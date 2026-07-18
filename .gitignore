@@ -1,0 +1,17 @@
+# Build output
+db.exe
+*.exe
+*.o
+*.obj
+
+# MSYS2 / Windows
+*.pdb
+*.ilk
+
+# Editor/IDE
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
