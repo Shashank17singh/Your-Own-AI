@@ -37,23 +37,28 @@ A fully working **Vector Database** built from scratch in C++ with a web UI. Imp
 
 ## 🧠 How It Works
 
-```
-Your Text
-    │
-    ▼
-Ollama (nomic-embed-text)          ← converts text to a 768-dimensional vector
-    │
-    ▼
-HNSW Index (C++)                   ← indexes the vector in a multilayer graph
-    │
-    ▼
-Semantic Search                    ← finds nearest neighbors in vector space
-    │
-    ▼
-Ollama (llama3.2)                  ← reads retrieved chunks, generates an answer
-    │
-    ▼
-Answer
+```mermaid
+graph TD
+    subgraph "Vector Search Pipeline"
+    A[Raw Text Document] -->|Chunking| B(Ollama: nomic-embed-text)
+    B -->|768D Vector| C{HNSW Index C++}
+    end
+    
+    subgraph "Retrieval Augmented Generation (RAG)"
+    D[User Query] -->|Embed| E(Ollama: nomic-embed-text)
+    E -->|768D Query Vector| C
+    C -->|K-Nearest Neighbors| F[Retrieved Context]
+    F -->|Prompt Injection| G(Ollama: Llama 3.2)
+    G --> H[Final Generated Answer]
+    end
+    
+    classDef llm fill:#f9f0ff,stroke:#8a2be2,stroke-width:2px,color:#000;
+    classDef data fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
+    classDef index fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000;
+    
+    class B,G,E llm;
+    class A,D,F,H data;
+    class C index;
 ```
 
 **HNSW (Hierarchical Navigable Small World)** is the same algorithm used by Pinecone, Weaviate, Chroma, and Milvus. It builds a multilayer graph where each layer is progressively sparser — searches start at the top layer and zoom in, achieving O(log N) complexity instead of O(N) for brute force.
