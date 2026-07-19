@@ -23,6 +23,10 @@ static const int DIMS = 16;   // demo vectors
 //  DATA TYPES
 // =====================================================================
 
+/**
+ * @struct VectorItem
+ * @brief Represents a single document or chunk embedded in the vector space.
+ */
 struct VectorItem {
     int id;
     std::string metadata;
@@ -36,12 +40,24 @@ using DistFn = std::function<float(const std::vector<float>&, const std::vector<
 //  DISTANCE METRICS
 // =====================================================================
 
+/**
+ * @brief Calculates the Euclidean (L2) distance between two vectors.
+ * @param a First vector
+ * @param b Second vector
+ * @return float Euclidean distance
+ */
 float euclidean(const std::vector<float>& a, const std::vector<float>& b) {
     float s = 0;
     for (int i = 0; i < (int)a.size(); i++) { float d = a[i]-b[i]; s += d*d; }
     return std::sqrt(s);
 }
 
+/**
+ * @brief Calculates the Cosine distance between two vectors (1.0 - cosine_similarity).
+ * @param a First vector
+ * @param b Second vector
+ * @return float Cosine distance
+ */
 float cosine(const std::vector<float>& a, const std::vector<float>& b) {
     float dot=0, na=0, nb=0;
     for (int i = 0; i < (int)a.size(); i++) {
@@ -101,6 +117,12 @@ struct KDNode {
     explicit KDNode(const VectorItem& v) : item(v) {}
 };
 
+/**
+ * @class KDTree
+ * @brief K-Dimensional Tree implementation for exact nearest neighbor search.
+ * 
+ * Partitions space iteratively along alternating axes. Best suited for lower-dimensional data.
+ */
 class KDTree {
     KDNode* root = nullptr;
     int dims;
@@ -162,6 +184,13 @@ public:
 //  HNSW — Hierarchical Navigable Small World
 // =====================================================================
 
+/**
+ * @class HNSW
+ * @brief Hierarchical Navigable Small World Graph implementation for approximate nearest neighbor search.
+ * 
+ * Provides O(log N) search complexity by building a multi-layered graph where upper layers are sparse 
+ * and lower layers are dense.
+ */
 class HNSW {
     struct Node {
         VectorItem item;
