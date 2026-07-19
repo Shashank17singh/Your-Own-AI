@@ -13,4 +13,7 @@ find_package(Threads REQUIRED)
 
 add_executable(vectordb src/main.cpp)
 target_link_libraries(vectordb Threads::Threads)
+if(WIN32)
+    target_link_libraries(vectordb ws2_32)
+endif()
 
