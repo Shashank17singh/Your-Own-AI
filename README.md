@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 VectorDB — Build a Vector Database from Scratch in C++
+# 🧠 Your-Own-AI (VectorDB) — Build a Vector Database from Scratch in C++
 
 **A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama**
 
