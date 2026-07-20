@@ -46,7 +46,7 @@ graph TD
     D[User Query] -->|Embed| E(Ollama: nomic-embed-text)
     E -->|768D Query Vector| C
     C -->|K-Nearest Neighbors| F[Retrieved Context]
-    F -->|Prompt Injection| G(Ollama: Llama 3.2)
+    F -->|Prompt Injection| G(Ollama: Llama 3.2:1b)
     G --> H[Final Generated Answer]
     end
     
