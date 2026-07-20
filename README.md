@@ -17,8 +17,6 @@
 
 A fully working **Vector Database** built from scratch in C++ with a web UI. Implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
 
-> Built as an educational project to show how production vector databases like Pinecone, Weaviate, and Chroma actually work under the hood.
-
 ---
 
 ## ✨ What This Project Does
