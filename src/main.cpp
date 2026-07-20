@@ -584,7 +584,7 @@ std::vector<std::string> chunkText(const std::string& text,
 //  OLLAMA CLIENT  — wraps local Ollama REST API
 //  Install:  https://ollama.com
 //  Models:   ollama pull nomic-embed-text
-//            ollama pull llama3.2
+//            ollama pull llama3.2:1b
 // =====================================================================
 
 class OllamaClient {
@@ -948,7 +948,7 @@ int main() {
                 res.set_content(
                     "{\"error\":\"Ollama unavailable. "
                     "Install from https://ollama.com then run: "
-                    "ollama pull nomic-embed-text && ollama pull llama3.2\"}",
+                    "ollama pull nomic-embed-text && ollama pull llama3.2:1b\"}",
                     "application/json");
                 return;
             }

@@ -49,7 +49,7 @@ notebook = {
       "metadata": {},
       "outputs": [],
       "source": [
-        "!ollama pull llama3.2\n",
+        "!ollama pull llama3.2:1b\n",
         "!ollama pull nomic-embed-text"
       ]
     },
@@ -118,7 +118,7 @@ notebook = {
   "nbformat_minor": 0
 }
 
-with open('e:/Project/VectorDB/Ollama_Cloud_GPU.ipynb', 'w', encoding='utf-8') as f:
+with open('e:/Project/Your-Own-AI/Ollama_Cloud_GPU.ipynb', 'w', encoding='utf-8') as f:
     json.dump(notebook, f, indent=2)
 
 print("Notebook created")
