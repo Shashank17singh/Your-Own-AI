@@ -218,8 +218,8 @@ What happens behind the scenes:
 ```
 1. Your question → embedded with nomic-embed-text (768D vector)
 2. HNSW search → finds 3 most semantically similar chunks
-3. Retrieved chunks → sent as context to llama3.2
-4. llama3.2 → generates an answer based only on your documents
+3. Retrieved chunks → sent as context to llama3.2:1b
+4. llama3.2:1b → generates an answer based only on your documents
 ```
 
 The answer streams in with a typewriter effect. Click the **context chips** to see exactly which chunks the AI used.
@@ -324,7 +324,7 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 | Embedding takes forever | Ollama is downloading the model on first use, wait ~2 min |
 | `g++: command not found` | Add `C:\msys64\ucrt64\bin` to Windows PATH |
 | Port 8080 already in use | Kill the process: `netstat -ano \| findstr 8080` then `taskkill /PID <pid> /F` |
-| LLM answer is slow | Normal — llama3.2 takes 10–30s on a laptop CPU. Use `llama3.2:1b` for faster answers |
+| LLM answer is slow | Normal — llama3.2:1b takes 10–30s on a laptop CPU. |
 
 
 ---
