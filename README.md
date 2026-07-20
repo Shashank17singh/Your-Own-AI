@@ -326,20 +326,5 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 | Port 8080 already in use | Kill the process: `netstat -ano \| findstr 8080` then `taskkill /PID <pid> /F` |
 | LLM answer is slow | Normal — llama3.2 takes 10–30s on a laptop CPU. Use `llama3.2:1b` for faster answers |
 
-### Use a Smaller/Faster LLM
-
-If llama3.2 is too slow on your laptop, switch to the 1B model:
-
-```bash
-ollama pull llama3.2:1b
-```
-
-Then edit `main.cpp` where `genModel` is set:
-
-```cpp
-std::string genModel = "llama3.2:1b";   // change this
-```
-
-Recompile and restart.
 
 ---
