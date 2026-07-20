@@ -126,7 +126,7 @@ git --version
 
 ```bash
 ollama pull nomic-embed-text   # ~274 MB — the embedding model
-ollama pull llama3.2           # ~2 GB — the language model
+ollama pull llama3.2:1b        # ~1.3 GB — the language model
 ```
 
 4. Verify Ollama is running:
