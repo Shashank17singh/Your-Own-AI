@@ -178,7 +178,7 @@ You should see:
 http://localhost:8080
 20 demo vectors | 16 dims | HNSW+KD-Tree+BruteForce
 Ollama: ONLINE
-  embed model: nomic-embed-text  gen model: llama3.2
+  embed model: nomic-embed-text  gen model: llama3.2:1b
 ```
 
 Open your browser to **http://localhost:8080**.
