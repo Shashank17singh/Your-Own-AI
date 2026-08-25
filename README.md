@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 Your-Own-AI (VectorDB) — Build a Vector Database from Scratch in C++
+#  Your-Own-AI (VectorDB) — Build a Vector Database from Scratch in C++
 
 **A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama**
 
@@ -13,27 +13,27 @@
 
 ---
 
-## 📖 Overview
+##  Overview
 
 A fully working **Vector Database** built from scratch in C++ with a web UI. Implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
 
 ---
 
-## ✨ What This Project Does
+##  What This Project Does
 
 | Feature | Description |
 |---|---|
-| 🔎 **3 Search Algorithms** | HNSW (production-grade), KD-Tree, Brute Force — run all three and compare speed |
-| 📐 **3 Distance Metrics** | Cosine similarity, Euclidean distance, Manhattan distance |
-| 🎯 **16D Demo Vectors** | 20 pre-loaded semantic vectors across 4 categories (CS, Math, Food, Sports) |
-| 📊 **2D PCA Scatter Plot** | Live visualization of semantic space — watch clusters form |
-| 📄 **Real Document Embedding** | Paste any text → Ollama embeds it with `nomic-embed-text` (768D) |
-| 🤖 **RAG Pipeline** | Ask questions about your documents → HNSW retrieves context → local LLM answers |
-| 🔌 **Full REST API** | CRUD endpoints: insert, delete, search, benchmark, hnsw-info |
+|  **3 Search Algorithms** | HNSW (production-grade), KD-Tree, Brute Force — run all three and compare speed |
+|  **3 Distance Metrics** | Cosine similarity, Euclidean distance, Manhattan distance |
+|  **16D Demo Vectors** | 20 pre-loaded semantic vectors across 4 categories (CS, Math, Food, Sports) |
+|  **2D PCA Scatter Plot** | Live visualization of semantic space — watch clusters form |
+|  **Real Document Embedding** | Paste any text → Ollama embeds it with `nomic-embed-text` (768D) |
+|  **RAG Pipeline** | Ask questions about your documents → HNSW retrieves context → local LLM answers |
+|  **Full REST API** | CRUD endpoints: insert, delete, search, benchmark, hnsw-info |
 
 ---
 
-## 🧠 How It Works
+##  How It Works
 
 ```mermaid
 graph TD
@@ -63,7 +63,7 @@ graph TD
 
 ---
 
-## ⚙️ Prerequisites
+##  Prerequisites
 
 You need **3 things** installed on your Windows laptop:
 
@@ -73,7 +73,7 @@ You need **3 things** installed on your Windows laptop:
 
 ---
 
-## 🚀 Step-by-Step Setup (Windows)
+##  Step-by-Step Setup (Windows)
 
 ### Step 1 — Install MSYS2 (C++ Compiler)
 
@@ -185,15 +185,15 @@ Open your browser to **http://localhost:8080**.
 
 ---
 
-## 🖱️ Using the Application
+##  Using the Application
 
 ### Tab 1: Search (Demo Vectors)
 
 - Type any concept in the search box: `binary tree`, `sushi`, `basketball`, `calculus`
 - Choose your algorithm: **HNSW**, **KD-Tree**, or **Brute Force**
 - Choose distance metric: **Cosine**, **Euclidean**, or **Manhattan**
-- Click **⚡ SEARCH** — results appear with distances, the matching point glows on the scatter plot
-- Click **▶ COMPARE ALL ALGOS** to run all 3 algorithms and compare their speed
+- Click ** SEARCH** — results appear with distances, the matching point glows on the scatter plot
+- Click ** COMPARE ALL ALGOS** to run all 3 algorithms and compare their speed
 
 The scatter plot shows all 20 vectors projected to 2D using PCA. The 4 semantic categories (CS, Math, Food, Sports) form distinct clusters — that's what "semantic similarity" looks like visually.
 
@@ -203,7 +203,7 @@ Uses Ollama to generate **real 768-dimensional embeddings** from any text.
 
 1. Type a title (e.g., `Operating Systems Notes`)
 2. Paste any text — lecture notes, textbook paragraphs, Wikipedia articles
-3. Click **⚡ EMBED & INSERT**
+3. Click ** EMBED & INSERT**
 4. Long documents are automatically split into overlapping 250-word chunks
 5. Each chunk gets its own embedding and is stored in a separate HNSW index
 
@@ -211,7 +211,7 @@ Uses Ollama to generate **real 768-dimensional embeddings** from any text.
 
 1. Make sure you've inserted some documents in Tab 2 first
 2. Type a question about your documents
-3. Click **🤖 ASK AI**
+3. Click ** ASK AI**
 
 What happens behind the scenes:
 
@@ -226,7 +226,7 @@ The answer streams in with a typewriter effect. Click the **context chips** to s
 
 ---
 
-## 📡 REST API Reference
+##  REST API Reference
 
 The server exposes a full REST API at `http://localhost:8080`.
 
@@ -268,7 +268,7 @@ curl -X POST http://localhost:8080/doc/ask `
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 VectorDB/
@@ -292,7 +292,7 @@ OllamaClient        HTTP client → /api/embeddings + /api/generate
 
 ---
 
-## 🔬 Algorithm Deep Dive
+##  Algorithm Deep Dive
 
 ### HNSW (Hierarchical Navigable Small World)
 
@@ -316,7 +316,7 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 ---
 
-## 🛠️ Common Issues
+##  Common Issues
 
 | Problem | Fix |
 |---|---|
