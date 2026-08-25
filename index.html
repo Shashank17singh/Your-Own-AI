@@ -225,7 +225,7 @@ button {
     </div>
     <div>
       <div class="sec">Benchmark</div>
-      <button class="btn-s" onclick="runBenchmark()">▶ COMPARE ALL ALGOS</button>
+      <button class="btn-s" onclick="runBenchmark()"> COMPARE ALL ALGOS</button>
     </div>
   </div>
 
@@ -667,7 +667,7 @@ async function insertDocument() {
   const text=document.getElementById('docText').value.trim();
   const btn=document.getElementById('insertDocBtn');
   const status=document.getElementById('insertStatus');
-  if(!title||!text){status.textContent='⚠ Need both a title and text.';return;}
+  if(!title||!text){status.textContent=' Need both a title and text.';return;}
 
   btn.disabled=true; btn.textContent='Embedding…';
   status.innerHTML='<span style="color:var(--muted)">Calling Ollama nomic-embed-text…</span>';
@@ -697,7 +697,7 @@ async function insertDocument() {
   } catch(_) {
     status.innerHTML='<span style="color:var(--red)">✗ Server error</span>';
   }
-  btn.disabled=false; btn.textContent='⚡ EMBED & INSERT';
+  btn.disabled=false; btn.textContent=' EMBED & INSERT';
 }
 
 async function loadDocList() {
@@ -807,7 +807,7 @@ async function askAI() {
       aDiv.innerHTML=`<div class="chat-a-label">ERROR</div><div class="chat-a-text" style="color:var(--red)">${d.error}</div>`;
     } else {
       // Build answer block with typewriter
-      aDiv.innerHTML=`<div class="chat-a-label">🤖 ${d.model||'llm'}</div>`+
+      aDiv.innerHTML=`<div class="chat-a-label"> ${d.model||'llm'}</div>`+
         `<div class="chat-a-text" id="typeTarget"></div>`+
         `<div class="chat-ctx">`+
           `<div class="chat-ctx-label">RETRIEVED CONTEXT (${d.contexts.length} chunks)</div>`+

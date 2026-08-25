@@ -7,7 +7,7 @@ notebook = {
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "# 🚀 Host Ollama on a Free Cloud GPU (Google Colab)\n",
+        "#  Host Ollama on a Free Cloud GPU (Google Colab)\n",
         "This notebook installs Ollama, pulls your models, and exposes them securely to the public internet using a Cloudflare tunnel.\n",
         "**Instructions:**\n",
         "1. Go to the top menu and click **Runtime > Change runtime type**.\n",
@@ -88,7 +88,7 @@ notebook = {
         "            url = re.search(r'https://[-a-zA-Z0-9]+\\.trycloudflare\\.com', line)\n",
         "            if url:\n",
         "                print(\"\\n\" + \"=\"*70)\n",
-        "                print(f\"🚀 YOUR PUBLIC OLLAMA API URL IS: {url.group(0)}\")\n",
+        "                print(f\" YOUR PUBLIC OLLAMA API URL IS: {url.group(0)}\")\n",
         "                print(\"=\"*70 + \"\\n\")\n",
         "                print(\"Replace 'http://localhost:11434' in your VectorDB project with this URL!\")\n",
         "                break\n",
