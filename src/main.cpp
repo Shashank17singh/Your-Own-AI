@@ -181,7 +181,7 @@ public:
 };
 
 // =====================================================================
-//  HNSW — Hierarchical Navigable Small World
+//  HNSW - Hierarchical Navigable Small World
 // =====================================================================
 
 /**
@@ -581,7 +581,7 @@ std::vector<std::string> chunkText(const std::string& text,
 }
 
 // =====================================================================
-//  OLLAMA CLIENT  — wraps local Ollama REST API
+//  OLLAMA CLIENT  - wraps local Ollama REST API
 //  Install:  https://ollama.com
 //  Models:   ollama pull nomic-embed-text
 //            ollama pull llama3.2:1b
@@ -611,7 +611,7 @@ class OllamaClient {
         if (p == std::string::npos) return {};
         p = body.find('[', p);
         if (p == std::string::npos) return {};
-        // Find matching ]  — embeddings can be large (768+ floats)
+        // Find matching ]  - embeddings can be large (768+ floats)
         size_t e = p + 1, depth = 1;
         while (e < body.size() && depth > 0) {
             if (body[e] == '[') depth++;
@@ -667,7 +667,7 @@ public:
 };
 
 // =====================================================================
-//  DOCUMENT DATABASE  — HNSW over real Ollama embeddings
+//  DOCUMENT DATABASE  - HNSW over real Ollama embeddings
 // =====================================================================
 
 struct DocItem {
@@ -702,7 +702,7 @@ public:
         return item.id;
     }
 
-    // Semantic search — returns top-k most similar chunks
+    // Semantic search - returns top-k most similar chunks
     std::vector<std::pair<float, DocItem>> search(
         const std::vector<float>& q, int k, float max_dist = 0.7f)
     {

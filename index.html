@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VectorDB — HNSW + RAG</title>
+<title>VectorDB - HNSW + RAG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -244,7 +244,7 @@ button {
     <div class="tab-content on" id="tab-search">
       <div>
         <div class="sec">Search Latency</div>
-        <div class="lat-big" id="latBig">—</div>
+        <div class="lat-big" id="latBig">-</div>
         <div class="lat-sub" id="latSub">No query yet</div>
       </div>
       <div>
@@ -548,7 +548,7 @@ async function runSearch() {
       if(sw>0)queryPt={x:sx/sw+(Math.random()-.5)*.015,y:sy/sw+(Math.random()-.5)*.015};
     }
     renderResults(searchResults); drawVecChart(emb);
-  } catch(_){alert('Cannot reach server — is it running on :8080?');}
+  } catch(_){alert('Cannot reach server - is it running on :8080?');}
 }
 
 document.getElementById('qInput').addEventListener('keydown',e=>{if(e.key==='Enter')runSearch();});
@@ -728,7 +728,7 @@ async function deleteDoc(id) {
 }
 
 // ════════════════════════════════════════════════════════════
-//  RAG  — Ask AI
+//  RAG  - Ask AI
 // ════════════════════════════════════════════════════════════
 document.getElementById('ragQuestion').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.ctrlKey)askAI();
@@ -833,7 +833,7 @@ async function askAI() {
   } catch(e) {
     thinkDiv.remove();
     const err=document.createElement('div');err.className='chat-a';
-    err.innerHTML='<div class="chat-a-label">ERROR</div><div class="chat-a-text" style="color:var(--red)">Server error — is the backend running?</div>';
+    err.innerHTML='<div class="chat-a-label">ERROR</div><div class="chat-a-text" style="color:var(--red)">Server error - is the backend running?</div>';
     history.appendChild(err);
   }
 
