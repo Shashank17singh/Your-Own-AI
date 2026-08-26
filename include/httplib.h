@@ -765,7 +765,7 @@ inline bool parse_url(const std::string &url, UrlComponents &uc) {
 
     // Without :// or //, the entire input must be consumed as host[:port].
     // If there is leftover (path, query, etc.), this is not a valid
-    // host[:port] string — clear and reparse as a plain path.
+    // host[:port] string - clear and reparse as a plain path.
     if (!has_authority_prefix && pos < url.size()) {
       uc.host.clear();
       uc.port.clear();
@@ -887,7 +887,7 @@ using UploadProgress = std::function<bool(size_t current, size_t total)>;
 
 /*
  * detail: type-erased storage used by UserData.
- * ABI-stable regardless of C++ standard — always uses this custom
+ * ABI-stable regardless of C++ standard - always uses this custom
  * implementation instead of std::any.
  */
 namespace detail {
@@ -1328,7 +1328,7 @@ struct Response {
   std::string body;
   std::string location; // Redirect location
 
-  // User-defined context — set by pre-routing/pre-request handlers and read
+  // User-defined context - set by pre-routing/pre-request handlers and read
   // by route handlers to pass arbitrary data (e.g. decoded auth tokens).
   UserData user_data;
 
@@ -12160,7 +12160,7 @@ Server::process_request(Stream &strm, const std::string &remote_addr,
     if (!detail::read_content(
             strm, req, payload_max_length_, drain_status, nullptr,
             [](const char *, size_t, size_t, size_t) { return true; }, false)) {
-      // Body exceeds payload limit or read error — close the connection
+      // Body exceeds payload limit or read error - close the connection
       // to prevent leftover bytes from being misinterpreted.
       connection_closed = true;
     }
