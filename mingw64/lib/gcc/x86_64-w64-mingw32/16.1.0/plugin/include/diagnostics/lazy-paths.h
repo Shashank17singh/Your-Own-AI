@@ -35,31 +35,25 @@ namespace paths {
    is actually used by a diagnostic, and thus avoided for warnings that
    are disabled.  */
 
-class lazy_path : public path
-{
- public:
-  virtual ~lazy_path () {}
+class lazy_path : public path {
+public:
+  virtual ~lazy_path() {}
 
-  unsigned num_events () const final override;
-  const event & get_event (int idx) const final override;
-  unsigned num_threads () const final override;
-  const thread &
-  get_thread (thread_id_t) const final override;
-  bool
-  same_function_p (int event_idx_a,
-		   int event_idx_b) const final override;
+  unsigned num_events() const final override;
+  const event &get_event(int idx) const final override;
+  unsigned num_threads() const final override;
+  const thread &get_thread(thread_id_t) const final override;
+  bool same_function_p(int event_idx_a, int event_idx_b) const final override;
 
-  bool generated_p () const { return m_inner_path != nullptr; }
+  bool generated_p() const { return m_inner_path != nullptr; }
 
 protected:
-  lazy_path (const logical_locations::manager &logical_loc_mgr)
-  : path (logical_loc_mgr)
-  {
-  }
+  lazy_path(const logical_locations::manager &logical_loc_mgr)
+      : path(logical_loc_mgr) {}
 
- private:
-  void lazily_generate_path () const;
-  virtual std::unique_ptr<path> make_inner_path () const = 0;
+private:
+  void lazily_generate_path() const;
+  virtual std::unique_ptr<path> make_inner_path() const = 0;
 
   mutable std::unique_ptr<path> m_inner_path;
 };

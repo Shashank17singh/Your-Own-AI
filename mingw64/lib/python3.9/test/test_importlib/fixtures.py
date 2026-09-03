@@ -85,13 +85,13 @@ class DistInfoPkg(OnSysPath, SiteDir):
                 [entries]
                 main = mod:main
                 ns:sub = mod:main
-            """
-            },
+            """,
+        },
         "mod.py": """
             def main():
                 print("hello world")
             """,
-        }
+    }
 
     def setUp(self):
         super(DistInfoPkg, self).setUp()
@@ -128,13 +128,13 @@ class EggInfoPkg(OnSysPath, SiteDir):
                 [test]
                 pytest
             """,
-            "top_level.txt": "mod\n"
-            },
+            "top_level.txt": "mod\n",
+        },
         "mod.py": """
             def main():
                 print("hello world")
             """,
-        }
+    }
 
     def setUp(self):
         super(EggInfoPkg, self).setUp()
@@ -155,7 +155,7 @@ class EggInfoFile(OnSysPath, SiteDir):
             Description: UNKNOWN
             Platform: UNKNOWN
             """,
-        }
+    }
 
     def setUp(self):
         super(EggInfoFile, self).setUp()
@@ -168,7 +168,7 @@ class LocalPackage:
             import setuptools
             setuptools.setup(name="local-pkg", version="2.0.1")
             """,
-        }
+    }
 
     def setUp(self):
         self.fixtures = contextlib.ExitStack()
@@ -204,10 +204,10 @@ def build_files(file_defs, prefix=pathlib.Path()):
             build_files(contents, prefix=full_name)
         else:
             if isinstance(contents, bytes):
-                with full_name.open('wb') as f:
+                with full_name.open("wb") as f:
                     f.write(contents)
             else:
-                with full_name.open('w') as f:
+                with full_name.open("w") as f:
                     f.write(DALS(contents))
 
 
@@ -217,9 +217,10 @@ class FileBuilder:
             import test.support
         except ImportError:
             # outside CPython, hard-code a unicode snowman
-            return '☃'
-        return test.support.FS_NONASCII or \
-            self.skip("File system does not support non-ascii.")
+            return "☃"
+        return test.support.FS_NONASCII or self.skip(
+            "File system does not support non-ascii."
+        )
 
     def skip(self, reason):
         raise unittest.SkipTest(reason)

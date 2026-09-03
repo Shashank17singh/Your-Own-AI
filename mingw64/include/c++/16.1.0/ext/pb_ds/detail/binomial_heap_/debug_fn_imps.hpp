@@ -43,10 +43,9 @@
 #ifdef _GLIBCXX_DEBUG
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-assert_valid(const char* __file, int __line) const
-{ base_type::assert_valid(true, __file, __line); }
+void PB_DS_CLASS_C_DEC::assert_valid(const char *__file, int __line) const {
+  base_type::assert_valid(true, __file, __line);
+}
 
-#endif 
+#endif
 #endif

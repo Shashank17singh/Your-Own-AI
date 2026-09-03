@@ -5,16 +5,13 @@
  */
 #ifndef _NTDSBMSG_
 #define _NTDSBMSG_
-
 #define FACILITY_SYSTEM 0x0
 #define FACILITY_NTDSB 0x800
 #define FACILITY_BACKUP 0x7FF
-
 #define STATUS_SEVERITY_WARNING 0x2
 #define STATUS_SEVERITY_SUCCESS 0x0
 #define STATUS_SEVERITY_INFORMATIONAL 0x1
 #define STATUS_SEVERITY_ERROR 0x3
-
 #define hrNone ((HRESULT)0x00000000)
 #define hrNyi ((HRESULT)0xC0000001)
 #define hrInvalidParam ((HRESULT)0xC7FF0001)
@@ -202,5 +199,4 @@
 #define hrLogCorrupted ((HRESULT)0xC800073C)
 #define hrInvalidOperation ((HRESULT)0xC8000772)
 #define hrAccessDenied ((HRESULT)0xC8000773)
-
 #endif

@@ -21,16 +21,15 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTICS_HTML_SINK_H
 #define GCC_DIAGNOSTICS_HTML_SINK_H
 
-#include "diagnostics/sink.h"
 #include "diagnostics/output-file.h"
+#include "diagnostics/sink.h"
 
 namespace diagnostics {
 
-struct html_generation_options
-{
-  html_generation_options ();
+struct html_generation_options {
+  html_generation_options();
 
-  void dump (FILE *out, int indent) const;
+  void dump(FILE *out, int indent) const;
 
   bool m_css;
   bool m_javascript;
@@ -49,22 +48,18 @@ struct html_generation_options
 };
 
 extern diagnostics::output_file
-open_html_output_file (context &dc,
-		       line_maps *line_maps,
-		       const char *base_file_name);
+open_html_output_file(context &dc, line_maps *line_maps,
+                      const char *base_file_name);
 
 extern std::unique_ptr<sink>
-make_html_sink (context &dc,
-		const line_maps &line_maps,
-		const html_generation_options &html_gen_opts,
-		output_file output_file_);
+make_html_sink(context &dc, const line_maps &line_maps,
+               const html_generation_options &html_gen_opts,
+               output_file output_file_);
 
-extern void
-print_path_as_html (xml::printer &xp,
-		    const paths::path &path,
-		    context &dc,
-		    html_label_writer *event_label_writer,
-		    const source_print_policy &dspp);
+extern void print_path_as_html(xml::printer &xp, const paths::path &path,
+                               context &dc,
+                               html_label_writer *event_label_writer,
+                               const source_print_policy &dspp);
 
 } // namespace diagnostics
 

@@ -35,27 +35,24 @@ along with GCC; see the file COPYING3.  If not see
    This has to be in the global namespace for compatibility with
    c-format.cc in GCC 10 onwards.  */
 
-class diagnostic_event_id_t
-{
- public:
-  diagnostic_event_id_t () : m_index (UNKNOWN_EVENT_IDX) {}
-  diagnostic_event_id_t (int zero_based_idx) : m_index (zero_based_idx) {}
+class diagnostic_event_id_t {
+public:
+  diagnostic_event_id_t() : m_index(UNKNOWN_EVENT_IDX) {}
+  diagnostic_event_id_t(int zero_based_idx) : m_index(zero_based_idx) {}
 
-  bool known_p () const { return m_index != UNKNOWN_EVENT_IDX; }
+  bool known_p() const { return m_index != UNKNOWN_EVENT_IDX; }
 
-  int zero_based () const
-  {
-    gcc_assert (known_p ());
+  int zero_based() const {
+    gcc_assert(known_p());
     return m_index;
   }
 
-  int one_based () const
-  {
-    gcc_assert (known_p ());
+  int one_based() const {
+    gcc_assert(known_p());
     return m_index + 1;
   }
 
- private:
+private:
   static const int UNKNOWN_EVENT_IDX = -1;
   int m_index; // zero-based
 };
@@ -72,7 +69,6 @@ typedef int thread_id_t;
 
 } // namespace paths
 } // namespace diagnostics
-
 
 /* A pointer to a diagnostic_event_id_t, for use with the "%@" format
    code, which will print a 1-based representation for it, with suitable

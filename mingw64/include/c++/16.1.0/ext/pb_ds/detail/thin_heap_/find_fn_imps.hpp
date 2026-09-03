@@ -42,9 +42,7 @@
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::const_reference
-PB_DS_CLASS_C_DEC::
-top() const
-{
+PB_DS_CLASS_C_DEC::top() const {
   PB_DS_ASSERT_VALID((*this))
   _GLIBCXX_DEBUG_ASSERT(!base_type::empty());
 

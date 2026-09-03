@@ -4,12 +4,9 @@
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #include <crtdefs.h>
-
 #include <io.h>
-
 #ifndef _INC_FCNTL
 #define _INC_FCNTL
-
 #define _O_RDONLY 0x0000
 #define _O_WRONLY 0x0001
 #define _O_RDWR 0x0002
@@ -22,16 +19,13 @@
 #define _O_WTEXT 0x10000
 #define _O_U16TEXT 0x20000
 #define _O_U8TEXT 0x40000
-#define _O_ACCMODE (_O_RDONLY|_O_WRONLY|_O_RDWR)
-
+#define _O_ACCMODE (_O_RDONLY | _O_WRONLY | _O_RDWR)
 #define _O_RAW _O_BINARY
 #define _O_NOINHERIT 0x0080
 #define _O_TEMPORARY 0x0040
 #define _O_SHORT_LIVED 0x1000
-
 #define _O_SEQUENTIAL 0x0020
 #define _O_RANDOM 0x0010
-
 #if !defined(NO_OLDNAMES) || defined(_POSIX)
 #define O_RDONLY _O_RDONLY
 #define O_WRONLY _O_WRONLY

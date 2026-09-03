@@ -8,10 +8,10 @@ import asyncio
 from test.test_asyncio import utils as test_utils
 
 STR_RGX_REPR = (
-    r'^<(?P<class>.*?) object at (?P<address>.*?)'
-    r'\[(?P<extras>'
-    r'(set|unset|locked|unlocked)(, value:\d)?(, waiters:\d+)?'
-    r')\]>\Z'
+    r"^<(?P<class>.*?) object at (?P<address>.*?)"
+    r"\[(?P<extras>"
+    r"(set|unset|locked|unlocked)(, value:\d)?(, waiters:\d+)?"
+    r")\]>\Z"
 )
 RGX_REPR = re.compile(STR_RGX_REPR)
 
@@ -44,11 +44,11 @@ class LockTests(test_utils.TestCase):
     def test_repr(self):
         with self.assertWarns(DeprecationWarning):
             lock = asyncio.Lock(loop=self.loop)
-        self.assertTrue(repr(lock).endswith('[unlocked]>'))
+        self.assertTrue(repr(lock).endswith("[unlocked]>"))
         self.assertTrue(RGX_REPR.match(repr(lock)))
 
         self.loop.run_until_complete(lock.acquire())
-        self.assertTrue(repr(lock).endswith('[locked]>'))
+        self.assertTrue(repr(lock).endswith("[locked]>"))
         self.assertTrue(RGX_REPR.match(repr(lock)))
 
     def test_lock(self):
@@ -59,10 +59,7 @@ class LockTests(test_utils.TestCase):
             def acquire_lock():
                 return (yield from lock)
 
-        with self.assertRaisesRegex(
-            TypeError,
-            "object is not iterable"
-        ):
+        with self.assertRaisesRegex(TypeError, "object is not iterable"):
             self.loop.run_until_complete(acquire_lock())
 
         self.assertFalse(lock.locked())
@@ -82,10 +79,7 @@ class LockTests(test_utils.TestCase):
             def test(lock):
                 yield from asyncio.sleep(0.01)
                 self.assertFalse(lock.locked())
-                with self.assertRaisesRegex(
-                    TypeError,
-                    "object is not iterable"
-                ):
+                with self.assertRaisesRegex(TypeError, "object is not iterable"):
                     with (yield from lock):
                         pass
                 self.assertFalse(lock.locked())
@@ -153,9 +147,7 @@ class LockTests(test_utils.TestCase):
 
         task = self.loop.create_task(lock.acquire())
         self.loop.call_soon(task.cancel)
-        self.assertRaises(
-            asyncio.CancelledError,
-            self.loop.run_until_complete, task)
+        self.assertRaises(asyncio.CancelledError, self.loop.run_until_complete, task)
         self.assertFalse(lock._waiters)
 
     def test_cancel_race(self):
@@ -185,13 +177,13 @@ class LockTests(test_utils.TestCase):
                 lock.release()
 
         fa = self.loop.create_future()
-        ta = self.loop.create_task(lockit('A', fa))
+        ta = self.loop.create_task(lockit("A", fa))
         test_utils.run_briefly(self.loop)
         self.assertTrue(lock.locked())
-        tb = self.loop.create_task(lockit('B', None))
+        tb = self.loop.create_task(lockit("B", None))
         test_utils.run_briefly(self.loop)
         self.assertEqual(len(lock._waiters), 1)
-        tc = self.loop.create_task(lockit('C', None))
+        tc = self.loop.create_task(lockit("C", None))
         test_utils.run_briefly(self.loop)
         self.assertEqual(len(lock._waiters), 2)
 
@@ -330,16 +322,16 @@ class EventTests(test_utils.TestCase):
     def test_repr(self):
         with self.assertWarns(DeprecationWarning):
             ev = asyncio.Event(loop=self.loop)
-        self.assertTrue(repr(ev).endswith('[unset]>'))
+        self.assertTrue(repr(ev).endswith("[unset]>"))
         match = RGX_REPR.match(repr(ev))
-        self.assertEqual(match.group('extras'), 'unset')
+        self.assertEqual(match.group("extras"), "unset")
 
         ev.set()
-        self.assertTrue(repr(ev).endswith('[set]>'))
+        self.assertTrue(repr(ev).endswith("[set]>"))
         self.assertTrue(RGX_REPR.match(repr(ev)))
 
         ev._waiters.append(mock.Mock())
-        self.assertTrue('waiters:1' in repr(ev))
+        self.assertTrue("waiters:1" in repr(ev))
         self.assertTrue(RGX_REPR.match(repr(ev)))
 
     def test_wait(self):
@@ -394,9 +386,7 @@ class EventTests(test_utils.TestCase):
 
         wait = self.loop.create_task(ev.wait())
         self.loop.call_soon(wait.cancel)
-        self.assertRaises(
-            asyncio.CancelledError,
-            self.loop.run_until_complete, wait)
+        self.assertRaises(asyncio.CancelledError, self.loop.run_until_complete, wait)
         self.assertFalse(ev._waiters)
 
     def test_clear(self):
@@ -531,9 +521,7 @@ class ConditionTests(test_utils.TestCase):
 
         wait = self.loop.create_task(cond.wait())
         self.loop.call_soon(wait.cancel)
-        self.assertRaises(
-            asyncio.CancelledError,
-            self.loop.run_until_complete, wait)
+        self.assertRaises(asyncio.CancelledError, self.loop.run_until_complete, wait)
         self.assertFalse(cond._waiters)
         self.assertTrue(cond.locked())
 
@@ -592,9 +580,7 @@ class ConditionTests(test_utils.TestCase):
     def test_wait_unacquired(self):
         with self.assertWarns(DeprecationWarning):
             cond = asyncio.Condition(loop=self.loop)
-        self.assertRaises(
-            RuntimeError,
-            self.loop.run_until_complete, cond.wait())
+        self.assertRaises(RuntimeError, self.loop.run_until_complete, cond.wait())
 
     def test_wait_for(self):
         with self.assertWarns(DeprecationWarning):
@@ -643,9 +629,8 @@ class ConditionTests(test_utils.TestCase):
         self.assertEqual([1, 2, 3], res)
 
         self.assertRaises(
-            RuntimeError,
-            self.loop.run_until_complete,
-            cond.wait_for(lambda: False))
+            RuntimeError, self.loop.run_until_complete, cond.wait_for(lambda: False)
+        )
 
     def test_notify(self):
         with self.assertWarns(DeprecationWarning):
@@ -750,18 +735,18 @@ class ConditionTests(test_utils.TestCase):
     def test_repr(self):
         with self.assertWarns(DeprecationWarning):
             cond = asyncio.Condition(loop=self.loop)
-        self.assertTrue('unlocked' in repr(cond))
+        self.assertTrue("unlocked" in repr(cond))
         self.assertTrue(RGX_REPR.match(repr(cond)))
 
         self.loop.run_until_complete(cond.acquire())
-        self.assertTrue('locked' in repr(cond))
+        self.assertTrue("locked" in repr(cond))
 
         cond._waiters.append(mock.Mock())
-        self.assertTrue('waiters:1' in repr(cond))
+        self.assertTrue("waiters:1" in repr(cond))
         self.assertTrue(RGX_REPR.match(repr(cond)))
 
         cond._waiters.append(mock.Mock())
-        self.assertTrue('waiters:2' in repr(cond))
+        self.assertTrue("waiters:2" in repr(cond))
         self.assertTrue(RGX_REPR.match(repr(cond)))
 
     def test_context_manager(self):
@@ -833,20 +818,20 @@ class SemaphoreTests(test_utils.TestCase):
     def test_repr(self):
         with self.assertWarns(DeprecationWarning):
             sem = asyncio.Semaphore(loop=self.loop)
-        self.assertTrue(repr(sem).endswith('[unlocked, value:1]>'))
+        self.assertTrue(repr(sem).endswith("[unlocked, value:1]>"))
         self.assertTrue(RGX_REPR.match(repr(sem)))
 
         self.loop.run_until_complete(sem.acquire())
-        self.assertTrue(repr(sem).endswith('[locked]>'))
-        self.assertTrue('waiters' not in repr(sem))
+        self.assertTrue(repr(sem).endswith("[locked]>"))
+        self.assertTrue("waiters" not in repr(sem))
         self.assertTrue(RGX_REPR.match(repr(sem)))
 
         sem._waiters.append(mock.Mock())
-        self.assertTrue('waiters:1' in repr(sem))
+        self.assertTrue("waiters:1" in repr(sem))
         self.assertTrue(RGX_REPR.match(repr(sem)))
 
         sem._waiters.append(mock.Mock())
-        self.assertTrue('waiters:2' in repr(sem))
+        self.assertTrue("waiters:2" in repr(sem))
         self.assertTrue(RGX_REPR.match(repr(sem)))
 
     def test_semaphore(self):
@@ -855,6 +840,7 @@ class SemaphoreTests(test_utils.TestCase):
         self.assertEqual(1, sem._value)
 
         with self.assertWarns(DeprecationWarning):
+
             @asyncio.coroutine
             def acquire_lock():
                 return (yield from sem)
@@ -940,11 +926,10 @@ class SemaphoreTests(test_utils.TestCase):
 
         acquire = self.loop.create_task(sem.acquire())
         self.loop.call_soon(acquire.cancel)
-        self.assertRaises(
-            asyncio.CancelledError,
-            self.loop.run_until_complete, acquire)
-        self.assertTrue((not sem._waiters) or
-                        all(waiter.done() for waiter in sem._waiters))
+        self.assertRaises(asyncio.CancelledError, self.loop.run_until_complete, acquire)
+        self.assertTrue(
+            (not sem._waiters) or all(waiter.done() for waiter in sem._waiters)
+        )
 
     def test_acquire_cancel_before_awoken(self):
         with self.assertWarns(DeprecationWarning):
@@ -1000,5 +985,5 @@ class SemaphoreTests(test_utils.TestCase):
         self.assertFalse(sem.locked())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

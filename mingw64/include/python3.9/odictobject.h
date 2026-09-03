@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-
 /* OrderedDict */
 /* This API is optional and mostly redundant. */
 
@@ -28,12 +27,12 @@ PyAPI_FUNC(int) PyODict_DelItem(PyObject *od, PyObject *key);
 
 /* wrappers around PyDict* functions */
 #define PyODict_GetItem(od, key) PyDict_GetItem(_PyObject_CAST(od), key)
-#define PyODict_GetItemWithError(od, key) \
-    PyDict_GetItemWithError(_PyObject_CAST(od), key)
+#define PyODict_GetItemWithError(od, key)                                      \
+  PyDict_GetItemWithError(_PyObject_CAST(od), key)
 #define PyODict_Contains(od, key) PyDict_Contains(_PyObject_CAST(od), key)
 #define PyODict_Size(od) PyDict_Size(_PyObject_CAST(od))
-#define PyODict_GetItemString(od, key) \
-    PyDict_GetItemString(_PyObject_CAST(od), key)
+#define PyODict_GetItemString(od, key)                                         \
+  PyDict_GetItemString(_PyObject_CAST(od), key)
 
 #endif
 

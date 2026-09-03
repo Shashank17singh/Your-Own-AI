@@ -35,40 +35,40 @@
  * #yasm_dbgfmt implementation.
  */
 typedef struct yasm_dbgfmt_base {
-    /** #yasm_dbgfmt_module implementation for this debug format. */
-    const struct yasm_dbgfmt_module *module;
+  /** #yasm_dbgfmt_module implementation for this debug format. */
+  const struct yasm_dbgfmt_module *module;
 } yasm_dbgfmt_base;
 #endif
 
 /** Debug format module interface. */
 struct yasm_dbgfmt_module {
-    /** One-line description of the debug format. */
-    const char *name;
+  /** One-line description of the debug format. */
+  const char *name;
 
-    /** Keyword used to select debug format. */
-    const char *keyword;
+  /** Keyword used to select debug format. */
+  const char *keyword;
 
-    /** NULL-terminated list of directives.  NULL if none. */
-    /*@null@*/ const yasm_directive *directives;
+  /** NULL-terminated list of directives.  NULL if none. */
+  /*@null@*/ const yasm_directive *directives;
 
-    /** Create debug format.
-     * Module-level implementation of yasm_dbgfmt_create().
-     * The filenames are provided solely for informational purposes.
-     * \param object        object
-     * \return NULL if object format does not provide needed support.
-     */
-    /*@null@*/ /*@only@*/ yasm_dbgfmt * (*create) (yasm_object *object);
+  /** Create debug format.
+   * Module-level implementation of yasm_dbgfmt_create().
+   * The filenames are provided solely for informational purposes.
+   * \param object        object
+   * \return NULL if object format does not provide needed support.
+   */
+  /*@null@*/ /*@only@*/ yasm_dbgfmt *(*create)(yasm_object *object);
 
-    /** Module-level implementation of yasm_dbgfmt_destroy().
-     * Call yasm_dbgfmt_destroy() instead of calling this function.
-     */
-    void (*destroy) (/*@only@*/ yasm_dbgfmt *dbgfmt);
+  /** Module-level implementation of yasm_dbgfmt_destroy().
+   * Call yasm_dbgfmt_destroy() instead of calling this function.
+   */
+  void (*destroy)(/*@only@*/ yasm_dbgfmt *dbgfmt);
 
-    /** Module-level implementation of yasm_dbgfmt_generate().
-     * Call yasm_dbgfmt_generate() instead of calling this function.
-     */
-    void (*generate) (yasm_object *object, yasm_linemap *linemap,
-                      yasm_errwarns *errwarns);
+  /** Module-level implementation of yasm_dbgfmt_generate().
+   * Call yasm_dbgfmt_generate() instead of calling this function.
+   */
+  void (*generate)(yasm_object *object, yasm_linemap *linemap,
+                   yasm_errwarns *errwarns);
 };
 
 /** Get the keyword used to select a debug format.
@@ -84,8 +84,8 @@ const char *yasm_dbgfmt_keyword(const yasm_dbgfmt *dbgfmt);
  * \param object        object to generate debugging information for
  * \return NULL if object format does not provide needed support.
  */
-/*@null@*/ /*@only@*/ yasm_dbgfmt *yasm_dbgfmt_create
-    (const yasm_dbgfmt_module *module, yasm_object *object);
+/*@null@*/ /*@only@*/ yasm_dbgfmt *
+yasm_dbgfmt_create(const yasm_dbgfmt_module *module, yasm_object *object);
 
 /** Cleans up any allocated debug format memory.
  * \param dbgfmt        debug format
@@ -105,17 +105,16 @@ void yasm_dbgfmt_generate(yasm_object *object, yasm_linemap *linemap,
 
 /* Inline macro implementations for dbgfmt functions */
 
-#define yasm_dbgfmt_keyword(dbgfmt) \
-    (((yasm_dbgfmt_base *)dbgfmt)->module->keyword)
+#define yasm_dbgfmt_keyword(dbgfmt)                                            \
+  (((yasm_dbgfmt_base *)dbgfmt)->module->keyword)
 
-#define yasm_dbgfmt_create(module, object) \
-    module->create(object)
+#define yasm_dbgfmt_create(module, object) module->create(object)
 
-#define yasm_dbgfmt_destroy(dbgfmt) \
-    ((yasm_dbgfmt_base *)dbgfmt)->module->destroy(dbgfmt)
-#define yasm_dbgfmt_generate(object, linemap, ews) \
-    ((yasm_dbgfmt_base *)((object)->dbgfmt))->module->generate \
-        (object, linemap, ews)
+#define yasm_dbgfmt_destroy(dbgfmt)                                            \
+  ((yasm_dbgfmt_base *)dbgfmt)->module->destroy(dbgfmt)
+#define yasm_dbgfmt_generate(object, linemap, ews)                             \
+  ((yasm_dbgfmt_base *)((object)->dbgfmt))                                     \
+      ->module->generate(object, linemap, ews)
 
 #endif
 

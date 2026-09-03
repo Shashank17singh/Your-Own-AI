@@ -25,8 +25,7 @@ along with GCC; see the file COPYING3.  If not see
    Tabs will be expanded or not according to the value of -ftabstop.  The origin
    (default 1) is controlled by -fdiagnostics-column-origin.  */
 
-enum diagnostics_column_unit
-{
+enum diagnostics_column_unit {
   /* The default from GCC 11 onwards: display columns.  */
   DIAGNOSTICS_COLUMN_UNIT_DISPLAY,
 
@@ -37,8 +36,7 @@ enum diagnostics_column_unit
 /* An enum for controlling how to print non-ASCII characters/bytes when
    a diagnostic suggests escaping the source code on output.  */
 
-enum diagnostics_escape_format
-{
+enum diagnostics_escape_format {
   /* Escape non-ASCII Unicode characters in the form <U+XXXX> and
      non-UTF-8 bytes in the form <XX>.  */
   DIAGNOSTICS_ESCAPE_FORMAT_UNICODE,
@@ -50,8 +48,7 @@ enum diagnostics_escape_format
 
 /* Enum for overriding the standard output format.  */
 
-enum diagnostics_output_format
-{
+enum diagnostics_output_format {
   /* The default: textual output.  */
   DIAGNOSTICS_OUTPUT_FORMAT_TEXT,
 
@@ -63,8 +60,7 @@ enum diagnostics_output_format
 };
 
 /* An enum for controlling how diagnostic paths should be printed.  */
-enum diagnostic_path_format
-{
+enum diagnostic_path_format {
   /* Don't print diagnostic paths.  */
   DPF_NONE,
 
@@ -82,8 +78,7 @@ enum diagnostic_path_format
 /* An enum for capturing values of GCC_EXTRA_DIAGNOSTIC_OUTPUT,
    and for -fdiagnostics-parseable-fixits.  */
 
-enum diagnostics_extra_output_kind
-{
+enum diagnostics_extra_output_kind {
   /* No extra output, or an unrecognized value.  */
   EXTRA_DIAGNOSTIC_OUTPUT_none,
 
@@ -97,8 +92,7 @@ enum diagnostics_extra_output_kind
 
 /* Values for -fdiagnostics-text-art-charset=.  */
 
-enum diagnostic_text_art_charset
-{
+enum diagnostic_text_art_charset {
   /* No text art diagrams shall be emitted.  */
   DIAGNOSTICS_TEXT_ART_CHARSET_NONE,
 

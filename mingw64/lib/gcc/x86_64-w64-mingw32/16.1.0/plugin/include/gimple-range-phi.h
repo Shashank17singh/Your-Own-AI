@@ -47,23 +47,23 @@ along with GCC; see the file COPYING3.  If not see
 // Based on just this analysis, We can project that qa_9 and qa_10 will have
 // a range of [0, +INF].
 
-class phi_group
-{
+class phi_group {
 public:
-  phi_group (bitmap bm, irange &init_range, gimple *mod, range_query *q);
-  phi_group (const phi_group &g);
-  const_bitmap group () const { return m_group; }
-  const vrange &range () const { return m_vr; }
-  gimple *modifier_stmt () const { return m_modifier; }
-  void dump (FILE *);
+  phi_group(bitmap bm, irange &init_range, gimple *mod, range_query *q);
+  phi_group(const phi_group &g);
+  const_bitmap group() const { return m_group; }
+  const vrange &range() const { return m_vr; }
+  gimple *modifier_stmt() const { return m_modifier; }
+  void dump(FILE *);
+
 protected:
-  bool calculate_using_modifier (range_query *q);
-  bool refine_using_relation (relation_kind k);
-  static unsigned is_modifier_p (gimple *s, const bitmap bm, tree *op = NULL);
+  bool calculate_using_modifier(range_query *q);
+  bool refine_using_relation(relation_kind k);
+  static unsigned is_modifier_p(gimple *s, const bitmap bm, tree *op = NULL);
   bitmap m_group;
   gimple *m_modifier;     // Single stmt which modifies phi group.
   unsigned m_modifier_op; // Operand of group member in modifier stmt.
-  tree m_modifier_name;	  // Name of modifier operand ssa-name.
+  tree m_modifier_name;   // Name of modifier operand ssa-name.
   int_range_max m_vr;
   friend class phi_analyzer;
 };
@@ -73,20 +73,20 @@ protected:
 // looking at the arguments to PHIS and following them to their defs to
 // determine whether the conditions are met to form a new group.
 
-class phi_analyzer
-{
+class phi_analyzer {
 public:
-  phi_analyzer (range_query &);
-  ~phi_analyzer ();
-  phi_group *operator[] (tree name);
-  void dump (FILE *f);
+  phi_analyzer(range_query &);
+  ~phi_analyzer();
+  phi_group *operator[](tree name);
+  void dump(FILE *f);
+
 protected:
-  phi_group *group (tree name) const;
-  void process_phi (gphi *phi, range_query &query);
+  phi_group *group(tree name) const;
+  void process_phi(gphi *phi, range_query &query);
   vec<tree> m_work;
 
-  bitmap m_simple;       // Processed, not part of a group.
-  bitmap m_current;	 // Potential group currently being analyzed.
+  bitmap m_simple;  // Processed, not part of a group.
+  bitmap m_current; // Potential group currently being analyzed.
   vec<phi_group *> m_phi_groups;
   vec<phi_group *> m_tab;
   bitmap_obstack m_bitmaps;
@@ -96,6 +96,6 @@ protected:
 // to form groups with initial values. Then export any ranges found
 // to set_range_info.  When finished, it will simply dispose of itself.
 
-void phi_analysis (range_query &q);
+void phi_analysis(range_query &q);
 
 #endif // GCC_SSA_RANGE_PHI_H

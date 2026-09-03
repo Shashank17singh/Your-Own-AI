@@ -2,7 +2,7 @@ from test import support
 import unittest
 
 # Skip test if nis module does not exist.
-nis = support.import_module('nis')
+nis = support.import_module("nis")
 
 
 class NisTests(unittest.TestCase):
@@ -35,5 +35,6 @@ class NisTests(unittest.TestCase):
             if done:
                 break
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

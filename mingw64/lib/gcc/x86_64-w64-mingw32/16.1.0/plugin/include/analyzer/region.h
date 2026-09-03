@@ -28,8 +28,7 @@ namespace ana {
 
 /* An enum for identifying different spaces within memory.  */
 
-enum memory_space
-{
+enum memory_space {
   MEMSPACE_UNKNOWN,
   MEMSPACE_CODE,
   MEMSPACE_GLOBALS,
@@ -43,8 +42,7 @@ enum memory_space
 /* An enum for discriminating between the different concrete subclasses
    of region.  */
 
-enum region_kind
-{
+enum region_kind {
   RK_FRAME,
   RK_GLOBALS,
   RK_CODE,
@@ -90,26 +88,26 @@ enum region_kind
      label_region (RK_LABEL): a particular label within a function
      symbolic_region (RK_SYMBOLIC): dereferencing a symbolic pointer
      decl_region (RK_DECL): the memory occupied by a particular global, local,
-			    or SSA name
+                            or SSA name
      field_region (RK_FIELD): the memory occupied by a field within a struct
-			      or union
+                              or union
      element_region (RK_ELEMENT): an element within an array
      offset_region (RK_OFFSET): a byte-offset within another region, for
-				handling pointer arithmetic as a region
+                                handling pointer arithmetic as a region
      sized_region (RK_SIZED): a subregion of symbolic size (in bytes)
-			      within its parent
+                              within its parent
      cast_region (RK_CAST): a region that views another region using a
-			    different type
+                            different type
      heap_allocated_region (RK_HEAP_ALLOCATED): an untyped region dynamically
-						allocated on the heap via
-						"malloc" or similar
+                                                allocated on the heap via
+                                                "malloc" or similar
      alloca_region (RK_ALLOCA): an untyped region dynamically allocated on the
-				stack via "alloca"
+                                stack via "alloca"
      string_region (RK_STRING): a region for a STRING_CST
      bit_range_region (RK_BIT_RANGE): a region for a specific range of bits
-				      within another region
+                                      within another region
      var_arg_region (RK_VAR_ARG): a region for the N-th vararg within a
-				  frame_region for a variadic call
+                                  frame_region for a variadic call
      errno_region (RK_ERRNO): a region for holding "errno"
      private_region (RK_PRIVATE): a region for internal state of an API
      unknown_region (RK_UNKNOWN): for handling unimplemented tree codes.  */
@@ -122,153 +120,149 @@ enum region_kind
    within the frames and the "globals" region.  Regions for structs
    can have subregions for fields.  */
 
-class region : public symbol
-{
+class region : public symbol {
 public:
-  virtual ~region ();
+  virtual ~region();
 
-  virtual enum region_kind get_kind () const = 0;
-  virtual const frame_region *
-  dyn_cast_frame_region () const { return nullptr; }
-  virtual const function_region *
-  dyn_cast_function_region () const { return nullptr; }
-  virtual const symbolic_region *
-  dyn_cast_symbolic_region () const { return nullptr; }
-  virtual const decl_region *
-  dyn_cast_decl_region () const { return nullptr; }
-  virtual const field_region *
-  dyn_cast_field_region () const { return nullptr; }
-  virtual const element_region *
-  dyn_cast_element_region () const { return nullptr; }
-  virtual const offset_region *
-  dyn_cast_offset_region () const { return nullptr; }
-  virtual const sized_region *
-  dyn_cast_sized_region () const { return nullptr; }
-  virtual const cast_region *
-  dyn_cast_cast_region () const { return nullptr; }
-  virtual const string_region *
-  dyn_cast_string_region () const { return nullptr; }
-  virtual const bit_range_region *
-  dyn_cast_bit_range_region () const { return nullptr; }
-  virtual const var_arg_region *
-  dyn_cast_var_arg_region () const { return nullptr; }
+  virtual enum region_kind get_kind() const = 0;
+  virtual const frame_region *dyn_cast_frame_region() const { return nullptr; }
+  virtual const function_region *dyn_cast_function_region() const {
+    return nullptr;
+  }
+  virtual const symbolic_region *dyn_cast_symbolic_region() const {
+    return nullptr;
+  }
+  virtual const decl_region *dyn_cast_decl_region() const { return nullptr; }
+  virtual const field_region *dyn_cast_field_region() const { return nullptr; }
+  virtual const element_region *dyn_cast_element_region() const {
+    return nullptr;
+  }
+  virtual const offset_region *dyn_cast_offset_region() const {
+    return nullptr;
+  }
+  virtual const sized_region *dyn_cast_sized_region() const { return nullptr; }
+  virtual const cast_region *dyn_cast_cast_region() const { return nullptr; }
+  virtual const string_region *dyn_cast_string_region() const {
+    return nullptr;
+  }
+  virtual const bit_range_region *dyn_cast_bit_range_region() const {
+    return nullptr;
+  }
+  virtual const var_arg_region *dyn_cast_var_arg_region() const {
+    return nullptr;
+  }
 
-  virtual void accept (visitor *v) const;
+  virtual void accept(visitor *v) const;
 
-  const region *get_parent_region () const { return m_parent; }
-  const region *get_base_region () const;
-  bool base_region_p () const;
-  bool descendent_of_p (const region *elder) const;
-  const frame_region *maybe_get_frame_region () const;
-  enum memory_space get_memory_space () const;
-  bool can_have_initial_svalue_p () const;
-  const svalue *get_initial_value_at_main (region_model_manager *mgr) const;
+  const region *get_parent_region() const { return m_parent; }
+  const region *get_base_region() const;
+  bool base_region_p() const;
+  bool descendent_of_p(const region *elder) const;
+  const frame_region *maybe_get_frame_region() const;
+  enum memory_space get_memory_space() const;
+  bool can_have_initial_svalue_p() const;
+  const svalue *get_initial_value_at_main(region_model_manager *mgr) const;
 
-  tree maybe_get_decl () const;
+  tree maybe_get_decl() const;
 
-  tree get_type () const { return m_type; }
+  tree get_type() const { return m_type; }
 
-  void print (const region_model &model,
-	      pretty_printer *pp) const;
-  label_text get_desc (bool simple=true) const;
+  void print(const region_model &model, pretty_printer *pp) const;
+  label_text get_desc(bool simple = true) const;
 
-  virtual void dump_to_pp (pretty_printer *pp, bool simple) const = 0;
-  void dump (bool simple) const;
-  void dump () const;
+  virtual void dump_to_pp(pretty_printer *pp, bool simple) const = 0;
+  void dump(bool simple) const;
+  void dump() const;
 
-  std::unique_ptr<json::value> to_json () const;
+  std::unique_ptr<json::value> to_json() const;
 
-
-  bool maybe_print_for_user (pretty_printer *pp,
-			     const region_model &model) const;
+  bool maybe_print_for_user(pretty_printer *pp,
+                            const region_model &model) const;
 
   std::unique_ptr<text_art::tree_widget>
-  make_dump_widget (const text_art::dump_widget_info &dwi,
-		    const char *prefix = nullptr) const;
+  make_dump_widget(const text_art::dump_widget_info &dwi,
+                   const char *prefix = nullptr) const;
 
-  bool non_null_p () const;
+  bool non_null_p() const;
 
-  static int cmp_ptr_ptr (const void *, const void *);
+  static int cmp_ptr_ptr(const void *, const void *);
 
-  bool involves_p (const svalue *sval) const;
+  bool involves_p(const svalue *sval) const;
 
-  region_offset get_offset (region_model_manager *mgr) const;
-  region_offset get_next_offset (region_model_manager *mgr) const;
+  region_offset get_offset(region_model_manager *mgr) const;
+  region_offset get_next_offset(region_model_manager *mgr) const;
 
   /* Attempt to get the size of this region as a concrete number of bytes.
      If successful, return true and write the size to *OUT.
      Otherwise return false.
      This is the accessed size, not necessarily the size that's valid to
      access.  */
-  virtual bool get_byte_size (byte_size_t *out) const;
+  virtual bool get_byte_size(byte_size_t *out) const;
 
   /* Attempt to get the size of this region as a concrete number of bits.
      If successful, return true and write the size to *OUT.
      Otherwise return false.
      This is the accessed size, not necessarily the size that's valid to
      access.  */
-  virtual bool get_bit_size (bit_size_t *out) const;
+  virtual bool get_bit_size(bit_size_t *out) const;
 
   /* Get a symbolic value describing the size of this region in bytes
      (which could be "unknown").
      This is the accessed size, not necessarily the size that's valid to
      access.  */
-  virtual const svalue *get_byte_size_sval (region_model_manager *mgr) const;
+  virtual const svalue *get_byte_size_sval(region_model_manager *mgr) const;
 
   /* Get a symbolic value describing the size of this region in bits
      (which could be "unknown").
      This is the accessed size, not necessarily the size that's valid to
      access.  */
-  virtual const svalue *get_bit_size_sval (region_model_manager *mgr) const;
+  virtual const svalue *get_bit_size_sval(region_model_manager *mgr) const;
 
   /* Attempt to get the offset in bits of this region relative to its parent.
      If successful, return true and write to *OUT.
      Otherwise return false.  */
-  virtual bool get_relative_concrete_offset (bit_offset_t *out) const;
+  virtual bool get_relative_concrete_offset(bit_offset_t *out) const;
 
   /* Get the offset in bytes of this region relative to its parent as a svalue.
      Might return an unknown_svalue.  */
   virtual const svalue *
-  get_relative_symbolic_offset (region_model_manager *mgr) const;
+  get_relative_symbolic_offset(region_model_manager *mgr) const;
 
   /* Attempt to get the position and size of this region expressed as a
      concrete range of bytes relative to its parent.
      If successful, return true and write to *OUT.
      Otherwise return false.  */
-  bool get_relative_concrete_byte_range (byte_range *out) const;
+  bool get_relative_concrete_byte_range(byte_range *out) const;
 
-  void
-  get_subregions_for_binding (region_model_manager *mgr,
-			      bit_offset_t start_bit_offset,
-			      bit_size_t size_in_bits,
-			      tree type,
-			      auto_vec <const region *> *out) const;
+  void get_subregions_for_binding(region_model_manager *mgr,
+                                  bit_offset_t start_bit_offset,
+                                  bit_size_t size_in_bits, tree type,
+                                  auto_vec<const region *> *out) const;
 
-  bool symbolic_for_unknown_ptr_p () const;
+  bool symbolic_for_unknown_ptr_p() const;
 
-  bool symbolic_p () const;
+  bool symbolic_p() const;
 
   /* For most base regions it makes sense to track the bindings of the region
      within the store.  As an optimization, some are not tracked (to avoid
      bloating the store object with redundant binding clusters).  */
-  virtual bool tracked_p () const { return true; }
+  virtual bool tracked_p() const { return true; }
 
-  bool is_named_decl_p (const char *decl_name) const;
+  bool is_named_decl_p(const char *decl_name) const;
 
-  bool empty_p () const;
+  bool empty_p() const;
 
- protected:
-  region (complexity c, symbol::id_t id, const region *parent, tree type);
+protected:
+  region(complexity c, symbol::id_t id, const region *parent, tree type);
 
- private:
-  region_offset calc_offset (region_model_manager *mgr) const;
-  const svalue *calc_initial_value_at_main (region_model_manager *mgr) const;
+private:
+  region_offset calc_offset(region_model_manager *mgr) const;
+  const svalue *calc_initial_value_at_main(region_model_manager *mgr) const;
 
+  virtual void print_dump_widget_label(pretty_printer *pp) const = 0;
   virtual void
-  print_dump_widget_label (pretty_printer *pp) const = 0;
-  virtual void
-  add_dump_widget_children (text_art::tree_widget &,
-			    const text_art::dump_widget_info &dwi) const;
+  add_dump_widget_children(text_art::tree_widget &,
+                           const text_art::dump_widget_info &dwi) const;
 
   const region *m_parent;
   tree m_type;
@@ -284,9 +278,7 @@ public:
 
 template <>
 template <>
-inline bool
-is_a_helper <const region *>::test (const region *)
-{
+inline bool is_a_helper<const region *>::test(const region *) {
   return true;
 }
 
@@ -295,12 +287,10 @@ namespace ana {
 /* Abstract subclass of region, for regions that represent an untyped
    space within memory, such as the stack or the heap.  */
 
-class space_region : public region
-{
+class space_region : public region {
 protected:
-  space_region (symbol::id_t id, const region *parent)
-  : region (complexity (parent), id, parent, NULL_TREE)
-  {}
+  space_region(symbol::id_t id, const region *parent)
+      : region(complexity(parent), id, parent, NULL_TREE) {}
 };
 
 /* Concrete space_region subclass, representing a function frame on the stack,
@@ -315,81 +305,69 @@ protected:
    where the parent region for each of the frames is the "stack" region.
    The index is the count of frames earlier than this in the stack.  */
 
-class frame_region : public space_region
-{
+class frame_region : public space_region {
 public:
   /* A support class for uniquifying instances of frame_region.  */
-  struct key_t
-  {
-    key_t (const frame_region *calling_frame, const function &fun)
-    : m_calling_frame (calling_frame), m_fun (&fun)
-    {
+  struct key_t {
+    key_t(const frame_region *calling_frame, const function &fun)
+        : m_calling_frame(calling_frame), m_fun(&fun) {
       /* calling_frame can be nullptr.  */
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_calling_frame);
-      hstate.add_ptr (m_fun);
-      return hstate.end ();
+      hstate.add_ptr(m_calling_frame);
+      hstate.add_ptr(m_fun);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_calling_frame == other.m_calling_frame
-	      && m_fun == other.m_fun);
+    bool operator==(const key_t &other) const {
+      return (m_calling_frame == other.m_calling_frame && m_fun == other.m_fun);
     }
 
-    void mark_deleted () { m_fun = reinterpret_cast<function *> (1); }
-    void mark_empty () { m_fun = nullptr; }
-    bool is_deleted () const
-    {
-      return m_fun == reinterpret_cast<function *> (1);
-    }
-    bool is_empty () const { return m_fun == nullptr; }
+    void mark_deleted() { m_fun = reinterpret_cast<function *>(1); }
+    void mark_empty() { m_fun = nullptr; }
+    bool is_deleted() const { return m_fun == reinterpret_cast<function *>(1); }
+    bool is_empty() const { return m_fun == nullptr; }
 
     const frame_region *m_calling_frame;
     const function *m_fun;
   };
 
-  frame_region (symbol::id_t id, const region *parent,
-		const frame_region *calling_frame,
-		const function &fun, int index)
-  : space_region (id, parent), m_calling_frame (calling_frame),
-    m_fun (fun), m_index (index)
-  {}
-  ~frame_region ();
+  frame_region(symbol::id_t id, const region *parent,
+               const frame_region *calling_frame, const function &fun,
+               int index)
+      : space_region(id, parent), m_calling_frame(calling_frame), m_fun(fun),
+        m_index(index) {}
+  ~frame_region();
 
   /* region vfuncs.  */
-  enum region_kind get_kind () const final override { return RK_FRAME; }
-  const frame_region * dyn_cast_frame_region () const final override
-  {
+  enum region_kind get_kind() const final override { return RK_FRAME; }
+  const frame_region *dyn_cast_frame_region() const final override {
     return this;
   }
-  void accept (visitor *v) const final override;
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
+  void accept(visitor *v) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
 
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
   /* Accessors.  */
-  const frame_region *get_calling_frame () const { return m_calling_frame; }
-  const function &get_function () const { return m_fun; }
-  tree get_fndecl () const { return get_function ().decl; }
-  int get_index () const { return m_index; }
-  int get_stack_depth () const { return m_index + 1; }
+  const frame_region *get_calling_frame() const { return m_calling_frame; }
+  const function &get_function() const { return m_fun; }
+  tree get_fndecl() const { return get_function().decl; }
+  int get_index() const { return m_index; }
+  int get_stack_depth() const { return m_index + 1; }
 
   const decl_region *
-  get_region_for_local (region_model_manager *mgr,
-			tree expr,
-			const region_model_context *ctxt) const;
+  get_region_for_local(region_model_manager *mgr, tree expr,
+                       const region_model_context *ctxt) const;
 
-  unsigned get_num_locals () const { return m_locals.elements (); }
+  unsigned get_num_locals() const { return m_locals.elements(); }
 
   /* Implemented in region-model-manager.cc.  */
-  void dump_untracked_regions () const;
+  void dump_untracked_regions() const;
 
- private:
+private:
   const frame_region *m_calling_frame;
   const function &m_fun;
   int m_index;
@@ -405,15 +383,13 @@ public:
 
 template <>
 template <>
-inline bool
-is_a_helper <const frame_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_FRAME;
+inline bool is_a_helper<const frame_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_FRAME;
 }
 
-template <> struct default_hash_traits<frame_region::key_t>
-: public member_function_hash_traits<frame_region::key_t>
-{
+template <>
+struct default_hash_traits<frame_region::key_t>
+    : public member_function_hash_traits<frame_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -421,27 +397,23 @@ namespace ana {
 
 /* Concrete space_region subclass, to hold global variables (data and bss).  */
 
-class globals_region : public space_region
-{
- public:
-  globals_region (symbol::id_t id, const region *parent)
-  : space_region (id, parent)
-  {}
+class globals_region : public space_region {
+public:
+  globals_region(symbol::id_t id, const region *parent)
+      : space_region(id, parent) {}
 
   /* region vfuncs.  */
-  enum region_kind get_kind () const final override { return RK_GLOBALS; }
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_GLOBALS; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const globals_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_GLOBALS;
+inline bool is_a_helper<const globals_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_GLOBALS;
 }
 
 namespace ana {
@@ -449,27 +421,23 @@ namespace ana {
 /* Concrete space_region subclass, representing the code segment
    containing functions.  */
 
-class code_region : public space_region
-{
+class code_region : public space_region {
 public:
-  code_region (symbol::id_t id, const region *parent)
-  : space_region (id, parent)
-  {}
+  code_region(symbol::id_t id, const region *parent)
+      : space_region(id, parent) {}
 
   /* region vfuncs.  */
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
-  enum region_kind get_kind () const final override { return RK_CODE; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_CODE; }
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const code_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_CODE;
+inline bool is_a_helper<const code_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_CODE;
 }
 
 namespace ana {
@@ -477,25 +445,24 @@ namespace ana {
 /* Concrete region subclass.  A region representing the code for
    a particular function.  */
 
-class function_region : public region
-{
+class function_region : public region {
 public:
-  function_region (symbol::id_t id, const code_region *parent, tree fndecl)
-  : region (complexity (parent), id, parent, TREE_TYPE (fndecl)),
-    m_fndecl (fndecl)
-  {
-    gcc_assert (FUNC_OR_METHOD_TYPE_P (TREE_TYPE (fndecl)));
+  function_region(symbol::id_t id, const code_region *parent, tree fndecl)
+      : region(complexity(parent), id, parent, TREE_TYPE(fndecl)),
+        m_fndecl(fndecl) {
+    gcc_assert(FUNC_OR_METHOD_TYPE_P(TREE_TYPE(fndecl)));
   }
 
   /* region vfuncs.  */
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  enum region_kind get_kind () const final override { return RK_FUNCTION; }
-  const function_region *
-  dyn_cast_function_region () const final override{ return this; }
+  enum region_kind get_kind() const final override { return RK_FUNCTION; }
+  const function_region *dyn_cast_function_region() const final override {
+    return this;
+  }
 
-  tree get_fndecl () const { return m_fndecl; }
+  tree get_fndecl() const { return m_fndecl; }
 
 private:
   tree m_fndecl;
@@ -505,10 +472,8 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const function_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_FUNCTION;
+inline bool is_a_helper<const function_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_FUNCTION;
 }
 
 namespace ana {
@@ -516,21 +481,19 @@ namespace ana {
 /* Concrete region subclass.  A region representing a particular label
    within a function.  */
 
-class label_region : public region
-{
+class label_region : public region {
 public:
-  label_region (symbol::id_t id, const function_region *parent, tree label)
-  : region (complexity (parent), id, parent, NULL_TREE), m_label (label)
-  {
-    gcc_assert (TREE_CODE (label) == LABEL_DECL);
+  label_region(symbol::id_t id, const function_region *parent, tree label)
+      : region(complexity(parent), id, parent, NULL_TREE), m_label(label) {
+    gcc_assert(TREE_CODE(label) == LABEL_DECL);
   }
 
   /* region vfuncs.  */
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
-  enum region_kind get_kind () const final override { return RK_LABEL; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_LABEL; }
 
-  tree get_label () const { return m_label; }
+  tree get_label() const { return m_label; }
 
 private:
   tree m_label;
@@ -540,10 +503,8 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const label_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_LABEL;
+inline bool is_a_helper<const label_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_LABEL;
 }
 
 namespace ana {
@@ -551,27 +512,22 @@ namespace ana {
 /* Concrete space_region subclass representing a stack, containing all stack
    frames.  */
 
-class stack_region : public space_region
-{
+class stack_region : public space_region {
 public:
-  stack_region (symbol::id_t id, region *parent)
-  : space_region (id, parent)
-  {}
+  stack_region(symbol::id_t id, region *parent) : space_region(id, parent) {}
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  enum region_kind get_kind () const final override { return RK_STACK; }
+  enum region_kind get_kind() const final override { return RK_STACK; }
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const stack_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_STACK;
+inline bool is_a_helper<const stack_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_STACK;
 }
 
 namespace ana {
@@ -579,26 +535,21 @@ namespace ana {
 /* Concrete space_region subclass: a region within which regions can be
    dynamically allocated.  */
 
-class heap_region : public space_region
-{
+class heap_region : public space_region {
 public:
-  heap_region (symbol::id_t id, region *parent)
-  : space_region (id, parent)
-  {}
+  heap_region(symbol::id_t id, region *parent) : space_region(id, parent) {}
 
-  enum region_kind get_kind () const final override { return RK_HEAP; }
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_HEAP; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const heap_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_HEAP;
+inline bool is_a_helper<const heap_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_HEAP;
 }
 
 namespace ana {
@@ -606,26 +557,22 @@ namespace ana {
 /* Concrete space_region subclass: thread-local data for the thread
    being analyzed.  */
 
-class thread_local_region : public space_region
-{
+class thread_local_region : public space_region {
 public:
-  thread_local_region (symbol::id_t id, region *parent)
-  : space_region (id, parent)
-  {}
+  thread_local_region(symbol::id_t id, region *parent)
+      : space_region(id, parent) {}
 
-  enum region_kind get_kind () const final override { return RK_THREAD_LOCAL; }
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_THREAD_LOCAL; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const thread_local_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_THREAD_LOCAL;
+inline bool is_a_helper<const thread_local_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_THREAD_LOCAL;
 }
 
 namespace ana {
@@ -634,24 +581,21 @@ namespace ana {
    (either directly, or as descendents).
    Unique within a region_model_manager.  */
 
-class root_region : public region
-{
+class root_region : public region {
 public:
-  root_region (symbol::id_t id);
+  root_region(symbol::id_t id);
 
-  enum region_kind get_kind () const final override { return RK_ROOT; }
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_ROOT; }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const root_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_ROOT;
+inline bool is_a_helper<const root_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_ROOT;
 }
 
 namespace ana {
@@ -659,58 +603,52 @@ namespace ana {
 /* Concrete region subclass: a region to use when dereferencing an unknown
    pointer.  */
 
-class symbolic_region : public region
-{
+class symbolic_region : public region {
 public:
   /* A support class for uniquifying instances of symbolic_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, const svalue *sval_ptr)
-    : m_parent (parent), m_sval_ptr (sval_ptr)
-    {
-      gcc_assert (sval_ptr);
+  struct key_t {
+    key_t(const region *parent, const svalue *sval_ptr)
+        : m_parent(parent), m_sval_ptr(sval_ptr) {
+      gcc_assert(sval_ptr);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_sval_ptr);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_sval_ptr);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
+    bool operator==(const key_t &other) const {
       return (m_parent == other.m_parent && m_sval_ptr == other.m_sval_ptr);
     }
 
-    void mark_deleted () { m_sval_ptr = reinterpret_cast<const svalue *> (1); }
-    void mark_empty () { m_sval_ptr = nullptr; }
-    bool is_deleted () const
-    {
-      return m_sval_ptr == reinterpret_cast<const svalue *> (1);
+    void mark_deleted() { m_sval_ptr = reinterpret_cast<const svalue *>(1); }
+    void mark_empty() { m_sval_ptr = nullptr; }
+    bool is_deleted() const {
+      return m_sval_ptr == reinterpret_cast<const svalue *>(1);
     }
-    bool is_empty () const { return m_sval_ptr == nullptr; }
+    bool is_empty() const { return m_sval_ptr == nullptr; }
 
     const region *m_parent;
     const svalue *m_sval_ptr;
   };
 
-  symbolic_region (symbol::id_t id, region *parent, const svalue *sval_ptr);
+  symbolic_region(symbol::id_t id, region *parent, const svalue *sval_ptr);
 
-  const symbolic_region *
-  dyn_cast_symbolic_region () const final override { return this; }
+  const symbolic_region *dyn_cast_symbolic_region() const final override {
+    return this;
+  }
 
-  enum region_kind get_kind () const final override { return RK_SYMBOLIC; }
-  void accept (visitor *v) const final override;
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
-  void
-  add_dump_widget_children (text_art::tree_widget &w,
-			    const text_art::dump_widget_info &dwi)
-    const final override;
+  enum region_kind get_kind() const final override { return RK_SYMBOLIC; }
+  void accept(visitor *v) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  void add_dump_widget_children(
+      text_art::tree_widget &w,
+      const text_art::dump_widget_info &dwi) const final override;
 
-  const svalue *get_pointer () const { return m_sval_ptr; }
+  const svalue *get_pointer() const { return m_sval_ptr; }
 
 private:
   const svalue *m_sval_ptr;
@@ -720,15 +658,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const symbolic_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_SYMBOLIC;
+inline bool is_a_helper<const symbolic_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_SYMBOLIC;
 }
 
-template <> struct default_hash_traits<symbolic_region::key_t>
-: public member_function_hash_traits<symbolic_region::key_t>
-{
+template <>
+struct default_hash_traits<symbolic_region::key_t>
+    : public member_function_hash_traits<symbolic_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -738,38 +674,35 @@ namespace ana {
    variable (whether for a global or a local).
    Also used for representing SSA names, as if they were locals.  */
 
-class decl_region : public region
-{
+class decl_region : public region {
 public:
-  decl_region (symbol::id_t id, const region *parent, tree decl)
-  : region (complexity (parent), id, parent, TREE_TYPE (decl)), m_decl (decl),
-    m_tracked (calc_tracked_p (decl)),
-    m_ctor_svalue (nullptr)
-  {}
+  decl_region(symbol::id_t id, const region *parent, tree decl)
+      : region(complexity(parent), id, parent, TREE_TYPE(decl)), m_decl(decl),
+        m_tracked(calc_tracked_p(decl)), m_ctor_svalue(nullptr) {}
 
-  enum region_kind get_kind () const final override { return RK_DECL; }
-  const decl_region *
-  dyn_cast_decl_region () const final override { return this; }
+  enum region_kind get_kind() const final override { return RK_DECL; }
+  const decl_region *dyn_cast_decl_region() const final override {
+    return this;
+  }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
 
-  void
-  print_dump_widget_label (pretty_printer *pp) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  bool tracked_p () const final override { return m_tracked; }
+  bool tracked_p() const final override { return m_tracked; }
 
-  tree get_decl () const { return m_decl; }
-  int get_stack_depth () const;
+  tree get_decl() const { return m_decl; }
+  int get_stack_depth() const;
 
-  const svalue *maybe_get_constant_value (region_model_manager *mgr) const;
-  const svalue *get_svalue_for_constructor (tree ctor,
-					    region_model_manager *mgr) const;
-  const svalue *get_svalue_for_initializer (region_model_manager *mgr) const;
+  const svalue *maybe_get_constant_value(region_model_manager *mgr) const;
+  const svalue *get_svalue_for_constructor(tree ctor,
+                                           region_model_manager *mgr) const;
+  const svalue *get_svalue_for_initializer(region_model_manager *mgr) const;
 
 private:
-  const svalue *calc_svalue_for_constructor (tree ctor,
-					     region_model_manager *mgr) const;
-  static bool calc_tracked_p (tree decl);
+  const svalue *calc_svalue_for_constructor(tree ctor,
+                                            region_model_manager *mgr) const;
+  static bool calc_tracked_p(tree decl);
 
   tree m_decl;
 
@@ -787,10 +720,8 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const decl_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_DECL;
+inline bool is_a_helper<const decl_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_DECL;
 }
 
 namespace ana {
@@ -798,58 +729,52 @@ namespace ana {
 /* Concrete region subclass representing the memory occupied by a
    field within a struct or union.  */
 
-class field_region : public region
-{
+class field_region : public region {
 public:
   /* A support class for uniquifying instances of field_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree field)
-    : m_parent (parent), m_field (field)
-    {
-      gcc_assert (field);
+  struct key_t {
+    key_t(const region *parent, tree field) : m_parent(parent), m_field(field) {
+      gcc_assert(field);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_field);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_field);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
+    bool operator==(const key_t &other) const {
       return (m_parent == other.m_parent && m_field == other.m_field);
     }
 
-    void mark_deleted () { m_field = reinterpret_cast<tree> (1); }
-    void mark_empty () { m_field = NULL_TREE; }
-    bool is_deleted () const { return m_field == reinterpret_cast<tree> (1); }
-    bool is_empty () const { return m_field == NULL_TREE; }
+    void mark_deleted() { m_field = reinterpret_cast<tree>(1); }
+    void mark_empty() { m_field = NULL_TREE; }
+    bool is_deleted() const { return m_field == reinterpret_cast<tree>(1); }
+    bool is_empty() const { return m_field == NULL_TREE; }
 
     const region *m_parent;
     tree m_field;
   };
 
-  field_region (symbol::id_t id, const region *parent, tree field)
-  : region (complexity (parent), id, parent, TREE_TYPE (field)),
-    m_field (field)
-  {}
+  field_region(symbol::id_t id, const region *parent, tree field)
+      : region(complexity(parent), id, parent, TREE_TYPE(field)),
+        m_field(field) {}
 
-  enum region_kind get_kind () const final override { return RK_FIELD; }
+  enum region_kind get_kind() const final override { return RK_FIELD; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  const field_region *
-  dyn_cast_field_region () const final override { return this; }
+  const field_region *dyn_cast_field_region() const final override {
+    return this;
+  }
 
-  tree get_field () const { return m_field; }
+  tree get_field() const { return m_field; }
 
-  bool get_relative_concrete_offset (bit_offset_t *out) const final override;
-  const svalue *get_relative_symbolic_offset (region_model_manager *mgr)
-    const final override;
+  bool get_relative_concrete_offset(bit_offset_t *out) const final override;
+  const svalue *
+  get_relative_symbolic_offset(region_model_manager *mgr) const final override;
 
 private:
   tree m_field;
@@ -859,15 +784,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const field_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_FIELD;
+inline bool is_a_helper<const field_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_FIELD;
 }
 
-template <> struct default_hash_traits<field_region::key_t>
-: public member_function_hash_traits<field_region::key_t>
-{
+template <>
+struct default_hash_traits<field_region::key_t>
+    : public member_function_hash_traits<field_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -875,74 +798,66 @@ namespace ana {
 
 /* An element within an array.  */
 
-class element_region : public region
-{
+class element_region : public region {
 public:
   /* A support class for uniquifying instances of element_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree element_type, const svalue *index)
-    : m_parent (parent), m_element_type (element_type), m_index (index)
-    {
-      gcc_assert (index);
+  struct key_t {
+    key_t(const region *parent, tree element_type, const svalue *index)
+        : m_parent(parent), m_element_type(element_type), m_index(index) {
+      gcc_assert(index);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_element_type);
-      hstate.add_ptr (m_index);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_element_type);
+      hstate.add_ptr(m_index);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_element_type == other.m_element_type
-	      && m_index == other.m_index);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent &&
+              m_element_type == other.m_element_type &&
+              m_index == other.m_index);
     }
 
-    void mark_deleted () { m_index = reinterpret_cast<const svalue *> (1); }
-    void mark_empty () { m_index = nullptr; }
-    bool is_deleted () const
-    {
-      return m_index == reinterpret_cast<const svalue *> (1);
+    void mark_deleted() { m_index = reinterpret_cast<const svalue *>(1); }
+    void mark_empty() { m_index = nullptr; }
+    bool is_deleted() const {
+      return m_index == reinterpret_cast<const svalue *>(1);
     }
-    bool is_empty () const { return m_index == nullptr; }
+    bool is_empty() const { return m_index == nullptr; }
 
     const region *m_parent;
     tree m_element_type;
     const svalue *m_index;
   };
 
-  element_region (symbol::id_t id, const region *parent, tree element_type,
-		  const svalue *index)
-  : region (complexity::from_pair (parent, index), id, parent, element_type),
-    m_index (index)
-  {}
+  element_region(symbol::id_t id, const region *parent, tree element_type,
+                 const svalue *index)
+      : region(complexity::from_pair(parent, index), id, parent, element_type),
+        m_index(index) {}
 
-  enum region_kind get_kind () const final override { return RK_ELEMENT; }
-  const element_region *
-  dyn_cast_element_region () const final override { return this; }
+  enum region_kind get_kind() const final override { return RK_ELEMENT; }
+  const element_region *dyn_cast_element_region() const final override {
+    return this;
+  }
 
-  void accept (visitor *v) const final override;
+  void accept(visitor *v) const final override;
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
 
-  void
-  print_dump_widget_label (pretty_printer *pp) const final override;
-  void
-  add_dump_widget_children (text_art::tree_widget &,
-			    const text_art::dump_widget_info &dwi)
-    const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  void add_dump_widget_children(
+      text_art::tree_widget &,
+      const text_art::dump_widget_info &dwi) const final override;
 
-  const svalue *get_index () const { return m_index; }
+  const svalue *get_index() const { return m_index; }
 
   virtual bool
-  get_relative_concrete_offset (bit_offset_t *out) const final override;
-  const svalue *get_relative_symbolic_offset (region_model_manager *mgr)
-    const final override;
+  get_relative_concrete_offset(bit_offset_t *out) const final override;
+  const svalue *
+  get_relative_symbolic_offset(region_model_manager *mgr) const final override;
 
 private:
   const svalue *m_index;
@@ -952,15 +867,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const element_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_ELEMENT;
+inline bool is_a_helper<const element_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_ELEMENT;
 }
 
-template <> struct default_hash_traits<element_region::key_t>
-: public member_function_hash_traits<element_region::key_t>
-{
+template <>
+struct default_hash_traits<element_region::key_t>
+    : public member_function_hash_traits<element_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -969,74 +882,67 @@ namespace ana {
 /* A byte-offset within another region, for handling pointer arithmetic
    as a region.  */
 
-class offset_region : public region
-{
+class offset_region : public region {
 public:
   /* A support class for uniquifying instances of offset_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree element_type, const svalue *byte_offset)
-    : m_parent (parent), m_element_type (element_type), m_byte_offset (byte_offset)
-    {
-      gcc_assert (byte_offset);
+  struct key_t {
+    key_t(const region *parent, tree element_type, const svalue *byte_offset)
+        : m_parent(parent), m_element_type(element_type),
+          m_byte_offset(byte_offset) {
+      gcc_assert(byte_offset);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_element_type);
-      hstate.add_ptr (m_byte_offset);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_element_type);
+      hstate.add_ptr(m_byte_offset);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_element_type == other.m_element_type
-	      && m_byte_offset == other.m_byte_offset);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent &&
+              m_element_type == other.m_element_type &&
+              m_byte_offset == other.m_byte_offset);
     }
 
-    void mark_deleted () { m_byte_offset = reinterpret_cast<const svalue *> (1); }
-    void mark_empty () { m_byte_offset = nullptr; }
-    bool is_deleted () const
-    {
-      return m_byte_offset == reinterpret_cast<const svalue *> (1);
+    void mark_deleted() { m_byte_offset = reinterpret_cast<const svalue *>(1); }
+    void mark_empty() { m_byte_offset = nullptr; }
+    bool is_deleted() const {
+      return m_byte_offset == reinterpret_cast<const svalue *>(1);
     }
-    bool is_empty () const { return m_byte_offset == nullptr; }
+    bool is_empty() const { return m_byte_offset == nullptr; }
 
     const region *m_parent;
     tree m_element_type;
     const svalue *m_byte_offset;
   };
 
-  offset_region (symbol::id_t id, const region *parent, tree type,
-		 const svalue *byte_offset)
-  : region (complexity::from_pair (parent, byte_offset), id, parent, type),
-    m_byte_offset (byte_offset)
-  {}
+  offset_region(symbol::id_t id, const region *parent, tree type,
+                const svalue *byte_offset)
+      : region(complexity::from_pair(parent, byte_offset), id, parent, type),
+        m_byte_offset(byte_offset) {}
 
-  enum region_kind get_kind () const final override { return RK_OFFSET; }
-  const offset_region *
-  dyn_cast_offset_region () const final override { return this; }
+  enum region_kind get_kind() const final override { return RK_OFFSET; }
+  const offset_region *dyn_cast_offset_region() const final override {
+    return this;
+  }
 
-  void accept (visitor *v) const final override;
+  void accept(visitor *v) const final override;
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
 
-  void
-  print_dump_widget_label (pretty_printer *pp) const final override;
-  void
-  add_dump_widget_children (text_art::tree_widget &,
-			    const text_art::dump_widget_info &dwi)
-    const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  void add_dump_widget_children(
+      text_art::tree_widget &,
+      const text_art::dump_widget_info &dwi) const final override;
 
-  const svalue *get_byte_offset () const { return m_byte_offset; }
-  const svalue *get_bit_offset (region_model_manager *mgr) const;
+  const svalue *get_byte_offset() const { return m_byte_offset; }
+  const svalue *get_bit_offset(region_model_manager *mgr) const;
 
-  bool get_relative_concrete_offset (bit_offset_t *out) const final override;
-  const svalue *get_relative_symbolic_offset (region_model_manager *mgr)
-    const final override;
+  bool get_relative_concrete_offset(bit_offset_t *out) const final override;
+  const svalue *
+  get_relative_symbolic_offset(region_model_manager *mgr) const final override;
 
 private:
   const svalue *m_byte_offset;
@@ -1046,15 +952,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const offset_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_OFFSET;
+inline bool is_a_helper<const offset_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_OFFSET;
 }
 
-template <> struct default_hash_traits<offset_region::key_t>
-: public member_function_hash_traits<offset_region::key_t>
-{
+template <>
+struct default_hash_traits<offset_region::key_t>
+    : public member_function_hash_traits<offset_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -1063,43 +967,38 @@ namespace ana {
 /* A region that is size BYTES_SIZE_SVAL in size within its parent
    region (or possibly larger, which would lead to an overflow.  */
 
-class sized_region : public region
-{
+class sized_region : public region {
 public:
   /* A support class for uniquifying instances of sized_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree element_type,
-	   const svalue *byte_size_sval)
-      : m_parent (parent), m_element_type (element_type),
-	m_byte_size_sval (byte_size_sval)
-    {
-      gcc_assert (byte_size_sval);
+  struct key_t {
+    key_t(const region *parent, tree element_type, const svalue *byte_size_sval)
+        : m_parent(parent), m_element_type(element_type),
+          m_byte_size_sval(byte_size_sval) {
+      gcc_assert(byte_size_sval);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_element_type);
-      hstate.add_ptr (m_byte_size_sval);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_element_type);
+      hstate.add_ptr(m_byte_size_sval);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_element_type == other.m_element_type
-	      && m_byte_size_sval == other.m_byte_size_sval);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent &&
+              m_element_type == other.m_element_type &&
+              m_byte_size_sval == other.m_byte_size_sval);
     }
 
-    void mark_deleted () { m_byte_size_sval = reinterpret_cast<const svalue *> (1); }
-    void mark_empty () { m_byte_size_sval = nullptr; }
-    bool is_deleted () const
-    {
-      return m_byte_size_sval == reinterpret_cast<const svalue *> (1);
+    void mark_deleted() {
+      m_byte_size_sval = reinterpret_cast<const svalue *>(1);
     }
-    bool is_empty () const { return m_byte_size_sval == nullptr; }
+    void mark_empty() { m_byte_size_sval = nullptr; }
+    bool is_deleted() const {
+      return m_byte_size_sval == reinterpret_cast<const svalue *>(1);
+    }
+    bool is_empty() const { return m_byte_size_sval == nullptr; }
 
     const region *m_parent;
     tree m_element_type;
@@ -1107,38 +1006,33 @@ public:
     const svalue *m_end_offset;
   };
 
-  sized_region (symbol::id_t id, const region *parent, tree type,
-		const svalue *byte_size_sval)
-  : region (complexity::from_pair (parent, byte_size_sval),
-	    id, parent, type),
-    m_byte_size_sval (byte_size_sval)
-  {}
+  sized_region(symbol::id_t id, const region *parent, tree type,
+               const svalue *byte_size_sval)
+      : region(complexity::from_pair(parent, byte_size_sval), id, parent, type),
+        m_byte_size_sval(byte_size_sval) {}
 
-  enum region_kind get_kind () const final override { return RK_SIZED; }
-  const sized_region *
-  dyn_cast_sized_region () const final override { return this; }
+  enum region_kind get_kind() const final override { return RK_SIZED; }
+  const sized_region *dyn_cast_sized_region() const final override {
+    return this;
+  }
 
-  void accept (visitor *v) const final override;
+  void accept(visitor *v) const final override;
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void
-  print_dump_widget_label (pretty_printer *pp) const final override;
-  void
-  add_dump_widget_children (text_art::tree_widget &,
-			    const text_art::dump_widget_info &dwi)
-    const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
+  void add_dump_widget_children(
+      text_art::tree_widget &,
+      const text_art::dump_widget_info &dwi) const final override;
 
-  bool get_byte_size (byte_size_t *out) const final override;
-  bool get_bit_size (bit_size_t *out) const final override;
+  bool get_byte_size(byte_size_t *out) const final override;
+  bool get_bit_size(bit_size_t *out) const final override;
 
   const svalue *
-  get_byte_size_sval (region_model_manager *) const final override
-  {
+  get_byte_size_sval(region_model_manager *) const final override {
     return m_byte_size_sval;
   }
 
-  const svalue *
-  get_bit_size_sval (region_model_manager *) const final override;
+  const svalue *get_bit_size_sval(region_model_manager *) const final override;
 
 private:
   const svalue *m_byte_size_sval;
@@ -1148,15 +1042,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const sized_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_SIZED;
+inline bool is_a_helper<const sized_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_SIZED;
 }
 
-template <> struct default_hash_traits<sized_region::key_t>
-: public member_function_hash_traits<sized_region::key_t>
-{
+template <>
+struct default_hash_traits<sized_region::key_t>
+    : public member_function_hash_traits<sized_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -1164,75 +1056,60 @@ namespace ana {
 
 /* A region that views another region using a different type.  */
 
-class cast_region : public region
-{
+class cast_region : public region {
 public:
   /* A support class for uniquifying instances of cast_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree type)
-    : m_parent (parent), m_type (type)
-    {
-      gcc_assert (parent);
+  struct key_t {
+    key_t(const region *parent, tree type) : m_parent(parent), m_type(type) {
+      gcc_assert(parent);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_type);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_type);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_type == other.m_type);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent && m_type == other.m_type);
     }
 
-    void mark_deleted ()
-    {
-      m_parent = reinterpret_cast<const region *> (1);
+    void mark_deleted() { m_parent = reinterpret_cast<const region *>(1); }
+    void mark_empty() { m_parent = nullptr; }
+    bool is_deleted() const {
+      return m_parent == reinterpret_cast<const region *>(1);
     }
-    void mark_empty () { m_parent = nullptr; }
-    bool is_deleted () const
-    {
-      return m_parent == reinterpret_cast<const region *> (1);
-    }
-    bool is_empty () const { return m_parent == nullptr; }
+    bool is_empty() const { return m_parent == nullptr; }
 
     const region *m_parent;
     tree m_type;
   };
 
-  cast_region (symbol::id_t id, const region *parent, tree type)
-  : region (complexity (parent), id,
-	    parent, type)
-  {}
+  cast_region(symbol::id_t id, const region *parent, tree type)
+      : region(complexity(parent), id, parent, type) {}
 
-  enum region_kind get_kind () const final override { return RK_CAST; }
-  const cast_region *
-  dyn_cast_cast_region () const final override { return this; }
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void
-  print_dump_widget_label (pretty_printer *pp) const final override;
+  enum region_kind get_kind() const final override { return RK_CAST; }
+  const cast_region *dyn_cast_cast_region() const final override {
+    return this;
+  }
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  bool get_relative_concrete_offset (bit_offset_t *out) const final override;
+  bool get_relative_concrete_offset(bit_offset_t *out) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const cast_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_CAST;
+inline bool is_a_helper<const cast_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_CAST;
 }
 
-template <> struct default_hash_traits<cast_region::key_t>
-: public member_function_hash_traits<cast_region::key_t>
-{
+template <>
+struct default_hash_traits<cast_region::key_t>
+    : public member_function_hash_traits<cast_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -1241,58 +1118,52 @@ namespace ana {
 /* An untyped region dynamically allocated on the heap via "malloc"
    or similar.  */
 
-class heap_allocated_region : public region
-{
+class heap_allocated_region : public region {
 public:
-  heap_allocated_region (symbol::id_t id, const region *parent)
-  : region (complexity (parent), id, parent, NULL_TREE)
-  {}
+  heap_allocated_region(symbol::id_t id, const region *parent)
+      : region(complexity(parent), id, parent, NULL_TREE) {}
 
-  enum region_kind
-  get_kind () const final override { return RK_HEAP_ALLOCATED; }
+  enum region_kind get_kind() const final override { return RK_HEAP_ALLOCATED; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 /* An untyped region dynamically allocated on the stack via "alloca".  */
 
-class alloca_region : public region
-{
+class alloca_region : public region {
 public:
-  alloca_region (symbol::id_t id, const frame_region *parent)
-  : region (complexity (parent), id, parent, NULL_TREE)
-  {}
+  alloca_region(symbol::id_t id, const frame_region *parent)
+      : region(complexity(parent), id, parent, NULL_TREE) {}
 
-  enum region_kind get_kind () const final override { return RK_ALLOCA; }
+  enum region_kind get_kind() const final override { return RK_ALLOCA; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 /* A region for a STRING_CST.  */
 
-class string_region : public region
-{
+class string_region : public region {
 public:
-  string_region (symbol::id_t id, const region *parent, tree string_cst)
-  : region (complexity (parent), id, parent, TREE_TYPE (string_cst)),
-    m_string_cst (string_cst)
-  {}
+  string_region(symbol::id_t id, const region *parent, tree string_cst)
+      : region(complexity(parent), id, parent, TREE_TYPE(string_cst)),
+        m_string_cst(string_cst) {}
 
-  const string_region *
-  dyn_cast_string_region () const final override { return this; }
+  const string_region *dyn_cast_string_region() const final override {
+    return this;
+  }
 
-  enum region_kind get_kind () const final override { return RK_STRING; }
+  enum region_kind get_kind() const final override { return RK_STRING; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
   /* We assume string literals are immutable, so we don't track them in
      the store.  */
-  bool tracked_p () const final override { return false; }
+  bool tracked_p() const final override { return false; }
 
-  tree get_string_cst () const { return m_string_cst; }
+  tree get_string_cst() const { return m_string_cst; }
 
 private:
   tree m_string_cst;
@@ -1302,81 +1173,73 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const string_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_STRING;
+inline bool is_a_helper<const string_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_STRING;
 }
 
 namespace ana {
 
 /* A region for a specific range of bits within another region.  */
 
-class bit_range_region : public region
-{
+class bit_range_region : public region {
 public:
   /* A support class for uniquifying instances of bit_range_region.  */
-  struct key_t
-  {
-    key_t (const region *parent, tree type, const bit_range &bits)
-    : m_parent (parent), m_type (type), m_bits (bits)
-    {
-      gcc_assert (parent);
+  struct key_t {
+    key_t(const region *parent, tree type, const bit_range &bits)
+        : m_parent(parent), m_type(type), m_bits(bits) {
+      gcc_assert(parent);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_ptr (m_type);
-      hstate.add_wide_int (m_bits.m_start_bit_offset);
-      hstate.add_wide_int (m_bits.m_size_in_bits);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_ptr(m_type);
+      hstate.add_wide_int(m_bits.m_start_bit_offset);
+      hstate.add_wide_int(m_bits.m_size_in_bits);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_type == other.m_type
-	      && m_bits == other.m_bits);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent && m_type == other.m_type &&
+              m_bits == other.m_bits);
     }
 
-    void mark_deleted () { m_parent = reinterpret_cast<const region *> (1); }
-    void mark_empty () { m_parent = nullptr; }
-    bool is_deleted () const
-    {
-      return m_parent == reinterpret_cast<const region *> (1);
+    void mark_deleted() { m_parent = reinterpret_cast<const region *>(1); }
+    void mark_empty() { m_parent = nullptr; }
+    bool is_deleted() const {
+      return m_parent == reinterpret_cast<const region *>(1);
     }
-    bool is_empty () const { return m_parent == nullptr; }
+    bool is_empty() const { return m_parent == nullptr; }
 
     const region *m_parent;
     tree m_type;
     bit_range m_bits;
   };
 
-  bit_range_region (symbol::id_t id, const region *parent, tree type,
-		    const bit_range &bits)
-  : region (complexity (parent), id, parent, type),
-    m_bits (bits)
-  {}
+  bit_range_region(symbol::id_t id, const region *parent, tree type,
+                   const bit_range &bits)
+      : region(complexity(parent), id, parent, type), m_bits(bits) {}
 
-  const bit_range_region *
-  dyn_cast_bit_range_region () const final override { return this; }
+  const bit_range_region *dyn_cast_bit_range_region() const final override {
+    return this;
+  }
 
-  enum region_kind get_kind () const final override { return RK_BIT_RANGE; }
+  enum region_kind get_kind() const final override { return RK_BIT_RANGE; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  const bit_range &get_bits () const { return m_bits; }
+  const bit_range &get_bits() const { return m_bits; }
 
-  bool get_byte_size (byte_size_t *out) const final override;
-  bool get_bit_size (bit_size_t *out) const final override;
-  const svalue *get_byte_size_sval (region_model_manager *mgr) const final override;
-  const svalue *get_bit_size_sval (region_model_manager *mgr) const final override;
-  bool get_relative_concrete_offset (bit_offset_t *out) const final override;
-  const svalue *get_relative_symbolic_offset (region_model_manager *mgr)
-    const final override;
+  bool get_byte_size(byte_size_t *out) const final override;
+  bool get_bit_size(bit_size_t *out) const final override;
+  const svalue *
+  get_byte_size_sval(region_model_manager *mgr) const final override;
+  const svalue *
+  get_bit_size_sval(region_model_manager *mgr) const final override;
+  bool get_relative_concrete_offset(bit_offset_t *out) const final override;
+  const svalue *
+  get_relative_symbolic_offset(region_model_manager *mgr) const final override;
 
 private:
   bit_range m_bits;
@@ -1386,15 +1249,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const bit_range_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_BIT_RANGE;
+inline bool is_a_helper<const bit_range_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_BIT_RANGE;
 }
 
-template <> struct default_hash_traits<bit_range_region::key_t>
-: public member_function_hash_traits<bit_range_region::key_t>
-{
+template <>
+struct default_hash_traits<bit_range_region::key_t>
+    : public member_function_hash_traits<bit_range_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -1402,63 +1263,53 @@ namespace ana {
 
 /* A region for the N-th vararg within a frame_region for a variadic call.  */
 
-class var_arg_region : public region
-{
+class var_arg_region : public region {
 public:
   /* A support class for uniquifying instances of var_arg_region.  */
-  struct key_t
-  {
-    key_t (const frame_region *parent, unsigned idx)
-    : m_parent (parent), m_idx (idx)
-    {
-      gcc_assert (parent);
+  struct key_t {
+    key_t(const frame_region *parent, unsigned idx)
+        : m_parent(parent), m_idx(idx) {
+      gcc_assert(parent);
     }
 
-    hashval_t hash () const
-    {
+    hashval_t hash() const {
       inchash::hash hstate;
-      hstate.add_ptr (m_parent);
-      hstate.add_int (m_idx);
-      return hstate.end ();
+      hstate.add_ptr(m_parent);
+      hstate.add_int(m_idx);
+      return hstate.end();
     }
 
-    bool operator== (const key_t &other) const
-    {
-      return (m_parent == other.m_parent
-	      && m_idx == other.m_idx);
+    bool operator==(const key_t &other) const {
+      return (m_parent == other.m_parent && m_idx == other.m_idx);
     }
 
-    void mark_deleted ()
-    {
-      m_parent = reinterpret_cast<const frame_region *> (1);
+    void mark_deleted() {
+      m_parent = reinterpret_cast<const frame_region *>(1);
     }
-    void mark_empty () { m_parent = nullptr; }
-    bool is_deleted () const
-    {
-      return m_parent == reinterpret_cast<const frame_region *> (1);
+    void mark_empty() { m_parent = nullptr; }
+    bool is_deleted() const {
+      return m_parent == reinterpret_cast<const frame_region *>(1);
     }
-    bool is_empty () const { return m_parent == nullptr; }
+    bool is_empty() const { return m_parent == nullptr; }
 
     const frame_region *m_parent;
     unsigned m_idx;
   };
 
-  var_arg_region (symbol::id_t id, const frame_region *parent,
-		  unsigned idx)
-  : region (complexity (parent), id, parent, NULL_TREE),
-    m_idx (idx)
-  {}
+  var_arg_region(symbol::id_t id, const frame_region *parent, unsigned idx)
+      : region(complexity(parent), id, parent, NULL_TREE), m_idx(idx) {}
 
-  const var_arg_region *
-  dyn_cast_var_arg_region () const final override { return this; }
+  const var_arg_region *dyn_cast_var_arg_region() const final override {
+    return this;
+  }
 
-  enum region_kind get_kind () const final override { return RK_VAR_ARG; }
+  enum region_kind get_kind() const final override { return RK_VAR_ARG; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
-  const frame_region *get_frame_region () const;
-  unsigned get_index () const { return m_idx; }
+  const frame_region *get_frame_region() const;
+  unsigned get_index() const { return m_idx; }
 
 private:
   unsigned m_idx;
@@ -1468,15 +1319,13 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const var_arg_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_VAR_ARG;
+inline bool is_a_helper<const var_arg_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_VAR_ARG;
 }
 
-template <> struct default_hash_traits<var_arg_region::key_t>
-: public member_function_hash_traits<var_arg_region::key_t>
-{
+template <>
+struct default_hash_traits<var_arg_region::key_t>
+    : public member_function_hash_traits<var_arg_region::key_t> {
   static const bool empty_zero_p = true;
 };
 
@@ -1484,27 +1333,23 @@ namespace ana {
 
 /* A region for errno for the current thread.  */
 
-class errno_region : public region
-{
+class errno_region : public region {
 public:
-  errno_region (symbol::id_t id, const thread_local_region *parent)
-  : region (complexity (parent), id, parent, integer_type_node)
-  {}
+  errno_region(symbol::id_t id, const thread_local_region *parent)
+      : region(complexity(parent), id, parent, integer_type_node) {}
 
-  enum region_kind get_kind () const final override { return RK_ERRNO; }
+  enum region_kind get_kind() const final override { return RK_ERRNO; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana
 
 template <>
 template <>
-inline bool
-is_a_helper <const errno_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_ERRNO;
+inline bool is_a_helper<const errno_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_ERRNO;
 }
 
 namespace ana {
@@ -1516,19 +1361,15 @@ namespace ana {
    These are owned by known_function instances, rather than the
    region_model_manager.  */
 
-class private_region : public region
-{
+class private_region : public region {
 public:
-  private_region (unsigned id, const region *parent, tree type,
-		  const char *desc)
-  : region (complexity (parent), id, parent, type),
-    m_desc (desc)
-  {}
+  private_region(unsigned id, const region *parent, tree type, const char *desc)
+      : region(complexity(parent), id, parent, type), m_desc(desc) {}
 
-  enum region_kind get_kind () const final override { return RK_PRIVATE; }
+  enum region_kind get_kind() const final override { return RK_PRIVATE; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 
 private:
   const char *m_desc;
@@ -1538,27 +1379,23 @@ private:
 
 template <>
 template <>
-inline bool
-is_a_helper <const private_region *>::test (const region *reg)
-{
-  return reg->get_kind () == RK_PRIVATE;
+inline bool is_a_helper<const private_region *>::test(const region *reg) {
+  return reg->get_kind() == RK_PRIVATE;
 }
 
 namespace ana {
 
 /* An unknown region, for handling unimplemented tree codes.  */
 
-class unknown_region : public region
-{
+class unknown_region : public region {
 public:
-  unknown_region (symbol::id_t id, const region *parent, tree type)
-  : region (complexity (parent), id, parent, type)
-  {}
+  unknown_region(symbol::id_t id, const region *parent, tree type)
+      : region(complexity(parent), id, parent, type) {}
 
-  enum region_kind get_kind () const final override { return RK_UNKNOWN; }
+  enum region_kind get_kind() const final override { return RK_UNKNOWN; }
 
-  void dump_to_pp (pretty_printer *pp, bool simple) const final override;
-  void print_dump_widget_label (pretty_printer *pp) const final override;
+  void dump_to_pp(pretty_printer *pp, bool simple) const final override;
+  void print_dump_widget_label(pretty_printer *pp) const final override;
 };
 
 } // namespace ana

@@ -72,7 +72,8 @@ YASM_LIB_DECL
 
 /** Convert character constant to integer value, using NASM rules.  NASM syntax
  * supports automatic conversion from strings such as 'abcd' to a 32-bit
- * integer value (little endian order).  This function performs those conversions.
+ * integer value (little endian order).  This function performs those
+ * conversions.
  * \param str       character constant string
  * \return Newly allocated intnum.
  */
@@ -110,8 +111,9 @@ YASM_LIB_DECL
  *         bytes_read parameter.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_intnum *yasm_intnum_create_leb128
-    (const unsigned char *ptr, int sign, /*@out@*/ unsigned long *size);
+/*@only@*/ yasm_intnum *
+yasm_intnum_create_leb128(const unsigned char *ptr, int sign,
+                          /*@out@*/ unsigned long *size);
 
 /** Create a new intnum from a little-endian or big-endian buffer.
  * In little endian, the LSB is in ptr[0].
@@ -121,8 +123,8 @@ YASM_LIB_DECL
  * \param bigendian endianness (nonzero=big, zero=little)
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_intnum *yasm_intnum_create_sized
-    (unsigned char *ptr, int sign, size_t srcsize, int bigendian);
+/*@only@*/ yasm_intnum *yasm_intnum_create_sized(unsigned char *ptr, int sign,
+                                                 size_t srcsize, int bigendian);
 
 /** Duplicate an intnum.
  * \param intn  intnum
@@ -261,8 +263,8 @@ void yasm_intnum_get_sized(const yasm_intnum *intn, unsigned char *ptr,
  * \return Nonzero if intnum will fit.
  */
 YASM_LIB_DECL
-int yasm_intnum_check_size(const yasm_intnum *intn, size_t size,
-                           size_t rshift, int rangetype);
+int yasm_intnum_check_size(const yasm_intnum *intn, size_t size, size_t rshift,
+                           int rangetype);
 
 /** Check to see if intnum will fit into a particular numeric range.
  * \param intn      intnum

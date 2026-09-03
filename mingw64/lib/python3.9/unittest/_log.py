@@ -1,11 +1,9 @@
 import logging
 import collections
-
 from .case import _BaseTestCaseContext
 
+_LoggingWatcher = collections.namedtuple("_LoggingWatcher", ["records", "output"])
 
-_LoggingWatcher = collections.namedtuple("_LoggingWatcher",
-                                         ["records", "output"])
 
 class _CapturingHandler(logging.Handler):
     """
@@ -61,9 +59,10 @@ class _AssertLogsContext(_BaseTestCaseContext):
         self.logger.propagate = self.old_propagate
         self.logger.setLevel(self.old_level)
         if exc_type is not None:
-            # let unexpected exceptions pass through
             return False
         if len(self.watcher.records) == 0:
             self._raiseFailure(
-                "no logs of level {} or higher triggered on {}"
-                .format(logging.getLevelName(self.level), self.logger.name))
+                "no logs of level {} or higher triggered on {}".format(
+                    logging.getLevelName(self.level), self.logger.name
+                )
+            )

@@ -29,10 +29,8 @@ namespace selftest {
 
 /* Helper function for selftests that need a function decl.  */
 
-extern tree make_fndecl (tree return_type,
-			 const char *name,
-			 vec <tree> &param_types,
-			 bool is_variadic = false);
+extern tree make_fndecl(tree return_type, const char *name,
+                        vec<tree> &param_types, bool is_variadic = false);
 
 } /* end of namespace selftest.  */
 

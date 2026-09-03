@@ -24,10 +24,8 @@ namespace diagnostics {
 
 /* A bundle of options relating to the meaning of column numbers.  */
 
-struct column_options
-{
-  int convert_column (file_cache &fc,
-		      expanded_location s) const;
+struct column_options {
+  int convert_column(file_cache &fc, expanded_location s) const;
 
   /* What units to use when outputting the column number.  */
   enum diagnostics_column_unit m_column_unit;

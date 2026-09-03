@@ -21,8 +21,7 @@
 #ifndef GCC_AVOID_STORE_FORWARDING_H
 #define GCC_AVOID_STORE_FORWARDING_H
 
-struct store_fwd_info
-{
+struct store_fwd_info {
   /* The store instruction that is a store forwarding candidate.  */
   rtx_insn *store_insn;
   /* SET_DEST (single_set (store_insn)).  */
@@ -47,4 +46,4 @@ struct store_fwd_info
   bool forwarded;
 };
 
-#endif  /* GCC_AVOID_STORE_FORWARDING_H  */
+#endif /* GCC_AVOID_STORE_FORWARDING_H  */

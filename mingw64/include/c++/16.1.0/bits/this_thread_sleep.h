@@ -38,75 +38,67 @@
 #include <bits/chrono.h> // std::chrono::*
 
 #ifdef _GLIBCXX_USE_NANOSLEEP
-# include <cerrno>  // errno, EINTR
-# include <time.h>  // nanosleep
+#include <cerrno> // errno, EINTR
+#include <time.h> // nanosleep
 #endif
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
-  /** @addtogroup threads
-   *  @{
-   */
+/** @addtogroup threads
+ *  @{
+ */
 
-  /** @namespace std::this_thread
-   *  @brief ISO C++ 2011 namespace for interacting with the current thread
-   *
-   *  C++11 30.3.2 [thread.thread.this] Namespace this_thread.
-   */
-  namespace this_thread
-  {
+/** @namespace std::this_thread
+ *  @brief ISO C++ 2011 namespace for interacting with the current thread
+ *
+ *  C++11 30.3.2 [thread.thread.this] Namespace this_thread.
+ */
+namespace this_thread {
 #ifndef _GLIBCXX_NO_SLEEP
 
-    /// this_thread::sleep_for
-    template<typename _Rep, typename _Period>
-      inline void
-      sleep_for(const chrono::duration<_Rep, _Period>& __rtime)
-      {
-	if (__rtime <= __rtime.zero())
-	  return;
+/// this_thread::sleep_for
+template <typename _Rep, typename _Period>
+inline void sleep_for(const chrono::duration<_Rep, _Period> &__rtime) {
+  if (__rtime <= __rtime.zero())
+    return;
 
-	struct timespec __ts = chrono::__to_timeout_timespec(__rtime);
+  struct timespec __ts = chrono::__to_timeout_timespec(__rtime);
 #ifdef _GLIBCXX_USE_NANOSLEEP
-	while (::nanosleep(&__ts, &__ts) == -1 && errno == EINTR)
-	  { }
+  while (::nanosleep(&__ts, &__ts) == -1 && errno == EINTR) {
+  }
 #else
-	using chrono::seconds;
-	using chrono::nanoseconds;
-	void __sleep_for(seconds __s, nanoseconds __ns);
-	__sleep_for(seconds(__ts.tv_sec), nanoseconds(__ts.tv_nsec));
+  using chrono::nanoseconds;
+  using chrono::seconds;
+  void __sleep_for(seconds __s, nanoseconds __ns);
+  __sleep_for(seconds(__ts.tv_sec), nanoseconds(__ts.tv_nsec));
 #endif
-      }
+}
 
-    /// this_thread::sleep_until
-    template<typename _Clock, typename _Duration>
-      inline void
-      sleep_until(const chrono::time_point<_Clock, _Duration>& __atime)
-      {
+/// this_thread::sleep_until
+template <typename _Clock, typename _Duration>
+inline void sleep_until(const chrono::time_point<_Clock, _Duration> &__atime) {
 #if __cplusplus > 201703L
-	static_assert(chrono::is_clock_v<_Clock>);
+  static_assert(chrono::is_clock_v<_Clock>);
 #endif
-	auto __now = _Clock::now();
-	if (_Clock::is_steady)
-	  {
-	    if (__now < __atime)
-	      sleep_for(__atime - __now);
-	    return;
-	  }
-	while (__now < __atime)
-	  {
-	    sleep_for(__atime - __now);
-	    __now = _Clock::now();
-	  }
-      }
+  auto __now = _Clock::now();
+  if (_Clock::is_steady) {
+    if (__now < __atime)
+      sleep_for(__atime - __now);
+    return;
+  }
+  while (__now < __atime) {
+    sleep_for(__atime - __now);
+    __now = _Clock::now();
+  }
+}
 #endif // ! NO_SLEEP
-  } // namespace this_thread
+} // namespace this_thread
 
-  /// @}
+/// @}
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 #endif // C++11
 
 #endif // _GLIBCXX_THIS_THREAD_SLEEP_H

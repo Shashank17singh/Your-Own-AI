@@ -2,22 +2,22 @@
 #define Py_INTERNAL_CONDVAR_H
 
 #ifndef Py_BUILD_CORE
-#  error "this header requires Py_BUILD_CORE define"
+#error "this header requires Py_BUILD_CORE define"
 #endif
 
 #ifdef __MINGW32__
-# if !defined(HAVE_PTHREAD_H) || defined(NT_THREADS)
-#  undef _POSIX_THREADS
-# endif
+#if !defined(HAVE_PTHREAD_H) || defined(NT_THREADS)
+#undef _POSIX_THREADS
+#endif
 #endif
 
 #ifndef _POSIX_THREADS
 /* This means pthreads are not implemented in libc headers, hence the macro
    not present in unistd.h. But they still can be implemented as an external
    library (e.g. gnu pth in pthread emulation) */
-# ifdef HAVE_PTHREAD_H
-#  include <pthread.h> /* _POSIX_THREADS */
-# endif
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h> /* _POSIX_THREADS */
+#endif
 #endif
 
 #ifdef _POSIX_THREADS
@@ -43,7 +43,8 @@
 /* include windows if it hasn't been done before */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-/* winpthreads are involved via windows header, so need undef _POSIX_THREADS after header include */
+/* winpthreads are involved via windows header, so need undef _POSIX_THREADS
+ * after header include */
 #if defined(_POSIX_THREADS)
 #undef _POSIX_THREADS
 #endif
@@ -53,7 +54,7 @@
  * to target Windows Vista.  Modify this macro to enable them.
  */
 #ifndef _PY_EMULATED_WIN_CV
-#define _PY_EMULATED_WIN_CV 1  /* use emulated condition variables */
+#define _PY_EMULATED_WIN_CV 1 /* use emulated condition variables */
 #endif
 
 /* fall back to emulation if not targeting Vista */
@@ -83,10 +84,9 @@ typedef CRITICAL_SECTION PyMUTEX_T;
    that would otherwise happen.
  */
 
-typedef struct _PyCOND_T
-{
-    HANDLE sem;
-    int waiting; /* to allow PyCOND_SIGNAL to be a no-op */
+typedef struct _PyCOND_T {
+  HANDLE sem;
+  int waiting; /* to allow PyCOND_SIGNAL to be a no-op */
 } PyCOND_T;
 
 #else /* !_PY_EMULATED_WIN_CV */
@@ -96,7 +96,7 @@ typedef struct _PyCOND_T
 /* SRWLOCK is faster and better than CriticalSection */
 typedef SRWLOCK PyMUTEX_T;
 
-typedef CONDITION_VARIABLE  PyCOND_T;
+typedef CONDITION_VARIABLE PyCOND_T;
 
 #endif /* _PY_EMULATED_WIN_CV */
 

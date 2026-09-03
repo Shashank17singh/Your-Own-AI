@@ -31,157 +31,145 @@
 #define _STD_NEW_ALLOCATOR_H 1
 
 #include <bits/c++config.h>
-#include <new>
-#include <bits/new_throw.h>
 #include <bits/move.h>
+#include <bits/new_throw.h>
+#include <new>
 #if __cplusplus >= 201103L
 #include <type_traits>
 #endif
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
-  /**
-   * @brief  An allocator that uses global `new`, as per C++03 [20.4.1].
-   * @ingroup allocators
-   *
-   * This is precisely the allocator defined in the C++ Standard.
-   *   - all allocation calls `operator new`
-   *   - all deallocation calls `operator delete`
-   *
-   * This is the default base-class implementation of `std::allocator`,
-   * and is also the base-class of the `__gnu_cxx::new_allocator` extension.
-   * You should use either `std::allocator` or `__gnu_cxx::new_allocator`
-   * instead of using this directly.
-   *
-   * @tparam  _Tp  Type of allocated object.
-   *
-   * @headerfile memory
-   */
-  template<typename _Tp>
-    class __new_allocator
-    {
-    public:
-      typedef _Tp        value_type;
-      typedef std::size_t     size_type;
-      typedef std::ptrdiff_t  difference_type;
+/**
+ * @brief  An allocator that uses global `new`, as per C++03 [20.4.1].
+ * @ingroup allocators
+ *
+ * This is precisely the allocator defined in the C++ Standard.
+ *   - all allocation calls `operator new`
+ *   - all deallocation calls `operator delete`
+ *
+ * This is the default base-class implementation of `std::allocator`,
+ * and is also the base-class of the `__gnu_cxx::new_allocator` extension.
+ * You should use either `std::allocator` or `__gnu_cxx::new_allocator`
+ * instead of using this directly.
+ *
+ * @tparam  _Tp  Type of allocated object.
+ *
+ * @headerfile memory
+ */
+template <typename _Tp> class __new_allocator {
+public:
+  typedef _Tp value_type;
+  typedef std::size_t size_type;
+  typedef std::ptrdiff_t difference_type;
 #if __cplusplus <= 201703L
-      typedef _Tp*       pointer;
-      typedef const _Tp* const_pointer;
-      typedef _Tp&       reference;
-      typedef const _Tp& const_reference;
+  typedef _Tp *pointer;
+  typedef const _Tp *const_pointer;
+  typedef _Tp &reference;
+  typedef const _Tp &const_reference;
 
-      template<typename _Tp1>
-	struct rebind
-	{ typedef __new_allocator<_Tp1> other; };
+  template <typename _Tp1> struct rebind {
+    typedef __new_allocator<_Tp1> other;
+  };
 #endif
 
 #if __cplusplus >= 201103L
-      // _GLIBCXX_RESOLVE_LIB_DEFECTS
-      // 2103. propagate_on_container_move_assignment
-      typedef std::true_type propagate_on_container_move_assignment;
+  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+  // 2103. propagate_on_container_move_assignment
+  typedef std::true_type propagate_on_container_move_assignment;
 #endif
 
-      __attribute__((__always_inline__))
-      _GLIBCXX20_CONSTEXPR
-      __new_allocator() _GLIBCXX_USE_NOEXCEPT { }
+  __attribute__((__always_inline__))
+  _GLIBCXX20_CONSTEXPR __new_allocator() _GLIBCXX_USE_NOEXCEPT {}
 
-      __attribute__((__always_inline__))
-      _GLIBCXX20_CONSTEXPR
-      __new_allocator(const __new_allocator&) _GLIBCXX_USE_NOEXCEPT { }
+  __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR
+  __new_allocator(const __new_allocator &) _GLIBCXX_USE_NOEXCEPT {}
 
-      template<typename _Tp1>
-	__attribute__((__always_inline__))
-	_GLIBCXX20_CONSTEXPR
-	__new_allocator(const __new_allocator<_Tp1>&) _GLIBCXX_USE_NOEXCEPT { }
+  template <typename _Tp1>
+  __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR
+  __new_allocator(const __new_allocator<_Tp1> &) _GLIBCXX_USE_NOEXCEPT {}
 
 #if __cplusplus >= 201103L
-      __new_allocator& operator=(const __new_allocator&) = default;
+  __new_allocator &operator=(const __new_allocator &) = default;
 #endif
 
 #if __cplusplus <= 201703L
-      ~__new_allocator() _GLIBCXX_USE_NOEXCEPT { }
+  ~__new_allocator() _GLIBCXX_USE_NOEXCEPT {}
 
-      pointer
-      address(reference __x) const _GLIBCXX_NOEXCEPT
-      { return std::__addressof(__x); }
+  pointer address(reference __x) const _GLIBCXX_NOEXCEPT {
+    return std::__addressof(__x);
+  }
 
-      const_pointer
-      address(const_reference __x) const _GLIBCXX_NOEXCEPT
-      { return std::__addressof(__x); }
+  const_pointer address(const_reference __x) const _GLIBCXX_NOEXCEPT {
+    return std::__addressof(__x);
+  }
 #endif
 
 #if __has_builtin(__builtin_operator_new) >= 201802L
-# define _GLIBCXX_OPERATOR_NEW __builtin_operator_new
-# define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
+#define _GLIBCXX_OPERATOR_NEW __builtin_operator_new
+#define _GLIBCXX_OPERATOR_DELETE __builtin_operator_delete
 #else
-# define _GLIBCXX_OPERATOR_NEW ::operator new
-# define _GLIBCXX_OPERATOR_DELETE ::operator delete
+#define _GLIBCXX_OPERATOR_NEW ::operator new
+#define _GLIBCXX_OPERATOR_DELETE ::operator delete
 #endif
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wc++17-extensions" // if constexpr
 
-      // NB: __n is permitted to be 0.  The C++ standard says nothing
-      // about what the return value is when __n == 0.
-      _GLIBCXX_NODISCARD _GLIBCXX20_CONSTEXPR _Tp*
-      allocate(size_type __n, const void* = static_cast<const void*>(0))
-      {
+  // NB: __n is permitted to be 0.  The C++ standard says nothing
+  // about what the return value is when __n == 0.
+  _GLIBCXX_NODISCARD _GLIBCXX20_CONSTEXPR _Tp *
+  allocate(size_type __n, const void * = static_cast<const void *>(0)) {
 #if __cplusplus >= 201103L
-	// _GLIBCXX_RESOLVE_LIB_DEFECTS
-	// 3308. std::allocator<void>().allocate(n)
-#if ! __cpp_concepts
-	static_assert(sizeof(_Tp) != 0, "cannot allocate incomplete types");
+    // _GLIBCXX_RESOLVE_LIB_DEFECTS
+    // 3308. std::allocator<void>().allocate(n)
+#if !__cpp_concepts
+    static_assert(sizeof(_Tp) != 0, "cannot allocate incomplete types");
 #else
-	static_assert(requires { sizeof(_Tp); },
-	  "cannot allocate incomplete types");
+    static_assert(
+        requires { sizeof(_Tp); }, "cannot allocate incomplete types");
 
-	if constexpr (!requires { sizeof(_Tp); })
-	  return nullptr; // static_assert already failed
-	else
+    if constexpr (!requires { sizeof(_Tp); })
+      return nullptr; // static_assert already failed
+    else
 #endif
 #endif
-	if (__builtin_expect(__n > this->_M_max_size(), false))
-	  {
-	    // _GLIBCXX_RESOLVE_LIB_DEFECTS
-	    // 3190. allocator::allocate sometimes returns too little storage
-	    if (__n > (std::size_t(-1) / sizeof(_Tp)))
-	      std::__throw_bad_array_new_length();
-	    std::__throw_bad_alloc();
-	  }
+    if (__builtin_expect(__n > this->_M_max_size(), false)) {
+      // _GLIBCXX_RESOLVE_LIB_DEFECTS
+      // 3190. allocator::allocate sometimes returns too little storage
+      if (__n > (std::size_t(-1) / sizeof(_Tp)))
+        std::__throw_bad_array_new_length();
+      std::__throw_bad_alloc();
+    }
 #if __cpp_aligned_new && __cplusplus >= 201103L
-	else if constexpr (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
-	  {
-	    std::align_val_t __al = std::align_val_t(alignof(_Tp));
-	    return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp),
-							   __al));
-	  }
+    else if constexpr (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+      std::align_val_t __al = std::align_val_t(alignof(_Tp));
+      return static_cast<_Tp *>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp), __al));
+    }
 #endif
-	else
-	  return static_cast<_Tp*>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
-      }
+    else
+      return static_cast<_Tp *>(_GLIBCXX_OPERATOR_NEW(__n * sizeof(_Tp)));
+  }
 
-      // __p is not permitted to be a null pointer.
-      _GLIBCXX20_CONSTEXPR void
-      deallocate(_Tp* __p, size_type __n __attribute__ ((__unused__)))
-      {
+  // __p is not permitted to be a null pointer.
+  _GLIBCXX20_CONSTEXPR void deallocate(_Tp *__p, size_type __n
+                                       __attribute__((__unused__))) {
 #if __cpp_sized_deallocation
-# define _GLIBCXX_SIZED_DEALLOC(p, n) (p), (n) * sizeof(_Tp)
+#define _GLIBCXX_SIZED_DEALLOC(p, n) (p), (n) * sizeof(_Tp)
 #else
-# define _GLIBCXX_SIZED_DEALLOC(p, n) (p)
+#define _GLIBCXX_SIZED_DEALLOC(p, n) (p)
 #endif
 
 #if __cpp_aligned_new && __cplusplus >= 201103L
-	if constexpr (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
-	  {
-	    _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n),
-				     std::align_val_t(alignof(_Tp)));
-	    return;
-	  }
+    if constexpr (alignof(_Tp) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+      _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n),
+                               std::align_val_t(alignof(_Tp)));
+      return;
+    }
 #endif
-	_GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
-      }
+    _GLIBCXX_OPERATOR_DELETE(_GLIBCXX_SIZED_DEALLOC(__p, __n));
+  }
 
 #pragma GCC diagnostic pop
 #undef _GLIBCXX_SIZED_DEALLOC
@@ -189,67 +177,64 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
 #undef _GLIBCXX_OPERATOR_NEW
 
 #if __cplusplus <= 201703L
-      __attribute__((__always_inline__))
-      size_type
-      max_size() const _GLIBCXX_USE_NOEXCEPT
-      { return _M_max_size(); }
+  __attribute__((__always_inline__))
+  size_type max_size() const _GLIBCXX_USE_NOEXCEPT {
+    return _M_max_size();
+  }
 
 #if __cplusplus >= 201103L
-      template<typename _Up, typename... _Args>
-	__attribute__((__always_inline__))
-	void
-	construct(_Up* __p, _Args&&... __args)
-	noexcept(__is_nothrow_new_constructible<_Up, _Args...>)
-	{ ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+  template <typename _Up, typename... _Args>
+  __attribute__((__always_inline__)) void
+  construct(_Up *__p, _Args &&...__args) noexcept(
+      __is_nothrow_new_constructible<_Up, _Args...>) {
+    ::new ((void *)__p) _Up(std::forward<_Args>(__args)...);
+  }
 
-      template<typename _Up>
-	__attribute__((__always_inline__))
-	void
-	destroy(_Up* __p)
-	noexcept(std::is_nothrow_destructible<_Up>::value)
-	{ __p->~_Up(); }
+  template <typename _Up>
+  __attribute__((__always_inline__)) void
+  destroy(_Up *__p) noexcept(std::is_nothrow_destructible<_Up>::value) {
+    __p->~_Up();
+  }
 #else
-      // _GLIBCXX_RESOLVE_LIB_DEFECTS
-      // 402. wrong new expression in [some_] allocator::construct
-      __attribute__((__always_inline__))
-      void
-      construct(pointer __p, const _Tp& __val)
-      { ::new((void *)__p) _Tp(__val); }
+  // _GLIBCXX_RESOLVE_LIB_DEFECTS
+  // 402. wrong new expression in [some_] allocator::construct
+  __attribute__((__always_inline__)) void construct(pointer __p,
+                                                    const _Tp &__val) {
+    ::new ((void *)__p) _Tp(__val);
+  }
 
-      __attribute__((__always_inline__))
-      void
-      destroy(pointer __p) { __p->~_Tp(); }
+  __attribute__((__always_inline__)) void destroy(pointer __p) { __p->~_Tp(); }
 #endif
 #endif // ! C++20
 
-      template<typename _Up>
-	friend __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR bool
-	operator==(const __new_allocator&, const __new_allocator<_Up>&)
-	_GLIBCXX_NOTHROW
-	{ return true; }
+  template <typename _Up>
+  friend __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR bool
+  operator==(const __new_allocator &,
+             const __new_allocator<_Up> &) _GLIBCXX_NOTHROW {
+    return true;
+  }
 
 #if __cpp_impl_three_way_comparison < 201907L
-      template<typename _Up>
-	friend __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR bool
-	operator!=(const __new_allocator&, const __new_allocator<_Up>&)
-	_GLIBCXX_NOTHROW
-	{ return false; }
+  template <typename _Up>
+  friend __attribute__((__always_inline__)) _GLIBCXX20_CONSTEXPR bool
+  operator!=(const __new_allocator &,
+             const __new_allocator<_Up> &) _GLIBCXX_NOTHROW {
+    return false;
+  }
 #endif
 
-    private:
-      __attribute__((__always_inline__))
-      _GLIBCXX_CONSTEXPR size_type
-      _M_max_size() const _GLIBCXX_USE_NOEXCEPT
-      {
+private:
+  __attribute__((__always_inline__)) _GLIBCXX_CONSTEXPR size_type
+  _M_max_size() const _GLIBCXX_USE_NOEXCEPT {
 #if __PTRDIFF_MAX__ < __SIZE_MAX__
-	return std::size_t(__PTRDIFF_MAX__) / sizeof(_Tp);
+    return std::size_t(__PTRDIFF_MAX__) / sizeof(_Tp);
 #else
-	return std::size_t(-1) / sizeof(_Tp);
+    return std::size_t(-1) / sizeof(_Tp);
 #endif
-      }
-    };
+  }
+};
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif

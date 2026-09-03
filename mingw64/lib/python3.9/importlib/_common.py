@@ -19,14 +19,14 @@ def fallback_resources(spec):
     try:
         archive_path = spec.loader.archive
         rel_path = package_directory.relative_to(archive_path)
-        return zipfile.Path(archive_path, str(rel_path) + '/')
+        return zipfile.Path(archive_path, str(rel_path) + "/")
     except Exception:
         pass
     return package_directory
 
 
 @contextlib.contextmanager
-def _tempfile(reader, suffix=''):
+def _tempfile(reader, suffix=""):
     # Not using tempfile.NamedTemporaryFile as it leads to deeper 'try'
     # blocks due to the need to close the temporary file to work on Windows
     # properly.

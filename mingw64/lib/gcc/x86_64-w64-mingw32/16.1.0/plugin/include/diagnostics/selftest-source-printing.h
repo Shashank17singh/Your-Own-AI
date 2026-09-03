@@ -20,8 +20,8 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTICS_SELFTEST_SOURCE_PRINTING_H
 #define GCC_DIAGNOSTICS_SELFTEST_SOURCE_PRINTING_H
 
-#include "selftest.h"
 #include "diagnostics/file-cache.h"
+#include "selftest.h"
 
 /* The selftest code should entirely disappear in a production
    configuration, hence we guard all of it with #if CHECKING_P.  */
@@ -39,15 +39,11 @@ namespace selftest {
      push a line_map starting at the first line of the temporary file
    - provide a file_cache.  */
 
-struct source_printing_fixture
-{
-  source_printing_fixture (const ::selftest::line_table_case &case_,
-			   const char *content);
+struct source_printing_fixture {
+  source_printing_fixture(const ::selftest::line_table_case &case_,
+                          const char *content);
 
-  const char *get_filename () const
-  {
-    return m_tmp_source_file.get_filename ();
-  }
+  const char *get_filename() const { return m_tmp_source_file.get_filename(); }
 
   const char *m_content;
   ::selftest::temp_source_file m_tmp_source_file;
@@ -71,13 +67,12 @@ struct source_printing_fixture
    Here SS represents the two display columns for the U+1F602 emoji and
    P represents the one display column for the U+03C0 pi symbol.  */
 
-struct source_printing_fixture_one_liner_utf8
-  : public source_printing_fixture
-{
-  source_printing_fixture_one_liner_utf8 (const ::selftest::line_table_case &case_);
+struct source_printing_fixture_one_liner_utf8 : public source_printing_fixture {
+  source_printing_fixture_one_liner_utf8(
+      const ::selftest::line_table_case &case_);
 };
 
-} // namespace diagnostics::selftest
+} // namespace selftest
 } // namespace diagnostics
 
 #endif /* #if CHECKING_P */

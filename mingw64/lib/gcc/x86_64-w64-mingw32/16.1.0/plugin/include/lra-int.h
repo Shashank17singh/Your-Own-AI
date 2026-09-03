@@ -21,7 +21,7 @@ along with GCC; see the file COPYING3.	If not see
 #ifndef GCC_LRA_INT_H
 #define GCC_LRA_INT_H
 
-#define lra_assert(c) gcc_checking_assert (c)
+#define lra_assert(c) gcc_checking_assert(c)
 
 /* The parameter used to prevent infinite reloading for an insn.  Each
    insn operands might require a reload and, if it is a memory, its
@@ -34,8 +34,7 @@ typedef struct lra_live_range *lra_live_range_t;
    The live ranges can be used to find conflicts with other pseudos.
    If the live ranges of two pseudos are intersected, the pseudos are
    in conflict.	 */
-struct lra_live_range
-{
+struct lra_live_range {
   /* Pseudo regno whose live range is described by given
      structure.	 */
   int regno;
@@ -51,8 +50,7 @@ struct lra_live_range
 typedef struct lra_copy *lra_copy_t;
 
 /* Copy between pseudos which affects assigning hard registers.	 */
-struct lra_copy
-{
+struct lra_copy {
   /* True if regno1 is the destination of the copy.  */
   bool regno1_dest_p;
   /* Execution frequency of the copy.  */
@@ -64,8 +62,7 @@ struct lra_copy
 };
 
 /* Common info about a register (pseudo or hard register).  */
-class lra_reg
-{
+class lra_reg {
 public:
   /* Bitmap of UIDs of insns (including debug insns) referring the
      reg.  */
@@ -92,7 +89,7 @@ public:
   bool no_stack_p;
 #endif
   /* Number of references and execution frequencies of the register in
-     *non-debug* insns.	 */
+   *non-debug* insns.	 */
   int nrefs, freq;
   int last_reload;
   /* rtx used to undo the inheritance.  It can be non-null only
@@ -124,8 +121,7 @@ extern HARD_REG_SET hard_regs_spilled_into;
    same ICODE).	 Warning: if the structure definition is changed, the
    initializer for debug_operand_data in lra.cc should be changed
    too.	 */
-struct lra_operand_data
-{
+struct lra_operand_data {
   /* The machine description constraint string of the operand.	*/
   const char *constraint;
   /* Alternatives for which early_clobber can be true.  */
@@ -134,7 +130,7 @@ struct lra_operand_data
      from recog_data.operand_mode) and can be of VOIDmode.  */
   ENUM_BITFIELD(machine_mode) mode : 16;
   /* The type of the operand (in/out/inout).  */
-  ENUM_BITFIELD (op_type) type : 8;
+  ENUM_BITFIELD(op_type) type : 8;
   /* Through if accessed through STRICT_LOW.  */
   unsigned int strict_low : 1;
   /* True if the operand is an operator.  */
@@ -144,8 +140,7 @@ struct lra_operand_data
 };
 
 /* Info about register occurrence in an insn.  */
-struct lra_insn_reg
-{
+struct lra_insn_reg {
   /* Alternatives for which early_clobber can be true.  */
   alternative_mask early_clobber_alts;
   /* The biggest mode through which the insn refers to the register
@@ -153,7 +148,7 @@ struct lra_insn_reg
      subreg in the insn).  */
   ENUM_BITFIELD(machine_mode) biggest_mode : 16;
   /* The type of the corresponding operand which is the register.  */
-  ENUM_BITFIELD (op_type) type : 8;
+  ENUM_BITFIELD(op_type) type : 8;
   /* True if the reg is accessed through a subreg and the subreg is
      just a part of the register.  */
   unsigned int subreg_p : 1;
@@ -169,8 +164,7 @@ struct lra_insn_reg
    own structure.  Warning: if the structure definition is changed,
    the initializer for debug_insn_static_data in lra.cc should be
    changed too.  */
-struct lra_static_insn_data
-{
+struct lra_static_insn_data {
   /* Static info about each insn operand.  */
   struct lra_operand_data *operand;
   /* Each duplication refers to the number of the corresponding
@@ -199,8 +193,7 @@ struct lra_static_insn_data
 
 /* LRA internal info about an insn (LRA internal insn
    representation).  */
-class lra_insn_recog_data
-{
+class lra_insn_recog_data {
 public:
   /* The insn code.  */
   int icode;
@@ -222,7 +215,7 @@ public:
   /* Two arrays of size correspondingly equal to the operand and the
      duplication numbers: */
   rtx **operand_loc; /* The operand locations, NULL if no operands.  */
-  rtx **dup_loc; /* The dup locations, NULL if no dups.	 */
+  rtx **dup_loc;     /* The dup locations, NULL if no dups.	 */
   /* Number of hard registers implicitly used/clobbered in given call
      insn.  The value can be NULL or points to array of the hard
      register numbers ending with a negative value.  To differ
@@ -238,8 +231,8 @@ public:
 typedef class lra_insn_recog_data *lra_insn_recog_data_t;
 
 /* Whether the clobber is used temporary in LRA.  */
-#define LRA_TEMP_CLOBBER_P(x) \
-  (RTL_FLAG_CHECK1 ("TEMP_CLOBBER_P", (x), CLOBBER)->unchanging)
+#define LRA_TEMP_CLOBBER_P(x)                                                  \
+  (RTL_FLAG_CHECK1("TEMP_CLOBBER_P", (x), CLOBBER)->unchanging)
 
 /* Cost factor for each additional reload and maximal cost reject for
    insn reloads.  One might ask about such strange numbers.  Their
@@ -274,16 +267,17 @@ typedef class lra_insn_recog_data *lra_insn_recog_data_t;
    at all on x86-64.  */
 #define LRA_MAX_INHERITANCE_PASSES 2
 
-#if LRA_MAX_INHERITANCE_PASSES <= 0 \
-    || LRA_MAX_INHERITANCE_PASSES >= LRA_MAX_ASSIGNMENT_ITERATION_NUMBER - 8
+#if LRA_MAX_INHERITANCE_PASSES <= 0 ||                                         \
+    LRA_MAX_INHERITANCE_PASSES >= LRA_MAX_ASSIGNMENT_ITERATION_NUMBER - 8
 #error wrong LRA_MAX_INHERITANCE_PASSES value
 #endif
 
 /* Analogous macro to the above one but for rematerialization.  */
 #define LRA_MAX_REMATERIALIZATION_PASSES 2
 
-#if LRA_MAX_REMATERIALIZATION_PASSES <= 0 \
-    || LRA_MAX_REMATERIALIZATION_PASSES >= LRA_MAX_ASSIGNMENT_ITERATION_NUMBER - 8
+#if LRA_MAX_REMATERIALIZATION_PASSES <= 0 ||                                   \
+    LRA_MAX_REMATERIALIZATION_PASSES >=                                        \
+        LRA_MAX_ASSIGNMENT_ITERATION_NUMBER - 8
 #error wrong LRA_MAX_REMATERIALIZATION_PASSES value
 #endif
 
@@ -303,50 +297,50 @@ extern lra_insn_recog_data_t *lra_insn_recog_data;
 
 extern int lra_curr_reload_num;
 
-extern void lra_dump_bitmap_with_title (const char *, bitmap, int);
-extern hashval_t lra_rtx_hash (rtx x);
-extern void lra_push_insn (rtx_insn *);
-extern void lra_push_insn_by_uid (unsigned int);
-extern void lra_push_insn_and_update_insn_regno_info (rtx_insn *);
-extern rtx_insn *lra_pop_insn (void);
-extern unsigned int lra_insn_stack_length (void);
+extern void lra_dump_bitmap_with_title(const char *, bitmap, int);
+extern hashval_t lra_rtx_hash(rtx x);
+extern void lra_push_insn(rtx_insn *);
+extern void lra_push_insn_by_uid(unsigned int);
+extern void lra_push_insn_and_update_insn_regno_info(rtx_insn *);
+extern rtx_insn *lra_pop_insn(void);
+extern unsigned int lra_insn_stack_length(void);
 
-extern rtx lra_create_new_reg (machine_mode, rtx, enum reg_class, HARD_REG_SET *,
-			       const char *);
-extern rtx lra_create_new_reg_with_unique_value (machine_mode, rtx,
-						 enum reg_class, HARD_REG_SET *,
-						 const char *);
-extern void lra_set_regno_unique_value (int);
-extern void lra_invalidate_insn_data (rtx_insn *);
-extern void lra_set_insn_deleted (rtx_insn *);
-extern void lra_delete_dead_insn (rtx_insn *);
-extern void lra_emit_add (rtx, rtx, rtx);
-extern void lra_emit_move (rtx, rtx);
-extern void lra_update_dups (lra_insn_recog_data_t, signed char *);
-extern void lra_asm_insn_error (rtx_insn *insn);
+extern rtx lra_create_new_reg(machine_mode, rtx, enum reg_class, HARD_REG_SET *,
+                              const char *);
+extern rtx lra_create_new_reg_with_unique_value(machine_mode, rtx,
+                                                enum reg_class, HARD_REG_SET *,
+                                                const char *);
+extern void lra_set_regno_unique_value(int);
+extern void lra_invalidate_insn_data(rtx_insn *);
+extern void lra_set_insn_deleted(rtx_insn *);
+extern void lra_delete_dead_insn(rtx_insn *);
+extern void lra_emit_add(rtx, rtx, rtx);
+extern void lra_emit_move(rtx, rtx);
+extern void lra_update_dups(lra_insn_recog_data_t, signed char *);
+extern void lra_asm_insn_error(rtx_insn *insn);
 
-extern void lra_dump_insns (FILE *f);
-extern void lra_dump_insns_if_possible (const char *title);
+extern void lra_dump_insns(FILE *f);
+extern void lra_dump_insns_if_possible(const char *title);
 
-extern void lra_process_new_insns (rtx_insn *insn, rtx_insn *before,
-				   rtx_insn *after, const char *title,
-				   bool fixup_reg_args_size = false);
+extern void lra_process_new_insns(rtx_insn *insn, rtx_insn *before,
+                                  rtx_insn *after, const char *title,
+                                  bool fixup_reg_args_size = false);
 
-extern bool lra_substitute_pseudo (rtx *, int, rtx, bool, bool);
-extern bool lra_substitute_pseudo_within_insn (rtx_insn *, int, rtx, bool);
+extern bool lra_substitute_pseudo(rtx *, int, rtx, bool, bool);
+extern bool lra_substitute_pseudo_within_insn(rtx_insn *, int, rtx, bool);
 
-extern lra_insn_recog_data_t lra_set_insn_recog_data (rtx_insn *);
-extern lra_insn_recog_data_t lra_update_insn_recog_data (rtx_insn *);
-extern void lra_set_used_insn_alternative (rtx_insn *, int);
-extern void lra_set_used_insn_alternative_by_uid (int, int);
+extern lra_insn_recog_data_t lra_set_insn_recog_data(rtx_insn *);
+extern lra_insn_recog_data_t lra_update_insn_recog_data(rtx_insn *);
+extern void lra_set_used_insn_alternative(rtx_insn *, int);
+extern void lra_set_used_insn_alternative_by_uid(int, int);
 
-extern void lra_invalidate_insn_regno_info (rtx_insn *);
-extern void lra_update_insn_regno_info (rtx_insn *);
-extern struct lra_insn_reg *lra_get_insn_regs (int);
+extern void lra_invalidate_insn_regno_info(rtx_insn *);
+extern void lra_update_insn_regno_info(rtx_insn *);
+extern struct lra_insn_reg *lra_get_insn_regs(int);
 
-extern void lra_free_copies (void);
-extern void lra_create_copy (int, int, int);
-extern lra_copy_t lra_get_copy (int);
+extern void lra_free_copies(void);
+extern void lra_create_copy(int, int, int);
+extern lra_copy_t lra_get_copy(int);
 
 extern int lra_new_regno_start;
 extern int lra_constraint_new_regno_start;
@@ -360,23 +354,24 @@ extern bitmap_head lra_postponed_insns;
 
 /* lra-constraints.cc: */
 
-extern void lra_init_equiv (void);
-extern void lra_pointer_equiv_set_add (rtx);
-extern bool lra_pointer_equiv_set_in (rtx);
-extern void lra_finish_equiv (void);
-extern int lra_constraint_offset (int, machine_mode);
+extern void lra_init_equiv(void);
+extern void lra_pointer_equiv_set_add(rtx);
+extern bool lra_pointer_equiv_set_in(rtx);
+extern void lra_finish_equiv(void);
+extern int lra_constraint_offset(int, machine_mode);
 
 extern int lra_constraint_iter;
 extern bool check_and_force_assignment_correctness_p;
 extern int lra_inheritance_iter;
 extern int lra_undo_inheritance_iter;
-extern bool lra_constrain_insn (rtx_insn *);
-extern bool lra_constraints (bool);
-extern void lra_constraints_init (void);
-extern void lra_constraints_finish (void);
-extern bool spill_hard_reg_in_range (int, enum reg_class, rtx_insn *, rtx_insn *);
-extern void lra_inheritance (void);
-extern bool lra_undo_inheritance (void);
+extern bool lra_constrain_insn(rtx_insn *);
+extern bool lra_constraints(bool);
+extern void lra_constraints_init(void);
+extern void lra_constraints_finish(void);
+extern bool spill_hard_reg_in_range(int, enum reg_class, rtx_insn *,
+                                    rtx_insn *);
+extern void lra_inheritance(void);
+extern bool lra_undo_inheritance(void);
 
 /* lra-lives.cc: */
 
@@ -386,97 +381,88 @@ extern int *lra_point_freq;
 extern int lra_hard_reg_usage[FIRST_PSEUDO_REGISTER];
 
 extern int lra_live_range_iter;
-extern void lra_reset_live_range_list (lra_live_range_t &);
-extern void lra_create_live_ranges (bool, bool);
-extern bool lra_complete_live_ranges (void);
-extern lra_live_range_t lra_copy_live_range_list (lra_live_range_t);
-extern lra_live_range_t lra_merge_live_ranges (lra_live_range_t,
-					       lra_live_range_t);
-extern bool lra_intersected_live_ranges_p (lra_live_range_t,
-					   lra_live_range_t);
-extern void lra_print_live_range_list (FILE *, lra_live_range_t);
-extern void debug (lra_live_range &ref);
-extern void debug (lra_live_range *ptr);
-extern void lra_debug_live_range_list (lra_live_range_t);
-extern void lra_debug_pseudo_live_ranges (int);
-extern void lra_debug_live_ranges (void);
-extern void lra_clear_live_ranges (void);
-extern void lra_live_ranges_init (void);
-extern void lra_live_ranges_finish (void);
-extern void lra_setup_reload_pseudo_preferenced_hard_reg (int, int, int);
+extern void lra_reset_live_range_list(lra_live_range_t &);
+extern void lra_create_live_ranges(bool, bool);
+extern bool lra_complete_live_ranges(void);
+extern lra_live_range_t lra_copy_live_range_list(lra_live_range_t);
+extern lra_live_range_t lra_merge_live_ranges(lra_live_range_t,
+                                              lra_live_range_t);
+extern bool lra_intersected_live_ranges_p(lra_live_range_t, lra_live_range_t);
+extern void lra_print_live_range_list(FILE *, lra_live_range_t);
+extern void debug(lra_live_range &ref);
+extern void debug(lra_live_range *ptr);
+extern void lra_debug_live_range_list(lra_live_range_t);
+extern void lra_debug_pseudo_live_ranges(int);
+extern void lra_debug_live_ranges(void);
+extern void lra_clear_live_ranges(void);
+extern void lra_live_ranges_init(void);
+extern void lra_live_ranges_finish(void);
+extern void lra_setup_reload_pseudo_preferenced_hard_reg(int, int, int);
 
 /* lra-assigns.cc: */
 
 extern int lra_assignment_iter;
 extern int lra_assignment_iter_after_spill;
-extern void lra_setup_reg_renumber (int, int, bool);
-extern bool lra_assign (bool &);
-extern bool lra_split_hard_reg_for (bool fail_p);
+extern void lra_setup_reg_renumber(int, int, bool);
+extern bool lra_assign(bool &);
+extern bool lra_split_hard_reg_for(bool fail_p);
 
 /* lra-coalesce.cc: */
 
 extern int lra_coalesce_iter;
-extern bool lra_coalesce (void);
+extern bool lra_coalesce(void);
 
 /* lra-spills.cc:  */
 
-extern bool lra_need_for_scratch_reg_p (void);
-extern bool lra_need_for_spills_p (void);
-extern void lra_spill (void);
-extern void lra_final_code_change (void);
-extern void lra_recompute_slots_live_ranges (void);
+extern bool lra_need_for_scratch_reg_p(void);
+extern bool lra_need_for_spills_p(void);
+extern void lra_spill(void);
+extern void lra_final_code_change(void);
+extern void lra_recompute_slots_live_ranges(void);
 
 /* lra-remat.cc:  */
 
 extern int lra_rematerialization_iter;
-extern bool lra_remat (void);
+extern bool lra_remat(void);
 
 /* lra-elimination.c: */
 
-extern void lra_debug_elim_table (void);
-extern int lra_get_elimination_hard_regno (int);
-extern rtx lra_eliminate_regs_1 (rtx_insn *, rtx, machine_mode,
-				 bool, bool, poly_int64, bool);
-extern void eliminate_regs_in_insn (rtx_insn *insn, bool, bool, poly_int64);
-extern int lra_update_fp2sp_elimination (int *spilled_pseudos);
-extern bool lra_fp_pseudo_p (void);
-extern void lra_eliminate (bool, bool);
+extern void lra_debug_elim_table(void);
+extern int lra_get_elimination_hard_regno(int);
+extern rtx lra_eliminate_regs_1(rtx_insn *, rtx, machine_mode, bool, bool,
+                                poly_int64, bool);
+extern void eliminate_regs_in_insn(rtx_insn *insn, bool, bool, poly_int64);
+extern int lra_update_fp2sp_elimination(int *spilled_pseudos);
+extern bool lra_fp_pseudo_p(void);
+extern void lra_eliminate(bool, bool);
 
-extern poly_int64 lra_update_sp_offset (rtx, poly_int64);
-extern void lra_eliminate_reg_if_possible (rtx *);
-
-
+extern poly_int64 lra_update_sp_offset(rtx, poly_int64);
+extern void lra_eliminate_reg_if_possible(rtx *);
 
 /* Return the hard register which given pseudo REGNO assigned to.
    Negative value means that the register got memory or we don't know
    allocation yet.  */
-inline int
-lra_get_regno_hard_regno (int regno)
-{
-  resize_reg_info ();
+inline int lra_get_regno_hard_regno(int regno) {
+  resize_reg_info();
   return reg_renumber[regno];
 }
 
 /* Change class of pseudo REGNO to NEW_CLASS.  Print info about it
    using TITLE.  Output a new line if NL_P.  */
-inline void
-lra_change_class (int regno, enum reg_class new_class,
-		  const char *title, bool nl_p)
-{
-  lra_assert (regno >= FIRST_PSEUDO_REGISTER);
+inline void lra_change_class(int regno, enum reg_class new_class,
+                             const char *title, bool nl_p) {
+  lra_assert(regno >= FIRST_PSEUDO_REGISTER);
   if (lra_dump_file != NULL)
-    fprintf (lra_dump_file, "%s class %s for r%d",
-	     title, reg_class_names[new_class], regno);
-  setup_reg_classes (regno, new_class, NO_REGS, new_class);
+    fprintf(lra_dump_file, "%s class %s for r%d", title,
+            reg_class_names[new_class], regno);
+  setup_reg_classes(regno, new_class, NO_REGS, new_class);
   if (lra_dump_file != NULL && nl_p)
-    fprintf (lra_dump_file, "\n");
+    fprintf(lra_dump_file, "\n");
 }
 
 /* Update insn operands which are duplication of NOP operand.  The
    insn is represented by its LRA internal representation ID.  */
-inline void
-lra_update_dup (lra_insn_recog_data_t id, int nop)
-{
+inline void lra_update_dup(lra_insn_recog_data_t id, int nop) {
   int i;
   struct lra_static_insn_data *static_id = id->insn_static_data;
 
@@ -489,85 +475,67 @@ lra_update_dup (lra_insn_recog_data_t id, int nop)
    operands processing.	 Generally speaking, we could do this probably
    simultaneously with operands processing because a common practice
    is to enumerate the operators after their operands.	*/
-inline void
-lra_update_operator_dups (lra_insn_recog_data_t id)
-{
+inline void lra_update_operator_dups(lra_insn_recog_data_t id) {
   int i;
   struct lra_static_insn_data *static_id = id->insn_static_data;
 
-  for (i = 0; i < static_id->n_dups; i++)
-    {
-      int ndup = static_id->dup_num[i];
+  for (i = 0; i < static_id->n_dups; i++) {
+    int ndup = static_id->dup_num[i];
 
-      if (static_id->operand[ndup].is_operator)
-	*id->dup_loc[i] = *id->operand_loc[ndup];
-    }
+    if (static_id->operand[ndup].is_operator)
+      *id->dup_loc[i] = *id->operand_loc[ndup];
+  }
 }
 
 /* Return info about INSN.  Set up the info if it is not done yet.  */
-inline lra_insn_recog_data_t
-lra_get_insn_recog_data (rtx_insn *insn)
-{
+inline lra_insn_recog_data_t lra_get_insn_recog_data(rtx_insn *insn) {
   lra_insn_recog_data_t data;
-  unsigned int uid = INSN_UID (insn);
+  unsigned int uid = INSN_UID(insn);
 
-  if (lra_insn_recog_data_len > (int) uid
-      && (data = lra_insn_recog_data[uid]) != NULL)
-    {
-      /* Check that we did not change insn without updating the insn
-	 info.	*/
-      lra_assert (data->insn == insn
-		  && (INSN_CODE (insn) < 0
-		      || data->icode == INSN_CODE (insn)));
-      return data;
-    }
-  return lra_set_insn_recog_data (insn);
+  if (lra_insn_recog_data_len > (int)uid &&
+      (data = lra_insn_recog_data[uid]) != NULL) {
+    /* Check that we did not change insn without updating the insn
+       info.	*/
+    lra_assert(data->insn == insn &&
+               (INSN_CODE(insn) < 0 || data->icode == INSN_CODE(insn)));
+    return data;
+  }
+  return lra_set_insn_recog_data(insn);
 }
 
 /* Update offset from pseudos with VAL by INCR.  */
-inline void
-lra_update_reg_val_offset (int val, poly_int64 incr)
-{
+inline void lra_update_reg_val_offset(int val, poly_int64 incr) {
   int i;
 
-  for (i = FIRST_PSEUDO_REGISTER; i < max_reg_num (); i++)
-    {
-      if (lra_reg_info[i].val == val)
-        lra_reg_info[i].offset += incr;
-    }
+  for (i = FIRST_PSEUDO_REGISTER; i < max_reg_num(); i++) {
+    if (lra_reg_info[i].val == val)
+      lra_reg_info[i].offset += incr;
+  }
 }
 
 /* Return true if register content is equal to VAL with OFFSET.  */
-inline bool
-lra_reg_val_equal_p (int regno, int val, poly_int64 offset)
-{
-  if (lra_reg_info[regno].val == val
-      && known_eq (lra_reg_info[regno].offset, offset))
+inline bool lra_reg_val_equal_p(int regno, int val, poly_int64 offset) {
+  if (lra_reg_info[regno].val == val &&
+      known_eq(lra_reg_info[regno].offset, offset))
     return true;
 
   return false;
 }
 
 /* Assign value of register FROM to TO.  */
-inline void
-lra_assign_reg_val (int from, int to)
-{
+inline void lra_assign_reg_val(int from, int to) {
   lra_reg_info[to].val = lra_reg_info[from].val;
   lra_reg_info[to].offset = lra_reg_info[from].offset;
 }
 
 /* Update REGNO's biggest recorded mode so that it includes a reference
    in mode MODE.  */
-inline void
-lra_update_biggest_mode (int regno, machine_mode mode)
-{
-  if (!ordered_p (GET_MODE_SIZE (lra_reg_info[regno].biggest_mode),
-		  GET_MODE_SIZE (mode)))
-    {
-      gcc_checking_assert (HARD_REGISTER_NUM_P (regno));
-      lra_reg_info[regno].biggest_mode = reg_raw_mode[regno];
-    }
-  else if (partial_subreg_p (lra_reg_info[regno].biggest_mode, mode))
+inline void lra_update_biggest_mode(int regno, machine_mode mode) {
+  if (!ordered_p(GET_MODE_SIZE(lra_reg_info[regno].biggest_mode),
+                 GET_MODE_SIZE(mode))) {
+    gcc_checking_assert(HARD_REGISTER_NUM_P(regno));
+    lra_reg_info[regno].biggest_mode = reg_raw_mode[regno];
+  } else if (partial_subreg_p(lra_reg_info[regno].biggest_mode, mode))
     lra_reg_info[regno].biggest_mode = mode;
 }
 

@@ -26,6 +26,6 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #ifndef _STDCOUNTOF_H
 #define _STDCOUNTOF_H
 
-#define countof  _Countof
+#define countof _Countof
 
-#endif	/* stdcountof.h */
+#endif /* stdcountof.h */

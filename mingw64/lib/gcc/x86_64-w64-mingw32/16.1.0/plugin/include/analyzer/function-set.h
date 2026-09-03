@@ -25,23 +25,20 @@ namespace ana {
 
 /* A set of names.  */
 
-class function_set
-{
+class function_set {
 public:
   /* Construct from a sorted array NAMES of size COUNT.  */
-  function_set (const char * const *names, size_t count)
-  : m_names (names), m_count (count)
-  {
-  }
+  function_set(const char *const *names, size_t count)
+      : m_names(names), m_count(count) {}
 
-  bool contains_name_p (const char *name) const;
-  bool contains_decl_p (tree fndecl) const;
+  bool contains_name_p(const char *name) const;
+  bool contains_decl_p(tree fndecl) const;
 
-  void assert_sorted () const;
-  void assert_sane () const;
+  void assert_sorted() const;
+  void assert_sane() const;
 
 private:
-  const char * const *m_names; // must be sorted
+  const char *const *m_names; // must be sorted
   size_t m_count;
 };
 

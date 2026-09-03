@@ -23,7 +23,7 @@ along with GCC; see the file COPYING3.  If not see
 
 namespace ana {
 
-extern void run_checkers ();
+extern void run_checkers();
 
 } // namespace ana
 

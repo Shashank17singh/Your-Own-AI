@@ -12,15 +12,26 @@ import time
 import unittest
 from test.libregrtest.cmdline import _parse_args
 from test.libregrtest.runtest import (
-    findtests, runtest, get_abs_module, is_failed,
-    STDTESTS, NOTTESTS, PROGRESS_MIN_TIME,
-    Passed, Failed, EnvChanged, Skipped, ResourceDenied, Interrupted,
-    ChildError, DidNotRun)
+    findtests,
+    runtest,
+    get_abs_module,
+    is_failed,
+    STDTESTS,
+    NOTTESTS,
+    PROGRESS_MIN_TIME,
+    Passed,
+    Failed,
+    EnvChanged,
+    Skipped,
+    ResourceDenied,
+    Interrupted,
+    ChildError,
+    DidNotRun,
+)
 from test.libregrtest.setup import setup_tests
 from test.libregrtest.pgo import setup_pgo_tests
 from test.libregrtest.utils import removepy, count, format_duration, printlist
 from test import support
-
 
 # bpo-38203: Maximum delay in seconds to exit Python (call Py_Finalize()).
 # Used to protect against threading._shutdown() hang.
@@ -51,6 +62,7 @@ class Regrtest:
     directly to set the values that would normally be set by flags
     on the command line.
     """
+
     def __init__(self):
         # Namespace of command line options
         self.ns = None
@@ -78,7 +90,7 @@ class Regrtest:
 
         # used to display the progress bar "[ 3/100]"
         self.start_time = time.monotonic()
-        self.test_count = ''
+        self.test_count = ""
         self.test_count_width = 1
 
         # used by --single
@@ -94,9 +106,14 @@ class Regrtest:
         self.worker_test_name = None
 
     def get_executed(self):
-        return (set(self.good) | set(self.bad) | set(self.skipped)
-                | set(self.resource_denieds) | set(self.environment_changed)
-                | set(self.run_no_tests))
+        return (
+            set(self.good)
+            | set(self.bad)
+            | set(self.skipped)
+            | set(self.resource_denieds)
+            | set(self.environment_changed)
+            | set(self.run_no_tests)
+        )
 
     def accumulate_result(self, result, rerun=False):
         test_name = result.name
@@ -130,6 +147,7 @@ class Regrtest:
         xml_data = result.xml_data
         if xml_data:
             import xml.etree.ElementTree as ET
+
             for e in xml_data:
                 try:
                     self.testsuite_xml.append(ET.fromstring(e))
@@ -137,7 +155,7 @@ class Regrtest:
                     print(xml_data, file=sys.__stderr__)
                     raise
 
-    def log(self, line=''):
+    def log(self, line=""):
         empty = not line
 
         # add the system load prefix: "load avg: 1.80 "
@@ -175,6 +193,7 @@ class Regrtest:
         worker_args = ns.worker_args
         if worker_args is not None:
             from test.libregrtest.runtest_mp import parse_worker_args
+
             ns, test_name = parse_worker_args(ns.worker_args)
             ns.worker_args = worker_args
             self.worker_test_name = test_name
@@ -185,9 +204,11 @@ class Regrtest:
         if ns.huntrleaks:
             warmup, repetitions, _ = ns.huntrleaks
             if warmup < 1 or repetitions < 1:
-                msg = ("Invalid values for the --huntrleaks/-R parameters. The "
-                       "number of warmups and repetitions must be at least 1 "
-                       "each (1:1).")
+                msg = (
+                    "Invalid values for the --huntrleaks/-R parameters. The "
+                    "number of warmups and repetitions must be at least 1 "
+                    "each (1:1)."
+                )
                 print(msg, file=sys.stderr, flush=True)
                 sys.exit(2)
 
@@ -200,9 +221,9 @@ class Regrtest:
         self.tests = tests
 
         if self.ns.single:
-            self.next_single_filename = os.path.join(self.tmp_dir, 'pynexttest')
+            self.next_single_filename = os.path.join(self.tmp_dir, "pynexttest")
             try:
-                with open(self.next_single_filename, 'r') as fp:
+                with open(self.next_single_filename, "r") as fp:
                     next_test = fp.read().strip()
                     self.tests = [next_test]
             except OSError:
@@ -212,10 +233,10 @@ class Regrtest:
             self.tests = []
             # regex to match 'test_builtin' in line:
             # '0:00:00 [  4/400] test_builtin -- test_dict took 1 sec'
-            regex = re.compile(r'\btest_[a-zA-Z0-9_]+\b')
+            regex = re.compile(r"\btest_[a-zA-Z0-9_]+\b")
             with open(os.path.join(support.SAVEDCWD, self.ns.fromfile)) as fp:
                 for line in fp:
-                    line = line.split('#', 1)[0]
+                    line = line.split("#", 1)[0]
                     line = line.strip()
                     match = regex.search(line)
                     if match is not None:
@@ -258,10 +279,12 @@ class Regrtest:
         # Remove all the selected tests that precede start if it's set.
         if self.ns.start:
             try:
-                del self.selected[:self.selected.index(self.ns.start)]
+                del self.selected[: self.selected.index(self.ns.start)]
             except ValueError:
-                print("Couldn't find starting test (%s), using all tests"
-                      % self.ns.start, file=sys.stderr)
+                print(
+                    "Couldn't find starting test (%s), using all tests" % self.ns.start,
+                    file=sys.stderr,
+                )
 
         if self.ns.randomize:
             if self.ns.random_seed is None:
@@ -315,8 +338,12 @@ class Regrtest:
             test_name = result.name
             errors = result.errors or []
             failures = result.failures or []
-            error_names = [test_full_name.split(" ")[0] for (test_full_name, *_) in errors]
-            failure_names = [test_full_name.split(" ")[0] for (test_full_name, *_) in failures]
+            error_names = [
+                test_full_name.split(" ")[0] for (test_full_name, *_) in errors
+            ]
+            failure_names = [
+                test_full_name.split(" ")[0] for (test_full_name, *_) in failures
+            ]
             self.ns.verbose = True
             orig_match_tests = self.ns.match_tests
             if errors or failures:
@@ -337,7 +364,7 @@ class Regrtest:
                 break
 
         if self.bad:
-            print(count(len(self.bad), 'test'), "failed again:")
+            print(count(len(self.bad), "test"), "failed again:")
             printlist(self.bad)
 
         self.display_result()
@@ -361,11 +388,13 @@ class Regrtest:
 
         if self.good and not self.ns.quiet:
             print()
-            if (not self.bad
+            if (
+                not self.bad
                 and not self.skipped
                 and not self.interrupted
-                and len(self.good) > 1):
-                print("All", end=' ')
+                and len(self.good) > 1
+            ):
+                print("All", end=" ")
             print(count(len(self.good), "test"), "OK.")
 
         if self.ns.print_slow:
@@ -382,8 +411,11 @@ class Regrtest:
 
         if self.environment_changed:
             print()
-            print("{} altered the execution environment:".format(
-                     count(len(self.environment_changed), "test")))
+            print(
+                "{} altered the execution environment:".format(
+                    count(len(self.environment_changed), "test")
+                )
+            )
             printlist(self.environment_changed)
 
         if self.skipped and not self.ns.quiet:
@@ -404,6 +436,7 @@ class Regrtest:
     def run_tests_sequential(self):
         if self.ns.trace:
             import trace
+
             self.tracer = trace.Trace(trace=False, count=True)
 
         save_modules = sys.modules.keys()
@@ -419,17 +452,19 @@ class Regrtest:
 
             text = test_name
             if previous_test:
-                text = '%s -- %s' % (text, previous_test)
+                text = "%s -- %s" % (text, previous_test)
             self.display_progress(test_index, text)
 
             if self.tracer:
                 # If we're tracing code coverage, then we don't exit with status
                 # if on a false return value from main.
-                cmd = ('result = runtest(self.ns, test_name); '
-                       'self.accumulate_result(result)')
+                cmd = (
+                    "result = runtest(self.ns, test_name); "
+                    "self.accumulate_result(result)"
+                )
                 ns = dict(locals())
                 self.tracer.runctx(cmd, globals=globals(), locals=ns)
-                result = ns['result']
+                result = ns["result"]
             else:
                 result = runtest(self.ns, test_name)
                 self.accumulate_result(result)
@@ -468,15 +503,15 @@ class Regrtest:
     def display_header(self):
         # Print basic platform information
         print("==", platform.python_implementation(), *sys.version.split())
-        print("==", platform.platform(aliased=True),
-                      "%s-endian" % sys.byteorder)
+        print("==", platform.platform(aliased=True), "%s-endian" % sys.byteorder)
         print("== cwd:", os.getcwd())
         cpu_count = os.cpu_count()
         if cpu_count:
             print("== CPU count:", cpu_count)
-        print("== encodings: locale=%s, FS=%s"
-              % (locale.getpreferredencoding(False),
-                 sys.getfilesystemencoding()))
+        print(
+            "== encodings: locale=%s, FS=%s"
+            % (locale.getpreferredencoding(False), sys.getfilesystemencoding())
+        )
 
     def get_tests_result(self):
         result = []
@@ -484,8 +519,15 @@ class Regrtest:
             result.append("FAILURE")
         elif self.ns.fail_env_changed and self.environment_changed:
             result.append("ENV CHANGED")
-        elif not any((self.good, self.bad, self.skipped, self.interrupted,
-            self.environment_changed)):
+        elif not any(
+            (
+                self.good,
+                self.bad,
+                self.skipped,
+                self.interrupted,
+                self.environment_changed,
+            )
+        ):
             result.append("NO TEST RUN")
 
         if self.interrupted:
@@ -494,23 +536,25 @@ class Regrtest:
         if not result:
             result.append("SUCCESS")
 
-        result = ', '.join(result)
+        result = ", ".join(result)
         if self.first_result:
-            result = '%s then %s' % (self.first_result, result)
+            result = "%s then %s" % (self.first_result, result)
         return result
 
     def run_tests(self):
         # For a partial run, we do not need to clutter the output.
-        if (self.ns.header
-            or not(self.ns.pgo or self.ns.quiet or self.ns.single
-                   or self.tests or self.ns.args)):
+        if self.ns.header or not (
+            self.ns.pgo or self.ns.quiet or self.ns.single or self.tests or self.ns.args
+        ):
             self.display_header()
 
         if self.ns.huntrleaks:
             warmup, repetitions, _ = self.ns.huntrleaks
             if warmup < 3:
-                msg = ("WARNING: Running tests with --huntrleaks/-R and less than "
-                        "3 warmup repetitions can give false positives!")
+                msg = (
+                    "WARNING: Running tests with --huntrleaks/-R and less than "
+                    "3 warmup repetitions can give false positives!"
+                )
                 print(msg, file=sys.stdout, flush=True)
 
         if self.ns.randomize:
@@ -518,15 +562,16 @@ class Regrtest:
 
         if self.ns.forever:
             self.tests = self._test_forever(list(self.selected))
-            self.test_count = ''
+            self.test_count = ""
             self.test_count_width = 3
         else:
             self.tests = iter(self.selected)
-            self.test_count = '/{}'.format(len(self.selected))
+            self.test_count = "/{}".format(len(self.selected))
             self.test_count_width = len(self.test_count) - 1
 
         if self.ns.use_mp:
             from test.libregrtest.runtest_mp import run_tests_multiprocess
+
             run_tests_multiprocess(self)
         else:
             self.run_tests_sequential()
@@ -534,15 +579,14 @@ class Regrtest:
     def finalize(self):
         if self.next_single_filename:
             if self.next_single_test:
-                with open(self.next_single_filename, 'w') as fp:
-                    fp.write(self.next_single_test + '\n')
+                with open(self.next_single_filename, "w") as fp:
+                    fp.write(self.next_single_test + "\n")
             else:
                 os.unlink(self.next_single_filename)
 
         if self.tracer:
             r = self.tracer.results()
-            r.write_results(show_missing=True, summary=True,
-                            coverdir=self.ns.coverdir)
+            r.write_results(show_missing=True, summary=True, coverdir=self.ns.coverdir)
 
         print()
         duration = time.monotonic() - self.start_time
@@ -557,10 +601,11 @@ class Regrtest:
             return
 
         import xml.etree.ElementTree as ET
+
         root = ET.Element("testsuites")
 
         # Manually count the totals for the overall summary
-        totals = {'tests': 0, 'errors': 0, 'failures': 0}
+        totals = {"tests": 0, "errors": 0, "failures": 0}
         for suite in self.testsuite_xml:
             root.append(suite)
             for k in totals:
@@ -573,7 +618,7 @@ class Regrtest:
             root.set(k, str(v))
 
         xmlpath = os.path.join(support.SAVEDCWD, self.ns.xmlpath)
-        with open(xmlpath, 'wb') as f:
+        with open(xmlpath, "wb") as f:
             for s in ET.tostringlist(root):
                 f.write(s)
 
@@ -586,14 +631,14 @@ class Regrtest:
             # to keep the test files in a subfolder.  This eases the cleanup of leftover
             # files using the "make distclean" command.
             if sysconfig.is_python_build():
-                self.tmp_dir = sysconfig.get_config_var('abs_builddir')
+                self.tmp_dir = sysconfig.get_config_var("abs_builddir")
                 if self.tmp_dir is None:
                     # bpo-30284: On Windows, only srcdir is available. Using
                     # abs_builddir mostly matters on UNIX when building Python
                     # out of the source tree, especially when the source tree
                     # is read only.
-                    self.tmp_dir = sysconfig.get_config_var('srcdir')
-                self.tmp_dir = os.path.join(self.tmp_dir, 'build')
+                    self.tmp_dir = sysconfig.get_config_var("srcdir")
+                self.tmp_dir = os.path.join(self.tmp_dir, "build")
             else:
                 self.tmp_dir = tempfile.gettempdir()
 
@@ -607,9 +652,9 @@ class Regrtest:
         # testing (see the -j option).
         pid = os.getpid()
         if self.worker_test_name is not None:
-            test_cwd = 'test_python_worker_{}'.format(pid)
+            test_cwd = "test_python_worker_{}".format(pid)
         else:
-            test_cwd = 'test_python_{}'.format(pid)
+            test_cwd = "test_python_{}".format(pid)
         test_cwd += support.FS_NONASCII
         test_cwd = os.path.join(self.tmp_dir, test_cwd)
         return test_cwd
@@ -617,7 +662,7 @@ class Regrtest:
     def cleanup(self):
         import glob
 
-        path = os.path.join(glob.escape(self.tmp_dir), 'test_python_*')
+        path = os.path.join(glob.escape(self.tmp_dir), "test_python_*")
         print("Cleanup %s directory" % self.tmp_dir)
         for name in glob.glob(path):
             if os.path.isdir(name):
@@ -661,7 +706,7 @@ class Regrtest:
         if self.win_load_tracker is not None:
             return self.win_load_tracker.getloadavg()
 
-        if hasattr(os, 'getloadavg'):
+        if hasattr(os, "getloadavg"):
             return os.getloadavg()[0]
 
         return None
@@ -669,6 +714,7 @@ class Regrtest:
     def _main(self, tests, kwargs):
         if self.worker_test_name is not None:
             from test.libregrtest.runtest_mp import run_tests_worker
+
             run_tests_worker(self.ns, self.worker_test_name)
 
         if self.ns.wait:
@@ -691,7 +737,7 @@ class Regrtest:
 
         # If we're on windows and this is the parent runner (not a worker),
         # track the load average.
-        if sys.platform == 'win32' and self.worker_test_name is None:
+        if sys.platform == "win32" and self.worker_test_name is None:
             from test.libregrtest.win_utils import WindowsLoadTracker
 
             try:
@@ -699,7 +745,7 @@ class Regrtest:
             except FileNotFoundError as error:
                 # Windows IoT Core and Windows Nano Server do not provide
                 # typeperf.exe for x64, x86 or ARM
-                print(f'Failed to create WindowsLoadTracker: {error}')
+                print(f"Failed to create WindowsLoadTracker: {error}")
 
         try:
             self.run_tests()

@@ -21,12 +21,12 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTIC_H
 #define GCC_DIAGNOSTIC_H
 
-#include "rich-location.h"
-#include "pretty-print.h"
 #include "diagnostic-core.h"
+#include "pretty-print.h"
+#include "rich-location.h"
 
-#include "diagnostics/diagnostic-info.h"
 #include "diagnostics/context.h"
+#include "diagnostics/diagnostic-info.h"
 
 /* Extension hooks for client.  */
 #define diagnostic_context_auxiliary_data(DC) (DC)->m_client_aux_data
@@ -39,82 +39,68 @@ extern diagnostics::context *global_dc;
 
 /* The number of errors that have been issued so far.  Ideally, these
    would take a diagnostics::context as an argument.  */
-#define errorcount global_dc->diagnostic_count (diagnostics::kind::error)
+#define errorcount global_dc->diagnostic_count(diagnostics::kind::error)
 /* Similarly, but for warnings.  */
-#define warningcount global_dc->diagnostic_count (diagnostics::kind::warning)
+#define warningcount global_dc->diagnostic_count(diagnostics::kind::warning)
 /* Similarly, but for warnings promoted to errors.  */
-#define werrorcount global_dc->diagnostic_count (diagnostics::kind::werror)
+#define werrorcount global_dc->diagnostic_count(diagnostics::kind::werror)
 /* Similarly, but for sorrys.  */
-#define sorrycount global_dc->diagnostic_count (diagnostics::kind::sorry)
+#define sorrycount global_dc->diagnostic_count(diagnostics::kind::sorry)
 
 /* Returns nonzero if warnings should be emitted.  */
-#define diagnostic_report_warnings_p(DC, LOC)				\
-  (!(DC)->m_inhibit_warnings						\
-   && !(in_system_header_at (LOC) && !(DC)->m_warn_system_headers))
+#define diagnostic_report_warnings_p(DC, LOC)                                  \
+  (!(DC)->m_inhibit_warnings &&                                                \
+   !(in_system_header_at(LOC) && !(DC)->m_warn_system_headers))
 
 /* Override the option index to be used for reporting a
    diagnostic.  */
 
-inline void
-diagnostic_set_option_id (diagnostics::diagnostic_info *info,
-			  diagnostics::option_id opt_id)
-{
+inline void diagnostic_set_option_id(diagnostics::diagnostic_info *info,
+                                     diagnostics::option_id opt_id) {
   info->m_option_id = opt_id;
 }
 
 /* Diagnostic related functions.  */
 
-inline void
-diagnostic_initialize (diagnostics::context *context, int n_opts)
-{
-  context->initialize (n_opts);
+inline void diagnostic_initialize(diagnostics::context *context, int n_opts) {
+  context->initialize(n_opts);
 }
 
-inline void
-diagnostic_color_init (diagnostics::context *context, int value = -1)
-{
-  context->color_init (value);
+inline void diagnostic_color_init(diagnostics::context *context,
+                                  int value = -1) {
+  context->color_init(value);
 }
 
-inline void
-diagnostic_urls_init (diagnostics::context *context, int value = -1)
-{
-  context->urls_init (value);
+inline void diagnostic_urls_init(diagnostics::context *context,
+                                 int value = -1) {
+  context->urls_init(value);
 }
 
-inline void
-diagnostic_finish (diagnostics::context *context)
-{
-  context->finish ();
+inline void diagnostic_finish(diagnostics::context *context) {
+  context->finish();
 }
 
-inline void
-diagnostic_show_locus (diagnostics::context *context,
-		       const diagnostics::source_printing_options &opts,
-		       rich_location *richloc,
-		       enum diagnostics::kind diagnostic_kind,
-		       pretty_printer *pp,
-		       diagnostics::source_effect_info *effect_info = nullptr)
-{
-  gcc_assert (context);
-  gcc_assert (richloc);
-  gcc_assert (pp);
-  context->maybe_show_locus (*richloc, opts, diagnostic_kind, *pp, effect_info);
+inline void diagnostic_show_locus(
+    diagnostics::context *context,
+    const diagnostics::source_printing_options &opts, rich_location *richloc,
+    enum diagnostics::kind diagnostic_kind, pretty_printer *pp,
+    diagnostics::source_effect_info *effect_info = nullptr) {
+  gcc_assert(context);
+  gcc_assert(richloc);
+  gcc_assert(pp);
+  context->maybe_show_locus(*richloc, opts, diagnostic_kind, *pp, effect_info);
 }
 
-inline void
-diagnostic_show_locus_as_html (diagnostics::context *context,
-			       const diagnostics::source_printing_options &opts,
-			       rich_location *richloc,
-			       enum diagnostics::kind diagnostic_kind,
-			       xml::printer &xp,
-			       diagnostics::source_effect_info *effect_info = nullptr,
-			       diagnostics::html_label_writer *label_writer = nullptr)
-{
-  gcc_assert (context);
-  gcc_assert (richloc);
-  context->maybe_show_locus_as_html (*richloc, opts, diagnostic_kind, xp,
-				     effect_info, label_writer);
+inline void diagnostic_show_locus_as_html(
+    diagnostics::context *context,
+    const diagnostics::source_printing_options &opts, rich_location *richloc,
+    enum diagnostics::kind diagnostic_kind, xml::printer &xp,
+    diagnostics::source_effect_info *effect_info = nullptr,
+    diagnostics::html_label_writer *label_writer = nullptr) {
+  gcc_assert(context);
+  gcc_assert(richloc);
+  context->maybe_show_locus_as_html(*richloc, opts, diagnostic_kind, xp,
+                                    effect_info, label_writer);
 }
 
 /* Because we read source files a second time after the frontend did it the
@@ -133,34 +119,27 @@ diagnostic_show_locus_as_html (diagnostics::context *context,
    rather skipped as part of the conversion process.)  */
 
 inline void
-diagnostic_initialize_input_context (diagnostics::context *context,
-				     diagnostic_input_charset_callback ccb,
-				     bool should_skip_bom)
-{
-  context->initialize_input_context (ccb, should_skip_bom);
+diagnostic_initialize_input_context(diagnostics::context *context,
+                                    diagnostic_input_charset_callback ccb,
+                                    bool should_skip_bom) {
+  context->initialize_input_context(ccb, should_skip_bom);
 }
 
 /* Force diagnostics controlled by OPTIDX to be kind KIND.  */
 inline diagnostics::kind
-diagnostic_classify_diagnostic (diagnostics::context *context,
-				diagnostics::option_id opt_id,
-				enum diagnostics::kind kind,
-				location_t where)
-{
-  return context->classify_diagnostic (opt_id, kind, where);
+diagnostic_classify_diagnostic(diagnostics::context *context,
+                               diagnostics::option_id opt_id,
+                               enum diagnostics::kind kind, location_t where) {
+  return context->classify_diagnostic(opt_id, kind, where);
 }
 
-inline void
-diagnostic_push_diagnostics (diagnostics::context *context,
-			     location_t where)
-{
-  context->push_diagnostics (where);
+inline void diagnostic_push_diagnostics(diagnostics::context *context,
+                                        location_t where) {
+  context->push_diagnostics(where);
 }
-inline void
-diagnostic_pop_diagnostics (diagnostics::context *context,
-			    location_t where)
-{
-  context->pop_diagnostics (where);
+inline void diagnostic_pop_diagnostics(diagnostics::context *context,
+                                       location_t where) {
+  context->pop_diagnostics(where);
 }
 
 /* Report a diagnostic message (an error or a warning) as specified by
@@ -171,59 +150,54 @@ diagnostic_pop_diagnostics (diagnostics::context *context,
    Return true if a diagnostic was printed, false otherwise.  */
 
 inline bool
-diagnostic_report_diagnostic (diagnostics::context *context,
-			      diagnostics::diagnostic_info *diagnostic)
-{
-  context->begin_group ();
-  bool warned = context->report_diagnostic (diagnostic);
-  context->end_group ();
+diagnostic_report_diagnostic(diagnostics::context *context,
+                             diagnostics::diagnostic_info *diagnostic) {
+  context->begin_group();
+  bool warned = context->report_diagnostic(diagnostic);
+  context->end_group();
   return warned;
 }
 
 #ifdef ATTRIBUTE_GCC_DIAG
-extern void diagnostic_set_info (diagnostics::diagnostic_info *,
-				 const char *, va_list *,
-				 rich_location *,
-				 enum diagnostics::kind)
-  ATTRIBUTE_GCC_DIAG(2,0);
-extern void diagnostic_set_info_translated (diagnostics::diagnostic_info *,
-					    const char *, va_list *,
-					    rich_location *,
-					    enum diagnostics::kind)
-     ATTRIBUTE_GCC_DIAG(2,0);
+extern void diagnostic_set_info(diagnostics::diagnostic_info *, const char *,
+                                va_list *, rich_location *,
+                                enum diagnostics::kind)
+    ATTRIBUTE_GCC_DIAG(2, 0);
+extern void diagnostic_set_info_translated(diagnostics::diagnostic_info *,
+                                           const char *, va_list *,
+                                           rich_location *,
+                                           enum diagnostics::kind)
+    ATTRIBUTE_GCC_DIAG(2, 0);
 #endif
 
 namespace diagnostics {
 
-void default_text_starter (diagnostics::text_sink &,
-			   const diagnostics::diagnostic_info *);
+void default_text_starter(diagnostics::text_sink &,
+                          const diagnostics::diagnostic_info *);
 template <typename TextOrHtml>
-void default_start_span_fn (const diagnostics::location_print_policy &,
-			    TextOrHtml &text_or_html,
-			    expanded_location);
-void default_text_finalizer (diagnostics::text_sink &,
-			     const diagnostics::diagnostic_info *,
-			     enum diagnostics::kind);
+void default_start_span_fn(const diagnostics::location_print_policy &,
+                           TextOrHtml &text_or_html, expanded_location);
+void default_text_finalizer(diagnostics::text_sink &,
+                            const diagnostics::diagnostic_info *,
+                            enum diagnostics::kind);
 } // namespace diagnostics
 
-int get_terminal_width (void);
+int get_terminal_width(void);
 
 /* Return the location associated to this diagnostic. Parameter WHICH
    specifies which location. By default, expand the first one.  */
 
 inline location_t
-diagnostic_location (const diagnostics::diagnostic_info *diagnostic,
-		     int which = 0)
-{
-  return diagnostic->m_message.get_location (which);
+diagnostic_location(const diagnostics::diagnostic_info *diagnostic,
+                    int which = 0) {
+  return diagnostic->m_message.get_location(which);
 }
 
 /* Return the number of locations to be printed in DIAGNOSTIC.  */
 
 inline unsigned int
-diagnostic_num_locations (const diagnostics::diagnostic_info *diagnostic)
-{
-  return diagnostic->m_message.m_richloc->get_num_locations ();
+diagnostic_num_locations(const diagnostics::diagnostic_info *diagnostic) {
+  return diagnostic->m_message.m_richloc->get_num_locations();
 }
 
 /* Expand the location of this diagnostic. Use this function for
@@ -231,10 +205,9 @@ diagnostic_num_locations (const diagnostics::diagnostic_info *diagnostic)
    expand the first one.  */
 
 inline expanded_location
-diagnostic_expand_location (const diagnostics::diagnostic_info *diagnostic,
-			    int which = 0)
-{
-  return diagnostic->m_richloc->get_expanded_location (which);
+diagnostic_expand_location(const diagnostics::diagnostic_info *diagnostic,
+                           int which = 0) {
+  return diagnostic->m_richloc->get_expanded_location(which);
 }
 
 /* This is somehow the right-side margin of a caret line, that is, we
@@ -246,42 +219,33 @@ const int CARET_LINE_MARGIN = 10;
    caret line.  This is used to build a prefix and also to determine
    whether to print one or two caret lines.  */
 
-inline bool
-diagnostic_same_line (const diagnostics::context *context,
-		      expanded_location s1, expanded_location s2)
-{
-  return (s2.column && s1.line == s2.line
-	  && ((context->get_source_printing_options ().max_width
-	       - CARET_LINE_MARGIN)
-	      > abs (s1.column - s2.column)));
+inline bool diagnostic_same_line(const diagnostics::context *context,
+                                 expanded_location s1, expanded_location s2) {
+  return (s2.column && s1.line == s2.line &&
+          ((context->get_source_printing_options().max_width -
+            CARET_LINE_MARGIN) > abs(s1.column - s2.column)));
 }
 
 /* Pure text formatting support functions.  */
 
-extern char *build_message_string (const char *, ...) ATTRIBUTE_PRINTF_1;
+extern char *build_message_string(const char *, ...) ATTRIBUTE_PRINTF_1;
 
-inline bool
-warning_enabled_at (location_t loc, diagnostics::option_id opt_id)
-{
-  return global_dc->warning_enabled_at (loc, opt_id);
+inline bool warning_enabled_at(location_t loc, diagnostics::option_id opt_id) {
+  return global_dc->warning_enabled_at(loc, opt_id);
 }
 
-inline bool
-option_unspecified_p (diagnostics::option_id opt_id)
-{
-  return global_dc->option_unspecified_p (opt_id);
+inline bool option_unspecified_p(diagnostics::option_id opt_id) {
+  return global_dc->option_unspecified_p(opt_id);
 }
 
-inline bool
-emitting_diagnostic_p ()
-{
-  return global_dc->emitting_diagnostic_p ();
+inline bool emitting_diagnostic_p() {
+  return global_dc->emitting_diagnostic_p();
 }
 
 namespace diagnostics {
 
 /* Compute the number of digits in the decimal representation of an integer.  */
-extern int num_digits (uint64_t);
+extern int num_digits(uint64_t);
 
 } // namespace diagnostics
 

@@ -2,17 +2,13 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #include <winapifamily.h>
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #ifdef RC_INVOKED
 #define _HRESULT_TYPEDEF_(_sc) _sc
 #else
 #define _HRESULT_TYPEDEF_(_sc) ((HRESULT)_sc)
 #endif
-
 #define FACILITY_NULL 0
 #define FACILITY_RPC 1
 #define FACILITY_DISPATCH 2
@@ -22,7 +18,6 @@
 #define FACILITY_WINDOWS 8
 #define FACILITY_SSPI 9
 #define FACILITY_CONTROL 10
-
 #define E_ADS_BAD_PATHNAME _HRESULT_TYPEDEF_(0x80005000)
 #define E_ADS_INVALID_DOMAIN_OBJECT _HRESULT_TYPEDEF_(0x80005001)
 #define E_ADS_INVALID_USER_OBJECT _HRESULT_TYPEDEF_(0x80005002)
@@ -44,5 +39,4 @@
 #define S_ADS_NOMORE_ROWS _HRESULT_TYPEDEF_(0x00005012)
 #define S_ADS_NOMORE_COLUMNS _HRESULT_TYPEDEF_(0x00005013)
 #define E_ADS_INVALID_FILTER _HRESULT_TYPEDEF_(0x80005014)
-
 #endif

@@ -34,105 +34,84 @@ namespace selftest {
    equalling EXPECTED_VALUE.
    Use LOC for any failures.  */
 
-void
-assert_json_string_eq (const location &loc,
-		       const json::value *value,
-		       const char *expected_value);
-#define ASSERT_JSON_STRING_EQ(JSON_VALUE, EXPECTED_VALUE) \
-  assert_json_string_eq ((SELFTEST_LOCATION),			\
-			 (JSON_VALUE),				\
-			 (EXPECTED_VALUE))
+void assert_json_string_eq(const location &loc, const json::value *value,
+                           const char *expected_value);
+#define ASSERT_JSON_STRING_EQ(JSON_VALUE, EXPECTED_VALUE)                      \
+  assert_json_string_eq((SELFTEST_LOCATION), (JSON_VALUE), (EXPECTED_VALUE))
 
 /* Assert that VALUE is a non-null json::object,
    returning it as such, failing at LOC if this isn't the case.  */
 
-const json::object *
-expect_json_object (const location &loc,
-		    const json::value *value);
+const json::object *expect_json_object(const location &loc,
+                                       const json::value *value);
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME.
    Return the value of the property.
    Use LOC for any failures.  */
 
-const json::value *
-expect_json_object_with_property (const location &loc,
-				  const json::value *value,
-				  const char *property_name);
+const json::value *expect_json_object_with_property(const location &loc,
+                                                    const json::value *value,
+                                                    const char *property_name);
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME, and that the value of that property is a non-null
    json::integer_number equalling EXPECTED_VALUE.
    Use LOC for any failures.  */
 
-void
-assert_json_int_property_eq (const location &loc,
-			     const json::value *value,
-			     const char *property_name,
-			     long expected_value);
+void assert_json_int_property_eq(const location &loc, const json::value *value,
+                                 const char *property_name,
+                                 long expected_value);
 #define ASSERT_JSON_INT_PROPERTY_EQ(JSON_VALUE, PROPERTY_NAME, EXPECTED_VALUE) \
-  assert_json_int_property_eq ((SELFTEST_LOCATION),			\
-			       (JSON_VALUE),		\
-			       (PROPERTY_NAME),	\
-			       (EXPECTED_VALUE))
+  assert_json_int_property_eq((SELFTEST_LOCATION), (JSON_VALUE),               \
+                              (PROPERTY_NAME), (EXPECTED_VALUE))
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME, and that the property value is a non-null JSON object.
    Return the value of the property as a json::object.
    Use LOC for any failures.  */
 
-const json::object *
-expect_json_object_with_object_property (const location &loc,
-					 const json::value *value,
-					 const char *property_name);
-#define EXPECT_JSON_OBJECT_WITH_OBJECT_PROPERTY(JSON_VALUE, PROPERTY_NAME) \
-  expect_json_object_with_object_property ((SELFTEST_LOCATION),		\
-					   (JSON_VALUE),		\
-					   (PROPERTY_NAME))
+const json::object *expect_json_object_with_object_property(
+    const location &loc, const json::value *value, const char *property_name);
+#define EXPECT_JSON_OBJECT_WITH_OBJECT_PROPERTY(JSON_VALUE, PROPERTY_NAME)     \
+  expect_json_object_with_object_property((SELFTEST_LOCATION), (JSON_VALUE),   \
+                                          (PROPERTY_NAME))
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME, and that the property value is a non-null JSON array.
    Return the value of the property as a json::array.
    Use LOC for any failures.  */
 
-const json::array *
-expect_json_object_with_array_property (const location &loc,
-					const json::value *value,
-					const char *property_name);
-#define EXPECT_JSON_OBJECT_WITH_ARRAY_PROPERTY(JSON_VALUE, PROPERTY_NAME) \
-  expect_json_object_with_array_property ((SELFTEST_LOCATION),		\
-					  (JSON_VALUE),		\
-					  (PROPERTY_NAME))
+const json::array *expect_json_object_with_array_property(
+    const location &loc, const json::value *value, const char *property_name);
+#define EXPECT_JSON_OBJECT_WITH_ARRAY_PROPERTY(JSON_VALUE, PROPERTY_NAME)      \
+  expect_json_object_with_array_property((SELFTEST_LOCATION), (JSON_VALUE),    \
+                                         (PROPERTY_NAME))
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME, and that the property value is a non-null JSON string.
    Return the value of the property as a json::string.
    Use LOC for any failures.  */
 
-const json::string *
-expect_json_object_with_string_property (const location &loc,
-					 const json::value *value,
-					 const char *property_name);
-#define EXPECT_JSON_OBJECT_WITH_STRING_PROPERTY(JSON_VALUE, PROPERTY_NAME) \
-  expect_json_object_with_string_property ((SELFTEST_LOCATION),		\
-					   (JSON_VALUE),		\
-					   (PROPERTY_NAME))
+const json::string *expect_json_object_with_string_property(
+    const location &loc, const json::value *value, const char *property_name);
+#define EXPECT_JSON_OBJECT_WITH_STRING_PROPERTY(JSON_VALUE, PROPERTY_NAME)     \
+  expect_json_object_with_string_property((SELFTEST_LOCATION), (JSON_VALUE),   \
+                                          (PROPERTY_NAME))
 
 /* Assert that VALUE is a non-null json::object that has property
    PROPERTY_NAME, and that the value of that property is a non-null
    JSON string equalling EXPECTED_VALUE.
    Use LOC for any failures.  */
 
-void
-assert_json_string_property_eq (const location &loc,
-				const json::value *value,
-				const char *property_name,
-				const char *expected_value);
-#define ASSERT_JSON_STRING_PROPERTY_EQ(JSON_VALUE, PROPERTY_NAME, EXPECTED_VALUE) \
-  assert_json_string_property_eq ((SELFTEST_LOCATION),			\
-				  (JSON_VALUE),				\
-				  (PROPERTY_NAME),			\
-				  (EXPECTED_VALUE))
+void assert_json_string_property_eq(const location &loc,
+                                    const json::value *value,
+                                    const char *property_name,
+                                    const char *expected_value);
+#define ASSERT_JSON_STRING_PROPERTY_EQ(JSON_VALUE, PROPERTY_NAME,              \
+                                       EXPECTED_VALUE)                         \
+  assert_json_string_property_eq((SELFTEST_LOCATION), (JSON_VALUE),            \
+                                 (PROPERTY_NAME), (EXPECTED_VALUE))
 
 } // namespace selftest
 

@@ -1,4 +1,5 @@
 """Utility code for constructing importers, etc."""
+
 from . import abc
 from ._bootstrap import module_from_spec
 from ._bootstrap import _resolve_name
@@ -26,14 +27,16 @@ def source_hash(source_bytes):
 
 def resolve_name(name, package):
     """Resolve a relative module name to an absolute one."""
-    if not name.startswith('.'):
+    if not name.startswith("."):
         return name
     elif not package:
-        raise ImportError(f'no package specified for {repr(name)} '
-                          '(required for relative module names)')
+        raise ImportError(
+            f"no package specified for {repr(name)} "
+            "(required for relative module names)"
+        )
     level = 0
     for character in name:
-        if character != '.':
+        if character != ".":
             break
         level += 1
     return _resolve_name(name[level:], package, level)
@@ -63,10 +66,10 @@ def _find_spec_from_path(name, path=None):
         try:
             spec = module.__spec__
         except AttributeError:
-            raise ValueError('{}.__spec__ is not set'.format(name)) from None
+            raise ValueError("{}.__spec__ is not set".format(name)) from None
         else:
             if spec is None:
-                raise ValueError('{}.__spec__ is None'.format(name))
+                raise ValueError("{}.__spec__ is None".format(name))
             return spec
 
 
@@ -87,17 +90,19 @@ def find_spec(name, package=None):
     In other words, relative module names (with leading dots) work.
 
     """
-    fullname = resolve_name(name, package) if name.startswith('.') else name
+    fullname = resolve_name(name, package) if name.startswith(".") else name
     if fullname not in sys.modules:
-        parent_name = fullname.rpartition('.')[0]
+        parent_name = fullname.rpartition(".")[0]
         if parent_name:
-            parent = __import__(parent_name, fromlist=['__path__'])
+            parent = __import__(parent_name, fromlist=["__path__"])
             try:
                 parent_path = parent.__path__
             except AttributeError as e:
                 raise ModuleNotFoundError(
                     f"__path__ attribute not found on {parent_name!r} "
-                    f"while trying to find {fullname!r}", name=fullname) from e
+                    f"while trying to find {fullname!r}",
+                    name=fullname,
+                ) from e
         else:
             parent_path = None
         return _find_spec(fullname, parent_path)
@@ -108,10 +113,10 @@ def find_spec(name, package=None):
         try:
             spec = module.__spec__
         except AttributeError:
-            raise ValueError('{}.__spec__ is not set'.format(name)) from None
+            raise ValueError("{}.__spec__ is not set".format(name)) from None
         else:
             if spec is None:
-                raise ValueError('{}.__spec__ is None'.format(name))
+                raise ValueError("{}.__spec__ is None".format(name))
             return spec
 
 
@@ -147,16 +152,21 @@ def set_package(fxn):
     This function is deprecated.
 
     """
+
     @functools.wraps(fxn)
     def set_package_wrapper(*args, **kwargs):
-        warnings.warn('The import system now takes care of this automatically.',
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "The import system now takes care of this automatically.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         module = fxn(*args, **kwargs)
-        if getattr(module, '__package__', None) is None:
+        if getattr(module, "__package__", None) is None:
             module.__package__ = module.__name__
-            if not hasattr(module, '__path__'):
-                module.__package__ = module.__package__.rpartition('.')[0]
+            if not hasattr(module, "__path__"):
+                module.__package__ = module.__package__.rpartition(".")[0]
         return module
+
     return set_package_wrapper
 
 
@@ -166,14 +176,19 @@ def set_loader(fxn):
     This function is deprecated.
 
     """
+
     @functools.wraps(fxn)
     def set_loader_wrapper(self, *args, **kwargs):
-        warnings.warn('The import system now takes care of this automatically.',
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "The import system now takes care of this automatically.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         module = fxn(self, *args, **kwargs)
-        if getattr(module, '__loader__', None) is None:
+        if getattr(module, "__loader__", None) is None:
             module.__loader__ = self
         return module
+
     return set_loader_wrapper
 
 
@@ -195,8 +210,12 @@ def module_for_loader(fxn):
     the second argument.
 
     """
-    warnings.warn('The import system now takes care of this automatically.',
-                  DeprecationWarning, stacklevel=2)
+    warnings.warn(
+        "The import system now takes care of this automatically.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     @functools.wraps(fxn)
     def module_for_loader_wrapper(self, fullname, *args, **kwargs):
         with _module_to_load(fullname) as module:
@@ -209,7 +228,7 @@ def module_for_loader(fxn):
                 if is_package:
                     module.__package__ = fullname
                 else:
-                    module.__package__ = fullname.rpartition('.')[0]
+                    module.__package__ = fullname.rpartition(".")[0]
             # If __package__ was not set above, __import__() will do it later.
             return fxn(self, module, *args, **kwargs)
 
@@ -217,7 +236,6 @@ def module_for_loader(fxn):
 
 
 class _LazyModule(types.ModuleType):
-
     """A subclass of the module type which triggers loading upon attribute access."""
 
     def __getattribute__(self, attr):
@@ -231,8 +249,8 @@ class _LazyModule(types.ModuleType):
         original_name = self.__spec__.name
         # Figure out exactly what attributes were mutated between the creation
         # of the module and now.
-        attrs_then = self.__spec__.loader_state['__dict__']
-        original_type = self.__spec__.loader_state['__class__']
+        attrs_then = self.__spec__.loader_state["__dict__"]
+        original_type = self.__spec__.loader_state["__class__"]
         attrs_now = self.__dict__
         attrs_updated = {}
         for key, value in attrs_now.items():
@@ -247,9 +265,11 @@ class _LazyModule(types.ModuleType):
         # object was put into sys.modules.
         if original_name in sys.modules:
             if id(self) != id(sys.modules[original_name]):
-                raise ValueError(f"module object for {original_name!r} "
-                                  "substituted in sys.modules during a lazy "
-                                  "load")
+                raise ValueError(
+                    f"module object for {original_name!r} "
+                    "substituted in sys.modules during a lazy "
+                    "load"
+                )
         # Update after loading since that's what would happen in an eager
         # loading situation.
         self.__dict__.update(attrs_updated)
@@ -264,13 +284,12 @@ class _LazyModule(types.ModuleType):
 
 
 class LazyLoader(abc.Loader):
-
     """A loader that creates a module which defers loading until attribute access."""
 
     @staticmethod
     def __check_eager_loader(loader):
-        if not hasattr(loader, 'exec_module'):
-            raise TypeError('loader must define exec_module()')
+        if not hasattr(loader, "exec_module"):
+            raise TypeError("loader must define exec_module()")
 
     @classmethod
     def factory(cls, loader):
@@ -294,7 +313,7 @@ class LazyLoader(abc.Loader):
         # e.g. ``module.__spec__.loader = None`` would trigger a load from
         # trying to access module.__spec__.
         loader_state = {}
-        loader_state['__dict__'] = module.__dict__.copy()
-        loader_state['__class__'] = module.__class__
+        loader_state["__dict__"] = module.__dict__.copy()
+        loader_state["__class__"] = module.__class__
         module.__spec__.loader_state = loader_state
         module.__class__ = _LazyModule

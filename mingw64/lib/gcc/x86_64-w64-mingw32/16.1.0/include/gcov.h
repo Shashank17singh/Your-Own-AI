@@ -29,11 +29,11 @@ struct gcov_info;
 
 /* Set all counters to zero.  */
 
-extern void __gcov_reset (void);
+extern void __gcov_reset(void);
 
 /* Write profile information to a file.  */
 
-extern void __gcov_dump (void);
+extern void __gcov_dump(void);
 
 /* Convert the gcov information referenced by INFO to a gcda data stream.
    The FILENAME_FN callback is called exactly once with the filename associated
@@ -47,11 +47,10 @@ extern void __gcov_dump (void);
    in the filename callback function.  */
 
 extern void
-__gcov_info_to_gcda (const struct gcov_info *__info,
-		     void (*__filename_fn) (const char *, void *),
-		     void (*__dump_fn) (const void *, unsigned, void *),
-		     void *(*__allocate_fn) (unsigned, void *),
-		     void *__arg);
+__gcov_info_to_gcda(const struct gcov_info *__info,
+                    void (*__filename_fn)(const char *, void *),
+                    void (*__dump_fn)(const void *, unsigned, void *),
+                    void *(*__allocate_fn)(unsigned, void *), void *__arg);
 
 /* Convert the FILENAME to a gcfn data stream.  The DUMP_FN callback is
    subsequently called with chunks (the begin and length of the chunk are
@@ -62,9 +61,9 @@ __gcov_info_to_gcda (const struct gcov_info *__info,
    data stream is used by the merge-stream subcommand of the gcov-tool to
    get the filename associated with a gcda data stream.  */
 
-extern void
-__gcov_filename_to_gcfn (const char *__filename,
-			 void (*__dump_fn) (const void *, unsigned, void *),
-			 void *__arg);
+extern void __gcov_filename_to_gcfn(const char *__filename,
+                                    void (*__dump_fn)(const void *, unsigned,
+                                                      void *),
+                                    void *__arg);
 
 #endif /* GCC_GCOV_H */

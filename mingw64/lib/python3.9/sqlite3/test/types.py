@@ -1,4 +1,4 @@
-#-*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 # pysqlite2/test/types.py: tests for type conversion and detection
 #
 # Copyright (C) 2005 Gerhard Häring <gh@ghaering.de>
@@ -24,6 +24,7 @@
 import datetime
 import unittest
 import sqlite3 as sqlite
+
 try:
     import zlib
 except ImportError:
@@ -79,13 +80,14 @@ class SqliteTypeTests(unittest.TestCase):
         row = self.cur.fetchone()
         self.assertEqual(row[0], "Österreich")
 
+
 class DeclTypesTests(unittest.TestCase):
     class Foo:
         def __init__(self, _val):
             if isinstance(_val, bytes):
                 # sqlite3 always calls __init__ with a bytes created from a
                 # UTF-8 string when __conform__ was used to store the object.
-                _val = _val.decode('utf-8')
+                _val = _val.decode("utf-8")
             self.val = _val
 
         def __eq__(self, other):
@@ -105,13 +107,16 @@ class DeclTypesTests(unittest.TestCase):
     class BadConform:
         def __init__(self, exc):
             self.exc = exc
+
         def __conform__(self, protocol):
             raise self.exc
 
     def setUp(self):
         self.con = sqlite.connect(":memory:", detect_types=sqlite.PARSE_DECLTYPES)
         self.cur = self.con.cursor()
-        self.cur.execute("create table test(i int, s str, f float, b bool, u unicode, foo foo, bin blob, n1 number, n2 number(5), bad bad)")
+        self.cur.execute(
+            "create table test(i int, s str, f float, b bool, u unicode, foo foo, bin blob, n1 number, n2 number(5), bad bad)"
+        )
 
         # override float, make them always return the same number
         sqlite.converters["FLOAT"] = lambda x: 47.2
@@ -205,13 +210,17 @@ class DeclTypesTests(unittest.TestCase):
             self.cur.execute("insert into test(bad) values (:val)", {"val": val})
 
     def CheckUnsupportedSeq(self):
-        class Bar: pass
+        class Bar:
+            pass
+
         val = Bar()
         with self.assertRaises(sqlite.InterfaceError):
             self.cur.execute("insert into test(f) values (?)", (val,))
 
     def CheckUnsupportedDict(self):
-        class Bar: pass
+        class Bar:
+            pass
+
         val = Bar()
         with self.assertRaises(sqlite.InterfaceError):
             self.cur.execute("insert into test(f) values (:val)", {"val": val})
@@ -238,6 +247,7 @@ class DeclTypesTests(unittest.TestCase):
         # if the converter is not used, it's an int instead of a float
         self.assertEqual(type(value), float)
 
+
 class ColNamesTests(unittest.TestCase):
     def setUp(self):
         self.con = sqlite.connect(":memory:", detect_types=sqlite.PARSE_COLNAMES)
@@ -246,7 +256,7 @@ class ColNamesTests(unittest.TestCase):
 
         sqlite.converters["FOO"] = lambda x: "[%s]" % x.decode("ascii")
         sqlite.converters["BAR"] = lambda x: "<%s>" % x.decode("ascii")
-        sqlite.converters["EXC"] = lambda x: 5/0
+        sqlite.converters["EXC"] = lambda x: 5 / 0
         sqlite.converters["B1B1"] = lambda x: "MARKER"
 
     def tearDown(self):
@@ -327,10 +337,14 @@ class CommonTableExpressionTests(unittest.TestCase):
 
     def CheckCursorDescriptionCTE(self):
         self.cur.execute("insert into test values (1)")
-        self.cur.execute("with bar as (select * from test) select * from test where x = 1")
+        self.cur.execute(
+            "with bar as (select * from test) select * from test where x = 1"
+        )
         self.assertIsNotNone(self.cur.description)
         self.assertEqual(self.cur.description[0][0], "x")
-        self.cur.execute("with bar as (select * from test) select * from test where x = 2")
+        self.cur.execute(
+            "with bar as (select * from test) select * from test where x = 2"
+        )
         self.assertIsNotNone(self.cur.description)
         self.assertEqual(self.cur.description[0][0], "x")
 
@@ -338,6 +352,7 @@ class CommonTableExpressionTests(unittest.TestCase):
 class ObjectAdaptationTests(unittest.TestCase):
     def cast(obj):
         return float(obj)
+
     cast = staticmethod(cast)
 
     def setUp(self):
@@ -359,10 +374,12 @@ class ObjectAdaptationTests(unittest.TestCase):
         val = self.cur.fetchone()[0]
         self.assertEqual(type(val), float)
 
+
 @unittest.skipUnless(zlib, "requires zlib")
 class BinaryConverterTests(unittest.TestCase):
     def convert(s):
         return zlib.decompress(s)
+
     convert = staticmethod(convert)
 
     def setUp(self):
@@ -374,8 +391,11 @@ class BinaryConverterTests(unittest.TestCase):
 
     def CheckBinaryInputForConverter(self):
         testdata = b"abcdefg" * 10
-        result = self.con.execute('select ? as "x [bin]"', (memoryview(zlib.compress(testdata)),)).fetchone()[0]
+        result = self.con.execute(
+            'select ? as "x [bin]"', (memoryview(zlib.compress(testdata)),)
+        ).fetchone()[0]
         self.assertEqual(testdata, result)
+
 
 class DateTimeTests(unittest.TestCase):
     def setUp(self):
@@ -401,8 +421,10 @@ class DateTimeTests(unittest.TestCase):
         ts2 = self.cur.fetchone()[0]
         self.assertEqual(ts, ts2)
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 1),
-                     'the date functions are available on 3.1 or later')
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 1),
+        "the date functions are available on 3.1 or later",
+    )
     def CheckSqlTimestamp(self):
         now = datetime.datetime.utcnow()
         self.cur.execute("insert into test(ts) values (current_timestamp)")
@@ -425,6 +447,7 @@ class DateTimeTests(unittest.TestCase):
         ts2 = self.cur.fetchone()[0]
         self.assertEqual(ts, ts2)
 
+
 def suite():
     sqlite_type_suite = unittest.makeSuite(SqliteTypeTests, "Check")
     decltypes_type_suite = unittest.makeSuite(DeclTypesTests, "Check")
@@ -433,11 +456,23 @@ def suite():
     bin_suite = unittest.makeSuite(BinaryConverterTests, "Check")
     date_suite = unittest.makeSuite(DateTimeTests, "Check")
     cte_suite = unittest.makeSuite(CommonTableExpressionTests, "Check")
-    return unittest.TestSuite((sqlite_type_suite, decltypes_type_suite, colnames_type_suite, adaptation_suite, bin_suite, date_suite, cte_suite))
+    return unittest.TestSuite(
+        (
+            sqlite_type_suite,
+            decltypes_type_suite,
+            colnames_type_suite,
+            adaptation_suite,
+            bin_suite,
+            date_suite,
+            cte_suite,
+        )
+    )
+
 
 def test():
     runner = unittest.TextTestRunner()
     runner.run(suite())
+
 
 if __name__ == "__main__":
     test()

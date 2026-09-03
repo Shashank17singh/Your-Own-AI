@@ -41,68 +41,57 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-splay(node_pointer p_nd)
-{
-  while (p_nd->m_p_parent != base_type::m_p_head)
+void PB_DS_CLASS_C_DEC::splay(node_pointer p_nd) {
+  while (p_nd->m_p_parent != base_type::m_p_head) {
+#ifdef _GLIBCXX_DEBUG
     {
-#ifdef _GLIBCXX_DEBUG
-      {
-	node_pointer p_head = base_type::m_p_head;
-	assert_special_imp(p_head, __FILE__, __LINE__);
-      }
-#endif
-
-      PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_nd)
-
-      if (p_nd->m_p_parent->m_p_parent == base_type::m_p_head)
-	{
-	  base_type::rotate_parent(p_nd);
-	  _GLIBCXX_DEBUG_ASSERT(p_nd == this->m_p_head->m_p_parent);
-	}
-      else
-	{
-	  const node_pointer p_parent = p_nd->m_p_parent;
-	  const node_pointer p_grandparent = p_parent->m_p_parent;
-
-#ifdef _GLIBCXX_DEBUG
-	  const size_type total =
-	    base_type::recursive_count(p_grandparent);
-	  _GLIBCXX_DEBUG_ASSERT(total >= 3);
-#endif
-
-	  if (p_parent->m_p_left == p_nd &&
-	      p_grandparent->m_p_right == p_parent)
-	    splay_zig_zag_left(p_nd, p_parent, p_grandparent);
-	  else if (p_parent->m_p_right == p_nd &&
-		   p_grandparent->m_p_left == p_parent)
-	    splay_zig_zag_right(p_nd, p_parent, p_grandparent);
-	  else if (p_parent->m_p_left == p_nd &&
-		   p_grandparent->m_p_left == p_parent)
-	    splay_zig_zig_left(p_nd, p_parent, p_grandparent);
-	  else
-	    splay_zig_zig_right(p_nd, p_parent, p_grandparent);
-	  _GLIBCXX_DEBUG_ASSERT(total ==this->recursive_count(p_nd));
-	}
-
-      PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_nd)
+      node_pointer p_head = base_type::m_p_head;
+      assert_special_imp(p_head, __FILE__, __LINE__);
     }
+#endif
+
+    PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_nd)
+
+    if (p_nd->m_p_parent->m_p_parent == base_type::m_p_head) {
+      base_type::rotate_parent(p_nd);
+      _GLIBCXX_DEBUG_ASSERT(p_nd == this->m_p_head->m_p_parent);
+    } else {
+      const node_pointer p_parent = p_nd->m_p_parent;
+      const node_pointer p_grandparent = p_parent->m_p_parent;
+
+#ifdef _GLIBCXX_DEBUG
+      const size_type total = base_type::recursive_count(p_grandparent);
+      _GLIBCXX_DEBUG_ASSERT(total >= 3);
+#endif
+
+      if (p_parent->m_p_left == p_nd && p_grandparent->m_p_right == p_parent)
+        splay_zig_zag_left(p_nd, p_parent, p_grandparent);
+      else if (p_parent->m_p_right == p_nd &&
+               p_grandparent->m_p_left == p_parent)
+        splay_zig_zag_right(p_nd, p_parent, p_grandparent);
+      else if (p_parent->m_p_left == p_nd &&
+               p_grandparent->m_p_left == p_parent)
+        splay_zig_zig_left(p_nd, p_parent, p_grandparent);
+      else
+        splay_zig_zig_right(p_nd, p_parent, p_grandparent);
+      _GLIBCXX_DEBUG_ASSERT(total == this->recursive_count(p_nd));
+    }
+
+    PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_nd)
+  }
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zig_zag_left(node_pointer p_nd, node_pointer p_parent,
-		   node_pointer p_grandparent)
-{
+inline void PB_DS_CLASS_C_DEC::splay_zig_zag_left(node_pointer p_nd,
+                                                  node_pointer p_parent,
+                                                  node_pointer p_grandparent) {
   _GLIBCXX_DEBUG_ASSERT(p_parent == p_nd->m_p_parent);
   _GLIBCXX_DEBUG_ASSERT(p_grandparent == p_parent->m_p_parent);
 
   PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_grandparent)
 
   _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_left == p_nd &&
-			p_grandparent->m_p_right == p_parent);
+                        p_grandparent->m_p_right == p_parent);
 
   splay_zz_start(p_nd, p_parent, p_grandparent);
 
@@ -127,18 +116,16 @@ splay_zig_zag_left(node_pointer p_nd, node_pointer p_parent,
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zig_zag_right(node_pointer p_nd, node_pointer p_parent,
-		    node_pointer p_grandparent)
-{
+inline void PB_DS_CLASS_C_DEC::splay_zig_zag_right(node_pointer p_nd,
+                                                   node_pointer p_parent,
+                                                   node_pointer p_grandparent) {
   _GLIBCXX_DEBUG_ASSERT(p_parent == p_nd->m_p_parent);
   _GLIBCXX_DEBUG_ASSERT(p_grandparent == p_parent->m_p_parent);
 
   PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_grandparent)
 
   _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_right == p_nd &&
-	  		p_grandparent->m_p_left == p_parent);
+                        p_grandparent->m_p_left == p_parent);
 
   splay_zz_start(p_nd, p_parent, p_grandparent);
 
@@ -163,18 +150,17 @@ splay_zig_zag_right(node_pointer p_nd, node_pointer p_parent,
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zig_zig_left(node_pointer p_nd, node_pointer p_parent,
-		   node_pointer p_grandparent)
-{
+inline void PB_DS_CLASS_C_DEC::splay_zig_zig_left(node_pointer p_nd,
+                                                  node_pointer p_parent,
+                                                  node_pointer p_grandparent) {
   _GLIBCXX_DEBUG_ASSERT(p_parent == p_nd->m_p_parent);
   _GLIBCXX_DEBUG_ASSERT(p_grandparent == p_parent->m_p_parent);
 
   PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_grandparent)
 
   _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_left == p_nd &&
-		     p_nd->m_p_parent->m_p_parent->m_p_left == p_nd->m_p_parent);
+                        p_nd->m_p_parent->m_p_parent->m_p_left ==
+                            p_nd->m_p_parent);
 
   splay_zz_start(p_nd, p_parent, p_grandparent);
 
@@ -199,16 +185,15 @@ splay_zig_zig_left(node_pointer p_nd, node_pointer p_parent,
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zig_zig_right(node_pointer p_nd, node_pointer p_parent,
-		    node_pointer p_grandparent)
-{
+inline void PB_DS_CLASS_C_DEC::splay_zig_zig_right(node_pointer p_nd,
+                                                   node_pointer p_parent,
+                                                   node_pointer p_grandparent) {
   _GLIBCXX_DEBUG_ASSERT(p_parent == p_nd->m_p_parent);
   _GLIBCXX_DEBUG_ASSERT(p_grandparent == p_parent->m_p_parent);
   PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_grandparent)
   _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_right == p_nd &&
-		  p_nd->m_p_parent->m_p_parent->m_p_right == p_nd->m_p_parent);
+                        p_nd->m_p_parent->m_p_parent->m_p_right ==
+                            p_nd->m_p_parent);
 
   splay_zz_start(p_nd, p_parent, p_grandparent);
 
@@ -229,33 +214,30 @@ splay_zig_zig_right(node_pointer p_nd, node_pointer p_parent,
   if (p_c != 0)
     p_c->m_p_parent = p_grandparent;
 
-  base_type::update_to_top(p_grandparent, (node_update*)this);
+  base_type::update_to_top(p_grandparent, (node_update *)this);
   splay_zz_end(p_nd, p_parent, p_grandparent);
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zz_start(node_pointer p_nd,
+inline void PB_DS_CLASS_C_DEC::splay_zz_start(node_pointer p_nd,
 #ifdef _GLIBCXX_DEBUG
-	       node_pointer p_parent,
+                                              node_pointer p_parent,
 #else
-	       node_pointer /*p_parent*/,
+                                              node_pointer /*p_parent*/,
 #endif
-	       node_pointer p_grandparent)
-{
+                                              node_pointer p_grandparent) {
   _GLIBCXX_DEBUG_ASSERT(p_nd != 0);
   _GLIBCXX_DEBUG_ASSERT(p_parent != 0);
   _GLIBCXX_DEBUG_ASSERT(p_grandparent != 0);
 
-  const bool grandparent_head = p_grandparent->m_p_parent == base_type::m_p_head;
+  const bool grandparent_head =
+      p_grandparent->m_p_parent == base_type::m_p_head;
 
-  if (grandparent_head)
-    {
-      base_type::m_p_head->m_p_parent = base_type::m_p_head->m_p_parent;
-      p_nd->m_p_parent = base_type::m_p_head;
-      return;
-    }
+  if (grandparent_head) {
+    base_type::m_p_head->m_p_parent = base_type::m_p_head->m_p_parent;
+    p_nd->m_p_parent = base_type::m_p_head;
+    return;
+  }
 
   node_pointer p_greatgrandparent = p_grandparent->m_p_parent;
 
@@ -268,17 +250,15 @@ splay_zz_start(node_pointer p_nd,
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-splay_zz_end(node_pointer p_nd, node_pointer p_parent,
-	     node_pointer p_grandparent)
-{
+inline void PB_DS_CLASS_C_DEC::splay_zz_end(node_pointer p_nd,
+                                            node_pointer p_parent,
+                                            node_pointer p_grandparent) {
   if (p_nd->m_p_parent == base_type::m_p_head)
     base_type::m_p_head->m_p_parent = p_nd;
 
-  this->apply_update(p_grandparent, (node_update*)this);
-  this->apply_update(p_parent, (node_update*)this);
-  this->apply_update(p_nd, (node_update*)this);
+  this->apply_update(p_grandparent, (node_update *)this);
+  this->apply_update(p_parent, (node_update *)this);
+  this->apply_update(p_nd, (node_update *)this);
   PB_DS_ASSERT_BASE_NODE_CONSISTENT(p_nd)
 }
 #endif

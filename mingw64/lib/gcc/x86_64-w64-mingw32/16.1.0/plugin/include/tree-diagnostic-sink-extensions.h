@@ -22,11 +22,10 @@ along with GCC; see the file COPYING3.  If not see
 
 #include "opts-diagnostic.h"
 
-class compiler_extension_factory : public gcc_extension_factory
-{
+class compiler_extension_factory : public gcc_extension_factory {
 public:
   std::unique_ptr<diagnostics::sink::extension>
-  make_cfg_extension (diagnostics::sink &sink) const final override;
+  make_cfg_extension(diagnostics::sink &sink) const final override;
 };
 
 #endif /* TREE_DIAGNOSTIC_SINK_EXTENSIONS_H */

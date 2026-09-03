@@ -21,8 +21,7 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_TREE_STDARG_H
 #define GCC_TREE_STDARG_H 1
 
-struct stdarg_info
-{
+struct stdarg_info {
   bitmap va_list_vars, va_list_escape_vars;
   basic_block bb;
   int compute_sizes, va_start_count;

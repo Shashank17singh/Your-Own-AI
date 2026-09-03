@@ -3,7 +3,7 @@ from test import support
 import unittest
 
 # Skip tests if we don't have concurrent.futures.
-support.import_module('concurrent.futures')
+support.import_module("concurrent.futures")
 
 
 def load_tests(loader, _, pattern):
@@ -19,6 +19,7 @@ class AsyncioTestSuite(unittest.TestSuite):
     test module part of the test suite. Copying those functions to each file
     would be tedious, let's run this once and for all.
     """
+
     def run(self, result, debug=False):
         ignore = support.ignore_deprecations_from
         tokens = {

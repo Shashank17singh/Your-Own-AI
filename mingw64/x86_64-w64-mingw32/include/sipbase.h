@@ -5,7 +5,5 @@
  */
 #ifndef SIPBASE_H
 #define SIPBASE_H
-
 #include <mssip.h>
-
 #endif

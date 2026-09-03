@@ -32,50 +32,41 @@ using digraph = diagnostics::digraphs::digraph;
 using digraph_node = diagnostics::digraphs::node;
 using digraph_edge = diagnostics::digraphs::edge;
 
-class converter
-{
+class converter {
 public:
-  static std::unique_ptr<converter>
-  make (const digraph &dg);
+  static std::unique_ptr<converter> make(const digraph &dg);
 
   virtual std::unique_ptr<dot::graph>
-  make_dot_graph_from_diagnostic_graph (const digraph &);
+  make_dot_graph_from_diagnostic_graph(const digraph &);
 
   std::unique_ptr<dot::stmt>
-  make_dot_node_from_digraph_node (const digraph_node &);
+  make_dot_node_from_digraph_node(const digraph_node &);
 
   std::unique_ptr<dot::edge_stmt>
-  make_dot_edge_from_digraph_edge (const digraph_edge &);
+  make_dot_edge_from_digraph_edge(const digraph_edge &);
 
-  dot::id
-  get_dot_id_for_node (const digraph_node &);
+  dot::id get_dot_id_for_node(const digraph_node &);
 
-  dot::node_id
-  get_node_id_for_node (const digraph_node &,
-			const char *compass_point = nullptr);
+  dot::node_id get_node_id_for_node(const digraph_node &,
+                                    const char *compass_point = nullptr);
 
-  bool
-  has_edges_p (const digraph_node &);
+  bool has_edges_p(const digraph_node &);
 
-  virtual void
-  add_any_subgraph_attrs (const digraph_node &input_node,
-			  dot::subgraph &output_subgraph);
+  virtual void add_any_subgraph_attrs(const digraph_node &input_node,
+                                      dot::subgraph &output_subgraph);
 
-  virtual void
-  add_any_node_attrs (const digraph_node &input_node,
-		      dot::node_stmt &output_node);
+  virtual void add_any_node_attrs(const digraph_node &input_node,
+                                  dot::node_stmt &output_node);
 
-  virtual void
-  add_any_edge_attrs (const digraph_edge &input_edge,
-		      dot::edge_stmt &output_edge);
+  virtual void add_any_edge_attrs(const digraph_edge &input_edge,
+                                  dot::edge_stmt &output_edge);
 
 private:
   std::set<const digraph_node *> m_nodes_with_edges;
   std::map<const digraph_node *, dot::stmt *> m_node_map;
 };
 
-extern std::unique_ptr<converter>
-make_converter_from_cfg ();
+extern std::unique_ptr<converter> make_converter_from_cfg();
 
 } // namespace to_dot
 } // namespace digraphs

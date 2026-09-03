@@ -40,43 +40,43 @@
  * symrecs can become the relative term in a #yasm_value.
  */
 typedef enum yasm_expr__type {
-    YASM_EXPR_NONE = 0,     /**< Nothing */
-    YASM_EXPR_REG = 1<<0,   /**< Register */
-    YASM_EXPR_INT = 1<<1,   /**< Integer value */
-    YASM_EXPR_SUBST = 1<<2, /**< Substitution placeholder */
-    YASM_EXPR_FLOAT = 1<<3, /**< Floating point value */
-    YASM_EXPR_SYM = 1<<4,   /**< Symbol */
-    YASM_EXPR_PRECBC = 1<<5,/**< Direct bytecode ref (rather than via sym) */
-    YASM_EXPR_EXPR = 1<<6   /**< Subexpression */
+  YASM_EXPR_NONE = 0,        /**< Nothing */
+  YASM_EXPR_REG = 1 << 0,    /**< Register */
+  YASM_EXPR_INT = 1 << 1,    /**< Integer value */
+  YASM_EXPR_SUBST = 1 << 2,  /**< Substitution placeholder */
+  YASM_EXPR_FLOAT = 1 << 3,  /**< Floating point value */
+  YASM_EXPR_SYM = 1 << 4,    /**< Symbol */
+  YASM_EXPR_PRECBC = 1 << 5, /**< Direct bytecode ref (rather than via sym) */
+  YASM_EXPR_EXPR = 1 << 6    /**< Subexpression */
 } yasm_expr__type;
 
 /** Expression item. */
 typedef struct yasm_expr__item {
-    yasm_expr__type type;   /**< Type */
+  yasm_expr__type type; /**< Type */
 
-    /** Expression item data.  Correct value depends on type. */
-    union {
-        yasm_bytecode *precbc;  /**< Direct bytecode ref (YASM_EXPR_PRECBC) */
-        yasm_symrec *sym;       /**< Symbol (YASM_EXPR_SYM) */
-        yasm_expr *expn;        /**< Subexpression (YASM_EXPR_EXPR) */
-        yasm_intnum *intn;      /**< Integer value (YASM_EXPR_INT) */
-        yasm_floatnum *flt;     /**< Floating point value (YASM_EXPR_FLOAT) */
-        uintptr_t reg;          /**< Register (YASM_EXPR_REG) */
-        unsigned int subst;     /**< Subst placeholder (YASM_EXPR_SUBST) */
-    } data;
+  /** Expression item data.  Correct value depends on type. */
+  union {
+    yasm_bytecode *precbc; /**< Direct bytecode ref (YASM_EXPR_PRECBC) */
+    yasm_symrec *sym;      /**< Symbol (YASM_EXPR_SYM) */
+    yasm_expr *expn;       /**< Subexpression (YASM_EXPR_EXPR) */
+    yasm_intnum *intn;     /**< Integer value (YASM_EXPR_INT) */
+    yasm_floatnum *flt;    /**< Floating point value (YASM_EXPR_FLOAT) */
+    uintptr_t reg;         /**< Register (YASM_EXPR_REG) */
+    unsigned int subst;    /**< Subst placeholder (YASM_EXPR_SUBST) */
+  } data;
 } yasm_expr__item;
 
 /** Expression. */
 struct yasm_expr {
-    yasm_expr_op op;    /**< Operation. */
-    unsigned long line; /**< Line number where expression was defined. */
-    int numterms;       /**< Number of terms in the expression. */
+  yasm_expr_op op;    /**< Operation. */
+  unsigned long line; /**< Line number where expression was defined. */
+  int numterms;       /**< Number of terms in the expression. */
 
-    /** Terms of the expression.  Structure may be extended to include more
-     * terms, as some operations may allow more than two operand terms
-     * (ADD, MUL, OR, AND, XOR).
-     */
-    yasm_expr__item terms[2];
+  /** Terms of the expression.  Structure may be extended to include more
+   * terms, as some operations may allow more than two operand terms
+   * (ADD, MUL, OR, AND, XOR).
+   */
+  yasm_expr__item terms[2];
 };
 
 /** Create a new expression e=a op b.
@@ -87,9 +87,10 @@ struct yasm_expr {
  * \return Newly allocated expression.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_expr *yasm_expr_create
-    (yasm_expr_op op, /*@only@*/ yasm_expr__item *a,
-     /*@only@*/ /*@null@*/ yasm_expr__item *b, unsigned long line);
+/*@only@*/ yasm_expr *yasm_expr_create(yasm_expr_op op,
+                                       /*@only@*/ yasm_expr__item *a,
+                                       /*@only@*/ /*@null@*/ yasm_expr__item *b,
+                                       unsigned long line);
 
 /** Create a new preceding-bytecode expression item.
  * \param precbc    preceding bytecode
@@ -140,8 +141,8 @@ YASM_LIB_DECL
  * \param i     line index
  * \return Newly allocated expression.
  */
-#define yasm_expr_create_tree(l,o,r,i) \
-    yasm_expr_create ((o), yasm_expr_expr(l), yasm_expr_expr(r), i)
+#define yasm_expr_create_tree(l, o, r, i)                                      \
+  yasm_expr_create((o), yasm_expr_expr(l), yasm_expr_expr(r), i)
 
 /** Create a new expression branch e=op r.
  * \param o     operation
@@ -149,16 +150,16 @@ YASM_LIB_DECL
  * \param i     line index
  * \return Newly allocated expression.
  */
-#define yasm_expr_create_branch(o,r,i) \
-    yasm_expr_create ((o), yasm_expr_expr(r), (yasm_expr__item *)NULL, i)
+#define yasm_expr_create_branch(o, r, i)                                       \
+  yasm_expr_create((o), yasm_expr_expr(r), (yasm_expr__item *)NULL, i)
 
 /** Create a new expression identity e=r.
  * \param r     expression for identity within new expression
  * \param i     line index
  * \return Newly allocated expression.
  */
-#define yasm_expr_create_ident(r,i) \
-    yasm_expr_create (YASM_EXPR_IDENT, (r), (yasm_expr__item *)NULL, i)
+#define yasm_expr_create_ident(r, i)                                           \
+  yasm_expr_create(YASM_EXPR_IDENT, (r), (yasm_expr__item *)NULL, i)
 
 /** Duplicate an expression.
  * \param e     expression
@@ -166,7 +167,7 @@ YASM_LIB_DECL
  */
 yasm_expr *yasm_expr_copy(const yasm_expr *e);
 #ifndef YASM_DOXYGEN
-#define yasm_expr_copy(e)   yasm_expr__copy_except(e, -1)
+#define yasm_expr_copy(e) yasm_expr__copy_except(e, -1)
 #endif
 
 /** Destroy (free allocated memory for) an expression.
@@ -190,8 +191,8 @@ int yasm_expr_is_op(const yasm_expr *e, yasm_expr_op op);
  *              yasm_expr__level_tree()
  * \return Transformed e.
  */
-typedef /*@only@*/ yasm_expr * (*yasm_expr_xform_func)
-    (/*@returned@*/ /*@only@*/ yasm_expr *e, /*@null@*/ void *d);
+typedef /*@only@*/ yasm_expr *(*yasm_expr_xform_func)(
+    /*@returned@*/ /*@only@*/ yasm_expr *e, /*@null@*/ void *d);
 
 /** Level an entire expression tree.
  * \internal
@@ -206,11 +207,12 @@ typedef /*@only@*/ yasm_expr * (*yasm_expr_xform_func)
  * \return Leveled expression.
  */
 YASM_LIB_DECL
-/*@only@*/ /*@null@*/ yasm_expr *yasm_expr__level_tree
-    (/*@returned@*/ /*@only@*/ /*@null@*/ yasm_expr *e, int fold_const,
-     int simplify_ident, int simplify_reg_mul, int calc_bc_dist,
-     /*@null@*/ yasm_expr_xform_func expr_xform_extra,
-     /*@null@*/ void *expr_xform_extra_data);
+/*@only@*/ /*@null@*/ yasm_expr *
+yasm_expr__level_tree(/*@returned@*/ /*@only@*/ /*@null@*/ yasm_expr *e,
+                      int fold_const, int simplify_ident, int simplify_reg_mul,
+                      int calc_bc_dist,
+                      /*@null@*/ yasm_expr_xform_func expr_xform_extra,
+                      /*@null@*/ void *expr_xform_extra_data);
 
 /** Simplify an expression as much as possible.  Eliminates extraneous
  * branches and simplifies integer-only subexpressions.  Simplified version
@@ -219,8 +221,8 @@ YASM_LIB_DECL
  * \param cbd   if distance between bytecodes should be calculated
  * \return Simplified expression.
  */
-#define yasm_expr_simplify(e, cbd) \
-    yasm_expr__level_tree(e, 1, 1, 1, cbd, NULL, NULL)
+#define yasm_expr_simplify(e, cbd)                                             \
+  yasm_expr__level_tree(e, 1, 1, 1, cbd, NULL, NULL)
 
 /** Extract the segment portion of an expression containing SEG:OFF, leaving
  * the offset.
@@ -263,8 +265,8 @@ YASM_LIB_DECL
  *         intnum value of the expression.
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ yasm_intnum *yasm_expr_get_intnum
-    (yasm_expr **ep, int calc_bc_dist);
+/*@dependent@*/ /*@null@*/ yasm_intnum *yasm_expr_get_intnum(yasm_expr **ep,
+                                                             int calc_bc_dist);
 
 /** Get the symbol value of an expression if it's just a symbol.
  * \param ep            expression (pointer to)
@@ -273,8 +275,8 @@ YASM_LIB_DECL
  *         the expression.
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ const yasm_symrec *yasm_expr_get_symrec
-    (yasm_expr **ep, int simplify);
+/*@dependent@*/ /*@null@*/ const yasm_symrec *
+yasm_expr_get_symrec(yasm_expr **ep, int simplify);
 
 /** Get the register value of an expression if it's just a register.
  * \param ep            expression (pointer to)
@@ -283,8 +285,8 @@ YASM_LIB_DECL
  *         of the expression.
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ const uintptr_t *yasm_expr_get_reg
-    (yasm_expr **ep, int simplify);
+/*@dependent@*/ /*@null@*/ const uintptr_t *yasm_expr_get_reg(yasm_expr **ep,
+                                                              int simplify);
 
 /** Print an expression.  For debugging purposes.
  * \param e     expression
@@ -314,9 +316,9 @@ const char *yasm_expr_segment(const yasm_expr *e);
  *         Otherwise returns 0.
  */
 YASM_LIB_DECL
-int yasm_expr__traverse_leaves_in_const
-    (const yasm_expr *e, /*@null@*/ void *d,
-     int (*func) (/*@null@*/ const yasm_expr__item *ei, /*@null@*/ void *d));
+int yasm_expr__traverse_leaves_in_const(
+    const yasm_expr *e, /*@null@*/ void *d,
+    int (*func)(/*@null@*/ const yasm_expr__item *ei, /*@null@*/ void *d));
 
 /** Traverse over expression tree in order.
  * Calls func for each leaf (non-operation).
@@ -327,9 +329,9 @@ int yasm_expr__traverse_leaves_in_const
  *         Otherwise returns 0.
  */
 YASM_LIB_DECL
-int yasm_expr__traverse_leaves_in
-    (yasm_expr *e, /*@null@*/ void *d,
-     int (*func) (/*@null@*/ yasm_expr__item *ei, /*@null@*/ void *d));
+int yasm_expr__traverse_leaves_in(yasm_expr *e, /*@null@*/ void *d,
+                                  int (*func)(/*@null@*/ yasm_expr__item *ei,
+                                              /*@null@*/ void *d));
 
 /** Reorder terms of e into canonical order.  Only reorders if reordering
  * doesn't change meaning of expression.  (eg, doesn't reorder SUB).
@@ -369,10 +371,10 @@ int yasm_expr__contains(const yasm_expr *e, yasm_expr__type t);
  */
 YASM_LIB_DECL
 int yasm_expr__bc_dist_subst(yasm_expr **ep, void *cbd,
-                             void (*callback) (unsigned int subst,
-                                               yasm_bytecode *precbc,
-                                               yasm_bytecode *precbc2,
-                                               void *cbd));
+                             void (*callback)(unsigned int subst,
+                                              yasm_bytecode *precbc,
+                                              yasm_bytecode *precbc2,
+                                              void *cbd));
 
 /** Substitute items into expr YASM_EXPR_SUBST items (by index).  Items are
  * copied, so caller is responsible for freeing array of items.

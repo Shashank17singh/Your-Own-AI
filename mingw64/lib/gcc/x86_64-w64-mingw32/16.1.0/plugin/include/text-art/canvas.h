@@ -34,36 +34,32 @@ class canvas;
    Each text cell can be styled independently (colorization,
    URLs, etc).  */
 
-class canvas
-{
- public:
+class canvas {
+public:
   typedef styled_unichar cell_t;
   typedef size<class canvas> size_t;
   typedef coord<class canvas> coord_t;
   typedef range<class canvas> range_t;
   typedef rect<class canvas> rect_t;
 
-  canvas (size_t size, const style_manager &style_mgr);
+  canvas(size_t size, const style_manager &style_mgr);
 
-  size_t get_size () const { return m_cells.get_size (); }
+  size_t get_size() const { return m_cells.get_size(); }
 
-  void paint (coord_t coord, cell_t c);
-  void paint_text (coord_t coord, const styled_string &text);
+  void paint(coord_t coord, cell_t c);
+  void paint_text(coord_t coord, const styled_string &text);
 
-  void fill (rect_t rect, cell_t c);
-  void debug_fill ();
+  void fill(rect_t rect, cell_t c);
+  void debug_fill();
 
-  void print_to_pp (pretty_printer *pp,
-		    const char *per_line_prefix = NULL) const;
-  void debug (bool styled) const;
+  void print_to_pp(pretty_printer *pp,
+                   const char *per_line_prefix = NULL) const;
+  void debug(bool styled) const;
 
-  const cell_t &get (coord_t coord) const
-  {
-    return m_cells.get (coord);
-  }
+  const cell_t &get(coord_t coord) const { return m_cells.get(coord); }
 
- private:
-  int get_final_x_in_row (int y) const;
+private:
+  int get_final_x_in_row(int y) const;
 
   array2<cell_t, size_t, coord_t> m_cells;
   const style_manager &m_style_mgr;

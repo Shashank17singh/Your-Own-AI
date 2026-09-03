@@ -26,80 +26,67 @@
 
 /* A "bitset" of warning groups.  */
 
-class nowarn_spec_t
-{
+class nowarn_spec_t {
 public:
-  enum
-    {
-     /* Middle end warnings about invalid accesses.  */
-     NW_ACCESS = 1 << 0,
-     /* Front end/lexical warnings.  */
-     NW_LEXICAL = 1 << 1,
-     /* Warnings about null pointers.  */
-     NW_NONNULL = 1 << 2,
-     /* Warnings about uninitialized reads.  */
-     NW_UNINIT = 1 << 3,
-     /* Warnings about arithmetic overflow.  */
-     NW_VFLOW = 1 << 4,
-     /* Warnings about dangling pointers.  */
-     NW_DANGLING = 1 << 5,
-     /* All other unclassified warnings.  */
-     NW_OTHER = 1 << 6,
-     /* Warnings about redundant calls.  */
-     NW_REDUNDANT = 1 << 7,
-     /* All groups of warnings.  */
-     NW_ALL = (NW_ACCESS | NW_LEXICAL | NW_NONNULL
-	       | NW_UNINIT | NW_VFLOW | NW_DANGLING | NW_REDUNDANT | NW_OTHER)
-   };
+  enum {
+    /* Middle end warnings about invalid accesses.  */
+    NW_ACCESS = 1 << 0,
+    /* Front end/lexical warnings.  */
+    NW_LEXICAL = 1 << 1,
+    /* Warnings about null pointers.  */
+    NW_NONNULL = 1 << 2,
+    /* Warnings about uninitialized reads.  */
+    NW_UNINIT = 1 << 3,
+    /* Warnings about arithmetic overflow.  */
+    NW_VFLOW = 1 << 4,
+    /* Warnings about dangling pointers.  */
+    NW_DANGLING = 1 << 5,
+    /* All other unclassified warnings.  */
+    NW_OTHER = 1 << 6,
+    /* Warnings about redundant calls.  */
+    NW_REDUNDANT = 1 << 7,
+    /* All groups of warnings.  */
+    NW_ALL = (NW_ACCESS | NW_LEXICAL | NW_NONNULL | NW_UNINIT | NW_VFLOW |
+              NW_DANGLING | NW_REDUNDANT | NW_OTHER)
+  };
 
-  nowarn_spec_t (): m_bits () { }
+  nowarn_spec_t() : m_bits() {}
 
-  nowarn_spec_t (opt_code);
+  nowarn_spec_t(opt_code);
 
-  static nowarn_spec_t from_bits (unsigned bits)
-  {
+  static nowarn_spec_t from_bits(unsigned bits) {
     nowarn_spec_t spec;
     spec.m_bits = bits;
     return spec;
   }
 
   /* Return the raw bitset.  */
-  operator unsigned() const
-  {
-    return m_bits;
-  }
+  operator unsigned() const { return m_bits; }
 
   /* Return true if the bitset is clear.  */
-  bool operator!() const
-  {
-    return !m_bits;
-  }
+  bool operator!() const { return !m_bits; }
 
   /* Return the inverse of the bitset.  */
-  nowarn_spec_t operator~() const
-  {
-    nowarn_spec_t res (*this);
+  nowarn_spec_t operator~() const {
+    nowarn_spec_t res(*this);
     res.m_bits &= ~NW_ALL;
     return res;
   }
 
   /* Set *THIS to the bitwise OR of *THIS and RHS.  */
-  nowarn_spec_t& operator|= (const nowarn_spec_t &rhs)
-  {
+  nowarn_spec_t &operator|=(const nowarn_spec_t &rhs) {
     m_bits |= rhs.m_bits;
     return *this;
   }
 
   /* Set *THIS to the bitwise AND of *THIS and RHS.  */
-  nowarn_spec_t& operator&= (const nowarn_spec_t &rhs)
-  {
+  nowarn_spec_t &operator&=(const nowarn_spec_t &rhs) {
     m_bits &= rhs.m_bits;
     return *this;
   }
 
   /* Set *THIS to the bitwise exclusive OR of *THIS and RHS.  */
-  nowarn_spec_t& operator^= (const nowarn_spec_t &rhs)
-  {
+  nowarn_spec_t &operator^=(const nowarn_spec_t &rhs) {
     m_bits ^= rhs.m_bits;
     return *this;
   }
@@ -111,33 +98,27 @@ private:
 
 /* Return the bitwise OR of LHS and RHS.  */
 
-inline nowarn_spec_t
-operator| (const nowarn_spec_t &lhs, const nowarn_spec_t &rhs)
-{
-  return nowarn_spec_t (lhs) |= rhs;
+inline nowarn_spec_t operator|(const nowarn_spec_t &lhs,
+                               const nowarn_spec_t &rhs) {
+  return nowarn_spec_t(lhs) |= rhs;
 }
 
 /* Return the bitwise AND of LHS and RHS.  */
 
-inline nowarn_spec_t
-operator& (const nowarn_spec_t &lhs, const nowarn_spec_t &rhs)
-{
-  return nowarn_spec_t (lhs) &= rhs;
+inline nowarn_spec_t operator&(const nowarn_spec_t &lhs,
+                               const nowarn_spec_t &rhs) {
+  return nowarn_spec_t(lhs) &= rhs;
 }
 
 /* Return true if LHS is equal RHS.  */
 
-inline bool
-operator== (const nowarn_spec_t &lhs, const nowarn_spec_t &rhs)
-{
+inline bool operator==(const nowarn_spec_t &lhs, const nowarn_spec_t &rhs) {
   return static_cast<unsigned>(lhs) == static_cast<unsigned>(rhs);
 }
 
 /* Return true if LHS is not equal RHS.  */
 
-inline bool
-operator!= (const nowarn_spec_t &lhs, const nowarn_spec_t &rhs)
-{
+inline bool operator!=(const nowarn_spec_t &lhs, const nowarn_spec_t &rhs) {
   return !(lhs == rhs);
 }
 

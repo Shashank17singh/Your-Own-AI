@@ -27,16 +27,14 @@ extern bool lra_simple_p;
 /* Return the allocno reg class of REGNO.  If it is a reload pseudo,
    the pseudo should finally get hard register of the allocno
    class.  */
-inline enum reg_class
-lra_get_allocno_class (int regno)
-{
-  resize_reg_info ();
-  return reg_allocno_class (regno);
+inline enum reg_class lra_get_allocno_class(int regno) {
+  resize_reg_info();
+  return reg_allocno_class(regno);
 }
 
-extern rtx lra_eliminate_regs (rtx, machine_mode, rtx);
-extern void lra (FILE *, int);
-extern void lra_init_once (void);
-extern void lra_finish_once (void);
+extern rtx lra_eliminate_regs(rtx, machine_mode, rtx);
+extern void lra(FILE *, int);
+extern void lra_init_once(void);
+extern void lra_finish_once(void);
 
 #endif /* GCC_LRA_H */

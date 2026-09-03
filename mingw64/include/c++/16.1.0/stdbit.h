@@ -38,14 +38,13 @@
 
 #define __STDC_VERSION_STDBIT_H__ 202311L
 
-#define __STDC_ENDIAN_BIG__     __ORDER_BIG_ENDIAN__
-#define __STDC_ENDIAN_LITTLE__  __ORDER_LITTLE_ENDIAN__
-#define __STDC_ENDIAN_NATIVE__  __BYTE_ORDER__
+#define __STDC_ENDIAN_BIG__ __ORDER_BIG_ENDIAN__
+#define __STDC_ENDIAN_LITTLE__ __ORDER_LITTLE_ENDIAN__
+#define __STDC_ENDIAN_NATIVE__ __BYTE_ORDER__
 
 #ifndef _GLIBCXX_DOXYGEN
 // We define these in our own namespace, but let Doxygen think otherwise.
-namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
-{
+namespace __gnu_cxx _GLIBCXX_VISIBILITY(default) {
 #endif
 
 /** Count the number of leading zero bits
@@ -54,33 +53,30 @@ namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_leading_zeros(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_leading_zeros(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::countl_zero(__value);
 }
 
-inline unsigned int
-stdc_leading_zeros_uc(unsigned char __value)
-{ return stdc_leading_zeros(__value); }
+inline unsigned int stdc_leading_zeros_uc(unsigned char __value) {
+  return stdc_leading_zeros(__value);
+}
 
-inline unsigned int
-stdc_leading_zeros_us(unsigned short __value)
-{ return stdc_leading_zeros(__value); }
+inline unsigned int stdc_leading_zeros_us(unsigned short __value) {
+  return stdc_leading_zeros(__value);
+}
 
-inline unsigned int
-stdc_leading_zeros_ui(unsigned int __value)
-{ return stdc_leading_zeros(__value); }
+inline unsigned int stdc_leading_zeros_ui(unsigned int __value) {
+  return stdc_leading_zeros(__value);
+}
 
-inline unsigned int
-stdc_leading_zeros_ul(unsigned long int __value)
-{ return stdc_leading_zeros(__value); }
+inline unsigned int stdc_leading_zeros_ul(unsigned long int __value) {
+  return stdc_leading_zeros(__value);
+}
 
-inline unsigned int
-stdc_leading_zeros_ull(unsigned long long int __value)
-{ return stdc_leading_zeros(__value); }
+inline unsigned int stdc_leading_zeros_ull(unsigned long long int __value) {
+  return stdc_leading_zeros(__value);
+}
 /// @}
 
 /** Count the number of leading one bits
@@ -89,33 +85,30 @@ stdc_leading_zeros_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_leading_ones(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_leading_ones(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::countl_one(__value);
 }
 
-inline unsigned int
-stdc_leading_ones_uc(unsigned char __value)
-{ return stdc_leading_ones(__value); }
+inline unsigned int stdc_leading_ones_uc(unsigned char __value) {
+  return stdc_leading_ones(__value);
+}
 
-inline unsigned int
-stdc_leading_ones_us(unsigned short __value)
-{ return stdc_leading_ones(__value); }
+inline unsigned int stdc_leading_ones_us(unsigned short __value) {
+  return stdc_leading_ones(__value);
+}
 
-inline unsigned int
-stdc_leading_ones_ui(unsigned int __value)
-{ return stdc_leading_ones(__value); }
+inline unsigned int stdc_leading_ones_ui(unsigned int __value) {
+  return stdc_leading_ones(__value);
+}
 
-inline unsigned int
-stdc_leading_ones_ul(unsigned long int __value)
-{ return stdc_leading_ones(__value); }
+inline unsigned int stdc_leading_ones_ul(unsigned long int __value) {
+  return stdc_leading_ones(__value);
+}
 
-inline unsigned int
-stdc_leading_ones_ull(unsigned long long int __value)
-{ return stdc_leading_ones(__value); }
+inline unsigned int stdc_leading_ones_ull(unsigned long long int __value) {
+  return stdc_leading_ones(__value);
+}
 /// @}
 
 /** Count the number of trailing zero bits
@@ -124,33 +117,30 @@ stdc_leading_ones_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_trailing_zeros(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_trailing_zeros(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::countr_zero(__value);
 }
 
-inline unsigned int
-stdc_trailing_zeros_uc(unsigned char __value)
-{ return stdc_trailing_zeros(__value); }
+inline unsigned int stdc_trailing_zeros_uc(unsigned char __value) {
+  return stdc_trailing_zeros(__value);
+}
 
-inline unsigned int
-stdc_trailing_zeros_us(unsigned short __value)
-{ return stdc_trailing_zeros(__value); }
+inline unsigned int stdc_trailing_zeros_us(unsigned short __value) {
+  return stdc_trailing_zeros(__value);
+}
 
-inline unsigned int
-stdc_trailing_zeros_ui(unsigned int __value)
-{ return stdc_trailing_zeros(__value); }
+inline unsigned int stdc_trailing_zeros_ui(unsigned int __value) {
+  return stdc_trailing_zeros(__value);
+}
 
-inline unsigned int
-stdc_trailing_zeros_ul(unsigned long int __value)
-{ return stdc_trailing_zeros(__value); }
+inline unsigned int stdc_trailing_zeros_ul(unsigned long int __value) {
+  return stdc_trailing_zeros(__value);
+}
 
-inline unsigned int
-stdc_trailing_zeros_ull(unsigned long long int __value)
-{ return stdc_trailing_zeros(__value); }
+inline unsigned int stdc_trailing_zeros_ull(unsigned long long int __value) {
+  return stdc_trailing_zeros(__value);
+}
 /// @}
 
 /** Count the number of trailing one bits
@@ -159,33 +149,30 @@ stdc_trailing_zeros_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_trailing_ones(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_trailing_ones(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::countr_one(__value);
 }
 
-inline unsigned int
-stdc_trailing_ones_uc(unsigned char __value)
-{ return stdc_trailing_ones(__value); }
+inline unsigned int stdc_trailing_ones_uc(unsigned char __value) {
+  return stdc_trailing_ones(__value);
+}
 
-inline unsigned int
-stdc_trailing_ones_us(unsigned short __value)
-{ return stdc_trailing_ones(__value); }
+inline unsigned int stdc_trailing_ones_us(unsigned short __value) {
+  return stdc_trailing_ones(__value);
+}
 
-inline unsigned int
-stdc_trailing_ones_ui(unsigned int __value)
-{ return stdc_trailing_ones(__value); }
+inline unsigned int stdc_trailing_ones_ui(unsigned int __value) {
+  return stdc_trailing_ones(__value);
+}
 
-inline unsigned int
-stdc_trailing_ones_ul(unsigned long int __value)
-{ return stdc_trailing_ones(__value); }
+inline unsigned int stdc_trailing_ones_ul(unsigned long int __value) {
+  return stdc_trailing_ones(__value);
+}
 
-inline unsigned int
-stdc_trailing_ones_ull(unsigned long long int __value)
-{ return stdc_trailing_ones(__value); }
+inline unsigned int stdc_trailing_ones_ull(unsigned long long int __value) {
+  return stdc_trailing_ones(__value);
+}
 /// @}
 
 /** Find the leftmost (i.e. most significant) zero bit
@@ -196,33 +183,32 @@ stdc_trailing_ones_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_first_leading_zero(_Tp __value)
-{
+template <typename _Tp>
+inline unsigned int stdc_first_leading_zero(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return __value == _Tp(-1) ? 0 : 1 + std::countl_one(__value);
 }
 
-inline unsigned int
-stdc_first_leading_zero_uc(unsigned char __value)
-{ return stdc_first_leading_zero(__value); }
+inline unsigned int stdc_first_leading_zero_uc(unsigned char __value) {
+  return stdc_first_leading_zero(__value);
+}
+
+inline unsigned int stdc_first_leading_zero_us(unsigned short __value) {
+  return stdc_first_leading_zero(__value);
+}
+
+inline unsigned int stdc_first_leading_zero_ui(unsigned int __value) {
+  return stdc_first_leading_zero(__value);
+}
+
+inline unsigned int stdc_first_leading_zero_ul(unsigned long int __value) {
+  return stdc_first_leading_zero(__value);
+}
 
 inline unsigned int
-stdc_first_leading_zero_us(unsigned short __value)
-{ return stdc_first_leading_zero(__value); }
-
-inline unsigned int
-stdc_first_leading_zero_ui(unsigned int __value)
-{ return stdc_first_leading_zero(__value); }
-
-inline unsigned int
-stdc_first_leading_zero_ul(unsigned long int __value)
-{ return stdc_first_leading_zero(__value); }
-
-inline unsigned int
-stdc_first_leading_zero_ull(unsigned long long int __value)
-{ return stdc_first_leading_zero(__value); }
+stdc_first_leading_zero_ull(unsigned long long int __value) {
+  return stdc_first_leading_zero(__value);
+}
 /// @}
 
 /** Find the leftmost (i.e. most significant) one bit
@@ -233,33 +219,31 @@ stdc_first_leading_zero_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_first_leading_one(_Tp __value)
-{
+template <typename _Tp>
+inline unsigned int stdc_first_leading_one(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return __value == 0 ? 0 : 1 + std::countl_zero(__value);
 }
 
-inline unsigned int
-stdc_first_leading_one_uc(unsigned char __value)
-{ return stdc_first_leading_one(__value); }
+inline unsigned int stdc_first_leading_one_uc(unsigned char __value) {
+  return stdc_first_leading_one(__value);
+}
 
-inline unsigned int
-stdc_first_leading_one_us(unsigned short __value)
-{ return stdc_first_leading_one(__value); }
+inline unsigned int stdc_first_leading_one_us(unsigned short __value) {
+  return stdc_first_leading_one(__value);
+}
 
-inline unsigned int
-stdc_first_leading_one_ui(unsigned int __value)
-{ return stdc_first_leading_one(__value); }
+inline unsigned int stdc_first_leading_one_ui(unsigned int __value) {
+  return stdc_first_leading_one(__value);
+}
 
-inline unsigned int
-stdc_first_leading_one_ul(unsigned long int __value)
-{ return stdc_first_leading_one(__value); }
+inline unsigned int stdc_first_leading_one_ul(unsigned long int __value) {
+  return stdc_first_leading_one(__value);
+}
 
-inline unsigned int
-stdc_first_leading_one_ull(unsigned long long int __value)
-{ return stdc_first_leading_one(__value); }
+inline unsigned int stdc_first_leading_one_ull(unsigned long long int __value) {
+  return stdc_first_leading_one(__value);
+}
 /// @}
 
 /** Find the rightmost (i.e. least significant) zero bit
@@ -270,33 +254,32 @@ stdc_first_leading_one_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_first_trailing_zero(_Tp __value)
-{
+template <typename _Tp>
+inline unsigned int stdc_first_trailing_zero(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return __value == _Tp(-1) ? 0 : 1 + std::countr_one(__value);
 }
 
-inline unsigned int
-stdc_first_trailing_zero_uc(unsigned char __value)
-{ return stdc_first_trailing_zero(__value); }
+inline unsigned int stdc_first_trailing_zero_uc(unsigned char __value) {
+  return stdc_first_trailing_zero(__value);
+}
+
+inline unsigned int stdc_first_trailing_zero_us(unsigned short __value) {
+  return stdc_first_trailing_zero(__value);
+}
+
+inline unsigned int stdc_first_trailing_zero_ui(unsigned int __value) {
+  return stdc_first_trailing_zero(__value);
+}
+
+inline unsigned int stdc_first_trailing_zero_ul(unsigned long int __value) {
+  return stdc_first_trailing_zero(__value);
+}
 
 inline unsigned int
-stdc_first_trailing_zero_us(unsigned short __value)
-{ return stdc_first_trailing_zero(__value); }
-
-inline unsigned int
-stdc_first_trailing_zero_ui(unsigned int __value)
-{ return stdc_first_trailing_zero(__value); }
-
-inline unsigned int
-stdc_first_trailing_zero_ul(unsigned long int __value)
-{ return stdc_first_trailing_zero(__value); }
-
-inline unsigned int
-stdc_first_trailing_zero_ull(unsigned long long int __value)
-{ return stdc_first_trailing_zero(__value); }
+stdc_first_trailing_zero_ull(unsigned long long int __value) {
+  return stdc_first_trailing_zero(__value);
+}
 /// @}
 
 /** Find the rightmost (i.e. least significant) one bit
@@ -307,33 +290,32 @@ stdc_first_trailing_zero_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_first_trailing_one(_Tp __value)
-{
+template <typename _Tp>
+inline unsigned int stdc_first_trailing_one(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return __value == 0 ? 0 : 1 + std::countr_zero(__value);
 }
 
-inline unsigned int
-stdc_first_trailing_one_uc(unsigned char __value)
-{ return stdc_first_trailing_one(__value); }
+inline unsigned int stdc_first_trailing_one_uc(unsigned char __value) {
+  return stdc_first_trailing_one(__value);
+}
+
+inline unsigned int stdc_first_trailing_one_us(unsigned short __value) {
+  return stdc_first_trailing_one(__value);
+}
+
+inline unsigned int stdc_first_trailing_one_ui(unsigned int __value) {
+  return stdc_first_trailing_one(__value);
+}
+
+inline unsigned int stdc_first_trailing_one_ul(unsigned long int __value) {
+  return stdc_first_trailing_one(__value);
+}
 
 inline unsigned int
-stdc_first_trailing_one_us(unsigned short __value)
-{ return stdc_first_trailing_one(__value); }
-
-inline unsigned int
-stdc_first_trailing_one_ui(unsigned int __value)
-{ return stdc_first_trailing_one(__value); }
-
-inline unsigned int
-stdc_first_trailing_one_ul(unsigned long int __value)
-{ return stdc_first_trailing_one(__value); }
-
-inline unsigned int
-stdc_first_trailing_one_ull(unsigned long long int __value)
-{ return stdc_first_trailing_one(__value); }
+stdc_first_trailing_one_ull(unsigned long long int __value) {
+  return stdc_first_trailing_one(__value);
+}
 /// @}
 
 /** Count zeros
@@ -343,33 +325,30 @@ stdc_first_trailing_one_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_count_zeros(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_count_zeros(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::popcount(_Tp(~__value));
 }
 
-inline unsigned int
-stdc_count_zeros_uc(unsigned char __value)
-{ return stdc_count_zeros(__value); }
+inline unsigned int stdc_count_zeros_uc(unsigned char __value) {
+  return stdc_count_zeros(__value);
+}
 
-inline unsigned int
-stdc_count_zeros_us(unsigned short __value)
-{ return stdc_count_zeros(__value); }
+inline unsigned int stdc_count_zeros_us(unsigned short __value) {
+  return stdc_count_zeros(__value);
+}
 
-inline unsigned int
-stdc_count_zeros_ui(unsigned int __value)
-{ return stdc_count_zeros(__value); }
+inline unsigned int stdc_count_zeros_ui(unsigned int __value) {
+  return stdc_count_zeros(__value);
+}
 
-inline unsigned int
-stdc_count_zeros_ul(unsigned long int __value)
-{ return stdc_count_zeros(__value); }
+inline unsigned int stdc_count_zeros_ul(unsigned long int __value) {
+  return stdc_count_zeros(__value);
+}
 
-inline unsigned int
-stdc_count_zeros_ull(unsigned long long int __value)
-{ return stdc_count_zeros(__value); }
+inline unsigned int stdc_count_zeros_ull(unsigned long long int __value) {
+  return stdc_count_zeros(__value);
+}
 /// @}
 
 /** Count ones
@@ -379,33 +358,30 @@ stdc_count_zeros_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_count_ones(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_count_ones(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::popcount(__value);
 }
 
-inline unsigned int
-stdc_count_ones_uc(unsigned char __value)
-{ return stdc_count_ones(__value); }
+inline unsigned int stdc_count_ones_uc(unsigned char __value) {
+  return stdc_count_ones(__value);
+}
 
-inline unsigned int
-stdc_count_ones_us(unsigned short __value)
-{ return stdc_count_ones(__value); }
+inline unsigned int stdc_count_ones_us(unsigned short __value) {
+  return stdc_count_ones(__value);
+}
 
-inline unsigned int
-stdc_count_ones_ui(unsigned int __value)
-{ return stdc_count_ones(__value); }
+inline unsigned int stdc_count_ones_ui(unsigned int __value) {
+  return stdc_count_ones(__value);
+}
 
-inline unsigned int
-stdc_count_ones_ul(unsigned long int __value)
-{ return stdc_count_ones(__value); }
+inline unsigned int stdc_count_ones_ul(unsigned long int __value) {
+  return stdc_count_ones(__value);
+}
 
-inline unsigned int
-stdc_count_ones_ull(unsigned long long int __value)
-{ return stdc_count_ones(__value); }
+inline unsigned int stdc_count_ones_ull(unsigned long long int __value) {
+  return stdc_count_ones(__value);
+}
 /// @}
 
 /** Power of two check
@@ -415,33 +391,30 @@ stdc_count_ones_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline bool
-stdc_has_single_bit(_Tp __value)
-{
+template <typename _Tp> inline bool stdc_has_single_bit(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::has_single_bit(__value);
 }
 
-inline bool
-stdc_has_single_bit_uc(unsigned char __value)
-{ return stdc_has_single_bit(__value); }
+inline bool stdc_has_single_bit_uc(unsigned char __value) {
+  return stdc_has_single_bit(__value);
+}
 
-inline bool
-stdc_has_single_bit_us(unsigned short __value)
-{ return stdc_has_single_bit(__value); }
+inline bool stdc_has_single_bit_us(unsigned short __value) {
+  return stdc_has_single_bit(__value);
+}
 
-inline bool
-stdc_has_single_bit_ui(unsigned int __value)
-{ return stdc_has_single_bit(__value); }
+inline bool stdc_has_single_bit_ui(unsigned int __value) {
+  return stdc_has_single_bit(__value);
+}
 
-inline bool
-stdc_has_single_bit_ul(unsigned long int __value)
-{ return stdc_has_single_bit(__value); }
+inline bool stdc_has_single_bit_ul(unsigned long int __value) {
+  return stdc_has_single_bit(__value);
+}
 
-inline bool
-stdc_has_single_bit_ull(unsigned long long int __value)
-{ return stdc_has_single_bit(__value); }
+inline bool stdc_has_single_bit_ull(unsigned long long int __value) {
+  return stdc_has_single_bit(__value);
+}
 /// @}
 
 /** Bit width
@@ -451,33 +424,30 @@ stdc_has_single_bit_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline unsigned int
-stdc_bit_width(_Tp __value)
-{
+template <typename _Tp> inline unsigned int stdc_bit_width(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::bit_width(__value);
 }
 
-inline unsigned int
-stdc_bit_width_uc(unsigned char __value)
-{ return stdc_bit_width(__value); }
+inline unsigned int stdc_bit_width_uc(unsigned char __value) {
+  return stdc_bit_width(__value);
+}
 
-inline unsigned int
-stdc_bit_width_us(unsigned short __value)
-{ return stdc_bit_width(__value); }
+inline unsigned int stdc_bit_width_us(unsigned short __value) {
+  return stdc_bit_width(__value);
+}
 
-inline unsigned int
-stdc_bit_width_ui(unsigned int __value)
-{ return stdc_bit_width(__value); }
+inline unsigned int stdc_bit_width_ui(unsigned int __value) {
+  return stdc_bit_width(__value);
+}
 
-inline unsigned int
-stdc_bit_width_ul(unsigned long int __value)
-{ return stdc_bit_width(__value); }
+inline unsigned int stdc_bit_width_ul(unsigned long int __value) {
+  return stdc_bit_width(__value);
+}
 
-inline unsigned int
-stdc_bit_width_ull(unsigned long long int __value)
-{ return stdc_bit_width(__value); }
+inline unsigned int stdc_bit_width_ull(unsigned long long int __value) {
+  return stdc_bit_width(__value);
+}
 /// @}
 
 /** Bit floor
@@ -487,33 +457,31 @@ stdc_bit_width_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline _Tp
-stdc_bit_floor(_Tp __value)
-{
+template <typename _Tp> inline _Tp stdc_bit_floor(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   return std::bit_floor(__value);
 }
 
-inline unsigned char
-stdc_bit_floor_uc(unsigned char __value)
-{ return stdc_bit_floor(__value); }
+inline unsigned char stdc_bit_floor_uc(unsigned char __value) {
+  return stdc_bit_floor(__value);
+}
 
-inline unsigned short
-stdc_bit_floor_us(unsigned short __value)
-{ return stdc_bit_floor(__value); }
+inline unsigned short stdc_bit_floor_us(unsigned short __value) {
+  return stdc_bit_floor(__value);
+}
 
-inline unsigned int
-stdc_bit_floor_ui(unsigned int __value)
-{ return stdc_bit_floor(__value); }
+inline unsigned int stdc_bit_floor_ui(unsigned int __value) {
+  return stdc_bit_floor(__value);
+}
 
-inline unsigned long int
-stdc_bit_floor_ul(unsigned long int __value)
-{ return stdc_bit_floor(__value); }
+inline unsigned long int stdc_bit_floor_ul(unsigned long int __value) {
+  return stdc_bit_floor(__value);
+}
 
 inline unsigned long long int
-stdc_bit_floor_ull(unsigned long long int __value)
-{ return stdc_bit_floor(__value); }
+stdc_bit_floor_ull(unsigned long long int __value) {
+  return stdc_bit_floor(__value);
+}
 /// @}
 
 /** Bit ceiling
@@ -526,44 +494,42 @@ stdc_bit_floor_ull(unsigned long long int __value)
  * @since C++26
  * @{
  */
-template<typename _Tp>
-inline _Tp
-stdc_bit_ceil(_Tp __value)
-{
+template <typename _Tp> inline _Tp stdc_bit_ceil(_Tp __value) {
   static_assert(std::__unsigned_integer<_Tp>);
   constexpr _Tp __msb = _Tp(1) << (__gnu_cxx::__int_traits<_Tp>::__digits - 1);
   return (__value & __msb) ? 0 : std::bit_ceil(__value);
 }
 
-inline unsigned char
-stdc_bit_ceil_uc(unsigned char __value)
-{ return stdc_bit_ceil(__value); }
+inline unsigned char stdc_bit_ceil_uc(unsigned char __value) {
+  return stdc_bit_ceil(__value);
+}
 
-inline unsigned short
-stdc_bit_ceil_us(unsigned short __value)
-{ return stdc_bit_ceil(__value); }
+inline unsigned short stdc_bit_ceil_us(unsigned short __value) {
+  return stdc_bit_ceil(__value);
+}
 
-inline unsigned int
-stdc_bit_ceil_ui(unsigned int __value)
-{ return stdc_bit_ceil(__value); }
+inline unsigned int stdc_bit_ceil_ui(unsigned int __value) {
+  return stdc_bit_ceil(__value);
+}
 
-inline unsigned long int
-stdc_bit_ceil_ul(unsigned long int __value)
-{ return stdc_bit_ceil(__value); }
+inline unsigned long int stdc_bit_ceil_ul(unsigned long int __value) {
+  return stdc_bit_ceil(__value);
+}
 
 inline unsigned long long int
-stdc_bit_ceil_ull(unsigned long long int __value)
-{ return stdc_bit_ceil(__value); }
+stdc_bit_ceil_ull(unsigned long long int __value) {
+  return stdc_bit_ceil(__value);
+}
 /// @}
 
 #ifndef _GLIBCXX_DOXYGEN
 } // namespace __gnu_cxx
-#define _GLIBCXX_STDBIT_FUNC(F) \
-  using __gnu_cxx::F ## _uc; \
-  using __gnu_cxx::F ## _us; \
-  using __gnu_cxx::F ## _ui; \
-  using __gnu_cxx::F ## _ul; \
-  using __gnu_cxx::F ## _ull; \
+#define _GLIBCXX_STDBIT_FUNC(F)                                                \
+  using __gnu_cxx::F##_uc;                                                     \
+  using __gnu_cxx::F##_us;                                                     \
+  using __gnu_cxx::F##_ui;                                                     \
+  using __gnu_cxx::F##_ul;                                                     \
+  using __gnu_cxx::F##_ull;                                                    \
   using __gnu_cxx::F
 _GLIBCXX_STDBIT_FUNC(stdc_leading_zeros);
 _GLIBCXX_STDBIT_FUNC(stdc_leading_ones);

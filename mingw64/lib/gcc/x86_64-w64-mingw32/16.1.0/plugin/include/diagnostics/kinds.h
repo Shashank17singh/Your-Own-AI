@@ -23,8 +23,7 @@ along with GCC; see the file COPYING3.  If not see
 namespace diagnostics {
 
 /* Constants used to discriminate diagnostics.  */
-enum class kind
-{
+enum class kind {
 #define DEFINE_DIAGNOSTIC_KIND(K, msgid, C) K,
 #include "diagnostics/kinds.def"
 #undef DEFINE_DIAGNOSTIC_KIND
@@ -37,9 +36,9 @@ enum class kind
   any
 };
 
-extern const char *get_text_for_kind (enum diagnostics::kind);
-extern const char *get_debug_string_for_kind (enum diagnostics::kind);
-extern const char *get_color_for_kind (enum diagnostics::kind);
+extern const char *get_text_for_kind(enum diagnostics::kind);
+extern const char *get_debug_string_for_kind(enum diagnostics::kind);
+extern const char *get_color_for_kind(enum diagnostics::kind);
 
 } // namespace diagnostics
 

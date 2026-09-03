@@ -23,7 +23,9 @@ along with GCC; see the file COPYING3.  If not see
 class temp_slot;
 typedef class temp_slot *temp_slot_p;
 class predefined_function_abi;
-namespace rtl_ssa { class function_info; }
+namespace rtl_ssa {
+class function_info;
+}
 
 /* Information mainlined about RTL representation of incoming arguments.  */
 struct GTY(()) incoming_args {
@@ -54,10 +56,9 @@ struct GTY(()) incoming_args {
   rtx internal_arg_pointer;
 };
 
-
 /* Datastructures maintained for currently processed function in RTL form.  */
 struct GTY(()) rtl_data {
-  void init_stack_alignment ();
+  void init_stack_alignment();
 
   struct expr_status expr;
   struct emit_status emit;
@@ -92,7 +93,7 @@ struct GTY(()) rtl_data {
      register of approprite mode that stores the initial value a hard
      register REGNO, and that hard register itself.  */
   /* ??? This could be a VEC but there is currently no way to define an
-	 opaque VEC type.  */
+         opaque VEC type.  */
   struct initial_value_struct *hard_reg_initial_vals;
 
   /* A variable living at the top of the frame that holds a known value.
@@ -347,188 +348,165 @@ extern GTY(()) struct rtl_data x_rtl;
 #define crtl (&x_rtl)
 
 /* Return whether two MEM_ATTRs are equal.  */
-bool mem_attrs_eq_p (const class mem_attrs *, const class mem_attrs *);
+bool mem_attrs_eq_p(const class mem_attrs *, const class mem_attrs *);
 
 /* Set the alias set of MEM to SET.  */
-extern void set_mem_alias_set (rtx, alias_set_type);
+extern void set_mem_alias_set(rtx, alias_set_type);
 
 /* Set the alignment of MEM to ALIGN bits.  */
-extern void set_mem_align (rtx, unsigned int);
+extern void set_mem_align(rtx, unsigned int);
 
 /* Set the address space of MEM to ADDRSPACE.  */
-extern void set_mem_addr_space (rtx, addr_space_t);
+extern void set_mem_addr_space(rtx, addr_space_t);
 
 /* Set the expr for MEM to EXPR.  */
-extern void set_mem_expr (rtx, tree);
+extern void set_mem_expr(rtx, tree);
 
 /* Set the offset for MEM to OFFSET.  */
-extern void set_mem_offset (rtx, poly_int64);
+extern void set_mem_offset(rtx, poly_int64);
 
 /* Clear the offset recorded for MEM.  */
-extern void clear_mem_offset (rtx);
+extern void clear_mem_offset(rtx);
 
 /* Set the size for MEM to SIZE.  */
-extern void set_mem_size (rtx, poly_int64);
+extern void set_mem_size(rtx, poly_int64);
 
 /* Clear the size recorded for MEM.  */
-extern void clear_mem_size (rtx);
+extern void clear_mem_size(rtx);
 
 /* Set the attributes for MEM appropriate for a spill slot.  */
-extern void set_mem_attrs_for_spill (rtx);
-extern tree get_spill_slot_decl (bool);
+extern void set_mem_attrs_for_spill(rtx);
+extern tree get_spill_slot_decl(bool);
 
 /* Return a memory reference like MEMREF, but with its address changed to
    ADDR.  The caller is asserting that the actual piece of memory pointed
    to is the same, just the form of the address is being changed, such as
    by putting something into a register.  */
-extern rtx replace_equiv_address (rtx, rtx, bool = false);
+extern rtx replace_equiv_address(rtx, rtx, bool = false);
 
 /* Likewise, but the reference is not required to be valid.  */
-extern rtx replace_equiv_address_nv (rtx, rtx, bool = false);
+extern rtx replace_equiv_address_nv(rtx, rtx, bool = false);
 
-extern rtx gen_blockage (void);
-extern rtvec gen_rtvec (int, ...);
-extern rtx copy_insn_1 (rtx);
-extern rtx copy_insn (rtx);
-extern rtx_insn *copy_delay_slot_insn (rtx_insn *);
-extern rtx gen_int_mode (poly_int64, machine_mode);
-extern rtx_insn *emit_copy_of_insn_after (rtx_insn *, rtx_insn *);
-extern void set_reg_attrs_from_value (rtx, rtx);
-extern void set_reg_attrs_for_parm (rtx, rtx);
-extern void set_reg_attrs_for_decl_rtl (tree t, rtx x);
-extern void adjust_reg_mode (rtx, machine_mode);
-extern bool mem_expr_equal_p (const_tree, const_tree);
-extern rtx gen_int_shift_amount (machine_mode, poly_int64);
+extern rtx gen_blockage(void);
+extern rtvec gen_rtvec(int, ...);
+extern rtx copy_insn_1(rtx);
+extern rtx copy_insn(rtx);
+extern rtx_insn *copy_delay_slot_insn(rtx_insn *);
+extern rtx gen_int_mode(poly_int64, machine_mode);
+extern rtx_insn *emit_copy_of_insn_after(rtx_insn *, rtx_insn *);
+extern void set_reg_attrs_from_value(rtx, rtx);
+extern void set_reg_attrs_for_parm(rtx, rtx);
+extern void set_reg_attrs_for_decl_rtl(tree t, rtx x);
+extern void adjust_reg_mode(rtx, machine_mode);
+extern bool mem_expr_equal_p(const_tree, const_tree);
+extern rtx gen_int_shift_amount(machine_mode, poly_int64);
 
-extern bool need_atomic_barrier_p (enum memmodel, bool);
+extern bool need_atomic_barrier_p(enum memmodel, bool);
 
 /* Return the current sequence.  */
 
-inline struct sequence_stack *
-get_current_sequence (void)
-{
+inline struct sequence_stack *get_current_sequence(void) {
   return &crtl->emit.seq;
 }
 
 /* Return the outermost sequence.  */
 
-inline struct sequence_stack *
-get_topmost_sequence (void)
-{
+inline struct sequence_stack *get_topmost_sequence(void) {
   struct sequence_stack *seq, *top;
 
-  seq = get_current_sequence ();
-  do
-    {
-      top = seq;
-      seq = seq->next;
-    } while (seq);
+  seq = get_current_sequence();
+  do {
+    top = seq;
+    seq = seq->next;
+  } while (seq);
   return top;
 }
 
 /* Return the first insn of the current sequence or current function.  */
 
-inline rtx_insn *
-get_insns (void)
-{
-  return get_current_sequence ()->first;
-}
+inline rtx_insn *get_insns(void) { return get_current_sequence()->first; }
 
 /* Specify a new insn as the first in the chain.  */
 
-inline void
-set_first_insn (rtx_insn *insn)
-{
-  gcc_checking_assert (!insn || !PREV_INSN (insn));
-  get_current_sequence ()->first = insn;
+inline void set_first_insn(rtx_insn *insn) {
+  gcc_checking_assert(!insn || !PREV_INSN(insn));
+  get_current_sequence()->first = insn;
 }
 
 /* Return the last insn emitted in current sequence or current function.  */
 
-inline rtx_insn *
-get_last_insn (void)
-{
-  return get_current_sequence ()->last;
-}
+inline rtx_insn *get_last_insn(void) { return get_current_sequence()->last; }
 
 /* Specify a new insn as the last in the chain.  */
 
-inline void
-set_last_insn (rtx_insn *insn)
-{
-  gcc_checking_assert (!insn || !NEXT_INSN (insn));
-  get_current_sequence ()->last = insn;
+inline void set_last_insn(rtx_insn *insn) {
+  gcc_checking_assert(!insn || !NEXT_INSN(insn));
+  get_current_sequence()->last = insn;
 }
 
 /* Return a number larger than any instruction's uid in this function.  */
 
-inline int
-get_max_uid (void)
-{
-  return crtl->emit.x_cur_insn_uid;
-}
+inline int get_max_uid(void) { return crtl->emit.x_cur_insn_uid; }
 
-extern bool valid_for_const_vector_p (machine_mode, rtx);
-extern rtx gen_const_vec_duplicate (machine_mode, rtx);
-extern rtx gen_vec_duplicate (machine_mode, rtx);
+extern bool valid_for_const_vector_p(machine_mode, rtx);
+extern rtx gen_const_vec_duplicate(machine_mode, rtx);
+extern rtx gen_vec_duplicate(machine_mode, rtx);
 
-extern rtx gen_const_vec_series (machine_mode, rtx, rtx);
-extern rtx gen_vec_series (machine_mode, rtx, rtx);
+extern rtx gen_const_vec_series(machine_mode, rtx, rtx);
+extern rtx gen_vec_series(machine_mode, rtx, rtx);
 
-extern void set_decl_incoming_rtl (tree, rtx, bool);
+extern void set_decl_incoming_rtl(tree, rtx, bool);
 
 /* Return a memory reference like MEMREF, but with its mode changed
    to MODE and its address changed to ADDR.
    (VOIDmode means don't change the mode.
    NULL for ADDR means don't change the address.)  */
-extern rtx change_address (rtx, machine_mode, rtx);
+extern rtx change_address(rtx, machine_mode, rtx);
 
 /* Return a memory reference like MEMREF, but with its mode changed
    to MODE and its address offset by OFFSET bytes.  */
-#define adjust_address(MEMREF, MODE, OFFSET) \
-  adjust_address_1 (MEMREF, MODE, OFFSET, 1, 1, 0, 0)
+#define adjust_address(MEMREF, MODE, OFFSET)                                   \
+  adjust_address_1(MEMREF, MODE, OFFSET, 1, 1, 0, 0)
 
 /* Likewise, but the reference is not required to be valid.  */
-#define adjust_address_nv(MEMREF, MODE, OFFSET) \
-  adjust_address_1 (MEMREF, MODE, OFFSET, 0, 1, 0, 0)
+#define adjust_address_nv(MEMREF, MODE, OFFSET)                                \
+  adjust_address_1(MEMREF, MODE, OFFSET, 0, 1, 0, 0)
 
 /* Return a memory reference like MEMREF, but with its mode changed
    to MODE and its address offset by OFFSET bytes.  Assume that it's
    for a bitfield and conservatively drop the underlying object if we
    cannot be sure to stay within its bounds.  */
-#define adjust_bitfield_address(MEMREF, MODE, OFFSET) \
-  adjust_address_1 (MEMREF, MODE, OFFSET, 1, 1, 1, 0)
+#define adjust_bitfield_address(MEMREF, MODE, OFFSET)                          \
+  adjust_address_1(MEMREF, MODE, OFFSET, 1, 1, 1, 0)
 
 /* As for adjust_bitfield_address, but specify that the width of
    BLKmode accesses is SIZE bytes.  */
-#define adjust_bitfield_address_size(MEMREF, MODE, OFFSET, SIZE) \
-  adjust_address_1 (MEMREF, MODE, OFFSET, 1, 1, 1, SIZE)
+#define adjust_bitfield_address_size(MEMREF, MODE, OFFSET, SIZE)               \
+  adjust_address_1(MEMREF, MODE, OFFSET, 1, 1, 1, SIZE)
 
 /* Likewise, but the reference is not required to be valid.  */
-#define adjust_bitfield_address_nv(MEMREF, MODE, OFFSET) \
-  adjust_address_1 (MEMREF, MODE, OFFSET, 0, 1, 1, 0)
+#define adjust_bitfield_address_nv(MEMREF, MODE, OFFSET)                       \
+  adjust_address_1(MEMREF, MODE, OFFSET, 0, 1, 1, 0)
 
 /* Return a memory reference like MEMREF, but with its mode changed
    to MODE and its address changed to ADDR, which is assumed to be
    increased by OFFSET bytes from MEMREF.  */
-#define adjust_automodify_address(MEMREF, MODE, ADDR, OFFSET) \
-  adjust_automodify_address_1 (MEMREF, MODE, ADDR, OFFSET, 1)
+#define adjust_automodify_address(MEMREF, MODE, ADDR, OFFSET)                  \
+  adjust_automodify_address_1(MEMREF, MODE, ADDR, OFFSET, 1)
 
 /* Likewise, but the reference is not required to be valid.  */
-#define adjust_automodify_address_nv(MEMREF, MODE, ADDR, OFFSET) \
-  adjust_automodify_address_1 (MEMREF, MODE, ADDR, OFFSET, 0)
+#define adjust_automodify_address_nv(MEMREF, MODE, ADDR, OFFSET)               \
+  adjust_automodify_address_1(MEMREF, MODE, ADDR, OFFSET, 0)
 
-extern rtx adjust_address_1 (rtx, machine_mode, poly_int64, int, int,
-			     int, poly_int64);
-extern rtx adjust_automodify_address_1 (rtx, machine_mode, rtx,
-					poly_int64, int);
+extern rtx adjust_address_1(rtx, machine_mode, poly_int64, int, int, int,
+                            poly_int64);
+extern rtx adjust_automodify_address_1(rtx, machine_mode, rtx, poly_int64, int);
 
 /* Class wrapping emit_autoinc which allows derived classes to control
    how reload pseudos are created.  */
-struct address_reload_context
-{
+struct address_reload_context {
   /* Can be overriden by derived classes.  */
-  virtual rtx get_reload_reg () const { return gen_reg_rtx (Pmode); }
+  virtual rtx get_reload_reg() const { return gen_reg_rtx(Pmode); }
 
   /* Emit insns to reload VALUE into a new register.  VALUE is an
      auto-increment or auto-decrement RTX whose operand is a register or
@@ -538,37 +516,37 @@ struct address_reload_context
      positive and ignored for POST_MODIFY/PRE_MODIFY).
 
      Return a pseudo containing the result.  */
-  rtx emit_autoinc (rtx value, poly_int64 amount);
+  rtx emit_autoinc(rtx value, poly_int64 amount);
 };
 
 /* Return a memory reference like MEM, but with the address reloaded into a
    pseudo register.  */
-extern rtx force_reload_address (rtx mem);
+extern rtx force_reload_address(rtx mem);
 
 /* Return a memory reference like MEMREF, but whose address is changed by
    adding OFFSET, an RTX, to it.  POW2 is the highest power of two factor
    known to be in OFFSET (possibly 1).  */
-extern rtx offset_address (rtx, rtx, unsigned HOST_WIDE_INT);
+extern rtx offset_address(rtx, rtx, unsigned HOST_WIDE_INT);
 
 /* Given REF, a MEM, and T, either the type of X or the expression
    corresponding to REF, set the memory attributes.  OBJECTP is nonzero
    if we are making a new object of this type.  */
-extern void set_mem_attributes (rtx, tree, int);
+extern void set_mem_attributes(rtx, tree, int);
 
 /* Similar, except that BITPOS has not yet been applied to REF, so if
    we alter MEM_OFFSET according to T then we should subtract BITPOS
    expecting that it'll be added back in later.  */
-extern void set_mem_attributes_minus_bitpos (rtx, tree, int, poly_int64);
+extern void set_mem_attributes_minus_bitpos(rtx, tree, int, poly_int64);
 
 /* Return OFFSET if XEXP (MEM, 0) - OFFSET is known to be ALIGN
    bits aligned for 0 <= OFFSET < ALIGN / BITS_PER_UNIT, or
    -1 if not known.  */
-extern int get_mem_align_offset (rtx, unsigned int);
+extern int get_mem_align_offset(rtx, unsigned int);
 
 /* Return a memory reference like MEMREF, but with its mode widened to
    MODE and adjusted by OFFSET.  */
-extern rtx widen_memory_access (rtx, machine_mode, poly_int64);
+extern rtx widen_memory_access(rtx, machine_mode, poly_int64);
 
-extern void maybe_set_max_label_num (rtx_code_label *x);
+extern void maybe_set_max_label_num(rtx_code_label *x);
 
 #endif /* GCC_EMIT_RTL_H */

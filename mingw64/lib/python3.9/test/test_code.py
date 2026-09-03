@@ -130,12 +130,18 @@ import sys
 import threading
 import unittest
 import weakref
+
 try:
     import ctypes
 except ImportError:
     ctypes = None
-from test.support import (run_doctest, run_unittest, cpython_only,
-                          check_impl_detail, gc_collect)
+from test.support import (
+    run_doctest,
+    run_unittest,
+    cpython_only,
+    check_impl_detail,
+    gc_collect,
+)
 
 
 def consts(t):
@@ -147,24 +153,37 @@ def consts(t):
         else:
             yield r
 
+
 def dump(co):
     """Print out a text representation of a code object."""
-    for attr in ["name", "argcount", "posonlyargcount",
-                 "kwonlyargcount", "names", "varnames",
-                 "cellvars", "freevars", "nlocals", "flags"]:
+    for attr in [
+        "name",
+        "argcount",
+        "posonlyargcount",
+        "kwonlyargcount",
+        "names",
+        "varnames",
+        "cellvars",
+        "freevars",
+        "nlocals",
+        "flags",
+    ]:
         print("%s: %s" % (attr, getattr(co, "co_" + attr)))
     print("consts:", tuple(consts(co.co_consts)))
+
 
 # Needed for test_closure_injection below
 # Defined at global scope to avoid implicitly closing over __class__
 def external_getitem(self, i):
     return f"Foreign getitem: {super().__getitem__(i)}"
 
+
 class CodeTest(unittest.TestCase):
 
     @cpython_only
     def test_newempty(self):
         import _testcapi
+
         co = _testcapi.code_newempty("filename", "funcname", 15)
         self.assertEqual(co.co_filename, "filename")
         self.assertEqual(co.co_name, "funcname")
@@ -179,8 +198,8 @@ class CodeTest(unittest.TestCase):
             return (lambda: __class__).__closure__
 
         def new_code(c):
-            '''A new code object with a __class__ cell added to freevars'''
-            return c.replace(co_freevars=c.co_freevars + ('__class__',))
+            """A new code object with a __class__ cell added to freevars"""
+            return c.replace(co_freevars=c.co_freevars + ("__class__",))
 
         def add_foreign_method(cls, name, f):
             code = new_code(f.__code__)
@@ -200,46 +219,54 @@ class CodeTest(unittest.TestCase):
         self.assertIs(class_ref, List)
 
         # Ensure the code correctly indicates it accesses a free variable
-        self.assertFalse(function.__code__.co_flags & inspect.CO_NOFREE,
-                         hex(function.__code__.co_flags))
+        self.assertFalse(
+            function.__code__.co_flags & inspect.CO_NOFREE,
+            hex(function.__code__.co_flags),
+        )
 
         # Ensure the zero-arg super() call in the injected method works
         obj = List([1, 2, 3])
         self.assertEqual(obj[0], "Foreign getitem: 1")
 
     def test_constructor(self):
-        def func(): pass
+        def func():
+            pass
+
         co = func.__code__
         CodeType = type(co)
 
         # test code constructor
-        CodeType(co.co_argcount,
-                        co.co_posonlyargcount,
-                        co.co_kwonlyargcount,
-                        co.co_nlocals,
-                        co.co_stacksize,
-                        co.co_flags,
-                        co.co_code,
-                        co.co_consts,
-                        co.co_names,
-                        co.co_varnames,
-                        co.co_filename,
-                        co.co_name,
-                        co.co_firstlineno,
-                        co.co_lnotab,
-                        co.co_freevars,
-                        co.co_cellvars)
+        CodeType(
+            co.co_argcount,
+            co.co_posonlyargcount,
+            co.co_kwonlyargcount,
+            co.co_nlocals,
+            co.co_stacksize,
+            co.co_flags,
+            co.co_code,
+            co.co_consts,
+            co.co_names,
+            co.co_varnames,
+            co.co_filename,
+            co.co_name,
+            co.co_firstlineno,
+            co.co_lnotab,
+            co.co_freevars,
+            co.co_cellvars,
+        )
 
     def test_replace(self):
         def func():
             x = 1
             return x
+
         code = func.__code__
 
         # different co_name, co_varnames, co_consts
         def func2():
             y = 2
             return y
+
         code2 = func2.__code__
 
         for attr, value in (
@@ -266,7 +293,8 @@ class CodeTest(unittest.TestCase):
 
 
 def isinterned(s):
-    return s is sys.intern(('_' + s + '_')[1:-1])
+    return s is sys.intern(("_" + s + "_")[1:-1])
+
 
 class CodeConstsTest(unittest.TestCase):
 
@@ -275,44 +303,45 @@ class CodeConstsTest(unittest.TestCase):
             if v == value:
                 return v
         self.assertIn(value, consts)  # raises an exception
-        self.fail('Should never be reached')
+        self.fail("Should never be reached")
 
     def assertIsInterned(self, s):
         if not isinterned(s):
-            self.fail('String %r is not interned' % (s,))
+            self.fail("String %r is not interned" % (s,))
 
     def assertIsNotInterned(self, s):
         if isinterned(s):
-            self.fail('String %r is interned' % (s,))
+            self.fail("String %r is interned" % (s,))
 
     @cpython_only
     def test_interned_string(self):
-        co = compile('res = "str_value"', '?', 'exec')
-        v = self.find_const(co.co_consts, 'str_value')
+        co = compile('res = "str_value"', "?", "exec")
+        v = self.find_const(co.co_consts, "str_value")
         self.assertIsInterned(v)
 
     @cpython_only
     def test_interned_string_in_tuple(self):
-        co = compile('res = ("str_value",)', '?', 'exec')
-        v = self.find_const(co.co_consts, ('str_value',))
+        co = compile('res = ("str_value",)', "?", "exec")
+        v = self.find_const(co.co_consts, ("str_value",))
         self.assertIsInterned(v[0])
 
     @cpython_only
     def test_interned_string_in_frozenset(self):
-        co = compile('res = a in {"str_value"}', '?', 'exec')
-        v = self.find_const(co.co_consts, frozenset(('str_value',)))
+        co = compile('res = a in {"str_value"}', "?", "exec")
+        v = self.find_const(co.co_consts, frozenset(("str_value",)))
         self.assertIsInterned(tuple(v)[0])
 
     @cpython_only
     def test_interned_string_default(self):
-        def f(a='str_value'):
+        def f(a="str_value"):
             return a
+
         self.assertIsInterned(f())
 
     @cpython_only
     def test_interned_string_with_null(self):
-        co = compile(r'res = "str\0value!"', '?', 'exec')
-        v = self.find_const(co.co_consts, 'str\0value!')
+        co = compile(r'res = "str\0value!"', "?", "exec")
+        v = self.find_const(co.co_consts, "str\0value!")
         self.assertIsNotInterned(v)
 
 
@@ -327,6 +356,7 @@ class CodeWeakRefTest(unittest.TestCase):
         del namespace
 
         self.called = False
+
         def callback(code):
             self.called = True
 
@@ -344,7 +374,7 @@ class CodeWeakRefTest(unittest.TestCase):
 
 if check_impl_detail(cpython=True) and ctypes is not None:
     py = ctypes.pythonapi
-    freefunc = ctypes.CFUNCTYPE(None,ctypes.c_voidp)
+    freefunc = ctypes.CFUNCTYPE(None, ctypes.c_voidp)
 
     RequestCodeExtraIndex = py._PyEval_RequestCodeExtraIndex
     RequestCodeExtraIndex.argtypes = (freefunc,)
@@ -355,11 +385,15 @@ if check_impl_detail(cpython=True) and ctypes is not None:
     SetExtra.restype = ctypes.c_int
 
     GetExtra = py._PyCode_GetExtra
-    GetExtra.argtypes = (ctypes.py_object, ctypes.c_ssize_t,
-                         ctypes.POINTER(ctypes.c_voidp))
+    GetExtra.argtypes = (
+        ctypes.py_object,
+        ctypes.c_ssize_t,
+        ctypes.POINTER(ctypes.c_voidp),
+    )
     GetExtra.restype = ctypes.c_int
 
     LAST_FREED = None
+
     def myfree(ptr):
         global LAST_FREED
         LAST_FREED = ptr
@@ -372,22 +406,26 @@ if check_impl_detail(cpython=True) and ctypes is not None:
             # Defining a function causes the containing function to have a
             # reference to the code object.  We need the code objects to go
             # away, so we eval a lambda.
-            return eval('lambda:42')
+            return eval("lambda:42")
 
         def test_get_non_code(self):
             f = self.get_func()
 
-            self.assertRaises(SystemError, SetExtra, 42, FREE_INDEX,
-                              ctypes.c_voidp(100))
-            self.assertRaises(SystemError, GetExtra, 42, FREE_INDEX,
-                              ctypes.c_voidp(100))
+            self.assertRaises(
+                SystemError, SetExtra, 42, FREE_INDEX, ctypes.c_voidp(100)
+            )
+            self.assertRaises(
+                SystemError, GetExtra, 42, FREE_INDEX, ctypes.c_voidp(100)
+            )
 
         def test_bad_index(self):
             f = self.get_func()
-            self.assertRaises(SystemError, SetExtra, f.__code__,
-                              FREE_INDEX+100, ctypes.c_voidp(100))
-            self.assertEqual(GetExtra(f.__code__, FREE_INDEX+100,
-                              ctypes.c_voidp(100)), 0)
+            self.assertRaises(
+                SystemError, SetExtra, f.__code__, FREE_INDEX + 100, ctypes.c_voidp(100)
+            )
+            self.assertEqual(
+                GetExtra(f.__code__, FREE_INDEX + 100, ctypes.c_voidp(100)), 0
+            )
 
         def test_free_called(self):
             # Verify that the provided free function gets invoked
@@ -418,11 +456,13 @@ if check_impl_detail(cpython=True) and ctypes is not None:
             # Freeing a code object on a different thread then
             # where the co_extra was set should be safe.
             f = self.get_func()
+
             class ThreadTest(threading.Thread):
                 def __init__(self, f, test):
                     super().__init__()
                     self.f = f
                     self.test = test
+
                 def run(self):
                     del self.f
                     self.test.assertEqual(LAST_FREED, 500)
@@ -437,11 +477,13 @@ if check_impl_detail(cpython=True) and ctypes is not None:
 
 def test_main(verbose=None):
     from test import test_code
+
     run_doctest(test_code, verbose)
     tests = [CodeTest, CodeConstsTest, CodeWeakRefTest]
     if check_impl_detail(cpython=True) and ctypes is not None:
         tests.append(CoExtra)
     run_unittest(*tests)
+
 
 if __name__ == "__main__":
     test_main()

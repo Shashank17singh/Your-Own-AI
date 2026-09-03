@@ -10,7 +10,7 @@ import operator
 import re
 import sys
 
-__all__ = ['Fraction']
+__all__ = ["Fraction"]
 
 
 # Constants related to the hash implementation;  hash(x) is based
@@ -20,7 +20,8 @@ _PyHASH_MODULUS = sys.hash_info.modulus
 # _PyHASH_MODULUS.
 _PyHASH_INF = sys.hash_info.inf
 
-_RATIONAL_FORMAT = re.compile(r"""
+_RATIONAL_FORMAT = re.compile(
+    r"""
     \A\s*                      # optional whitespace at the start, then
     (?P<sign>[-+]?)            # an optional sign, then
     (?=\d|\.\d)                # lookahead for digit or .digit
@@ -32,7 +33,9 @@ _RATIONAL_FORMAT = re.compile(r"""
        (?:E(?P<exp>[-+]?\d+))? # and optional exponent
     )
     \s*\Z                      # and optional whitespace to finish
-""", re.VERBOSE | re.IGNORECASE)
+""",
+    re.VERBOSE | re.IGNORECASE,
+)
 
 
 class Fraction(numbers.Rational):
@@ -56,7 +59,7 @@ class Fraction(numbers.Rational):
 
     """
 
-    __slots__ = ('_numerator', '_denominator')
+    __slots__ = ("_numerator", "_denominator")
 
     # We're immutable, so use __new__ not __init__
     def __new__(cls, numerator=0, denominator=None, *, _normalize=True):
@@ -112,48 +115,46 @@ class Fraction(numbers.Rational):
                 # Handle construction from strings.
                 m = _RATIONAL_FORMAT.match(numerator)
                 if m is None:
-                    raise ValueError('Invalid literal for Fraction: %r' %
-                                     numerator)
-                numerator = int(m.group('num') or '0')
-                denom = m.group('denom')
+                    raise ValueError("Invalid literal for Fraction: %r" % numerator)
+                numerator = int(m.group("num") or "0")
+                denom = m.group("denom")
                 if denom:
                     denominator = int(denom)
                 else:
                     denominator = 1
-                    decimal = m.group('decimal')
+                    decimal = m.group("decimal")
                     if decimal:
-                        scale = 10**len(decimal)
+                        scale = 10 ** len(decimal)
                         numerator = numerator * scale + int(decimal)
                         denominator *= scale
-                    exp = m.group('exp')
+                    exp = m.group("exp")
                     if exp:
                         exp = int(exp)
                         if exp >= 0:
                             numerator *= 10**exp
                         else:
                             denominator *= 10**-exp
-                if m.group('sign') == '-':
+                if m.group("sign") == "-":
                     numerator = -numerator
 
             else:
-                raise TypeError("argument should be a string "
-                                "or a Rational instance")
+                raise TypeError("argument should be a string " "or a Rational instance")
 
         elif type(numerator) is int is type(denominator):
-            pass # *very* normal case
+            pass  # *very* normal case
 
-        elif (isinstance(numerator, numbers.Rational) and
-            isinstance(denominator, numbers.Rational)):
+        elif isinstance(numerator, numbers.Rational) and isinstance(
+            denominator, numbers.Rational
+        ):
             numerator, denominator = (
                 numerator.numerator * denominator.denominator,
-                denominator.numerator * numerator.denominator
-                )
+                denominator.numerator * numerator.denominator,
+            )
         else:
-            raise TypeError("both arguments should be "
-                            "Rational instances")
+            raise TypeError("both arguments should be " "Rational instances")
 
         if denominator == 0:
-            raise ZeroDivisionError('Fraction(%s, 0)' % numerator)
+            raise ZeroDivisionError("Fraction(%s, 0)" % numerator)
         if _normalize:
             g = math.gcd(numerator, denominator)
             if denominator < 0:
@@ -174,20 +175,24 @@ class Fraction(numbers.Rational):
         if isinstance(f, numbers.Integral):
             return cls(f)
         elif not isinstance(f, float):
-            raise TypeError("%s.from_float() only takes floats, not %r (%s)" %
-                            (cls.__name__, f, type(f).__name__))
+            raise TypeError(
+                "%s.from_float() only takes floats, not %r (%s)"
+                % (cls.__name__, f, type(f).__name__)
+            )
         return cls(*f.as_integer_ratio())
 
     @classmethod
     def from_decimal(cls, dec):
         """Converts a finite Decimal instance to a rational number, exactly."""
         from decimal import Decimal
+
         if isinstance(dec, numbers.Integral):
             dec = Decimal(int(dec))
         elif not isinstance(dec, Decimal):
             raise TypeError(
-                "%s.from_decimal() only takes Decimals, not %r (%s)" %
-                (cls.__name__, dec, type(dec).__name__))
+                "%s.from_decimal() only takes Decimals, not %r (%s)"
+                % (cls.__name__, dec, type(dec).__name__)
+            )
         return cls(*dec.as_integer_ratio())
 
     def as_integer_ratio(self):
@@ -238,17 +243,17 @@ class Fraction(numbers.Rational):
         p0, q0, p1, q1 = 0, 1, 1, 0
         n, d = self._numerator, self._denominator
         while True:
-            a = n//d
-            q2 = q0+a*q1
+            a = n // d
+            q2 = q0 + a * q1
             if q2 > max_denominator:
                 break
-            p0, q0, p1, q1 = p1, q1, p0+a*p1, q2
-            n, d = d, n-a*d
+            p0, q0, p1, q1 = p1, q1, p0 + a * p1, q2
+            n, d = d, n - a * d
 
-        k = (max_denominator-q0)//q1
-        bound1 = Fraction(p0+k*p1, q0+k*q1)
+        k = (max_denominator - q0) // q1
+        bound1 = Fraction(p0 + k * p1, q0 + k * q1)
         bound2 = Fraction(p1, q1)
-        if abs(bound2 - self) <= abs(bound1-self):
+        if abs(bound2 - self) <= abs(bound1 - self):
             return bound2
         else:
             return bound1
@@ -263,15 +268,18 @@ class Fraction(numbers.Rational):
 
     def __repr__(self):
         """repr(self)"""
-        return '%s(%s, %s)' % (self.__class__.__name__,
-                               self._numerator, self._denominator)
+        return "%s(%s, %s)" % (
+            self.__class__.__name__,
+            self._numerator,
+            self._denominator,
+        )
 
     def __str__(self):
         """str(self)"""
         if self._denominator == 1:
             return str(self._numerator)
         else:
-            return '%s/%s' % (self._numerator, self._denominator)
+            return "%s/%s" % (self._numerator, self._denominator)
 
     def _operator_fallbacks(monomorphic_operator, fallback_operator):
         """Generates forward and reverse operators given a purely-rational
@@ -353,6 +361,7 @@ class Fraction(numbers.Rational):
                will get a TypeError.
 
         """
+
         def forward(a, b):
             if isinstance(b, (int, Fraction)):
                 return monomorphic_operator(a, b)
@@ -362,7 +371,8 @@ class Fraction(numbers.Rational):
                 return fallback_operator(complex(a), b)
             else:
                 return NotImplemented
-        forward.__name__ = '__' + fallback_operator.__name__ + '__'
+
+        forward.__name__ = "__" + fallback_operator.__name__ + "__"
         forward.__doc__ = monomorphic_operator.__doc__
 
         def reverse(b, a):
@@ -375,7 +385,8 @@ class Fraction(numbers.Rational):
                 return fallback_operator(complex(a), complex(b))
             else:
                 return NotImplemented
-        reverse.__name__ = '__r' + fallback_operator.__name__ + '__'
+
+        reverse.__name__ = "__r" + fallback_operator.__name__ + "__"
         reverse.__doc__ = monomorphic_operator.__doc__
 
         return forward, reverse
@@ -383,16 +394,14 @@ class Fraction(numbers.Rational):
     def _add(a, b):
         """a + b"""
         da, db = a.denominator, b.denominator
-        return Fraction(a.numerator * db + b.numerator * da,
-                        da * db)
+        return Fraction(a.numerator * db + b.numerator * da, da * db)
 
     __add__, __radd__ = _operator_fallbacks(_add, operator.add)
 
     def _sub(a, b):
         """a - b"""
         da, db = a.denominator, b.denominator
-        return Fraction(a.numerator * db - b.numerator * da,
-                        da * db)
+        return Fraction(a.numerator * db - b.numerator * da, da * db)
 
     __sub__, __rsub__ = _operator_fallbacks(_sub, operator.sub)
 
@@ -404,8 +413,7 @@ class Fraction(numbers.Rational):
 
     def _div(a, b):
         """a / b"""
-        return Fraction(a.numerator * b.denominator,
-                        a.denominator * b.numerator)
+        return Fraction(a.numerator * b.denominator, a.denominator * b.numerator)
 
     __truediv__, __rtruediv__ = _operator_fallbacks(_div, operator.truediv)
 
@@ -442,17 +450,19 @@ class Fraction(numbers.Rational):
             if b.denominator == 1:
                 power = b.numerator
                 if power >= 0:
-                    return Fraction(a._numerator ** power,
-                                    a._denominator ** power,
-                                    _normalize=False)
+                    return Fraction(
+                        a._numerator**power, a._denominator**power, _normalize=False
+                    )
                 elif a._numerator >= 0:
-                    return Fraction(a._denominator ** -power,
-                                    a._numerator ** -power,
-                                    _normalize=False)
+                    return Fraction(
+                        a._denominator**-power, a._numerator**-power, _normalize=False
+                    )
                 else:
-                    return Fraction((-a._denominator) ** -power,
-                                    (-a._numerator) ** -power,
-                                    _normalize=False)
+                    return Fraction(
+                        (-a._denominator) ** -power,
+                        (-a._numerator) ** -power,
+                        _normalize=False,
+                    )
             else:
                 # A fractional power will generally produce an
                 # irrational number.
@@ -464,13 +474,13 @@ class Fraction(numbers.Rational):
         """a ** b"""
         if b._denominator == 1 and b._numerator >= 0:
             # If a is an int, keep it that way if possible.
-            return a ** b._numerator
+            return a**b._numerator
 
         if isinstance(a, numbers.Rational):
             return Fraction(a.numerator, a.denominator) ** b
 
         if b._denominator == 1:
-            return a ** b._numerator
+            return a**b._numerator
 
         return a ** float(b)
 
@@ -518,7 +528,7 @@ class Fraction(numbers.Rational):
                 return floor
             else:
                 return floor + 1
-        shift = 10**abs(ndigits)
+        shift = 10 ** abs(ndigits)
         # See _operator_fallbacks.forward to check that the results of
         # these operations will always be Fraction and therefore have
         # round().
@@ -565,8 +575,7 @@ class Fraction(numbers.Rational):
         if type(b) is int:
             return a._numerator == b and a._denominator == 1
         if isinstance(b, numbers.Rational):
-            return (a._numerator == b.numerator and
-                    a._denominator == b.denominator)
+            return a._numerator == b.numerator and a._denominator == b.denominator
         if isinstance(b, numbers.Complex) and b.imag == 0:
             b = b.real
         if isinstance(b, float):
@@ -593,8 +602,9 @@ class Fraction(numbers.Rational):
         """
         # convert other to a Rational instance where reasonable.
         if isinstance(other, numbers.Rational):
-            return op(self._numerator * other.denominator,
-                      self._denominator * other.numerator)
+            return op(
+                self._numerator * other.denominator, self._denominator * other.numerator
+            )
         if isinstance(other, float):
             if math.isnan(other) or math.isinf(other):
                 return op(0.0, other)
@@ -632,10 +642,10 @@ class Fraction(numbers.Rational):
 
     def __copy__(self):
         if type(self) == Fraction:
-            return self     # I'm immutable; therefore I am my own clone
+            return self  # I'm immutable; therefore I am my own clone
         return self.__class__(self._numerator, self._denominator)
 
     def __deepcopy__(self, memo):
         if type(self) == Fraction:
-            return self     # My components are also immutable
+            return self  # My components are also immutable
         return self.__class__(self._numerator, self._denominator)

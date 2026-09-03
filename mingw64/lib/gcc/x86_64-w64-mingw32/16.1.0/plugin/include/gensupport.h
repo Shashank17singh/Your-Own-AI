@@ -41,17 +41,17 @@ public:
   int index;
 };
 
-#define OPTAB_CL(name, pat, c, b, l)		name,
+#define OPTAB_CL(name, pat, c, b, l) name,
 #define OPTAB_CX(name, pat)
-#define OPTAB_CD(name, pat)			name,
-#define OPTAB_NL(name, pat, c, b, s, l)		name,
-#define OPTAB_NC(name, pat, c)			name,
+#define OPTAB_CD(name, pat) name,
+#define OPTAB_NL(name, pat, c, b, s, l) name,
+#define OPTAB_NC(name, pat, c) name,
 #define OPTAB_NX(name, pat)
-#define OPTAB_VL(name, pat, c, b, s, l)		name,
-#define OPTAB_VC(name, pat, c)			name,
+#define OPTAB_VL(name, pat, c, b, s, l) name,
+#define OPTAB_VC(name, pat, c) name,
 #define OPTAB_VX(name, pat)
-#define OPTAB_DC(name, pat, c)			name,
-#define OPTAB_D(name, pat)			name,
+#define OPTAB_DC(name, pat, c) name,
+#define OPTAB_D(name, pat) name,
 
 /* Enumerates all optabs.  */
 typedef enum optab_tag {
@@ -73,8 +73,7 @@ typedef enum optab_tag {
 #undef OPTAB_D
 
 /* Describes one entry in optabs.def.  */
-struct optab_def
-{
+struct optab_def {
   /* The name of the optab (e.g. "add_optab").  */
   const char *name;
 
@@ -109,11 +108,10 @@ extern optab_def optabs[];
 extern unsigned int num_optabs;
 
 extern vec<const char *> register_filters;
-extern unsigned int get_register_filter_id (const char *);
+extern unsigned int get_register_filter_id(const char *);
 
 /* Information about an instruction name that matches an optab pattern.  */
-struct optab_pattern
-{
+struct optab_pattern {
   /* The name of the instruction.  */
   const char *name;
 
@@ -129,13 +127,13 @@ struct optab_pattern
   unsigned int sort_num;
 };
 
-extern rtx add_implicit_parallel (rtvec);
-extern rtx_reader *init_rtx_reader_args_cb (int, const char **,
-					    bool (*)(const char *));
-extern rtx_reader *init_rtx_reader_args (int, const char **);
-extern int count_patterns ();
-extern bool read_md_rtx (md_rtx_info *);
-extern unsigned int get_num_insn_codes ();
+extern rtx add_implicit_parallel(rtvec);
+extern rtx_reader *init_rtx_reader_args_cb(int, const char **,
+                                           bool (*)(const char *));
+extern rtx_reader *init_rtx_reader_args(int, const char **);
+extern int count_patterns();
+extern bool read_md_rtx(md_rtx_info *);
+extern unsigned int get_num_insn_codes();
 
 /* Set this to 0 to disable automatic elision of insn patterns which
    can never be used in this configuration.  See genconditions.cc.
@@ -144,60 +142,57 @@ extern int insn_elision;
 
 /* Return the C test that says whether a definition rtx can be used,
    or "" if it can be used unconditionally.  */
-extern const char *get_c_test (rtx);
+extern const char *get_c_test(rtx);
 
 /* If the C test passed as the argument can be evaluated at compile
    time, return its truth value; else return -1.  The test must have
    appeared somewhere in the machine description when genconditions
    was run.  */
-extern int maybe_eval_c_test (const char *);
+extern int maybe_eval_c_test(const char *);
 
 /* Add an entry to the table of conditions.  Used by genconditions and
    by read-rtl.cc.  */
-extern void add_c_test (const char *, int);
+extern void add_c_test(const char *, int);
 
 /* This structure is used internally by gensupport.cc and genconditions.cc.  */
-struct c_test
-{
+struct c_test {
   const char *expr;
   int value;
 };
 
 #ifdef __HASHTAB_H__
-extern hashval_t hash_c_test (const void *);
-extern int cmp_c_test (const void *, const void *);
-extern void traverse_c_tests (htab_trav, void *);
+extern hashval_t hash_c_test(const void *);
+extern int cmp_c_test(const void *, const void *);
+extern void traverse_c_tests(htab_trav, void *);
 #endif
 
 /* Predicate handling: helper functions and data structures.  */
 
-struct pred_data
-{
-  struct pred_data *next;	/* for iterating over the set of all preds */
-  const char *name;		/* predicate name */
-  bool special;			/* special handling of modes? */
+struct pred_data {
+  struct pred_data *next; /* for iterating over the set of all preds */
+  const char *name;       /* predicate name */
+  bool special;           /* special handling of modes? */
 
   /* data used primarily by genpreds.cc */
-  const char *c_block;		/* C test block */
-  rtx exp;			/* RTL test expression */
+  const char *c_block; /* C test block */
+  rtx exp;             /* RTL test expression */
 
   /* data used primarily by genrecog.cc */
-  enum rtx_code singleton;	/* if pred takes only one code, that code */
-  int num_codes;		/* number of codes accepted */
-  bool allows_non_lvalue;	/* if pred allows non-lvalue expressions */
-  bool allows_non_const;	/* if pred allows non-const expressions */
-  bool codes[NUM_RTX_CODE];	/* set of codes accepted */
+  enum rtx_code singleton;  /* if pred takes only one code, that code */
+  int num_codes;            /* number of codes accepted */
+  bool allows_non_lvalue;   /* if pred allows non-lvalue expressions */
+  bool allows_non_const;    /* if pred allows non-const expressions */
+  bool codes[NUM_RTX_CODE]; /* set of codes accepted */
 };
 
 extern struct pred_data *first_predicate;
-extern struct pred_data *lookup_predicate (const char *);
-extern void add_predicate_code (struct pred_data *, enum rtx_code);
-extern void add_predicate (struct pred_data *);
+extern struct pred_data *lookup_predicate(const char *);
+extern void add_predicate_code(struct pred_data *, enum rtx_code);
+extern void add_predicate(struct pred_data *);
 
 #define FOR_ALL_PREDICATES(p) for (p = first_predicate; p; p = p->next)
 
-struct pattern_stats
-{
+struct pattern_stats {
   /* The largest match_operand, match_operator or match_parallel
      number found.  */
   int max_opno;
@@ -225,11 +220,11 @@ struct pattern_stats
 
 extern hash_set<rtx> compact_syntax;
 
-extern void get_pattern_stats (struct pattern_stats *ranges, rtvec vec);
-extern void compute_test_codes (rtx, file_location, char *);
-extern file_location get_file_location (rtx);
-extern const char *get_emit_function (rtx);
-extern bool find_optab (optab_pattern *, const char *);
-extern FILE *choose_output (const vec<FILE *> &, unsigned &);
+extern void get_pattern_stats(struct pattern_stats *ranges, rtvec vec);
+extern void compute_test_codes(rtx, file_location, char *);
+extern file_location get_file_location(rtx);
+extern const char *get_emit_function(rtx);
+extern bool find_optab(optab_pattern *, const char *);
+extern FILE *choose_output(const vec<FILE *> &, unsigned &);
 
 #endif /* GCC_GENSUPPORT_H */

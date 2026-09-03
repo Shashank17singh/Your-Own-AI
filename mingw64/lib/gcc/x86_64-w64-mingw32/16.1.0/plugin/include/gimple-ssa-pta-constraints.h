@@ -23,15 +23,15 @@
 
 namespace pointer_analysis {
 
-varinfo_t lookup_vi_for_tree (tree);
-varinfo_t lookup_call_use_vi (gcall *);
-varinfo_t lookup_call_clobber_vi (gcall *);
-varinfo_t get_fi_for_callee (gcall *);
+varinfo_t lookup_vi_for_tree(tree);
+varinfo_t lookup_call_use_vi(gcall *);
+varinfo_t lookup_call_clobber_vi(gcall *);
+varinfo_t get_fi_for_callee(gcall *);
 
-void init_constraint_builder (void);
-void delete_constraint_builder (void);
-void intra_build_constraints (void);
-void ipa_build_constraints (void);
+void init_constraint_builder(void);
+void delete_constraint_builder(void);
+void intra_build_constraints(void);
+void ipa_build_constraints(void);
 
 } // namespace pointer_analysis
 

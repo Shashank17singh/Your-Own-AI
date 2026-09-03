@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING3.  If not see
 <http://www.gnu.org/licenses/>.  */
 
-
 /* This header generic type query and conversion functions.
 
 
@@ -169,48 +168,35 @@ when needed may result in a crash.  For example,
 /* A base class that specializations of is_a_helper can use if casting
    U * to T is simply a reinterpret_cast.  */
 
-template <typename T>
-struct reinterpret_is_a_helper
-{
-  template <typename U>
-  static inline T cast (U *p) { return reinterpret_cast <T> (p); }
+template <typename T> struct reinterpret_is_a_helper {
+  template <typename U> static inline T cast(U *p) {
+    return reinterpret_cast<T>(p);
+  }
 };
 
 /* A base class that specializations of is_a_helper can use if casting
    U * to T is simply a static_cast.  This is more type-safe than
    reinterpret_is_a_helper.  */
 
-template <typename T>
-struct static_is_a_helper
-{
-  template <typename U>
-  static inline T cast (U *p) { return static_cast <T> (p); }
+template <typename T> struct static_is_a_helper {
+  template <typename U> static inline T cast(U *p) { return static_cast<T>(p); }
 };
 
 /* A generic type conversion internal helper class.  */
 
-template <typename T>
-struct is_a_helper : reinterpret_is_a_helper<T>
-{
-  template <typename U>
-  static inline bool test (U *p);
+template <typename T> struct is_a_helper : reinterpret_is_a_helper<T> {
+  template <typename U> static inline bool test(U *p);
 };
 
 /* Reuse the definition of is_a_helper<T *> to implement
    is_a_helper<const T *>.  */
 
-template <typename T>
-struct is_a_helper<const T *>
-{
-  template <typename U>
-  static inline const T *cast (const U *p)
-  {
-    return is_a_helper<T *>::cast (const_cast <U *> (p));
+template <typename T> struct is_a_helper<const T *> {
+  template <typename U> static inline const T *cast(const U *p) {
+    return is_a_helper<T *>::cast(const_cast<U *>(p));
   }
-  template <typename U>
-  static inline bool test (const U *p)
-  {
-    return is_a_helper<T *>::test (p);
+  template <typename U> static inline bool test(const U *p) {
+    return is_a_helper<T *>::test(p);
   }
 };
 
@@ -225,22 +211,16 @@ struct is_a_helper<const T *>
    to use this function.  The question answered is "Is type T a derived type of
    type U?".  */
 
-template <typename T, typename U>
-inline bool
-is_a (U *p)
-{
-  return is_a_helper<T>::test (p);
+template <typename T, typename U> inline bool is_a(U *p) {
+  return is_a_helper<T>::test(p);
 }
 
 /* Similar to is_a<>, but where the pointer can be NULL, even if
    is_a_helper<T> doesn't check for NULL.  */
 
-template <typename T, typename U>
-inline bool
-safe_is_a (U *p)
-{
+template <typename T, typename U> inline bool safe_is_a(U *p) {
   if (p)
-    return is_a_helper <T>::test (p);
+    return is_a_helper<T>::test(p);
   else
     return false;
 }
@@ -248,50 +228,36 @@ safe_is_a (U *p)
 /* A generic conversion from a base type U to a derived type T.  See the
    discussion above for when to use this function.  */
 
-template <typename T, typename U>
-inline T
-as_a (U *p)
-{
-  gcc_checking_assert (is_a <T> (p));
-  return is_a_helper <T>::cast (p);
+template <typename T, typename U> inline T as_a(U *p) {
+  gcc_checking_assert(is_a<T>(p));
+  return is_a_helper<T>::cast(p);
 }
 
 /* Similar to as_a<>, but where the pointer can be NULL, even if
    is_a_helper<T> doesn't check for NULL.  */
 
-template <typename T, typename U>
-inline T
-safe_as_a (U *p)
-{
-  if (p)
-    {
-      gcc_checking_assert (is_a <T> (p));
-      return is_a_helper <T>::cast (p);
-    }
-  else
+template <typename T, typename U> inline T safe_as_a(U *p) {
+  if (p) {
+    gcc_checking_assert(is_a<T>(p));
+    return is_a_helper<T>::cast(p);
+  } else
     return NULL;
 }
 
 /* A generic checked conversion from a base type U to a derived type T.  See
    the discussion above for when to use this function.  */
 
-template <typename T, typename U>
-inline T
-dyn_cast (U *p)
-{
-  if (is_a <T> (p))
-    return is_a_helper <T>::cast (p);
+template <typename T, typename U> inline T dyn_cast(U *p) {
+  if (is_a<T>(p))
+    return is_a_helper<T>::cast(p);
   else
-    return static_cast <T> (0);
+    return static_cast<T>(0);
 }
 
 /* Similar to dyn_cast, except that the pointer may be null.  */
 
-template <typename T, typename U>
-inline T
-safe_dyn_cast (U *p)
-{
-  return p ? dyn_cast <T> (p) : 0;
+template <typename T, typename U> inline T safe_dyn_cast(U *p) {
+  return p ? dyn_cast<T>(p) : 0;
 }
 
-#endif  /* GCC_IS_A_H  */
+#endif /* GCC_IS_A_H  */

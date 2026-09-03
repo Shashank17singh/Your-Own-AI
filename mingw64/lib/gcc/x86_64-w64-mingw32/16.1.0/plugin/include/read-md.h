@@ -25,16 +25,17 @@ along with GCC; see the file COPYING3.  If not see
 /* Records a position in the file.  */
 class file_location {
 public:
-  file_location () {}
-  file_location (const char *, int, int);
+  file_location() {}
+  file_location(const char *, int, int);
 
   const char *filename;
   int lineno;
   int colno;
 };
 
-inline file_location::file_location (const char *filename_in, int lineno_in, int colno_in)
-: filename (filename_in), lineno (lineno_in), colno (colno_in) {}
+inline file_location::file_location(const char *filename_in, int lineno_in,
+                                    int colno_in)
+    : filename(filename_in), lineno(lineno_in), colno(colno_in) {}
 
 /* Holds one symbol or number in the .md file.  */
 struct md_name {
@@ -146,9 +147,8 @@ struct mapping;
    rtl.def; for that see the rtx_reader subclass below (implemented in
    read-rtl.cc).  */
 
-class md_reader
-{
- public:
+class md_reader {
+public:
   /* Associates PTR (which can be a string, etc.) with the file location
      specified by LOC.  */
   struct ptr_loc {
@@ -156,93 +156,91 @@ class md_reader
     file_location loc;
   };
 
-  md_reader (bool compact);
-  virtual ~md_reader ();
+  md_reader(bool compact);
+  virtual ~md_reader();
 
-  bool read_md_files (int, const char **, bool (*) (const char *));
-  bool read_file (const char *filename);
-  bool read_file_fragment (const char *filename,
-			   int first_line,
-			   int last_line);
+  bool read_md_files(int, const char **, bool (*)(const char *));
+  bool read_file(const char *filename);
+  bool read_file_fragment(const char *filename, int first_line, int last_line);
 
   /* A hook that handles a single .md-file directive, up to but not
      including the closing ')'.  It takes two arguments: the file position
      at which the directive started, and the name of the directive.  The next
      unread character is the optional space after the directive name.  */
-  virtual void handle_unknown_directive (file_location, const char *) = 0;
+  virtual void handle_unknown_directive(file_location, const char *) = 0;
 
-  file_location get_current_location () const;
+  file_location get_current_location() const;
 
-  bool is_compact () const { return m_compact; }
+  bool is_compact() const { return m_compact; }
 
   /* Defined in read-md.cc.  */
-  int read_char (void);
-  void unread_char (int ch);
-  file_location read_name (struct md_name *name);
-  file_location read_name_or_nil (struct md_name *);
-  void read_escape ();
-  char *read_quoted_string ();
-  char *read_braced_string ();
-  char *read_string (int star_if_braced);
-  void read_skip_construct (int depth, file_location loc);
-  void require_char (char expected);
-  void require_char_ws (char expected);
-  void require_word_ws (const char *expected);
-  int peek_char (void);
+  int read_char(void);
+  void unread_char(int ch);
+  file_location read_name(struct md_name *name);
+  file_location read_name_or_nil(struct md_name *);
+  void read_escape();
+  char *read_quoted_string();
+  char *read_braced_string();
+  char *read_string(int star_if_braced);
+  void read_skip_construct(int depth, file_location loc);
+  void require_char(char expected);
+  void require_char_ws(char expected);
+  void require_word_ws(const char *expected);
+  int peek_char(void);
 
-  void set_md_ptr_loc (const void *ptr, file_location);
-  const struct ptr_loc *get_md_ptr_loc (const void *ptr);
-  void copy_md_ptr_loc (const void *new_ptr, const void *old_ptr);
-  void fprint_md_ptr_loc (FILE *outf, const void *ptr);
-  void print_md_ptr_loc (const void *ptr, FILE * = stdout);
+  void set_md_ptr_loc(const void *ptr, file_location);
+  const struct ptr_loc *get_md_ptr_loc(const void *ptr);
+  void copy_md_ptr_loc(const void *new_ptr, const void *old_ptr);
+  void fprint_md_ptr_loc(FILE *outf, const void *ptr);
+  void print_md_ptr_loc(const void *ptr, FILE * = stdout);
 
-  struct enum_type *lookup_enum_type (const char *name);
-  void traverse_enum_types (htab_trav callback, void *info);
+  struct enum_type *lookup_enum_type(const char *name);
+  void traverse_enum_types(htab_trav callback, void *info);
 
-  void handle_constants ();
-  void traverse_md_constants (htab_trav callback, void *info);
-  void handle_enum (file_location loc, bool md_p);
+  void handle_constants();
+  void traverse_md_constants(htab_trav callback, void *info);
+  void handle_enum(file_location loc, bool md_p);
 
-  const char *join_c_conditions (const char *cond1, const char *cond2);
-  void fprint_c_condition (FILE *outf, const char *cond);
-  void print_c_condition (FILE *outf, const char *cond);
+  const char *join_c_conditions(const char *cond1, const char *cond2);
+  void fprint_c_condition(FILE *outf, const char *cond);
+  void print_c_condition(FILE *outf, const char *cond);
 
   /* Defined in read-rtl.cc.  */
-  const char *apply_iterator_to_string (const char *string);
-  rtx copy_rtx_for_iterators (rtx original);
-  void read_conditions ();
-  void record_potential_iterator_use (struct iterator_group *group,
-				      file_location loc, rtx x,
-				      unsigned int index, const char *name);
-  struct mapping *read_mapping (struct iterator_group *group, htab_t table);
-  overloaded_name *handle_overloaded_name (rtx, vec<mapping *> *);
+  const char *apply_iterator_to_string(const char *string);
+  rtx copy_rtx_for_iterators(rtx original);
+  void read_conditions();
+  void record_potential_iterator_use(struct iterator_group *group,
+                                     file_location loc, rtx x,
+                                     unsigned int index, const char *name);
+  struct mapping *read_mapping(struct iterator_group *group, htab_t table);
+  overloaded_name *handle_overloaded_name(rtx, vec<mapping *> *);
 
-  const char *get_top_level_filename () const { return m_toplevel_fname; }
-  const char *get_filename () const { return m_read_md_filename; }
-  int get_lineno () const { return m_read_md_lineno; }
-  int get_colno () const { return m_read_md_colno; }
+  const char *get_top_level_filename() const { return m_toplevel_fname; }
+  const char *get_filename() const { return m_read_md_filename; }
+  int get_lineno() const { return m_read_md_lineno; }
+  int get_colno() const { return m_read_md_colno; }
 
-  struct obstack *get_string_obstack () { return &m_string_obstack; }
-  htab_t get_md_constants () { return m_md_constants; }
+  struct obstack *get_string_obstack() { return &m_string_obstack; }
+  htab_t get_md_constants() { return m_md_constants; }
 
-  overloaded_name *get_overloads () const { return m_first_overload; }
+  overloaded_name *get_overloads() const { return m_first_overload; }
 
- private:
+private:
   /* A singly-linked list of filenames.  */
   struct file_name_list {
     struct file_name_list *next;
     const char *fname;
   };
 
- private:
-  void handle_file ();
-  void handle_toplevel_file ();
-  void handle_include (file_location loc);
-  void add_include_path (const char *arg);
+private:
+  void handle_file();
+  void handle_toplevel_file();
+  void handle_include(file_location loc);
+  void add_include_path(const char *arg);
 
-  bool read_name_1 (struct md_name *name, file_location *out_loc);
+  bool read_name_1(struct md_name *name, file_location *out_loc);
 
- private:
+private:
   /* Are we reading a compact dump?  */
   bool m_compact;
 
@@ -324,13 +322,12 @@ extern md_reader *md_reader_ptr;
 /* An md_reader subclass which skips unknown directives, for
    the gen* tools that purely use read-md.o.  */
 
-class noop_reader : public md_reader
-{
- public:
-  noop_reader () : md_reader (false) {}
+class noop_reader : public md_reader {
+public:
+  noop_reader() : md_reader(false) {}
 
   /* A dummy implementation which skips unknown directives.  */
-  void handle_unknown_directive (file_location, const char *) override;
+  void handle_unknown_directive(file_location, const char *) override;
 };
 
 /* An md_reader subclass that actually handles full hierarchical
@@ -338,29 +335,28 @@ class noop_reader : public md_reader
 
    Implemented in read-rtl.cc.  */
 
-class rtx_reader : public md_reader
-{
- public:
-  rtx_reader (bool compact);
-  ~rtx_reader ();
+class rtx_reader : public md_reader {
+public:
+  rtx_reader(bool compact);
+  ~rtx_reader();
 
-  bool read_rtx (const char *rtx_name, vec<rtx> *rtxen);
-  rtx rtx_alloc_for_name (const char *);
-  rtx read_rtx_code (const char *code_name);
-  virtual rtx read_rtx_operand (rtx return_rtx, int idx);
-  rtx read_nested_rtx ();
-  rtx read_rtx_variadic (rtx form);
-  char *read_until (const char *terminator_chars, bool consume_terminator);
+  bool read_rtx(const char *rtx_name, vec<rtx> *rtxen);
+  rtx rtx_alloc_for_name(const char *);
+  rtx read_rtx_code(const char *code_name);
+  virtual rtx read_rtx_operand(rtx return_rtx, int idx);
+  rtx read_nested_rtx();
+  rtx read_rtx_variadic(rtx form);
+  char *read_until(const char *terminator_chars, bool consume_terminator);
 
-  virtual void handle_any_trailing_information (rtx) {}
-  virtual rtx postprocess (rtx x) { return x; }
+  virtual void handle_any_trailing_information(rtx) {}
+  virtual rtx postprocess(rtx x) { return x; }
 
   /* Hook to allow function_reader subclass to put STRINGBUF into gc-managed
      memory, rather than within an obstack.
      This base class implementation is a no-op.  */
-  virtual const char *finalize_string (char *stringbuf) { return stringbuf; }
+  virtual const char *finalize_string(char *stringbuf) { return stringbuf; }
 
- protected:
+protected:
   /* Analogous to rtx_writer's m_in_call_function_usage.  */
   bool m_in_call_function_usage;
 
@@ -373,38 +369,30 @@ class rtx_reader : public md_reader
 /* Global singleton; constrast with md_reader_ptr above.  */
 extern rtx_reader *rtx_reader_ptr;
 
-extern void (*include_callback) (const char *);
+extern void (*include_callback)(const char *);
 
 /* Read the next character from the MD file.  */
 
-inline int
-read_char (void)
-{
-  return md_reader_ptr->read_char ();
-}
+inline int read_char(void) { return md_reader_ptr->read_char(); }
 
 /* Put back CH, which was the last character read from the MD file.  */
 
-inline void
-unread_char (int ch)
-{
-  md_reader_ptr->unread_char (ch);
-}
+inline void unread_char(int ch) { md_reader_ptr->unread_char(ch); }
 
-extern hashval_t leading_string_hash (const void *);
-extern int leading_string_eq_p (const void *, const void *);
-extern const char *join_c_conditions (const char *, const char *);
-extern void message_at (file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
-extern void error_at (file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
-extern void fatal_at (file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
-extern void fatal_with_file_and_line (const char *, ...)
-  ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN;
-extern void fatal_expected_char (int, int) ATTRIBUTE_NORETURN;
-extern int read_skip_spaces (void);
-extern int n_comma_elts (const char *);
-extern const char *scan_comma_elt (const char **);
-extern void upcase_string (char *);
-extern void traverse_enum_types (htab_trav, void *);
-extern struct enum_type *lookup_enum_type (const char *);
+extern hashval_t leading_string_hash(const void *);
+extern int leading_string_eq_p(const void *, const void *);
+extern const char *join_c_conditions(const char *, const char *);
+extern void message_at(file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
+extern void error_at(file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
+extern void fatal_at(file_location, const char *, ...) ATTRIBUTE_PRINTF_2;
+extern void fatal_with_file_and_line(const char *,
+                                     ...) ATTRIBUTE_PRINTF_1 ATTRIBUTE_NORETURN;
+extern void fatal_expected_char(int, int) ATTRIBUTE_NORETURN;
+extern int read_skip_spaces(void);
+extern int n_comma_elts(const char *);
+extern const char *scan_comma_elt(const char **);
+extern void upcase_string(char *);
+extern void traverse_enum_types(htab_trav, void *);
+extern struct enum_type *lookup_enum_type(const char *);
 
 #endif /* GCC_READ_MD_H */

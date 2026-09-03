@@ -5,7 +5,5 @@
  */
 #ifndef _MSTERR_H_
 #define _MSTERR_H_
-
 #include "winerror.h"
-
 #endif

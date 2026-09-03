@@ -38,23 +38,21 @@
 #pragma GCC visibility push(default)
 
 #ifdef __cplusplus
-namespace __cxxabiv1
-{
-  /**
-   *  @brief Thrown as part of forced unwinding.
-   *  @ingroup exceptions
-   *
-   *  A magic placeholder class that can be caught by reference to
-   *  recognize forced unwinding.
-   */
-  class __forced_unwind
-  {
-    virtual ~__forced_unwind() throw();
+namespace __cxxabiv1 {
+/**
+ *  @brief Thrown as part of forced unwinding.
+ *  @ingroup exceptions
+ *
+ *  A magic placeholder class that can be caught by reference to
+ *  recognize forced unwinding.
+ */
+class __forced_unwind {
+  virtual ~__forced_unwind() throw();
 
-    // Prevent catch by value.
-    virtual void __pure_dummy() = 0;
-  };
-}
+  // Prevent catch by value.
+  virtual void __pure_dummy() = 0;
+};
+} // namespace __cxxabiv1
 #endif // __cplusplus
 
 #pragma GCC visibility pop

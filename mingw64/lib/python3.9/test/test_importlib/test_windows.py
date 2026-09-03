@@ -1,5 +1,6 @@
 from . import util as test_util
-machinery = test_util.import_importlib('importlib.machinery')
+
+machinery = test_util.import_importlib("importlib.machinery")
 
 import os
 import re
@@ -10,12 +11,19 @@ from distutils.util import get_platform
 from contextlib import contextmanager
 from .util import temp_module
 
-support.import_module('winreg', required_on=['win'])
+support.import_module("winreg", required_on=["win"])
 from winreg import (
-    CreateKey, HKEY_CURRENT_USER,
-    SetValue, REG_SZ, KEY_ALL_ACCESS,
-    EnumKey, CloseKey, DeleteKey, OpenKey
+    CreateKey,
+    HKEY_CURRENT_USER,
+    SetValue,
+    REG_SZ,
+    KEY_ALL_ACCESS,
+    EnumKey,
+    CloseKey,
+    DeleteKey,
+    OpenKey,
 )
+
 
 def delete_registry_tree(root, subkey):
     try:
@@ -33,14 +41,14 @@ def delete_registry_tree(root, subkey):
     CloseKey(hkey)
     DeleteKey(root, subkey)
 
+
 @contextmanager
 def setup_module(machinery, name, path=None):
     if machinery.WindowsRegistryFinder.DEBUG_BUILD:
         root = machinery.WindowsRegistryFinder.REGISTRY_KEY_DEBUG
     else:
         root = machinery.WindowsRegistryFinder.REGISTRY_KEY
-    key = root.format(fullname=name,
-                      sys_version='%d.%d' % sys.version_info[:2])
+    key = root.format(fullname=name, sys_version="%d.%d" % sys.version_info[:2])
     try:
         with temp_module(name, "a = 1") as location:
             subkey = CreateKey(HKEY_CURRENT_USER, key)
@@ -54,18 +62,18 @@ def setup_module(machinery, name, path=None):
         delete_registry_tree(HKEY_CURRENT_USER, key)
 
 
-@unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+@unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
 class WindowsRegistryFinderTests:
     # The module name is process-specific, allowing for
     # simultaneous runs of the same test on a single machine.
     test_module = "spamham{}".format(os.getpid())
 
     def test_find_spec_missing(self):
-        spec = self.machinery.WindowsRegistryFinder.find_spec('spam')
+        spec = self.machinery.WindowsRegistryFinder.find_spec("spam")
         self.assertIs(spec, None)
 
     def test_find_module_missing(self):
-        loader = self.machinery.WindowsRegistryFinder.find_module('spam')
+        loader = self.machinery.WindowsRegistryFinder.find_module("spam")
         self.assertIs(loader, None)
 
     def test_module_found(self):
@@ -82,16 +90,19 @@ class WindowsRegistryFinderTests:
             self.assertIsNone(loader)
             self.assertIsNone(spec)
 
-(Frozen_WindowsRegistryFinderTests,
- Source_WindowsRegistryFinderTests
- ) = test_util.test_both(WindowsRegistryFinderTests, machinery=machinery)
 
-@unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+Frozen_WindowsRegistryFinderTests, Source_WindowsRegistryFinderTests = (
+    test_util.test_both(WindowsRegistryFinderTests, machinery=machinery)
+)
+
+
+@unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
 class WindowsExtensionSuffixTests:
     def test_tagged_suffix(self):
         suffixes = self.machinery.EXTENSION_SUFFIXES
-        expected_tag = ".cp{0.major}{0.minor}-{1}.pyd".format(sys.version_info,
-            re.sub('[^a-zA-Z0-9]', '_', get_platform()))
+        expected_tag = ".cp{0.major}{0.minor}-{1}.pyd".format(
+            sys.version_info, re.sub("[^a-zA-Z0-9]", "_", get_platform())
+        )
         try:
             untagged_i = suffixes.index(".pyd")
         except ValueError:
@@ -104,15 +115,17 @@ class WindowsExtensionSuffixTests:
         tagged_i = suffixes.index(expected_tag)
         self.assertLess(tagged_i, untagged_i)
 
-(Frozen_WindowsExtensionSuffixTests,
- Source_WindowsExtensionSuffixTests
- ) = test_util.test_both(WindowsExtensionSuffixTests, machinery=machinery)
+
+Frozen_WindowsExtensionSuffixTests, Source_WindowsExtensionSuffixTests = (
+    test_util.test_both(WindowsExtensionSuffixTests, machinery=machinery)
+)
 
 
-@unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+@unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
 class WindowsBootstrapPathTests(unittest.TestCase):
     def check_join(self, expected, *inputs):
         from importlib._bootstrap_external import _path_join
+
         actual = _path_join(*inputs)
         if expected.casefold() == actual.casefold():
             return
@@ -139,9 +152,18 @@ class WindowsBootstrapPathTests(unittest.TestCase):
         self.check_join(r"A.\.\B", "A.", ".", "B")
 
         self.check_join(r"\\Server\Share\A\B\C", r"\\Server\Share", "A", "B", "C")
-        self.check_join(r"\\Server\Share\A\B\C", r"\\Server\Share", "D", r"\A", "B", "C")
-        self.check_join(r"\\Server\Share\A\B\C", r"\\Server2\Share2", "D",
-                                                 r"\\Server\Share", "A", "B", "C")
+        self.check_join(
+            r"\\Server\Share\A\B\C", r"\\Server\Share", "D", r"\A", "B", "C"
+        )
+        self.check_join(
+            r"\\Server\Share\A\B\C",
+            r"\\Server2\Share2",
+            "D",
+            r"\\Server\Share",
+            "A",
+            "B",
+            "C",
+        )
         self.check_join(r"\\Server\Share\A\B\C", r"\\Server", r"\Share", "A", "B", "C")
         self.check_join(r"\\Server\Share", r"\\Server\Share")
         self.check_join(r"\\Server\Share\\", r"\\Server\Share\\")

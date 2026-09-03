@@ -22,14 +22,14 @@ class SpecLoaderAttributeTests:
 
     def test___loader__(self):
         loader = SpecLoaderMock()
-        with util.uncache('blah'), util.import_state(meta_path=[loader]):
-            module = self.__import__('blah')
+        with util.uncache("blah"), util.import_state(meta_path=[loader]):
+            module = self.__import__("blah")
         self.assertEqual(loader, module.__loader__)
 
 
-(Frozen_SpecTests,
- Source_SpecTests
- ) = util.test_both(SpecLoaderAttributeTests, __import__=util.__import__)
+Frozen_SpecTests, Source_SpecTests = util.test_both(
+    SpecLoaderAttributeTests, __import__=util.__import__
+)
 
 
 class LoaderMock:
@@ -45,31 +45,31 @@ class LoaderMock:
 class LoaderAttributeTests:
 
     def test___loader___missing(self):
-        module = types.ModuleType('blah')
+        module = types.ModuleType("blah")
         try:
             del module.__loader__
         except AttributeError:
             pass
         loader = LoaderMock()
         loader.module = module
-        with util.uncache('blah'), util.import_state(meta_path=[loader]):
-            module = self.__import__('blah')
+        with util.uncache("blah"), util.import_state(meta_path=[loader]):
+            module = self.__import__("blah")
         self.assertEqual(loader, module.__loader__)
 
     def test___loader___is_None(self):
-        module = types.ModuleType('blah')
+        module = types.ModuleType("blah")
         module.__loader__ = None
         loader = LoaderMock()
         loader.module = module
-        with util.uncache('blah'), util.import_state(meta_path=[loader]):
-            returned_module = self.__import__('blah')
+        with util.uncache("blah"), util.import_state(meta_path=[loader]):
+            returned_module = self.__import__("blah")
         self.assertEqual(loader, module.__loader__)
 
 
-(Frozen_Tests,
- Source_Tests
- ) = util.test_both(LoaderAttributeTests, __import__=util.__import__)
+Frozen_Tests, Source_Tests = util.test_both(
+    LoaderAttributeTests, __import__=util.__import__
+)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

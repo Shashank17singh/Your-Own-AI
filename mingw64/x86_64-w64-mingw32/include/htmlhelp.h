@@ -5,13 +5,10 @@
  */
 #ifndef __HTMLHELP_H__
 #define __HTMLHELP_H__
-
 #include <_mingw_unicode.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define HH_DISPLAY_TOPIC 0x0000
 #define HH_HELP_FINDER 0x0000
 #define HH_DISPLAY_TOC 0x0001
@@ -45,7 +42,6 @@ extern "C" {
 #define HH_PRETRANSLATEMESSAGE 0x00fd
 #define HH_SET_GLOBAL_PROPERTY 0x00fc
 #define HH_SAFE_DISPLAY_TOPIC 0x0020
-
 #define HHWIN_PROP_TAB_AUTOHIDESHOW (1 << 0)
 #define HHWIN_PROP_ONTOP (1 << 1)
 #define HHWIN_PROP_NOTITLEBAR (1 << 2)
@@ -75,7 +71,6 @@ extern "C" {
 #define HHWIN_PROP_TAB_CUSTOM8 (1 << 26)
 #define HHWIN_PROP_TAB_CUSTOM9 (1 << 27)
 #define HHWIN_TB_MARGIN (1 << 28)
-
 #define HHWIN_PARAM_PROPERTIES (1 << 1)
 #define HHWIN_PARAM_STYLES (1 << 2)
 #define HHWIN_PARAM_EXSTYLES (1 << 3)
@@ -89,7 +84,6 @@ extern "C" {
 #define HHWIN_PARAM_TABORDER (1 << 11)
 #define HHWIN_PARAM_HISTORY_COUNT (1 << 12)
 #define HHWIN_PARAM_CUR_TAB (1 << 13)
-
 #define HHWIN_BUTTON_EXPAND (1 << 1)
 #define HHWIN_BUTTON_BACK (1 << 2)
 #define HHWIN_BUTTON_FORWARD (1 << 3)
@@ -112,9 +106,9 @@ extern "C" {
 #define HHWIN_BUTTON_ZOOM (1 << 20)
 #define HHWIN_BUTTON_TOC_NEXT (1 << 21)
 #define HHWIN_BUTTON_TOC_PREV (1 << 22)
-
-#define HHWIN_DEF_BUTTONS (HHWIN_BUTTON_EXPAND | HHWIN_BUTTON_BACK | HHWIN_BUTTON_OPTIONS | HHWIN_BUTTON_PRINT)
-
+#define HHWIN_DEF_BUTTONS                                                      \
+  (HHWIN_BUTTON_EXPAND | HHWIN_BUTTON_BACK | HHWIN_BUTTON_OPTIONS |            \
+   HHWIN_BUTTON_PRINT)
 #define IDTB_EXPAND 200
 #define IDTB_CONTRACT 201
 #define IDTB_STOP 202
@@ -139,175 +133,181 @@ extern "C" {
 #define IDTB_ZOOM 222
 #define IDTB_TOC_NEXT 223
 #define IDTB_TOC_PREV 224
-
-#define HHN_FIRST (0U-860U)
-#define HHN_LAST (0U-879U)
-
-#define HHN_NAVCOMPLETE (HHN_FIRST-0)
-#define HHN_TRACK (HHN_FIRST-1)
-#define HHN_WINDOW_CREATE (HHN_FIRST-2)
-
-  typedef struct tagHHN_NOTIFY {
-    NMHDR hdr;
-    PCSTR pszUrl;
-  } HHN_NOTIFY;
-
-  typedef struct tagHH_POPUP {
-    int cbStruct;
-    HINSTANCE hinst;
-    UINT idString;
-    LPCTSTR pszText;
-    POINT pt;
-    COLORREF clrForeground;
-    COLORREF clrBackground;
-    RECT rcMargins;
-    LPCTSTR pszFont;
-  } HH_POPUP;
-
-  typedef struct tagHH_AKLINK {
-    int cbStruct;
-    WINBOOL fReserved;
-    LPCTSTR pszKeywords;
-    LPCTSTR pszUrl;
-    LPCTSTR pszMsgText;
-    LPCTSTR pszMsgTitle;
-    LPCTSTR pszWindow;
-    WINBOOL fIndexOnFail;
-  } HH_AKLINK;
-
-  enum {
-    HHWIN_NAVTYPE_TOC,HHWIN_NAVTYPE_INDEX,HHWIN_NAVTYPE_SEARCH,HHWIN_NAVTYPE_FAVORITES,HHWIN_NAVTYPE_HISTORY,HHWIN_NAVTYPE_AUTHOR,
-    HHWIN_NAVTYPE_CUSTOM_FIRST = 11
-  };
-
-  enum {
-    IT_INCLUSIVE,IT_EXCLUSIVE,IT_HIDDEN
-  };
-
-  typedef struct tagHH_ENUM_IT {
-    int cbStruct;
-    int iType;
-    LPCSTR pszCatName;
-    LPCSTR pszITName;
-    LPCSTR pszITDescription;
-  } HH_ENUM_IT,*PHH_ENUM_IT;
-
-  typedef struct tagHH_ENUM_CAT {
-    int cbStruct;
-    LPCSTR pszCatName;
-    LPCSTR pszCatDescription;
-  } HH_ENUM_CAT,*PHH_ENUM_CAT;
-
-  typedef struct tagHH_SET_INFOTYPE {
-    int cbStruct;
-    LPCSTR pszCatName;
-    LPCSTR pszInfoTypeName;
-  } HH_SET_INFOTYPE,*PHH_SET_INFOTYPE;
-
-  typedef DWORD HH_INFOTYPE;
-  typedef HH_INFOTYPE *PHH_INFOTYPE;
-
-  enum {
-    HHWIN_NAVTAB_TOP,HHWIN_NAVTAB_LEFT,HHWIN_NAVTAB_BOTTOM
-  };
-
+#define HHN_FIRST (0U - 860U)
+#define HHN_LAST (0U - 879U)
+#define HHN_NAVCOMPLETE (HHN_FIRST - 0)
+#define HHN_TRACK (HHN_FIRST - 1)
+#define HHN_WINDOW_CREATE (HHN_FIRST - 2)
+typedef struct tagHHN_NOTIFY {
+  NMHDR hdr;
+  PCSTR pszUrl;
+} HHN_NOTIFY;
+typedef struct tagHH_POPUP {
+  int cbStruct;
+  HINSTANCE hinst;
+  UINT idString;
+  LPCTSTR pszText;
+  POINT pt;
+  COLORREF clrForeground;
+  COLORREF clrBackground;
+  RECT rcMargins;
+  LPCTSTR pszFont;
+} HH_POPUP;
+typedef struct tagHH_AKLINK {
+  int cbStruct;
+  WINBOOL fReserved;
+  LPCTSTR pszKeywords;
+  LPCTSTR pszUrl;
+  LPCTSTR pszMsgText;
+  LPCTSTR pszMsgTitle;
+  LPCTSTR pszWindow;
+  WINBOOL fIndexOnFail;
+} HH_AKLINK;
+enum {
+  HHWIN_NAVTYPE_TOC,
+  HHWIN_NAVTYPE_INDEX,
+  HHWIN_NAVTYPE_SEARCH,
+  HHWIN_NAVTYPE_FAVORITES,
+  HHWIN_NAVTYPE_HISTORY,
+  HHWIN_NAVTYPE_AUTHOR,
+  HHWIN_NAVTYPE_CUSTOM_FIRST = 11
+};
+enum { IT_INCLUSIVE, IT_EXCLUSIVE, IT_HIDDEN };
+typedef struct tagHH_ENUM_IT {
+  int cbStruct;
+  int iType;
+  LPCSTR pszCatName;
+  LPCSTR pszITName;
+  LPCSTR pszITDescription;
+} HH_ENUM_IT, *PHH_ENUM_IT;
+typedef struct tagHH_ENUM_CAT {
+  int cbStruct;
+  LPCSTR pszCatName;
+  LPCSTR pszCatDescription;
+} HH_ENUM_CAT, *PHH_ENUM_CAT;
+typedef struct tagHH_SET_INFOTYPE {
+  int cbStruct;
+  LPCSTR pszCatName;
+  LPCSTR pszInfoTypeName;
+} HH_SET_INFOTYPE, *PHH_SET_INFOTYPE;
+typedef DWORD HH_INFOTYPE;
+typedef HH_INFOTYPE *PHH_INFOTYPE;
+enum { HHWIN_NAVTAB_TOP, HHWIN_NAVTAB_LEFT, HHWIN_NAVTAB_BOTTOM };
 #define HH_MAX_TABS 19
-
-  enum {
-    HH_TAB_CONTENTS,HH_TAB_INDEX,HH_TAB_SEARCH,HH_TAB_FAVORITES,HH_TAB_HISTORY,HH_TAB_AUTHOR,HH_TAB_CUSTOM_FIRST = 11,
-    HH_TAB_CUSTOM_LAST = HH_MAX_TABS
-  };
-
+enum {
+  HH_TAB_CONTENTS,
+  HH_TAB_INDEX,
+  HH_TAB_SEARCH,
+  HH_TAB_FAVORITES,
+  HH_TAB_HISTORY,
+  HH_TAB_AUTHOR,
+  HH_TAB_CUSTOM_FIRST = 11,
+  HH_TAB_CUSTOM_LAST = HH_MAX_TABS
+};
 #define HH_MAX_TABS_CUSTOM (HH_TAB_CUSTOM_LAST - HH_TAB_CUSTOM_FIRST + 1)
-
 #define HH_FTS_DEFAULT_PROXIMITY (-1)
-
-  typedef struct tagHH_FTS_QUERY {
-    int cbStruct;
-    WINBOOL fUniCodeStrings;
-    LPCTSTR pszSearchQuery;
-    LONG iProximity;
-    WINBOOL fStemmedSearch;
-    WINBOOL fTitleOnly;
-    WINBOOL fExecute;
-    LPCTSTR pszWindow;
-  } HH_FTS_QUERY;
-
-  typedef struct tagHH_WINTYPE {
-    int cbStruct;
-    WINBOOL fUniCodeStrings;
-    LPCTSTR pszType;
-    DWORD fsValidMembers;
-    DWORD fsWinProperties;
-    LPCTSTR pszCaption;
-    DWORD dwStyles;
-    DWORD dwExStyles;
-    RECT rcWindowPos;
-    int nShowState;
-    HWND hwndHelp;
-    HWND hwndCaller;
-    HH_INFOTYPE *paInfoTypes;
-    HWND hwndToolBar;
-    HWND hwndNavigation;
-    HWND hwndHTML;
-    int iNavWidth;
-    RECT rcHTML;
-    LPCTSTR pszToc;
-    LPCTSTR pszIndex;
-    LPCTSTR pszFile;
-    LPCTSTR pszHome;
-    DWORD fsToolBarFlags;
-    WINBOOL fNotExpanded;
-    int curNavType;
-    int tabpos;
-    int idNotify;
-    BYTE tabOrder[HH_MAX_TABS + 1];
-    int cHistory;
-    LPCTSTR pszJump1;
-    LPCTSTR pszJump2;
-    LPCTSTR pszUrlJump1;
-    LPCTSTR pszUrlJump2;
-    RECT rcMinSize;
-    int cbInfoTypes;
-    LPCTSTR pszCustomTabs;
-  } HH_WINTYPE,*PHH_WINTYPE;
-
-  enum {
-    HHACT_TAB_CONTENTS,HHACT_TAB_INDEX,HHACT_TAB_SEARCH,HHACT_TAB_HISTORY,HHACT_TAB_FAVORITES,HHACT_EXPAND,HHACT_CONTRACT,
-    HHACT_BACK,HHACT_FORWARD,HHACT_STOP,HHACT_REFRESH,HHACT_HOME,HHACT_SYNC,HHACT_OPTIONS,HHACT_PRINT,HHACT_HIGHLIGHT,HHACT_CUSTOMIZE,
-    HHACT_JUMP1,HHACT_JUMP2,HHACT_ZOOM,HHACT_TOC_NEXT,HHACT_TOC_PREV,HHACT_NOTES,HHACT_LAST_ENUM
-  };
-
-  typedef struct tagHHNTRACK {
-    NMHDR hdr;
-    PCSTR pszCurUrl;
-    int idAction;
-    HH_WINTYPE *phhWinType;
-  } HHNTRACK;
-
+typedef struct tagHH_FTS_QUERY {
+  int cbStruct;
+  WINBOOL fUniCodeStrings;
+  LPCTSTR pszSearchQuery;
+  LONG iProximity;
+  WINBOOL fStemmedSearch;
+  WINBOOL fTitleOnly;
+  WINBOOL fExecute;
+  LPCTSTR pszWindow;
+} HH_FTS_QUERY;
+typedef struct tagHH_WINTYPE {
+  int cbStruct;
+  WINBOOL fUniCodeStrings;
+  LPCTSTR pszType;
+  DWORD fsValidMembers;
+  DWORD fsWinProperties;
+  LPCTSTR pszCaption;
+  DWORD dwStyles;
+  DWORD dwExStyles;
+  RECT rcWindowPos;
+  int nShowState;
+  HWND hwndHelp;
+  HWND hwndCaller;
+  HH_INFOTYPE *paInfoTypes;
+  HWND hwndToolBar;
+  HWND hwndNavigation;
+  HWND hwndHTML;
+  int iNavWidth;
+  RECT rcHTML;
+  LPCTSTR pszToc;
+  LPCTSTR pszIndex;
+  LPCTSTR pszFile;
+  LPCTSTR pszHome;
+  DWORD fsToolBarFlags;
+  WINBOOL fNotExpanded;
+  int curNavType;
+  int tabpos;
+  int idNotify;
+  BYTE tabOrder[HH_MAX_TABS + 1];
+  int cHistory;
+  LPCTSTR pszJump1;
+  LPCTSTR pszJump2;
+  LPCTSTR pszUrlJump1;
+  LPCTSTR pszUrlJump2;
+  RECT rcMinSize;
+  int cbInfoTypes;
+  LPCTSTR pszCustomTabs;
+} HH_WINTYPE, *PHH_WINTYPE;
+enum {
+  HHACT_TAB_CONTENTS,
+  HHACT_TAB_INDEX,
+  HHACT_TAB_SEARCH,
+  HHACT_TAB_HISTORY,
+  HHACT_TAB_FAVORITES,
+  HHACT_EXPAND,
+  HHACT_CONTRACT,
+  HHACT_BACK,
+  HHACT_FORWARD,
+  HHACT_STOP,
+  HHACT_REFRESH,
+  HHACT_HOME,
+  HHACT_SYNC,
+  HHACT_OPTIONS,
+  HHACT_PRINT,
+  HHACT_HIGHLIGHT,
+  HHACT_CUSTOMIZE,
+  HHACT_JUMP1,
+  HHACT_JUMP2,
+  HHACT_ZOOM,
+  HHACT_TOC_NEXT,
+  HHACT_TOC_PREV,
+  HHACT_NOTES,
+  HHACT_LAST_ENUM
+};
+typedef struct tagHHNTRACK {
+  NMHDR hdr;
+  PCSTR pszCurUrl;
+  int idAction;
+  HH_WINTYPE *phhWinType;
+} HHNTRACK;
 #define HtmlHelp __MINGW_NAME_AW(HtmlHelp)
-
-  HWND WINAPI HtmlHelpA(HWND hwndCaller,LPCSTR pszFile,UINT uCommand,DWORD_PTR dwData);
-  HWND WINAPI HtmlHelpW(HWND hwndCaller,LPCWSTR pszFile,UINT uCommand,DWORD_PTR dwData);
-
+HWND WINAPI HtmlHelpA(HWND hwndCaller, LPCSTR pszFile, UINT uCommand,
+                      DWORD_PTR dwData);
+HWND WINAPI HtmlHelpW(HWND hwndCaller, LPCWSTR pszFile, UINT uCommand,
+                      DWORD_PTR dwData);
 #define ATOM_HTMLHELP_API_ANSI (LPTSTR)((DWORD)((WORD)(14)))
 #define ATOM_HTMLHELP_API_UNICODE (LPTSTR)((DWORD)((WORD)(15)))
-
-  typedef enum tagHH_GPROPID {
-    HH_GPROPID_SINGLETHREAD=1,HH_GPROPID_TOOLBAR_MARGIN=2,HH_GPROPID_UI_LANGUAGE=3,HH_GPROPID_CURRENT_SUBSET=4,HH_GPROPID_CONTENT_LANGUAGE=5
-  } HH_GPROPID;
-
+typedef enum tagHH_GPROPID {
+  HH_GPROPID_SINGLETHREAD = 1,
+  HH_GPROPID_TOOLBAR_MARGIN = 2,
+  HH_GPROPID_UI_LANGUAGE = 3,
+  HH_GPROPID_CURRENT_SUBSET = 4,
+  HH_GPROPID_CONTENT_LANGUAGE = 5
+} HH_GPROPID;
 #ifdef __oaidl_h__
-#pragma pack(push,8)
-
-  typedef struct tagHH_GLOBAL_PROPERTY {
-    HH_GPROPID id;
-    VARIANT var;
-  } HH_GLOBAL_PROPERTY;
-
+#pragma pack(push, 8)
+typedef struct tagHH_GLOBAL_PROPERTY {
+  HH_GPROPID id;
+  VARIANT var;
+} HH_GLOBAL_PROPERTY;
 #pragma pack(pop)
 #endif
-
 #ifdef __cplusplus
 }
 #endif

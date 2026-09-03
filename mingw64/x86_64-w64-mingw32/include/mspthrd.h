@@ -5,28 +5,21 @@
  */
 #ifndef __MSPTHRD_H
 #define __MSPTHRD_H
-
-typedef enum {
-  WORK_ITEM,STOP
-} COMMAND;
-
+typedef enum { WORK_ITEM, STOP } COMMAND;
 typedef struct {
   COMMAND cmd;
   LPTHREAD_START_ROUTINE pfn;
   PVOID pContext;
   HANDLE hEvent;
 } COMMAND_NODE;
-
 typedef struct {
   LIST_ENTRY link;
   COMMAND_NODE node;
 } COMMAND_QUEUE_ITEM;
-
 typedef struct _NOTIF_LIST {
   CMSPAddress *addr;
   _NOTIF_LIST *next;
-} NOTIF_LIST,*PNOTIF_LIST;
-
+} NOTIF_LIST, *PNOTIF_LIST;
 class CMSPThread {
 public:
   CMSPThread() {
@@ -36,15 +29,18 @@ public:
     m_NotifList = NULL;
     m_iStartCount = 0;
   }
-  ~CMSPThread() { };
+  ~CMSPThread() {};
   HRESULT Start();
   HRESULT Stop();
   HRESULT Shutdown();
   HRESULT ThreadProc();
-  static LRESULT CALLBACK NotifWndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+  static LRESULT CALLBACK NotifWndProc(HWND hwnd, UINT uMsg, WPARAM wParam,
+                                       LPARAM lParam);
   HRESULT RegisterPnpNotification(CMSPAddress *pCMSPAddress);
   HRESULT UnregisterPnpNotification(CMSPAddress *pCMSPAddress);
-  HRESULT QueueWorkItem(LPTHREAD_START_ROUTINE Function,PVOID Context,WINBOOL fSynchronous);
+  HRESULT QueueWorkItem(LPTHREAD_START_ROUTINE Function, PVOID Context,
+                        WINBOOL fSynchronous);
+
 private:
   WINBOOL SignalThreadProc() { return SetEvent(m_hCommandEvent); }
   CMSPCritSection m_CountLock;
@@ -59,6 +55,5 @@ private:
   PNOTIF_LIST m_NotifList;
   CMSPCritSection m_NotifLock;
 };
-
 extern CMSPThread g_Thread;
 #endif

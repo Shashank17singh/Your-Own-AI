@@ -5,11 +5,20 @@ In most cases it is preferred you consider using the importlib module's
 functionality over this module.
 
 """
+
 # (Probably) need to stay in _imp
-from _imp import (lock_held, acquire_lock, release_lock,
-                  get_frozen_object, is_frozen_package,
-                  init_frozen, is_builtin, is_frozen,
-                  _fix_co_filename)
+from _imp import (
+    lock_held,
+    acquire_lock,
+    release_lock,
+    get_frozen_object,
+    is_frozen_package,
+    init_frozen,
+    is_builtin,
+    is_frozen,
+    _fix_co_filename,
+)
+
 try:
     from _imp import create_dynamic
 except ImportError:
@@ -28,9 +37,12 @@ import tokenize
 import types
 import warnings
 
-warnings.warn("the imp module is deprecated in favour of importlib; "
-              "see the module's documentation for alternative uses",
-              DeprecationWarning, stacklevel=2)
+warnings.warn(
+    "the imp module is deprecated in favour of importlib; "
+    "see the module's documentation for alternative uses",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 # DEPRECATED
 SEARCH_ERROR = 0
@@ -84,7 +96,7 @@ def cache_from_source(path, debug_override=None):
 
     """
     with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
+        warnings.simplefilter("ignore")
         return util.cache_from_source(path, debug_override)
 
 
@@ -104,15 +116,14 @@ def source_from_cache(path):
 
 def get_suffixes():
     """**DEPRECATED**"""
-    extensions = [(s, 'rb', C_EXTENSION) for s in machinery.EXTENSION_SUFFIXES]
-    source = [(s, 'r', PY_SOURCE) for s in machinery.SOURCE_SUFFIXES]
-    bytecode = [(s, 'rb', PY_COMPILED) for s in machinery.BYTECODE_SUFFIXES]
+    extensions = [(s, "rb", C_EXTENSION) for s in machinery.EXTENSION_SUFFIXES]
+    source = [(s, "r", PY_SOURCE) for s in machinery.SOURCE_SUFFIXES]
+    bytecode = [(s, "rb", PY_COMPILED) for s in machinery.BYTECODE_SUFFIXES]
 
     return extensions + source + bytecode
 
 
 class NullImporter:
-
     """**DEPRECATED**
 
     Null import object.
@@ -120,10 +131,10 @@ class NullImporter:
     """
 
     def __init__(self, path):
-        if path == '':
-            raise ImportError('empty pathname', path='')
+        if path == "":
+            raise ImportError("empty pathname", path="")
         elif os.path.isdir(path):
-            raise ImportError('existing directory', path=path)
+            raise ImportError("existing directory", path=path)
 
     def find_module(self, fullname):
         """Always returns None."""
@@ -131,7 +142,6 @@ class NullImporter:
 
 
 class _HackedGetData:
-
     """Compatibility support for 'file' arguments of various load_*()
     functions."""
 
@@ -146,10 +156,10 @@ class _HackedGetData:
             # file in binary mode if needed.
             if not self.file.closed:
                 file = self.file
-                if 'b' not in file.mode:
+                if "b" not in file.mode:
                     file.close()
             if self.file.closed:
-                self.file = file = open(self.path, 'rb')
+                self.file = file = open(self.path, "rb")
 
             with file:
                 return file.read()
@@ -158,7 +168,6 @@ class _HackedGetData:
 
 
 class _LoadSourceCompatibility(_HackedGetData, machinery.SourceFileLoader):
-
     """Compatibility support for implementing load_source()."""
 
 
@@ -177,7 +186,6 @@ def load_source(name, pathname, file=None):
 
 
 class _LoadCompiledCompatibility(_HackedGetData, SourcelessFileLoader):
-
     """Compatibility support for implementing load_compiled()."""
 
 
@@ -199,17 +207,15 @@ def load_compiled(name, pathname, file=None):
 def load_package(name, path):
     """**DEPRECATED**"""
     if os.path.isdir(path):
-        extensions = (machinery.SOURCE_SUFFIXES[:] +
-                      machinery.BYTECODE_SUFFIXES[:])
+        extensions = machinery.SOURCE_SUFFIXES[:] + machinery.BYTECODE_SUFFIXES[:]
         for extension in extensions:
-            init_path = os.path.join(path, '__init__' + extension)
+            init_path = os.path.join(path, "__init__" + extension)
             if os.path.exists(init_path):
                 path = init_path
                 break
         else:
-            raise ValueError('{!r} is not a package'.format(path))
-    spec = util.spec_from_file_location(name, path,
-                                        submodule_search_locations=[])
+            raise ValueError("{!r} is not a package".format(path))
+    spec = util.spec_from_file_location(name, path, submodule_search_locations=[])
     if name in sys.modules:
         return _exec(spec, sys.modules[name])
     else:
@@ -225,10 +231,10 @@ def load_module(name, file, filename, details):
 
     """
     suffix, mode, type_ = details
-    if mode and (not mode.startswith(('r', 'U')) or '+' in mode):
-        raise ValueError('invalid file open mode {!r}'.format(mode))
+    if mode and (not mode.startswith(("r", "U")) or "+" in mode):
+        raise ValueError("invalid file open mode {!r}".format(mode))
     elif file is None and type_ in {PY_SOURCE, PY_COMPILED}:
-        msg = 'file object required for import (type code {})'.format(type_)
+        msg = "file object required for import (type code {})".format(type_)
         raise ValueError(msg)
     elif type_ == PY_SOURCE:
         return load_source(name, filename, file)
@@ -236,7 +242,7 @@ def load_module(name, file, filename, details):
         return load_compiled(name, filename, file)
     elif type_ == C_EXTENSION and load_dynamic is not None:
         if file is None:
-            with open(filename, 'rb') as opened_file:
+            with open(filename, "rb") as opened_file:
                 return load_dynamic(name, filename, opened_file)
         else:
             return load_dynamic(name, filename, file)
@@ -247,7 +253,7 @@ def load_module(name, file, filename, details):
     elif type_ == PY_FROZEN:
         return init_frozen(name)
     else:
-        msg =  "Don't know how to import {} (type code {})".format(name, type_)
+        msg = "Don't know how to import {} (type code {})".format(name, type_)
         raise ImportError(msg, name=name)
 
 
@@ -266,24 +272,25 @@ def find_module(name, path=None):
         raise TypeError("'name' must be a str, not {}".format(type(name)))
     elif not isinstance(path, (type(None), list)):
         # Backwards-compatibility
-        raise RuntimeError("'path' must be None or a list, "
-                           "not {}".format(type(path)))
+        raise RuntimeError(
+            "'path' must be None or a list, " "not {}".format(type(path))
+        )
 
     if path is None:
         if is_builtin(name):
-            return None, None, ('', '', C_BUILTIN)
+            return None, None, ("", "", C_BUILTIN)
         elif is_frozen(name):
-            return None, None, ('', '', PY_FROZEN)
+            return None, None, ("", "", PY_FROZEN)
         else:
             path = sys.path
 
     for entry in path:
         package_directory = os.path.join(entry, name)
-        for suffix in ['.py', machinery.BYTECODE_SUFFIXES[0]]:
-            package_file_name = '__init__' + suffix
+        for suffix in [".py", machinery.BYTECODE_SUFFIXES[0]]:
+            package_file_name = "__init__" + suffix
             file_path = os.path.join(package_directory, package_file_name)
             if os.path.isfile(file_path):
-                return None, package_directory, ('', '', PKG_DIRECTORY)
+                return None, package_directory, ("", "", PKG_DIRECTORY)
         for suffix, mode, type_ in get_suffixes():
             file_name = name + suffix
             file_path = os.path.join(entry, file_name)
@@ -296,8 +303,8 @@ def find_module(name, path=None):
         raise ImportError(_ERR_MSG.format(name), name=name)
 
     encoding = None
-    if 'b' not in mode:
-        with open(file_path, 'rb') as file:
+    if "b" not in mode:
+        with open(file_path, "rb") as file:
             encoding = tokenize.detect_encoding(file.readline)[0]
     file = open(file_path, mode, encoding=encoding)
     return file, file_path, (suffix, mode, type_)
@@ -327,18 +334,19 @@ def init_builtin(name):
 
 
 if create_dynamic:
+
     def load_dynamic(name, path, file=None):
         """**DEPRECATED**
 
         Load an extension module.
         """
         import importlib.machinery
+
         loader = importlib.machinery.ExtensionFileLoader(name, path)
 
         # Issue #24748: Skip the sys.modules check in _load_module_shim;
         # always load new extension
-        spec = importlib.machinery.ModuleSpec(
-            name=name, loader=loader, origin=path)
+        spec = importlib.machinery.ModuleSpec(name=name, loader=loader, origin=path)
         return _load(spec)
 
 else:

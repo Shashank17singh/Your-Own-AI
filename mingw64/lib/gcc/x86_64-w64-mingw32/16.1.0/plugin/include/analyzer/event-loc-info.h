@@ -25,14 +25,12 @@ namespace ana {
 
 /* A bundle of location information for a checker_event.  */
 
-struct event_loc_info
-{
-  event_loc_info (location_t loc, tree fndecl, int depth)
-  : m_loc (loc), m_fndecl (fndecl), m_depth (depth)
-  {}
+struct event_loc_info {
+  event_loc_info(location_t loc, tree fndecl, int depth)
+      : m_loc(loc), m_fndecl(fndecl), m_depth(depth) {}
 
-  event_loc_info (const exploded_node *enode);
-  event_loc_info (const program_point &point);
+  event_loc_info(const exploded_node *enode);
+  event_loc_info(const program_point &point);
 
   location_t m_loc;
   tree m_fndecl;

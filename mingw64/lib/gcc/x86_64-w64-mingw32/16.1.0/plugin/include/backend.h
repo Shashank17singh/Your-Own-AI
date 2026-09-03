@@ -25,11 +25,11 @@ along with GCC; see the file COPYING3.  If not see
 /* This is an aggregation header file. This means it should contain only
    other include files.  */
 
-#include "tm.h"
-#include "function.h"
-#include "bitmap.h"
-#include "sbitmap.h"
 #include "basic-block.h"
+#include "bitmap.h"
 #include "cfg.h"
+#include "function.h"
+#include "sbitmap.h"
+#include "tm.h"
 
 #endif /*GCC_BACKEND_H */

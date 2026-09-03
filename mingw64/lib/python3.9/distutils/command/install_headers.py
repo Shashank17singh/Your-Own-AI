@@ -11,13 +11,12 @@ class install_headers(Command):
 
     description = "install C/C++ header files"
 
-    user_options = [('install-dir=', 'd',
-                     "directory to install header files to"),
-                    ('force', 'f',
-                     "force installation (overwrite existing files)"),
-                   ]
+    user_options = [
+        ("install-dir=", "d", "directory to install header files to"),
+        ("force", "f", "force installation (overwrite existing files)"),
+    ]
 
-    boolean_options = ['force']
+    boolean_options = ["force"]
 
     def initialize_options(self):
         self.install_dir = None
@@ -25,10 +24,9 @@ class install_headers(Command):
         self.outfiles = []
 
     def finalize_options(self):
-        self.set_undefined_options('install',
-                                   ('install_headers', 'install_dir'),
-                                   ('force', 'force'))
-
+        self.set_undefined_options(
+            "install", ("install_headers", "install_dir"), ("force", "force")
+        )
 
     def run(self):
         headers = self.distribution.headers
@@ -37,7 +35,7 @@ class install_headers(Command):
 
         self.mkpath(self.install_dir)
         for header in headers:
-            (out, _) = self.copy_file(header, self.install_dir)
+            out, _ = self.copy_file(header, self.install_dir)
             self.outfiles.append(out)
 
     def get_inputs(self):

@@ -16,33 +16,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef __AMAUDIO__
 #define __AMAUDIO__
-
-#include <mmsystem.h>
 #include <dsound.h>
-
+#include <mmsystem.h>
 #undef INTERFACE
 #define INTERFACE IAMDirectSound
-
-DECLARE_INTERFACE_(IAMDirectSound,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-
-    /*** IAMDirectSound methods ***/
-    STDMETHOD(GetDirectSoundInterface)(THIS_ IDirectSound **ds) PURE;
-    STDMETHOD(GetPrimaryBufferInterface)(THIS_ IDirectSoundBuffer **buf) PURE;
-    STDMETHOD(GetSecondaryBufferInterface)(THIS_ IDirectSoundBuffer **buf) PURE;
-    STDMETHOD(ReleaseDirectSoundInterface)(THIS_ IDirectSound *ds) PURE;
-    STDMETHOD(ReleasePrimaryBufferInterface)(THIS_ IDirectSoundBuffer *buf) PURE;
-    STDMETHOD(ReleaseSecondaryBufferInterface)(THIS_ IDirectSoundBuffer *buf) PURE;
-    STDMETHOD(SetFocusWindow)(THIS_ HWND hwnd, WINBOOL bgaudible) PURE;
-    STDMETHOD(GetFocusWindow)(THIS_ HWND *hwnd, WINBOOL *bgaudible) PURE;
+DECLARE_INTERFACE_(IAMDirectSound, IUnknown) {
+  /*** IUnknown methods ***/
+  STDMETHOD_(HRESULT, QueryInterface)(THIS_ REFIID riid, void **ppvObject) PURE;
+  STDMETHOD_(ULONG, AddRef)(THIS) PURE;
+  STDMETHOD_(ULONG, Release)(THIS) PURE;
+  /*** IAMDirectSound methods ***/
+  STDMETHOD(GetDirectSoundInterface)(THIS_ IDirectSound * *ds) PURE;
+  STDMETHOD(GetPrimaryBufferInterface)(THIS_ IDirectSoundBuffer * *buf) PURE;
+  STDMETHOD(GetSecondaryBufferInterface)(THIS_ IDirectSoundBuffer * *buf) PURE;
+  STDMETHOD(ReleaseDirectSoundInterface)(THIS_ IDirectSound * ds) PURE;
+  STDMETHOD(ReleasePrimaryBufferInterface)(THIS_ IDirectSoundBuffer * buf) PURE;
+  STDMETHOD(ReleaseSecondaryBufferInterface)(THIS_ IDirectSoundBuffer * buf)
+      PURE;
+  STDMETHOD(SetFocusWindow)(THIS_ HWND hwnd, WINBOOL bgaudible) PURE;
+  STDMETHOD(GetFocusWindow)(THIS_ HWND * hwnd, WINBOOL * bgaudible) PURE;
 };
 #undef INTERFACE
-
 #endif

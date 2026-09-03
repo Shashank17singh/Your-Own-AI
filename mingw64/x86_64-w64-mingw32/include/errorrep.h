@@ -5,23 +5,24 @@
  */
 #ifndef __ERRORREP_H__
 #define __ERRORREP_H__
-
 #include <_mingw_unicode.h>
-
 typedef enum tagEFaultRepRetVal {
   frrvOk = 0,
-  frrvOkManifest,frrvOkQueued,frrvErr,frrvErrNoDW,frrvErrTimeout,frrvLaunchDebugger,frrvOkHeadless
+  frrvOkManifest,
+  frrvOkQueued,
+  frrvErr,
+  frrvErrNoDW,
+  frrvErrTimeout,
+  frrvLaunchDebugger,
+  frrvOkHeadless
 } EFaultRepRetVal;
-
-EFaultRepRetVal WINAPI ReportFault(LPEXCEPTION_POINTERS pep,DWORD dwOpt);
+EFaultRepRetVal WINAPI ReportFault(LPEXCEPTION_POINTERS pep, DWORD dwOpt);
 WINBOOL WINAPI AddERExcludedApplicationA(LPCSTR szApplication);
 WINBOOL WINAPI AddERExcludedApplicationW(LPCWSTR wszApplication);
-
-typedef EFaultRepRetVal (WINAPI *pfn_REPORTFAULT)(LPEXCEPTION_POINTERS,DWORD);
-typedef EFaultRepRetVal (WINAPI *pfn_ADDEREXCLUDEDAPPLICATIONA)(LPCSTR);
-typedef EFaultRepRetVal (WINAPI *pfn_ADDEREXCLUDEDAPPLICATIONW)(LPCWSTR);
-
+typedef EFaultRepRetVal(WINAPI *pfn_REPORTFAULT)(LPEXCEPTION_POINTERS, DWORD);
+typedef EFaultRepRetVal(WINAPI *pfn_ADDEREXCLUDEDAPPLICATIONA)(LPCSTR);
+typedef EFaultRepRetVal(WINAPI *pfn_ADDEREXCLUDEDAPPLICATIONW)(LPCWSTR);
 #define AddERExcludedApplication __MINGW_NAME_AW(AddERExcludedApplication)
-#define pfn_ADDEREXCLUDEDAPPLICATION __MINGW_NAME_AW(pfn_ADDEREXCLUDEDAPPLICATION)
-
+#define pfn_ADDEREXCLUDEDAPPLICATION                                           \
+  __MINGW_NAME_AW(pfn_ADDEREXCLUDEDAPPLICATION)
 #endif

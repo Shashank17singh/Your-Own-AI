@@ -37,8 +37,8 @@
 
 #pragma GCC visibility push(default)
 
-#include <stddef.h>
 #include <bits/c++config.h>
+#include <stddef.h>
 
 #ifndef _GLIBCXX_CDTOR_CALLABI
 #define _GLIBCXX_CDTOR_CALLABI
@@ -49,31 +49,24 @@
 
 #ifdef __cplusplus
 
-namespace std
-{
-  class type_info;
+namespace std {
+class type_info;
 }
 
-namespace __cxxabiv1
-{
-  struct __cxa_refcounted_exception;
+namespace __cxxabiv1 {
+struct __cxa_refcounted_exception;
 
-  extern "C"
-    {
-      // Allocate memory for the primary exception plus the thrown object.
-      void*
-      __cxa_allocate_exception(size_t) _GLIBCXX_NOTHROW;
+extern "C" {
+// Allocate memory for the primary exception plus the thrown object.
+void *__cxa_allocate_exception(size_t) _GLIBCXX_NOTHROW;
 
-      void
-      __cxa_free_exception(void*) _GLIBCXX_NOTHROW;
+void __cxa_free_exception(void *) _GLIBCXX_NOTHROW;
 
-      // Initialize exception (this is a GNU extension)
-      __cxa_refcounted_exception*
-      __cxa_init_primary_exception(void *__object, std::type_info *__tinfo,
-                void (_GLIBCXX_CDTOR_CALLABI *__dest) (void *))
-	_GLIBCXX_NOTHROW;
-
-    }
+// Initialize exception (this is a GNU extension)
+__cxa_refcounted_exception *__cxa_init_primary_exception(
+    void *__object, std::type_info *__tinfo,
+    void(_GLIBCXX_CDTOR_CALLABI *__dest)(void *)) _GLIBCXX_NOTHROW;
+}
 } // namespace __cxxabiv1
 
 #endif

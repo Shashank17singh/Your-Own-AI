@@ -6,5 +6,4 @@
 #ifndef RC_INVOKED
 #warning Your code should include objbase.h instead of compobj.h
 #endif
-
 #include <objbase.h>

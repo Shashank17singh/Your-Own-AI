@@ -82,13 +82,22 @@ class abstractproperty(property):
 
 
 try:
-    from _abc import (get_cache_token, _abc_init, _abc_register,
-                      _abc_instancecheck, _abc_subclasscheck, _get_dump,
-                      _reset_registry, _reset_caches)
+    from _abc import (
+        get_cache_token,
+        _abc_init,
+        _abc_register,
+        _abc_instancecheck,
+        _abc_subclasscheck,
+        _get_dump,
+        _reset_registry,
+        _reset_caches,
+    )
 except ImportError:
     from _py_abc import ABCMeta, get_cache_token
-    ABCMeta.__module__ = 'abc'
+
+    ABCMeta.__module__ = "abc"
 else:
+
     class ABCMeta(type):
         """Metaclass for defining Abstract Base Classes (ABCs).
 
@@ -102,6 +111,7 @@ else:
         implementations defined by the registering ABC be callable (not
         even via super()).
         """
+
         def __new__(mcls, name, bases, namespace, **kwargs):
             cls = super().__new__(mcls, name, bases, namespace, **kwargs)
             _abc_init(cls)
@@ -126,13 +136,19 @@ else:
             """Debug helper to print the ABC registry."""
             print(f"Class: {cls.__module__}.{cls.__qualname__}", file=file)
             print(f"Inv. counter: {get_cache_token()}", file=file)
-            (_abc_registry, _abc_cache, _abc_negative_cache,
-             _abc_negative_cache_version) = _get_dump(cls)
+            (
+                _abc_registry,
+                _abc_cache,
+                _abc_negative_cache,
+                _abc_negative_cache_version,
+            ) = _get_dump(cls)
             print(f"_abc_registry: {_abc_registry!r}", file=file)
             print(f"_abc_cache: {_abc_cache!r}", file=file)
             print(f"_abc_negative_cache: {_abc_negative_cache!r}", file=file)
-            print(f"_abc_negative_cache_version: {_abc_negative_cache_version!r}",
-                  file=file)
+            print(
+                f"_abc_negative_cache_version: {_abc_negative_cache_version!r}",
+                file=file,
+            )
 
         def _abc_registry_clear(cls):
             """Clear the registry (for debugging or testing)."""
@@ -147,4 +163,5 @@ class ABC(metaclass=ABCMeta):
     """Helper class that provides a standard way to create an ABC using
     inheritance.
     """
+
     __slots__ = ()

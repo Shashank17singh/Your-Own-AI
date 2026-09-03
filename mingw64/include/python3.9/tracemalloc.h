@@ -9,18 +9,14 @@
    Return -2 if tracemalloc is disabled.
 
    If memory block is already tracked, update the existing trace. */
-PyAPI_FUNC(int) PyTraceMalloc_Track(
-    unsigned int domain,
-    uintptr_t ptr,
-    size_t size);
+PyAPI_FUNC(int)
+    PyTraceMalloc_Track(unsigned int domain, uintptr_t ptr, size_t size);
 
 /* Untrack an allocated memory block in the tracemalloc module.
    Do nothing if the block was not tracked.
 
    Return -2 if tracemalloc is disabled, otherwise return 0. */
-PyAPI_FUNC(int) PyTraceMalloc_Untrack(
-    unsigned int domain,
-    uintptr_t ptr);
+PyAPI_FUNC(int) PyTraceMalloc_Untrack(unsigned int domain, uintptr_t ptr);
 
 /* Get the traceback where a memory block was allocated.
 
@@ -30,9 +26,8 @@ PyAPI_FUNC(int) PyTraceMalloc_Untrack(
    is not tracked by tracemalloc.
 
    Raise an exception and return NULL on error. */
-PyAPI_FUNC(PyObject*) _PyTraceMalloc_GetTraceback(
-    unsigned int domain,
-    uintptr_t ptr);
+PyAPI_FUNC(PyObject *)
+    _PyTraceMalloc_GetTraceback(unsigned int domain, uintptr_t ptr);
 #endif
 
 #endif /* !Py_TRACEMALLOC_H */

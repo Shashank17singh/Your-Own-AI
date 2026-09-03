@@ -21,17 +21,17 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_VALUE_RANGE_PRETTY_H
 #define GCC_VALUE_RANGE_PRETTY_H
 
-class vrange_printer : public vrange_visitor
-{
+class vrange_printer : public vrange_visitor {
 public:
-  vrange_printer (pretty_printer *pp_) : pp (pp_) { }
-  void visit (const unsupported_range &) const override;
-  void visit (const irange &) const override;
-  void visit (const prange &) const override;
-  void visit (const frange &) const override;
+  vrange_printer(pretty_printer *pp_) : pp(pp_) {}
+  void visit(const unsupported_range &) const override;
+  void visit(const irange &) const override;
+  void visit(const prange &) const override;
+  void visit(const frange &) const override;
+
 private:
-  void print_frange_nan (const frange &) const;
-  void print_real_value (tree type, const REAL_VALUE_TYPE &r) const;
+  void print_frange_nan(const frange &) const;
+  void print_real_value(tree type, const REAL_VALUE_TYPE &r) const;
 
   pretty_printer *pp;
 };

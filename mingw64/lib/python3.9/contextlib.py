@@ -1,4 +1,5 @@
 """Utilities for with-statement contexts.  See PEP 343."""
+
 import abc
 import sys
 import _collections_abc
@@ -6,14 +7,23 @@ from collections import deque
 from functools import wraps
 from types import MethodType, GenericAlias
 
-__all__ = ["asynccontextmanager", "contextmanager", "closing", "nullcontext",
-           "AbstractContextManager", "AbstractAsyncContextManager",
-           "AsyncExitStack", "ContextDecorator", "ExitStack",
-           "redirect_stdout", "redirect_stderr", "suppress"]
+__all__ = [
+    "asynccontextmanager",
+    "contextmanager",
+    "closing",
+    "nullcontext",
+    "AbstractContextManager",
+    "AbstractAsyncContextManager",
+    "AsyncExitStack",
+    "ContextDecorator",
+    "ExitStack",
+    "redirect_stdout",
+    "redirect_stderr",
+    "suppress",
+]
 
 
 class AbstractContextManager(abc.ABC):
-
     """An abstract base class for context managers."""
 
     __class_getitem__ = classmethod(GenericAlias)
@@ -35,7 +45,6 @@ class AbstractContextManager(abc.ABC):
 
 
 class AbstractAsyncContextManager(abc.ABC):
-
     """An abstract base class for asynchronous context managers."""
 
     __class_getitem__ = classmethod(GenericAlias)
@@ -52,8 +61,7 @@ class AbstractAsyncContextManager(abc.ABC):
     @classmethod
     def __subclasshook__(cls, C):
         if cls is AbstractAsyncContextManager:
-            return _collections_abc._check_methods(C, "__aenter__",
-                                                   "__aexit__")
+            return _collections_abc._check_methods(C, "__aenter__", "__aexit__")
         return NotImplemented
 
 
@@ -77,6 +85,7 @@ class ContextDecorator(object):
         def inner(*args, **kwds):
             with self._recreate_cm():
                 return func(*args, **kwds)
+
         return inner
 
 
@@ -150,10 +159,7 @@ class _GeneratorContextManager(
                 # have this behavior). But do this only if the exception wrapped
                 # by the RuntimeError is actually Stop(Async)Iteration (see
                 # issue29692).
-                if (
-                    isinstance(value, StopIteration)
-                    and exc.__cause__ is value
-                ):
+                if isinstance(value, StopIteration) and exc.__cause__ is value:
                     return False
                 raise
             except BaseException as exc:
@@ -169,8 +175,9 @@ class _GeneratorContextManager(
             raise RuntimeError("generator didn't stop after throw()")
 
 
-class _AsyncGeneratorContextManager(_GeneratorContextManagerBase,
-                                    AbstractAsyncContextManager):
+class _AsyncGeneratorContextManager(
+    _GeneratorContextManagerBase, AbstractAsyncContextManager
+):
     """Helper for @asynccontextmanager decorator."""
 
     async def __aenter__(self):
@@ -258,9 +265,11 @@ def contextmanager(func):
         finally:
             <cleanup>
     """
+
     @wraps(func)
     def helper(*args, **kwds):
         return _GeneratorContextManager(func, args, kwds)
+
     return helper
 
 
@@ -291,9 +300,11 @@ def asynccontextmanager(func):
         finally:
             <cleanup>
     """
+
     @wraps(func)
     def helper(*args, **kwds):
         return _AsyncGeneratorContextManager(func, args, kwds)
+
     return helper
 
 
@@ -314,10 +325,13 @@ class closing(AbstractContextManager):
             f.close()
 
     """
+
     def __init__(self, thing):
         self.thing = thing
+
     def __enter__(self):
         return self.thing
+
     def __exit__(self, *exc_info):
         self.thing.close()
 
@@ -343,14 +357,14 @@ class _RedirectStream(AbstractContextManager):
 class redirect_stdout(_RedirectStream):
     """Context manager for temporarily redirecting stdout to another file.
 
-        # How to send help() to stderr
-        with redirect_stdout(sys.stderr):
-            help(dir)
+    # How to send help() to stderr
+    with redirect_stdout(sys.stderr):
+        help(dir)
 
-        # How to write help() to a file
-        with open('help.txt', 'w') as f:
-            with redirect_stdout(f):
-                help(pow)
+    # How to write help() to a file
+    with open('help.txt', 'w') as f:
+        with redirect_stdout(f):
+            help(pow)
     """
 
     _stream = "stdout"
@@ -403,6 +417,7 @@ class _BaseExitStack:
     def _create_cb_wrapper(callback, /, *args, **kwds):
         def _exit_wrapper(exc_type, exc, tb):
             callback(*args, **kwds)
+
         return _exit_wrapper
 
     def __init__(self):
@@ -492,6 +507,7 @@ class ExitStack(_BaseExitStack, AbstractContextManager):
         # We manipulate the exception state so it behaves as though
         # we were actually nesting multiple with statements
         frame_exc = sys.exc_info()[1]
+
         def _fix_exception_context(new_exc, old_exc):
             # Context may not be correct, so find the end of the chain
             while 1:
@@ -562,6 +578,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
     def _create_async_cb_wrapper(callback, /, *args, **kwds):
         async def _exit_wrapper(exc_type, exc, tb):
             await callback(*args, **kwds)
+
         return _exit_wrapper
 
     async def enter_async_context(self, cm):
@@ -626,6 +643,7 @@ class AsyncExitStack(_BaseExitStack, AbstractAsyncContextManager):
         # We manipulate the exception state so it behaves as though
         # we were actually nesting multiple with statements
         frame_exc = sys.exc_info()[1]
+
         def _fix_exception_context(new_exc, old_exc):
             # Context may not be correct, so find the end of the chain
             while 1:

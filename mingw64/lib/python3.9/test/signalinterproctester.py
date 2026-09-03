@@ -13,13 +13,13 @@ class SIGUSR1Exception(Exception):
 
 class InterProcessSignalTests(unittest.TestCase):
     def setUp(self):
-        self.got_signals = {'SIGHUP': 0, 'SIGUSR1': 0, 'SIGALRM': 0}
+        self.got_signals = {"SIGHUP": 0, "SIGUSR1": 0, "SIGALRM": 0}
 
     def sighup_handler(self, signum, frame):
-        self.got_signals['SIGHUP'] += 1
+        self.got_signals["SIGHUP"] += 1
 
     def sigusr1_handler(self, signum, frame):
-        self.got_signals['SIGUSR1'] += 1
+        self.got_signals["SIGUSR1"] += 1
         raise SIGUSR1Exception
 
     def wait_signal(self, child, signame):
@@ -36,12 +36,11 @@ class InterProcessSignalTests(unittest.TestCase):
                 return
             signal.pause()
 
-        self.fail('signal %s not received after %s seconds'
-                  % (signame, timeout))
+        self.fail("signal %s not received after %s seconds" % (signame, timeout))
 
     def subprocess_send_signal(self, pid, signame):
-        code = 'import os, signal; os.kill(%s, signal.%s)' % (pid, signame)
-        args = [sys.executable, '-I', '-c', code]
+        code = "import os, signal; os.kill(%s, signal.%s)" % (pid, signame)
+        args = [sys.executable, "-I", "-c", code]
         return subprocess.Popen(args)
 
     def test_interprocess_signal(self):
@@ -56,15 +55,13 @@ class InterProcessSignalTests(unittest.TestCase):
         pid = str(os.getpid())
 
         with self.subprocess_send_signal(pid, "SIGHUP") as child:
-            self.wait_signal(child, 'SIGHUP')
-        self.assertEqual(self.got_signals, {'SIGHUP': 1, 'SIGUSR1': 0,
-                                            'SIGALRM': 0})
+            self.wait_signal(child, "SIGHUP")
+        self.assertEqual(self.got_signals, {"SIGHUP": 1, "SIGUSR1": 0, "SIGALRM": 0})
 
         with self.assertRaises(SIGUSR1Exception):
             with self.subprocess_send_signal(pid, "SIGUSR1") as child:
-                self.wait_signal(child, 'SIGUSR1')
-        self.assertEqual(self.got_signals, {'SIGHUP': 1, 'SIGUSR1': 1,
-                                            'SIGALRM': 0})
+                self.wait_signal(child, "SIGUSR1")
+        self.assertEqual(self.got_signals, {"SIGHUP": 1, "SIGUSR1": 1, "SIGALRM": 0})
 
         with self.subprocess_send_signal(pid, "SIGUSR2") as child:
             # Nothing should happen: SIGUSR2 is ignored
@@ -73,9 +70,10 @@ class InterProcessSignalTests(unittest.TestCase):
         try:
             with self.assertRaises(KeyboardInterrupt):
                 signal.alarm(1)
-                self.wait_signal(None, 'SIGALRM')
-            self.assertEqual(self.got_signals, {'SIGHUP': 1, 'SIGUSR1': 1,
-                                                'SIGALRM': 0})
+                self.wait_signal(None, "SIGALRM")
+            self.assertEqual(
+                self.got_signals, {"SIGHUP": 1, "SIGUSR1": 1, "SIGALRM": 0}
+            )
         finally:
             signal.alarm(0)
 

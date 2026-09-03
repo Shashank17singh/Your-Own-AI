@@ -1,11 +1,8 @@
 #ifndef __cplusplus
-#  error "A C compiler has been selected for C++."
+#error "A C compiler has been selected for C++."
 #endif
-
 #include "CMakeCompilerABI.h"
-
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
   int require = 0;
   require += info_sizeof_dptr[argc];
   require += info_byte_order_big_endian[argc];

@@ -63,7 +63,6 @@ along with GCC; see the file COPYING3.  If not see
 
    which is off by default.  */
 
-
 /* Forward decls.  */
 class opt_pass;
 class optinfo_item;
@@ -72,92 +71,75 @@ class optinfo_item;
    of inlining information.
    (if true, then the information is preserved).  */
 
-extern bool optinfo_wants_inlining_info_p ();
+extern bool optinfo_wants_inlining_info_p();
 
 class dump_context;
 
 /* A bundle of information describing part of an optimization.  */
 
-class optinfo
-{
+class optinfo {
   friend class dump_context;
 
- public:
+public:
   /* The various kinds of optinfo.  */
-  enum class kind
-  {
-    success,
-    failure,
-    note,
-    scope
-  };
+  enum class kind { success, failure, note, scope };
 
-  optinfo (const dump_location_t &loc,
-	   enum kind kind_,
-	   opt_pass *pass)
-  : m_loc (loc), m_kind (kind_), m_pass (pass), m_items ()
-  {}
-  ~optinfo ();
+  optinfo(const dump_location_t &loc, enum kind kind_, opt_pass *pass)
+      : m_loc(loc), m_kind(kind_), m_pass(pass), m_items() {}
+  ~optinfo();
 
-  const dump_location_t &
-  get_dump_location () const { return m_loc; }
+  const dump_location_t &get_dump_location() const { return m_loc; }
 
-  const dump_user_location_t &
-  get_user_location () const { return m_loc.get_user_location (); }
+  const dump_user_location_t &get_user_location() const {
+    return m_loc.get_user_location();
+  }
 
-  const dump_impl_location_t &
-  get_impl_location () const { return m_loc.get_impl_location (); }
+  const dump_impl_location_t &get_impl_location() const {
+    return m_loc.get_impl_location();
+  }
 
-  enum kind get_kind () const { return m_kind; }
-  opt_pass *get_pass () const { return m_pass; }
-  unsigned int num_items () const { return m_items.length (); }
-  const optinfo_item *get_item (unsigned int i) const { return m_items[i]; }
+  enum kind get_kind() const { return m_kind; }
+  opt_pass *get_pass() const { return m_pass; }
+  unsigned int num_items() const { return m_items.length(); }
+  const optinfo_item *get_item(unsigned int i) const { return m_items[i]; }
 
-  location_t get_location_t () const { return m_loc.get_location_t (); }
-  profile_count get_count () const { return m_loc.get_count (); }
+  location_t get_location_t() const { return m_loc.get_location_t(); }
+  profile_count get_count() const { return m_loc.get_count(); }
 
-  void add_item (std::unique_ptr<optinfo_item> item);
+  void add_item(std::unique_ptr<optinfo_item> item);
 
-  void emit_for_opt_problem () const;
+  void emit_for_opt_problem() const;
 
-  static const char *kind_to_string (enum kind k);
-  static dump_flags_t kind_to_dump_flag (enum kind k);
+  static const char *kind_to_string(enum kind k);
+  static dump_flags_t kind_to_dump_flag(enum kind k);
 
- private:
+private:
   /* Pre-canned ways of manipulating the optinfo, for use by friend class
      dump_context.  */
-  void handle_dump_file_kind (dump_flags_t);
+  void handle_dump_file_kind(dump_flags_t);
 
- private:
+private:
   dump_location_t m_loc;
   enum kind m_kind;
   opt_pass *m_pass;
-  auto_vec <optinfo_item *> m_items;
+  auto_vec<optinfo_item *> m_items;
 };
 
 /* An item within an optinfo.  */
 
-class optinfo_item
-{
- public:
+class optinfo_item {
+public:
   /* An enum for discriminating between different kinds of optinfo_item.  */
-  enum class kind
-  {
-    text,
-    tree,
-    gimple,
-    symtab_node
-  };
+  enum class kind { text, tree, gimple, symtab_node };
 
-  optinfo_item (enum kind kind_, location_t location,
-		char *text);
-  ~optinfo_item ();
+  optinfo_item(enum kind kind_, location_t location, char *text);
+  ~optinfo_item();
 
-  enum kind get_kind () const { return m_kind; }
-  location_t get_location () const { return m_location; }
-  const char *get_text () const { return m_text; }
+  enum kind get_kind() const { return m_kind; }
+  location_t get_location() const { return m_location; }
+  const char *get_text() const { return m_text; }
 
- private:
+private:
   /* Metadata (e.g. for optimization records).  */
   enum kind m_kind;
   location_t m_location;

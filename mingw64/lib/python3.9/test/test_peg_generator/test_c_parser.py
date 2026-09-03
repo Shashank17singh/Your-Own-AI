@@ -3,16 +3,14 @@ import textwrap
 import unittest
 from distutils.tests.support import TempdirManager
 from pathlib import Path
-
 from test import test_tools
 from test import support
 from test.support.script_helper import assert_python_ok
 
-_py_cflags_nodist = sysconfig.get_config_var('PY_CFLAGS_NODIST')
-_pgo_flag = sysconfig.get_config_var('PGO_PROF_USE_FLAG')
+_py_cflags_nodist = sysconfig.get_config_var("PY_CFLAGS_NODIST")
+_pgo_flag = sysconfig.get_config_var("PGO_PROF_USE_FLAG")
 if _pgo_flag and _py_cflags_nodist and _pgo_flag in _py_cflags_nodist:
     raise unittest.SkipTest("peg_generator test disabled under PGO build")
-
 test_tools.skip_if_missing("peg_generator")
 with test_tools.imports_under_tool("peg_generator"):
     from pegen.grammar_parser import GeneratedParser as GrammarParser
@@ -22,25 +20,18 @@ with test_tools.imports_under_tool("peg_generator"):
         generate_c_parser_source,
     )
     from pegen.ast_dump import ast_dump
-
-
 TEST_TEMPLATE = """
 tmp_dir = {extension_path!r}
-
 import ast
 import traceback
 import sys
 import unittest
-
 from test import test_tools
 with test_tools.imports_under_tool("peg_generator"):
     from pegen.ast_dump import ast_dump
-
 sys.path.insert(0, tmp_dir)
 import parse
-
 class Tests(unittest.TestCase):
-
     def check_input_strings_for_grammar(
         self,
         valid_cases = (),
@@ -49,20 +40,16 @@ class Tests(unittest.TestCase):
         if valid_cases:
             for case in valid_cases:
                 parse.parse_string(case, mode=0)
-
         if invalid_cases:
             for case in invalid_cases:
                 with self.assertRaises(SyntaxError):
                     parse.parse_string(case, mode=0)
-
     def verify_ast_generation(self, stmt):
         expected_ast = ast.parse(stmt)
         actual_ast = parse.parse_string(stmt, mode=1)
         self.assertEqual(ast_dump(expected_ast), ast_dump(actual_ast))
-
     def test_parse(self):
         {test_source}
-
 unittest.main()
 """
 
@@ -126,7 +113,6 @@ class TestCParser(TempdirManager, unittest.TestCase):
             "(1+1) * (1+1)",
             "(1+1) / (1+1)",
         ]
-
         for expr in expressions:
             the_ast = parse.parse_string(expr, mode=1)
             expected_ast = ast.parse(expr)
@@ -280,20 +266,13 @@ class TestCParser(TempdirManager, unittest.TestCase):
         start[mod_ty]: a=[statements] ENDMARKER { Module(a, NULL, p->arena) }
         statements[asdl_seq*]: a=statement+ { _PyPegen_seq_flatten(p, a) }
         statement[asdl_seq*]:  a=compound_stmt { _PyPegen_singleton_seq(p, a) } | simple_stmt
-
         simple_stmt[asdl_seq*]: a=small_stmt b=further_small_stmt* [';'] NEWLINE { _PyPegen_seq_insert_in_front(p, a, b) }
         further_small_stmt[stmt_ty]: ';' a=small_stmt { a }
-
         block: simple_stmt | NEWLINE INDENT a=statements DEDENT { a }
-
         compound_stmt: if_stmt
-
         if_stmt: 'if' a=full_expression ':' b=block { _Py_If(a, b, NULL, EXTRA) }
-
         small_stmt[stmt_ty]: pass_stmt
-
         pass_stmt[stmt_ty]: a='pass' { _Py_Pass(EXTRA) }
-
         full_expression: NAME
         """
         test_source = """
@@ -392,7 +371,6 @@ class TestCParser(TempdirManager, unittest.TestCase):
         """
         grammar = parse_string(grammar_source, GrammarParser)
         parser_source = generate_c_parser_source(grammar)
-
         self.assertTrue("SOME HEADER" in parser_source)
         self.assertTrue("SOME SUBHEADER" in parser_source)
         self.assertTrue("SOME TRAILER" in parser_source)
@@ -402,7 +380,6 @@ class TestCParser(TempdirManager, unittest.TestCase):
         start: expr+ NEWLINE? ENDMARKER
         expr: NAME {PyTuple_New(-1)}
         """
-        # PyTuple_New raises SystemError if an invalid argument was passed.
         test_source = """
         with self.assertRaises(SystemError):
             parse.parse_string("a", mode=0)

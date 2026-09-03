@@ -95,20 +95,18 @@ PyObject_{New, NewVar, Del}.
    the raw memory.
 */
 PyAPI_FUNC(void *) PyObject_Malloc(size_t size);
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03050000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API + 0 >= 0x03050000
 PyAPI_FUNC(void *) PyObject_Calloc(size_t nelem, size_t elsize);
 #endif
 PyAPI_FUNC(void *) PyObject_Realloc(void *ptr, size_t new_size);
 PyAPI_FUNC(void) PyObject_Free(void *ptr);
 
-
 /* Macros */
-#define PyObject_MALLOC         PyObject_Malloc
-#define PyObject_REALLOC        PyObject_Realloc
-#define PyObject_FREE           PyObject_Free
-#define PyObject_Del            PyObject_Free
-#define PyObject_DEL            PyObject_Free
-
+#define PyObject_MALLOC PyObject_Malloc
+#define PyObject_REALLOC PyObject_Realloc
+#define PyObject_FREE PyObject_Free
+#define PyObject_Del PyObject_Free
+#define PyObject_DEL PyObject_Free
 
 /*
  * Generic object allocator interface
@@ -117,8 +115,8 @@ PyAPI_FUNC(void) PyObject_Free(void *ptr);
 
 /* Functions */
 PyAPI_FUNC(PyObject *) PyObject_Init(PyObject *, PyTypeObject *);
-PyAPI_FUNC(PyVarObject *) PyObject_InitVar(PyVarObject *,
-                                                 PyTypeObject *, Py_ssize_t);
+PyAPI_FUNC(PyVarObject *)
+    PyObject_InitVar(PyVarObject *, PyTypeObject *, Py_ssize_t);
 PyAPI_FUNC(PyObject *) _PyObject_New(PyTypeObject *);
 PyAPI_FUNC(PyVarObject *) _PyObject_NewVar(PyTypeObject *, Py_ssize_t);
 
@@ -128,26 +126,23 @@ PyAPI_FUNC(PyVarObject *) _PyObject_NewVar(PyTypeObject *, Py_ssize_t);
 // PyObject_MALLOC() with _PyObject_SIZE().
 #define PyObject_NEW(type, typeobj) PyObject_New(type, typeobj)
 
-#define PyObject_NewVar(type, typeobj, n) \
-                ( (type *) _PyObject_NewVar((typeobj), (n)) )
+#define PyObject_NewVar(type, typeobj, n)                                      \
+  ((type *)_PyObject_NewVar((typeobj), (n)))
 
 // Alias to PyObject_New(). In Python 3.8, PyObject_NEW() called directly
 // PyObject_MALLOC() with _PyObject_VAR_SIZE().
 #define PyObject_NEW_VAR(type, typeobj, n) PyObject_NewVar(type, typeobj, n)
 
-
 #ifdef Py_LIMITED_API
 /* Define PyObject_INIT() and PyObject_INIT_VAR() as aliases to PyObject_Init()
    and PyObject_InitVar() in the limited C API for compatibility with the
    CPython C API. */
-#  define PyObject_INIT(op, typeobj) \
-        PyObject_Init(_PyObject_CAST(op), (typeobj))
-#  define PyObject_INIT_VAR(op, typeobj, size) \
-        PyObject_InitVar(_PyVarObject_CAST(op), (typeobj), (size))
+#define PyObject_INIT(op, typeobj) PyObject_Init(_PyObject_CAST(op), (typeobj))
+#define PyObject_INIT_VAR(op, typeobj, size)                                   \
+  PyObject_InitVar(_PyVarObject_CAST(op), (typeobj), (size))
 #else
 /* PyObject_INIT() and PyObject_INIT_VAR() are defined in cpython/objimpl.h */
 #endif
-
 
 /*
  * Garbage Collection Support
@@ -161,10 +156,8 @@ PyAPI_FUNC(Py_ssize_t) PyGC_Collect(void);
 #define PyType_IS_GC(t) PyType_HasFeature((t), Py_TPFLAGS_HAVE_GC)
 
 PyAPI_FUNC(PyVarObject *) _PyObject_GC_Resize(PyVarObject *, Py_ssize_t);
-#define PyObject_GC_Resize(type, op, n) \
-                ( (type *) _PyObject_GC_Resize(_PyVarObject_CAST(op), (n)) )
-
-
+#define PyObject_GC_Resize(type, op, n)                                        \
+  ((type *)_PyObject_GC_Resize(_PyVarObject_CAST(op), (n)))
 
 PyAPI_FUNC(PyObject *) _PyObject_GC_New(PyTypeObject *);
 PyAPI_FUNC(PyVarObject *) _PyObject_GC_NewVar(PyTypeObject *, Py_ssize_t);
@@ -181,10 +174,9 @@ PyAPI_FUNC(void) PyObject_GC_UnTrack(void *);
 
 PyAPI_FUNC(void) PyObject_GC_Del(void *);
 
-#define PyObject_GC_New(type, typeobj) \
-                ( (type *) _PyObject_GC_New(typeobj) )
-#define PyObject_GC_NewVar(type, typeobj, n) \
-                ( (type *) _PyObject_GC_NewVar((typeobj), (n)) )
+#define PyObject_GC_New(type, typeobj) ((type *)_PyObject_GC_New(typeobj))
+#define PyObject_GC_NewVar(type, typeobj, n)                                   \
+  ((type *)_PyObject_GC_NewVar((typeobj), (n)))
 
 PyAPI_FUNC(int) PyObject_GC_IsTracked(PyObject *);
 PyAPI_FUNC(int) PyObject_GC_IsFinalized(PyObject *);
@@ -194,19 +186,19 @@ PyAPI_FUNC(int) PyObject_GC_IsFinalized(PyObject *);
  * "visit" and "arg".  This is intended to keep tp_traverse functions
  * looking as much alike as possible.
  */
-#define Py_VISIT(op)                                                    \
-    do {                                                                \
-        if (op) {                                                       \
-            int vret = visit(_PyObject_CAST(op), arg);                  \
-            if (vret)                                                   \
-                return vret;                                            \
-        }                                                               \
-    } while (0)
+#define Py_VISIT(op)                                                           \
+  do {                                                                         \
+    if (op) {                                                                  \
+      int vret = visit(_PyObject_CAST(op), arg);                               \
+      if (vret)                                                                \
+        return vret;                                                           \
+    }                                                                          \
+  } while (0)
 
 #ifndef Py_LIMITED_API
-#  define Py_CPYTHON_OBJIMPL_H
-#  include  "cpython/objimpl.h"
-#  undef Py_CPYTHON_OBJIMPL_H
+#define Py_CPYTHON_OBJIMPL_H
+#include "cpython/objimpl.h"
+#undef Py_CPYTHON_OBJIMPL_H
 #endif
 
 #ifdef __cplusplus

@@ -19,8 +19,7 @@ class ToThreadTests(test_utils.TestCase):
         asyncio.set_event_loop(self.loop)
 
     def tearDown(self):
-        self.loop.run_until_complete(
-            self.loop.shutdown_default_executor())
+        self.loop.run_until_complete(self.loop.shutdown_default_executor())
         self.loop.close()
         asyncio.set_event_loop(None)
         self.loop = None
@@ -70,23 +69,23 @@ class ToThreadTests(test_utils.TestCase):
         func = mock.Mock()
 
         async def main():
-            await asyncio.to_thread(func, 'test', something=True)
+            await asyncio.to_thread(func, "test", something=True)
 
         self.loop.run_until_complete(main())
-        func.assert_called_once_with('test', something=True)
+        func.assert_called_once_with("test", something=True)
 
     def test_to_thread_contextvars(self):
-        test_ctx = ContextVar('test_ctx')
+        test_ctx = ContextVar("test_ctx")
 
         def get_ctx():
             return test_ctx.get()
 
         async def main():
-            test_ctx.set('parrot')
+            test_ctx.set("parrot")
             return await asyncio.to_thread(get_ctx)
 
         result = self.loop.run_until_complete(main())
-        self.assertEqual(result, 'parrot')
+        self.assertEqual(result, "parrot")
 
 
 if __name__ == "__main__":

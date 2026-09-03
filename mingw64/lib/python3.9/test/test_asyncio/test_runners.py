@@ -36,6 +36,7 @@ class BaseTest(unittest.TestCase):
 
         async def shutdown_asyncgens():
             loop.shutdown_ag_run = True
+
         loop.shutdown_asyncgens = shutdown_asyncgens
 
         return loop
@@ -68,16 +69,16 @@ class RunTests(BaseTest):
     def test_asyncio_run_raises(self):
         async def main():
             await asyncio.sleep(0)
-            raise ValueError('spam')
+            raise ValueError("spam")
 
-        with self.assertRaisesRegex(ValueError, 'spam'):
+        with self.assertRaisesRegex(ValueError, "spam"):
             asyncio.run(main())
 
     def test_asyncio_run_only_coro(self):
         for o in {1, lambda: None}:
-            with self.subTest(obj=o), \
-                    self.assertRaisesRegex(ValueError,
-                                           'a coroutine was expected'):
+            with self.subTest(obj=o), self.assertRaisesRegex(
+                ValueError, "a coroutine was expected"
+            ):
                 asyncio.run(o)
 
     def test_asyncio_run_debug(self):
@@ -87,7 +88,7 @@ class RunTests(BaseTest):
 
         asyncio.run(main(False))
         asyncio.run(main(True), debug=True)
-        with mock.patch('asyncio.coroutines._is_debug_mode', lambda: True):
+        with mock.patch("asyncio.coroutines._is_debug_mode", lambda: True):
             asyncio.run(main(True))
             asyncio.run(main(False), debug=False)
 
@@ -99,8 +100,7 @@ class RunTests(BaseTest):
             finally:
                 coro.close()  # Suppress ResourceWarning
 
-        with self.assertRaisesRegex(RuntimeError,
-                                    'cannot be called from a running'):
+        with self.assertRaisesRegex(RuntimeError, "cannot be called from a running"):
             asyncio.run(main())
 
     def test_asyncio_run_cancels_hanging_tasks(self):
@@ -138,11 +138,13 @@ class RunTests(BaseTest):
         self.assertEqual(asyncio.run(main()), 123)
         self.assertTrue(lo_task.done())
 
-        call_exc_handler_mock.assert_called_with({
-            'message': test_utils.MockPattern(r'asyncio.run.*shutdown'),
-            'task': lo_task,
-            'exception': test_utils.MockInstanceOf(ZeroDivisionError)
-        })
+        call_exc_handler_mock.assert_called_with(
+            {
+                "message": test_utils.MockPattern(r"asyncio.run.*shutdown"),
+                "task": lo_task,
+                "exception": test_utils.MockInstanceOf(ZeroDivisionError),
+            }
+        )
 
     def test_asyncio_run_closes_gens_after_hanging_tasks_errors(self):
         spinner = None

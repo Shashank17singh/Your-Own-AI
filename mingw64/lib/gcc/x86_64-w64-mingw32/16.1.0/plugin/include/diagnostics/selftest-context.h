@@ -31,57 +31,44 @@ namespace selftest {
 /* Convenience subclass of diagnostics::context for testing
    the diagnostic subsystem.  */
 
-class test_context : public context
-{
- public:
-  test_context ();
-  ~test_context ();
+class test_context : public context {
+public:
+  test_context();
+  ~test_context();
 
   /* Implementation of diagnostics::start_span_fn, hiding the
      real filename (to avoid printing the names of tempfiles).  */
-  static void
-  start_span_cb (const location_print_policy &,
-		 to_text &sink,
-		 expanded_location exploc);
+  static void start_span_cb(const location_print_policy &, to_text &sink,
+                            expanded_location exploc);
 
   /* Report a diagnostic to this context.  For a selftest, this
      should only be called on a context that uses a non-standard formatter
      that e.g. gathers the results in memory, rather than emits to stderr.  */
-  bool
-  report (enum kind kind,
-	  rich_location &richloc,
-	  const metadata *,
-	  option_id opt_id,
-	  const char * fmt, ...) ATTRIBUTE_GCC_DIAG(6,7);
+  bool report(enum kind kind, rich_location &richloc, const metadata *,
+              option_id opt_id, const char *fmt, ...) ATTRIBUTE_GCC_DIAG(6, 7);
 
-  const char *test_show_locus (rich_location &richloc);
+  const char *test_show_locus(rich_location &richloc);
 
   /* Setters for the context's source_printing_options
      for use in selftests.  */
-  void colorize_source (bool val)
-  {
-    get_source_printing_options ().colorize_source_p = val;
+  void colorize_source(bool val) {
+    get_source_printing_options().colorize_source_p = val;
   }
-  void show_labels (bool val)
-  {
-    get_source_printing_options ().show_labels_p = val;
+  void show_labels(bool val) {
+    get_source_printing_options().show_labels_p = val;
   }
-  void show_line_numbers (bool val)
-  {
-    get_source_printing_options ().show_line_numbers_p = val;
+  void show_line_numbers(bool val) {
+    get_source_printing_options().show_line_numbers_p = val;
   }
-  void show_ruler (bool val)
-  {
-    get_source_printing_options ().show_ruler_p = val;
+  void show_ruler(bool val) {
+    get_source_printing_options().show_ruler_p = val;
   }
-  void show_event_links (bool val)
-  {
-    get_source_printing_options ().show_event_links_p = val;
+  void show_event_links(bool val) {
+    get_source_printing_options().show_event_links_p = val;
   }
-  void set_caret_char (unsigned idx, char ch)
-  {
-    gcc_assert (idx < rich_location::STATICALLY_ALLOCATED_RANGES);
-    get_source_printing_options ().caret_chars[idx] = ch;
+  void set_caret_char(unsigned idx, char ch) {
+    gcc_assert(idx < rich_location::STATICALLY_ALLOCATED_RANGES);
+    get_source_printing_options().caret_chars[idx] = ch;
   }
 };
 

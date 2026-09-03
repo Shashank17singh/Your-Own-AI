@@ -21,8 +21,8 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_IRA_INT_H
 #define GCC_IRA_INT_H
 
-#include "recog.h"
 #include "function-abi.h"
+#include "recog.h"
 
 /* To provide consistency in naming, all IRA external variables,
    functions, common typedefs start with prefix ira_.  */
@@ -32,7 +32,7 @@ along with GCC; see the file COPYING3.  If not see
 #endif
 
 #ifdef ENABLE_IRA_CHECKING
-#define ira_assert(c) gcc_assert (c)
+#define ira_assert(c) gcc_assert(c)
 #else
 /* Always define and include C, so that warnings for empty body in an
   'if' statement and unused variable do not occur.  */
@@ -44,10 +44,10 @@ along with GCC; see the file COPYING3.  If not see
    profile driven feedback is available and the function is never
    executed, frequency is always equivalent.  Otherwise rescale the
    edge frequency.  */
-#define REG_FREQ_FROM_EDGE_FREQ(freq)				   \
-  (optimize_function_for_size_p (cfun)				   \
-   ? REG_FREQ_MAX : (freq * REG_FREQ_MAX / BB_FREQ_MAX)		   \
-   ? (freq * REG_FREQ_MAX / BB_FREQ_MAX) : 1)
+#define REG_FREQ_FROM_EDGE_FREQ(freq)                                          \
+  (optimize_function_for_size_p(cfun)    ? REG_FREQ_MAX                        \
+   : (freq * REG_FREQ_MAX / BB_FREQ_MAX) ? (freq * REG_FREQ_MAX / BB_FREQ_MAX) \
+                                         : 1)
 
 /* A modified value of flag `-fira-verbose' used internally.  */
 extern int internal_flag_ira_verbose;
@@ -78,10 +78,9 @@ typedef unsigned short move_table[N_REG_CLASSES];
    not a part of the tree from cfgloop.h.  We also use the nodes for
    storing additional information about basic blocks/loops for the
    register allocation purposes.  */
-struct ira_loop_tree_node
-{
+struct ira_loop_tree_node {
   /* The node represents basic block if children == NULL.  */
-  basic_block bb;    /* NULL for loop.  */
+  basic_block bb; /* NULL for loop.  */
   /* NULL for BB or for loop tree root if we did not build CFG loop tree.  */
   class loop *loop;
   /* NEXT/SUBLOOP_NEXT is the next node/loop-node of the same parent.
@@ -152,21 +151,21 @@ extern ira_loop_tree_node_t ira_bb_nodes;
 
 /* Two access macros to the nodes representing basic blocks.  */
 #if defined ENABLE_IRA_CHECKING && (GCC_VERSION >= 2007)
-#define IRA_BB_NODE_BY_INDEX(index) __extension__			\
-(({ ira_loop_tree_node_t _node = (&ira_bb_nodes[index]);		\
-     if (_node->children != NULL || _node->loop != NULL || _node->bb == NULL)\
-       {								\
-         fprintf (stderr,						\
-                  "\n%s: %d: error in %s: it is not a block node\n",	\
-                  __FILE__, __LINE__, __FUNCTION__);			\
-         gcc_unreachable ();						\
-       }								\
-     _node; }))
+#define IRA_BB_NODE_BY_INDEX(index)                                            \
+  __extension__(({                                                             \
+    ira_loop_tree_node_t _node = (&ira_bb_nodes[index]);                       \
+    if (_node->children != NULL || _node->loop != NULL || _node->bb == NULL) { \
+      fprintf(stderr, "\n%s: %d: error in %s: it is not a block node\n",       \
+              __FILE__, __LINE__, __FUNCTION__);                               \
+      gcc_unreachable();                                                       \
+    }                                                                          \
+    _node;                                                                     \
+  }))
 #else
 #define IRA_BB_NODE_BY_INDEX(index) (&ira_bb_nodes[index])
 #endif
 
-#define IRA_BB_NODE(bb) IRA_BB_NODE_BY_INDEX ((bb)->index)
+#define IRA_BB_NODE(bb) IRA_BB_NODE_BY_INDEX((bb)->index)
 
 /* All nodes representing loops are referred through the following
    array.  */
@@ -174,29 +173,27 @@ extern ira_loop_tree_node_t ira_loop_nodes;
 
 /* Two access macros to the nodes representing loops.  */
 #if defined ENABLE_IRA_CHECKING && (GCC_VERSION >= 2007)
-#define IRA_LOOP_NODE_BY_INDEX(index) __extension__			\
-(({ ira_loop_tree_node_t const _node = (&ira_loop_nodes[index]);	\
-     if (_node->children == NULL || _node->bb != NULL			\
-         || (_node->loop == NULL && current_loops != NULL))		\
-       {								\
-         fprintf (stderr,						\
-                  "\n%s: %d: error in %s: it is not a loop node\n",	\
-                  __FILE__, __LINE__, __FUNCTION__);			\
-         gcc_unreachable ();						\
-       }								\
-     _node; }))
+#define IRA_LOOP_NODE_BY_INDEX(index)                                          \
+  __extension__(({                                                             \
+    ira_loop_tree_node_t const _node = (&ira_loop_nodes[index]);               \
+    if (_node->children == NULL || _node->bb != NULL ||                        \
+        (_node->loop == NULL && current_loops != NULL)) {                      \
+      fprintf(stderr, "\n%s: %d: error in %s: it is not a loop node\n",        \
+              __FILE__, __LINE__, __FUNCTION__);                               \
+      gcc_unreachable();                                                       \
+    }                                                                          \
+    _node;                                                                     \
+  }))
 #else
 #define IRA_LOOP_NODE_BY_INDEX(index) (&ira_loop_nodes[index])
 #endif
 
-#define IRA_LOOP_NODE(loop) IRA_LOOP_NODE_BY_INDEX ((loop)->num)
+#define IRA_LOOP_NODE(loop) IRA_LOOP_NODE_BY_INDEX((loop)->num)
 
-
 /* The structure describes program points where a given allocno lives.
    If the live ranges of two allocnos are intersected, the allocnos
    are in conflict.  */
-struct live_range
-{
+struct live_range {
   /* Object whose live range is described by given structure.  */
   ira_object_t object;
   /* Program point range.  */
@@ -223,8 +220,7 @@ extern live_range_t *ira_start_point_ranges, *ira_finish_point_ranges;
 
 /* A structure representing conflict information for an allocno
    (or one of its subwords).  */
-struct ira_object
-{
+struct ira_object {
   /* The allocno associated with this record.  */
   ira_allocno_t allocno;
   /* Vector of accumulated conflicting conflict_redords with NULL end
@@ -271,8 +267,7 @@ struct ira_object
    called *cap*.  There may be more one cap representing the same
    pseudo-register in region.  It means that the corresponding
    pseudo-register lives in more one non-intersected subregion.  */
-struct ira_allocno
-{
+struct ira_allocno {
   /* The allocno order number starting with 0.  Each allocno has an
      unique number and the number is never changed for the
      allocno.  */
@@ -281,13 +276,13 @@ struct ira_allocno
   int regno;
   /* Mode of the allocno which is the mode of the corresponding
      pseudo-register.  */
-  ENUM_BITFIELD (machine_mode) mode : MACHINE_MODE_BITSIZE;
+  ENUM_BITFIELD(machine_mode) mode : MACHINE_MODE_BITSIZE;
   /* Widest mode of the allocno which in at least one case could be
      for paradoxical subregs where wmode > mode.  */
-  ENUM_BITFIELD (machine_mode) wmode : MACHINE_MODE_BITSIZE;
+  ENUM_BITFIELD(machine_mode) wmode : MACHINE_MODE_BITSIZE;
   /* Register class which should be used for allocation for given
      allocno.  NO_REGS means that we should use memory.  */
-  ENUM_BITFIELD (reg_class) aclass : 16;
+  ENUM_BITFIELD(reg_class) aclass : 16;
   /* Hard register assigned to given allocno.  Negative value means
      that memory was allocated to the allocno.  During the reload,
      spilled allocno has value equal to the corresponding stack slot
@@ -397,7 +392,7 @@ struct ira_allocno
      multi-word register.  */
   ira_object_t objects[2];
   /* Registers clobbered by intersected calls.  */
-   HARD_REG_SET crossed_calls_clobbered_regs;
+  HARD_REG_SET crossed_calls_clobbered_regs;
   /* Array of usage costs (accumulated and the one updated during
      coloring) for each hard register of the allocno class.  The
      member value can be NULL if all costs are the same and equal to
@@ -425,7 +420,6 @@ struct ira_allocno
   void *add_data;
 };
 
-
 /* All members of the allocno structures should be accessed only
    through the following macros.  */
 #define ALLOCNO_NUM(A) ((A)->num)
@@ -437,21 +431,21 @@ struct ira_allocno
 #define ALLOCNO_CAP_MEMBER(A) ((A)->cap_member)
 #define ALLOCNO_NREFS(A) ((A)->nrefs)
 #define ALLOCNO_FREQ(A) ((A)->freq)
-#define ALLOCNO_MIGHT_CONFLICT_WITH_PARENT_P(A) \
+#define ALLOCNO_MIGHT_CONFLICT_WITH_PARENT_P(A)                                \
   ((A)->might_conflict_with_parent_p)
 #if NUM_REGISTER_FILTERS
 #define ALLOCNO_REGISTER_FILTERS(A) (A)->register_filters
 #define ALLOCNO_SET_REGISTER_FILTERS(A, X) ((A)->register_filters = (X))
 #else
 #define ALLOCNO_REGISTER_FILTERS(A) 0
-#define ALLOCNO_SET_REGISTER_FILTERS(A, X) ((void) (A), gcc_assert ((X) == 0))
+#define ALLOCNO_SET_REGISTER_FILTERS(A, X) ((void)(A), gcc_assert((X) == 0))
 #endif
 #define ALLOCNO_HARD_REGNO(A) ((A)->hard_regno)
 #define ALLOCNO_CALL_FREQ(A) ((A)->call_freq)
 #define ALLOCNO_CALLS_CROSSED_NUM(A) ((A)->calls_crossed_num)
 #define ALLOCNO_CHEAP_CALLS_CROSSED_NUM(A) ((A)->cheap_calls_crossed_num)
 #define ALLOCNO_CROSSED_CALLS_ABIS(A) ((A)->crossed_calls_abis)
-#define ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS(A) \
+#define ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS(A)                                \
   ((A)->crossed_calls_clobbered_regs)
 #define ALLOCNO_MEM_OPTIMIZED_DEST(A) ((A)->mem_optimized_dest)
 #define ALLOCNO_MEM_OPTIMIZED_DEST_P(A) ((A)->mem_optimized_dest_p)
@@ -470,18 +464,16 @@ struct ira_allocno
 #define ALLOCNO_COPIES(A) ((A)->allocno_copies)
 #define ALLOCNO_HARD_REG_COSTS(A) ((A)->hard_reg_costs)
 #define ALLOCNO_UPDATED_HARD_REG_COSTS(A) ((A)->updated_hard_reg_costs)
-#define ALLOCNO_CONFLICT_HARD_REG_COSTS(A) \
-  ((A)->conflict_hard_reg_costs)
-#define ALLOCNO_UPDATED_CONFLICT_HARD_REG_COSTS(A) \
+#define ALLOCNO_CONFLICT_HARD_REG_COSTS(A) ((A)->conflict_hard_reg_costs)
+#define ALLOCNO_UPDATED_CONFLICT_HARD_REG_COSTS(A)                             \
   ((A)->updated_conflict_hard_reg_costs)
 #define ALLOCNO_CLASS(A) ((A)->aclass)
 #define ALLOCNO_CLASS_COST(A) ((A)->class_cost)
 #define ALLOCNO_UPDATED_CLASS_COST(A) ((A)->updated_class_cost)
 #define ALLOCNO_MEMORY_COST(A) ((A)->memory_cost)
 #define ALLOCNO_UPDATED_MEMORY_COST(A) ((A)->updated_memory_cost)
-#define ALLOCNO_EXCESS_PRESSURE_POINTS_NUM(A) \
-  ((A)->excess_pressure_points_num)
-#define ALLOCNO_OBJECT(A,N) ((A)->objects[N])
+#define ALLOCNO_EXCESS_PRESSURE_POINTS_NUM(A) ((A)->excess_pressure_points_num)
+#define ALLOCNO_OBJECT(A, N) ((A)->objects[N])
 #define ALLOCNO_NUM_OBJECTS(A) ((A)->num_objects)
 #define ALLOCNO_ADD_DATA(A) ((A)->add_data)
 
@@ -490,8 +482,7 @@ typedef struct ira_emit_data *ira_emit_data_t;
 
 /* Allocno bound data used for emit pseudo live range split insns and
    to flattening IR.  */
-struct ira_emit_data
-{
+struct ira_emit_data {
   /* TRUE if the allocno assigned to memory was a destination of
      removed move (see ira-emit.cc) at loop exit because the value of
      the corresponding pseudo-register is not changed inside the
@@ -512,16 +503,14 @@ struct ira_emit_data
   ira_allocno_t mem_optimized_dest;
 };
 
-#define ALLOCNO_EMIT_DATA(a) ((ira_emit_data_t) ALLOCNO_ADD_DATA (a))
+#define ALLOCNO_EMIT_DATA(a) ((ira_emit_data_t)ALLOCNO_ADD_DATA(a))
 
 /* Data used to emit live range split insns and to flattening IR.  */
 extern ira_emit_data_t ira_allocno_emit_data;
 
 /* Abbreviation for frequent emit data access.  */
-inline rtx
-allocno_emit_reg (ira_allocno_t a)
-{
-  return ALLOCNO_EMIT_DATA (a)->reg;
+inline rtx allocno_emit_reg(ira_allocno_t a) {
+  return ALLOCNO_EMIT_DATA(a)->reg;
 }
 
 #define OBJECT_ALLOCNO(O) ((O)->allocno)
@@ -561,8 +550,7 @@ extern int ira_objects_num;
    allocno.  The preference represent move insns or potential move
    insns usually because of two operand insn constraints.  One move
    operand is a hard register.  */
-struct ira_allocno_pref
-{
+struct ira_allocno_pref {
   /* The unique order number of the preference node starting with 0.  */
   int num;
   /* Preferred hard register.  */
@@ -589,8 +577,7 @@ extern int ira_prefs_num;
    of two operand insn constraints.  To remove register shuffle, we
    also create copies between allocno which is output of an insn and
    allocno becoming dead in the insn.  */
-struct ira_allocno_copy
-{
+struct ira_allocno_copy {
   /* The unique order number of the copy node starting with 0.  */
   int num;
   /* Allocnos connected by the copy.  The first allocno should have
@@ -625,8 +612,7 @@ extern int ira_copies_num;
 
 /* The following structure describes a stack slot used for spilled
    pseudo-registers.  */
-class ira_spilled_reg_stack_slot
-{
+class ira_spilled_reg_stack_slot {
 public:
   /* pseudo-registers assigned to the stack slot.  */
   bitmap_head spilled_regs;
@@ -652,11 +638,10 @@ extern int64_t ira_reg_cost, ira_mem_cost;
 extern int64_t ira_load_cost, ira_store_cost, ira_shuffle_cost;
 extern int ira_move_loops_num, ira_additional_jumps_num;
 
-
 /* This page contains a bitset implementation called 'min/max sets' used to
    record conflicts in IRA.
    They are named min/maxs set since we keep track of a minimum and a maximum
-   bit number for each set representing the bounds of valid elements.  Otherwise,
+   bit number for each set representing the bounds of valid elements. Otherwise,
    the implementation resembles sbitmaps in that we store an array of integers
    whose bits directly represent the members of the set.  */
 
@@ -671,56 +656,55 @@ extern int ira_move_loops_num, ira_additional_jumps_num;
    MAX.  */
 #if defined ENABLE_IRA_CHECKING && (GCC_VERSION >= 2007)
 
-#define SET_MINMAX_SET_BIT(R, I, MIN, MAX) __extension__	        \
-  (({ int _min = (MIN), _max = (MAX), _i = (I);				\
-     if (_i < _min || _i > _max)					\
-       {								\
-         fprintf (stderr,						\
-                  "\n%s: %d: error in %s: %d not in range [%d,%d]\n",   \
-                  __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);	\
-         gcc_unreachable ();						\
-       }								\
-     ((R)[(unsigned) (_i - _min) / IRA_INT_BITS]			\
-      |= ((IRA_INT_TYPE) 1 << ((unsigned) (_i - _min) % IRA_INT_BITS))); }))
+#define SET_MINMAX_SET_BIT(R, I, MIN, MAX)                                     \
+  __extension__(({                                                             \
+    int _min = (MIN), _max = (MAX), _i = (I);                                  \
+    if (_i < _min || _i > _max) {                                              \
+      fprintf(stderr, "\n%s: %d: error in %s: %d not in range [%d,%d]\n",      \
+              __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);               \
+      gcc_unreachable();                                                       \
+    }                                                                          \
+    ((R)[(unsigned)(_i - _min) / IRA_INT_BITS] |=                              \
+     ((IRA_INT_TYPE)1 << ((unsigned)(_i - _min) % IRA_INT_BITS)));             \
+  }))
 
+#define CLEAR_MINMAX_SET_BIT(R, I, MIN, MAX)                                   \
+  __extension__(({                                                             \
+    int _min = (MIN), _max = (MAX), _i = (I);                                  \
+    if (_i < _min || _i > _max) {                                              \
+      fprintf(stderr, "\n%s: %d: error in %s: %d not in range [%d,%d]\n",      \
+              __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);               \
+      gcc_unreachable();                                                       \
+    }                                                                          \
+    ((R)[(unsigned)(_i - _min) / IRA_INT_BITS] &=                              \
+     ~((IRA_INT_TYPE)1 << ((unsigned)(_i - _min) % IRA_INT_BITS)));            \
+  }))
 
-#define CLEAR_MINMAX_SET_BIT(R, I, MIN, MAX) __extension__	        \
-  (({ int _min = (MIN), _max = (MAX), _i = (I);				\
-     if (_i < _min || _i > _max)					\
-       {								\
-         fprintf (stderr,						\
-                  "\n%s: %d: error in %s: %d not in range [%d,%d]\n",   \
-                  __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);	\
-         gcc_unreachable ();						\
-       }								\
-     ((R)[(unsigned) (_i - _min) / IRA_INT_BITS]			\
-      &= ~((IRA_INT_TYPE) 1 << ((unsigned) (_i - _min) % IRA_INT_BITS))); }))
-
-#define TEST_MINMAX_SET_BIT(R, I, MIN, MAX) __extension__	        \
-  (({ int _min = (MIN), _max = (MAX), _i = (I);				\
-     if (_i < _min || _i > _max)					\
-       {								\
-         fprintf (stderr,						\
-                  "\n%s: %d: error in %s: %d not in range [%d,%d]\n",   \
-                  __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);	\
-         gcc_unreachable ();						\
-       }								\
-     ((R)[(unsigned) (_i - _min) / IRA_INT_BITS]			\
-      & ((IRA_INT_TYPE) 1 << ((unsigned) (_i - _min) % IRA_INT_BITS))); }))
+#define TEST_MINMAX_SET_BIT(R, I, MIN, MAX)                                    \
+  __extension__(({                                                             \
+    int _min = (MIN), _max = (MAX), _i = (I);                                  \
+    if (_i < _min || _i > _max) {                                              \
+      fprintf(stderr, "\n%s: %d: error in %s: %d not in range [%d,%d]\n",      \
+              __FILE__, __LINE__, __FUNCTION__, _i, _min, _max);               \
+      gcc_unreachable();                                                       \
+    }                                                                          \
+    ((R)[(unsigned)(_i - _min) / IRA_INT_BITS] &                               \
+     ((IRA_INT_TYPE)1 << ((unsigned)(_i - _min) % IRA_INT_BITS)));             \
+  }))
 
 #else
 
-#define SET_MINMAX_SET_BIT(R, I, MIN, MAX)			\
-  ((R)[(unsigned) ((I) - (MIN)) / IRA_INT_BITS]			\
-   |= ((IRA_INT_TYPE) 1 << ((unsigned) ((I) - (MIN)) % IRA_INT_BITS)))
+#define SET_MINMAX_SET_BIT(R, I, MIN, MAX)                                     \
+  ((R)[(unsigned)((I) - (MIN)) / IRA_INT_BITS] |=                              \
+   ((IRA_INT_TYPE)1 << ((unsigned)((I) - (MIN)) % IRA_INT_BITS)))
 
-#define CLEAR_MINMAX_SET_BIT(R, I, MIN, MAX)			\
-  ((R)[(unsigned) ((I) - (MIN)) / IRA_INT_BITS]			\
-   &= ~((IRA_INT_TYPE) 1 << ((unsigned) ((I) - (MIN)) % IRA_INT_BITS)))
+#define CLEAR_MINMAX_SET_BIT(R, I, MIN, MAX)                                   \
+  ((R)[(unsigned)((I) - (MIN)) / IRA_INT_BITS] &=                              \
+   ~((IRA_INT_TYPE)1 << ((unsigned)((I) - (MIN)) % IRA_INT_BITS)))
 
-#define TEST_MINMAX_SET_BIT(R, I, MIN, MAX)			\
-  ((R)[(unsigned) ((I) - (MIN)) / IRA_INT_BITS]			\
-   & ((IRA_INT_TYPE) 1 << ((unsigned) ((I) - (MIN)) % IRA_INT_BITS)))
+#define TEST_MINMAX_SET_BIT(R, I, MIN, MAX)                                    \
+  ((R)[(unsigned)((I) - (MIN)) / IRA_INT_BITS] &                               \
+   ((IRA_INT_TYPE)1 << ((unsigned)((I) - (MIN)) % IRA_INT_BITS)))
 
 #endif
 
@@ -748,10 +732,8 @@ struct minmax_set_iterator {
 
 /* Initialize the iterator I for bit vector VEC containing minimal and
    maximal values MIN and MAX.  */
-inline void
-minmax_set_iter_init (minmax_set_iterator *i, IRA_INT_TYPE *vec, int min,
-		      int max)
-{
+inline void minmax_set_iter_init(minmax_set_iterator *i, IRA_INT_TYPE *vec,
+                                 int min, int max) {
   i->vec = vec;
   i->word_num = 0;
   i->nel = max < min ? 0 : max - min + 1;
@@ -763,34 +745,29 @@ minmax_set_iter_init (minmax_set_iterator *i, IRA_INT_TYPE *vec, int min,
 /* Return TRUE if we have more allocnos to visit, in which case *N is
    set to the number of the element to be visited.  Otherwise, return
    FALSE.  */
-inline bool
-minmax_set_iter_cond (minmax_set_iterator *i, int *n)
-{
+inline bool minmax_set_iter_cond(minmax_set_iterator *i, int *n) {
   /* Skip words that are zeros.  */
-  for (; i->word == 0; i->word = i->vec[i->word_num])
-    {
-      i->word_num++;
-      i->bit_num = i->word_num * IRA_INT_BITS;
+  for (; i->word == 0; i->word = i->vec[i->word_num]) {
+    i->word_num++;
+    i->bit_num = i->word_num * IRA_INT_BITS;
 
-      /* If we have reached the end, break.  */
-      if (i->bit_num >= i->nel)
-	return false;
-    }
+    /* If we have reached the end, break.  */
+    if (i->bit_num >= i->nel)
+      return false;
+  }
 
   /* Skip bits that are zero.  */
-  int off = ctz_hwi (i->word);
+  int off = ctz_hwi(i->word);
   i->bit_num += off;
   i->word >>= off;
 
-  *n = (int) i->bit_num + i->start_val;
+  *n = (int)i->bit_num + i->start_val;
 
   return true;
 }
 
 /* Advance to the next element in the set.  */
-inline void
-minmax_set_iter_next (minmax_set_iterator *i)
-{
+inline void minmax_set_iter_next(minmax_set_iterator *i) {
   i->word >>= 1;
   i->bit_num++;
 }
@@ -799,17 +776,16 @@ minmax_set_iter_next (minmax_set_iterator *i)
    their minimal and maximal values MIN and MAX.  In each iteration, N
    is set to the number of next allocno.  ITER is an instance of
    minmax_set_iterator used to iterate over the set.  */
-#define FOR_EACH_BIT_IN_MINMAX_SET(VEC, MIN, MAX, N, ITER)	\
-  for (minmax_set_iter_init (&(ITER), (VEC), (MIN), (MAX));	\
-       minmax_set_iter_cond (&(ITER), &(N));			\
-       minmax_set_iter_next (&(ITER)))
-
+#define FOR_EACH_BIT_IN_MINMAX_SET(VEC, MIN, MAX, N, ITER)                     \
+  for (minmax_set_iter_init(&(ITER), (VEC), (MIN), (MAX));                     \
+       minmax_set_iter_cond(&(ITER), &(N)); minmax_set_iter_next(&(ITER)))
+
 class target_ira_int {
 public:
-  ~target_ira_int ();
+  ~target_ira_int();
 
-  void free_ira_costs ();
-  void free_register_move_costs ();
+  void free_ira_costs();
+  void free_register_move_costs();
 
   /* Initialized once.  It is a maximal possible size of the allocated
      struct costs.  */
@@ -832,8 +808,8 @@ public:
 
   /* Map: hard regs X modes -> set of hard registers for storing value
      of given mode starting with given hard register.  */
-  HARD_REG_SET (x_ira_reg_mode_hard_regset
-		[FIRST_PSEUDO_REGISTER][NUM_MACHINE_MODES]);
+  HARD_REG_SET(
+      x_ira_reg_mode_hard_regset[FIRST_PSEUDO_REGISTER][NUM_MACHINE_MODES]);
 
   /* Maximum cost of moving from a register in one class to a register
      in another class.  Based on TARGET_REGISTER_MOVE_COST.  */
@@ -948,59 +924,50 @@ extern class target_ira_int *this_target_ira_int;
 #define this_target_ira_int (&default_target_ira_int)
 #endif
 
-#define ira_reg_mode_hard_regset \
+#define ira_reg_mode_hard_regset                                               \
   (this_target_ira_int->x_ira_reg_mode_hard_regset)
-#define ira_register_move_cost \
-  (this_target_ira_int->x_ira_register_move_cost)
-#define ira_max_memory_move_cost \
+#define ira_register_move_cost (this_target_ira_int->x_ira_register_move_cost)
+#define ira_max_memory_move_cost                                               \
   (this_target_ira_int->x_ira_max_memory_move_cost)
-#define ira_may_move_in_cost \
-  (this_target_ira_int->x_ira_may_move_in_cost)
-#define ira_may_move_out_cost \
-  (this_target_ira_int->x_ira_may_move_out_cost)
-#define ira_reg_allocno_class_p \
-  (this_target_ira_int->x_ira_reg_allocno_class_p)
-#define ira_reg_pressure_class_p \
+#define ira_may_move_in_cost (this_target_ira_int->x_ira_may_move_in_cost)
+#define ira_may_move_out_cost (this_target_ira_int->x_ira_may_move_out_cost)
+#define ira_reg_allocno_class_p (this_target_ira_int->x_ira_reg_allocno_class_p)
+#define ira_reg_pressure_class_p                                               \
   (this_target_ira_int->x_ira_reg_pressure_class_p)
-#define ira_non_ordered_class_hard_regs \
+#define ira_non_ordered_class_hard_regs                                        \
   (this_target_ira_int->x_ira_non_ordered_class_hard_regs)
-#define ira_class_hard_reg_index \
+#define ira_class_hard_reg_index                                               \
   (this_target_ira_int->x_ira_class_hard_reg_index)
-#define ira_useful_class_mode_regs \
+#define ira_useful_class_mode_regs                                             \
   (this_target_ira_int->x_ira_useful_class_mode_regs)
-#define ira_important_classes_num \
+#define ira_important_classes_num                                              \
   (this_target_ira_int->x_ira_important_classes_num)
-#define ira_important_classes \
-  (this_target_ira_int->x_ira_important_classes)
-#define ira_important_class_nums \
+#define ira_important_classes (this_target_ira_int->x_ira_important_classes)
+#define ira_important_class_nums                                               \
   (this_target_ira_int->x_ira_important_class_nums)
-#define ira_uniform_class_p \
-  (this_target_ira_int->x_ira_uniform_class_p)
-#define ira_reg_class_intersect \
-  (this_target_ira_int->x_ira_reg_class_intersect)
-#define ira_reg_class_super_classes \
+#define ira_uniform_class_p (this_target_ira_int->x_ira_uniform_class_p)
+#define ira_reg_class_intersect (this_target_ira_int->x_ira_reg_class_intersect)
+#define ira_reg_class_super_classes                                            \
   (this_target_ira_int->x_ira_reg_class_super_classes)
-#define ira_reg_class_subunion \
-  (this_target_ira_int->x_ira_reg_class_subunion)
-#define ira_reg_class_superunion \
+#define ira_reg_class_subunion (this_target_ira_int->x_ira_reg_class_subunion)
+#define ira_reg_class_superunion                                               \
   (this_target_ira_int->x_ira_reg_class_superunion)
-#define ira_prohibited_mode_move_regs \
+#define ira_prohibited_mode_move_regs                                          \
   (this_target_ira_int->x_ira_prohibited_mode_move_regs)
-#define ira_hard_regno_nrefs \
-  (this_target_ira_int->x_ira_hard_regno_nrefs)
-
+#define ira_hard_regno_nrefs (this_target_ira_int->x_ira_hard_regno_nrefs)
+
 /* ira.cc: */
 
-extern void *ira_allocate (size_t);
-extern void ira_free (void *addr);
-extern bitmap ira_allocate_bitmap (void);
-extern void ira_free_bitmap (bitmap);
-extern void ira_print_disposition (FILE *);
-extern void ira_debug_disposition (void);
-extern void ira_debug_allocno_classes (void);
-extern void ira_init_register_move_cost (machine_mode);
-extern alternative_mask ira_setup_alts (rtx_insn *);
-extern int ira_get_dup_out_num (int, alternative_mask, bool &);
+extern void *ira_allocate(size_t);
+extern void ira_free(void *addr);
+extern bitmap ira_allocate_bitmap(void);
+extern void ira_free_bitmap(bitmap);
+extern void ira_print_disposition(FILE *);
+extern void ira_debug_disposition(void);
+extern void ira_debug_allocno_classes(void);
+extern void ira_init_register_move_cost(machine_mode);
+extern alternative_mask ira_setup_alts(rtx_insn *);
+extern int ira_get_dup_out_num(int, alternative_mask, bool &);
 
 /* ira-build.cc */
 
@@ -1008,123 +975,109 @@ extern int ira_get_dup_out_num (int, alternative_mask, bool &);
 extern ira_loop_tree_node_t ira_curr_loop_tree_node;
 extern ira_allocno_t *ira_curr_regno_allocno_map;
 
-extern void ira_debug_pref (ira_pref_t);
-extern void ira_debug_prefs (void);
-extern void ira_debug_allocno_prefs (ira_allocno_t);
+extern void ira_debug_pref(ira_pref_t);
+extern void ira_debug_prefs(void);
+extern void ira_debug_allocno_prefs(ira_allocno_t);
 
-extern void ira_debug_copy (ira_copy_t);
-extern void debug (ira_allocno_copy &ref);
-extern void debug (ira_allocno_copy *ptr);
+extern void ira_debug_copy(ira_copy_t);
+extern void debug(ira_allocno_copy &ref);
+extern void debug(ira_allocno_copy *ptr);
 
-extern void ira_debug_copies (void);
-extern void ira_debug_allocno_copies (ira_allocno_t);
-extern void debug (ira_allocno &ref);
-extern void debug (ira_allocno *ptr);
+extern void ira_debug_copies(void);
+extern void ira_debug_allocno_copies(ira_allocno_t);
+extern void debug(ira_allocno &ref);
+extern void debug(ira_allocno *ptr);
 
-extern void ira_traverse_loop_tree (bool, ira_loop_tree_node_t,
-				    void (*) (ira_loop_tree_node_t),
-				    void (*) (ira_loop_tree_node_t));
-extern ira_allocno_t ira_parent_allocno (ira_allocno_t);
-extern ira_allocno_t ira_parent_or_cap_allocno (ira_allocno_t);
-extern ira_allocno_t ira_create_allocno (int, bool, ira_loop_tree_node_t);
-extern void ira_create_allocno_objects (ira_allocno_t);
-extern void ira_set_allocno_class (ira_allocno_t, enum reg_class);
-extern bool ira_conflict_vector_profitable_p (ira_object_t, int);
-extern void ira_allocate_conflict_vec (ira_object_t, int);
-extern void ira_allocate_object_conflicts (ira_object_t, int);
-extern void ior_hard_reg_conflicts (ira_allocno_t, const_hard_reg_set);
-extern void ira_print_expanded_allocno (ira_allocno_t);
-extern void ira_add_live_range_to_object (ira_object_t, int, int);
-extern live_range_t ira_create_live_range (ira_object_t, int, int,
-					   live_range_t);
-extern live_range_t ira_copy_live_range_list (live_range_t);
-extern live_range_t ira_merge_live_ranges (live_range_t, live_range_t);
-extern bool ira_live_ranges_intersect_p (live_range_t, live_range_t);
-extern void ira_finish_live_range (live_range_t);
-extern void ira_finish_live_range_list (live_range_t);
-extern void ira_free_allocno_updated_costs (ira_allocno_t);
-extern ira_pref_t ira_create_pref (ira_allocno_t, int, int);
-extern void ira_add_allocno_pref (ira_allocno_t, int, int);
-extern void ira_remove_pref (ira_pref_t);
-extern void ira_remove_allocno_prefs (ira_allocno_t);
-extern ira_copy_t ira_create_copy (ira_allocno_t, ira_allocno_t,
-				   int, bool, rtx_insn *,
-				   ira_loop_tree_node_t);
-extern ira_copy_t ira_add_allocno_copy (ira_allocno_t, ira_allocno_t, int,
-					bool, rtx_insn *,
-					ira_loop_tree_node_t);
+extern void ira_traverse_loop_tree(bool, ira_loop_tree_node_t,
+                                   void (*)(ira_loop_tree_node_t),
+                                   void (*)(ira_loop_tree_node_t));
+extern ira_allocno_t ira_parent_allocno(ira_allocno_t);
+extern ira_allocno_t ira_parent_or_cap_allocno(ira_allocno_t);
+extern ira_allocno_t ira_create_allocno(int, bool, ira_loop_tree_node_t);
+extern void ira_create_allocno_objects(ira_allocno_t);
+extern void ira_set_allocno_class(ira_allocno_t, enum reg_class);
+extern bool ira_conflict_vector_profitable_p(ira_object_t, int);
+extern void ira_allocate_conflict_vec(ira_object_t, int);
+extern void ira_allocate_object_conflicts(ira_object_t, int);
+extern void ior_hard_reg_conflicts(ira_allocno_t, const_hard_reg_set);
+extern void ira_print_expanded_allocno(ira_allocno_t);
+extern void ira_add_live_range_to_object(ira_object_t, int, int);
+extern live_range_t ira_create_live_range(ira_object_t, int, int, live_range_t);
+extern live_range_t ira_copy_live_range_list(live_range_t);
+extern live_range_t ira_merge_live_ranges(live_range_t, live_range_t);
+extern bool ira_live_ranges_intersect_p(live_range_t, live_range_t);
+extern void ira_finish_live_range(live_range_t);
+extern void ira_finish_live_range_list(live_range_t);
+extern void ira_free_allocno_updated_costs(ira_allocno_t);
+extern ira_pref_t ira_create_pref(ira_allocno_t, int, int);
+extern void ira_add_allocno_pref(ira_allocno_t, int, int);
+extern void ira_remove_pref(ira_pref_t);
+extern void ira_remove_allocno_prefs(ira_allocno_t);
+extern ira_copy_t ira_create_copy(ira_allocno_t, ira_allocno_t, int, bool,
+                                  rtx_insn *, ira_loop_tree_node_t);
+extern ira_copy_t ira_add_allocno_copy(ira_allocno_t, ira_allocno_t, int, bool,
+                                       rtx_insn *, ira_loop_tree_node_t);
 
-extern int *ira_allocate_cost_vector (reg_class_t);
-extern void ira_free_cost_vector (int *, reg_class_t);
+extern int *ira_allocate_cost_vector(reg_class_t);
+extern void ira_free_cost_vector(int *, reg_class_t);
 
-extern void ira_flattening (int, int);
-extern bool ira_build (void);
-extern void ira_destroy (void);
+extern void ira_flattening(int, int);
+extern bool ira_build(void);
+extern void ira_destroy(void);
 
 /* ira-costs.cc */
-extern void ira_init_costs_once (void);
-extern void ira_init_costs (void);
-extern void ira_costs (void);
-extern void ira_tune_allocno_costs (void);
+extern void ira_init_costs_once(void);
+extern void ira_init_costs(void);
+extern void ira_costs(void);
+extern void ira_tune_allocno_costs(void);
 
 /* ira-lives.cc */
 
-extern void ira_rebuild_start_finish_chains (void);
-extern void ira_print_live_range_list (FILE *, live_range_t);
-extern void debug (live_range &ref);
-extern void debug (live_range *ptr);
-extern void ira_debug_live_range_list (live_range_t);
-extern void ira_debug_allocno_live_ranges (ira_allocno_t);
-extern void ira_debug_live_ranges (void);
-extern void ira_create_allocno_live_ranges (void);
-extern void ira_compress_allocno_live_ranges (void);
-extern void ira_finish_allocno_live_ranges (void);
-extern void ira_implicitly_set_insn_hard_regs (HARD_REG_SET *,
-					       alternative_mask);
+extern void ira_rebuild_start_finish_chains(void);
+extern void ira_print_live_range_list(FILE *, live_range_t);
+extern void debug(live_range &ref);
+extern void debug(live_range *ptr);
+extern void ira_debug_live_range_list(live_range_t);
+extern void ira_debug_allocno_live_ranges(ira_allocno_t);
+extern void ira_debug_live_ranges(void);
+extern void ira_create_allocno_live_ranges(void);
+extern void ira_compress_allocno_live_ranges(void);
+extern void ira_finish_allocno_live_ranges(void);
+extern void ira_implicitly_set_insn_hard_regs(HARD_REG_SET *, alternative_mask);
 
 /* ira-conflicts.cc */
-extern void ira_debug_conflicts (bool);
-extern void ira_build_conflicts (void);
+extern void ira_debug_conflicts(bool);
+extern void ira_build_conflicts(void);
 
 /* ira-color.cc */
-extern ira_allocno_t ira_soft_conflict (ira_allocno_t, ira_allocno_t);
-extern void ira_debug_hard_regs_forest (void);
-extern int ira_loop_edge_freq (ira_loop_tree_node_t, int, bool);
-extern void ira_reassign_conflict_allocnos (int);
-extern void ira_initiate_assign (void);
-extern void ira_finish_assign (void);
-extern void ira_color (void);
+extern ira_allocno_t ira_soft_conflict(ira_allocno_t, ira_allocno_t);
+extern void ira_debug_hard_regs_forest(void);
+extern int ira_loop_edge_freq(ira_loop_tree_node_t, int, bool);
+extern void ira_reassign_conflict_allocnos(int);
+extern void ira_initiate_assign(void);
+extern void ira_finish_assign(void);
+extern void ira_color(void);
 
 /* ira-emit.cc */
-extern void ira_initiate_emit_data (void);
-extern void ira_finish_emit_data (void);
-extern void ira_emit (bool);
-
-
+extern void ira_initiate_emit_data(void);
+extern void ira_finish_emit_data(void);
+extern void ira_emit(bool);
 
 /* Return true if equivalence of pseudo REGNO is not a lvalue.  */
-inline bool
-ira_equiv_no_lvalue_p (int regno)
-{
+inline bool ira_equiv_no_lvalue_p(int regno) {
   if (regno >= ira_reg_equiv_len)
     return false;
-  return (ira_reg_equiv[regno].constant != NULL_RTX
-	  || ira_reg_equiv[regno].invariant != NULL_RTX
-	  || (ira_reg_equiv[regno].memory != NULL_RTX
-	      && MEM_READONLY_P (ira_reg_equiv[regno].memory)));
+  return (ira_reg_equiv[regno].constant != NULL_RTX ||
+          ira_reg_equiv[regno].invariant != NULL_RTX ||
+          (ira_reg_equiv[regno].memory != NULL_RTX &&
+           MEM_READONLY_P(ira_reg_equiv[regno].memory)));
 }
-
-
 
 /* Initialize register costs for MODE if necessary.  */
-inline void
-ira_init_register_move_cost_if_necessary (machine_mode mode)
-{
+inline void ira_init_register_move_cost_if_necessary(machine_mode mode) {
   if (ira_register_move_cost[mode] == NULL)
-    ira_init_register_move_cost (mode);
+    ira_init_register_move_cost(mode);
 }
-
-
 
 /* The iterator for all allocnos.  */
 struct ira_allocno_iterator {
@@ -1133,36 +1086,28 @@ struct ira_allocno_iterator {
 };
 
 /* Initialize the iterator I.  */
-inline void
-ira_allocno_iter_init (ira_allocno_iterator *i)
-{
-  i->n = 0;
-}
+inline void ira_allocno_iter_init(ira_allocno_iterator *i) { i->n = 0; }
 
 /* Return TRUE if we have more allocnos to visit, in which case *A is
    set to the allocno to be visited.  Otherwise, return FALSE.  */
-inline bool
-ira_allocno_iter_cond (ira_allocno_iterator *i, ira_allocno_t *a)
-{
+inline bool ira_allocno_iter_cond(ira_allocno_iterator *i, ira_allocno_t *a) {
   int n;
 
   for (n = i->n; n < ira_allocnos_num; n++)
-    if (ira_allocnos[n] != NULL)
-      {
-	*a = ira_allocnos[n];
-	i->n = n + 1;
-	return true;
-      }
+    if (ira_allocnos[n] != NULL) {
+      *a = ira_allocnos[n];
+      i->n = n + 1;
+      return true;
+    }
   return false;
 }
 
 /* Loop over all allocnos.  In each iteration, A is set to the next
    allocno.  ITER is an instance of ira_allocno_iterator used to iterate
    the allocnos.  */
-#define FOR_EACH_ALLOCNO(A, ITER)			\
-  for (ira_allocno_iter_init (&(ITER));			\
-       ira_allocno_iter_cond (&(ITER), &(A));)
-
+#define FOR_EACH_ALLOCNO(A, ITER)                                              \
+  for (ira_allocno_iter_init(&(ITER)); ira_allocno_iter_cond(&(ITER), &(A));)
+
 /* The iterator for all objects.  */
 struct ira_object_iterator {
   /* The number of the current element in ira_object_id_map.  */
@@ -1170,36 +1115,28 @@ struct ira_object_iterator {
 };
 
 /* Initialize the iterator I.  */
-inline void
-ira_object_iter_init (ira_object_iterator *i)
-{
-  i->n = 0;
-}
+inline void ira_object_iter_init(ira_object_iterator *i) { i->n = 0; }
 
 /* Return TRUE if we have more objects to visit, in which case *OBJ is
    set to the object to be visited.  Otherwise, return FALSE.  */
-inline bool
-ira_object_iter_cond (ira_object_iterator *i, ira_object_t *obj)
-{
+inline bool ira_object_iter_cond(ira_object_iterator *i, ira_object_t *obj) {
   int n;
 
   for (n = i->n; n < ira_objects_num; n++)
-    if (ira_object_id_map[n] != NULL)
-      {
-	*obj = ira_object_id_map[n];
-	i->n = n + 1;
-	return true;
-      }
+    if (ira_object_id_map[n] != NULL) {
+      *obj = ira_object_id_map[n];
+      i->n = n + 1;
+      return true;
+    }
   return false;
 }
 
 /* Loop over all objects.  In each iteration, OBJ is set to the next
    object.  ITER is an instance of ira_object_iterator used to iterate
    the objects.  */
-#define FOR_EACH_OBJECT(OBJ, ITER)			\
-  for (ira_object_iter_init (&(ITER));			\
-       ira_object_iter_cond (&(ITER), &(OBJ));)
-
+#define FOR_EACH_OBJECT(OBJ, ITER)                                             \
+  for (ira_object_iter_init(&(ITER)); ira_object_iter_cond(&(ITER), &(OBJ));)
+
 /* The iterator for objects associated with an allocno.  */
 struct ira_allocno_object_iterator {
   /* The number of the element the allocno's object array.  */
@@ -1207,35 +1144,29 @@ struct ira_allocno_object_iterator {
 };
 
 /* Initialize the iterator I.  */
-inline void
-ira_allocno_object_iter_init (ira_allocno_object_iterator *i)
-{
+inline void ira_allocno_object_iter_init(ira_allocno_object_iterator *i) {
   i->n = 0;
 }
 
 /* Return TRUE if we have more objects to visit in allocno A, in which
    case *O is set to the object to be visited.  Otherwise, return
    FALSE.  */
-inline bool
-ira_allocno_object_iter_cond (ira_allocno_object_iterator *i, ira_allocno_t a,
-			      ira_object_t *o)
-{
+inline bool ira_allocno_object_iter_cond(ira_allocno_object_iterator *i,
+                                         ira_allocno_t a, ira_object_t *o) {
   int n = i->n++;
-  if (n < ALLOCNO_NUM_OBJECTS (a))
-    {
-      *o = ALLOCNO_OBJECT (a, n);
-      return true;
-    }
+  if (n < ALLOCNO_NUM_OBJECTS(a)) {
+    *o = ALLOCNO_OBJECT(a, n);
+    return true;
+  }
   return false;
 }
 
 /* Loop over all objects associated with allocno A.  In each
    iteration, O is set to the next object.  ITER is an instance of
    ira_allocno_object_iterator used to iterate the conflicts.  */
-#define FOR_EACH_ALLOCNO_OBJECT(A, O, ITER)			\
-  for (ira_allocno_object_iter_init (&(ITER));			\
-       ira_allocno_object_iter_cond (&(ITER), (A), &(O));)
-
+#define FOR_EACH_ALLOCNO_OBJECT(A, O, ITER)                                    \
+  for (ira_allocno_object_iter_init(&(ITER));                                  \
+       ira_allocno_object_iter_cond(&(ITER), (A), &(O));)
 
 /* The iterator for prefs.  */
 struct ira_pref_iterator {
@@ -1244,36 +1175,27 @@ struct ira_pref_iterator {
 };
 
 /* Initialize the iterator I.  */
-inline void
-ira_pref_iter_init (ira_pref_iterator *i)
-{
-  i->n = 0;
-}
+inline void ira_pref_iter_init(ira_pref_iterator *i) { i->n = 0; }
 
 /* Return TRUE if we have more prefs to visit, in which case *PREF is
    set to the pref to be visited.  Otherwise, return FALSE.  */
-inline bool
-ira_pref_iter_cond (ira_pref_iterator *i, ira_pref_t *pref)
-{
+inline bool ira_pref_iter_cond(ira_pref_iterator *i, ira_pref_t *pref) {
   int n;
 
   for (n = i->n; n < ira_prefs_num; n++)
-    if (ira_prefs[n] != NULL)
-      {
-	*pref = ira_prefs[n];
-	i->n = n + 1;
-	return true;
-      }
+    if (ira_prefs[n] != NULL) {
+      *pref = ira_prefs[n];
+      i->n = n + 1;
+      return true;
+    }
   return false;
 }
 
 /* Loop over all prefs.  In each iteration, P is set to the next
    pref.  ITER is an instance of ira_pref_iterator used to iterate
    the prefs.  */
-#define FOR_EACH_PREF(P, ITER)				\
-  for (ira_pref_iter_init (&(ITER));			\
-       ira_pref_iter_cond (&(ITER), &(P));)
-
+#define FOR_EACH_PREF(P, ITER)                                                 \
+  for (ira_pref_iter_init(&(ITER)); ira_pref_iter_cond(&(ITER), &(P));)
 
 /* The iterator for copies.  */
 struct ira_copy_iterator {
@@ -1282,36 +1204,28 @@ struct ira_copy_iterator {
 };
 
 /* Initialize the iterator I.  */
-inline void
-ira_copy_iter_init (ira_copy_iterator *i)
-{
-  i->n = 0;
-}
+inline void ira_copy_iter_init(ira_copy_iterator *i) { i->n = 0; }
 
 /* Return TRUE if we have more copies to visit, in which case *CP is
    set to the copy to be visited.  Otherwise, return FALSE.  */
-inline bool
-ira_copy_iter_cond (ira_copy_iterator *i, ira_copy_t *cp)
-{
+inline bool ira_copy_iter_cond(ira_copy_iterator *i, ira_copy_t *cp) {
   int n;
 
   for (n = i->n; n < ira_copies_num; n++)
-    if (ira_copies[n] != NULL)
-      {
-	*cp = ira_copies[n];
-	i->n = n + 1;
-	return true;
-      }
+    if (ira_copies[n] != NULL) {
+      *cp = ira_copies[n];
+      i->n = n + 1;
+      return true;
+    }
   return false;
 }
 
 /* Loop over all copies.  In each iteration, C is set to the next
    copy.  ITER is an instance of ira_copy_iterator used to iterate
    the copies.  */
-#define FOR_EACH_COPY(C, ITER)				\
-  for (ira_copy_iter_init (&(ITER));			\
-       ira_copy_iter_cond (&(ITER), &(C));)
-
+#define FOR_EACH_COPY(C, ITER)                                                 \
+  for (ira_copy_iter_init(&(ITER)); ira_copy_iter_cond(&(ITER), &(C));)
+
 /* The iterator for object conflicts.  */
 struct ira_object_conflict_iterator {
 
@@ -1343,70 +1257,61 @@ struct ira_object_conflict_iterator {
 };
 
 /* Initialize the iterator I with ALLOCNO conflicts.  */
-inline void
-ira_object_conflict_iter_init (ira_object_conflict_iterator *i,
-			       ira_object_t obj)
-{
-  i->conflict_vec_p = OBJECT_CONFLICT_VEC_P (obj);
-  i->vec = OBJECT_CONFLICT_ARRAY (obj);
+inline void ira_object_conflict_iter_init(ira_object_conflict_iterator *i,
+                                          ira_object_t obj) {
+  i->conflict_vec_p = OBJECT_CONFLICT_VEC_P(obj);
+  i->vec = OBJECT_CONFLICT_ARRAY(obj);
   i->word_num = 0;
   if (i->conflict_vec_p)
     i->size = i->bit_num = i->base_conflict_id = i->word = 0;
-  else
-    {
-      if (OBJECT_MIN (obj) > OBJECT_MAX (obj))
-	i->size = 0;
-      else
-	i->size = ((OBJECT_MAX (obj) - OBJECT_MIN (obj)
-		    + IRA_INT_BITS)
-		   / IRA_INT_BITS) * sizeof (IRA_INT_TYPE);
-      i->bit_num = 0;
-      i->base_conflict_id = OBJECT_MIN (obj);
-      i->word = (i->size == 0 ? 0 : ((IRA_INT_TYPE *) i->vec)[0]);
-    }
+  else {
+    if (OBJECT_MIN(obj) > OBJECT_MAX(obj))
+      i->size = 0;
+    else
+      i->size =
+          ((OBJECT_MAX(obj) - OBJECT_MIN(obj) + IRA_INT_BITS) / IRA_INT_BITS) *
+          sizeof(IRA_INT_TYPE);
+    i->bit_num = 0;
+    i->base_conflict_id = OBJECT_MIN(obj);
+    i->word = (i->size == 0 ? 0 : ((IRA_INT_TYPE *)i->vec)[0]);
+  }
 }
 
 /* Return TRUE if we have more conflicting allocnos to visit, in which
    case *A is set to the allocno to be visited.  Otherwise, return
    FALSE.  */
-inline bool
-ira_object_conflict_iter_cond (ira_object_conflict_iterator *i,
-			       ira_object_t *pobj)
-{
+inline bool ira_object_conflict_iter_cond(ira_object_conflict_iterator *i,
+                                          ira_object_t *pobj) {
   ira_object_t obj;
 
-  if (i->conflict_vec_p)
-    {
-      obj = ((ira_object_t *) i->vec)[i->word_num++];
-      if (obj == NULL)
-	return false;
+  if (i->conflict_vec_p) {
+    obj = ((ira_object_t *)i->vec)[i->word_num++];
+    if (obj == NULL)
+      return false;
+  } else {
+    unsigned IRA_INT_TYPE word = i->word;
+    unsigned int bit_num = i->bit_num;
+
+    /* Skip words that are zeros.  */
+    for (; word == 0; word = ((IRA_INT_TYPE *)i->vec)[i->word_num]) {
+      i->word_num++;
+
+      /* If we have reached the end, break.  */
+      if (i->word_num * sizeof(IRA_INT_TYPE) >= i->size)
+        return false;
+
+      bit_num = i->word_num * IRA_INT_BITS;
     }
-  else
-    {
-      unsigned IRA_INT_TYPE word = i->word;
-      unsigned int bit_num = i->bit_num;
 
-      /* Skip words that are zeros.  */
-      for (; word == 0; word = ((IRA_INT_TYPE *) i->vec)[i->word_num])
-	{
-	  i->word_num++;
+    /* Skip bits that are zero.  */
+    int off = ctz_hwi(word);
+    bit_num += off;
+    word >>= off;
 
-	  /* If we have reached the end, break.  */
-	  if (i->word_num * sizeof (IRA_INT_TYPE) >= i->size)
-	    return false;
-
-	  bit_num = i->word_num * IRA_INT_BITS;
-	}
-
-      /* Skip bits that are zero.  */
-      int off = ctz_hwi (word);
-      bit_num += off;
-      word >>= off;
-
-      obj = ira_object_id_map[bit_num + i->base_conflict_id];
-      i->bit_num = bit_num + 1;
-      i->word = word >> 1;
-    }
+    obj = ira_object_id_map[bit_num + i->base_conflict_id];
+    i->bit_num = bit_num + 1;
+    i->word = word >> 1;
+  }
 
   *pobj = obj;
   return true;
@@ -1415,36 +1320,30 @@ ira_object_conflict_iter_cond (ira_object_conflict_iterator *i,
 /* Loop over all objects conflicting with OBJ.  In each iteration,
    CONF is set to the next conflicting object.  ITER is an instance
    of ira_object_conflict_iterator used to iterate the conflicts.  */
-#define FOR_EACH_OBJECT_CONFLICT(OBJ, CONF, ITER)			\
-  for (ira_object_conflict_iter_init (&(ITER), (OBJ));			\
-       ira_object_conflict_iter_cond (&(ITER), &(CONF));)
-
-
+#define FOR_EACH_OBJECT_CONFLICT(OBJ, CONF, ITER)                              \
+  for (ira_object_conflict_iter_init(&(ITER), (OBJ));                          \
+       ira_object_conflict_iter_cond(&(ITER), &(CONF));)
 
 /* The function returns TRUE if at least one hard register from ones
    starting with HARD_REGNO and containing value of MODE are in set
    HARD_REGSET.  */
-inline bool
-ira_hard_reg_set_intersection_p (int hard_regno, machine_mode mode,
-				 HARD_REG_SET hard_regset)
-{
+inline bool ira_hard_reg_set_intersection_p(int hard_regno, machine_mode mode,
+                                            HARD_REG_SET hard_regset) {
   int i;
 
-  gcc_assert (hard_regno >= 0);
-  for (i = hard_regno_nregs (hard_regno, mode) - 1; i >= 0; i--)
-    if (TEST_HARD_REG_BIT (hard_regset, hard_regno + i))
+  gcc_assert(hard_regno >= 0);
+  for (i = hard_regno_nregs(hard_regno, mode) - 1; i >= 0; i--)
+    if (TEST_HARD_REG_BIT(hard_regset, hard_regno + i))
       return true;
   return false;
 }
 
 /* Return number of hard registers in hard register SET.  */
-inline int
-hard_reg_set_size (HARD_REG_SET set)
-{
+inline int hard_reg_set_size(HARD_REG_SET set) {
   int i, size;
 
   for (size = i = 0; i < FIRST_PSEUDO_REGISTER; i++)
-    if (TEST_HARD_REG_BIT (set, i))
+    if (TEST_HARD_REG_BIT(set, i))
       size++;
   return size;
 }
@@ -1452,20 +1351,16 @@ hard_reg_set_size (HARD_REG_SET set)
 /* The function returns TRUE if hard registers starting with
    HARD_REGNO and containing value of MODE are fully in set
    HARD_REGSET.  */
-inline bool
-ira_hard_reg_in_set_p (int hard_regno, machine_mode mode,
-		       HARD_REG_SET hard_regset)
-{
+inline bool ira_hard_reg_in_set_p(int hard_regno, machine_mode mode,
+                                  HARD_REG_SET hard_regset) {
   int i;
 
-  ira_assert (hard_regno >= 0);
-  for (i = hard_regno_nregs (hard_regno, mode) - 1; i >= 0; i--)
-    if (!TEST_HARD_REG_BIT (hard_regset, hard_regno + i))
+  ira_assert(hard_regno >= 0);
+  for (i = hard_regno_nregs(hard_regno, mode) - 1; i >= 0; i--)
+    if (!TEST_HARD_REG_BIT(hard_regset, hard_regno + i))
       return false;
   return true;
 }
-
-
 
 /* To save memory we use a lazy approach for allocation and
    initialization of the cost vectors.  We do this only when it is
@@ -1473,49 +1368,44 @@ ira_hard_reg_in_set_p (int hard_regno, machine_mode mode,
 
 /* Allocate cost vector *VEC for hard registers of ACLASS and
    initialize the elements by VAL if it is necessary */
-inline void
-ira_allocate_and_set_costs (int **vec, reg_class_t aclass, int val)
-{
+inline void ira_allocate_and_set_costs(int **vec, reg_class_t aclass, int val) {
   int i, *reg_costs;
   int len;
 
   if (*vec != NULL)
     return;
-  *vec = reg_costs = ira_allocate_cost_vector (aclass);
-  len = ira_class_hard_regs_num[(int) aclass];
+  *vec = reg_costs = ira_allocate_cost_vector(aclass);
+  len = ira_class_hard_regs_num[(int)aclass];
   for (i = 0; i < len; i++)
     reg_costs[i] = val;
 }
 
 /* Allocate cost vector *VEC for hard registers of ACLASS and copy
    values of vector SRC into the vector if it is necessary */
-inline void
-ira_allocate_and_copy_costs (int **vec, enum reg_class aclass, int *src)
-{
+inline void ira_allocate_and_copy_costs(int **vec, enum reg_class aclass,
+                                        int *src) {
   int len;
 
   if (*vec != NULL || src == NULL)
     return;
-  *vec = ira_allocate_cost_vector (aclass);
+  *vec = ira_allocate_cost_vector(aclass);
   len = ira_class_hard_regs_num[aclass];
-  memcpy (*vec, src, sizeof (int) * len);
+  memcpy(*vec, src, sizeof(int) * len);
 }
 
 /* Allocate cost vector *VEC for hard registers of ACLASS and add
    values of vector SRC into the vector if it is necessary */
-inline void
-ira_allocate_and_accumulate_costs (int **vec, enum reg_class aclass, int *src)
-{
+inline void ira_allocate_and_accumulate_costs(int **vec, enum reg_class aclass,
+                                              int *src) {
   int i, len;
 
   if (src == NULL)
     return;
   len = ira_class_hard_regs_num[aclass];
-  if (*vec == NULL)
-    {
-      *vec = ira_allocate_cost_vector (aclass);
-      memset (*vec, 0, sizeof (int) * len);
-    }
+  if (*vec == NULL) {
+    *vec = ira_allocate_cost_vector(aclass);
+    memset(*vec, 0, sizeof(int) * len);
+  }
   for (i = 0; i < len; i++)
     (*vec)[i] += src[i];
 }
@@ -1523,65 +1413,57 @@ ira_allocate_and_accumulate_costs (int **vec, enum reg_class aclass, int *src)
 /* Allocate cost vector *VEC for hard registers of ACLASS and copy
    values of vector SRC into the vector or initialize it by VAL (if
    SRC is null).  */
-inline void
-ira_allocate_and_set_or_copy_costs (int **vec, enum reg_class aclass,
-				    int val, int *src)
-{
+inline void ira_allocate_and_set_or_copy_costs(int **vec, enum reg_class aclass,
+                                               int val, int *src) {
   int i, *reg_costs;
   int len;
 
   if (*vec != NULL)
     return;
-  *vec = reg_costs = ira_allocate_cost_vector (aclass);
+  *vec = reg_costs = ira_allocate_cost_vector(aclass);
   len = ira_class_hard_regs_num[aclass];
   if (src != NULL)
-    memcpy (reg_costs, src, sizeof (int) * len);
-  else
-    {
-      for (i = 0; i < len; i++)
-	reg_costs[i] = val;
-    }
+    memcpy(reg_costs, src, sizeof(int) * len);
+  else {
+    for (i = 0; i < len; i++)
+      reg_costs[i] = val;
+  }
 }
 
-extern rtx ira_create_new_reg (rtx);
+extern rtx ira_create_new_reg(rtx);
 extern int first_moveable_pseudo, last_moveable_pseudo;
 
 /* Return the set of registers that would need a caller save if allocno A
    overlapped them.  */
 
-inline HARD_REG_SET
-ira_need_caller_save_regs (ira_allocno_t a)
-{
-  return call_clobbers_in_region (ALLOCNO_CROSSED_CALLS_ABIS (a),
-				  ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS (a),
-				  ALLOCNO_MODE (a));
+inline HARD_REG_SET ira_need_caller_save_regs(ira_allocno_t a) {
+  return call_clobbers_in_region(ALLOCNO_CROSSED_CALLS_ABIS(a),
+                                 ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS(a),
+                                 ALLOCNO_MODE(a));
 }
 
 /* Return true if we would need to save allocno A around a call if we
    assigned hard register REGNO.  */
 
-inline bool
-ira_need_caller_save_p (ira_allocno_t a, unsigned int regno)
-{
-  if (ALLOCNO_CALLS_CROSSED_NUM (a) == 0)
+inline bool ira_need_caller_save_p(ira_allocno_t a, unsigned int regno) {
+  if (ALLOCNO_CALLS_CROSSED_NUM(a) == 0)
     return false;
-  return call_clobbered_in_region_p (ALLOCNO_CROSSED_CALLS_ABIS (a),
-				     ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS (a),
-				     ALLOCNO_MODE (a), regno);
+  return call_clobbered_in_region_p(ALLOCNO_CROSSED_CALLS_ABIS(a),
+                                    ALLOCNO_CROSSED_CALLS_CLOBBERED_REGS(a),
+                                    ALLOCNO_MODE(a), regno);
 }
 
 /* Represents the boundary between an allocno in one loop and its parent
    allocno in the enclosing loop.  It is usually possible to change a
    register's allocation on this boundary; the class provides routines
    for calculating the cost of such changes.  */
-class ira_loop_border_costs
-{
+class ira_loop_border_costs {
 public:
-  ira_loop_border_costs (ira_allocno_t);
+  ira_loop_border_costs(ira_allocno_t);
 
-  int move_between_loops_cost () const;
-  int spill_outside_loop_cost () const;
-  int spill_inside_loop_cost () const;
+  int move_between_loops_cost() const;
+  int spill_outside_loop_cost() const;
+  int spill_inside_loop_cost() const;
 
 private:
   /* The mode and class of the child allocno.  */
@@ -1596,32 +1478,26 @@ private:
    loading it back on exit from the loop.  This is the cost to use if
    the register is spilled within the loop but is successfully allocated
    in the parent loop.  */
-inline int
-ira_loop_border_costs::spill_inside_loop_cost () const
-{
-  return (m_entry_freq * ira_memory_move_cost[m_mode][m_class][0]
-	  + m_exit_freq * ira_memory_move_cost[m_mode][m_class][1]);
+inline int ira_loop_border_costs::spill_inside_loop_cost() const {
+  return (m_entry_freq * ira_memory_move_cost[m_mode][m_class][0] +
+          m_exit_freq * ira_memory_move_cost[m_mode][m_class][1]);
 }
 
 /* Return the cost of loading the register on entry to the loop and
    storing it back on exit from the loop.  This is the cost to use if
    the register is successfully allocated within the loop but is spilled
    in the parent loop.  */
-inline int
-ira_loop_border_costs::spill_outside_loop_cost () const
-{
-  return (m_entry_freq * ira_memory_move_cost[m_mode][m_class][1]
-	  + m_exit_freq * ira_memory_move_cost[m_mode][m_class][0]);
+inline int ira_loop_border_costs::spill_outside_loop_cost() const {
+  return (m_entry_freq * ira_memory_move_cost[m_mode][m_class][1] +
+          m_exit_freq * ira_memory_move_cost[m_mode][m_class][0]);
 }
 
 /* Return the cost of moving the pseudo register between different hard
    registers on entry and exit from the loop.  This is the cost to use
    if the register is successfully allocated within both this loop and
    the parent loop, but the allocations for the loops differ.  */
-inline int
-ira_loop_border_costs::move_between_loops_cost () const
-{
-  ira_init_register_move_cost_if_necessary (m_mode);
+inline int ira_loop_border_costs::move_between_loops_cost() const {
+  ira_init_register_move_cost_if_necessary(m_mode);
   auto move_cost = ira_register_move_cost[m_mode][m_class][m_class];
   return move_cost * (m_entry_freq + m_exit_freq);
 }
@@ -1631,73 +1507,64 @@ ira_loop_border_costs::move_between_loops_cost () const
    in which allocation succeeded for A.  EXCLUDE_OLD_RELOAD is true if
    we should always return false for non-LRA targets.  (This is a hack
    and should be removed along with old reload.)  */
-inline bool
-ira_subloop_allocnos_can_differ_p (ira_allocno_t a, bool allocated_p = true,
-				   bool exclude_old_reload = true)
-{
+inline bool ira_subloop_allocnos_can_differ_p(ira_allocno_t a,
+                                              bool allocated_p = true,
+                                              bool exclude_old_reload = true) {
   if (exclude_old_reload && !ira_use_lra_p)
     return false;
 
-  auto regno = ALLOCNO_REGNO (a);
+  auto regno = ALLOCNO_REGNO(a);
 
-  if (pic_offset_table_rtx != NULL
-      && regno == (int) REGNO (pic_offset_table_rtx))
+  if (pic_offset_table_rtx != NULL && regno == (int)REGNO(pic_offset_table_rtx))
     return false;
 
-  ira_assert (regno < ira_reg_equiv_len);
-  if (ira_equiv_no_lvalue_p (regno))
+  ira_assert(regno < ira_reg_equiv_len);
+  if (ira_equiv_no_lvalue_p(regno))
     return false;
 
   /* Avoid overlapping multi-registers.  Moves between them might result
      in wrong code generation.  */
-  if (allocated_p)
-    {
-      auto pclass = ira_pressure_class_translate[ALLOCNO_CLASS (a)];
-      if (ira_reg_class_max_nregs[pclass][ALLOCNO_MODE (a)] > 1)
-	return false;
-    }
+  if (allocated_p) {
+    auto pclass = ira_pressure_class_translate[ALLOCNO_CLASS(a)];
+    if (ira_reg_class_max_nregs[pclass][ALLOCNO_MODE(a)] > 1)
+      return false;
+  }
 
   return true;
 }
 
 /* Return true if we should treat A and SUBLOOP_A as belonging to a
    single region.  */
-inline bool
-ira_single_region_allocno_p (ira_allocno_t a, ira_allocno_t subloop_a)
-{
+inline bool ira_single_region_allocno_p(ira_allocno_t a,
+                                        ira_allocno_t subloop_a) {
   if (flag_ira_region != IRA_REGION_MIXED)
     return false;
 
-  if (ALLOCNO_MIGHT_CONFLICT_WITH_PARENT_P (subloop_a))
+  if (ALLOCNO_MIGHT_CONFLICT_WITH_PARENT_P(subloop_a))
     return false;
 
-  auto rclass = ALLOCNO_CLASS (a);
+  auto rclass = ALLOCNO_CLASS(a);
   auto pclass = ira_pressure_class_translate[rclass];
-  auto loop_used_regs = ALLOCNO_LOOP_TREE_NODE (a)->reg_pressure[pclass];
+  auto loop_used_regs = ALLOCNO_LOOP_TREE_NODE(a)->reg_pressure[pclass];
   return loop_used_regs <= ira_class_hard_regs_num[pclass];
 }
 
 /* Return the set of all hard registers that conflict with A.  */
-inline HARD_REG_SET
-ira_total_conflict_hard_regs (ira_allocno_t a)
-{
-  auto obj_0 = ALLOCNO_OBJECT (a, 0);
-  HARD_REG_SET conflicts = OBJECT_TOTAL_CONFLICT_HARD_REGS (obj_0);
-  for (int i = 1; i < ALLOCNO_NUM_OBJECTS (a); i++)
-    conflicts |= OBJECT_TOTAL_CONFLICT_HARD_REGS (ALLOCNO_OBJECT (a, i));
+inline HARD_REG_SET ira_total_conflict_hard_regs(ira_allocno_t a) {
+  auto obj_0 = ALLOCNO_OBJECT(a, 0);
+  HARD_REG_SET conflicts = OBJECT_TOTAL_CONFLICT_HARD_REGS(obj_0);
+  for (int i = 1; i < ALLOCNO_NUM_OBJECTS(a); i++)
+    conflicts |= OBJECT_TOTAL_CONFLICT_HARD_REGS(ALLOCNO_OBJECT(a, i));
   return conflicts;
 }
 
 /* Return the cost of saving a caller-saved register before each call
    in A's live range and restoring the same register after each call.  */
-inline int
-ira_caller_save_cost (ira_allocno_t a)
-{
-  auto mode = ALLOCNO_MODE (a);
-  auto rclass = ALLOCNO_CLASS (a);
-  return (ALLOCNO_CALL_FREQ (a)
-	  * (ira_memory_move_cost[mode][rclass][0]
-	     + ira_memory_move_cost[mode][rclass][1]));
+inline int ira_caller_save_cost(ira_allocno_t a) {
+  auto mode = ALLOCNO_MODE(a);
+  auto rclass = ALLOCNO_CLASS(a);
+  return (ALLOCNO_CALL_FREQ(a) * (ira_memory_move_cost[mode][rclass][0] +
+                                  ira_memory_move_cost[mode][rclass][1]));
 }
 
 /* A and SUBLOOP_A are allocnos for the same pseudo register, with A's
@@ -1714,16 +1581,15 @@ ira_caller_save_cost (ira_allocno_t a)
 
    Return true if (1) is better than (2).  SPILL_COST is the cost of
    doing (1).  */
-inline bool
-ira_caller_save_loop_spill_p (ira_allocno_t a, ira_allocno_t subloop_a,
-			      int spill_cost)
-{
-  if (!ira_subloop_allocnos_can_differ_p (a))
+inline bool ira_caller_save_loop_spill_p(ira_allocno_t a,
+                                         ira_allocno_t subloop_a,
+                                         int spill_cost) {
+  if (!ira_subloop_allocnos_can_differ_p(a))
     return false;
 
   /* Calculate the cost of saving a call-clobbered register
      before each call and restoring it afterwards.  */
-  int call_cost = ira_caller_save_cost (subloop_a);
+  int call_cost = ira_caller_save_cost(subloop_a);
   return call_cost && call_cost >= spill_cost;
 }
 

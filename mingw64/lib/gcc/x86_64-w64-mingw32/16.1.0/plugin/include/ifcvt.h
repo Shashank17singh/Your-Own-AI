@@ -23,25 +23,23 @@
 /* Structure to group all of the information to process IF-THEN and
    IF-THEN-ELSE blocks for the conditional execution support.  */
 
-struct ce_if_block
-{
-  basic_block test_bb;			/* First test block.  */
-  basic_block then_bb;			/* THEN block.  */
-  basic_block else_bb;			/* ELSE block or NULL.  */
-  basic_block join_bb;			/* Join THEN/ELSE blocks.  */
-  basic_block last_test_bb;		/* Last bb to hold && or || tests.  */
-  int num_multiple_test_blocks;		/* # of && and || basic blocks.  */
-  int num_and_and_blocks;		/* # of && blocks.  */
-  int num_or_or_blocks;			/* # of || blocks.  */
-  int num_multiple_test_insns;		/* # of insns in && and || blocks.  */
-  int and_and_p;			/* Complex test is &&.  */
-  int num_then_insns;			/* # of insns in THEN block.  */
-  int num_else_insns;			/* # of insns in ELSE block.  */
-  int pass;				/* Pass number.  */
+struct ce_if_block {
+  basic_block test_bb;          /* First test block.  */
+  basic_block then_bb;          /* THEN block.  */
+  basic_block else_bb;          /* ELSE block or NULL.  */
+  basic_block join_bb;          /* Join THEN/ELSE blocks.  */
+  basic_block last_test_bb;     /* Last bb to hold && or || tests.  */
+  int num_multiple_test_blocks; /* # of && and || basic blocks.  */
+  int num_and_and_blocks;       /* # of && blocks.  */
+  int num_or_or_blocks;         /* # of || blocks.  */
+  int num_multiple_test_insns;  /* # of insns in && and || blocks.  */
+  int and_and_p;                /* Complex test is &&.  */
+  int num_then_insns;           /* # of insns in THEN block.  */
+  int num_else_insns;           /* # of insns in ELSE block.  */
+  int pass;                     /* Pass number.  */
 };
 
-struct noce_multiple_sets_info
-{
+struct noce_multiple_sets_info {
   /* A list of indices to instructions that we need to rewire into this
      instruction when we replace them with temporary conditional moves.  */
   auto_vec<int> rewired_src;
@@ -62,8 +60,7 @@ struct noce_multiple_sets_info
    know that X is a register.  They should insert new instructions
    before cond_earliest.  */
 
-struct noce_if_info
-{
+struct noce_if_info {
   /* The basic blocks that make up the IF-THEN-{ELSE-,}JOIN block.  */
   basic_block test_bb, then_bb, else_bb, join_bb;
 

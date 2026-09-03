@@ -34,97 +34,81 @@
 #endif
 
 #if __cplusplus >= 201103L
-# include <type_traits>
+#include <type_traits>
 #else
-# include <bits/c++0x_warning.h>
+#include <bits/c++0x_warning.h>
 #endif
 
-namespace __gnu_cxx
-{
-  // A utility type containing a POD object that can hold an object of type
-  // _Tp initialized via placement new or allocator_traits::construct.
-  // Intended for use as a data member subobject, use __aligned_buffer for
-  // complete objects.
-  template<typename _Tp>
-    struct __aligned_membuf
-    {
-      // Target macro ADJUST_FIELD_ALIGN can produce different alignment for
-      // types when used as class members. __aligned_membuf is intended
-      // for use as a class member, so align the buffer as for a class member.
-      // Since GCC 8 we can just use alignas(_Tp) to get the right alignment.
+namespace __gnu_cxx {
+// A utility type containing a POD object that can hold an object of type
+// _Tp initialized via placement new or allocator_traits::construct.
+// Intended for use as a data member subobject, use __aligned_buffer for
+// complete objects.
+template <typename _Tp> struct __aligned_membuf {
+  // Target macro ADJUST_FIELD_ALIGN can produce different alignment for
+  // types when used as class members. __aligned_membuf is intended
+  // for use as a class member, so align the buffer as for a class member.
+  // Since GCC 8 we can just use alignas(_Tp) to get the right alignment.
 #ifdef __EDG__
-      // The EDG front end does not implement the PR c++/69560 alignof change.
-      struct _Tp2 { _Tp _M_t; };
-      alignas(__alignof__(_Tp2::_M_t))
+  // The EDG front end does not implement the PR c++/69560 alignof change.
+  struct _Tp2 {
+    _Tp _M_t;
+  };
+  alignas(__alignof__(_Tp2::_M_t))
 #else
-      alignas(_Tp)
+  alignas(_Tp)
 #endif
-	unsigned char _M_storage[sizeof(_Tp)];
+      unsigned char _M_storage[sizeof(_Tp)];
 
-      __aligned_membuf() = default;
+  __aligned_membuf() = default;
 
-      // Can be used to avoid value-initialization zeroing _M_storage.
-      __aligned_membuf(std::nullptr_t) { }
+  // Can be used to avoid value-initialization zeroing _M_storage.
+  __aligned_membuf(std::nullptr_t) {}
 
-      void*
-      _M_addr() noexcept
-      { return static_cast<void*>(&_M_storage); }
+  void *_M_addr() noexcept { return static_cast<void *>(&_M_storage); }
 
-      const void*
-      _M_addr() const noexcept
-      { return static_cast<const void*>(&_M_storage); }
+  const void *_M_addr() const noexcept {
+    return static_cast<const void *>(&_M_storage);
+  }
 
-      _Tp*
-      _M_ptr() noexcept
-      { return static_cast<_Tp*>(_M_addr()); }
+  _Tp *_M_ptr() noexcept { return static_cast<_Tp *>(_M_addr()); }
 
-      const _Tp*
-      _M_ptr() const noexcept
-      { return static_cast<const _Tp*>(_M_addr()); }
-    };
+  const _Tp *_M_ptr() const noexcept {
+    return static_cast<const _Tp *>(_M_addr());
+  }
+};
 
 #if _GLIBCXX_INLINE_VERSION
-  template<typename _Tp>
-    using __aligned_buffer = __aligned_membuf<_Tp>;
+template <typename _Tp> using __aligned_buffer = __aligned_membuf<_Tp>;
 #else
-  // Similar to __aligned_membuf but aligned for complete objects, not members.
-  // This type is used in <forward_list>, <future>, <bits/shared_ptr_base.h>
-  // and <bits/hashtable_policy.h>, but ideally they would use __aligned_membuf
-  // instead, as it has smaller size for some types on some targets.
-  // This type is still used to avoid an ABI change.
-  template<typename _Tp>
-    struct __aligned_buffer
-    {
-      // Using __alignof__ gives the alignment for a complete object.
-      alignas(__alignof__(_Tp)) unsigned char _M_storage[sizeof(_Tp)];
+// Similar to __aligned_membuf but aligned for complete objects, not members.
+// This type is used in <forward_list>, <future>, <bits/shared_ptr_base.h>
+// and <bits/hashtable_policy.h>, but ideally they would use __aligned_membuf
+// instead, as it has smaller size for some types on some targets.
+// This type is still used to avoid an ABI change.
+template <typename _Tp> struct __aligned_buffer {
+  // Using __alignof__ gives the alignment for a complete object.
+  alignas(__alignof__(_Tp)) unsigned char _M_storage[sizeof(_Tp)];
 
-      __aligned_buffer() = default;
+  __aligned_buffer() = default;
 
-      // Can be used to avoid value-initialization
-      __aligned_buffer(std::nullptr_t) { }
+  // Can be used to avoid value-initialization
+  __aligned_buffer(std::nullptr_t) {}
 
-      void*
-      _M_addr() noexcept
-      {
-        return static_cast<void*>(&_M_storage);
-      }
+  void *_M_addr() noexcept { return static_cast<void *>(&_M_storage); }
 
-      const void*
-      _M_addr() const noexcept
-      {
-        return static_cast<const void*>(&_M_storage);
-      }
+  const void *_M_addr() const noexcept {
+    return static_cast<const void *>(&_M_storage);
+  }
 
-      _Tp*
-      _M_ptr() noexcept
-      { return static_cast<_Tp*>(_M_addr()); }
+  _Tp *_M_ptr() noexcept { return static_cast<_Tp *>(_M_addr()); }
 
-      const _Tp*
-      _M_ptr() const noexcept
-      { return static_cast<const _Tp*>(_M_addr()); }
-    };
+  const _Tp *_M_ptr() const noexcept {
+    return static_cast<const _Tp *>(_M_addr());
+  }
+};
 #endif
 
-} // namespace
+} // namespace __gnu_cxx
 
 #endif /* _ALIGNED_BUFFER_H */

@@ -22,7 +22,7 @@ along with GCC; see the file COPYING3.  If not see
 #define GCC_OPT_PROBLEM_H
 
 #include "diagnostic-core.h" /* for ATTRIBUTE_GCC_DIAG.  */
-#include "optinfo.h" /* for optinfo.  */
+#include "optinfo.h"         /* for optinfo.  */
 
 /* This header declares a family of wrapper classes for tracking a
    success/failure value, while optionally supporting propagating an
@@ -116,23 +116,22 @@ along with GCC; see the file COPYING3.  If not see
 
    Instances are only created when dump_enabled_p ().  */
 
-class opt_problem
-{
- public:
-  static opt_problem *get_singleton () { return s_the_problem; }
+class opt_problem {
+public:
+  static opt_problem *get_singleton() { return s_the_problem; }
 
-  opt_problem (const dump_location_t &loc,
-	       const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DUMP_PRINTF (3, 0);
+  opt_problem(const dump_location_t &loc, const char *fmt, va_list *ap)
+      ATTRIBUTE_GCC_DUMP_PRINTF(3, 0);
 
-  const dump_location_t &
-  get_dump_location () const { return m_optinfo.get_dump_location (); }
+  const dump_location_t &get_dump_location() const {
+    return m_optinfo.get_dump_location();
+  }
 
-  const optinfo & get_optinfo () const { return m_optinfo; }
+  const optinfo &get_optinfo() const { return m_optinfo; }
 
-  void emit_and_clear ();
+  void emit_and_clear();
 
- private:
+private:
   optinfo m_optinfo;
 
   static opt_problem *s_the_problem;
@@ -142,30 +141,26 @@ class opt_problem
    optionally supporting propagating an opt_problem * describing any
    failure back up the call stack.  */
 
-template <typename T>
-class opt_wrapper
-{
- public:
+template <typename T> class opt_wrapper {
+public:
   typedef T wrapped_t;
 
   /* Be accessible as the wrapped type.  */
-  operator wrapped_t () const { return m_result; }
+  operator wrapped_t() const { return m_result; }
 
   /* No public ctor.  */
 
-  wrapped_t get_result () const { return m_result; }
-  opt_problem *get_problem () const { return opt_problem::get_singleton (); }
+  wrapped_t get_result() const { return m_result; }
+  opt_problem *get_problem() const { return opt_problem::get_singleton(); }
 
- protected:
-  opt_wrapper (wrapped_t result, opt_problem */*problem*/)
-  : m_result (result)
-  {
+protected:
+  opt_wrapper(wrapped_t result, opt_problem * /*problem*/) : m_result(result) {
     /* "problem" is ignored: although it looks like a field, we
        actually just use the opt_problem singleton, so that
        opt_wrapper<T> in memory is just a T.  */
   }
 
- private:
+private:
   wrapped_t m_result;
 };
 
@@ -175,47 +170,40 @@ class opt_wrapper
    whilst effectively propagating an opt_problem * describing any failure
    back up the call stack.  */
 
-class opt_result : public opt_wrapper <bool>
-{
- public:
+class opt_result : public opt_wrapper<bool> {
+public:
   /* Generate a "success" value: a wrapper around "true".  */
 
-  static opt_result success () { return opt_result (true, NULL); }
+  static opt_result success() { return opt_result(true, NULL); }
 
   /* Generate a "failure" value: a wrapper around "false", and,
      if dump_enabled_p, an opt_problem.  */
 
-  static opt_result failure_at (const dump_location_t &loc,
-				const char *fmt, ...)
-	  ATTRIBUTE_GCC_DUMP_PRINTF (2, 3)
-  {
+  static opt_result failure_at(const dump_location_t &loc, const char *fmt, ...)
+      ATTRIBUTE_GCC_DUMP_PRINTF(2, 3) {
     opt_problem *problem = NULL;
-    if (dump_enabled_p ())
-      {
-	va_list ap;
-	va_start (ap, fmt);
-	problem = new opt_problem (loc, fmt, &ap);
-	va_end (ap);
-      }
-    return opt_result (false, problem);
+    if (dump_enabled_p()) {
+      va_list ap;
+      va_start(ap, fmt);
+      problem = new opt_problem(loc, fmt, &ap);
+      va_end(ap);
+    }
+    return opt_result(false, problem);
   }
 
   /* Given a failure wrapper of some other kind, make an opt_result failure
      object, for propagating the opt_problem up the call stack.  */
 
   template <typename S>
-  static opt_result
-  propagate_failure (opt_wrapper <S> other)
-  {
-    return opt_result (false, other.get_problem ());
+  static opt_result propagate_failure(opt_wrapper<S> other) {
+    return opt_result(false, other.get_problem());
   }
 
- private:
+private:
   /* Private ctor.  Instances should be created by the success and failure
      static member functions.  */
-  opt_result (wrapped_t result, opt_problem *problem)
-  : opt_wrapper <bool> (result, problem)
-  {}
+  opt_result(wrapped_t result, opt_problem *problem)
+      : opt_wrapper<bool>(result, problem) {}
 };
 
 /* Subclass of opt_wrapper<T> where T is a pointer type, for tracking
@@ -226,59 +214,50 @@ class opt_result : public opt_wrapper <bool>
    back up the call stack.  */
 
 template <typename PtrType_t>
-class opt_pointer_wrapper : public opt_wrapper <PtrType_t>
-{
- public:
+class opt_pointer_wrapper : public opt_wrapper<PtrType_t> {
+public:
   typedef PtrType_t wrapped_pointer_t;
 
   /* Given a non-NULL pointer, make a success object wrapping it.  */
 
-  static opt_pointer_wrapper <wrapped_pointer_t>
-  success (wrapped_pointer_t ptr)
-  {
-    return opt_pointer_wrapper <wrapped_pointer_t> (ptr, NULL);
+  static opt_pointer_wrapper<wrapped_pointer_t> success(wrapped_pointer_t ptr) {
+    return opt_pointer_wrapper<wrapped_pointer_t>(ptr, NULL);
   }
 
   /* Make a NULL pointer failure object, with the given message
      (if dump_enabled_p).  */
 
-  static opt_pointer_wrapper <wrapped_pointer_t>
-  failure_at (const dump_location_t &loc,
-	      const char *fmt, ...)
-    ATTRIBUTE_GCC_DUMP_PRINTF (2, 3)
-  {
+  static opt_pointer_wrapper<wrapped_pointer_t>
+  failure_at(const dump_location_t &loc, const char *fmt, ...)
+      ATTRIBUTE_GCC_DUMP_PRINTF(2, 3) {
     opt_problem *problem = NULL;
-    if (dump_enabled_p ())
-      {
-	va_list ap;
-	va_start (ap, fmt);
-	problem = new opt_problem (loc, fmt, &ap);
-	va_end (ap);
-      }
-    return opt_pointer_wrapper <wrapped_pointer_t> (NULL, problem);
+    if (dump_enabled_p()) {
+      va_list ap;
+      va_start(ap, fmt);
+      problem = new opt_problem(loc, fmt, &ap);
+      va_end(ap);
+    }
+    return opt_pointer_wrapper<wrapped_pointer_t>(NULL, problem);
   }
 
   /* Given a failure wrapper of some other kind, make a NULL pointer
      failure object, propagating the problem.  */
 
   template <typename S>
-  static opt_pointer_wrapper <wrapped_pointer_t>
-  propagate_failure (opt_wrapper <S> other)
-  {
-    return opt_pointer_wrapper <wrapped_pointer_t> (NULL,
-						    other.get_problem ());
+  static opt_pointer_wrapper<wrapped_pointer_t>
+  propagate_failure(opt_wrapper<S> other) {
+    return opt_pointer_wrapper<wrapped_pointer_t>(NULL, other.get_problem());
   }
 
   /* Support accessing the underlying pointer via ->.  */
 
-  wrapped_pointer_t operator-> () const { return this->get_result (); }
+  wrapped_pointer_t operator->() const { return this->get_result(); }
 
- private:
+private:
   /* Private ctor.  Instances should be built using the static member
      functions "success" and "failure".  */
-  opt_pointer_wrapper (wrapped_pointer_t result, opt_problem *problem)
-  : opt_wrapper<PtrType_t> (result, problem)
-  {}
+  opt_pointer_wrapper(wrapped_pointer_t result, opt_problem *problem)
+      : opt_wrapper<PtrType_t>(result, problem) {}
 };
 
 /* A typedef for wrapping "tree" so that NULL_TREE can carry an

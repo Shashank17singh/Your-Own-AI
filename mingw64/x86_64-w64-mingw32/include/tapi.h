@@ -5,57 +5,43 @@
  */
 #ifndef TAPI_H
 #define TAPI_H
-
 #include <_mingw_unicode.h>
-
 #ifndef TAPI_CURRENT_VERSION
 #define TAPI_CURRENT_VERSION 0x00030001
 #endif
-
-#include <windows.h>
 #include <basetsd.h>
 #include <oaidl.h>
-
+#include <windows.h>
 #pragma pack(1)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define DECLARE_OPAQUE32(name) typedef DWORD name
-
-  DECLARE_OPAQUE32(HCALL);
-  typedef HCALL *LPHCALL;
-
-  DECLARE_OPAQUE32(HCALLHUB);
-  typedef HCALLHUB *LPHCALLHUB;
-
-  DECLARE_OPAQUE32(HLINE);
-  typedef HLINE *LPHLINE;
-
-  DECLARE_OPAQUE32(HPHONE);
-  typedef HPHONE *LPHPHONE;
-
-  DECLARE_OPAQUE32(HLINEAPP);
-  typedef HLINEAPP *LPHLINEAPP;
-
-  DECLARE_OPAQUE32(HPHONEAPP);
-  typedef HPHONEAPP *LPHPHONEAPP;
-
-  DECLARE_OPAQUE32(HAGENTSESSION);
-  typedef HAGENTSESSION *LPHAGENTSESSION;
-
-  DECLARE_OPAQUE32(HAGENT);
-  typedef HAGENT *LPHAGENT;
-
-  DECLARE_OPAQUE32(HPRIVATECHANNEL);
-  typedef HPRIVATECHANNEL *LPHPRIVATECHANNEL;
-
-  typedef HICON *LPHICON;
-
-  typedef void (CALLBACK *LINECALLBACK)(DWORD hDevice,DWORD dwMessage,DWORD_PTR dwInstance,DWORD_PTR dwParam1,DWORD_PTR dwParam2,DWORD_PTR dwParam3);
-  typedef void (CALLBACK *PHONECALLBACK)(DWORD hDevice,DWORD dwMessage,DWORD_PTR dwInstance,DWORD_PTR dwParam1,DWORD_PTR dwParam2,DWORD_PTR dwParam3);
-
+DECLARE_OPAQUE32(HCALL);
+typedef HCALL *LPHCALL;
+DECLARE_OPAQUE32(HCALLHUB);
+typedef HCALLHUB *LPHCALLHUB;
+DECLARE_OPAQUE32(HLINE);
+typedef HLINE *LPHLINE;
+DECLARE_OPAQUE32(HPHONE);
+typedef HPHONE *LPHPHONE;
+DECLARE_OPAQUE32(HLINEAPP);
+typedef HLINEAPP *LPHLINEAPP;
+DECLARE_OPAQUE32(HPHONEAPP);
+typedef HPHONEAPP *LPHPHONEAPP;
+DECLARE_OPAQUE32(HAGENTSESSION);
+typedef HAGENTSESSION *LPHAGENTSESSION;
+DECLARE_OPAQUE32(HAGENT);
+typedef HAGENT *LPHAGENT;
+DECLARE_OPAQUE32(HPRIVATECHANNEL);
+typedef HPRIVATECHANNEL *LPHPRIVATECHANNEL;
+typedef HICON *LPHICON;
+typedef void(CALLBACK *LINECALLBACK)(DWORD hDevice, DWORD dwMessage,
+                                     DWORD_PTR dwInstance, DWORD_PTR dwParam1,
+                                     DWORD_PTR dwParam2, DWORD_PTR dwParam3);
+typedef void(CALLBACK *PHONECALLBACK)(DWORD hDevice, DWORD dwMessage,
+                                      DWORD_PTR dwInstance, DWORD_PTR dwParam1,
+                                      DWORD_PTR dwParam2, DWORD_PTR dwParam3);
 #define LINE_ADDRESSSTATE __MSABI_LONG(0)
 #define LINE_CALLINFO __MSABI_LONG(1)
 #define LINE_CALLSTATE __MSABI_LONG(2)
@@ -83,19 +69,15 @@ extern "C" {
 #define LINE_PROXYREQUEST __MSABI_LONG(24)
 #define LINE_REMOVE __MSABI_LONG(25)
 #define PHONE_REMOVE __MSABI_LONG(26)
-
 #define LINE_AGENTSESSIONSTATUS __MSABI_LONG(27)
 #define LINE_QUEUESTATUS __MSABI_LONG(28)
 #define LINE_AGENTSTATUSEX __MSABI_LONG(29)
 #define LINE_GROUPSTATUS __MSABI_LONG(30)
 #define LINE_PROXYSTATUS __MSABI_LONG(31)
-
 #define LINE_APPNEWCALLHUB __MSABI_LONG(32)
 #define LINE_CALLHUBCLOSE __MSABI_LONG(33)
 #define LINE_DEVSPECIFICEX __MSABI_LONG(34)
-
 #define INITIALIZE_NEGOTIATION __MSABI_LONG(0xFFFFFFFFU)
-
 #define LINEADDRCAPFLAGS_FWDNUMRINGS 0x00000001
 #define LINEADDRCAPFLAGS_PICKUPGROUPID 0x00000002
 #define LINEADDRCAPFLAGS_SECURE 0x00000004
@@ -128,16 +110,13 @@ extern "C" {
 #define LINEADDRCAPFLAGS_SETCALLINGID 0x20000000
 #define LINEADDRCAPFLAGS_ACDGROUP 0x40000000
 #define LINEADDRCAPFLAGS_NOPSTNADDRESSTRANSLATION 0x80000000
-
 #define LINEADDRESSMODE_ADDRESSID 0x00000001
 #define LINEADDRESSMODE_DIALABLEADDR 0x00000002
-
 #define LINEADDRESSSHARING_PRIVATE 0x00000001
 #define LINEADDRESSSHARING_BRIDGEDEXCL 0x00000002
 #define LINEADDRESSSHARING_BRIDGEDNEW 0x00000004
 #define LINEADDRESSSHARING_BRIDGEDSHARED 0x00000008
 #define LINEADDRESSSHARING_MONITORED 0x00000010
-
 #define LINEADDRESSSTATE_OTHER 0x00000001
 #define LINEADDRESSSTATE_DEVSPECIFIC 0x00000002
 #define LINEADDRESSSTATE_INUSEZERO 0x00000004
@@ -147,13 +126,11 @@ extern "C" {
 #define LINEADDRESSSTATE_FORWARD 0x00000040
 #define LINEADDRESSSTATE_TERMINALS 0x00000080
 #define LINEADDRESSSTATE_CAPSCHANGE 0x00000100
-
 #define LINEADDRESSTYPE_PHONENUMBER 0x00000001
 #define LINEADDRESSTYPE_SDP 0x00000002
 #define LINEADDRESSTYPE_EMAILNAME 0x00000004
 #define LINEADDRESSTYPE_DOMAINNAME 0x00000008
 #define LINEADDRESSTYPE_IPADDRESS 0x00000010
-
 #define LINEADDRFEATURE_FORWARD 0x00000001
 #define LINEADDRFEATURE_MAKECALL 0x00000002
 #define LINEADDRFEATURE_PICKUP 0x00000004
@@ -168,14 +145,12 @@ extern "C" {
 #define LINEADDRFEATURE_PICKUPWAITING 0x00000800
 #define LINEADDRFEATURE_FORWARDFWD 0x00001000
 #define LINEADDRFEATURE_FORWARDDND 0x00002000
-
 #define LINEAGENTFEATURE_SETAGENTGROUP 0x00000001
 #define LINEAGENTFEATURE_SETAGENTSTATE 0x00000002
 #define LINEAGENTFEATURE_SETAGENTACTIVITY 0x00000004
 #define LINEAGENTFEATURE_AGENTSPECIFIC 0x00000008
 #define LINEAGENTFEATURE_GETAGENTACTIVITYLIST 0x00000010
 #define LINEAGENTFEATURE_GETAGENTGROUP 0x00000020
-
 #define LINEAGENTSTATE_LOGGEDOFF 0x00000001
 #define LINEAGENTSTATE_NOTREADY 0x00000002
 #define LINEAGENTSTATE_READY 0x00000004
@@ -186,7 +161,6 @@ extern "C" {
 #define LINEAGENTSTATE_WORKINGAFTERCALL 0x00000080
 #define LINEAGENTSTATE_UNKNOWN 0x00000100
 #define LINEAGENTSTATE_UNAVAIL 0x00000200
-
 #define LINEAGENTSTATUS_GROUP 0x00000001
 #define LINEAGENTSTATUS_STATE 0x00000002
 #define LINEAGENTSTATUS_NEXTSTATE 0x00000004
@@ -196,7 +170,6 @@ extern "C" {
 #define LINEAGENTSTATUS_CAPSCHANGE 0x00000040
 #define LINEAGENTSTATUS_VALIDSTATES 0x00000080
 #define LINEAGENTSTATUS_VALIDNEXTSTATES 0x00000100
-
 #define LINEAGENTSTATEEX_NOTREADY 0x00000001
 #define LINEAGENTSTATEEX_READY 0x00000002
 #define LINEAGENTSTATEEX_BUSYACD 0x00000004
@@ -204,37 +177,29 @@ extern "C" {
 #define LINEAGENTSTATEEX_BUSYOUTGOING 0x00000010
 #define LINEAGENTSTATEEX_UNKNOWN 0x00000020
 #define LINEAGENTSTATEEX_RELEASED 0x00000040
-
 #define LINEAGENTSTATUSEX_NEWAGENT 0x00000001
 #define LINEAGENTSTATUSEX_STATE 0x00000002
 #define LINEAGENTSTATUSEX_UPDATEINFO 0x00000004
-
 #define LINEAGENTSESSIONSTATE_NOTREADY 0x00000001
 #define LINEAGENTSESSIONSTATE_READY 0x00000002
 #define LINEAGENTSESSIONSTATE_BUSYONCALL 0x00000004
 #define LINEAGENTSESSIONSTATE_BUSYWRAPUP 0x00000008
 #define LINEAGENTSESSIONSTATE_ENDED 0x00000010
 #define LINEAGENTSESSIONSTATE_RELEASED 0x00000020
-
 #define LINEAGENTSESSIONSTATUS_NEWSESSION 0x00000001
 #define LINEAGENTSESSIONSTATUS_STATE 0x00000002
 #define LINEAGENTSESSIONSTATUS_UPDATEINFO 0x00000004
-
 #define LINEQUEUESTATUS_UPDATEINFO 0x00000001
 #define LINEQUEUESTATUS_NEWQUEUE 0x00000002
 #define LINEQUEUESTATUS_QUEUEREMOVED 0x00000004
-
 #define LINEGROUPSTATUS_NEWGROUP 0x00000001
 #define LINEGROUPSTATUS_GROUPREMOVED 0x00000002
-
 #define LINEPROXYSTATUS_OPEN 0x00000001
 #define LINEPROXYSTATUS_CLOSE 0x00000002
 #define LINEPROXYSTATUS_ALLOPENFORACD 0x00000004
-
 #define LINEANSWERMODE_NONE 0x00000001
 #define LINEANSWERMODE_DROP 0x00000002
 #define LINEANSWERMODE_HOLD 0x00000004
-
 #define LINEBEARERMODE_VOICE 0x00000001
 #define LINEBEARERMODE_SPEECH 0x00000002
 #define LINEBEARERMODE_MULTIUSE 0x00000004
@@ -243,20 +208,16 @@ extern "C" {
 #define LINEBEARERMODE_NONCALLSIGNALING 0x00000020
 #define LINEBEARERMODE_PASSTHROUGH 0x00000040
 #define LINEBEARERMODE_RESTRICTEDDATA 0x00000080
-
 #define LINEBUSYMODE_STATION 0x00000001
 #define LINEBUSYMODE_TRUNK 0x00000002
 #define LINEBUSYMODE_UNKNOWN 0x00000004
 #define LINEBUSYMODE_UNAVAIL 0x00000008
-
 #define LINECALLCOMPLCOND_BUSY 0x00000001
 #define LINECALLCOMPLCOND_NOANSWER 0x00000002
-
 #define LINECALLCOMPLMODE_CAMPON 0x00000001
 #define LINECALLCOMPLMODE_CALLBACK 0x00000002
 #define LINECALLCOMPLMODE_INTRUDE 0x00000004
 #define LINECALLCOMPLMODE_MESSAGE 0x00000008
-
 #define LINECALLFEATURE_ACCEPT 0x00000001
 #define LINECALLFEATURE_ADDTOCONF 0x00000002
 #define LINECALLFEATURE_ANSWER 0x00000004
@@ -299,11 +260,9 @@ extern "C" {
 #define LINECALLFEATURE2_TRANSFERCONF 0x00000080
 #define LINECALLFEATURE2_PARKDIRECT 0x00000100
 #define LINECALLFEATURE2_PARKNONDIRECT 0x00000200
-
 #define LINECALLHUBTRACKING_NONE 0x00000000
 #define LINECALLHUBTRACKING_PROVIDERLEVEL 0x00000001
 #define LINECALLHUBTRACKING_ALLCALLS 0x00000002
-
 #define LINECALLINFOSTATE_OTHER 0x00000001
 #define LINECALLINFOSTATE_DEVSPECIFIC 0x00000002
 #define LINECALLINFOSTATE_BEARERMODE 0x00000004
@@ -335,7 +294,6 @@ extern "C" {
 #define LINECALLINFOSTATE_TREATMENT 0x10000000
 #define LINECALLINFOSTATE_QOS 0x20000000
 #define LINECALLINFOSTATE_CALLDATA 0x40000000
-
 #define LINECALLORIGIN_OUTBOUND 0x00000001
 #define LINECALLORIGIN_INTERNAL 0x00000002
 #define LINECALLORIGIN_EXTERNAL 0x00000004
@@ -343,7 +301,6 @@ extern "C" {
 #define LINECALLORIGIN_UNAVAIL 0x00000020
 #define LINECALLORIGIN_CONFERENCE 0x00000040
 #define LINECALLORIGIN_INBOUND 0x00000080
-
 #define LINECALLPARAMFLAGS_SECURE 0x00000001
 #define LINECALLPARAMFLAGS_IDLE 0x00000002
 #define LINECALLPARAMFLAGS_BLOCKID 0x00000004
@@ -352,7 +309,6 @@ extern "C" {
 #define LINECALLPARAMFLAGS_NOHOLDCONFERENCE 0x00000020
 #define LINECALLPARAMFLAGS_PREDICTIVEDIAL 0x00000040
 #define LINECALLPARAMFLAGS_ONESTEPTRANSFER 0x00000080
-
 #define LINECALLPARTYID_BLOCKED 0x00000001
 #define LINECALLPARTYID_OUTOFAREA 0x00000002
 #define LINECALLPARTYID_NAME 0x00000004
@@ -360,11 +316,9 @@ extern "C" {
 #define LINECALLPARTYID_PARTIAL 0x00000010
 #define LINECALLPARTYID_UNKNOWN 0x00000020
 #define LINECALLPARTYID_UNAVAIL 0x00000040
-
 #define LINECALLPRIVILEGE_NONE 0x00000001
 #define LINECALLPRIVILEGE_MONITOR 0x00000002
 #define LINECALLPRIVILEGE_OWNER 0x00000004
-
 #define LINECALLREASON_DIRECT 0x00000001
 #define LINECALLREASON_FWDBUSY 0x00000002
 #define LINECALLREASON_FWDNOANSWER 0x00000004
@@ -381,13 +335,11 @@ extern "C" {
 #define LINECALLREASON_PARKED 0x00002000
 #define LINECALLREASON_CAMPEDON 0x00004000
 #define LINECALLREASON_ROUTEREQUEST 0x00008000
-
 #define LINECALLSELECT_LINE 0x00000001
 #define LINECALLSELECT_ADDRESS 0x00000002
 #define LINECALLSELECT_CALL 0x00000004
 #define LINECALLSELECT_DEVICEID 0x00000008
 #define LINECALLSELECT_CALLID 0x00000010
-
 #define LINECALLSTATE_IDLE 0x00000001
 #define LINECALLSTATE_OFFERING 0x00000002
 #define LINECALLSTATE_ACCEPTED 0x00000004
@@ -404,21 +356,17 @@ extern "C" {
 #define LINECALLSTATE_ONHOLDPENDTRANSFER 0x00002000
 #define LINECALLSTATE_DISCONNECTED 0x00004000
 #define LINECALLSTATE_UNKNOWN 0x00008000
-
 #define LINECALLTREATMENT_SILENCE 0x00000001
 #define LINECALLTREATMENT_RINGBACK 0x00000002
 #define LINECALLTREATMENT_BUSY 0x00000003
 #define LINECALLTREATMENT_MUSIC 0x00000004
-
 #define LINECARDOPTION_PREDEFINED 0x00000001
 #define LINECARDOPTION_HIDDEN 0x00000002
-
 #define LINECONNECTEDMODE_ACTIVE 0x00000001
 #define LINECONNECTEDMODE_INACTIVE 0x00000002
 #define LINECONNECTEDMODE_ACTIVEHELD 0x00000004
 #define LINECONNECTEDMODE_INACTIVEHELD 0x00000008
 #define LINECONNECTEDMODE_CONFIRMED 0x00000010
-
 #define LINEDEVCAPFLAGS_CROSSADDRCONF 0x00000001
 #define LINEDEVCAPFLAGS_HIGHLEVCOMP 0x00000002
 #define LINEDEVCAPFLAGS_LOWLEVCOMP 0x00000004
@@ -433,7 +381,6 @@ extern "C" {
 #define LINEDEVCAPFLAGS_CALLHUBTRACKING 0x00000800
 #define LINEDEVCAPFLAGS_PRIVATEOBJECTS 0x00001000
 #define LINEDEVCAPFLAGS_LOCAL 0x00002000
-
 #define LINEDEVSTATE_OTHER 0x00000001
 #define LINEDEVSTATE_RINGING 0x00000002
 #define LINEDEVSTATE_CONNECTED 0x00000004
@@ -459,23 +406,19 @@ extern "C" {
 #define LINEDEVSTATE_TRANSLATECHANGE 0x00400000
 #define LINEDEVSTATE_COMPLCANCEL 0x00800000
 #define LINEDEVSTATE_REMOVED 0x01000000
-
 #define LINEDEVSTATUSFLAGS_CONNECTED 0x00000001
 #define LINEDEVSTATUSFLAGS_MSGWAIT 0x00000002
 #define LINEDEVSTATUSFLAGS_INSERVICE 0x00000004
 #define LINEDEVSTATUSFLAGS_LOCKED 0x00000008
-
 #define LINEDIALTONEMODE_NORMAL 0x00000001
 #define LINEDIALTONEMODE_SPECIAL 0x00000002
 #define LINEDIALTONEMODE_INTERNAL 0x00000004
 #define LINEDIALTONEMODE_EXTERNAL 0x00000008
 #define LINEDIALTONEMODE_UNKNOWN 0x00000010
 #define LINEDIALTONEMODE_UNAVAIL 0x00000020
-
 #define LINEDIGITMODE_PULSE 0x00000001
 #define LINEDIGITMODE_DTMF 0x00000002
 #define LINEDIGITMODE_DTMFEND 0x00000004
-
 #define LINEDISCONNECTMODE_NORMAL 0x00000001
 #define LINEDISCONNECTMODE_UNKNOWN 0x00000002
 #define LINEDISCONNECTMODE_REJECT 0x00000004
@@ -496,7 +439,6 @@ extern "C" {
 #define LINEDISCONNECTMODE_BLOCKED 0x00020000
 #define LINEDISCONNECTMODE_DONOTDISTURB 0x00040000
 #define LINEDISCONNECTMODE_CANCELLED 0x00080000
-
 #define LINEERR_ALLOCATED 0x80000001
 #define LINEERR_BADDEVICEID 0x80000002
 #define LINEERR_BEARERMODEUNAVAIL 0x80000003
@@ -592,7 +534,6 @@ extern "C" {
 #define LINEERR_INVALAGENTSESSIONSTATE 0x8000005F
 #define LINEERR_DISCONNECTED 0X80000060
 #define LINEERR_SERVICE_NOT_RUNNING 0x80000061
-
 #define LINEFEATURE_DEVSPECIFIC 0x00000001
 #define LINEFEATURE_DEVSPECIFICFEAT 0x00000002
 #define LINEFEATURE_FORWARD 0x00000004
@@ -602,7 +543,6 @@ extern "C" {
 #define LINEFEATURE_SETDEVSTATUS 0x00000040
 #define LINEFEATURE_FORWARDFWD 0x00000080
 #define LINEFEATURE_FORWARDDND 0x00000100
-
 #define LINEFORWARDMODE_UNCOND 0x00000001
 #define LINEFORWARDMODE_UNCONDINTERNAL 0x00000002
 #define LINEFORWARDMODE_UNCONDEXTERNAL 0x00000004
@@ -621,24 +561,19 @@ extern "C" {
 #define LINEFORWARDMODE_BUSYNASPECIFIC 0x00008000
 #define LINEFORWARDMODE_UNKNOWN 0x00010000
 #define LINEFORWARDMODE_UNAVAIL 0x00020000
-
 #define LINEGATHERTERM_BUFFERFULL 0x00000001
 #define LINEGATHERTERM_TERMDIGIT 0x00000002
 #define LINEGATHERTERM_FIRSTTIMEOUT 0x00000004
 #define LINEGATHERTERM_INTERTIMEOUT 0x00000008
 #define LINEGATHERTERM_CANCEL 0x00000010
-
 #define LINEGENERATETERM_DONE 0x00000001
 #define LINEGENERATETERM_CANCEL 0x00000002
-
 #define LINEINITIALIZEEXOPTION_USEHIDDENWINDOW 0x00000001
 #define LINEINITIALIZEEXOPTION_USEEVENT 0x00000002
 #define LINEINITIALIZEEXOPTION_USECOMPLETIONPORT 0x00000003
 #define LINEINITIALIZEEXOPTION_CALLHUBTRACKING 0x80000000
 #define LINELOCATIONOPTION_PULSEDIAL 0x00000001
-
 #define LINEMAPPER 0xFFFFFFFF
-
 #define LINEMEDIACONTROL_NONE 0x00000001
 #define LINEMEDIACONTROL_START 0x00000002
 #define LINEMEDIACONTROL_RESET 0x00000004
@@ -650,7 +585,6 @@ extern "C" {
 #define LINEMEDIACONTROL_VOLUMEUP 0x00000100
 #define LINEMEDIACONTROL_VOLUMEDOWN 0x00000200
 #define LINEMEDIACONTROL_VOLUMENORMAL 0x00000400
-
 #define LINEMEDIAMODE_UNKNOWN 0x00000002
 #define LINEMEDIAMODE_INTERACTIVEVOICE 0x00000004
 #define LINEMEDIAMODE_AUTOMATEDVOICE 0x00000008
@@ -667,16 +601,12 @@ extern "C" {
 #define LINEMEDIAMODE_VOICEVIEW 0x00004000
 #define LINEMEDIAMODE_VIDEO 0x00008000
 #define LAST_LINEMEDIAMODE 0x00008000
-
 #define LINEOFFERINGMODE_ACTIVE 0x00000001
 #define LINEOFFERINGMODE_INACTIVE 0x00000002
-
 #define LINEOPENOPTION_SINGLEADDRESS 0x80000000
 #define LINEOPENOPTION_PROXY 0x40000000
-
 #define LINEPARKMODE_DIRECTED 0x00000001
 #define LINEPARKMODE_NONDIRECTED 0x00000002
-
 #define LINEPROXYREQUEST_SETAGENTGROUP 0x00000001
 #define LINEPROXYREQUEST_SETAGENTSTATE 0x00000002
 #define LINEPROXYREQUEST_SETAGENTACTIVITY 0x00000003
@@ -685,7 +615,6 @@ extern "C" {
 #define LINEPROXYREQUEST_AGENTSPECIFIC 0x00000006
 #define LINEPROXYREQUEST_GETAGENTACTIVITYLIST 0x00000007
 #define LINEPROXYREQUEST_GETAGENTGROUPLIST 0x00000008
-
 #define LINEPROXYREQUEST_CREATEAGENT 0x00000009
 #define LINEPROXYREQUEST_SETAGENTMEASUREMENTPERIOD 0x0000000A
 #define LINEPROXYREQUEST_GETAGENTINFO 0x0000000B
@@ -698,32 +627,26 @@ extern "C" {
 #define LINEPROXYREQUEST_GETQUEUEINFO 0x00000012
 #define LINEPROXYREQUEST_GETGROUPLIST 0x00000013
 #define LINEPROXYREQUEST_SETAGENTSTATEEX 0x00000014
-
 #define LINEREMOVEFROMCONF_NONE 0x00000001
 #define LINEREMOVEFROMCONF_LAST 0x00000002
 #define LINEREMOVEFROMCONF_ANY 0x00000003
-
 #define LINEREQUESTMODE_MAKECALL 0x00000001
 #define LINEREQUESTMODE_MEDIACALL 0x00000002
 #define LINEREQUESTMODE_DROP 0x00000004
 #define LAST_LINEREQUESTMODE LINEREQUESTMODE_MEDIACALL
-
 #define LINEROAMMODE_UNKNOWN 0x00000001
 #define LINEROAMMODE_UNAVAIL 0x00000002
 #define LINEROAMMODE_HOME 0x00000004
 #define LINEROAMMODE_ROAMA 0x00000008
 #define LINEROAMMODE_ROAMB 0x00000010
-
 #define LINESPECIALINFO_NOCIRCUIT 0x00000001
 #define LINESPECIALINFO_CUSTIRREG 0x00000002
 #define LINESPECIALINFO_REORDER 0x00000004
 #define LINESPECIALINFO_UNKNOWN 0x00000008
 #define LINESPECIALINFO_UNAVAIL 0x00000010
-
 #define LINETERMDEV_PHONE 0x00000001
 #define LINETERMDEV_HEADSET 0x00000002
 #define LINETERMDEV_SPEAKER 0x00000004
-
 #define LINETERMMODE_BUTTONS 0x00000001
 #define LINETERMMODE_LAMPS 0x00000002
 #define LINETERMMODE_DISPLAY 0x00000004
@@ -732,28 +655,22 @@ extern "C" {
 #define LINETERMMODE_MEDIATOLINE 0x00000020
 #define LINETERMMODE_MEDIAFROMLINE 0x00000040
 #define LINETERMMODE_MEDIABIDIRECT 0x00000080
-
 #define LINETERMSHARING_PRIVATE 0x00000001
 #define LINETERMSHARING_SHAREDEXCL 0x00000002
 #define LINETERMSHARING_SHAREDCONF 0x00000004
-
 #define LINETOLLLISTOPTION_ADD 0x00000001
 #define LINETOLLLISTOPTION_REMOVE 0x00000002
-
 #define LINETONEMODE_CUSTOM 0x00000001
 #define LINETONEMODE_RINGBACK 0x00000002
 #define LINETONEMODE_BUSY 0x00000004
 #define LINETONEMODE_BEEP 0x00000008
 #define LINETONEMODE_BILLING 0x00000010
-
 #define LINETRANSFERMODE_TRANSFER 0x00000001
 #define LINETRANSFERMODE_CONFERENCE 0x00000002
-
 #define LINETRANSLATEOPTION_CARDOVERRIDE 0x00000001
 #define LINETRANSLATEOPTION_CANCELCALLWAITING 0x00000002
 #define LINETRANSLATEOPTION_FORCELOCAL 0x00000004
 #define LINETRANSLATEOPTION_FORCELD 0x00000008
-
 #define LINETRANSLATERESULT_CANONICAL 0x00000001
 #define LINETRANSLATERESULT_INTERNATIONAL 0x00000002
 #define LINETRANSLATERESULT_LONGDISTANCE 0x00000004
@@ -766,7 +683,6 @@ extern "C" {
 #define LINETRANSLATERESULT_DIALPROMPT 0x00000200
 #define LINETRANSLATERESULT_VOICEDETECT 0x00000400
 #define LINETRANSLATERESULT_NOTRANSLATION 0x00000800
-
 #define PHONEBUTTONFUNCTION_UNKNOWN 0x00000000
 #define PHONEBUTTONFUNCTION_CONFERENCE 0x00000001
 #define PHONEBUTTONFUNCTION_TRANSFER 0x00000002
@@ -815,19 +731,16 @@ extern "C" {
 #define PHONEBUTTONFUNCTION_QUEUECALL 0x0000002D
 #define PHONEBUTTONFUNCTION_NONE 0x0000002E
 #define PHONEBUTTONFUNCTION_SEND 0x0000002F
-
 #define PHONEBUTTONMODE_DUMMY 0x00000001
 #define PHONEBUTTONMODE_CALL 0x00000002
 #define PHONEBUTTONMODE_FEATURE 0x00000004
 #define PHONEBUTTONMODE_KEYPAD 0x00000008
 #define PHONEBUTTONMODE_LOCAL 0x00000010
 #define PHONEBUTTONMODE_DISPLAY 0x00000020
-
 #define PHONEBUTTONSTATE_UP 0x00000001
 #define PHONEBUTTONSTATE_DOWN 0x00000002
 #define PHONEBUTTONSTATE_UNKNOWN 0x00000004
 #define PHONEBUTTONSTATE_UNAVAIL 0x00000008
-
 #define PHONEERR_ALLOCATED 0x90000001
 #define PHONEERR_BADDEVICEID 0x90000002
 #define PHONEERR_INCOMPATIBLEAPIVERSION 0x90000003
@@ -864,7 +777,6 @@ extern "C" {
 #define PHONEERR_REINIT 0x90000023
 #define PHONEERR_DISCONNECTED 0x90000024
 #define PHONEERR_SERVICE_NOT_RUNNING 0x90000025
-
 #define PHONEFEATURE_GETBUTTONINFO 0x00000001
 #define PHONEFEATURE_GETDATA 0x00000002
 #define PHONEFEATURE_GETDISPLAY 0x00000004
@@ -894,21 +806,17 @@ extern "C" {
 #define PHONEFEATURE_SETVOLUMESPEAKER 0x04000000
 #define PHONEFEATURE_SETVOLUMEHEADSET 0x08000000
 #define PHONEFEATURE_GENERICPHONE 0x10000000
-
 #define PHONEHOOKSWITCHDEV_HANDSET 0x00000001
 #define PHONEHOOKSWITCHDEV_SPEAKER 0x00000002
 #define PHONEHOOKSWITCHDEV_HEADSET 0x00000004
-
 #define PHONEHOOKSWITCHMODE_ONHOOK 0x00000001
 #define PHONEHOOKSWITCHMODE_MIC 0x00000002
 #define PHONEHOOKSWITCHMODE_SPEAKER 0x00000004
 #define PHONEHOOKSWITCHMODE_MICSPEAKER 0x00000008
 #define PHONEHOOKSWITCHMODE_UNKNOWN 0x00000010
-
 #define PHONEINITIALIZEEXOPTION_USEHIDDENWINDOW 0x00000001
 #define PHONEINITIALIZEEXOPTION_USEEVENT 0x00000002
 #define PHONEINITIALIZEEXOPTION_USECOMPLETIONPORT 0x00000003
-
 #define PHONELAMPMODE_DUMMY 0x00000001
 #define PHONELAMPMODE_OFF 0x00000002
 #define PHONELAMPMODE_STEADY 0x00000004
@@ -917,10 +825,8 @@ extern "C" {
 #define PHONELAMPMODE_FLUTTER 0x00000020
 #define PHONELAMPMODE_BROKENFLUTTER 0x00000040
 #define PHONELAMPMODE_UNKNOWN 0x00000080
-
 #define PHONEPRIVILEGE_MONITOR 0x00000001
 #define PHONEPRIVILEGE_OWNER 0x00000002
-
 #define PHONESTATE_OTHER 0x00000001
 #define PHONESTATE_CONNECTED 0x00000002
 #define PHONESTATE_DISCONNECTED 0x00000004
@@ -945,17 +851,13 @@ extern "C" {
 #define PHONESTATE_REINIT 0x00200000
 #define PHONESTATE_CAPSCHANGE 0x00400000
 #define PHONESTATE_REMOVED 0x00800000
-
 #define PHONESTATUSFLAGS_CONNECTED 0x00000001
 #define PHONESTATUSFLAGS_SUSPENDED 0x00000002
-
 #define STRINGFORMAT_ASCII 0x00000001
 #define STRINGFORMAT_DBCS 0x00000002
 #define STRINGFORMAT_UNICODE 0x00000003
 #define STRINGFORMAT_BINARY 0x00000004
-
 #define TAPI_REPLY WM_USER + 99
-
 #define TAPIERR_CONNECTED __MSABI_LONG(0)
 #define TAPIERR_DROPPED __MSABI_LONG(-1)
 #define TAPIERR_NOREQUESTRECIPIENT __MSABI_LONG(-2)
@@ -980,1283 +882,1534 @@ extern "C" {
 #define TAPIERR_PROVIDERALREADYINSTALLED __MSABI_LONG(-21)
 #define TAPIERR_SCP_ALREADY_EXISTS __MSABI_LONG(-22)
 #define TAPIERR_SCP_DOES_NOT_EXIST __MSABI_LONG(-23)
-
 #define TAPIMAXDESTADDRESSSIZE __MSABI_LONG(80)
 #define TAPIMAXAPPNAMESIZE __MSABI_LONG(40)
 #define TAPIMAXCALLEDPARTYSIZE __MSABI_LONG(40)
 #define TAPIMAXCOMMENTSIZE __MSABI_LONG(80)
 #define TAPIMAXDEVICECLASSSIZE __MSABI_LONG(40)
 #define TAPIMAXDEVICEIDSIZE __MSABI_LONG(40)
-
 #ifndef GUID_DEFINED
 #define GUID_DEFINED
-  typedef struct _GUID {
-    unsigned __LONG32 Data1;
-    unsigned short Data2;
-    unsigned short Data3;
-    unsigned char Data4[8];
-  } GUID;
+typedef struct _GUID {
+  unsigned __LONG32 Data1;
+  unsigned short Data2;
+  unsigned short Data3;
+  unsigned char Data4[8];
+} GUID;
 #endif
-
 #ifndef __LPGUID_DEFINED__
 #define __LPGUID_DEFINED__
-  typedef GUID *LPGUID;
+typedef GUID *LPGUID;
 #endif
-
-  typedef struct lineaddresscaps_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwLineDeviceID;
-    DWORD dwAddressSize;
-    DWORD dwAddressOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwAddressSharing;
-    DWORD dwAddressStates;
-    DWORD dwCallInfoStates;
-    DWORD dwCallerIDFlags;
-    DWORD dwCalledIDFlags;
-    DWORD dwConnectedIDFlags;
-    DWORD dwRedirectionIDFlags;
-    DWORD dwRedirectingIDFlags;
-    DWORD dwCallStates;
-    DWORD dwDialToneModes;
-    DWORD dwBusyModes;
-    DWORD dwSpecialInfo;
-    DWORD dwDisconnectModes;
-    DWORD dwMaxNumActiveCalls;
-    DWORD dwMaxNumOnHoldCalls;
-    DWORD dwMaxNumOnHoldPendingCalls;
-    DWORD dwMaxNumConference;
-    DWORD dwMaxNumTransConf;
-    DWORD dwAddrCapFlags;
-    DWORD dwCallFeatures;
-    DWORD dwRemoveFromConfCaps;
-    DWORD dwRemoveFromConfState;
-    DWORD dwTransferModes;
-    DWORD dwParkModes;
-    DWORD dwForwardModes;
-    DWORD dwMaxForwardEntries;
-    DWORD dwMaxSpecificEntries;
-    DWORD dwMinFwdNumRings;
-    DWORD dwMaxFwdNumRings;
-    DWORD dwMaxCallCompletions;
-    DWORD dwCallCompletionConds;
-    DWORD dwCallCompletionModes;
-    DWORD dwNumCompletionMessages;
-    DWORD dwCompletionMsgTextEntrySize;
-    DWORD dwCompletionMsgTextSize;
-    DWORD dwCompletionMsgTextOffset;
-    DWORD dwAddressFeatures;
-    DWORD dwPredictiveAutoTransferStates;
-    DWORD dwNumCallTreatments;
-    DWORD dwCallTreatmentListSize;
-    DWORD dwCallTreatmentListOffset;
-    DWORD dwDeviceClassesSize;
-    DWORD dwDeviceClassesOffset;
-    DWORD dwMaxCallDataSize;
-    DWORD dwCallFeatures2;
-    DWORD dwMaxNoAnswerTimeout;
-    DWORD dwConnectedModes;
-    DWORD dwOfferingModes;
-    DWORD dwAvailableMediaModes;
-  } LINEADDRESSCAPS,*LPLINEADDRESSCAPS;
-
-  typedef struct lineaddressstatus_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumInUse;
-    DWORD dwNumActiveCalls;
-    DWORD dwNumOnHoldCalls;
-    DWORD dwNumOnHoldPendCalls;
-    DWORD dwAddressFeatures;
-    DWORD dwNumRingsNoAnswer;
-    DWORD dwForwardNumEntries;
-    DWORD dwForwardSize;
-    DWORD dwForwardOffset;
-    DWORD dwTerminalModesSize;
-    DWORD dwTerminalModesOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-  } LINEADDRESSSTATUS,*LPLINEADDRESSSTATUS;
-
-  typedef struct lineagentactivityentry_tag {
-    DWORD dwID;
-    DWORD dwNameSize;
-    DWORD dwNameOffset;
-  } LINEAGENTACTIVITYENTRY,*LPLINEAGENTACTIVITYENTRY;
-
-  typedef struct lineagentactivitylist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEAGENTACTIVITYLIST,*LPLINEAGENTACTIVITYLIST;
-
-  typedef struct lineagentcaps_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwAgentHandlerInfoSize;
-    DWORD dwAgentHandlerInfoOffset;
-    DWORD dwCapsVersion;
-    DWORD dwFeatures;
-    DWORD dwStates;
-    DWORD dwNextStates;
-    DWORD dwMaxNumGroupEntries;
-    DWORD dwAgentStatusMessages;
-    DWORD dwNumAgentExtensionIDs;
-    DWORD dwAgentExtensionIDListSize;
-    DWORD dwAgentExtensionIDListOffset;
-    GUID ProxyGUID;
-  } LINEAGENTCAPS,*LPLINEAGENTCAPS;
-
-  typedef struct lineagentgroupentry_tag {
+typedef struct lineaddresscaps_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwLineDeviceID;
+  DWORD dwAddressSize;
+  DWORD dwAddressOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwAddressSharing;
+  DWORD dwAddressStates;
+  DWORD dwCallInfoStates;
+  DWORD dwCallerIDFlags;
+  DWORD dwCalledIDFlags;
+  DWORD dwConnectedIDFlags;
+  DWORD dwRedirectionIDFlags;
+  DWORD dwRedirectingIDFlags;
+  DWORD dwCallStates;
+  DWORD dwDialToneModes;
+  DWORD dwBusyModes;
+  DWORD dwSpecialInfo;
+  DWORD dwDisconnectModes;
+  DWORD dwMaxNumActiveCalls;
+  DWORD dwMaxNumOnHoldCalls;
+  DWORD dwMaxNumOnHoldPendingCalls;
+  DWORD dwMaxNumConference;
+  DWORD dwMaxNumTransConf;
+  DWORD dwAddrCapFlags;
+  DWORD dwCallFeatures;
+  DWORD dwRemoveFromConfCaps;
+  DWORD dwRemoveFromConfState;
+  DWORD dwTransferModes;
+  DWORD dwParkModes;
+  DWORD dwForwardModes;
+  DWORD dwMaxForwardEntries;
+  DWORD dwMaxSpecificEntries;
+  DWORD dwMinFwdNumRings;
+  DWORD dwMaxFwdNumRings;
+  DWORD dwMaxCallCompletions;
+  DWORD dwCallCompletionConds;
+  DWORD dwCallCompletionModes;
+  DWORD dwNumCompletionMessages;
+  DWORD dwCompletionMsgTextEntrySize;
+  DWORD dwCompletionMsgTextSize;
+  DWORD dwCompletionMsgTextOffset;
+  DWORD dwAddressFeatures;
+  DWORD dwPredictiveAutoTransferStates;
+  DWORD dwNumCallTreatments;
+  DWORD dwCallTreatmentListSize;
+  DWORD dwCallTreatmentListOffset;
+  DWORD dwDeviceClassesSize;
+  DWORD dwDeviceClassesOffset;
+  DWORD dwMaxCallDataSize;
+  DWORD dwCallFeatures2;
+  DWORD dwMaxNoAnswerTimeout;
+  DWORD dwConnectedModes;
+  DWORD dwOfferingModes;
+  DWORD dwAvailableMediaModes;
+} LINEADDRESSCAPS, *LPLINEADDRESSCAPS;
+typedef struct lineaddressstatus_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumInUse;
+  DWORD dwNumActiveCalls;
+  DWORD dwNumOnHoldCalls;
+  DWORD dwNumOnHoldPendCalls;
+  DWORD dwAddressFeatures;
+  DWORD dwNumRingsNoAnswer;
+  DWORD dwForwardNumEntries;
+  DWORD dwForwardSize;
+  DWORD dwForwardOffset;
+  DWORD dwTerminalModesSize;
+  DWORD dwTerminalModesOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+} LINEADDRESSSTATUS, *LPLINEADDRESSSTATUS;
+typedef struct lineagentactivityentry_tag {
+  DWORD dwID;
+  DWORD dwNameSize;
+  DWORD dwNameOffset;
+} LINEAGENTACTIVITYENTRY, *LPLINEAGENTACTIVITYENTRY;
+typedef struct lineagentactivitylist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEAGENTACTIVITYLIST, *LPLINEAGENTACTIVITYLIST;
+typedef struct lineagentcaps_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwAgentHandlerInfoSize;
+  DWORD dwAgentHandlerInfoOffset;
+  DWORD dwCapsVersion;
+  DWORD dwFeatures;
+  DWORD dwStates;
+  DWORD dwNextStates;
+  DWORD dwMaxNumGroupEntries;
+  DWORD dwAgentStatusMessages;
+  DWORD dwNumAgentExtensionIDs;
+  DWORD dwAgentExtensionIDListSize;
+  DWORD dwAgentExtensionIDListOffset;
+  GUID ProxyGUID;
+} LINEAGENTCAPS, *LPLINEAGENTCAPS;
+typedef struct lineagentgroupentry_tag {
+  struct {
+    DWORD dwGroupID1;
+    DWORD dwGroupID2;
+    DWORD dwGroupID3;
+    DWORD dwGroupID4;
+  } GroupID;
+  DWORD dwNameSize;
+  DWORD dwNameOffset;
+} LINEAGENTGROUPENTRY, *LPLINEAGENTGROUPENTRY;
+typedef struct lineagentgrouplist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEAGENTGROUPLIST, *LPLINEAGENTGROUPLIST;
+typedef struct lineagentstatus_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwGroupListSize;
+  DWORD dwGroupListOffset;
+  DWORD dwState;
+  DWORD dwNextState;
+  DWORD dwActivityID;
+  DWORD dwActivitySize;
+  DWORD dwActivityOffset;
+  DWORD dwAgentFeatures;
+  DWORD dwValidStates;
+  DWORD dwValidNextStates;
+} LINEAGENTSTATUS, *LPLINEAGENTSTATUS;
+typedef struct lineappinfo_tag {
+  DWORD dwMachineNameSize;
+  DWORD dwMachineNameOffset;
+  DWORD dwUserNameSize;
+  DWORD dwUserNameOffset;
+  DWORD dwModuleFilenameSize;
+  DWORD dwModuleFilenameOffset;
+  DWORD dwFriendlyNameSize;
+  DWORD dwFriendlyNameOffset;
+  DWORD dwMediaModes;
+  DWORD dwAddressID;
+} LINEAPPINFO, *LPLINEAPPINFO;
+typedef struct lineagententry_tag {
+  HAGENT hAgent;
+  DWORD dwNameSize;
+  DWORD dwNameOffset;
+  DWORD dwIDSize;
+  DWORD dwIDOffset;
+  DWORD dwPINSize;
+  DWORD dwPINOffset;
+} LINEAGENTENTRY, *LPLINEAGENTENTRY;
+typedef struct lineagentlist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEAGENTLIST, *LPLINEAGENTLIST;
+typedef struct lineagentinfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwAgentState;
+  DWORD dwNextAgentState;
+  DWORD dwMeasurementPeriod;
+  CURRENCY cyOverallCallRate;
+  DWORD dwNumberOfACDCalls;
+  DWORD dwNumberOfIncomingCalls;
+  DWORD dwNumberOfOutgoingCalls;
+  DWORD dwTotalACDTalkTime;
+  DWORD dwTotalACDCallTime;
+  DWORD dwTotalACDWrapUpTime;
+} LINEAGENTINFO, *LPLINEAGENTINFO;
+typedef struct lineagentsession_tag {
+  HAGENTSESSION hAgentSession;
+  HAGENT hAgent;
+  GUID GroupID;
+  DWORD dwWorkingAddressID;
+} LINEAGENTSESSIONENTRY, *LPLINEAGENTSESSIONENTRY;
+typedef struct lineagentsessionlist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEAGENTSESSIONLIST, *LPLINEAGENTSESSIONLIST;
+typedef struct lineagentsessioninfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwAgentSessionState;
+  DWORD dwNextAgentSessionState;
+  DATE dateSessionStartTime;
+  DWORD dwSessionDuration;
+  DWORD dwNumberOfCalls;
+  DWORD dwTotalTalkTime;
+  DWORD dwAverageTalkTime;
+  DWORD dwTotalCallTime;
+  DWORD dwAverageCallTime;
+  DWORD dwTotalWrapUpTime;
+  DWORD dwAverageWrapUpTime;
+  CURRENCY cyACDCallRate;
+  DWORD dwLongestTimeToAnswer;
+  DWORD dwAverageTimeToAnswer;
+} LINEAGENTSESSIONINFO, *LPLINEAGENTSESSIONINFO;
+typedef struct linequeueentry_tag {
+  DWORD dwQueueID;
+  DWORD dwNameSize;
+  DWORD dwNameOffset;
+} LINEQUEUEENTRY, *LPLINEQUEUEENTRY;
+typedef struct linequeuelist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEQUEUELIST, *LPLINEQUEUELIST;
+typedef struct linequeueinfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwMeasurementPeriod;
+  DWORD dwTotalCallsQueued;
+  DWORD dwCurrentCallsQueued;
+  DWORD dwTotalCallsAbandoned;
+  DWORD dwTotalCallsFlowedIn;
+  DWORD dwTotalCallsFlowedOut;
+  DWORD dwLongestEverWaitTime;
+  DWORD dwCurrentLongestWaitTime;
+  DWORD dwAverageWaitTime;
+  DWORD dwFinalDisposition;
+} LINEQUEUEINFO, *LPLINEQUEUEINFO;
+typedef struct lineproxyrequestlist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumEntries;
+  DWORD dwListSize;
+  DWORD dwListOffset;
+} LINEPROXYREQUESTLIST, *LPLINEPROXYREQUESTLIST;
+typedef struct linecallhubtrackinginfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwAvailableTracking;
+  DWORD dwCurrentTracking;
+} LINECALLHUBTRACKINGINFO, *LPLINECALLHUBTRACKINGINFO;
+typedef struct linedialparams_tag {
+  DWORD dwDialPause;
+  DWORD dwDialSpeed;
+  DWORD dwDigitDuration;
+  DWORD dwWaitForDialtone;
+} LINEDIALPARAMS, *LPLINEDIALPARAMS;
+typedef struct linecallinfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  HLINE hLine;
+  DWORD dwLineDeviceID;
+  DWORD dwAddressID;
+  DWORD dwBearerMode;
+  DWORD dwRate;
+  DWORD dwMediaMode;
+  DWORD dwAppSpecific;
+  DWORD dwCallID;
+  DWORD dwRelatedCallID;
+  DWORD dwCallParamFlags;
+  DWORD dwCallStates;
+  DWORD dwMonitorDigitModes;
+  DWORD dwMonitorMediaModes;
+  LINEDIALPARAMS DialParams;
+  DWORD dwOrigin;
+  DWORD dwReason;
+  DWORD dwCompletionID;
+  DWORD dwNumOwners;
+  DWORD dwNumMonitors;
+  DWORD dwCountryCode;
+  DWORD dwTrunk;
+  DWORD dwCallerIDFlags;
+  DWORD dwCallerIDSize;
+  DWORD dwCallerIDOffset;
+  DWORD dwCallerIDNameSize;
+  DWORD dwCallerIDNameOffset;
+  DWORD dwCalledIDFlags;
+  DWORD dwCalledIDSize;
+  DWORD dwCalledIDOffset;
+  DWORD dwCalledIDNameSize;
+  DWORD dwCalledIDNameOffset;
+  DWORD dwConnectedIDFlags;
+  DWORD dwConnectedIDSize;
+  DWORD dwConnectedIDOffset;
+  DWORD dwConnectedIDNameSize;
+  DWORD dwConnectedIDNameOffset;
+  DWORD dwRedirectionIDFlags;
+  DWORD dwRedirectionIDSize;
+  DWORD dwRedirectionIDOffset;
+  DWORD dwRedirectionIDNameSize;
+  DWORD dwRedirectionIDNameOffset;
+  DWORD dwRedirectingIDFlags;
+  DWORD dwRedirectingIDSize;
+  DWORD dwRedirectingIDOffset;
+  DWORD dwRedirectingIDNameSize;
+  DWORD dwRedirectingIDNameOffset;
+  DWORD dwAppNameSize;
+  DWORD dwAppNameOffset;
+  DWORD dwDisplayableAddressSize;
+  DWORD dwDisplayableAddressOffset;
+  DWORD dwCalledPartySize;
+  DWORD dwCalledPartyOffset;
+  DWORD dwCommentSize;
+  DWORD dwCommentOffset;
+  DWORD dwDisplaySize;
+  DWORD dwDisplayOffset;
+  DWORD dwUserUserInfoSize;
+  DWORD dwUserUserInfoOffset;
+  DWORD dwHighLevelCompSize;
+  DWORD dwHighLevelCompOffset;
+  DWORD dwLowLevelCompSize;
+  DWORD dwLowLevelCompOffset;
+  DWORD dwChargingInfoSize;
+  DWORD dwChargingInfoOffset;
+  DWORD dwTerminalModesSize;
+  DWORD dwTerminalModesOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwCallTreatment;
+  DWORD dwCallDataSize;
+  DWORD dwCallDataOffset;
+  DWORD dwSendingFlowspecSize;
+  DWORD dwSendingFlowspecOffset;
+  DWORD dwReceivingFlowspecSize;
+  DWORD dwReceivingFlowspecOffset;
+  DWORD dwCallerIDAddressType;
+  DWORD dwCalledIDAddressType;
+  DWORD dwConnectedIDAddressType;
+  DWORD dwRedirectionIDAddressType;
+  DWORD dwRedirectingIDAddressType;
+} LINECALLINFO, *LPLINECALLINFO;
+typedef struct linecalllist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwCallsNumEntries;
+  DWORD dwCallsSize;
+  DWORD dwCallsOffset;
+} LINECALLLIST, *LPLINECALLLIST;
+typedef struct linecallparams_tag {
+  DWORD dwTotalSize;
+  DWORD dwBearerMode;
+  DWORD dwMinRate;
+  DWORD dwMaxRate;
+  DWORD dwMediaMode;
+  DWORD dwCallParamFlags;
+  DWORD dwAddressMode;
+  DWORD dwAddressID;
+  LINEDIALPARAMS DialParams;
+  DWORD dwOrigAddressSize;
+  DWORD dwOrigAddressOffset;
+  DWORD dwDisplayableAddressSize;
+  DWORD dwDisplayableAddressOffset;
+  DWORD dwCalledPartySize;
+  DWORD dwCalledPartyOffset;
+  DWORD dwCommentSize;
+  DWORD dwCommentOffset;
+  DWORD dwUserUserInfoSize;
+  DWORD dwUserUserInfoOffset;
+  DWORD dwHighLevelCompSize;
+  DWORD dwHighLevelCompOffset;
+  DWORD dwLowLevelCompSize;
+  DWORD dwLowLevelCompOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwPredictiveAutoTransferStates;
+  DWORD dwTargetAddressSize;
+  DWORD dwTargetAddressOffset;
+  DWORD dwSendingFlowspecSize;
+  DWORD dwSendingFlowspecOffset;
+  DWORD dwReceivingFlowspecSize;
+  DWORD dwReceivingFlowspecOffset;
+  DWORD dwDeviceClassSize;
+  DWORD dwDeviceClassOffset;
+  DWORD dwDeviceConfigSize;
+  DWORD dwDeviceConfigOffset;
+  DWORD dwCallDataSize;
+  DWORD dwCallDataOffset;
+  DWORD dwNoAnswerTimeout;
+  DWORD dwCallingPartyIDSize;
+  DWORD dwCallingPartyIDOffset;
+  DWORD dwAddressType;
+} LINECALLPARAMS, *LPLINECALLPARAMS;
+typedef struct linecallstatus_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwCallState;
+  DWORD dwCallStateMode;
+  DWORD dwCallPrivilege;
+  DWORD dwCallFeatures;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwCallFeatures2;
+  SYSTEMTIME tStateEntryTime;
+} LINECALLSTATUS, *LPLINECALLSTATUS;
+typedef struct linecalltreatmententry_tag {
+  DWORD dwCallTreatmentID;
+  DWORD dwCallTreatmentNameSize;
+  DWORD dwCallTreatmentNameOffset;
+} LINECALLTREATMENTENTRY, *LPLINECALLTREATMENTENTRY;
+typedef struct linecardentry_tag {
+  DWORD dwPermanentCardID;
+  DWORD dwCardNameSize;
+  DWORD dwCardNameOffset;
+  DWORD dwCardNumberDigits;
+  DWORD dwSameAreaRuleSize;
+  DWORD dwSameAreaRuleOffset;
+  DWORD dwLongDistanceRuleSize;
+  DWORD dwLongDistanceRuleOffset;
+  DWORD dwInternationalRuleSize;
+  DWORD dwInternationalRuleOffset;
+  DWORD dwOptions;
+} LINECARDENTRY, *LPLINECARDENTRY;
+typedef struct linecountryentry_tag {
+  DWORD dwCountryID;
+  DWORD dwCountryCode;
+  DWORD dwNextCountryID;
+  DWORD dwCountryNameSize;
+  DWORD dwCountryNameOffset;
+  DWORD dwSameAreaRuleSize;
+  DWORD dwSameAreaRuleOffset;
+  DWORD dwLongDistanceRuleSize;
+  DWORD dwLongDistanceRuleOffset;
+  DWORD dwInternationalRuleSize;
+  DWORD dwInternationalRuleOffset;
+} LINECOUNTRYENTRY, *LPLINECOUNTRYENTRY;
+typedef struct linecountrylist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumCountries;
+  DWORD dwCountryListSize;
+  DWORD dwCountryListOffset;
+} LINECOUNTRYLIST, *LPLINECOUNTRYLIST;
+typedef struct linedevcaps_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwProviderInfoSize;
+  DWORD dwProviderInfoOffset;
+  DWORD dwSwitchInfoSize;
+  DWORD dwSwitchInfoOffset;
+  DWORD dwPermanentLineID;
+  DWORD dwLineNameSize;
+  DWORD dwLineNameOffset;
+  DWORD dwStringFormat;
+  DWORD dwAddressModes;
+  DWORD dwNumAddresses;
+  DWORD dwBearerModes;
+  DWORD dwMaxRate;
+  DWORD dwMediaModes;
+  DWORD dwGenerateToneModes;
+  DWORD dwGenerateToneMaxNumFreq;
+  DWORD dwGenerateDigitModes;
+  DWORD dwMonitorToneMaxNumFreq;
+  DWORD dwMonitorToneMaxNumEntries;
+  DWORD dwMonitorDigitModes;
+  DWORD dwGatherDigitsMinTimeout;
+  DWORD dwGatherDigitsMaxTimeout;
+  DWORD dwMedCtlDigitMaxListSize;
+  DWORD dwMedCtlMediaMaxListSize;
+  DWORD dwMedCtlToneMaxListSize;
+  DWORD dwMedCtlCallStateMaxListSize;
+  DWORD dwDevCapFlags;
+  DWORD dwMaxNumActiveCalls;
+  DWORD dwAnswerMode;
+  DWORD dwRingModes;
+  DWORD dwLineStates;
+  DWORD dwUUIAcceptSize;
+  DWORD dwUUIAnswerSize;
+  DWORD dwUUIMakeCallSize;
+  DWORD dwUUIDropSize;
+  DWORD dwUUISendUserUserInfoSize;
+  DWORD dwUUICallInfoSize;
+  LINEDIALPARAMS MinDialParams;
+  LINEDIALPARAMS MaxDialParams;
+  LINEDIALPARAMS DefaultDialParams;
+  DWORD dwNumTerminals;
+  DWORD dwTerminalCapsSize;
+  DWORD dwTerminalCapsOffset;
+  DWORD dwTerminalTextEntrySize;
+  DWORD dwTerminalTextSize;
+  DWORD dwTerminalTextOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwLineFeatures;
+  DWORD dwSettableDevStatus;
+  DWORD dwDeviceClassesSize;
+  DWORD dwDeviceClassesOffset;
+  GUID PermanentLineGuid;
+  DWORD dwAddressTypes;
+  GUID ProtocolGuid;
+  DWORD dwAvailableTracking;
+} LINEDEVCAPS, *LPLINEDEVCAPS;
+typedef struct linedevstatus_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumOpens;
+  DWORD dwOpenMediaModes;
+  DWORD dwNumActiveCalls;
+  DWORD dwNumOnHoldCalls;
+  DWORD dwNumOnHoldPendCalls;
+  DWORD dwLineFeatures;
+  DWORD dwNumCallCompletions;
+  DWORD dwRingMode;
+  DWORD dwSignalLevel;
+  DWORD dwBatteryLevel;
+  DWORD dwRoamMode;
+  DWORD dwDevStatusFlags;
+  DWORD dwTerminalModesSize;
+  DWORD dwTerminalModesOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwAvailableMediaModes;
+  DWORD dwAppInfoSize;
+  DWORD dwAppInfoOffset;
+} LINEDEVSTATUS, *LPLINEDEVSTATUS;
+typedef struct lineextensionid_tag {
+  DWORD dwExtensionID0;
+  DWORD dwExtensionID1;
+  DWORD dwExtensionID2;
+  DWORD dwExtensionID3;
+} LINEEXTENSIONID, *LPLINEEXTENSIONID;
+typedef struct lineforward_tag {
+  DWORD dwForwardMode;
+  DWORD dwCallerAddressSize;
+  DWORD dwCallerAddressOffset;
+  DWORD dwDestCountryCode;
+  DWORD dwDestAddressSize;
+  DWORD dwDestAddressOffset;
+  DWORD dwCallerAddressType;
+  DWORD dwDestAddressType;
+} LINEFORWARD, *LPLINEFORWARD;
+typedef struct lineforwardlist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNumEntries;
+  LINEFORWARD ForwardList[1];
+} LINEFORWARDLIST, *LPLINEFORWARDLIST;
+typedef struct linegeneratetone_tag {
+  DWORD dwFrequency;
+  DWORD dwCadenceOn;
+  DWORD dwCadenceOff;
+  DWORD dwVolume;
+} LINEGENERATETONE, *LPLINEGENERATETONE;
+typedef struct lineinitializeexparams_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwOptions;
+  union {
+    HANDLE hEvent;
+    HANDLE hCompletionPort;
+  } Handles;
+  DWORD dwCompletionKey;
+} LINEINITIALIZEEXPARAMS, *LPLINEINITIALIZEEXPARAMS;
+typedef struct linelocationentry_tag {
+  DWORD dwPermanentLocationID;
+  DWORD dwLocationNameSize;
+  DWORD dwLocationNameOffset;
+  DWORD dwCountryCode;
+  DWORD dwCityCodeSize;
+  DWORD dwCityCodeOffset;
+  DWORD dwPreferredCardID;
+  DWORD dwLocalAccessCodeSize;
+  DWORD dwLocalAccessCodeOffset;
+  DWORD dwLongDistanceAccessCodeSize;
+  DWORD dwLongDistanceAccessCodeOffset;
+  DWORD dwTollPrefixListSize;
+  DWORD dwTollPrefixListOffset;
+  DWORD dwCountryID;
+  DWORD dwOptions;
+  DWORD dwCancelCallWaitingSize;
+  DWORD dwCancelCallWaitingOffset;
+} LINELOCATIONENTRY, *LPLINELOCATIONENTRY;
+typedef struct linemediacontrolcallstate_tag {
+  DWORD dwCallStates;
+  DWORD dwMediaControl;
+} LINEMEDIACONTROLCALLSTATE, *LPLINEMEDIACONTROLCALLSTATE;
+typedef struct linemediacontroldigit_tag {
+  DWORD dwDigit;
+  DWORD dwDigitModes;
+  DWORD dwMediaControl;
+} LINEMEDIACONTROLDIGIT, *LPLINEMEDIACONTROLDIGIT;
+typedef struct linemediacontrolmedia_tag {
+  DWORD dwMediaModes;
+  DWORD dwDuration;
+  DWORD dwMediaControl;
+} LINEMEDIACONTROLMEDIA, *LPLINEMEDIACONTROLMEDIA;
+typedef struct linemediacontroltone_tag {
+  DWORD dwAppSpecific;
+  DWORD dwDuration;
+  DWORD dwFrequency1;
+  DWORD dwFrequency2;
+  DWORD dwFrequency3;
+  DWORD dwMediaControl;
+} LINEMEDIACONTROLTONE, *LPLINEMEDIACONTROLTONE;
+typedef struct linemessage_tag {
+  DWORD hDevice;
+  DWORD dwMessageID;
+  DWORD_PTR dwCallbackInstance;
+  DWORD_PTR dwParam1;
+  DWORD_PTR dwParam2;
+  DWORD_PTR dwParam3;
+} LINEMESSAGE, *LPLINEMESSAGE;
+typedef struct linemonitortone_tag {
+  DWORD dwAppSpecific;
+  DWORD dwDuration;
+  DWORD dwFrequency1;
+  DWORD dwFrequency2;
+  DWORD dwFrequency3;
+} LINEMONITORTONE, *LPLINEMONITORTONE;
+typedef struct lineproviderentry_tag {
+  DWORD dwPermanentProviderID;
+  DWORD dwProviderFilenameSize;
+  DWORD dwProviderFilenameOffset;
+} LINEPROVIDERENTRY, *LPLINEPROVIDERENTRY;
+typedef struct lineproviderlist_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumProviders;
+  DWORD dwProviderListSize;
+  DWORD dwProviderListOffset;
+} LINEPROVIDERLIST, *LPLINEPROVIDERLIST;
+typedef struct lineproxyrequest_tag {
+  DWORD dwSize;
+  DWORD dwClientMachineNameSize;
+  DWORD dwClientMachineNameOffset;
+  DWORD dwClientUserNameSize;
+  DWORD dwClientUserNameOffset;
+  DWORD dwClientAppAPIVersion;
+  DWORD dwRequestType;
+  __C89_NAMELESS union {
     struct {
-      DWORD dwGroupID1;
-      DWORD dwGroupID2;
-      DWORD dwGroupID3;
-      DWORD dwGroupID4;
-    } GroupID;
-    DWORD dwNameSize;
-    DWORD dwNameOffset;
-  } LINEAGENTGROUPENTRY,*LPLINEAGENTGROUPENTRY;
-
-  typedef struct lineagentgrouplist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEAGENTGROUPLIST,*LPLINEAGENTGROUPLIST;
-
-  typedef struct lineagentstatus_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwGroupListSize;
-    DWORD dwGroupListOffset;
-    DWORD dwState;
-    DWORD dwNextState;
-    DWORD dwActivityID;
-    DWORD dwActivitySize;
-    DWORD dwActivityOffset;
-    DWORD dwAgentFeatures;
-    DWORD dwValidStates;
-    DWORD dwValidNextStates;
-  } LINEAGENTSTATUS,*LPLINEAGENTSTATUS;
-
-  typedef struct lineappinfo_tag {
-    DWORD dwMachineNameSize;
-    DWORD dwMachineNameOffset;
-    DWORD dwUserNameSize;
-    DWORD dwUserNameOffset;
-    DWORD dwModuleFilenameSize;
-    DWORD dwModuleFilenameOffset;
-    DWORD dwFriendlyNameSize;
-    DWORD dwFriendlyNameOffset;
-    DWORD dwMediaModes;
-    DWORD dwAddressID;
-  } LINEAPPINFO,*LPLINEAPPINFO;
-
-  typedef struct lineagententry_tag {
-    HAGENT hAgent;
-    DWORD dwNameSize;
-    DWORD dwNameOffset;
-    DWORD dwIDSize;
-    DWORD dwIDOffset;
-    DWORD dwPINSize;
-    DWORD dwPINOffset;
-  } LINEAGENTENTRY,*LPLINEAGENTENTRY;
-
-  typedef struct lineagentlist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEAGENTLIST,*LPLINEAGENTLIST;
-
-  typedef struct lineagentinfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwAgentState;
-    DWORD dwNextAgentState;
-    DWORD dwMeasurementPeriod;
-    CURRENCY cyOverallCallRate;
-    DWORD dwNumberOfACDCalls;
-    DWORD dwNumberOfIncomingCalls;
-    DWORD dwNumberOfOutgoingCalls;
-    DWORD dwTotalACDTalkTime;
-    DWORD dwTotalACDCallTime;
-    DWORD dwTotalACDWrapUpTime;
-  } LINEAGENTINFO,*LPLINEAGENTINFO;
-
-  typedef struct lineagentsession_tag {
-    HAGENTSESSION hAgentSession;
-    HAGENT hAgent;
-    GUID GroupID;
-    DWORD dwWorkingAddressID;
-  } LINEAGENTSESSIONENTRY ,*LPLINEAGENTSESSIONENTRY;
-
-  typedef struct lineagentsessionlist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEAGENTSESSIONLIST,*LPLINEAGENTSESSIONLIST;
-
-  typedef struct lineagentsessioninfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwAgentSessionState;
-    DWORD dwNextAgentSessionState;
-    DATE dateSessionStartTime;
-    DWORD dwSessionDuration;
-    DWORD dwNumberOfCalls;
-    DWORD dwTotalTalkTime;
-    DWORD dwAverageTalkTime;
-    DWORD dwTotalCallTime;
-    DWORD dwAverageCallTime;
-    DWORD dwTotalWrapUpTime;
-    DWORD dwAverageWrapUpTime;
-    CURRENCY cyACDCallRate;
-    DWORD dwLongestTimeToAnswer;
-    DWORD dwAverageTimeToAnswer;
-  } LINEAGENTSESSIONINFO,*LPLINEAGENTSESSIONINFO;
-
-  typedef struct linequeueentry_tag {
-    DWORD dwQueueID;
-    DWORD dwNameSize;
-    DWORD dwNameOffset;
-  } LINEQUEUEENTRY,*LPLINEQUEUEENTRY;
-
-  typedef struct linequeuelist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEQUEUELIST,*LPLINEQUEUELIST;
-
-  typedef struct linequeueinfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwMeasurementPeriod;
-    DWORD dwTotalCallsQueued;
-    DWORD dwCurrentCallsQueued;
-    DWORD dwTotalCallsAbandoned;
-    DWORD dwTotalCallsFlowedIn;
-    DWORD dwTotalCallsFlowedOut;
-    DWORD dwLongestEverWaitTime;
-    DWORD dwCurrentLongestWaitTime;
-    DWORD dwAverageWaitTime;
-    DWORD dwFinalDisposition;
-  } LINEQUEUEINFO,*LPLINEQUEUEINFO;
-
-  typedef struct lineproxyrequestlist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumEntries;
-    DWORD dwListSize;
-    DWORD dwListOffset;
-  } LINEPROXYREQUESTLIST,*LPLINEPROXYREQUESTLIST;
-
-  typedef struct linecallhubtrackinginfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwAvailableTracking;
-    DWORD dwCurrentTracking;
-  } LINECALLHUBTRACKINGINFO,*LPLINECALLHUBTRACKINGINFO;
-
-  typedef struct linedialparams_tag {
-    DWORD dwDialPause;
-    DWORD dwDialSpeed;
-    DWORD dwDigitDuration;
-    DWORD dwWaitForDialtone;
-  } LINEDIALPARAMS,*LPLINEDIALPARAMS;
-
-  typedef struct linecallinfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    HLINE hLine;
-    DWORD dwLineDeviceID;
-    DWORD dwAddressID;
-    DWORD dwBearerMode;
-    DWORD dwRate;
-    DWORD dwMediaMode;
-    DWORD dwAppSpecific;
-    DWORD dwCallID;
-    DWORD dwRelatedCallID;
-    DWORD dwCallParamFlags;
-    DWORD dwCallStates;
-    DWORD dwMonitorDigitModes;
-    DWORD dwMonitorMediaModes;
-    LINEDIALPARAMS DialParams;
-    DWORD dwOrigin;
-    DWORD dwReason;
-    DWORD dwCompletionID;
-    DWORD dwNumOwners;
-    DWORD dwNumMonitors;
-    DWORD dwCountryCode;
-    DWORD dwTrunk;
-    DWORD dwCallerIDFlags;
-    DWORD dwCallerIDSize;
-    DWORD dwCallerIDOffset;
-    DWORD dwCallerIDNameSize;
-    DWORD dwCallerIDNameOffset;
-    DWORD dwCalledIDFlags;
-    DWORD dwCalledIDSize;
-    DWORD dwCalledIDOffset;
-    DWORD dwCalledIDNameSize;
-    DWORD dwCalledIDNameOffset;
-    DWORD dwConnectedIDFlags;
-    DWORD dwConnectedIDSize;
-    DWORD dwConnectedIDOffset;
-    DWORD dwConnectedIDNameSize;
-    DWORD dwConnectedIDNameOffset;
-    DWORD dwRedirectionIDFlags;
-    DWORD dwRedirectionIDSize;
-    DWORD dwRedirectionIDOffset;
-    DWORD dwRedirectionIDNameSize;
-    DWORD dwRedirectionIDNameOffset;
-    DWORD dwRedirectingIDFlags;
-    DWORD dwRedirectingIDSize;
-    DWORD dwRedirectingIDOffset;
-    DWORD dwRedirectingIDNameSize;
-    DWORD dwRedirectingIDNameOffset;
-    DWORD dwAppNameSize;
-    DWORD dwAppNameOffset;
-    DWORD dwDisplayableAddressSize;
-    DWORD dwDisplayableAddressOffset;
-    DWORD dwCalledPartySize;
-    DWORD dwCalledPartyOffset;
-    DWORD dwCommentSize;
-    DWORD dwCommentOffset;
-    DWORD dwDisplaySize;
-    DWORD dwDisplayOffset;
-    DWORD dwUserUserInfoSize;
-    DWORD dwUserUserInfoOffset;
-    DWORD dwHighLevelCompSize;
-    DWORD dwHighLevelCompOffset;
-    DWORD dwLowLevelCompSize;
-    DWORD dwLowLevelCompOffset;
-    DWORD dwChargingInfoSize;
-    DWORD dwChargingInfoOffset;
-    DWORD dwTerminalModesSize;
-    DWORD dwTerminalModesOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwCallTreatment;
-    DWORD dwCallDataSize;
-    DWORD dwCallDataOffset;
-    DWORD dwSendingFlowspecSize;
-    DWORD dwSendingFlowspecOffset;
-    DWORD dwReceivingFlowspecSize;
-    DWORD dwReceivingFlowspecOffset;
-    DWORD dwCallerIDAddressType;
-    DWORD dwCalledIDAddressType;
-    DWORD dwConnectedIDAddressType;
-    DWORD dwRedirectionIDAddressType;
-    DWORD dwRedirectingIDAddressType;
-  } LINECALLINFO,*LPLINECALLINFO;
-
-  typedef struct linecalllist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwCallsNumEntries;
-    DWORD dwCallsSize;
-    DWORD dwCallsOffset;
-  } LINECALLLIST,*LPLINECALLLIST;
-
-  typedef struct linecallparams_tag {
-    DWORD dwTotalSize;
-    DWORD dwBearerMode;
-    DWORD dwMinRate;
-    DWORD dwMaxRate;
-    DWORD dwMediaMode;
-    DWORD dwCallParamFlags;
-    DWORD dwAddressMode;
-    DWORD dwAddressID;
-    LINEDIALPARAMS DialParams;
-    DWORD dwOrigAddressSize;
-    DWORD dwOrigAddressOffset;
-    DWORD dwDisplayableAddressSize;
-    DWORD dwDisplayableAddressOffset;
-    DWORD dwCalledPartySize;
-    DWORD dwCalledPartyOffset;
-    DWORD dwCommentSize;
-    DWORD dwCommentOffset;
-    DWORD dwUserUserInfoSize;
-    DWORD dwUserUserInfoOffset;
-    DWORD dwHighLevelCompSize;
-    DWORD dwHighLevelCompOffset;
-    DWORD dwLowLevelCompSize;
-    DWORD dwLowLevelCompOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwPredictiveAutoTransferStates;
-    DWORD dwTargetAddressSize;
-    DWORD dwTargetAddressOffset;
-    DWORD dwSendingFlowspecSize;
-    DWORD dwSendingFlowspecOffset;
-    DWORD dwReceivingFlowspecSize;
-    DWORD dwReceivingFlowspecOffset;
-    DWORD dwDeviceClassSize;
-    DWORD dwDeviceClassOffset;
-    DWORD dwDeviceConfigSize;
-    DWORD dwDeviceConfigOffset;
-    DWORD dwCallDataSize;
-    DWORD dwCallDataOffset;
-    DWORD dwNoAnswerTimeout;
-    DWORD dwCallingPartyIDSize;
-    DWORD dwCallingPartyIDOffset;
-    DWORD dwAddressType;
-  } LINECALLPARAMS,*LPLINECALLPARAMS;
-
-  typedef struct linecallstatus_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwCallState;
-    DWORD dwCallStateMode;
-    DWORD dwCallPrivilege;
-    DWORD dwCallFeatures;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwCallFeatures2;
-    SYSTEMTIME tStateEntryTime;
-  } LINECALLSTATUS,*LPLINECALLSTATUS;
-
-  typedef struct linecalltreatmententry_tag {
-    DWORD dwCallTreatmentID;
-    DWORD dwCallTreatmentNameSize;
-    DWORD dwCallTreatmentNameOffset;
-  } LINECALLTREATMENTENTRY,*LPLINECALLTREATMENTENTRY;
-
-  typedef struct linecardentry_tag {
-    DWORD dwPermanentCardID;
-    DWORD dwCardNameSize;
-    DWORD dwCardNameOffset;
-    DWORD dwCardNumberDigits;
-    DWORD dwSameAreaRuleSize;
-    DWORD dwSameAreaRuleOffset;
-    DWORD dwLongDistanceRuleSize;
-    DWORD dwLongDistanceRuleOffset;
-    DWORD dwInternationalRuleSize;
-    DWORD dwInternationalRuleOffset;
-    DWORD dwOptions;
-  } LINECARDENTRY,*LPLINECARDENTRY;
-
-  typedef struct linecountryentry_tag {
-    DWORD dwCountryID;
-    DWORD dwCountryCode;
-    DWORD dwNextCountryID;
-    DWORD dwCountryNameSize;
-    DWORD dwCountryNameOffset;
-    DWORD dwSameAreaRuleSize;
-    DWORD dwSameAreaRuleOffset;
-    DWORD dwLongDistanceRuleSize;
-    DWORD dwLongDistanceRuleOffset;
-    DWORD dwInternationalRuleSize;
-    DWORD dwInternationalRuleOffset;
-  } LINECOUNTRYENTRY,*LPLINECOUNTRYENTRY;
-
-  typedef struct linecountrylist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumCountries;
-    DWORD dwCountryListSize;
-    DWORD dwCountryListOffset;
-  } LINECOUNTRYLIST,*LPLINECOUNTRYLIST;
-
-  typedef struct linedevcaps_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwProviderInfoSize;
-    DWORD dwProviderInfoOffset;
-    DWORD dwSwitchInfoSize;
-    DWORD dwSwitchInfoOffset;
-    DWORD dwPermanentLineID;
-    DWORD dwLineNameSize;
-    DWORD dwLineNameOffset;
-    DWORD dwStringFormat;
-    DWORD dwAddressModes;
-    DWORD dwNumAddresses;
-    DWORD dwBearerModes;
-    DWORD dwMaxRate;
-    DWORD dwMediaModes;
-    DWORD dwGenerateToneModes;
-    DWORD dwGenerateToneMaxNumFreq;
-    DWORD dwGenerateDigitModes;
-    DWORD dwMonitorToneMaxNumFreq;
-    DWORD dwMonitorToneMaxNumEntries;
-    DWORD dwMonitorDigitModes;
-    DWORD dwGatherDigitsMinTimeout;
-    DWORD dwGatherDigitsMaxTimeout;
-    DWORD dwMedCtlDigitMaxListSize;
-    DWORD dwMedCtlMediaMaxListSize;
-    DWORD dwMedCtlToneMaxListSize;
-    DWORD dwMedCtlCallStateMaxListSize;
-    DWORD dwDevCapFlags;
-    DWORD dwMaxNumActiveCalls;
-    DWORD dwAnswerMode;
-    DWORD dwRingModes;
-    DWORD dwLineStates;
-    DWORD dwUUIAcceptSize;
-    DWORD dwUUIAnswerSize;
-    DWORD dwUUIMakeCallSize;
-    DWORD dwUUIDropSize;
-    DWORD dwUUISendUserUserInfoSize;
-    DWORD dwUUICallInfoSize;
-    LINEDIALPARAMS MinDialParams;
-    LINEDIALPARAMS MaxDialParams;
-    LINEDIALPARAMS DefaultDialParams;
-    DWORD dwNumTerminals;
-    DWORD dwTerminalCapsSize;
-    DWORD dwTerminalCapsOffset;
-    DWORD dwTerminalTextEntrySize;
-    DWORD dwTerminalTextSize;
-    DWORD dwTerminalTextOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwLineFeatures;
-    DWORD dwSettableDevStatus;
-    DWORD dwDeviceClassesSize;
-    DWORD dwDeviceClassesOffset;
-    GUID PermanentLineGuid;
-    DWORD dwAddressTypes;
-    GUID ProtocolGuid;
-    DWORD dwAvailableTracking;
-  } LINEDEVCAPS,*LPLINEDEVCAPS;
-
-  typedef struct linedevstatus_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumOpens;
-    DWORD dwOpenMediaModes;
-    DWORD dwNumActiveCalls;
-    DWORD dwNumOnHoldCalls;
-    DWORD dwNumOnHoldPendCalls;
-    DWORD dwLineFeatures;
-    DWORD dwNumCallCompletions;
-    DWORD dwRingMode;
-    DWORD dwSignalLevel;
-    DWORD dwBatteryLevel;
-    DWORD dwRoamMode;
-    DWORD dwDevStatusFlags;
-    DWORD dwTerminalModesSize;
-    DWORD dwTerminalModesOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwAvailableMediaModes;
-    DWORD dwAppInfoSize;
-    DWORD dwAppInfoOffset;
-  } LINEDEVSTATUS,*LPLINEDEVSTATUS;
-
-  typedef struct lineextensionid_tag {
-    DWORD dwExtensionID0;
-    DWORD dwExtensionID1;
-    DWORD dwExtensionID2;
-    DWORD dwExtensionID3;
-  } LINEEXTENSIONID,*LPLINEEXTENSIONID;
-
-  typedef struct lineforward_tag {
-    DWORD dwForwardMode;
-    DWORD dwCallerAddressSize;
-    DWORD dwCallerAddressOffset;
-    DWORD dwDestCountryCode;
-    DWORD dwDestAddressSize;
-    DWORD dwDestAddressOffset;
-    DWORD dwCallerAddressType;
-    DWORD dwDestAddressType;
-  } LINEFORWARD,*LPLINEFORWARD;
-
-  typedef struct lineforwardlist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNumEntries;
-    LINEFORWARD ForwardList[1];
-  } LINEFORWARDLIST,*LPLINEFORWARDLIST;
-
-  typedef struct linegeneratetone_tag {
-    DWORD dwFrequency;
-    DWORD dwCadenceOn;
-    DWORD dwCadenceOff;
-    DWORD dwVolume;
-  } LINEGENERATETONE,*LPLINEGENERATETONE;
-
-  typedef struct lineinitializeexparams_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwOptions;
-    union {
-      HANDLE hEvent;
-      HANDLE hCompletionPort;
-    } Handles;
-    DWORD dwCompletionKey;
-  } LINEINITIALIZEEXPARAMS,*LPLINEINITIALIZEEXPARAMS;
-
-  typedef struct linelocationentry_tag {
-    DWORD dwPermanentLocationID;
-    DWORD dwLocationNameSize;
-    DWORD dwLocationNameOffset;
-    DWORD dwCountryCode;
-    DWORD dwCityCodeSize;
-    DWORD dwCityCodeOffset;
-    DWORD dwPreferredCardID;
-    DWORD dwLocalAccessCodeSize;
-    DWORD dwLocalAccessCodeOffset;
-    DWORD dwLongDistanceAccessCodeSize;
-    DWORD dwLongDistanceAccessCodeOffset;
-    DWORD dwTollPrefixListSize;
-    DWORD dwTollPrefixListOffset;
-    DWORD dwCountryID;
-    DWORD dwOptions;
-    DWORD dwCancelCallWaitingSize;
-    DWORD dwCancelCallWaitingOffset;
-  } LINELOCATIONENTRY,*LPLINELOCATIONENTRY;
-
-  typedef struct linemediacontrolcallstate_tag {
-    DWORD dwCallStates;
-    DWORD dwMediaControl;
-  } LINEMEDIACONTROLCALLSTATE,*LPLINEMEDIACONTROLCALLSTATE;
-
-  typedef struct linemediacontroldigit_tag {
-    DWORD dwDigit;
-    DWORD dwDigitModes;
-    DWORD dwMediaControl;
-  } LINEMEDIACONTROLDIGIT,*LPLINEMEDIACONTROLDIGIT;
-
-  typedef struct linemediacontrolmedia_tag {
-    DWORD dwMediaModes;
-    DWORD dwDuration;
-    DWORD dwMediaControl;
-  } LINEMEDIACONTROLMEDIA,*LPLINEMEDIACONTROLMEDIA;
-
-  typedef struct linemediacontroltone_tag {
-    DWORD dwAppSpecific;
-    DWORD dwDuration;
-    DWORD dwFrequency1;
-    DWORD dwFrequency2;
-    DWORD dwFrequency3;
-    DWORD dwMediaControl;
-  } LINEMEDIACONTROLTONE,*LPLINEMEDIACONTROLTONE;
-
-  typedef struct linemessage_tag {
-    DWORD hDevice;
-    DWORD dwMessageID;
-    DWORD_PTR dwCallbackInstance;
-    DWORD_PTR dwParam1;
-    DWORD_PTR dwParam2;
-    DWORD_PTR dwParam3;
-  } LINEMESSAGE,*LPLINEMESSAGE;
-
-  typedef struct linemonitortone_tag {
-    DWORD dwAppSpecific;
-    DWORD dwDuration;
-    DWORD dwFrequency1;
-    DWORD dwFrequency2;
-    DWORD dwFrequency3;
-  } LINEMONITORTONE,*LPLINEMONITORTONE;
-
-  typedef struct lineproviderentry_tag {
-    DWORD dwPermanentProviderID;
-    DWORD dwProviderFilenameSize;
-    DWORD dwProviderFilenameOffset;
-  } LINEPROVIDERENTRY,*LPLINEPROVIDERENTRY;
-
-  typedef struct lineproviderlist_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumProviders;
-    DWORD dwProviderListSize;
-    DWORD dwProviderListOffset;
-  } LINEPROVIDERLIST,*LPLINEPROVIDERLIST;
-
-  typedef struct lineproxyrequest_tag {
-    DWORD dwSize;
-    DWORD dwClientMachineNameSize;
-    DWORD dwClientMachineNameOffset;
-    DWORD dwClientUserNameSize;
-    DWORD dwClientUserNameOffset;
-    DWORD dwClientAppAPIVersion;
-    DWORD dwRequestType;
-    __C89_NAMELESS union {
-      struct {
-	DWORD dwAddressID;
-	LINEAGENTGROUPLIST GroupList;
-      } SetAgentGroup;
-      struct {
-	DWORD dwAddressID;
-	DWORD dwAgentState;
-	DWORD dwNextAgentState;
-      } SetAgentState;
-      struct {
-	DWORD dwAddressID;
-	DWORD dwActivityID;
-      } SetAgentActivity;
-      struct {
-	DWORD dwAddressID;
-	LINEAGENTCAPS AgentCaps;
-      } GetAgentCaps;
-      struct {
-	DWORD dwAddressID;
-	LINEAGENTSTATUS AgentStatus;
-      } GetAgentStatus;
-      struct {
-	DWORD dwAddressID;
-	DWORD dwAgentExtensionIDIndex;
-	DWORD dwSize;
-	BYTE Params[1];
-      } AgentSpecific;
-      struct {
-	DWORD dwAddressID;
-	LINEAGENTACTIVITYLIST ActivityList;
-      } GetAgentActivityList;
-      struct {
-	DWORD dwAddressID;
-	LINEAGENTGROUPLIST GroupList;
-      } GetAgentGroupList;
-      struct {
-	HAGENT hAgent;
-	DWORD dwAgentIDSize;
-	DWORD dwAgentIDOffset;
-	DWORD dwAgentPINSize;
-	DWORD dwAgentPINOffset;
-      } CreateAgent;
-      struct {
-	HAGENT hAgent;
-	DWORD dwAgentState;
-	DWORD dwNextAgentState;
-      } SetAgentStateEx;
-      struct {
-	HAGENT hAgent;
-	DWORD dwMeasurementPeriod;
-      } SetAgentMeasurementPeriod;
-      struct {
-	HAGENT hAgent;
-	LINEAGENTINFO AgentInfo;
-      } GetAgentInfo;
-      struct {
-	HAGENTSESSION hAgentSession;
-	DWORD dwAgentPINSize;
-	DWORD dwAgentPINOffset;
-	HAGENT hAgent;
-	GUID GroupID;
-	DWORD dwWorkingAddressID;
-      } CreateAgentSession;
-      struct {
-	HAGENT hAgent;
-	LINEAGENTSESSIONLIST SessionList;
-      } GetAgentSessionList;
-      struct {
-	HAGENTSESSION hAgentSession;
-	LINEAGENTSESSIONINFO SessionInfo;
-      } GetAgentSessionInfo;
-      struct {
-	HAGENTSESSION hAgentSession;
-	DWORD dwAgentSessionState;
-	DWORD dwNextAgentSessionState;
-      } SetAgentSessionState;
-      struct {
-	GUID GroupID;
-	LINEQUEUELIST QueueList;
-      } GetQueueList;
-      struct {
-	DWORD dwQueueID;
-	DWORD dwMeasurementPeriod;
-      } SetQueueMeasurementPeriod;
-      struct {
-	DWORD dwQueueID;
-	LINEQUEUEINFO QueueInfo;
-      } GetQueueInfo;
-      struct {
-	LINEAGENTGROUPLIST GroupList;
-      } GetGroupList;
-    };
-  } LINEPROXYREQUEST,*LPLINEPROXYREQUEST;
-
-  typedef struct linereqmakecall_tag {
-    char szDestAddress[TAPIMAXDESTADDRESSSIZE];
-    char szAppName[TAPIMAXAPPNAMESIZE];
-    char szCalledParty[TAPIMAXCALLEDPARTYSIZE];
-    char szComment[TAPIMAXCOMMENTSIZE];
-  } LINEREQMAKECALL,*LPLINEREQMAKECALL;
-
-  typedef struct linereqmakecallW_tag {
-    WCHAR szDestAddress[TAPIMAXDESTADDRESSSIZE];
-    WCHAR szAppName[TAPIMAXAPPNAMESIZE];
-    WCHAR szCalledParty[TAPIMAXCALLEDPARTYSIZE];
-    WCHAR szComment[TAPIMAXCOMMENTSIZE];
-  } LINEREQMAKECALLW,*LPLINEREQMAKECALLW;
-
+      DWORD dwAddressID;
+      LINEAGENTGROUPLIST GroupList;
+    } SetAgentGroup;
+    struct {
+      DWORD dwAddressID;
+      DWORD dwAgentState;
+      DWORD dwNextAgentState;
+    } SetAgentState;
+    struct {
+      DWORD dwAddressID;
+      DWORD dwActivityID;
+    } SetAgentActivity;
+    struct {
+      DWORD dwAddressID;
+      LINEAGENTCAPS AgentCaps;
+    } GetAgentCaps;
+    struct {
+      DWORD dwAddressID;
+      LINEAGENTSTATUS AgentStatus;
+    } GetAgentStatus;
+    struct {
+      DWORD dwAddressID;
+      DWORD dwAgentExtensionIDIndex;
+      DWORD dwSize;
+      BYTE Params[1];
+    } AgentSpecific;
+    struct {
+      DWORD dwAddressID;
+      LINEAGENTACTIVITYLIST ActivityList;
+    } GetAgentActivityList;
+    struct {
+      DWORD dwAddressID;
+      LINEAGENTGROUPLIST GroupList;
+    } GetAgentGroupList;
+    struct {
+      HAGENT hAgent;
+      DWORD dwAgentIDSize;
+      DWORD dwAgentIDOffset;
+      DWORD dwAgentPINSize;
+      DWORD dwAgentPINOffset;
+    } CreateAgent;
+    struct {
+      HAGENT hAgent;
+      DWORD dwAgentState;
+      DWORD dwNextAgentState;
+    } SetAgentStateEx;
+    struct {
+      HAGENT hAgent;
+      DWORD dwMeasurementPeriod;
+    } SetAgentMeasurementPeriod;
+    struct {
+      HAGENT hAgent;
+      LINEAGENTINFO AgentInfo;
+    } GetAgentInfo;
+    struct {
+      HAGENTSESSION hAgentSession;
+      DWORD dwAgentPINSize;
+      DWORD dwAgentPINOffset;
+      HAGENT hAgent;
+      GUID GroupID;
+      DWORD dwWorkingAddressID;
+    } CreateAgentSession;
+    struct {
+      HAGENT hAgent;
+      LINEAGENTSESSIONLIST SessionList;
+    } GetAgentSessionList;
+    struct {
+      HAGENTSESSION hAgentSession;
+      LINEAGENTSESSIONINFO SessionInfo;
+    } GetAgentSessionInfo;
+    struct {
+      HAGENTSESSION hAgentSession;
+      DWORD dwAgentSessionState;
+      DWORD dwNextAgentSessionState;
+    } SetAgentSessionState;
+    struct {
+      GUID GroupID;
+      LINEQUEUELIST QueueList;
+    } GetQueueList;
+    struct {
+      DWORD dwQueueID;
+      DWORD dwMeasurementPeriod;
+    } SetQueueMeasurementPeriod;
+    struct {
+      DWORD dwQueueID;
+      LINEQUEUEINFO QueueInfo;
+    } GetQueueInfo;
+    struct {
+      LINEAGENTGROUPLIST GroupList;
+    } GetGroupList;
+  };
+} LINEPROXYREQUEST, *LPLINEPROXYREQUEST;
+typedef struct linereqmakecall_tag {
+  char szDestAddress[TAPIMAXDESTADDRESSSIZE];
+  char szAppName[TAPIMAXAPPNAMESIZE];
+  char szCalledParty[TAPIMAXCALLEDPARTYSIZE];
+  char szComment[TAPIMAXCOMMENTSIZE];
+} LINEREQMAKECALL, *LPLINEREQMAKECALL;
+typedef struct linereqmakecallW_tag {
+  WCHAR szDestAddress[TAPIMAXDESTADDRESSSIZE];
+  WCHAR szAppName[TAPIMAXAPPNAMESIZE];
+  WCHAR szCalledParty[TAPIMAXCALLEDPARTYSIZE];
+  WCHAR szComment[TAPIMAXCOMMENTSIZE];
+} LINEREQMAKECALLW, *LPLINEREQMAKECALLW;
 #if defined(UNICODE)
 #define LINEREQMAKECALL LINEREQMAKECALLW
 #endif
-
-  typedef struct linereqmediacall_tag {
-    HWND hWnd;
-    WPARAM wRequestID;
-    char szDeviceClass[TAPIMAXDEVICECLASSSIZE];
-    unsigned char ucDeviceID[TAPIMAXDEVICEIDSIZE];
-    DWORD dwSize;
-    DWORD dwSecure;
-    char szDestAddress[TAPIMAXDESTADDRESSSIZE];
-    char szAppName[TAPIMAXAPPNAMESIZE];
-    char szCalledParty[TAPIMAXCALLEDPARTYSIZE];
-    char szComment[TAPIMAXCOMMENTSIZE];
-  } LINEREQMEDIACALL,*LPLINEREQMEDIACALL;
-
-  typedef struct linereqmediacallW_tag {
-    HWND hWnd;
-    WPARAM wRequestID;
-    WCHAR szDeviceClass[TAPIMAXDEVICECLASSSIZE];
-    unsigned char ucDeviceID[TAPIMAXDEVICEIDSIZE];
-    DWORD dwSize;
-    DWORD dwSecure;
-    WCHAR szDestAddress[TAPIMAXDESTADDRESSSIZE];
-    WCHAR szAppName[TAPIMAXAPPNAMESIZE];
-    WCHAR szCalledParty[TAPIMAXCALLEDPARTYSIZE];
-    WCHAR szComment[TAPIMAXCOMMENTSIZE];
-  } LINEREQMEDIACALLW,*LPLINEREQMEDIACALLW;
-
+typedef struct linereqmediacall_tag {
+  HWND hWnd;
+  WPARAM wRequestID;
+  char szDeviceClass[TAPIMAXDEVICECLASSSIZE];
+  unsigned char ucDeviceID[TAPIMAXDEVICEIDSIZE];
+  DWORD dwSize;
+  DWORD dwSecure;
+  char szDestAddress[TAPIMAXDESTADDRESSSIZE];
+  char szAppName[TAPIMAXAPPNAMESIZE];
+  char szCalledParty[TAPIMAXCALLEDPARTYSIZE];
+  char szComment[TAPIMAXCOMMENTSIZE];
+} LINEREQMEDIACALL, *LPLINEREQMEDIACALL;
+typedef struct linereqmediacallW_tag {
+  HWND hWnd;
+  WPARAM wRequestID;
+  WCHAR szDeviceClass[TAPIMAXDEVICECLASSSIZE];
+  unsigned char ucDeviceID[TAPIMAXDEVICEIDSIZE];
+  DWORD dwSize;
+  DWORD dwSecure;
+  WCHAR szDestAddress[TAPIMAXDESTADDRESSSIZE];
+  WCHAR szAppName[TAPIMAXAPPNAMESIZE];
+  WCHAR szCalledParty[TAPIMAXCALLEDPARTYSIZE];
+  WCHAR szComment[TAPIMAXCOMMENTSIZE];
+} LINEREQMEDIACALLW, *LPLINEREQMEDIACALLW;
 #if defined(UNICODE)
 #define LINEREQMEDIACALL LINEREQMEDIACALLW
 #endif
-
-  typedef struct linetermcaps_tag {
-    DWORD dwTermDev;
-    DWORD dwTermModes;
-    DWORD dwTermSharing;
-  } LINETERMCAPS,*LPLINETERMCAPS;
-
-  typedef struct linetranslatecaps_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwNumLocations;
-    DWORD dwLocationListSize;
-    DWORD dwLocationListOffset;
-    DWORD dwCurrentLocationID;
-    DWORD dwNumCards;
-    DWORD dwCardListSize;
-    DWORD dwCardListOffset;
-    DWORD dwCurrentPreferredCardID;
-  } LINETRANSLATECAPS,*LPLINETRANSLATECAPS;
-
-  typedef struct linetranslateoutput_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwDialableStringSize;
-    DWORD dwDialableStringOffset;
-    DWORD dwDisplayableStringSize;
-    DWORD dwDisplayableStringOffset;
-    DWORD dwCurrentCountry;
-    DWORD dwDestCountry;
-    DWORD dwTranslateResults;
-  } LINETRANSLATEOUTPUT,*LPLINETRANSLATEOUTPUT;
-
-  typedef struct phonebuttoninfo_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwButtonMode;
-    DWORD dwButtonFunction;
-    DWORD dwButtonTextSize;
-    DWORD dwButtonTextOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwButtonState;
-  } PHONEBUTTONINFO,*LPPHONEBUTTONINFO;
-
-  typedef struct phonecaps_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwProviderInfoSize;
-    DWORD dwProviderInfoOffset;
-    DWORD dwPhoneInfoSize;
-    DWORD dwPhoneInfoOffset;
-    DWORD dwPermanentPhoneID;
-    DWORD dwPhoneNameSize;
-    DWORD dwPhoneNameOffset;
-    DWORD dwStringFormat;
-    DWORD dwPhoneStates;
-    DWORD dwHookSwitchDevs;
-    DWORD dwHandsetHookSwitchModes;
-    DWORD dwSpeakerHookSwitchModes;
-    DWORD dwHeadsetHookSwitchModes;
-    DWORD dwVolumeFlags;
-    DWORD dwGainFlags;
-    DWORD dwDisplayNumRows;
-    DWORD dwDisplayNumColumns;
-    DWORD dwNumRingModes;
-    DWORD dwNumButtonLamps;
-    DWORD dwButtonModesSize;
-    DWORD dwButtonModesOffset;
-    DWORD dwButtonFunctionsSize;
-    DWORD dwButtonFunctionsOffset;
-    DWORD dwLampModesSize;
-    DWORD dwLampModesOffset;
-    DWORD dwNumSetData;
-    DWORD dwSetDataSize;
-    DWORD dwSetDataOffset;
-    DWORD dwNumGetData;
-    DWORD dwGetDataSize;
-    DWORD dwGetDataOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwDeviceClassesSize;
-    DWORD dwDeviceClassesOffset;
-    DWORD dwPhoneFeatures;
-    DWORD dwSettableHandsetHookSwitchModes;
-    DWORD dwSettableSpeakerHookSwitchModes;
-    DWORD dwSettableHeadsetHookSwitchModes;
-    DWORD dwMonitoredHandsetHookSwitchModes;
-    DWORD dwMonitoredSpeakerHookSwitchModes;
-    DWORD dwMonitoredHeadsetHookSwitchModes;
-    GUID PermanentPhoneGuid;
-  } PHONECAPS,*LPPHONECAPS;
-
-  typedef struct phoneextensionid_tag {
-    DWORD dwExtensionID0;
-    DWORD dwExtensionID1;
-    DWORD dwExtensionID2;
-    DWORD dwExtensionID3;
-  } PHONEEXTENSIONID,*LPPHONEEXTENSIONID;
-
-  typedef struct phoneinitializeexparams_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwOptions;
-    union {
-      HANDLE hEvent;
-      HANDLE hCompletionPort;
-    } Handles;
-    DWORD dwCompletionKey;
-  } PHONEINITIALIZEEXPARAMS,*LPPHONEINITIALIZEEXPARAMS;
-
-  typedef struct phonemessage_tag {
-    DWORD hDevice;
-    DWORD dwMessageID;
-    DWORD_PTR dwCallbackInstance;
-    DWORD_PTR dwParam1;
-    DWORD_PTR dwParam2;
-    DWORD_PTR dwParam3;
-  } PHONEMESSAGE,*LPPHONEMESSAGE;
-
-  typedef struct phonestatus_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwStatusFlags;
-    DWORD dwNumOwners;
-    DWORD dwNumMonitors;
-    DWORD dwRingMode;
-    DWORD dwRingVolume;
-    DWORD dwHandsetHookSwitchMode;
-    DWORD dwHandsetVolume;
-    DWORD dwHandsetGain;
-    DWORD dwSpeakerHookSwitchMode;
-    DWORD dwSpeakerVolume;
-    DWORD dwSpeakerGain;
-    DWORD dwHeadsetHookSwitchMode;
-    DWORD dwHeadsetVolume;
-    DWORD dwHeadsetGain;
-    DWORD dwDisplaySize;
-    DWORD dwDisplayOffset;
-    DWORD dwLampModesSize;
-    DWORD dwLampModesOffset;
-    DWORD dwOwnerNameSize;
-    DWORD dwOwnerNameOffset;
-    DWORD dwDevSpecificSize;
-    DWORD dwDevSpecificOffset;
-    DWORD dwPhoneFeatures;
-  } PHONESTATUS,*LPPHONESTATUS;
-
-  typedef struct varstring_tag {
-    DWORD dwTotalSize;
-    DWORD dwNeededSize;
-    DWORD dwUsedSize;
-    DWORD dwStringFormat;
-    DWORD dwStringSize;
-    DWORD dwStringOffset;
-  } VARSTRING,*LPVARSTRING;
-
-  LONG WINAPI lineAccept(HCALL hCall,LPCSTR lpsUserUserInfo,DWORD dwSize);
-  LONG WINAPI lineAddProvider(LPCSTR lpszProviderFilename,HWND hwndOwner,LPDWORD lpdwPermanentProviderID);
-  LONG WINAPI lineAddProviderA(LPCSTR lpszProviderFilename,HWND hwndOwner,LPDWORD lpdwPermanentProviderID);
-  LONG WINAPI lineAddProviderW(LPCWSTR lpszProviderFilename,HWND hwndOwner,LPDWORD lpdwPermanentProviderID);
-  LONG WINAPI lineAddToConference(HCALL hConfCall,HCALL hConsultCall);
-  LONG WINAPI lineAgentSpecific(HLINE hLine,DWORD dwAddressID,DWORD dwAgentExtensionIDIndex,LPVOID lpParams,DWORD dwSize);
-  LONG WINAPI lineAnswer(HCALL hCall,LPCSTR lpsUserUserInfo,DWORD dwSize);
-  LONG WINAPI lineBlindTransfer(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineBlindTransferA(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineBlindTransferW(HCALL hCall,LPCWSTR lpszDestAddressW,DWORD dwCountryCode);
-  LONG WINAPI lineClose(HLINE hLine);
-  LONG WINAPI lineCompleteCall(HCALL hCall,LPDWORD lpdwCompletionID,DWORD dwCompletionMode,DWORD dwMessageID);
-  LONG WINAPI lineCompleteTransfer(HCALL hCall,HCALL hConsultCall,LPHCALL lphConfCall,DWORD dwTransferMode);
-  LONG WINAPI lineConfigDialog(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineConfigDialogA(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineConfigDialogW(DWORD dwDeviceID,HWND hwndOwner,LPCWSTR lpszDeviceClass);
-  LONG WINAPI lineConfigDialogEdit(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass,LPVOID const lpDeviceConfigIn,DWORD dwSize,LPVARSTRING lpDeviceConfigOut);
-  LONG WINAPI lineConfigDialogEditA(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass,LPVOID const lpDeviceConfigIn,DWORD dwSize,LPVARSTRING lpDeviceConfigOut);
-  LONG WINAPI lineConfigDialogEditW(DWORD dwDeviceID,HWND hwndOwner,LPCWSTR lpszDeviceClass,LPVOID const lpDeviceConfigIn,DWORD dwSize,LPVARSTRING lpDeviceConfigOut);
-  LONG WINAPI lineConfigProvider(HWND hwndOwner,DWORD dwPermanentProviderID);
-  LONG WINAPI lineCreateAgentW(HLINE hLine,LPWSTR lpszAgentID,LPWSTR lpszAgentPIN,LPHAGENT lphAgent);
-  LONG WINAPI lineCreateAgentA(HLINE hLine,LPSTR lpszAgentID,LPSTR lpszAgentPIN,LPHAGENT lphAgent);
-  LONG WINAPI lineCreateAgentSessionW(HLINE hLine,HAGENT hAgent,LPWSTR lpszAgentPIN,DWORD dwWorkingAddressID,LPGUID lpGroupID,LPHAGENTSESSION lphAgentSession);
-  LONG WINAPI lineCreateAgentSessionA(HLINE hLine,HAGENT hAgent,LPSTR lpszAgentPIN,DWORD dwWorkingAddressID,LPGUID lpGroupID,LPHAGENTSESSION lphAgentSession);
-  LONG WINAPI lineDeallocateCall(HCALL hCall);
-  LONG WINAPI lineDevSpecific(HLINE hLine,DWORD dwAddressID,HCALL hCall,LPVOID lpParams,DWORD dwSize);
-  LONG WINAPI lineDevSpecificFeature(HLINE hLine,DWORD dwFeature,LPVOID lpParams,DWORD dwSize);
-  LONG WINAPI lineDial(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineDialA(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineDialW(HCALL hCall,LPCWSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineDrop(HCALL hCall,LPCSTR lpsUserUserInfo,DWORD dwSize);
-  LONG WINAPI lineForward(HLINE hLine,DWORD bAllAddresses,DWORD dwAddressID,LPLINEFORWARDLIST const lpForwardList,DWORD dwNumRingsNoAnswer,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineForwardA(HLINE hLine,DWORD bAllAddresses,DWORD dwAddressID,LPLINEFORWARDLIST const lpForwardList,DWORD dwNumRingsNoAnswer,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineForwardW(HLINE hLine,DWORD bAllAddresses,DWORD dwAddressID,LPLINEFORWARDLIST const lpForwardList,DWORD dwNumRingsNoAnswer,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineGatherDigits(HCALL hCall,DWORD dwDigitModes,LPSTR lpsDigits,DWORD dwNumDigits,LPCSTR lpszTerminationDigits,DWORD dwFirstDigitTimeout,DWORD dwInterDigitTimeout);
-  LONG WINAPI lineGatherDigitsA(HCALL hCall,DWORD dwDigitModes,LPSTR lpsDigits,DWORD dwNumDigits,LPCSTR lpszTerminationDigits,DWORD dwFirstDigitTimeout,DWORD dwInterDigitTimeout);
-  LONG WINAPI lineGatherDigitsW(HCALL hCall,DWORD dwDigitModes,LPWSTR lpsDigits,DWORD dwNumDigits,LPCWSTR lpszTerminationDigits,DWORD dwFirstDigitTimeout,DWORD dwInterDigitTimeout);
-  LONG WINAPI lineGenerateDigits(HCALL hCall,DWORD dwDigitMode,LPCSTR lpszDigits,DWORD dwDuration);
-  LONG WINAPI lineGenerateDigitsA(HCALL hCall,DWORD dwDigitMode,LPCSTR lpszDigits,DWORD dwDuration);
-  LONG WINAPI lineGenerateDigitsW(HCALL hCall,DWORD dwDigitMode,LPCWSTR lpszDigits,DWORD dwDuration);
-  LONG WINAPI lineGenerateTone(HCALL hCall,DWORD dwToneMode,DWORD dwDuration,DWORD dwNumTones,LPLINEGENERATETONE const lpTones);
-  LONG WINAPI lineGetAddressCaps(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAddressID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEADDRESSCAPS lpAddressCaps);
-  LONG WINAPI lineGetAddressCapsA(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAddressID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEADDRESSCAPS lpAddressCaps);
-  LONG WINAPI lineGetAddressCapsW(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAddressID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEADDRESSCAPS lpAddressCaps);
-  LONG WINAPI lineGetAddressID(HLINE hLine,LPDWORD lpdwAddressID,DWORD dwAddressMode,LPCSTR lpsAddress,DWORD dwSize);
-  LONG WINAPI lineGetAddressIDA(HLINE hLine,LPDWORD lpdwAddressID,DWORD dwAddressMode,LPCSTR lpsAddress,DWORD dwSize);
-  LONG WINAPI lineGetAddressIDW(HLINE hLine,LPDWORD lpdwAddressID,DWORD dwAddressMode,LPCWSTR lpsAddress,DWORD dwSize);
-  LONG WINAPI lineGetAddressStatus(HLINE hLine,DWORD dwAddressID,LPLINEADDRESSSTATUS lpAddressStatus);
-  LONG WINAPI lineGetAddressStatusA(HLINE hLine,DWORD dwAddressID,LPLINEADDRESSSTATUS lpAddressStatus);
-  LONG WINAPI lineGetAddressStatusW(HLINE hLine,DWORD dwAddressID,LPLINEADDRESSSTATUS lpAddressStatus);
-  LONG WINAPI lineGetAgentActivityListA(HLINE hLine,DWORD dwAddressID,LPLINEAGENTACTIVITYLIST lpAgentActivityList);
-  LONG WINAPI lineGetAgentActivityListW(HLINE hLine,DWORD dwAddressID,LPLINEAGENTACTIVITYLIST lpAgentActivityList);
-  LONG WINAPI lineGetAgentCapsA(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAddressID,DWORD dwAppAPIVersion,LPLINEAGENTCAPS lpAgentCaps);
-  LONG WINAPI lineGetAgentCapsW(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAddressID,DWORD dwAppAPIVersion,LPLINEAGENTCAPS lpAgentCaps);
-  LONG WINAPI lineGetAgentGroupListA(HLINE hLine,DWORD dwAddressID,LPLINEAGENTGROUPLIST lpAgentGroupList);
-  LONG WINAPI lineGetAgentGroupListW(HLINE hLine,DWORD dwAddressID,LPLINEAGENTGROUPLIST lpAgentGroupList);
-  LONG WINAPI lineGetAgentInfo(HLINE hLine,HAGENT hAgent,LPLINEAGENTINFO lpAgentInfo);
-  LONG WINAPI lineGetAgentSessionInfo(HLINE hLine,HAGENTSESSION hAgentSession,LPLINEAGENTSESSIONINFO lpAgentSessionInfo);
-  LONG WINAPI lineGetAgentSessionList(HLINE hLine,HAGENT hAgent,LPLINEAGENTSESSIONLIST lpAgentSessionList);
-  LONG WINAPI lineGetAgentStatusA(HLINE hLine,DWORD dwAddressID,LPLINEAGENTSTATUS lpAgentStatus);
-  LONG WINAPI lineGetAgentStatusW(HLINE hLine,DWORD dwAddressID,LPLINEAGENTSTATUS lpAgentStatus);
-  LONG WINAPI lineGetAppPriority(LPCSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPVARSTRING lpExtensionName,LPDWORD lpdwPriority);
-  LONG WINAPI lineGetAppPriorityA(LPCSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPVARSTRING lpExtensionName,LPDWORD lpdwPriority);
-  LONG WINAPI lineGetAppPriorityW(LPCWSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPVARSTRING lpExtensionName,LPDWORD lpdwPriority);
-  LONG WINAPI lineGetCallInfo(HCALL hCall,LPLINECALLINFO lpCallInfo);
-  LONG WINAPI lineGetCallInfoA(HCALL hCall,LPLINECALLINFO lpCallInfo);
-  LONG WINAPI lineGetCallInfoW(HCALL hCall,LPLINECALLINFO lpCallInfo);
-  LONG WINAPI lineGetCallStatus(HCALL hCall,LPLINECALLSTATUS lpCallStatus);
-  LONG WINAPI lineGetConfRelatedCalls(HCALL hCall,LPLINECALLLIST lpCallList);
-  LONG WINAPI lineGetCountry(DWORD dwCountryID,DWORD dwAPIVersion,LPLINECOUNTRYLIST lpLineCountryList);
-  LONG WINAPI lineGetCountryA(DWORD dwCountryID,DWORD dwAPIVersion,LPLINECOUNTRYLIST lpLineCountryList);
-  LONG WINAPI lineGetCountryW(DWORD dwCountryID,DWORD dwAPIVersion,LPLINECOUNTRYLIST lpLineCountryList);
-  LONG WINAPI lineGetDevCaps(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEDEVCAPS lpLineDevCaps);
-  LONG WINAPI lineGetDevCapsA(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEDEVCAPS lpLineDevCaps);
-  LONG WINAPI lineGetDevCapsW(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPLINEDEVCAPS lpLineDevCaps);
-  LONG WINAPI lineGetDevConfig(DWORD dwDeviceID,LPVARSTRING lpDeviceConfig,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineGetDevConfigA(DWORD dwDeviceID,LPVARSTRING lpDeviceConfig,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineGetDevConfigW(DWORD dwDeviceID,LPVARSTRING lpDeviceConfig,LPCWSTR lpszDeviceClass);
-  LONG WINAPI lineGetGroupListA(HLINE hLine,LPLINEAGENTGROUPLIST lpGroupList);
-  LONG WINAPI lineGetGroupListW(HLINE hLine,LPLINEAGENTGROUPLIST lpGroupList);
-  LONG WINAPI lineGetIcon(DWORD dwDeviceID,LPCSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI lineGetIconA(DWORD dwDeviceID,LPCSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI lineGetIconW(DWORD dwDeviceID,LPCWSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI lineGetID(HLINE hLine,DWORD dwAddressID,HCALL hCall,DWORD dwSelect,LPVARSTRING lpDeviceID,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineGetIDA(HLINE hLine,DWORD dwAddressID,HCALL hCall,DWORD dwSelect,LPVARSTRING lpDeviceID,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineGetIDW(HLINE hLine,DWORD dwAddressID,HCALL hCall,DWORD dwSelect,LPVARSTRING lpDeviceID,LPCWSTR lpszDeviceClass);
-  LONG WINAPI lineGetLineDevStatus(HLINE hLine,LPLINEDEVSTATUS lpLineDevStatus);
-  LONG WINAPI lineGetLineDevStatusA(HLINE hLine,LPLINEDEVSTATUS lpLineDevStatus);
-  LONG WINAPI lineGetLineDevStatusW(HLINE hLine,LPLINEDEVSTATUS lpLineDevStatus);
-  LONG WINAPI lineGetMessage(HLINEAPP hLineApp,LPLINEMESSAGE lpMessage,DWORD dwTimeout);
-  LONG WINAPI lineGetNewCalls(HLINE hLine,DWORD dwAddressID,DWORD dwSelect,LPLINECALLLIST lpCallList);
-  LONG WINAPI lineGetNumRings(HLINE hLine,DWORD dwAddressID,LPDWORD lpdwNumRings);
-  LONG WINAPI lineGetProviderList(DWORD dwAPIVersion,LPLINEPROVIDERLIST lpProviderList);
-  LONG WINAPI lineGetProviderListA(DWORD dwAPIVersion,LPLINEPROVIDERLIST lpProviderList);
-  LONG WINAPI lineGetProviderListW(DWORD dwAPIVersion,LPLINEPROVIDERLIST lpProviderList);
-  LONG WINAPI lineGetProxyStatus(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAppAPIVersion,LPLINEPROXYREQUESTLIST lpLineProxyReqestList);
-  LONG WINAPI lineGetQueueInfo(HLINE hLine,DWORD dwQueueID,LPLINEQUEUEINFO lpLineQueueInfo);
-  LONG WINAPI lineGetQueueListA(HLINE hLine,LPGUID lpGroupID,LPLINEQUEUELIST lpQueueList);
-  LONG WINAPI lineGetQueueListW(HLINE hLine,LPGUID lpGroupID,LPLINEQUEUELIST lpQueueList);
-  LONG WINAPI lineGetRequest(HLINEAPP hLineApp,DWORD dwRequestMode,LPVOID lpRequestBuffer);
-  LONG WINAPI lineGetRequestA(HLINEAPP hLineApp,DWORD dwRequestMode,LPVOID lpRequestBuffer);
-  LONG WINAPI lineGetRequestW(HLINEAPP hLineApp,DWORD dwRequestMode,LPVOID lpRequestBuffer);
-  LONG WINAPI lineGetStatusMessages(HLINE hLine,LPDWORD lpdwLineStates,LPDWORD lpdwAddressStates);
-  LONG WINAPI lineGetTranslateCaps(HLINEAPP hLineApp,DWORD dwAPIVersion,LPLINETRANSLATECAPS lpTranslateCaps);
-  LONG WINAPI lineGetTranslateCapsA(HLINEAPP hLineApp,DWORD dwAPIVersion,LPLINETRANSLATECAPS lpTranslateCaps);
-  LONG WINAPI lineGetTranslateCapsW(HLINEAPP hLineApp,DWORD dwAPIVersion,LPLINETRANSLATECAPS lpTranslateCaps);
-  LONG WINAPI lineHandoff(HCALL hCall,LPCSTR lpszFileName,DWORD dwMediaMode);
-  LONG WINAPI lineHandoffA(HCALL hCall,LPCSTR lpszFileName,DWORD dwMediaMode);
-  LONG WINAPI lineHandoffW(HCALL hCall,LPCWSTR lpszFileName,DWORD dwMediaMode);
-  LONG WINAPI lineHold(HCALL hCall);
-  LONG WINAPI lineInitialize(LPHLINEAPP lphLineApp,HINSTANCE hInstance,LINECALLBACK lpfnCallback,LPCSTR lpszAppName,LPDWORD lpdwNumDevs);
-  LONG WINAPI lineInitializeExA(LPHLINEAPP lphLineApp,HINSTANCE hInstance,LINECALLBACK lpfnCallback,LPCSTR lpszFriendlyAppName,LPDWORD lpdwNumDevs,LPDWORD lpdwAPIVersion,LPLINEINITIALIZEEXPARAMS lpLineInitializeExParams);
-  LONG WINAPI lineInitializeExW(LPHLINEAPP lphLineApp,HINSTANCE hInstance,LINECALLBACK lpfnCallback,LPCWSTR lpszFriendlyAppName,LPDWORD lpdwNumDevs,LPDWORD lpdwAPIVersion,LPLINEINITIALIZEEXPARAMS lpLineInitializeExParams);
-  LONG WINAPI lineMakeCall(HLINE hLine,LPHCALL lphCall,LPCSTR lpszDestAddress,DWORD dwCountryCode,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineMakeCallA(HLINE hLine,LPHCALL lphCall,LPCSTR lpszDestAddress,DWORD dwCountryCode,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineMakeCallW(HLINE hLine,LPHCALL lphCall,LPCWSTR lpszDestAddress,DWORD dwCountryCode,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineMonitorDigits(HCALL hCall,DWORD dwDigitModes);
-  LONG WINAPI lineMonitorMedia(HCALL hCall,DWORD dwMediaModes);
-  LONG WINAPI lineMonitorTones(HCALL hCall,LPLINEMONITORTONE const lpToneList,DWORD dwNumEntries);
-  LONG WINAPI lineNegotiateAPIVersion(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPILowVersion,DWORD dwAPIHighVersion,LPDWORD lpdwAPIVersion,LPLINEEXTENSIONID lpExtensionID);
-  LONG WINAPI lineNegotiateExtVersion(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtLowVersion,DWORD dwExtHighVersion,LPDWORD lpdwExtVersion);
-  LONG WINAPI lineOpen(HLINEAPP hLineApp,DWORD dwDeviceID,LPHLINE lphLine,DWORD dwAPIVersion,DWORD dwExtVersion,DWORD_PTR dwCallbackInstance,DWORD dwPrivileges,DWORD dwMediaModes,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineOpenA(HLINEAPP hLineApp,DWORD dwDeviceID,LPHLINE lphLine,DWORD dwAPIVersion,DWORD dwExtVersion,DWORD_PTR dwCallbackInstance,DWORD dwPrivileges,DWORD dwMediaModes,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineOpenW(HLINEAPP hLineApp,DWORD dwDeviceID,LPHLINE lphLine,DWORD dwAPIVersion,DWORD dwExtVersion,DWORD_PTR dwCallbackInstance,DWORD dwPrivileges,DWORD dwMediaModes,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI linePark(HCALL hCall,DWORD dwParkMode,LPCSTR lpszDirAddress,LPVARSTRING lpNonDirAddress);
-  LONG WINAPI lineParkA(HCALL hCall,DWORD dwParkMode,LPCSTR lpszDirAddress,LPVARSTRING lpNonDirAddress);
-  LONG WINAPI lineParkW(HCALL hCall,DWORD dwParkMode,LPCWSTR lpszDirAddress,LPVARSTRING lpNonDirAddress);
-  LONG WINAPI linePickup(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCSTR lpszDestAddress,LPCSTR lpszGroupID);
-  LONG WINAPI linePickupA(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCSTR lpszDestAddress,LPCSTR lpszGroupID);
-  LONG WINAPI linePickupW(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCWSTR lpszDestAddress,LPCWSTR lpszGroupID);
-  LONG WINAPI linePrepareAddToConference(HCALL hConfCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI linePrepareAddToConferenceA(HCALL hConfCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI linePrepareAddToConferenceW(HCALL hConfCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineProxyMessage(HLINE hLine,HCALL hCall,DWORD dwMsg,DWORD dwParam1,DWORD dwParam2,DWORD dwParam3);
-  LONG WINAPI lineProxyResponse(HLINE hLine,LPLINEPROXYREQUEST lpProxyRequest,DWORD dwResult);
-  LONG WINAPI lineRedirect(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineRedirectA(HCALL hCall,LPCSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineRedirectW(HCALL hCall,LPCWSTR lpszDestAddress,DWORD dwCountryCode);
-  LONG WINAPI lineRegisterRequestRecipient(HLINEAPP hLineApp,DWORD dwRegistrationInstance,DWORD dwRequestMode,DWORD bEnable);
-  LONG WINAPI lineReleaseUserUserInfo(HCALL hCall);
-  LONG WINAPI lineRemoveFromConference(HCALL hCall);
-  LONG WINAPI lineRemoveProvider(DWORD dwPermanentProviderID,HWND hwndOwner);
-  LONG WINAPI lineSecureCall(HCALL hCall);
-  LONG WINAPI lineSendUserUserInfo(HCALL hCall,LPCSTR lpsUserUserInfo,DWORD dwSize);
-  LONG WINAPI lineSetAgentActivity(HLINE hLine,DWORD dwAddressID,DWORD dwActivityID);
-  LONG WINAPI lineSetAgentGroup(HLINE hLine,DWORD dwAddressID,LPLINEAGENTGROUPLIST lpAgentGroupList);
-  LONG WINAPI lineSetAgentMeasurementPeriod(HLINE hLine,HAGENT hAgent,DWORD dwMeasurementPeriod);
-  LONG WINAPI lineSetAgentSessionState(HLINE hLine,HAGENTSESSION hAgentSession,DWORD dwAgentSessionState,DWORD dwNextAgentSessionState);
-  LONG WINAPI lineSetAgentStateEx(HLINE hLine,HAGENT hAgent,DWORD dwAgentState,DWORD dwNextAgentState);
-  LONG WINAPI lineSetAgentState(HLINE hLine,DWORD dwAddressID,DWORD dwAgentState,DWORD dwNextAgentState);
-  LONG WINAPI lineSetAppPriority(LPCSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPCSTR lpszExtensionName,DWORD dwPriority);
-  LONG WINAPI lineSetAppPriorityA(LPCSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPCSTR lpszExtensionName,DWORD dwPriority);
-  LONG WINAPI lineSetAppPriorityW(LPCWSTR lpszAppFilename,DWORD dwMediaMode,LPLINEEXTENSIONID lpExtensionID,DWORD dwRequestMode,LPCWSTR lpszExtensionName,DWORD dwPriority);
-  LONG WINAPI lineSetAppSpecific(HCALL hCall,DWORD dwAppSpecific);
-  LONG WINAPI lineSetCallData(HCALL hCall,LPVOID lpCallData,DWORD dwSize);
-  LONG WINAPI lineSetCallParams(HCALL hCall,DWORD dwBearerMode,DWORD dwMinRate,DWORD dwMaxRate,LPLINEDIALPARAMS const lpDialParams);
-  LONG WINAPI lineSetCallPrivilege(HCALL hCall,DWORD dwCallPrivilege);
-  LONG WINAPI lineSetCallQualityOfService(HCALL hCall,LPVOID lpSendingFlowspec,DWORD dwSendingFlowspecSize,LPVOID lpReceivingFlowspec,DWORD dwReceivingFlowspecSize);
-  LONG WINAPI lineSetCallTreatment(HCALL hCall,DWORD dwTreatment);
-  LONG WINAPI lineSetCurrentLocation(HLINEAPP hLineApp,DWORD dwLocation);
-  LONG WINAPI lineSetDevConfig(DWORD dwDeviceID,LPVOID const lpDeviceConfig,DWORD dwSize,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineSetDevConfigA(DWORD dwDeviceID,LPVOID const lpDeviceConfig,DWORD dwSize,LPCSTR lpszDeviceClass);
-  LONG WINAPI lineSetDevConfigW(DWORD dwDeviceID,LPVOID const lpDeviceConfig,DWORD dwSize,LPCWSTR lpszDeviceClass);
-  LONG WINAPI lineSetLineDevStatus(HLINE hLine,DWORD dwStatusToChange,DWORD fStatus);
-  LONG WINAPI lineSetMediaControl(HLINE hLine,DWORD dwAddressID,HCALL hCall,DWORD dwSelect,LPLINEMEDIACONTROLDIGIT const lpDigitList,DWORD dwDigitNumEntries,LPLINEMEDIACONTROLMEDIA const lpMediaList,DWORD dwMediaNumEntries,LPLINEMEDIACONTROLTONE const lpToneList,DWORD dwToneNumEntries,LPLINEMEDIACONTROLCALLSTATE const lpCallStateList,DWORD dwCallStateNumEntries);
-  LONG WINAPI lineSetMediaMode(HCALL hCall,DWORD dwMediaModes);
-  LONG WINAPI lineSetQueueMeasurementPeriod(HLINE hLine,DWORD dwQueueID,DWORD dwMeasurementPeriod);
-  LONG WINAPI lineSetNumRings(HLINE hLine,DWORD dwAddressID,DWORD dwNumRings);
-  LONG WINAPI lineSetStatusMessages(HLINE hLine,DWORD dwLineStates,DWORD dwAddressStates);
-  LONG WINAPI lineSetTerminal(HLINE hLine,DWORD dwAddressID,HCALL hCall,DWORD dwSelect,DWORD dwTerminalModes,DWORD dwTerminalID,DWORD bEnable);
-  LONG WINAPI lineSetTollList(HLINEAPP hLineApp,DWORD dwDeviceID,LPCSTR lpszAddressIn,DWORD dwTollListOption);
-  LONG WINAPI lineSetTollListA(HLINEAPP hLineApp,DWORD dwDeviceID,LPCSTR lpszAddressIn,DWORD dwTollListOption);
-  LONG WINAPI lineSetTollListW(HLINEAPP hLineApp,DWORD dwDeviceID,LPCWSTR lpszAddressInW,DWORD dwTollListOption);
-  LONG WINAPI lineSetupConference(HCALL hCall,HLINE hLine,LPHCALL lphConfCall,LPHCALL lphConsultCall,DWORD dwNumParties,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineSetupConferenceA(HCALL hCall,HLINE hLine,LPHCALL lphConfCall,LPHCALL lphConsultCall,DWORD dwNumParties,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineSetupConferenceW(HCALL hCall,HLINE hLine,LPHCALL lphConfCall,LPHCALL lphConsultCall,DWORD dwNumParties,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineSetupTransfer(HCALL hCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineSetupTransferA(HCALL hCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineSetupTransferW(HCALL hCall,LPHCALL lphConsultCall,LPLINECALLPARAMS const lpCallParams);
-  LONG WINAPI lineShutdown(HLINEAPP hLineApp);
-  LONG WINAPI lineSwapHold(HCALL hActiveCall,HCALL hHeldCall);
-  LONG WINAPI lineTranslateAddress(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,LPCSTR lpszAddressIn,DWORD dwCard,DWORD dwTranslateOptions,LPLINETRANSLATEOUTPUT lpTranslateOutput);
-  LONG WINAPI lineTranslateAddressA(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,LPCSTR lpszAddressIn,DWORD dwCard,DWORD dwTranslateOptions,LPLINETRANSLATEOUTPUT lpTranslateOutput);
-  LONG WINAPI lineTranslateAddressW(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,LPCWSTR lpszAddressIn,DWORD dwCard,DWORD dwTranslateOptions,LPLINETRANSLATEOUTPUT lpTranslateOutput);
-  LONG WINAPI lineTranslateDialog(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,HWND hwndOwner,LPCSTR lpszAddressIn);
-  LONG WINAPI lineTranslateDialogA(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,HWND hwndOwner,LPCSTR lpszAddressIn);
-  LONG WINAPI lineTranslateDialogW(HLINEAPP hLineApp,DWORD dwDeviceID,DWORD dwAPIVersion,HWND hwndOwner,LPCWSTR lpszAddressIn);
-  LONG WINAPI lineUncompleteCall(HLINE hLine,DWORD dwCompletionID);
-  LONG WINAPI lineUnhold(HCALL hCall);
-  LONG WINAPI lineUnpark(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCSTR lpszDestAddress);
-  LONG WINAPI lineUnparkA(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCSTR lpszDestAddress);
-  LONG WINAPI lineUnparkW(HLINE hLine,DWORD dwAddressID,LPHCALL lphCall,LPCWSTR lpszDestAddress);
-  LONG WINAPI phoneClose(HPHONE hPhone);
-  LONG WINAPI phoneConfigDialog(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass);
-  LONG WINAPI phoneConfigDialogA(DWORD dwDeviceID,HWND hwndOwner,LPCSTR lpszDeviceClass);
-  LONG WINAPI phoneConfigDialogW(DWORD dwDeviceID,HWND hwndOwner,LPCWSTR lpszDeviceClass);
-  LONG WINAPI phoneDevSpecific(HPHONE hPhone,LPVOID lpParams,DWORD dwSize);
-  LONG WINAPI phoneGetButtonInfo(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO lpButtonInfo);
-  LONG WINAPI phoneGetButtonInfoA(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO lpButtonInfo);
-  LONG WINAPI phoneGetButtonInfoW(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO lpButtonInfo);
-  LONG WINAPI phoneGetData(HPHONE hPhone,DWORD dwDataID,LPVOID lpData,DWORD dwSize);
-  LONG WINAPI phoneGetDevCaps(HPHONEAPP hPhoneApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPPHONECAPS lpPhoneCaps);
-  LONG WINAPI phoneGetDevCapsA(HPHONEAPP hPhoneApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPPHONECAPS lpPhoneCaps);
-  LONG WINAPI phoneGetDevCapsW(HPHONEAPP hPhoneApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtVersion,LPPHONECAPS lpPhoneCaps);
-  LONG WINAPI phoneGetDisplay(HPHONE hPhone,LPVARSTRING lpDisplay);
-  LONG WINAPI phoneGetGain(HPHONE hPhone,DWORD dwHookSwitchDev,LPDWORD lpdwGain);
-  LONG WINAPI phoneGetHookSwitch(HPHONE hPhone,LPDWORD lpdwHookSwitchDevs);
-  LONG WINAPI phoneGetIcon(DWORD dwDeviceID,LPCSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI phoneGetIconA(DWORD dwDeviceID,LPCSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI phoneGetIconW(DWORD dwDeviceID,LPCWSTR lpszDeviceClass,LPHICON lphIcon);
-  LONG WINAPI phoneGetID(HPHONE hPhone,LPVARSTRING lpDeviceID,LPCSTR lpszDeviceClass);
-  LONG WINAPI phoneGetIDA(HPHONE hPhone,LPVARSTRING lpDeviceID,LPCSTR lpszDeviceClass);
-  LONG WINAPI phoneGetIDW(HPHONE hPhone,LPVARSTRING lpDeviceID,LPCWSTR lpszDeviceClass);
-  LONG WINAPI phoneGetLamp(HPHONE hPhone,DWORD dwButtonLampID,LPDWORD lpdwLampMode);
-  LONG WINAPI phoneGetMessage(HPHONEAPP hPhoneApp,LPPHONEMESSAGE lpMessage,DWORD dwTimeout);
-  LONG WINAPI phoneGetRing(HPHONE hPhone,LPDWORD lpdwRingMode,LPDWORD lpdwVolume);
-  LONG WINAPI phoneGetStatus(HPHONE hPhone,LPPHONESTATUS lpPhoneStatus);
-  LONG WINAPI phoneGetStatusA(HPHONE hPhone,LPPHONESTATUS lpPhoneStatus);
-  LONG WINAPI phoneGetStatusW(HPHONE hPhone,LPPHONESTATUS lpPhoneStatus);
-  LONG WINAPI phoneGetStatusMessages(HPHONE hPhone,LPDWORD lpdwPhoneStates,LPDWORD lpdwButtonModes,LPDWORD lpdwButtonStates);
-  LONG WINAPI phoneGetVolume(HPHONE hPhone,DWORD dwHookSwitchDev,LPDWORD lpdwVolume);
-  LONG WINAPI phoneInitialize(LPHPHONEAPP lphPhoneApp,HINSTANCE hInstance,PHONECALLBACK lpfnCallback,LPCSTR lpszAppName,LPDWORD lpdwNumDevs);
-  LONG WINAPI phoneInitializeExA(LPHPHONEAPP lphPhoneApp,HINSTANCE hInstance,PHONECALLBACK lpfnCallback,LPCSTR lpszFriendlyAppName,LPDWORD lpdwNumDevs,LPDWORD lpdwAPIVersion,LPPHONEINITIALIZEEXPARAMS lpPhoneInitializeExParams);
-  LONG WINAPI phoneInitializeExW(LPHPHONEAPP lphPhoneApp,HINSTANCE hInstance,PHONECALLBACK lpfnCallback,LPCWSTR lpszFriendlyAppName,LPDWORD lpdwNumDevs,LPDWORD lpdwAPIVersion,LPPHONEINITIALIZEEXPARAMS lpPhoneInitializeExParams);
-  LONG WINAPI phoneNegotiateAPIVersion(HPHONEAPP hPhoneApp,DWORD dwDeviceID,DWORD dwAPILowVersion,DWORD dwAPIHighVersion,LPDWORD lpdwAPIVersion,LPPHONEEXTENSIONID lpExtensionID);
-  LONG WINAPI phoneNegotiateExtVersion(HPHONEAPP hPhoneApp,DWORD dwDeviceID,DWORD dwAPIVersion,DWORD dwExtLowVersion,DWORD dwExtHighVersion,LPDWORD lpdwExtVersion);
-  LONG WINAPI phoneOpen(HPHONEAPP hPhoneApp,DWORD dwDeviceID,LPHPHONE lphPhone,DWORD dwAPIVersion,DWORD dwExtVersion,DWORD_PTR dwCallbackInstance,DWORD dwPrivilege);
-  LONG WINAPI phoneSetButtonInfo(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO const lpButtonInfo);
-  LONG WINAPI phoneSetButtonInfoA(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO const lpButtonInfo);
-  LONG WINAPI phoneSetButtonInfoW(HPHONE hPhone,DWORD dwButtonLampID,LPPHONEBUTTONINFO const lpButtonInfo);
-  LONG WINAPI phoneSetData(HPHONE hPhone,DWORD dwDataID,LPVOID const lpData,DWORD dwSize);
-  LONG WINAPI phoneSetDisplay(HPHONE hPhone,DWORD dwRow,DWORD dwColumn,LPCSTR lpsDisplay,DWORD dwSize);
-  LONG WINAPI phoneSetGain(HPHONE hPhone,DWORD dwHookSwitchDev,DWORD dwGain);
-  LONG WINAPI phoneSetHookSwitch(HPHONE hPhone,DWORD dwHookSwitchDevs,DWORD dwHookSwitchMode);
-  LONG WINAPI phoneSetLamp(HPHONE hPhone,DWORD dwButtonLampID,DWORD dwLampMode);
-  LONG WINAPI phoneSetRing(HPHONE hPhone,DWORD dwRingMode,DWORD dwVolume);
-  LONG WINAPI phoneSetStatusMessages(HPHONE hPhone,DWORD dwPhoneStates,DWORD dwButtonModes,DWORD dwButtonStates);
-  LONG WINAPI phoneSetVolume(HPHONE hPhone,DWORD dwHookSwitchDev,DWORD dwVolume);
-  LONG WINAPI phoneShutdown(HPHONEAPP hPhoneApp);
-  LONG WINAPI tapiGetLocationInfo(LPSTR lpszCountryCode,LPSTR lpszCityCode);
-  LONG WINAPI tapiGetLocationInfoA(LPSTR lpszCountryCode,LPSTR lpszCityCode);
-  LONG WINAPI tapiGetLocationInfoW(LPWSTR lpszCountryCodeW,LPWSTR lpszCityCodeW);
-  LONG WINAPI tapiRequestDrop(HWND hwnd,WPARAM wRequestID);
-  LONG WINAPI tapiRequestMakeCall(LPCSTR lpszDestAddress,LPCSTR lpszAppName,LPCSTR lpszCalledParty,LPCSTR lpszComment);
-  LONG WINAPI tapiRequestMakeCallA(LPCSTR lpszDestAddress,LPCSTR lpszAppName,LPCSTR lpszCalledParty,LPCSTR lpszComment);
-  LONG WINAPI tapiRequestMakeCallW(LPCWSTR lpszDestAddress,LPCWSTR lpszAppName,LPCWSTR lpszCalledParty,LPCWSTR lpszComment);
-  LONG WINAPI tapiRequestMediaCall(HWND hwnd,WPARAM wRequestID,LPCSTR lpszDeviceClass,LPCSTR lpDeviceID,DWORD dwSize,DWORD dwSecure,LPCSTR lpszDestAddress,LPCSTR lpszAppName,LPCSTR lpszCalledParty,LPCSTR lpszComment);
-  LONG WINAPI tapiRequestMediaCallA(HWND hwnd,WPARAM wRequestID,LPCSTR lpszDeviceClass,LPCSTR lpDeviceID,DWORD dwSize,DWORD dwSecure,LPCSTR lpszDestAddress,LPCSTR lpszAppName,LPCSTR lpszCalledParty,LPCSTR lpszComment);
-  LONG WINAPI tapiRequestMediaCallW(HWND hwnd,WPARAM wRequestID,LPCWSTR lpszDeviceClass,LPCWSTR lpDeviceID,DWORD dwSize,DWORD dwSecure,LPCWSTR lpszDestAddress,LPCWSTR lpszAppName,LPCWSTR lpszCalledParty,LPCWSTR lpszComment);
-
+typedef struct linetermcaps_tag {
+  DWORD dwTermDev;
+  DWORD dwTermModes;
+  DWORD dwTermSharing;
+} LINETERMCAPS, *LPLINETERMCAPS;
+typedef struct linetranslatecaps_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwNumLocations;
+  DWORD dwLocationListSize;
+  DWORD dwLocationListOffset;
+  DWORD dwCurrentLocationID;
+  DWORD dwNumCards;
+  DWORD dwCardListSize;
+  DWORD dwCardListOffset;
+  DWORD dwCurrentPreferredCardID;
+} LINETRANSLATECAPS, *LPLINETRANSLATECAPS;
+typedef struct linetranslateoutput_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwDialableStringSize;
+  DWORD dwDialableStringOffset;
+  DWORD dwDisplayableStringSize;
+  DWORD dwDisplayableStringOffset;
+  DWORD dwCurrentCountry;
+  DWORD dwDestCountry;
+  DWORD dwTranslateResults;
+} LINETRANSLATEOUTPUT, *LPLINETRANSLATEOUTPUT;
+typedef struct phonebuttoninfo_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwButtonMode;
+  DWORD dwButtonFunction;
+  DWORD dwButtonTextSize;
+  DWORD dwButtonTextOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwButtonState;
+} PHONEBUTTONINFO, *LPPHONEBUTTONINFO;
+typedef struct phonecaps_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwProviderInfoSize;
+  DWORD dwProviderInfoOffset;
+  DWORD dwPhoneInfoSize;
+  DWORD dwPhoneInfoOffset;
+  DWORD dwPermanentPhoneID;
+  DWORD dwPhoneNameSize;
+  DWORD dwPhoneNameOffset;
+  DWORD dwStringFormat;
+  DWORD dwPhoneStates;
+  DWORD dwHookSwitchDevs;
+  DWORD dwHandsetHookSwitchModes;
+  DWORD dwSpeakerHookSwitchModes;
+  DWORD dwHeadsetHookSwitchModes;
+  DWORD dwVolumeFlags;
+  DWORD dwGainFlags;
+  DWORD dwDisplayNumRows;
+  DWORD dwDisplayNumColumns;
+  DWORD dwNumRingModes;
+  DWORD dwNumButtonLamps;
+  DWORD dwButtonModesSize;
+  DWORD dwButtonModesOffset;
+  DWORD dwButtonFunctionsSize;
+  DWORD dwButtonFunctionsOffset;
+  DWORD dwLampModesSize;
+  DWORD dwLampModesOffset;
+  DWORD dwNumSetData;
+  DWORD dwSetDataSize;
+  DWORD dwSetDataOffset;
+  DWORD dwNumGetData;
+  DWORD dwGetDataSize;
+  DWORD dwGetDataOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwDeviceClassesSize;
+  DWORD dwDeviceClassesOffset;
+  DWORD dwPhoneFeatures;
+  DWORD dwSettableHandsetHookSwitchModes;
+  DWORD dwSettableSpeakerHookSwitchModes;
+  DWORD dwSettableHeadsetHookSwitchModes;
+  DWORD dwMonitoredHandsetHookSwitchModes;
+  DWORD dwMonitoredSpeakerHookSwitchModes;
+  DWORD dwMonitoredHeadsetHookSwitchModes;
+  GUID PermanentPhoneGuid;
+} PHONECAPS, *LPPHONECAPS;
+typedef struct phoneextensionid_tag {
+  DWORD dwExtensionID0;
+  DWORD dwExtensionID1;
+  DWORD dwExtensionID2;
+  DWORD dwExtensionID3;
+} PHONEEXTENSIONID, *LPPHONEEXTENSIONID;
+typedef struct phoneinitializeexparams_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwOptions;
+  union {
+    HANDLE hEvent;
+    HANDLE hCompletionPort;
+  } Handles;
+  DWORD dwCompletionKey;
+} PHONEINITIALIZEEXPARAMS, *LPPHONEINITIALIZEEXPARAMS;
+typedef struct phonemessage_tag {
+  DWORD hDevice;
+  DWORD dwMessageID;
+  DWORD_PTR dwCallbackInstance;
+  DWORD_PTR dwParam1;
+  DWORD_PTR dwParam2;
+  DWORD_PTR dwParam3;
+} PHONEMESSAGE, *LPPHONEMESSAGE;
+typedef struct phonestatus_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwStatusFlags;
+  DWORD dwNumOwners;
+  DWORD dwNumMonitors;
+  DWORD dwRingMode;
+  DWORD dwRingVolume;
+  DWORD dwHandsetHookSwitchMode;
+  DWORD dwHandsetVolume;
+  DWORD dwHandsetGain;
+  DWORD dwSpeakerHookSwitchMode;
+  DWORD dwSpeakerVolume;
+  DWORD dwSpeakerGain;
+  DWORD dwHeadsetHookSwitchMode;
+  DWORD dwHeadsetVolume;
+  DWORD dwHeadsetGain;
+  DWORD dwDisplaySize;
+  DWORD dwDisplayOffset;
+  DWORD dwLampModesSize;
+  DWORD dwLampModesOffset;
+  DWORD dwOwnerNameSize;
+  DWORD dwOwnerNameOffset;
+  DWORD dwDevSpecificSize;
+  DWORD dwDevSpecificOffset;
+  DWORD dwPhoneFeatures;
+} PHONESTATUS, *LPPHONESTATUS;
+typedef struct varstring_tag {
+  DWORD dwTotalSize;
+  DWORD dwNeededSize;
+  DWORD dwUsedSize;
+  DWORD dwStringFormat;
+  DWORD dwStringSize;
+  DWORD dwStringOffset;
+} VARSTRING, *LPVARSTRING;
+LONG WINAPI lineAccept(HCALL hCall, LPCSTR lpsUserUserInfo, DWORD dwSize);
+LONG WINAPI lineAddProvider(LPCSTR lpszProviderFilename, HWND hwndOwner,
+                            LPDWORD lpdwPermanentProviderID);
+LONG WINAPI lineAddProviderA(LPCSTR lpszProviderFilename, HWND hwndOwner,
+                             LPDWORD lpdwPermanentProviderID);
+LONG WINAPI lineAddProviderW(LPCWSTR lpszProviderFilename, HWND hwndOwner,
+                             LPDWORD lpdwPermanentProviderID);
+LONG WINAPI lineAddToConference(HCALL hConfCall, HCALL hConsultCall);
+LONG WINAPI lineAgentSpecific(HLINE hLine, DWORD dwAddressID,
+                              DWORD dwAgentExtensionIDIndex, LPVOID lpParams,
+                              DWORD dwSize);
+LONG WINAPI lineAnswer(HCALL hCall, LPCSTR lpsUserUserInfo, DWORD dwSize);
+LONG WINAPI lineBlindTransfer(HCALL hCall, LPCSTR lpszDestAddress,
+                              DWORD dwCountryCode);
+LONG WINAPI lineBlindTransferA(HCALL hCall, LPCSTR lpszDestAddress,
+                               DWORD dwCountryCode);
+LONG WINAPI lineBlindTransferW(HCALL hCall, LPCWSTR lpszDestAddressW,
+                               DWORD dwCountryCode);
+LONG WINAPI lineClose(HLINE hLine);
+LONG WINAPI lineCompleteCall(HCALL hCall, LPDWORD lpdwCompletionID,
+                             DWORD dwCompletionMode, DWORD dwMessageID);
+LONG WINAPI lineCompleteTransfer(HCALL hCall, HCALL hConsultCall,
+                                 LPHCALL lphConfCall, DWORD dwTransferMode);
+LONG WINAPI lineConfigDialog(DWORD dwDeviceID, HWND hwndOwner,
+                             LPCSTR lpszDeviceClass);
+LONG WINAPI lineConfigDialogA(DWORD dwDeviceID, HWND hwndOwner,
+                              LPCSTR lpszDeviceClass);
+LONG WINAPI lineConfigDialogW(DWORD dwDeviceID, HWND hwndOwner,
+                              LPCWSTR lpszDeviceClass);
+LONG WINAPI lineConfigDialogEdit(DWORD dwDeviceID, HWND hwndOwner,
+                                 LPCSTR lpszDeviceClass,
+                                 LPVOID const lpDeviceConfigIn, DWORD dwSize,
+                                 LPVARSTRING lpDeviceConfigOut);
+LONG WINAPI lineConfigDialogEditA(DWORD dwDeviceID, HWND hwndOwner,
+                                  LPCSTR lpszDeviceClass,
+                                  LPVOID const lpDeviceConfigIn, DWORD dwSize,
+                                  LPVARSTRING lpDeviceConfigOut);
+LONG WINAPI lineConfigDialogEditW(DWORD dwDeviceID, HWND hwndOwner,
+                                  LPCWSTR lpszDeviceClass,
+                                  LPVOID const lpDeviceConfigIn, DWORD dwSize,
+                                  LPVARSTRING lpDeviceConfigOut);
+LONG WINAPI lineConfigProvider(HWND hwndOwner, DWORD dwPermanentProviderID);
+LONG WINAPI lineCreateAgentW(HLINE hLine, LPWSTR lpszAgentID,
+                             LPWSTR lpszAgentPIN, LPHAGENT lphAgent);
+LONG WINAPI lineCreateAgentA(HLINE hLine, LPSTR lpszAgentID, LPSTR lpszAgentPIN,
+                             LPHAGENT lphAgent);
+LONG WINAPI lineCreateAgentSessionW(HLINE hLine, HAGENT hAgent,
+                                    LPWSTR lpszAgentPIN,
+                                    DWORD dwWorkingAddressID, LPGUID lpGroupID,
+                                    LPHAGENTSESSION lphAgentSession);
+LONG WINAPI lineCreateAgentSessionA(HLINE hLine, HAGENT hAgent,
+                                    LPSTR lpszAgentPIN,
+                                    DWORD dwWorkingAddressID, LPGUID lpGroupID,
+                                    LPHAGENTSESSION lphAgentSession);
+LONG WINAPI lineDeallocateCall(HCALL hCall);
+LONG WINAPI lineDevSpecific(HLINE hLine, DWORD dwAddressID, HCALL hCall,
+                            LPVOID lpParams, DWORD dwSize);
+LONG WINAPI lineDevSpecificFeature(HLINE hLine, DWORD dwFeature,
+                                   LPVOID lpParams, DWORD dwSize);
+LONG WINAPI lineDial(HCALL hCall, LPCSTR lpszDestAddress, DWORD dwCountryCode);
+LONG WINAPI lineDialA(HCALL hCall, LPCSTR lpszDestAddress, DWORD dwCountryCode);
+LONG WINAPI lineDialW(HCALL hCall, LPCWSTR lpszDestAddress,
+                      DWORD dwCountryCode);
+LONG WINAPI lineDrop(HCALL hCall, LPCSTR lpsUserUserInfo, DWORD dwSize);
+LONG WINAPI lineForward(HLINE hLine, DWORD bAllAddresses, DWORD dwAddressID,
+                        LPLINEFORWARDLIST const lpForwardList,
+                        DWORD dwNumRingsNoAnswer, LPHCALL lphConsultCall,
+                        LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineForwardA(HLINE hLine, DWORD bAllAddresses, DWORD dwAddressID,
+                         LPLINEFORWARDLIST const lpForwardList,
+                         DWORD dwNumRingsNoAnswer, LPHCALL lphConsultCall,
+                         LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineForwardW(HLINE hLine, DWORD bAllAddresses, DWORD dwAddressID,
+                         LPLINEFORWARDLIST const lpForwardList,
+                         DWORD dwNumRingsNoAnswer, LPHCALL lphConsultCall,
+                         LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineGatherDigits(HCALL hCall, DWORD dwDigitModes, LPSTR lpsDigits,
+                             DWORD dwNumDigits, LPCSTR lpszTerminationDigits,
+                             DWORD dwFirstDigitTimeout,
+                             DWORD dwInterDigitTimeout);
+LONG WINAPI lineGatherDigitsA(HCALL hCall, DWORD dwDigitModes, LPSTR lpsDigits,
+                              DWORD dwNumDigits, LPCSTR lpszTerminationDigits,
+                              DWORD dwFirstDigitTimeout,
+                              DWORD dwInterDigitTimeout);
+LONG WINAPI lineGatherDigitsW(HCALL hCall, DWORD dwDigitModes, LPWSTR lpsDigits,
+                              DWORD dwNumDigits, LPCWSTR lpszTerminationDigits,
+                              DWORD dwFirstDigitTimeout,
+                              DWORD dwInterDigitTimeout);
+LONG WINAPI lineGenerateDigits(HCALL hCall, DWORD dwDigitMode,
+                               LPCSTR lpszDigits, DWORD dwDuration);
+LONG WINAPI lineGenerateDigitsA(HCALL hCall, DWORD dwDigitMode,
+                                LPCSTR lpszDigits, DWORD dwDuration);
+LONG WINAPI lineGenerateDigitsW(HCALL hCall, DWORD dwDigitMode,
+                                LPCWSTR lpszDigits, DWORD dwDuration);
+LONG WINAPI lineGenerateTone(HCALL hCall, DWORD dwToneMode, DWORD dwDuration,
+                             DWORD dwNumTones,
+                             LPLINEGENERATETONE const lpTones);
+LONG WINAPI lineGetAddressCaps(HLINEAPP hLineApp, DWORD dwDeviceID,
+                               DWORD dwAddressID, DWORD dwAPIVersion,
+                               DWORD dwExtVersion,
+                               LPLINEADDRESSCAPS lpAddressCaps);
+LONG WINAPI lineGetAddressCapsA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                DWORD dwAddressID, DWORD dwAPIVersion,
+                                DWORD dwExtVersion,
+                                LPLINEADDRESSCAPS lpAddressCaps);
+LONG WINAPI lineGetAddressCapsW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                DWORD dwAddressID, DWORD dwAPIVersion,
+                                DWORD dwExtVersion,
+                                LPLINEADDRESSCAPS lpAddressCaps);
+LONG WINAPI lineGetAddressID(HLINE hLine, LPDWORD lpdwAddressID,
+                             DWORD dwAddressMode, LPCSTR lpsAddress,
+                             DWORD dwSize);
+LONG WINAPI lineGetAddressIDA(HLINE hLine, LPDWORD lpdwAddressID,
+                              DWORD dwAddressMode, LPCSTR lpsAddress,
+                              DWORD dwSize);
+LONG WINAPI lineGetAddressIDW(HLINE hLine, LPDWORD lpdwAddressID,
+                              DWORD dwAddressMode, LPCWSTR lpsAddress,
+                              DWORD dwSize);
+LONG WINAPI lineGetAddressStatus(HLINE hLine, DWORD dwAddressID,
+                                 LPLINEADDRESSSTATUS lpAddressStatus);
+LONG WINAPI lineGetAddressStatusA(HLINE hLine, DWORD dwAddressID,
+                                  LPLINEADDRESSSTATUS lpAddressStatus);
+LONG WINAPI lineGetAddressStatusW(HLINE hLine, DWORD dwAddressID,
+                                  LPLINEADDRESSSTATUS lpAddressStatus);
+LONG WINAPI
+lineGetAgentActivityListA(HLINE hLine, DWORD dwAddressID,
+                          LPLINEAGENTACTIVITYLIST lpAgentActivityList);
+LONG WINAPI
+lineGetAgentActivityListW(HLINE hLine, DWORD dwAddressID,
+                          LPLINEAGENTACTIVITYLIST lpAgentActivityList);
+LONG WINAPI lineGetAgentCapsA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                              DWORD dwAddressID, DWORD dwAppAPIVersion,
+                              LPLINEAGENTCAPS lpAgentCaps);
+LONG WINAPI lineGetAgentCapsW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                              DWORD dwAddressID, DWORD dwAppAPIVersion,
+                              LPLINEAGENTCAPS lpAgentCaps);
+LONG WINAPI lineGetAgentGroupListA(HLINE hLine, DWORD dwAddressID,
+                                   LPLINEAGENTGROUPLIST lpAgentGroupList);
+LONG WINAPI lineGetAgentGroupListW(HLINE hLine, DWORD dwAddressID,
+                                   LPLINEAGENTGROUPLIST lpAgentGroupList);
+LONG WINAPI lineGetAgentInfo(HLINE hLine, HAGENT hAgent,
+                             LPLINEAGENTINFO lpAgentInfo);
+LONG WINAPI lineGetAgentSessionInfo(HLINE hLine, HAGENTSESSION hAgentSession,
+                                    LPLINEAGENTSESSIONINFO lpAgentSessionInfo);
+LONG WINAPI lineGetAgentSessionList(HLINE hLine, HAGENT hAgent,
+                                    LPLINEAGENTSESSIONLIST lpAgentSessionList);
+LONG WINAPI lineGetAgentStatusA(HLINE hLine, DWORD dwAddressID,
+                                LPLINEAGENTSTATUS lpAgentStatus);
+LONG WINAPI lineGetAgentStatusW(HLINE hLine, DWORD dwAddressID,
+                                LPLINEAGENTSTATUS lpAgentStatus);
+LONG WINAPI lineGetAppPriority(LPCSTR lpszAppFilename, DWORD dwMediaMode,
+                               LPLINEEXTENSIONID lpExtensionID,
+                               DWORD dwRequestMode, LPVARSTRING lpExtensionName,
+                               LPDWORD lpdwPriority);
+LONG WINAPI lineGetAppPriorityA(LPCSTR lpszAppFilename, DWORD dwMediaMode,
+                                LPLINEEXTENSIONID lpExtensionID,
+                                DWORD dwRequestMode,
+                                LPVARSTRING lpExtensionName,
+                                LPDWORD lpdwPriority);
+LONG WINAPI lineGetAppPriorityW(LPCWSTR lpszAppFilename, DWORD dwMediaMode,
+                                LPLINEEXTENSIONID lpExtensionID,
+                                DWORD dwRequestMode,
+                                LPVARSTRING lpExtensionName,
+                                LPDWORD lpdwPriority);
+LONG WINAPI lineGetCallInfo(HCALL hCall, LPLINECALLINFO lpCallInfo);
+LONG WINAPI lineGetCallInfoA(HCALL hCall, LPLINECALLINFO lpCallInfo);
+LONG WINAPI lineGetCallInfoW(HCALL hCall, LPLINECALLINFO lpCallInfo);
+LONG WINAPI lineGetCallStatus(HCALL hCall, LPLINECALLSTATUS lpCallStatus);
+LONG WINAPI lineGetConfRelatedCalls(HCALL hCall, LPLINECALLLIST lpCallList);
+LONG WINAPI lineGetCountry(DWORD dwCountryID, DWORD dwAPIVersion,
+                           LPLINECOUNTRYLIST lpLineCountryList);
+LONG WINAPI lineGetCountryA(DWORD dwCountryID, DWORD dwAPIVersion,
+                            LPLINECOUNTRYLIST lpLineCountryList);
+LONG WINAPI lineGetCountryW(DWORD dwCountryID, DWORD dwAPIVersion,
+                            LPLINECOUNTRYLIST lpLineCountryList);
+LONG WINAPI lineGetDevCaps(HLINEAPP hLineApp, DWORD dwDeviceID,
+                           DWORD dwAPIVersion, DWORD dwExtVersion,
+                           LPLINEDEVCAPS lpLineDevCaps);
+LONG WINAPI lineGetDevCapsA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                            DWORD dwAPIVersion, DWORD dwExtVersion,
+                            LPLINEDEVCAPS lpLineDevCaps);
+LONG WINAPI lineGetDevCapsW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                            DWORD dwAPIVersion, DWORD dwExtVersion,
+                            LPLINEDEVCAPS lpLineDevCaps);
+LONG WINAPI lineGetDevConfig(DWORD dwDeviceID, LPVARSTRING lpDeviceConfig,
+                             LPCSTR lpszDeviceClass);
+LONG WINAPI lineGetDevConfigA(DWORD dwDeviceID, LPVARSTRING lpDeviceConfig,
+                              LPCSTR lpszDeviceClass);
+LONG WINAPI lineGetDevConfigW(DWORD dwDeviceID, LPVARSTRING lpDeviceConfig,
+                              LPCWSTR lpszDeviceClass);
+LONG WINAPI lineGetGroupListA(HLINE hLine, LPLINEAGENTGROUPLIST lpGroupList);
+LONG WINAPI lineGetGroupListW(HLINE hLine, LPLINEAGENTGROUPLIST lpGroupList);
+LONG WINAPI lineGetIcon(DWORD dwDeviceID, LPCSTR lpszDeviceClass,
+                        LPHICON lphIcon);
+LONG WINAPI lineGetIconA(DWORD dwDeviceID, LPCSTR lpszDeviceClass,
+                         LPHICON lphIcon);
+LONG WINAPI lineGetIconW(DWORD dwDeviceID, LPCWSTR lpszDeviceClass,
+                         LPHICON lphIcon);
+LONG WINAPI lineGetID(HLINE hLine, DWORD dwAddressID, HCALL hCall,
+                      DWORD dwSelect, LPVARSTRING lpDeviceID,
+                      LPCSTR lpszDeviceClass);
+LONG WINAPI lineGetIDA(HLINE hLine, DWORD dwAddressID, HCALL hCall,
+                       DWORD dwSelect, LPVARSTRING lpDeviceID,
+                       LPCSTR lpszDeviceClass);
+LONG WINAPI lineGetIDW(HLINE hLine, DWORD dwAddressID, HCALL hCall,
+                       DWORD dwSelect, LPVARSTRING lpDeviceID,
+                       LPCWSTR lpszDeviceClass);
+LONG WINAPI lineGetLineDevStatus(HLINE hLine, LPLINEDEVSTATUS lpLineDevStatus);
+LONG WINAPI lineGetLineDevStatusA(HLINE hLine, LPLINEDEVSTATUS lpLineDevStatus);
+LONG WINAPI lineGetLineDevStatusW(HLINE hLine, LPLINEDEVSTATUS lpLineDevStatus);
+LONG WINAPI lineGetMessage(HLINEAPP hLineApp, LPLINEMESSAGE lpMessage,
+                           DWORD dwTimeout);
+LONG WINAPI lineGetNewCalls(HLINE hLine, DWORD dwAddressID, DWORD dwSelect,
+                            LPLINECALLLIST lpCallList);
+LONG WINAPI lineGetNumRings(HLINE hLine, DWORD dwAddressID,
+                            LPDWORD lpdwNumRings);
+LONG WINAPI lineGetProviderList(DWORD dwAPIVersion,
+                                LPLINEPROVIDERLIST lpProviderList);
+LONG WINAPI lineGetProviderListA(DWORD dwAPIVersion,
+                                 LPLINEPROVIDERLIST lpProviderList);
+LONG WINAPI lineGetProviderListW(DWORD dwAPIVersion,
+                                 LPLINEPROVIDERLIST lpProviderList);
+LONG WINAPI lineGetProxyStatus(HLINEAPP hLineApp, DWORD dwDeviceID,
+                               DWORD dwAppAPIVersion,
+                               LPLINEPROXYREQUESTLIST lpLineProxyReqestList);
+LONG WINAPI lineGetQueueInfo(HLINE hLine, DWORD dwQueueID,
+                             LPLINEQUEUEINFO lpLineQueueInfo);
+LONG WINAPI lineGetQueueListA(HLINE hLine, LPGUID lpGroupID,
+                              LPLINEQUEUELIST lpQueueList);
+LONG WINAPI lineGetQueueListW(HLINE hLine, LPGUID lpGroupID,
+                              LPLINEQUEUELIST lpQueueList);
+LONG WINAPI lineGetRequest(HLINEAPP hLineApp, DWORD dwRequestMode,
+                           LPVOID lpRequestBuffer);
+LONG WINAPI lineGetRequestA(HLINEAPP hLineApp, DWORD dwRequestMode,
+                            LPVOID lpRequestBuffer);
+LONG WINAPI lineGetRequestW(HLINEAPP hLineApp, DWORD dwRequestMode,
+                            LPVOID lpRequestBuffer);
+LONG WINAPI lineGetStatusMessages(HLINE hLine, LPDWORD lpdwLineStates,
+                                  LPDWORD lpdwAddressStates);
+LONG WINAPI lineGetTranslateCaps(HLINEAPP hLineApp, DWORD dwAPIVersion,
+                                 LPLINETRANSLATECAPS lpTranslateCaps);
+LONG WINAPI lineGetTranslateCapsA(HLINEAPP hLineApp, DWORD dwAPIVersion,
+                                  LPLINETRANSLATECAPS lpTranslateCaps);
+LONG WINAPI lineGetTranslateCapsW(HLINEAPP hLineApp, DWORD dwAPIVersion,
+                                  LPLINETRANSLATECAPS lpTranslateCaps);
+LONG WINAPI lineHandoff(HCALL hCall, LPCSTR lpszFileName, DWORD dwMediaMode);
+LONG WINAPI lineHandoffA(HCALL hCall, LPCSTR lpszFileName, DWORD dwMediaMode);
+LONG WINAPI lineHandoffW(HCALL hCall, LPCWSTR lpszFileName, DWORD dwMediaMode);
+LONG WINAPI lineHold(HCALL hCall);
+LONG WINAPI lineInitialize(LPHLINEAPP lphLineApp, HINSTANCE hInstance,
+                           LINECALLBACK lpfnCallback, LPCSTR lpszAppName,
+                           LPDWORD lpdwNumDevs);
+LONG WINAPI lineInitializeExA(
+    LPHLINEAPP lphLineApp, HINSTANCE hInstance, LINECALLBACK lpfnCallback,
+    LPCSTR lpszFriendlyAppName, LPDWORD lpdwNumDevs, LPDWORD lpdwAPIVersion,
+    LPLINEINITIALIZEEXPARAMS lpLineInitializeExParams);
+LONG WINAPI lineInitializeExW(
+    LPHLINEAPP lphLineApp, HINSTANCE hInstance, LINECALLBACK lpfnCallback,
+    LPCWSTR lpszFriendlyAppName, LPDWORD lpdwNumDevs, LPDWORD lpdwAPIVersion,
+    LPLINEINITIALIZEEXPARAMS lpLineInitializeExParams);
+LONG WINAPI lineMakeCall(HLINE hLine, LPHCALL lphCall, LPCSTR lpszDestAddress,
+                         DWORD dwCountryCode,
+                         LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineMakeCallA(HLINE hLine, LPHCALL lphCall, LPCSTR lpszDestAddress,
+                          DWORD dwCountryCode,
+                          LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineMakeCallW(HLINE hLine, LPHCALL lphCall, LPCWSTR lpszDestAddress,
+                          DWORD dwCountryCode,
+                          LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineMonitorDigits(HCALL hCall, DWORD dwDigitModes);
+LONG WINAPI lineMonitorMedia(HCALL hCall, DWORD dwMediaModes);
+LONG WINAPI lineMonitorTones(HCALL hCall, LPLINEMONITORTONE const lpToneList,
+                             DWORD dwNumEntries);
+LONG WINAPI lineNegotiateAPIVersion(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                    DWORD dwAPILowVersion,
+                                    DWORD dwAPIHighVersion,
+                                    LPDWORD lpdwAPIVersion,
+                                    LPLINEEXTENSIONID lpExtensionID);
+LONG WINAPI lineNegotiateExtVersion(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                    DWORD dwAPIVersion, DWORD dwExtLowVersion,
+                                    DWORD dwExtHighVersion,
+                                    LPDWORD lpdwExtVersion);
+LONG WINAPI lineOpen(HLINEAPP hLineApp, DWORD dwDeviceID, LPHLINE lphLine,
+                     DWORD dwAPIVersion, DWORD dwExtVersion,
+                     DWORD_PTR dwCallbackInstance, DWORD dwPrivileges,
+                     DWORD dwMediaModes, LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineOpenA(HLINEAPP hLineApp, DWORD dwDeviceID, LPHLINE lphLine,
+                      DWORD dwAPIVersion, DWORD dwExtVersion,
+                      DWORD_PTR dwCallbackInstance, DWORD dwPrivileges,
+                      DWORD dwMediaModes, LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineOpenW(HLINEAPP hLineApp, DWORD dwDeviceID, LPHLINE lphLine,
+                      DWORD dwAPIVersion, DWORD dwExtVersion,
+                      DWORD_PTR dwCallbackInstance, DWORD dwPrivileges,
+                      DWORD dwMediaModes, LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI linePark(HCALL hCall, DWORD dwParkMode, LPCSTR lpszDirAddress,
+                     LPVARSTRING lpNonDirAddress);
+LONG WINAPI lineParkA(HCALL hCall, DWORD dwParkMode, LPCSTR lpszDirAddress,
+                      LPVARSTRING lpNonDirAddress);
+LONG WINAPI lineParkW(HCALL hCall, DWORD dwParkMode, LPCWSTR lpszDirAddress,
+                      LPVARSTRING lpNonDirAddress);
+LONG WINAPI linePickup(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                       LPCSTR lpszDestAddress, LPCSTR lpszGroupID);
+LONG WINAPI linePickupA(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                        LPCSTR lpszDestAddress, LPCSTR lpszGroupID);
+LONG WINAPI linePickupW(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                        LPCWSTR lpszDestAddress, LPCWSTR lpszGroupID);
+LONG WINAPI linePrepareAddToConference(HCALL hConfCall, LPHCALL lphConsultCall,
+                                       LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI linePrepareAddToConferenceA(HCALL hConfCall, LPHCALL lphConsultCall,
+                                        LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI linePrepareAddToConferenceW(HCALL hConfCall, LPHCALL lphConsultCall,
+                                        LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineProxyMessage(HLINE hLine, HCALL hCall, DWORD dwMsg,
+                             DWORD dwParam1, DWORD dwParam2, DWORD dwParam3);
+LONG WINAPI lineProxyResponse(HLINE hLine, LPLINEPROXYREQUEST lpProxyRequest,
+                              DWORD dwResult);
+LONG WINAPI lineRedirect(HCALL hCall, LPCSTR lpszDestAddress,
+                         DWORD dwCountryCode);
+LONG WINAPI lineRedirectA(HCALL hCall, LPCSTR lpszDestAddress,
+                          DWORD dwCountryCode);
+LONG WINAPI lineRedirectW(HCALL hCall, LPCWSTR lpszDestAddress,
+                          DWORD dwCountryCode);
+LONG WINAPI lineRegisterRequestRecipient(HLINEAPP hLineApp,
+                                         DWORD dwRegistrationInstance,
+                                         DWORD dwRequestMode, DWORD bEnable);
+LONG WINAPI lineReleaseUserUserInfo(HCALL hCall);
+LONG WINAPI lineRemoveFromConference(HCALL hCall);
+LONG WINAPI lineRemoveProvider(DWORD dwPermanentProviderID, HWND hwndOwner);
+LONG WINAPI lineSecureCall(HCALL hCall);
+LONG WINAPI lineSendUserUserInfo(HCALL hCall, LPCSTR lpsUserUserInfo,
+                                 DWORD dwSize);
+LONG WINAPI lineSetAgentActivity(HLINE hLine, DWORD dwAddressID,
+                                 DWORD dwActivityID);
+LONG WINAPI lineSetAgentGroup(HLINE hLine, DWORD dwAddressID,
+                              LPLINEAGENTGROUPLIST lpAgentGroupList);
+LONG WINAPI lineSetAgentMeasurementPeriod(HLINE hLine, HAGENT hAgent,
+                                          DWORD dwMeasurementPeriod);
+LONG WINAPI lineSetAgentSessionState(HLINE hLine, HAGENTSESSION hAgentSession,
+                                     DWORD dwAgentSessionState,
+                                     DWORD dwNextAgentSessionState);
+LONG WINAPI lineSetAgentStateEx(HLINE hLine, HAGENT hAgent, DWORD dwAgentState,
+                                DWORD dwNextAgentState);
+LONG WINAPI lineSetAgentState(HLINE hLine, DWORD dwAddressID,
+                              DWORD dwAgentState, DWORD dwNextAgentState);
+LONG WINAPI lineSetAppPriority(LPCSTR lpszAppFilename, DWORD dwMediaMode,
+                               LPLINEEXTENSIONID lpExtensionID,
+                               DWORD dwRequestMode, LPCSTR lpszExtensionName,
+                               DWORD dwPriority);
+LONG WINAPI lineSetAppPriorityA(LPCSTR lpszAppFilename, DWORD dwMediaMode,
+                                LPLINEEXTENSIONID lpExtensionID,
+                                DWORD dwRequestMode, LPCSTR lpszExtensionName,
+                                DWORD dwPriority);
+LONG WINAPI lineSetAppPriorityW(LPCWSTR lpszAppFilename, DWORD dwMediaMode,
+                                LPLINEEXTENSIONID lpExtensionID,
+                                DWORD dwRequestMode, LPCWSTR lpszExtensionName,
+                                DWORD dwPriority);
+LONG WINAPI lineSetAppSpecific(HCALL hCall, DWORD dwAppSpecific);
+LONG WINAPI lineSetCallData(HCALL hCall, LPVOID lpCallData, DWORD dwSize);
+LONG WINAPI lineSetCallParams(HCALL hCall, DWORD dwBearerMode, DWORD dwMinRate,
+                              DWORD dwMaxRate,
+                              LPLINEDIALPARAMS const lpDialParams);
+LONG WINAPI lineSetCallPrivilege(HCALL hCall, DWORD dwCallPrivilege);
+LONG WINAPI lineSetCallQualityOfService(HCALL hCall, LPVOID lpSendingFlowspec,
+                                        DWORD dwSendingFlowspecSize,
+                                        LPVOID lpReceivingFlowspec,
+                                        DWORD dwReceivingFlowspecSize);
+LONG WINAPI lineSetCallTreatment(HCALL hCall, DWORD dwTreatment);
+LONG WINAPI lineSetCurrentLocation(HLINEAPP hLineApp, DWORD dwLocation);
+LONG WINAPI lineSetDevConfig(DWORD dwDeviceID, LPVOID const lpDeviceConfig,
+                             DWORD dwSize, LPCSTR lpszDeviceClass);
+LONG WINAPI lineSetDevConfigA(DWORD dwDeviceID, LPVOID const lpDeviceConfig,
+                              DWORD dwSize, LPCSTR lpszDeviceClass);
+LONG WINAPI lineSetDevConfigW(DWORD dwDeviceID, LPVOID const lpDeviceConfig,
+                              DWORD dwSize, LPCWSTR lpszDeviceClass);
+LONG WINAPI lineSetLineDevStatus(HLINE hLine, DWORD dwStatusToChange,
+                                 DWORD fStatus);
+LONG WINAPI lineSetMediaControl(
+    HLINE hLine, DWORD dwAddressID, HCALL hCall, DWORD dwSelect,
+    LPLINEMEDIACONTROLDIGIT const lpDigitList, DWORD dwDigitNumEntries,
+    LPLINEMEDIACONTROLMEDIA const lpMediaList, DWORD dwMediaNumEntries,
+    LPLINEMEDIACONTROLTONE const lpToneList, DWORD dwToneNumEntries,
+    LPLINEMEDIACONTROLCALLSTATE const lpCallStateList,
+    DWORD dwCallStateNumEntries);
+LONG WINAPI lineSetMediaMode(HCALL hCall, DWORD dwMediaModes);
+LONG WINAPI lineSetQueueMeasurementPeriod(HLINE hLine, DWORD dwQueueID,
+                                          DWORD dwMeasurementPeriod);
+LONG WINAPI lineSetNumRings(HLINE hLine, DWORD dwAddressID, DWORD dwNumRings);
+LONG WINAPI lineSetStatusMessages(HLINE hLine, DWORD dwLineStates,
+                                  DWORD dwAddressStates);
+LONG WINAPI lineSetTerminal(HLINE hLine, DWORD dwAddressID, HCALL hCall,
+                            DWORD dwSelect, DWORD dwTerminalModes,
+                            DWORD dwTerminalID, DWORD bEnable);
+LONG WINAPI lineSetTollList(HLINEAPP hLineApp, DWORD dwDeviceID,
+                            LPCSTR lpszAddressIn, DWORD dwTollListOption);
+LONG WINAPI lineSetTollListA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                             LPCSTR lpszAddressIn, DWORD dwTollListOption);
+LONG WINAPI lineSetTollListW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                             LPCWSTR lpszAddressInW, DWORD dwTollListOption);
+LONG WINAPI lineSetupConference(HCALL hCall, HLINE hLine, LPHCALL lphConfCall,
+                                LPHCALL lphConsultCall, DWORD dwNumParties,
+                                LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineSetupConferenceA(HCALL hCall, HLINE hLine, LPHCALL lphConfCall,
+                                 LPHCALL lphConsultCall, DWORD dwNumParties,
+                                 LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineSetupConferenceW(HCALL hCall, HLINE hLine, LPHCALL lphConfCall,
+                                 LPHCALL lphConsultCall, DWORD dwNumParties,
+                                 LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineSetupTransfer(HCALL hCall, LPHCALL lphConsultCall,
+                              LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineSetupTransferA(HCALL hCall, LPHCALL lphConsultCall,
+                               LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineSetupTransferW(HCALL hCall, LPHCALL lphConsultCall,
+                               LPLINECALLPARAMS const lpCallParams);
+LONG WINAPI lineShutdown(HLINEAPP hLineApp);
+LONG WINAPI lineSwapHold(HCALL hActiveCall, HCALL hHeldCall);
+LONG WINAPI lineTranslateAddress(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                 DWORD dwAPIVersion, LPCSTR lpszAddressIn,
+                                 DWORD dwCard, DWORD dwTranslateOptions,
+                                 LPLINETRANSLATEOUTPUT lpTranslateOutput);
+LONG WINAPI lineTranslateAddressA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                  DWORD dwAPIVersion, LPCSTR lpszAddressIn,
+                                  DWORD dwCard, DWORD dwTranslateOptions,
+                                  LPLINETRANSLATEOUTPUT lpTranslateOutput);
+LONG WINAPI lineTranslateAddressW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                  DWORD dwAPIVersion, LPCWSTR lpszAddressIn,
+                                  DWORD dwCard, DWORD dwTranslateOptions,
+                                  LPLINETRANSLATEOUTPUT lpTranslateOutput);
+LONG WINAPI lineTranslateDialog(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                DWORD dwAPIVersion, HWND hwndOwner,
+                                LPCSTR lpszAddressIn);
+LONG WINAPI lineTranslateDialogA(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                 DWORD dwAPIVersion, HWND hwndOwner,
+                                 LPCSTR lpszAddressIn);
+LONG WINAPI lineTranslateDialogW(HLINEAPP hLineApp, DWORD dwDeviceID,
+                                 DWORD dwAPIVersion, HWND hwndOwner,
+                                 LPCWSTR lpszAddressIn);
+LONG WINAPI lineUncompleteCall(HLINE hLine, DWORD dwCompletionID);
+LONG WINAPI lineUnhold(HCALL hCall);
+LONG WINAPI lineUnpark(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                       LPCSTR lpszDestAddress);
+LONG WINAPI lineUnparkA(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                        LPCSTR lpszDestAddress);
+LONG WINAPI lineUnparkW(HLINE hLine, DWORD dwAddressID, LPHCALL lphCall,
+                        LPCWSTR lpszDestAddress);
+LONG WINAPI phoneClose(HPHONE hPhone);
+LONG WINAPI phoneConfigDialog(DWORD dwDeviceID, HWND hwndOwner,
+                              LPCSTR lpszDeviceClass);
+LONG WINAPI phoneConfigDialogA(DWORD dwDeviceID, HWND hwndOwner,
+                               LPCSTR lpszDeviceClass);
+LONG WINAPI phoneConfigDialogW(DWORD dwDeviceID, HWND hwndOwner,
+                               LPCWSTR lpszDeviceClass);
+LONG WINAPI phoneDevSpecific(HPHONE hPhone, LPVOID lpParams, DWORD dwSize);
+LONG WINAPI phoneGetButtonInfo(HPHONE hPhone, DWORD dwButtonLampID,
+                               LPPHONEBUTTONINFO lpButtonInfo);
+LONG WINAPI phoneGetButtonInfoA(HPHONE hPhone, DWORD dwButtonLampID,
+                                LPPHONEBUTTONINFO lpButtonInfo);
+LONG WINAPI phoneGetButtonInfoW(HPHONE hPhone, DWORD dwButtonLampID,
+                                LPPHONEBUTTONINFO lpButtonInfo);
+LONG WINAPI phoneGetData(HPHONE hPhone, DWORD dwDataID, LPVOID lpData,
+                         DWORD dwSize);
+LONG WINAPI phoneGetDevCaps(HPHONEAPP hPhoneApp, DWORD dwDeviceID,
+                            DWORD dwAPIVersion, DWORD dwExtVersion,
+                            LPPHONECAPS lpPhoneCaps);
+LONG WINAPI phoneGetDevCapsA(HPHONEAPP hPhoneApp, DWORD dwDeviceID,
+                             DWORD dwAPIVersion, DWORD dwExtVersion,
+                             LPPHONECAPS lpPhoneCaps);
+LONG WINAPI phoneGetDevCapsW(HPHONEAPP hPhoneApp, DWORD dwDeviceID,
+                             DWORD dwAPIVersion, DWORD dwExtVersion,
+                             LPPHONECAPS lpPhoneCaps);
+LONG WINAPI phoneGetDisplay(HPHONE hPhone, LPVARSTRING lpDisplay);
+LONG WINAPI phoneGetGain(HPHONE hPhone, DWORD dwHookSwitchDev,
+                         LPDWORD lpdwGain);
+LONG WINAPI phoneGetHookSwitch(HPHONE hPhone, LPDWORD lpdwHookSwitchDevs);
+LONG WINAPI phoneGetIcon(DWORD dwDeviceID, LPCSTR lpszDeviceClass,
+                         LPHICON lphIcon);
+LONG WINAPI phoneGetIconA(DWORD dwDeviceID, LPCSTR lpszDeviceClass,
+                          LPHICON lphIcon);
+LONG WINAPI phoneGetIconW(DWORD dwDeviceID, LPCWSTR lpszDeviceClass,
+                          LPHICON lphIcon);
+LONG WINAPI phoneGetID(HPHONE hPhone, LPVARSTRING lpDeviceID,
+                       LPCSTR lpszDeviceClass);
+LONG WINAPI phoneGetIDA(HPHONE hPhone, LPVARSTRING lpDeviceID,
+                        LPCSTR lpszDeviceClass);
+LONG WINAPI phoneGetIDW(HPHONE hPhone, LPVARSTRING lpDeviceID,
+                        LPCWSTR lpszDeviceClass);
+LONG WINAPI phoneGetLamp(HPHONE hPhone, DWORD dwButtonLampID,
+                         LPDWORD lpdwLampMode);
+LONG WINAPI phoneGetMessage(HPHONEAPP hPhoneApp, LPPHONEMESSAGE lpMessage,
+                            DWORD dwTimeout);
+LONG WINAPI phoneGetRing(HPHONE hPhone, LPDWORD lpdwRingMode,
+                         LPDWORD lpdwVolume);
+LONG WINAPI phoneGetStatus(HPHONE hPhone, LPPHONESTATUS lpPhoneStatus);
+LONG WINAPI phoneGetStatusA(HPHONE hPhone, LPPHONESTATUS lpPhoneStatus);
+LONG WINAPI phoneGetStatusW(HPHONE hPhone, LPPHONESTATUS lpPhoneStatus);
+LONG WINAPI phoneGetStatusMessages(HPHONE hPhone, LPDWORD lpdwPhoneStates,
+                                   LPDWORD lpdwButtonModes,
+                                   LPDWORD lpdwButtonStates);
+LONG WINAPI phoneGetVolume(HPHONE hPhone, DWORD dwHookSwitchDev,
+                           LPDWORD lpdwVolume);
+LONG WINAPI phoneInitialize(LPHPHONEAPP lphPhoneApp, HINSTANCE hInstance,
+                            PHONECALLBACK lpfnCallback, LPCSTR lpszAppName,
+                            LPDWORD lpdwNumDevs);
+LONG WINAPI phoneInitializeExA(
+    LPHPHONEAPP lphPhoneApp, HINSTANCE hInstance, PHONECALLBACK lpfnCallback,
+    LPCSTR lpszFriendlyAppName, LPDWORD lpdwNumDevs, LPDWORD lpdwAPIVersion,
+    LPPHONEINITIALIZEEXPARAMS lpPhoneInitializeExParams);
+LONG WINAPI phoneInitializeExW(
+    LPHPHONEAPP lphPhoneApp, HINSTANCE hInstance, PHONECALLBACK lpfnCallback,
+    LPCWSTR lpszFriendlyAppName, LPDWORD lpdwNumDevs, LPDWORD lpdwAPIVersion,
+    LPPHONEINITIALIZEEXPARAMS lpPhoneInitializeExParams);
+LONG WINAPI phoneNegotiateAPIVersion(HPHONEAPP hPhoneApp, DWORD dwDeviceID,
+                                     DWORD dwAPILowVersion,
+                                     DWORD dwAPIHighVersion,
+                                     LPDWORD lpdwAPIVersion,
+                                     LPPHONEEXTENSIONID lpExtensionID);
+LONG WINAPI phoneNegotiateExtVersion(HPHONEAPP hPhoneApp, DWORD dwDeviceID,
+                                     DWORD dwAPIVersion, DWORD dwExtLowVersion,
+                                     DWORD dwExtHighVersion,
+                                     LPDWORD lpdwExtVersion);
+LONG WINAPI phoneOpen(HPHONEAPP hPhoneApp, DWORD dwDeviceID, LPHPHONE lphPhone,
+                      DWORD dwAPIVersion, DWORD dwExtVersion,
+                      DWORD_PTR dwCallbackInstance, DWORD dwPrivilege);
+LONG WINAPI phoneSetButtonInfo(HPHONE hPhone, DWORD dwButtonLampID,
+                               LPPHONEBUTTONINFO const lpButtonInfo);
+LONG WINAPI phoneSetButtonInfoA(HPHONE hPhone, DWORD dwButtonLampID,
+                                LPPHONEBUTTONINFO const lpButtonInfo);
+LONG WINAPI phoneSetButtonInfoW(HPHONE hPhone, DWORD dwButtonLampID,
+                                LPPHONEBUTTONINFO const lpButtonInfo);
+LONG WINAPI phoneSetData(HPHONE hPhone, DWORD dwDataID, LPVOID const lpData,
+                         DWORD dwSize);
+LONG WINAPI phoneSetDisplay(HPHONE hPhone, DWORD dwRow, DWORD dwColumn,
+                            LPCSTR lpsDisplay, DWORD dwSize);
+LONG WINAPI phoneSetGain(HPHONE hPhone, DWORD dwHookSwitchDev, DWORD dwGain);
+LONG WINAPI phoneSetHookSwitch(HPHONE hPhone, DWORD dwHookSwitchDevs,
+                               DWORD dwHookSwitchMode);
+LONG WINAPI phoneSetLamp(HPHONE hPhone, DWORD dwButtonLampID, DWORD dwLampMode);
+LONG WINAPI phoneSetRing(HPHONE hPhone, DWORD dwRingMode, DWORD dwVolume);
+LONG WINAPI phoneSetStatusMessages(HPHONE hPhone, DWORD dwPhoneStates,
+                                   DWORD dwButtonModes, DWORD dwButtonStates);
+LONG WINAPI phoneSetVolume(HPHONE hPhone, DWORD dwHookSwitchDev,
+                           DWORD dwVolume);
+LONG WINAPI phoneShutdown(HPHONEAPP hPhoneApp);
+LONG WINAPI tapiGetLocationInfo(LPSTR lpszCountryCode, LPSTR lpszCityCode);
+LONG WINAPI tapiGetLocationInfoA(LPSTR lpszCountryCode, LPSTR lpszCityCode);
+LONG WINAPI tapiGetLocationInfoW(LPWSTR lpszCountryCodeW, LPWSTR lpszCityCodeW);
+LONG WINAPI tapiRequestDrop(HWND hwnd, WPARAM wRequestID);
+LONG WINAPI tapiRequestMakeCall(LPCSTR lpszDestAddress, LPCSTR lpszAppName,
+                                LPCSTR lpszCalledParty, LPCSTR lpszComment);
+LONG WINAPI tapiRequestMakeCallA(LPCSTR lpszDestAddress, LPCSTR lpszAppName,
+                                 LPCSTR lpszCalledParty, LPCSTR lpszComment);
+LONG WINAPI tapiRequestMakeCallW(LPCWSTR lpszDestAddress, LPCWSTR lpszAppName,
+                                 LPCWSTR lpszCalledParty, LPCWSTR lpszComment);
+LONG WINAPI tapiRequestMediaCall(HWND hwnd, WPARAM wRequestID,
+                                 LPCSTR lpszDeviceClass, LPCSTR lpDeviceID,
+                                 DWORD dwSize, DWORD dwSecure,
+                                 LPCSTR lpszDestAddress, LPCSTR lpszAppName,
+                                 LPCSTR lpszCalledParty, LPCSTR lpszComment);
+LONG WINAPI tapiRequestMediaCallA(HWND hwnd, WPARAM wRequestID,
+                                  LPCSTR lpszDeviceClass, LPCSTR lpDeviceID,
+                                  DWORD dwSize, DWORD dwSecure,
+                                  LPCSTR lpszDestAddress, LPCSTR lpszAppName,
+                                  LPCSTR lpszCalledParty, LPCSTR lpszComment);
+LONG WINAPI tapiRequestMediaCallW(HWND hwnd, WPARAM wRequestID,
+                                  LPCWSTR lpszDeviceClass, LPCWSTR lpDeviceID,
+                                  DWORD dwSize, DWORD dwSecure,
+                                  LPCWSTR lpszDestAddress, LPCWSTR lpszAppName,
+                                  LPCWSTR lpszCalledParty, LPCWSTR lpszComment);
 #if defined(UNICODE) || (TAPI_CURRENT_VERSION >= 0x00020000)
 #define lineAddProvider __MINGW_NAME_AW(lineAddProvider)
 #define lineBlindTransfer __MINGW_NAME_AW(lineBlindTransfer)
@@ -2281,16 +2434,13 @@ extern "C" {
 #define lineTranslateAddress __MINGW_NAME_AW(lineTranslateAddress)
 #define lineTranslateDialog __MINGW_NAME_AW(lineTranslateDialog)
 #define lineUnpark __MINGW_NAME_AW(lineUnpark)
-
 #define phoneConfigDialog __MINGW_NAME_AW(phoneConfigDialog)
 #define phoneGetIcon __MINGW_NAME_AW(phoneGetIcon)
 #define phoneGetID __MINGW_NAME_AW(phoneGetID)
-
 #define tapiGetLocationInfo __MINGW_NAME_AW(tapiGetLocationInfo)
 #define tapiRequestMakeCall __MINGW_NAME_AW(tapiRequestMakeCall)
 #define tapiRequestMediaCall __MINGW_NAME_AW(tapiRequestMediaCall)
 #endif /* UNICODE || TAPI2 */
-
 #define lineCreateAgent __MINGW_NAME_AW(lineCreateAgent)
 #define lineCreateAgent __MINGW_NAME_AW(lineCreateAgent)
 #define lineForward __MINGW_NAME_AW(lineForward)
@@ -2314,18 +2464,19 @@ extern "C" {
 #define linePrepareAddToConference __MINGW_NAME_AW(linePrepareAddToConference)
 #define lineSetupConference __MINGW_NAME_AW(lineSetupConference)
 #define lineSetupTransfer __MINGW_NAME_AW(lineSetupTransfer)
-
 #define phoneGetButtonInfo __MINGW_NAME_AW(phoneGetButtonInfo)
 #define phoneGetDevCaps __MINGW_NAME_AW(phoneGetDevCaps)
 #define phoneGetStatus __MINGW_NAME_AW(phoneGetStatus)
 #define phoneInitializeEx __MINGW_NAME_AW(phoneInitializeEx)
 #define phoneSetButtonInfo __MINGW_NAME_AW(phoneSetButtonInfo)
-
-#define TAPIERROR_FORMATMESSAGE(__ErrCode__) (((__ErrCode__) > 0xFFFF0000) ? ((__ErrCode__) & 0x0000FFFF) : (((__ErrCode__) & 0x10000000) ? ((__ErrCode__) - 0x90000000 + 0xF000) : ((__ErrCode__) - 0x80000000 + 0xE000)))
-
+#define TAPIERROR_FORMATMESSAGE(__ErrCode__)                                   \
+  (((__ErrCode__) > 0xFFFF0000)                                                \
+       ? ((__ErrCode__) & 0x0000FFFF)                                          \
+       : (((__ErrCode__) & 0x10000000)                                         \
+              ? ((__ErrCode__) - 0x90000000 + 0xF000)                          \
+              : ((__ErrCode__) - 0x80000000 + 0xE000)))
 #ifdef __cplusplus
 }
 #endif
-
 #pragma pack()
 #endif

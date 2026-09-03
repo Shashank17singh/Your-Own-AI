@@ -15,55 +15,42 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef _MPEG2BITS_H_
 #define _MPEG2BITS_H_
-
 #pragma pack(push)
 #pragma pack(1)
-
 #if defined(__midl) || defined(__WIDL__)
-typedef struct
-{
-    WORD Bits;
+typedef struct {
+  WORD Bits;
 } PID_BITS_MIDL;
 #else
-typedef struct
-{
-    WORD Reserved : 3;
-    WORD ProgramId : 13;
+typedef struct {
+  WORD Reserved : 3;
+  WORD ProgramId : 13;
 } PID_BITS, *PPID_BITS;
 #endif
-
 #if defined(__midl) || defined(__WIDL__)
-typedef struct
-{
-    WORD Bits;
+typedef struct {
+  WORD Bits;
 } MPEG_HEADER_BITS_MIDL;
 #else
-typedef struct
-{
-    WORD SectionLength : 12;
-    WORD Reserved : 2;
-    WORD PrivateIndicator : 1;
-    WORD SectionSyntaxIndicator : 1;
+typedef struct {
+  WORD SectionLength : 12;
+  WORD Reserved : 2;
+  WORD PrivateIndicator : 1;
+  WORD SectionSyntaxIndicator : 1;
 } MPEG_HEADER_BITS, *PMPEG_HEADER_BITS;
 #endif
-
 #if defined(__midl) || defined(__WIDL__)
-typedef struct
-{
-    BYTE Bits;
+typedef struct {
+  BYTE Bits;
 } MPEG_HEADER_VERSION_BITS_MIDL;
 #else
-typedef struct
-{
-    BYTE CurrentNextIndicator : 1;
-    BYTE VersionNumber : 5;
-    BYTE Reserved : 2;
+typedef struct {
+  BYTE CurrentNextIndicator : 1;
+  BYTE VersionNumber : 5;
+  BYTE Reserved : 2;
 } MPEG_HEADER_VERSION_BITS, *PMPEG_HEADER_VERSION_BITS;
 #endif
-
 #pragma pack(pop)
-
 #endif /* _MPEG2BITS_H_ */

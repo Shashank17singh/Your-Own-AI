@@ -33,10 +33,10 @@
 #ifndef _GLIBCXX_PARALLEL_PARALLEL_H
 #define _GLIBCXX_PARALLEL_PARALLEL_H 1
 
-#include <parallel/features.h>
 #include <parallel/compiletime_settings.h>
-#include <parallel/types.h>
-#include <parallel/tags.h>
+#include <parallel/features.h>
 #include <parallel/settings.h>
+#include <parallel/tags.h>
+#include <parallel/types.h>
 
 #endif /* _GLIBCXX_PARALLEL_PARALLEL_H */

@@ -28,22 +28,20 @@ namespace diagnostics {
    (e.g. "3 errors and 1 warning"), for use by both diagnostics::context
    and by diagnostics::buffer.  */
 
-struct counters
-{
-  counters ();
+struct counters {
+  counters();
 
-  void dump (FILE *out, int indent) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  void dump(FILE *out, int indent) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
-  int get_count (enum kind kind) const
-  {
-    return m_count_for_kind[static_cast<size_t> (kind)];
+  int get_count(enum kind kind) const {
+    return m_count_for_kind[static_cast<size_t>(kind)];
   }
 
-  void move_to (counters &dest);
-  void clear ();
+  void move_to(counters &dest);
+  void clear();
 
-  int m_count_for_kind[static_cast<size_t> (kind::last_diagnostic_kind)];
+  int m_count_for_kind[static_cast<size_t>(kind::last_diagnostic_kind)];
 };
 
 } // namespace diagnostics

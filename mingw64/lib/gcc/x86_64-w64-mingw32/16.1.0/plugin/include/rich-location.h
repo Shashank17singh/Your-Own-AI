@@ -25,7 +25,9 @@ along with this program; see the file COPYING3.  If not see
 #include "label-text.h"
 
 class range_label;
-namespace diagnostics { class label_effects; }
+namespace diagnostics {
+class label_effects;
+}
 
 /* A hint to diagnostic_show_locus on how to print a source range within a
    rich_location.
@@ -41,8 +43,7 @@ namespace diagnostics { class label_effects; }
 
    where "1" and "2" are notionally carets.  */
 
-enum range_display_kind
-{
+enum range_display_kind {
   /* Show the pertinent source line(s), the caret, and underline(s).  */
   SHOW_RANGE_WITH_CARET,
 
@@ -61,8 +62,7 @@ enum range_display_kind
    the caret potentially flagged for display, and an optional
    label.  */
 
-struct location_range
-{
+struct location_range {
   location_t m_loc;
 
   enum range_display_kind m_range_display_kind;
@@ -85,22 +85,20 @@ struct location_range
 
    Dynamic allocation is not performed unless it's needed.  */
 
-template <typename T, int NUM_EMBEDDED>
-class semi_embedded_vec
-{
- public:
-  semi_embedded_vec ();
-  ~semi_embedded_vec ();
-  semi_embedded_vec (const semi_embedded_vec &other);
+template <typename T, int NUM_EMBEDDED> class semi_embedded_vec {
+public:
+  semi_embedded_vec();
+  ~semi_embedded_vec();
+  semi_embedded_vec(const semi_embedded_vec &other);
 
-  unsigned int count () const { return m_num; }
-  T& operator[] (int idx);
-  const T& operator[] (int idx) const;
+  unsigned int count() const { return m_num; }
+  T &operator[](int idx);
+  const T &operator[](int idx) const;
 
-  void push (const T&);
-  void truncate (int len);
+  void push(const T &);
+  void truncate(int len);
 
- private:
+private:
   int m_num;
   T m_embedded[NUM_EMBEDDED];
   int m_alloc;
@@ -111,109 +109,94 @@ class semi_embedded_vec
    is done.  */
 
 template <typename T, int NUM_EMBEDDED>
-semi_embedded_vec<T, NUM_EMBEDDED>::semi_embedded_vec ()
-: m_num (0), m_alloc (0), m_extra (NULL)
-{
-}
+semi_embedded_vec<T, NUM_EMBEDDED>::semi_embedded_vec()
+    : m_num(0), m_alloc(0), m_extra(NULL) {}
 
 /* Copy constructor for semi_embedded_vec.  */
 
 template <typename T, int NUM_EMBEDDED>
-semi_embedded_vec<T, NUM_EMBEDDED>::semi_embedded_vec (const semi_embedded_vec &other)
-: m_num (0),
-  m_alloc (other.m_alloc),
-  m_extra (nullptr)
-{
+semi_embedded_vec<T, NUM_EMBEDDED>::semi_embedded_vec(
+    const semi_embedded_vec &other)
+    : m_num(0), m_alloc(other.m_alloc), m_extra(nullptr) {
   if (other.m_extra)
-    m_extra = XNEWVEC (T, m_alloc);
+    m_extra = XNEWVEC(T, m_alloc);
 
   for (int i = 0; i < other.m_num; i++)
-    push (other[i]);
+    push(other[i]);
 }
 
 /* semi_embedded_vec's dtor.  Release any dynamically-allocated memory.  */
 
 template <typename T, int NUM_EMBEDDED>
-semi_embedded_vec<T, NUM_EMBEDDED>::~semi_embedded_vec ()
-{
-  XDELETEVEC (m_extra);
+semi_embedded_vec<T, NUM_EMBEDDED>::~semi_embedded_vec() {
+  XDELETEVEC(m_extra);
 }
 
 /* Look up element IDX, mutably.  */
 
 template <typename T, int NUM_EMBEDDED>
-T&
-semi_embedded_vec<T, NUM_EMBEDDED>::operator[] (int idx)
-{
-  linemap_assert (idx < m_num);
+T &semi_embedded_vec<T, NUM_EMBEDDED>::operator[](int idx) {
+  linemap_assert(idx < m_num);
   if (idx < NUM_EMBEDDED)
     return m_embedded[idx];
-  else
-    {
-      linemap_assert (m_extra != NULL);
-      return m_extra[idx - NUM_EMBEDDED];
-    }
+  else {
+    linemap_assert(m_extra != NULL);
+    return m_extra[idx - NUM_EMBEDDED];
+  }
 }
 
 /* Look up element IDX (const).  */
 
 template <typename T, int NUM_EMBEDDED>
-const T&
-semi_embedded_vec<T, NUM_EMBEDDED>::operator[] (int idx) const
-{
-  linemap_assert (idx < m_num);
+const T &semi_embedded_vec<T, NUM_EMBEDDED>::operator[](int idx) const {
+  linemap_assert(idx < m_num);
   if (idx < NUM_EMBEDDED)
     return m_embedded[idx];
-  else
-    {
-      linemap_assert (m_extra != NULL);
-      return m_extra[idx - NUM_EMBEDDED];
-    }
+  else {
+    linemap_assert(m_extra != NULL);
+    return m_extra[idx - NUM_EMBEDDED];
+  }
 }
 
 /* Append VALUE to the end of the semi_embedded_vec.  */
 
 template <typename T, int NUM_EMBEDDED>
-void
-semi_embedded_vec<T, NUM_EMBEDDED>::push (const T& value)
-{
+void semi_embedded_vec<T, NUM_EMBEDDED>::push(const T &value) {
   int idx = m_num++;
   if (idx < NUM_EMBEDDED)
     m_embedded[idx] = value;
-  else
-    {
-      /* Offset "idx" to be an index within m_extra.  */
-      idx -= NUM_EMBEDDED;
-      if (NULL == m_extra)
-	{
-	  linemap_assert (m_alloc == 0);
-	  m_alloc = 16;
-	  m_extra = XNEWVEC (T, m_alloc);
-	}
-      else if (idx >= m_alloc)
-	{
-	  linemap_assert (m_alloc > 0);
-	  m_alloc *= 2;
-	  m_extra = XRESIZEVEC (T, m_extra, m_alloc);
-	}
-      linemap_assert (m_extra);
-      linemap_assert (idx < m_alloc);
-      m_extra[idx] = value;
+  else {
+    /* Offset "idx" to be an index within m_extra.  */
+    idx -= NUM_EMBEDDED;
+    if (NULL == m_extra) {
+      linemap_assert(m_alloc == 0);
+      m_alloc = 16;
+      m_extra = XNEWVEC(T, m_alloc);
+    } else if (idx >= m_alloc) {
+      linemap_assert(m_alloc > 0);
+      m_alloc *= 2;
+      m_extra = XRESIZEVEC(T, m_extra, m_alloc);
     }
+    linemap_assert(m_extra);
+    linemap_assert(idx < m_alloc);
+    m_extra[idx] = value;
+  }
 }
 
 /* Truncate to length LEN.  No deallocation is performed.  */
 
 template <typename T, int NUM_EMBEDDED>
-void
-semi_embedded_vec<T, NUM_EMBEDDED>::truncate (int len)
-{
-  linemap_assert (len <= m_num);
+void semi_embedded_vec<T, NUM_EMBEDDED>::truncate(int len) {
+  linemap_assert(len <= m_num);
   m_num = len;
 }
 
 class fixit_hint;
-namespace diagnostics { namespace paths { class path; }}
+namespace diagnostics {
+namespace paths {
+class path;
+}
+} // namespace diagnostics
 
 /* A "rich" source code location, for use when printing diagnostics.
    A rich_location has one or more carets&ranges, where the carets
@@ -310,8 +293,8 @@ namespace diagnostics { namespace paths { class path; }}
    Example F: fix-it hint: insert_before
    *************************************
       ptr = arr[0];
-	    ^~~~~~
-	    &
+            ^~~~~~
+            &
    This rich location has a single range (range 0) covering "arr[0]",
    with the caret at the start.  The rich location has a single
    insertion fix-it hint, inserted before range 0, added via
@@ -320,8 +303,8 @@ namespace diagnostics { namespace paths { class path; }}
    Example G: multiple fix-it hints: insert_before and insert_after
    ****************************************************************
       #define FN(ARG0, ARG1, ARG2) fn(ARG0, ARG1, ARG2)
-				      ^~~~  ^~~~  ^~~~
-				      (   ) (   ) (   )
+                                      ^~~~  ^~~~  ^~~~
+                                      (   ) (   ) (   )
    This rich location has three ranges, covering "arg0", "arg1",
    and "arg2", all with caret-printing enabled.
    The rich location has 6 insertion fix-it hints: each arg
@@ -335,8 +318,8 @@ namespace diagnostics { namespace paths { class path; }}
    Example H: fix-it hint: removal
    *******************************
      struct s {int i};;
-		      ^
-		      -
+                      ^
+                      -
    This rich location has a single range at the stray trailing
    semicolon, along with a single removal fix-it hint, covering
    the same range, added via:
@@ -345,8 +328,8 @@ namespace diagnostics { namespace paths { class path; }}
    Example I: fix-it hint: replace
    *******************************
       c = s.colour;
-	    ^~~~~~
-	    color
+            ^~~~~~
+            color
    This rich location has a single range (range 0) covering "colour",
    and a single "replace" fix-it hint, covering the same range,
    added via
@@ -390,51 +373,47 @@ namespace diagnostics { namespace paths { class path; }}
    or that richloc.seen_impossible_fixit_p () should be checked before
    issuing the diagnostics.  */
 
-class rich_location
-{
- public:
+class rich_location {
+public:
   /* Constructors.  */
 
   /* Constructing from a location.  */
-  rich_location (line_maps *set, location_t loc,
-		 const range_label *label = nullptr,
-		 const char *label_highlight_color = nullptr);
+  rich_location(line_maps *set, location_t loc,
+                const range_label *label = nullptr,
+                const char *label_highlight_color = nullptr);
 
   /* Destructor.  */
-  ~rich_location ();
+  ~rich_location();
 
-  rich_location (const rich_location &);
-  rich_location (rich_location &&) = delete;
-  rich_location &operator= (const rich_location &) = delete;
-  rich_location &operator= (rich_location &&) = delete;
+  rich_location(const rich_location &);
+  rich_location(rich_location &&) = delete;
+  rich_location &operator=(const rich_location &) = delete;
+  rich_location &operator=(rich_location &&) = delete;
 
   /* Accessors.  */
-  location_t get_loc () const { return get_loc (0); }
-  location_t get_loc (unsigned int idx) const;
+  location_t get_loc() const { return get_loc(0); }
+  location_t get_loc(unsigned int idx) const;
 
-  void set_highlight_color (const char *highlight_color);
+  void set_highlight_color(const char *highlight_color);
 
-  void
-  add_range (location_t loc,
-	     enum range_display_kind range_display_kind
-	       = SHOW_RANGE_WITHOUT_CARET,
-	     const range_label *label = nullptr,
-	     const char *highlight_color = nullptr);
+  void add_range(
+      location_t loc,
+      enum range_display_kind range_display_kind = SHOW_RANGE_WITHOUT_CARET,
+      const range_label *label = nullptr,
+      const char *highlight_color = nullptr);
 
-  void
-  set_range (unsigned int idx, location_t loc,
-	     enum range_display_kind range_display_kind,
-	     const char *highlight_color = nullptr);
+  void set_range(unsigned int idx, location_t loc,
+                 enum range_display_kind range_display_kind,
+                 const char *highlight_color = nullptr);
 
-  unsigned int get_num_locations () const { return m_ranges.count (); }
+  unsigned int get_num_locations() const { return m_ranges.count(); }
 
-  const location_range *get_range (unsigned int idx) const;
-  location_range *get_range (unsigned int idx);
+  const location_range *get_range(unsigned int idx) const;
+  location_range *get_range(unsigned int idx);
 
-  expanded_location get_expanded_location (unsigned int idx) const;
+  expanded_location get_expanded_location(unsigned int idx) const;
 
-  void
-  override_column (int column);
+  void override_column(int column);
 
   /* Fix-it hints.  */
 
@@ -442,61 +421,47 @@ class rich_location
 
   /* Suggest inserting NEW_CONTENT immediately before the primary
      range's start.  */
-  void
-  add_fixit_insert_before (const char *new_content);
+  void add_fixit_insert_before(const char *new_content);
 
   /* Suggest inserting NEW_CONTENT immediately before the start of WHERE.  */
-  void
-  add_fixit_insert_before (location_t where,
-			   const char *new_content);
+  void add_fixit_insert_before(location_t where, const char *new_content);
 
   /* Suggest inserting NEW_CONTENT immediately after the end of the primary
      range.  */
-  void
-  add_fixit_insert_after (const char *new_content);
+  void add_fixit_insert_after(const char *new_content);
 
   /* Suggest inserting NEW_CONTENT immediately after the end of WHERE.  */
-  void
-  add_fixit_insert_after (location_t where,
-			  const char *new_content);
+  void add_fixit_insert_after(location_t where, const char *new_content);
 
   /* Methods for adding removal fix-it hints.  */
 
   /* Suggest removing the content covered by range 0.  */
-  void
-  add_fixit_remove ();
+  void add_fixit_remove();
 
   /* Suggest removing the content covered between the start and finish
      of WHERE.  */
-  void
-  add_fixit_remove (location_t where);
+  void add_fixit_remove(location_t where);
 
   /* Suggest removing the content covered by SRC_RANGE.  */
-  void
-  add_fixit_remove (source_range src_range);
+  void add_fixit_remove(source_range src_range);
 
   /* Methods for adding "replace" fix-it hints.  */
 
   /* Suggest replacing the content covered by range 0 with NEW_CONTENT.  */
-  void
-  add_fixit_replace (const char *new_content);
+  void add_fixit_replace(const char *new_content);
 
   /* Suggest replacing the content between the start and finish of
      WHERE with NEW_CONTENT.  */
-  void
-  add_fixit_replace (location_t where,
-		     const char *new_content);
+  void add_fixit_replace(location_t where, const char *new_content);
 
   /* Suggest replacing the content covered by SRC_RANGE with
      NEW_CONTENT.  */
-  void
-  add_fixit_replace (source_range src_range,
-		     const char *new_content);
+  void add_fixit_replace(source_range src_range, const char *new_content);
 
-  unsigned int get_num_fixit_hints () const { return m_fixit_hints.count (); }
-  fixit_hint *get_fixit_hint (int idx) const { return m_fixit_hints[idx]; }
-  fixit_hint *get_last_fixit_hint () const;
-  bool seen_impossible_fixit_p () const { return m_seen_impossible_fixit; }
+  unsigned int get_num_fixit_hints() const { return m_fixit_hints.count(); }
+  fixit_hint *get_fixit_hint(int idx) const { return m_fixit_hints[idx]; }
+  fixit_hint *get_last_fixit_hint() const;
+  bool seen_impossible_fixit_p() const { return m_seen_impossible_fixit; }
 
   /* Set this if the fix-it hints are not suitable to be
      automatically applied.
@@ -509,19 +474,17 @@ class rich_location
      If set, then the fix-it hints in the rich_location will
      be printed, but will not be added to generated patches,
      or affect the modified version of the file.  */
-  void fixits_cannot_be_auto_applied ()
-  {
+  void fixits_cannot_be_auto_applied() {
     m_fixits_cannot_be_auto_applied = true;
   }
 
-  bool fixits_can_be_auto_applied_p () const
-  {
+  bool fixits_can_be_auto_applied_p() const {
     return !m_fixits_cannot_be_auto_applied;
   }
 
   /* An optional path through the code.  */
-  const diagnostics::paths::path *get_path () const { return m_path; }
-  void set_path (const diagnostics::paths::path *path) { m_path = path; }
+  const diagnostics::paths::path *get_path() const { return m_path; }
+  void set_path(const diagnostics::paths::path *path) { m_path = path; }
 
   /* A flag for hinting that the diagnostic involves character encoding
      issues, and thus that it will be helpful to the user if we show some
@@ -532,26 +495,25 @@ class rich_location
      be escaped in a manner controlled by the user-supplied option
      -fdiagnostics-escape-format=, so that the user can better understand
      what's going on with the encoding in their source file.  */
-  bool escape_on_output_p () const { return m_escape_on_output; }
-  void set_escape_on_output (bool flag) { m_escape_on_output = flag; }
+  bool escape_on_output_p() const { return m_escape_on_output; }
+  void set_escape_on_output(bool flag) { m_escape_on_output = flag; }
 
-  const line_maps *get_line_table () const { return m_line_table; }
+  const line_maps *get_line_table() const { return m_line_table; }
 
-  int get_column_override () const { return m_column_override; }
+  int get_column_override() const { return m_column_override; }
 
 private:
-  bool reject_impossible_fixit (location_t where);
-  void stop_supporting_fixits ();
-  void maybe_add_fixit (location_t start,
-			location_t next_loc,
-			const char *new_content);
+  bool reject_impossible_fixit(location_t where);
+  void stop_supporting_fixits();
+  void maybe_add_fixit(location_t start, location_t next_loc,
+                       const char *new_content);
 
 public:
   static const int STATICALLY_ALLOCATED_RANGES = 3;
 
 protected:
-  line_maps * const m_line_table;
-  semi_embedded_vec <location_range, STATICALLY_ALLOCATED_RANGES> m_ranges;
+  line_maps *const m_line_table;
+  semi_embedded_vec<location_range, STATICALLY_ALLOCATED_RANGES> m_ranges;
 
   int m_column_override;
 
@@ -565,7 +527,7 @@ protected:
   /* The class manages the memory pointed to by the elements of
      the m_fixit_hints vector.  */
   static const int MAX_STATIC_FIXIT_HINTS = 2;
-  semi_embedded_vec <fixit_hint *, MAX_STATIC_FIXIT_HINTS> m_fixit_hints;
+  semi_embedded_vec<fixit_hint *, MAX_STATIC_FIXIT_HINTS> m_fixit_hints;
 
   const diagnostics::paths::path *m_path;
 };
@@ -585,20 +547,18 @@ protected:
    are intended to be allocated on the stack when generating diagnostics,
    and to be short-lived.  */
 
-class range_label
-{
- public:
-  virtual ~range_label () {}
+class range_label {
+public:
+  virtual ~range_label() {}
 
   /* Get localized text for the label.
      The RANGE_IDX is provided, allowing for range_label instances to be
      shared by multiple ranges if need be (the "flyweight" design pattern).  */
-  virtual label_text get_text (unsigned range_idx) const = 0;
+  virtual label_text get_text(unsigned range_idx) const = 0;
 
   /* Get any special effects for the label (e.g. links to other labels).  */
   virtual const diagnostics::label_effects *
-  get_effects (unsigned /*range_idx*/) const
-  {
+  get_effects(unsigned /*range_idx*/) const {
     return nullptr;
   }
 };
@@ -617,37 +577,31 @@ class range_label
    present, the newline character must be the final character of
    the content (preventing e.g. fix-its that split a pre-existing line).  */
 
-class fixit_hint
-{
- public:
-  fixit_hint (location_t start,
-	      location_t next_loc,
-	      const char *new_content);
-  fixit_hint (const fixit_hint &other);
-  fixit_hint (fixit_hint &&other) = delete;
-  ~fixit_hint () { free (m_bytes); }
-  fixit_hint &operator= (const fixit_hint &) = delete;
-  fixit_hint &operator= (fixit_hint &&) = delete;
+class fixit_hint {
+public:
+  fixit_hint(location_t start, location_t next_loc, const char *new_content);
+  fixit_hint(const fixit_hint &other);
+  fixit_hint(fixit_hint &&other) = delete;
+  ~fixit_hint() { free(m_bytes); }
+  fixit_hint &operator=(const fixit_hint &) = delete;
+  fixit_hint &operator=(fixit_hint &&) = delete;
 
-  bool affects_line_p (const line_maps *set,
-		       const char *file,
-		       int line) const;
-  location_t get_start_loc () const { return m_start; }
-  location_t get_next_loc () const { return m_next_loc; }
-  bool maybe_append (location_t start,
-		     location_t next_loc,
-		     const char *new_content);
+  bool affects_line_p(const line_maps *set, const char *file, int line) const;
+  location_t get_start_loc() const { return m_start; }
+  location_t get_next_loc() const { return m_next_loc; }
+  bool maybe_append(location_t start, location_t next_loc,
+                    const char *new_content);
 
-  const char *get_string () const { return m_bytes; }
-  size_t get_length () const { return m_len; }
+  const char *get_string() const { return m_bytes; }
+  size_t get_length() const { return m_len; }
 
-  bool insertion_p () const { return m_start == m_next_loc; }
-  bool deletion_p () const { return m_len == 0; }
-  bool replacement_p () const { return m_len > 0 && m_start != m_next_loc; }
+  bool insertion_p() const { return m_start == m_next_loc; }
+  bool deletion_p() const { return m_len == 0; }
+  bool replacement_p() const { return m_len > 0 && m_start != m_next_loc; }
 
-  bool ends_with_newline_p () const;
+  bool ends_with_newline_p() const;
 
- private:
+private:
   /* We don't use source_range here since, unlike most places,
      this is a half-open/half-closed range:
        [start, next_loc)

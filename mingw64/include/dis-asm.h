@@ -31,27 +31,25 @@
 extern "C" {
 #endif
 
+#include "bfd.h"
 #include <stdio.h>
 #include <string.h>
-#include "bfd.h"
 
-enum dis_insn_type
-{
-  dis_noninsn,			/* Not a valid instruction.  */
-  dis_nonbranch,		/* Not a branch instruction.  */
-  dis_branch,			/* Unconditional branch.  */
-  dis_condbranch,		/* Conditional branch.  */
-  dis_jsr,			/* Jump to subroutine.  */
-  dis_condjsr,			/* Conditional jump to subroutine.  */
-  dis_dref,			/* Data reference instruction.  */
-  dis_dref2			/* Two data references in instruction.  */
+enum dis_insn_type {
+  dis_noninsn,    /* Not a valid instruction.  */
+  dis_nonbranch,  /* Not a branch instruction.  */
+  dis_branch,     /* Unconditional branch.  */
+  dis_condbranch, /* Conditional branch.  */
+  dis_jsr,        /* Jump to subroutine.  */
+  dis_condjsr,    /* Conditional jump to subroutine.  */
+  dis_dref,       /* Data reference instruction.  */
+  dis_dref2       /* Two data references in instruction.  */
 };
 
 /* When printing styled disassembler output, this describes what style
    should be used.  */
 
-enum disassembler_style
-{
+enum disassembler_style {
   /* This is the default style, use this for any additional syntax
      (e.g. commas between operands, brackets, etc), or just as a default if
      no other style seems appropriate.  */
@@ -121,8 +119,9 @@ enum disassembler_style
   dis_style_comment_start
 };
 
-typedef int (*fprintf_ftype) (void *, const char*, ...) ATTRIBUTE_FPTR_PRINTF_2;
-typedef int (*fprintf_styled_ftype) (void *, enum disassembler_style, const char*, ...) ATTRIBUTE_FPTR_PRINTF_3;
+typedef int (*fprintf_ftype)(void *, const char *, ...) ATTRIBUTE_FPTR_PRINTF_2;
+typedef int (*fprintf_styled_ftype)(void *, enum disassembler_style,
+                                    const char *, ...) ATTRIBUTE_FPTR_PRINTF_3;
 
 /* This struct is passed into the instruction decoding routine,
    and is passed back out into each callback.  The various fields are used
@@ -134,8 +133,7 @@ typedef int (*fprintf_styled_ftype) (void *, enum disassembler_style, const char
    It must be initialized before it is first passed; this can be done
    by hand, or using one of the initialization macros below.  */
 
-typedef struct disassemble_info
-{
+typedef struct disassemble_info {
   fprintf_ftype fprintf_func;
   fprintf_styled_ftype fprintf_styled_func;
   void *stream;
@@ -181,7 +179,7 @@ typedef struct disassemble_info
   unsigned long flags;
   /* Set if the disassembler has determined that there are one or more
      relocations associated with the instruction being disassembled.  */
-#define INSN_HAS_RELOC	 (1u << 31)
+#define INSN_HAS_RELOC (1u << 31)
   /* Set if the user has requested the disassembly of data as well as code.  */
 #define DISASSEMBLE_DATA (1u << 30)
   /* Set if the user has specifically set the machine type encoded in the
@@ -202,20 +200,18 @@ typedef struct disassemble_info
      put the bytes in, and LENGTH is the number of bytes to read.
      INFO is a pointer to this struct.
      Returns an errno value or 0 for success.  */
-  int (*read_memory_func)
-    (bfd_vma memaddr, bfd_byte *myaddr, unsigned int length,
-     struct disassemble_info *dinfo);
+  int (*read_memory_func)(bfd_vma memaddr, bfd_byte *myaddr,
+                          unsigned int length, struct disassemble_info *dinfo);
 
   /* Function which should be called if we get an error that we can't
      recover from.  STATUS is the errno value from read_memory_func and
      MEMADDR is the address that we were trying to read.  INFO is a
      pointer to this struct.  */
-  void (*memory_error_func)
-    (int status, bfd_vma memaddr, struct disassemble_info *dinfo);
+  void (*memory_error_func)(int status, bfd_vma memaddr,
+                            struct disassemble_info *dinfo);
 
   /* Function called to print ADDR.  */
-  void (*print_address_func)
-    (bfd_vma addr, struct disassemble_info *dinfo);
+  void (*print_address_func)(bfd_vma addr, struct disassemble_info *dinfo);
 
   /* Function called to determine if there is a symbol at the given ADDR.
      If there is, the function returns 1, otherwise it returns 0.
@@ -224,14 +220,13 @@ typedef struct disassemble_info
      some circumstances we want to include the overlay number in the
      address, (normally because there is a symbol associated with
      that address), but sometimes we want to mask out the overlay bits.  */
-  asymbol * (*symbol_at_address_func)
-    (bfd_vma addr, struct disassemble_info *dinfo);
+  asymbol *(*symbol_at_address_func)(bfd_vma addr,
+                                     struct disassemble_info *dinfo);
 
   /* Function called to check if a SYMBOL is can be displayed to the user.
      This is used by some ports that want to hide special symbols when
      displaying debugging outout.  */
-  bool (*symbol_is_valid)
-    (asymbol *, struct disassemble_info *dinfo);
+  bool (*symbol_is_valid)(asymbol *, struct disassemble_info *dinfo);
 
   /* These are for buffer_read_memory.  */
   bfd_byte *buffer;
@@ -278,14 +273,14 @@ typedef struct disassemble_info
      To determine whether this decoder supports this information, set
      insn_info_valid to 0, decode an instruction, then check it.  */
 
-  char insn_info_valid;		/* Branch info has been set. */
-  char branch_delay_insns;	/* How many sequential insn's will run before
-				   a branch takes effect.  (0 = normal) */
-  char data_size;		/* Size of data reference in insn, in bytes */
-  enum dis_insn_type insn_type;	/* Type of instruction */
-  bfd_vma target;		/* Target address of branch or dref, if known;
-				   zero if unknown.  */
-  bfd_vma target2;		/* Second target address for dref2 */
+  char insn_info_valid;         /* Branch info has been set. */
+  char branch_delay_insns;      /* How many sequential insn's will run before
+                                   a branch takes effect.  (0 = normal) */
+  char data_size;               /* Size of data reference in insn, in bytes */
+  enum dis_insn_type insn_type; /* Type of instruction */
+  bfd_vma target;               /* Target address of branch or dref, if known;
+                                   zero if unknown.  */
+  bfd_vma target2;              /* Second target address for dref2 */
 
   /* Command line options specific to the target disassembler.
      Note that if this string contains multiple comma-separated
@@ -319,8 +314,7 @@ typedef struct disassemble_info
    option arguments from the target to the generic GDB functions
    that set and display them.  */
 
-typedef struct
-{
+typedef struct {
   /* Option argument name to use in descriptions.  */
   const char *name;
 
@@ -334,8 +328,7 @@ typedef struct
    generic GDB functions that set and display them.  Options are
    defined by tuples of vector entries at each index.  */
 
-typedef struct
-{
+typedef struct {
   /* Vector of option names, NULL-terminated.  */
   const char **name;
 
@@ -352,8 +345,7 @@ typedef struct
    options and arguments from the target to the generic GDB functions
    that set and display them.  */
 
-typedef struct
-{
+typedef struct {
   /* Valid disassembler options.  Individual options that support
      an argument will refer to entries in the ARGS vector.  */
   disasm_options_t options;
@@ -363,120 +355,116 @@ typedef struct
      may be shared by different options from the OPTIONS member.  */
   disasm_option_arg_t *args;
 } disasm_options_and_args_t;
-
+
 /* Standard disassemblers.  Disassemble one instruction at the given
    target address.  Return number of octets processed.  */
-typedef int (*disassembler_ftype) (bfd_vma, disassemble_info *);
+typedef int (*disassembler_ftype)(bfd_vma, disassemble_info *);
 
 /* Disassemblers used out side of opcodes library.  */
-extern int print_insn_m32c		(bfd_vma, disassemble_info *);
-extern int print_insn_mep		(bfd_vma, disassemble_info *);
-extern int print_insn_s12z		(bfd_vma, disassemble_info *);
-extern int print_insn_sh		(bfd_vma, disassemble_info *);
-extern int print_insn_sparc		(bfd_vma, disassemble_info *);
-extern int print_insn_rx		(bfd_vma, disassemble_info *);
-extern int print_insn_rl78		(bfd_vma, disassemble_info *);
-extern int print_insn_rl78_g10		(bfd_vma, disassemble_info *);
-extern int print_insn_rl78_g13		(bfd_vma, disassemble_info *);
-extern int print_insn_rl78_g14		(bfd_vma, disassemble_info *);
+extern int print_insn_m32c(bfd_vma, disassemble_info *);
+extern int print_insn_mep(bfd_vma, disassemble_info *);
+extern int print_insn_s12z(bfd_vma, disassemble_info *);
+extern int print_insn_sh(bfd_vma, disassemble_info *);
+extern int print_insn_sparc(bfd_vma, disassemble_info *);
+extern int print_insn_rx(bfd_vma, disassemble_info *);
+extern int print_insn_rl78(bfd_vma, disassemble_info *);
+extern int print_insn_rl78_g10(bfd_vma, disassemble_info *);
+extern int print_insn_rl78_g13(bfd_vma, disassemble_info *);
+extern int print_insn_rl78_g14(bfd_vma, disassemble_info *);
 
-extern disassembler_ftype arc_get_disassembler (bfd *);
-extern disassembler_ftype cris_get_disassembler (bfd *);
+extern disassembler_ftype arc_get_disassembler(bfd *);
+extern disassembler_ftype cris_get_disassembler(bfd *);
 
-extern void print_aarch64_disassembler_options (FILE *);
-extern void print_i386_disassembler_options (FILE *);
-extern void print_mips_disassembler_options (FILE *);
-extern void print_nfp_disassembler_options (FILE *);
-extern void print_ppc_disassembler_options (FILE *);
-extern void print_riscv_disassembler_options (FILE *);
-extern void print_arm_disassembler_options (FILE *);
-extern void print_arc_disassembler_options (FILE *);
+extern void print_aarch64_disassembler_options(FILE *);
+extern void print_i386_disassembler_options(FILE *);
+extern void print_mips_disassembler_options(FILE *);
+extern void print_nfp_disassembler_options(FILE *);
+extern void print_ppc_disassembler_options(FILE *);
+extern void print_riscv_disassembler_options(FILE *);
+extern void print_arm_disassembler_options(FILE *);
+extern void print_arc_disassembler_options(FILE *);
 extern void print_kvx_disassembler_options(FILE *);
-extern void print_s390_disassembler_options (FILE *);
-extern void print_wasm32_disassembler_options (FILE *);
-extern void print_loongarch_disassembler_options (FILE *);
-extern void print_bpf_disassembler_options (FILE *);
-extern bool aarch64_symbol_is_valid (asymbol *, struct disassemble_info *);
-extern bool arm_symbol_is_valid (asymbol *, struct disassemble_info *);
-extern bool csky_symbol_is_valid (asymbol *, struct disassemble_info *);
-extern bool riscv_symbol_is_valid (asymbol *, struct disassemble_info *);
-extern void disassemble_init_powerpc (struct disassemble_info *);
-extern void disassemble_init_s390 (struct disassemble_info *);
-extern void disassemble_init_wasm32 (struct disassemble_info *);
-extern void disassemble_init_nds32 (struct disassemble_info *);
-extern const disasm_options_and_args_t *disassembler_options_arc (void);
-extern const disasm_options_and_args_t *disassembler_options_arm (void);
-extern const disasm_options_and_args_t *disassembler_options_mips (void);
-extern const disasm_options_and_args_t *disassembler_options_powerpc (void);
-extern const disasm_options_and_args_t *disassembler_options_riscv (void);
-extern const disasm_options_and_args_t *disassembler_options_s390 (void);
+extern void print_s390_disassembler_options(FILE *);
+extern void print_wasm32_disassembler_options(FILE *);
+extern void print_loongarch_disassembler_options(FILE *);
+extern void print_bpf_disassembler_options(FILE *);
+extern bool aarch64_symbol_is_valid(asymbol *, struct disassemble_info *);
+extern bool arm_symbol_is_valid(asymbol *, struct disassemble_info *);
+extern bool csky_symbol_is_valid(asymbol *, struct disassemble_info *);
+extern bool riscv_symbol_is_valid(asymbol *, struct disassemble_info *);
+extern void disassemble_init_powerpc(struct disassemble_info *);
+extern void disassemble_init_s390(struct disassemble_info *);
+extern void disassemble_init_wasm32(struct disassemble_info *);
+extern void disassemble_init_nds32(struct disassemble_info *);
+extern const disasm_options_and_args_t *disassembler_options_arc(void);
+extern const disasm_options_and_args_t *disassembler_options_arm(void);
+extern const disasm_options_and_args_t *disassembler_options_mips(void);
+extern const disasm_options_and_args_t *disassembler_options_powerpc(void);
+extern const disasm_options_and_args_t *disassembler_options_riscv(void);
+extern const disasm_options_and_args_t *disassembler_options_s390(void);
 
 /* Fetch the disassembler for a given architecture ARC, endianess (big
    endian if BIG is true), bfd_mach value MACH, and ABFD, if that support
    is available.  ABFD may be NULL.  */
-extern disassembler_ftype disassembler (enum bfd_architecture arc,
-					bool big, unsigned long mach,
-					bfd *abfd);
+extern disassembler_ftype disassembler(enum bfd_architecture arc, bool big,
+                                       unsigned long mach, bfd *abfd);
 
-/* Amend the disassemble_info structure as necessary for the target architecture.
-   Should only be called after initialising the info->arch field.  */
-extern void disassemble_init_for_target (struct disassemble_info *);
+/* Amend the disassemble_info structure as necessary for the target
+   architecture. Should only be called after initialising the info->arch field.
+ */
+extern void disassemble_init_for_target(struct disassemble_info *);
 
 /* Tidy any memory allocated by targets, such as info->private_data.  */
-extern void disassemble_free_target (struct disassemble_info *);
+extern void disassemble_free_target(struct disassemble_info *);
 
 /* Set the basic disassembler print functions.  */
-extern void disassemble_set_printf (struct disassemble_info *, void *,
-				    fprintf_ftype, fprintf_styled_ftype);
+extern void disassemble_set_printf(struct disassemble_info *, void *,
+                                   fprintf_ftype, fprintf_styled_ftype);
 
 /* Document any target specific options available from the disassembler.  */
-extern void disassembler_usage (FILE *);
+extern void disassembler_usage(FILE *);
 
 /* Remove whitespace and consecutive commas.  */
-extern char *remove_whitespace_and_extra_commas (char *);
+extern char *remove_whitespace_and_extra_commas(char *);
 
 /* Iterate over each comma separated option in disassembler_options.  */
-extern bool for_each_disassembler_option (struct disassemble_info *,
-					  bool (*) (const char *, void *),
-					  void *);
-
+extern bool for_each_disassembler_option(struct disassemble_info *,
+                                         bool (*)(const char *, void *),
+                                         void *);
+
 /* This block of definitions is for particular callers who read instructions
    into a buffer before calling the instruction decoder.  */
 
 /* Here is a function which callers may wish to use for read_memory_func.
    It gets bytes from a buffer.  */
-extern int buffer_read_memory
-  (bfd_vma, bfd_byte *, unsigned int, struct disassemble_info *);
+extern int buffer_read_memory(bfd_vma, bfd_byte *, unsigned int,
+                              struct disassemble_info *);
 
 /* This function goes with buffer_read_memory.
    It prints a message using info->fprintf_func and info->stream.  */
-extern void perror_memory (int, bfd_vma, struct disassemble_info *);
-
+extern void perror_memory(int, bfd_vma, struct disassemble_info *);
 
 /* Just print the address in hex.  This is included for completeness even
    though both GDB and objdump provide their own (to print symbolic
    addresses).  */
-extern void generic_print_address
-  (bfd_vma, struct disassemble_info *);
+extern void generic_print_address(bfd_vma, struct disassemble_info *);
 
 /* Always NULL.  */
-extern asymbol *generic_symbol_at_address
-  (bfd_vma, struct disassemble_info *);
+extern asymbol *generic_symbol_at_address(bfd_vma, struct disassemble_info *);
 
 /* Always true.  */
-extern bool generic_symbol_is_valid
-  (asymbol *, struct disassemble_info *);
+extern bool generic_symbol_is_valid(asymbol *, struct disassemble_info *);
 
 /* Method to initialize a disassemble_info struct.  This should be
    called by all applications creating such a struct.  */
-extern void init_disassemble_info (struct disassemble_info *dinfo, void *stream,
-				   fprintf_ftype fprintf_func,
-				   fprintf_styled_ftype fprintf_styled_func);
+extern void init_disassemble_info(struct disassemble_info *dinfo, void *stream,
+                                  fprintf_ftype fprintf_func,
+                                  fprintf_styled_ftype fprintf_styled_func);
 
 /* For compatibility with existing code.  */
-#define INIT_DISASSEMBLE_INFO(INFO, STREAM, FPRINTF_FUNC, FPRINTF_STYLED_FUNC)  \
-  init_disassemble_info (&(INFO), (STREAM), (fprintf_ftype) (FPRINTF_FUNC), \
-			 (fprintf_styled_ftype) (FPRINTF_STYLED_FUNC))
+#define INIT_DISASSEMBLE_INFO(INFO, STREAM, FPRINTF_FUNC, FPRINTF_STYLED_FUNC) \
+  init_disassemble_info(&(INFO), (STREAM), (fprintf_ftype)(FPRINTF_FUNC),      \
+                        (fprintf_styled_ftype)(FPRINTF_STYLED_FUNC))
 
 #ifdef __cplusplus
 }

@@ -49,82 +49,68 @@ typedef const HARD_REG_SET const_hard_reg_set;
 
 #else
 
-#define HARD_REG_SET_LONGS \
- ((FIRST_PSEUDO_REGISTER + HOST_BITS_PER_WIDEST_FAST_INT - 1)	\
-  / HOST_BITS_PER_WIDEST_FAST_INT)
+#define HARD_REG_SET_LONGS                                                     \
+  ((FIRST_PSEUDO_REGISTER + HOST_BITS_PER_WIDEST_FAST_INT - 1) /               \
+   HOST_BITS_PER_WIDEST_FAST_INT)
 
-struct HARD_REG_SET
-{
+struct HARD_REG_SET {
   HARD_REG_SET
-  operator~ () const
-  {
+  operator~() const {
     HARD_REG_SET res;
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       res.elts[i] = ~elts[i];
     return res;
   }
 
   HARD_REG_SET
-  operator& (const HARD_REG_SET &other) const
-  {
+  operator&(const HARD_REG_SET & other) const {
     HARD_REG_SET res;
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       res.elts[i] = elts[i] & other.elts[i];
     return res;
   }
 
-  HARD_REG_SET &
-  operator&= (const HARD_REG_SET &other)
-  {
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+  HARD_REG_SET &operator&=(const HARD_REG_SET &other) {
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       elts[i] &= other.elts[i];
     return *this;
   }
 
   HARD_REG_SET
-  operator| (const HARD_REG_SET &other) const
-  {
+  operator|(const HARD_REG_SET & other) const {
     HARD_REG_SET res;
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       res.elts[i] = elts[i] | other.elts[i];
     return res;
   }
 
-  HARD_REG_SET &
-  operator|= (const HARD_REG_SET &other)
-  {
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+  HARD_REG_SET &operator|=(const HARD_REG_SET &other) {
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       elts[i] |= other.elts[i];
     return *this;
   }
 
-  bool
-  operator== (const HARD_REG_SET &other) const
-  {
+  bool operator==(const HARD_REG_SET &other) const {
     HARD_REG_ELT_TYPE bad = 0;
-    for (unsigned int i = 0; i < ARRAY_SIZE (elts); ++i)
+    for (unsigned int i = 0; i < ARRAY_SIZE(elts); ++i)
       bad |= (elts[i] ^ other.elts[i]);
     return bad == 0;
   }
 
-  bool
-  operator!= (const HARD_REG_SET &other) const
-  {
-    return !operator== (other);
+  bool operator!=(const HARD_REG_SET &other) const {
+    return !operator==(other);
   }
 
   HARD_REG_ELT_TYPE elts[HARD_REG_SET_LONGS];
 };
 typedef const HARD_REG_SET &const_hard_reg_set;
 
-template<>
-struct array_traits<HARD_REG_SET>
-{
+template <> struct array_traits<HARD_REG_SET> {
   typedef HARD_REG_ELT_TYPE element_type;
   static const bool has_constant_size = true;
   static const size_t constant_size = HARD_REG_SET_LONGS;
-  static const element_type *base (const HARD_REG_SET &x) { return x.elts; }
-  static size_t size (const HARD_REG_SET &) { return HARD_REG_SET_LONGS; }
+  static const element_type *base(const HARD_REG_SET &x) { return x.elts; }
+  static size_t size(const HARD_REG_SET &) { return HARD_REG_SET_LONGS; }
 };
 
 #endif
@@ -132,15 +118,14 @@ struct array_traits<HARD_REG_SET>
 /* HARD_REG_SET wrapped into a structure, to make it possible to
    use HARD_REG_SET even in APIs that should not include
    hard-reg-set.h.  */
-struct hard_reg_set_container
-{
+struct hard_reg_set_container {
   HARD_REG_SET set;
 };
 
 /* HARD_CONST is used to cast a constant to the appropriate type
    for use with a HARD_REG_SET.  */
 
-#define HARD_CONST(X) ((HARD_REG_ELT_TYPE) (X))
+#define HARD_CONST(X) ((HARD_REG_ELT_TYPE)(X))
 
 /* Define macros SET_HARD_REG_BIT, CLEAR_HARD_REG_BIT and TEST_HARD_REG_BIT
    to set, clear or test one bit in a hard reg set of type HARD_REG_SET.
@@ -159,52 +144,40 @@ struct hard_reg_set_container
    hard_reg_set_intersect_p (X, Y), which returns true if X and Y intersect.
    hard_reg_set_empty_p (X), which returns true if X is empty.  */
 
-#define UHOST_BITS_PER_WIDE_INT ((unsigned) HOST_BITS_PER_WIDEST_FAST_INT)
+#define UHOST_BITS_PER_WIDE_INT ((unsigned)HOST_BITS_PER_WIDEST_FAST_INT)
 
 #if FIRST_PSEUDO_REGISTER <= HOST_BITS_PER_WIDEST_FAST_INT
 
-#define SET_HARD_REG_BIT(SET, BIT)  \
- ((SET) |= HARD_CONST (1) << (BIT))
-#define CLEAR_HARD_REG_BIT(SET, BIT)  \
- ((SET) &= ~(HARD_CONST (1) << (BIT)))
-#define TEST_HARD_REG_BIT(SET, BIT)  \
- (!!((SET) & (HARD_CONST (1) << (BIT))))
+#define SET_HARD_REG_BIT(SET, BIT) ((SET) |= HARD_CONST(1) << (BIT))
+#define CLEAR_HARD_REG_BIT(SET, BIT) ((SET) &= ~(HARD_CONST(1) << (BIT)))
+#define TEST_HARD_REG_BIT(SET, BIT) (!!((SET) & (HARD_CONST(1) << (BIT))))
 
-#define CLEAR_HARD_REG_SET(TO) ((TO) = HARD_CONST (0))
-#define SET_HARD_REG_SET(TO) ((TO) = ~ HARD_CONST (0))
+#define CLEAR_HARD_REG_SET(TO) ((TO) = HARD_CONST(0))
+#define SET_HARD_REG_SET(TO) ((TO) = ~HARD_CONST(0))
 
-inline bool
-hard_reg_set_subset_p (const_hard_reg_set x, const_hard_reg_set y)
-{
-  return (x & ~y) == HARD_CONST (0);
+inline bool hard_reg_set_subset_p(const_hard_reg_set x, const_hard_reg_set y) {
+  return (x & ~y) == HARD_CONST(0);
 }
 
-inline bool
-hard_reg_set_intersect_p (const_hard_reg_set x, const_hard_reg_set y)
-{
-  return (x & y) != HARD_CONST (0);
+inline bool hard_reg_set_intersect_p(const_hard_reg_set x,
+                                     const_hard_reg_set y) {
+  return (x & y) != HARD_CONST(0);
 }
 
-inline bool
-hard_reg_set_empty_p (const_hard_reg_set x)
-{
-  return x == HARD_CONST (0);
+inline bool hard_reg_set_empty_p(const_hard_reg_set x) {
+  return x == HARD_CONST(0);
 }
 
-inline int
-hard_reg_set_popcount (const_hard_reg_set x)
-{
-  return popcount_hwi (x);
+inline int hard_reg_set_popcount(const_hard_reg_set x) {
+  return popcount_hwi(x);
 }
 
 /* Return 0 if there aren't any differences between X and Y after the first
    SKIP registers, or 1 + the register number of the lowest-numbered
    difference, negated if it's set in Y.  The return value is suitable for
    qsort.  */
-inline int
-hard_reg_set_first_diff (const_hard_reg_set x, const_hard_reg_set y,
-			 unsigned skip)
-{
+inline int hard_reg_set_first_diff(const_hard_reg_set x, const_hard_reg_set y,
+                                   unsigned skip) {
   if (skip >= UHOST_BITS_PER_WIDE_INT)
     return 0;
   const HARD_REG_ELT_TYPE full_mask = -1;
@@ -212,83 +185,66 @@ hard_reg_set_first_diff (const_hard_reg_set x, const_hard_reg_set y,
   HARD_REG_ELT_TYPE dif = (x ^ y) & mask;
   if (dif == 0)
     return 0;
-  int bit = ctz_hwi (dif);
+  int bit = ctz_hwi(dif);
   int regp1 = bit + 1;
-  if (y & (HARD_CONST (1) << bit))
+  if (y & (HARD_CONST(1) << bit))
     return -regp1;
   return regp1;
 }
 
 #else
 
-inline void
-SET_HARD_REG_BIT (HARD_REG_SET &set, unsigned int bit)
-{
-  set.elts[bit / UHOST_BITS_PER_WIDE_INT]
-    |= HARD_CONST (1) << (bit % UHOST_BITS_PER_WIDE_INT);
+inline void SET_HARD_REG_BIT(HARD_REG_SET &set, unsigned int bit) {
+  set.elts[bit / UHOST_BITS_PER_WIDE_INT] |= HARD_CONST(1)
+                                             << (bit % UHOST_BITS_PER_WIDE_INT);
 }
 
-inline void
-CLEAR_HARD_REG_BIT (HARD_REG_SET &set, unsigned int bit)
-{
-  set.elts[bit / UHOST_BITS_PER_WIDE_INT]
-    &= ~(HARD_CONST (1) << (bit % UHOST_BITS_PER_WIDE_INT));
+inline void CLEAR_HARD_REG_BIT(HARD_REG_SET &set, unsigned int bit) {
+  set.elts[bit / UHOST_BITS_PER_WIDE_INT] &=
+      ~(HARD_CONST(1) << (bit % UHOST_BITS_PER_WIDE_INT));
 }
 
-inline bool
-TEST_HARD_REG_BIT (const_hard_reg_set set, unsigned int bit)
-{
-  return (set.elts[bit / UHOST_BITS_PER_WIDE_INT]
-	  & (HARD_CONST (1) << (bit % UHOST_BITS_PER_WIDE_INT)));
+inline bool TEST_HARD_REG_BIT(const_hard_reg_set set, unsigned int bit) {
+  return (set.elts[bit / UHOST_BITS_PER_WIDE_INT] &
+          (HARD_CONST(1) << (bit % UHOST_BITS_PER_WIDE_INT)));
 }
 
-inline void
-CLEAR_HARD_REG_SET (HARD_REG_SET &set)
-{
-  for (unsigned int i = 0; i < ARRAY_SIZE (set.elts); ++i)
+inline void CLEAR_HARD_REG_SET(HARD_REG_SET &set) {
+  for (unsigned int i = 0; i < ARRAY_SIZE(set.elts); ++i)
     set.elts[i] = 0;
 }
 
-inline void
-SET_HARD_REG_SET (HARD_REG_SET &set)
-{
-  for (unsigned int i = 0; i < ARRAY_SIZE (set.elts); ++i)
+inline void SET_HARD_REG_SET(HARD_REG_SET &set) {
+  for (unsigned int i = 0; i < ARRAY_SIZE(set.elts); ++i)
     set.elts[i] = -1;
 }
 
-inline bool
-hard_reg_set_subset_p (const_hard_reg_set x, const_hard_reg_set y)
-{
+inline bool hard_reg_set_subset_p(const_hard_reg_set x, const_hard_reg_set y) {
   HARD_REG_ELT_TYPE bad = 0;
-  for (unsigned int i = 0; i < ARRAY_SIZE (x.elts); ++i)
+  for (unsigned int i = 0; i < ARRAY_SIZE(x.elts); ++i)
     bad |= (x.elts[i] & ~y.elts[i]);
   return bad == 0;
 }
 
-inline bool
-hard_reg_set_intersect_p (const_hard_reg_set x, const_hard_reg_set y)
-{
+inline bool hard_reg_set_intersect_p(const_hard_reg_set x,
+                                     const_hard_reg_set y) {
   HARD_REG_ELT_TYPE good = 0;
-  for (unsigned int i = 0; i < ARRAY_SIZE (x.elts); ++i)
+  for (unsigned int i = 0; i < ARRAY_SIZE(x.elts); ++i)
     good |= (x.elts[i] & y.elts[i]);
   return good != 0;
 }
 
-inline bool
-hard_reg_set_empty_p (const_hard_reg_set x)
-{
+inline bool hard_reg_set_empty_p(const_hard_reg_set x) {
   HARD_REG_ELT_TYPE bad = 0;
-  for (unsigned int i = 0; i < ARRAY_SIZE (x.elts); ++i)
+  for (unsigned int i = 0; i < ARRAY_SIZE(x.elts); ++i)
     bad |= x.elts[i];
   return bad == 0;
 }
 
-inline int
-hard_reg_set_popcount (const_hard_reg_set x)
-{
+inline int hard_reg_set_popcount(const_hard_reg_set x) {
   int count = 0;
-  for (unsigned int i = 0; i < ARRAY_SIZE (x.elts); ++i)
-    count += popcount_hwi (x.elts[i]);
+  for (unsigned int i = 0; i < ARRAY_SIZE(x.elts); ++i)
+    count += popcount_hwi(x.elts[i]);
   return count;
 }
 
@@ -296,35 +252,30 @@ hard_reg_set_popcount (const_hard_reg_set x)
    SKIP registers, or 1 + the register number of the lowest-numbered
    difference, negated if it's set in Y.  The return value is suitable for
    qsort.  */
-inline int
-hard_reg_set_first_diff (const_hard_reg_set x, const_hard_reg_set y,
-			 unsigned skip)
-{
+inline int hard_reg_set_first_diff(const_hard_reg_set x, const_hard_reg_set y,
+                                   unsigned skip) {
   const HARD_REG_ELT_TYPE full_mask = -1;
   HARD_REG_ELT_TYPE mask = full_mask << (skip % UHOST_BITS_PER_WIDE_INT);
-  for (unsigned int i = skip / UHOST_BITS_PER_WIDE_INT;
-       i < ARRAY_SIZE (x.elts); ++i)
-    {
-      HARD_REG_ELT_TYPE dif = (x.elts[i] ^ y.elts[i]) & mask;
-      if (dif == 0)
-	{
-	  mask = full_mask;
-	  continue;
-	}
-      int bit = ctz_hwi (dif);
-      int regp1 = bit + 1 + i * UHOST_BITS_PER_WIDE_INT;
-      if (y.elts[i] & (HARD_CONST (1) << bit))
-	return -regp1;
-      return regp1;
+  for (unsigned int i = skip / UHOST_BITS_PER_WIDE_INT; i < ARRAY_SIZE(x.elts);
+       ++i) {
+    HARD_REG_ELT_TYPE dif = (x.elts[i] ^ y.elts[i]) & mask;
+    if (dif == 0) {
+      mask = full_mask;
+      continue;
     }
+    int bit = ctz_hwi(dif);
+    int regp1 = bit + 1 + i * UHOST_BITS_PER_WIDE_INT;
+    if (y.elts[i] & (HARD_CONST(1) << bit))
+      return -regp1;
+    return regp1;
+  }
   return 0;
 }
 #endif
 
 /* Iterator for hard register sets.  */
 
-struct hard_reg_set_iterator
-{
+struct hard_reg_set_iterator {
   /* Pointer to the current element.  */
   const HARD_REG_ELT_TYPE *pelt;
 
@@ -344,10 +295,9 @@ struct hard_reg_set_iterator
 
 /* The implementation of the iterator functions is a simplified version of
    those of bitmap iterators.  */
-inline void
-hard_reg_set_iter_init (hard_reg_set_iterator *iter, const_hard_reg_set set,
-                        unsigned min, unsigned *regno)
-{
+inline void hard_reg_set_iter_init(hard_reg_set_iterator *iter,
+                                   const_hard_reg_set set, unsigned min,
+                                   unsigned *regno) {
 #ifdef HARD_REG_SET_LONGS
   iter->pelt = set.elts;
   iter->length = HARD_REG_SET_LONGS;
@@ -356,58 +306,49 @@ hard_reg_set_iter_init (hard_reg_set_iterator *iter, const_hard_reg_set set,
   iter->length = 1;
 #endif
   iter->word_no = min / HARD_REG_ELT_BITS;
-  if (iter->word_no < iter->length)
-    {
+  if (iter->word_no < iter->length) {
+    iter->bits = iter->pelt[iter->word_no];
+    iter->bits >>= min % HARD_REG_ELT_BITS;
+    *regno = min;
+  }
+}
+
+inline bool hard_reg_set_iter_set(hard_reg_set_iterator *iter,
+                                  unsigned *regno) {
+  while (1) {
+    /* Return false when we're advanced past the end of the set.  */
+    if (iter->word_no >= iter->length)
+      return false;
+
+    if (iter->bits) {
+      unsigned skip = ctz_hwi(iter->bits);
+      iter->bits >>= skip;
+      *regno += skip;
+      return (*regno < FIRST_PSEUDO_REGISTER);
+    }
+
+    /* Find the next non-zero word.  */
+    while (++iter->word_no < iter->length) {
       iter->bits = iter->pelt[iter->word_no];
-      iter->bits >>= min % HARD_REG_ELT_BITS;
-      *regno = min;
+      if (iter->bits) {
+        *regno = iter->word_no * HARD_REG_ELT_BITS;
+        break;
+      }
     }
+  }
 }
 
-inline bool
-hard_reg_set_iter_set (hard_reg_set_iterator *iter, unsigned *regno)
-{
-  while (1)
-    {
-      /* Return false when we're advanced past the end of the set.  */
-      if (iter->word_no >= iter->length)
-        return false;
-
-      if (iter->bits)
-        {
-	  unsigned skip = ctz_hwi (iter->bits);
-	  iter->bits >>= skip;
-	  *regno += skip;
-          return (*regno < FIRST_PSEUDO_REGISTER);
-        }
-
-      /* Find the next non-zero word.  */
-      while (++iter->word_no < iter->length)
-        {
-          iter->bits = iter->pelt[iter->word_no];
-          if (iter->bits)
-	    {
-	      *regno = iter->word_no * HARD_REG_ELT_BITS;
-	      break;
-	    }
-        }
-    }
-}
-
-inline void
-hard_reg_set_iter_next (hard_reg_set_iterator *iter, unsigned *)
-{
+inline void hard_reg_set_iter_next(hard_reg_set_iterator *iter, unsigned *) {
   /* Only clear the bit, so that we skip it in iter_set.  */
-  iter->bits &= ~ HARD_CONST (1);
+  iter->bits &= ~HARD_CONST(1);
 }
 
 /* SET must not change throughout the iteration.
    REGNUM (and ITER) may only be changed by the iteration functions.  */
-#define EXECUTE_IF_SET_IN_HARD_REG_SET(SET, MIN, REGNUM, ITER)          \
-  for (hard_reg_set_iter_init (&(ITER), (SET), (MIN), &(REGNUM));       \
-       hard_reg_set_iter_set (&(ITER), &(REGNUM));                      \
-       hard_reg_set_iter_next (&(ITER), &(REGNUM)))
-
+#define EXECUTE_IF_SET_IN_HARD_REG_SET(SET, MIN, REGNUM, ITER)                 \
+  for (hard_reg_set_iter_init(&(ITER), (SET), (MIN), &(REGNUM));               \
+       hard_reg_set_iter_set(&(ITER), &(REGNUM));                              \
+       hard_reg_set_iter_next(&(ITER), &(REGNUM)))
 
 /* Define some standard sets of registers.  */
 
@@ -423,16 +364,15 @@ extern HARD_REG_SET global_reg_set;
 class simplifiable_subreg;
 class subreg_shape;
 
-struct simplifiable_subregs_hasher : nofree_ptr_hash <simplifiable_subreg>
-{
+struct simplifiable_subregs_hasher : nofree_ptr_hash<simplifiable_subreg> {
   typedef const subreg_shape *compare_type;
 
-  static inline hashval_t hash (const simplifiable_subreg *);
-  static inline bool equal (const simplifiable_subreg *, const subreg_shape *);
+  static inline hashval_t hash(const simplifiable_subreg *);
+  static inline bool equal(const simplifiable_subreg *, const subreg_shape *);
 };
 
 struct target_hard_regs {
-  void finalize ();
+  void finalize();
 
   /* The set of registers that actually exist on the current target.  */
   HARD_REG_SET x_accessible_reg_set;
@@ -515,7 +455,7 @@ struct target_hard_regs {
 
   /* Records which registers can form a particular subreg, with the subreg
      being identified by its outer mode, inner mode and offset.  */
-  hash_table <simplifiable_subregs_hasher> *x_simplifiable_subregs;
+  hash_table<simplifiable_subregs_hasher> *x_simplifiable_subregs;
 };
 
 extern struct target_hard_regs default_target_hard_regs;
@@ -525,65 +465,46 @@ extern struct target_hard_regs *this_target_hard_regs;
 #define this_target_hard_regs (&default_target_hard_regs)
 #endif
 
-#define accessible_reg_set \
-  (this_target_hard_regs->x_accessible_reg_set)
-#define operand_reg_set \
-  (this_target_hard_regs->x_operand_reg_set)
-#define fixed_regs \
-  (this_target_hard_regs->x_fixed_regs)
-#define fixed_reg_set \
-  (this_target_hard_regs->x_fixed_reg_set)
-#define fixed_nonglobal_reg_set \
+#define accessible_reg_set (this_target_hard_regs->x_accessible_reg_set)
+#define operand_reg_set (this_target_hard_regs->x_operand_reg_set)
+#define fixed_regs (this_target_hard_regs->x_fixed_regs)
+#define fixed_reg_set (this_target_hard_regs->x_fixed_reg_set)
+#define fixed_nonglobal_reg_set                                                \
   (this_target_hard_regs->x_fixed_nonglobal_reg_set)
 #ifdef IN_TARGET_CODE
-#define call_used_regs \
-  (this_target_hard_regs->x_call_used_regs)
+#define call_used_regs (this_target_hard_regs->x_call_used_regs)
 #endif
-#define savable_regs \
-  (this_target_hard_regs->x_savable_regs)
+#define savable_regs (this_target_hard_regs->x_savable_regs)
 #ifdef IN_TARGET_CODE
-#define regs_invalidated_by_call \
+#define regs_invalidated_by_call                                               \
   (this_target_hard_regs->x_regs_invalidated_by_call)
-#define call_used_or_fixed_regs \
-  (regs_invalidated_by_call | fixed_reg_set)
+#define call_used_or_fixed_regs (regs_invalidated_by_call | fixed_reg_set)
 #endif
-#define eh_return_data_regs \
-  (this_target_hard_regs->x_eh_return_data_regs)
-#define reg_alloc_order \
-  (this_target_hard_regs->x_reg_alloc_order)
-#define inv_reg_alloc_order \
-  (this_target_hard_regs->x_inv_reg_alloc_order)
-#define reg_class_contents \
-  (this_target_hard_regs->x_reg_class_contents)
-#define class_only_fixed_regs \
-  (this_target_hard_regs->x_class_only_fixed_regs)
-#define reg_class_size \
-  (this_target_hard_regs->x_reg_class_size)
-#define reg_class_subclasses \
-  (this_target_hard_regs->x_reg_class_subclasses)
-#define reg_class_subunion \
-  (this_target_hard_regs->x_reg_class_subunion)
-#define reg_class_superunion \
-  (this_target_hard_regs->x_reg_class_superunion)
-#define reg_names \
-  (this_target_hard_regs->x_reg_names)
+#define eh_return_data_regs (this_target_hard_regs->x_eh_return_data_regs)
+#define reg_alloc_order (this_target_hard_regs->x_reg_alloc_order)
+#define inv_reg_alloc_order (this_target_hard_regs->x_inv_reg_alloc_order)
+#define reg_class_contents (this_target_hard_regs->x_reg_class_contents)
+#define class_only_fixed_regs (this_target_hard_regs->x_class_only_fixed_regs)
+#define reg_class_size (this_target_hard_regs->x_reg_class_size)
+#define reg_class_subclasses (this_target_hard_regs->x_reg_class_subclasses)
+#define reg_class_subunion (this_target_hard_regs->x_reg_class_subunion)
+#define reg_class_superunion (this_target_hard_regs->x_reg_class_superunion)
+#define reg_names (this_target_hard_regs->x_reg_names)
 
 /* Vector indexed by reg class giving its name.  */
 
-extern const char * reg_class_names[];
+extern const char *reg_class_names[];
 
 /* Given a hard REGN a FROM mode and a TO mode, return true if
    REGN can change from mode FROM to mode TO.  */
-#define REG_CAN_CHANGE_MODE_P(REGN, FROM, TO)                          \
-  (targetm.can_change_mode_class (FROM, TO, REGNO_REG_CLASS (REGN)))
+#define REG_CAN_CHANGE_MODE_P(REGN, FROM, TO)                                  \
+  (targetm.can_change_mode_class(FROM, TO, REGNO_REG_CLASS(REGN)))
 
 #ifdef IN_TARGET_CODE
 /* Return true if register REGNO is either fixed or call-used
    (aka call-clobbered).  */
 
-inline bool
-call_used_or_fixed_reg_p (unsigned int regno)
-{
+inline bool call_used_or_fixed_reg_p(unsigned int regno) {
   return fixed_regs[regno] || this_target_hard_regs->x_call_used_regs[regno];
 }
 #endif

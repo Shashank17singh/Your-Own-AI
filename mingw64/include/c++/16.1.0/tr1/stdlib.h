@@ -51,4 +51,3 @@ using std::tr1::div;
 #endif
 
 #endif // _GLIBCXX_TR1_STDLIB_H
-

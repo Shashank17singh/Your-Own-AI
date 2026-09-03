@@ -20,16 +20,16 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_TREE_SSA_LOOP_IVOPTS_H
 #define GCC_TREE_SSA_LOOP_IVOPTS_H
 
-extern void dump_iv (FILE *, struct iv *);
-extern void dump_use (FILE *, struct iv_use *);
-extern void dump_uses (FILE *, struct ivopts_data *);
-extern void dump_cand (FILE *, struct iv_cand *);
-extern bool contains_abnormal_ssa_name_p (tree);
-extern class loop *outermost_invariant_loop_for_expr (class loop *, tree);
-extern bool expr_invariant_in_loop_p (class loop *, tree);
-bool may_be_nonaddressable_p (tree expr);
-void tree_ssa_iv_optimize (void);
+extern void dump_iv(FILE *, struct iv *);
+extern void dump_use(FILE *, struct iv_use *);
+extern void dump_uses(FILE *, struct ivopts_data *);
+extern void dump_cand(FILE *, struct iv_cand *);
+extern bool contains_abnormal_ssa_name_p(tree);
+extern class loop *outermost_invariant_loop_for_expr(class loop *, tree);
+extern bool expr_invariant_in_loop_p(class loop *, tree);
+bool may_be_nonaddressable_p(tree expr);
+void tree_ssa_iv_optimize(void);
 
-void create_canonical_iv (class loop *, edge, tree,
-			  tree * = NULL, tree * = NULL);
+void create_canonical_iv(class loop *, edge, tree, tree * = NULL,
+                         tree * = NULL);
 #endif /* GCC_TREE_SSA_LOOP_IVOPTS_H */

@@ -14,5 +14,6 @@ from typing import Optional, TypedDict
 
 OptionalIntType = Optional[int]
 
+
 class Foo(TypedDict):
     a: OptionalIntType

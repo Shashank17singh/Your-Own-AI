@@ -23,9 +23,7 @@ along with GCC; see the file COPYING3.  If not see
 
 namespace pub_sub {
 
-template <typename Subscriber>
-class channel
-{
+template <typename Subscriber> class channel {
 public:
   using subscriber = Subscriber;
 
@@ -34,30 +32,21 @@ public:
 
   /* Return this if this channel has subscribers, or nullptr if
      there are none.  */
-  const channel *
-  get_if_active () const
-  {
-    if (m_subscribers.empty ())
+  const channel *get_if_active() const {
+    if (m_subscribers.empty())
       return nullptr;
     return this;
   }
 
-  template <typename Message>
-  void publish (const Message &m) const
-  {
+  template <typename Message> void publish(const Message &m) const {
     for (auto sub : m_subscribers)
-      sub->on_message (m);
+      sub->on_message(m);
   }
 
-  subscription
-  add_subscriber (subscriber &s)
-  {
-    return m_subscribers.insert (m_subscribers.end (), &s);
+  subscription add_subscriber(subscriber &s) {
+    return m_subscribers.insert(m_subscribers.end(), &s);
   }
-  void unsubscribe (subscription s)
-  {
-    m_subscribers.remove (s);
-  }
+  void unsubscribe(subscription s) { m_subscribers.remove(s); }
 
 private:
   std::list<subscriber *> m_subscribers;

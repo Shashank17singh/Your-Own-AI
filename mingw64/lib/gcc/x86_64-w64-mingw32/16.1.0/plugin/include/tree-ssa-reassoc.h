@@ -21,8 +21,7 @@ along with GCC; see the file COPYING3.  If not see
 #define GCC_SSA_REASSOC_H
 
 /* Operator, rank pair.  */
-struct operand_entry
-{
+struct operand_entry {
   unsigned int rank;
   unsigned int id;
   tree op;
@@ -30,8 +29,7 @@ struct operand_entry
   gimple *stmt_to_insert;
 };
 
-struct range_entry
-{
+struct range_entry {
   tree exp;
   tree low;
   tree high;
@@ -40,9 +38,9 @@ struct range_entry
   unsigned int idx, next;
 };
 
-void dump_range_entry (FILE *file, struct range_entry *r);
-void debug_range_entry (struct range_entry *r);
-void init_range_entry (struct range_entry *r, tree exp, gimple *stmt);
-bool no_side_effect_bb (basic_block bb);
+void dump_range_entry(FILE *file, struct range_entry *r);
+void debug_range_entry(struct range_entry *r);
+void init_range_entry(struct range_entry *r, tree exp, gimple *stmt);
+bool no_side_effect_bb(basic_block bb);
 
-#endif  /* GCC_SSA_REASSOC_H  */
+#endif /* GCC_SSA_REASSOC_H  */

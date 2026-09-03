@@ -21,9 +21,8 @@ along with GCC; see the file COPYING3.  If not see
 #define GCC_COLLECT2_AIX_H
 /* collect2-aix.cc requires mmap support.  It should otherwise be
    fairly portable.  */
-#if defined(CROSS_DIRECTORY_STRUCTURE) \
-    && defined(TARGET_AIX_VERSION) \
-    && HAVE_MMAP
+#if defined(CROSS_DIRECTORY_STRUCTURE) && defined(TARGET_AIX_VERSION) &&       \
+    HAVE_MMAP
 
 #define CROSS_AIX_SUPPORT 1
 
@@ -44,8 +43,7 @@ typedef unsigned HOST_WIDE_INT bfd_vma;
 #define AR_BIG_OFFSET_SIZE 20
 
 /* The format of the file header in a "big" XCOFF archive.  */
-struct external_big_ar_filehdr
-{
+struct external_big_ar_filehdr {
   /* Magic string.  */
   char fl_magic[FL_MAGIC_SIZE];
 
@@ -75,8 +73,7 @@ struct external_big_ar_filehdr
 #define SXCOFFARFMAG 2
 
 /* The format of a member header in a "big" XCOFF archive.  */
-struct external_big_ar_member
-{
+struct external_big_ar_member {
   /* File size not including the header (decimal ASCII string).  */
   char ar_size[AR_BIG_OFFSET_SIZE];
 
@@ -110,18 +107,17 @@ struct external_big_ar_member
 };
 
 /* The known values of f_magic in an XCOFF file header.  */
-#define U802WRMAGIC 0730	/* Writeable text segments.  */
-#define U802ROMAGIC 0735	/* Readonly sharable text segments.  */
-#define U802TOCMAGIC 0737	/* Readonly text segments and TOC.  */
-#define U803XTOCMAGIC 0757	/* Aix 4.3 64-bit XCOFF.  */
-#define U64_TOCMAGIC 0767	/* AIX 5+ 64-bit XCOFF.  */
+#define U802WRMAGIC 0730   /* Writeable text segments.  */
+#define U802ROMAGIC 0735   /* Readonly sharable text segments.  */
+#define U802TOCMAGIC 0737  /* Readonly text segments and TOC.  */
+#define U803XTOCMAGIC 0757 /* Aix 4.3 64-bit XCOFF.  */
+#define U64_TOCMAGIC 0767  /* AIX 5+ 64-bit XCOFF.  */
 
 /* The number of bytes in an XCOFF file's f_magic field.  */
 #define F_MAGIC_SIZE 2
 
 /* The format of a 32-bit XCOFF file header.  */
-struct external_filehdr_32
-{
+struct external_filehdr_32 {
   /* The magic number.  */
   char f_magic[F_MAGIC_SIZE];
 
@@ -145,8 +141,7 @@ struct external_filehdr_32
 };
 
 /* The format of a 64-bit XCOFF file header.  */
-struct external_filehdr_64
-{
+struct external_filehdr_64 {
   /* The magic number.  */
   char f_magic[F_MAGIC_SIZE];
 
@@ -170,8 +165,7 @@ struct external_filehdr_64
 };
 
 /* An internal representation of the XCOFF file header.  */
-struct internal_filehdr
-{
+struct internal_filehdr {
   unsigned short f_magic;
   unsigned short f_nscns;
   long f_timdat;
@@ -186,20 +180,19 @@ struct internal_filehdr
 #define DBXMASK 0x80
 
 /* The format of an XCOFF symbol-table entry.  */
-struct external_syment
-{
+struct external_syment {
   union {
     struct {
       union {
-	/* The name of the symbol.  There is an implicit null character
-	   after the end of the array.  */
-	char n_name[8];
-	struct {
-	  /* If n_zeroes is zero, n_offset is the offset the name from
-	     the start of the string table.  */
-	  char n_zeroes[4];
-	  char n_offset[4];
-	} u;
+        /* The name of the symbol.  There is an implicit null character
+           after the end of the array.  */
+        char n_name[8];
+        struct {
+          /* If n_zeroes is zero, n_offset is the offset the name from
+             the start of the string table.  */
+          char n_zeroes[4];
+          char n_offset[4];
+        } u;
       } u;
 
       /* The symbol's value.  */
@@ -231,10 +224,10 @@ struct external_syment
 /* Definitions required by collect2.  */
 #define C_EXT 2
 
-#define F_SHROBJ    0x2000
-#define F_LOADONLY  0x4000
+#define F_SHROBJ 0x2000
+#define F_LOADONLY 0x4000
 
-#define N_UNDEF ((short) 0)
+#define N_UNDEF ((short)0)
 #define N_TMASK 060
 #define N_BTSHFT 4
 
@@ -247,8 +240,7 @@ struct external_syment
 
 /* An internal representation of an XCOFF symbol-table entry,
    which is associated with the API-defined SYMENT type.  */
-struct internal_syment
-{
+struct internal_syment {
   char n_name[9];
   unsigned int n_zeroes;
   bfd_vma n_offset;
@@ -262,8 +254,7 @@ struct internal_syment
 typedef struct internal_syment SYMENT;
 
 /* The internal representation of the API-defined LDFILE type.  */
-struct internal_ldfile
-{
+struct internal_ldfile {
   /* The file handle for the associated file, or -1 if it hasn't been
      opened yet.  */
   int fd;
@@ -296,10 +287,10 @@ typedef struct internal_ldfile LDFILE;
 #define FAILURE 0
 
 /* API-defined functions.  */
-extern LDFILE *ldopen (char *, LDFILE *);
-extern char *ldgetname (LDFILE *, SYMENT *);
-extern int ldtbread (LDFILE *, long, SYMENT *);
-extern int ldclose (LDFILE *);
+extern LDFILE *ldopen(char *, LDFILE *);
+extern char *ldgetname(LDFILE *, SYMENT *);
+extern int ldtbread(LDFILE *, long, SYMENT *);
+extern int ldclose(LDFILE *);
 
 #endif
 

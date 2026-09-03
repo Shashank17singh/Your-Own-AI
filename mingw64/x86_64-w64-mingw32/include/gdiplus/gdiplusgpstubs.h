@@ -19,20 +19,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-
 #ifndef __GDIPLUS_GPSTUBS_H
 #define __GDIPLUS_GPSTUBS_H
-#if __GNUC__ >=3
+#if __GNUC__ >= 3
 #pragma GCC system_header
 #endif
-
 typedef Point GpPoint;
 typedef PointF GpPointF;
 typedef Rect GpRect;
 typedef RectF GpRectF;
 typedef Size GpSize;
 typedef SizeF GpSizeF;
-
 typedef enum BrushType GpBrushType;
 typedef enum CombineMode GpCombineMode;
 typedef enum CompositingMode GpCompositingMode;
@@ -76,38 +73,33 @@ typedef enum TextRenderingHint GpTextRenderingHint;
 typedef enum Unit GpUnit;
 typedef enum WarpMode GpWarpMode;
 typedef enum WrapMode GpWrapMode;
-
 #ifdef __cplusplus
-
-class CGpEffect {}; 
+class CGpEffect {};
 class GpCustomLineCap {};
 class GpImage {};
-
-class GpAdjustableArrowCap: public GpCustomLineCap {};
-class GpBitmap: public GpImage {};
+class GpAdjustableArrowCap : public GpCustomLineCap {};
+class GpBitmap : public GpImage {};
 class GpBrush {};
 class GpCachedBitmap {};
 class GpFont {};
 class GpFontCollection {};
 class GpFontFamily {};
 class GpGraphics {};
-class GpHatch: public GpBrush {};         /* HatchBrush */
+class GpHatch : public GpBrush {}; /* HatchBrush */
 class GpImageAttributes {};
-class GpLineGradient: public GpBrush {};  /* LinearGradientBrush */
+class GpLineGradient : public GpBrush {}; /* LinearGradientBrush */
 class GpMatrix {};
-class GpMetafile: public GpImage {};
-class GpPath {};                          /* GraphicsPath */
+class GpMetafile : public GpImage {};
+class GpPath {}; /* GraphicsPath */
 class GpPathData {};
-class GpPathGradient: public GpBrush {};  /* PathGradientBrush */
+class GpPathGradient : public GpBrush {}; /* PathGradientBrush */
 class GpPathIterator {};                  /* GraphicsPathIterator */
 class GpPen {};
 class GpRegion {};
-class GpSolidFill: public GpBrush {};     /* SolidBrush */
+class GpSolidFill : public GpBrush {}; /* SolidBrush */
 class GpStringFormat {};
-class GpTexture: public GpBrush {};       /* TextureBrush */
-
-#else /* !__cplusplus */
-
+class GpTexture : public GpBrush {}; /* TextureBrush */
+#else                                /* !__cplusplus */
 typedef void CGpEffect;
 typedef void GpAdjustableArrowCap;
 typedef void GpBitmap;
@@ -133,7 +125,5 @@ typedef void GpRegion;
 typedef void GpSolidFill;
 typedef void GpStringFormat;
 typedef void GpTexture;
-
-#endif /* !__cplusplus */
-
-#endif /* __GDIPLUS_GPSTUBS_H */
+#endif                               /* !__cplusplus */
+#endif                               /* __GDIPLUS_GPSTUBS_H */

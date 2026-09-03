@@ -5,7 +5,5 @@
  */
 #ifndef __SSPSERR_H__
 #define __SSPSERR_H__
-
 #include <scarderr.h>
-
 #endif

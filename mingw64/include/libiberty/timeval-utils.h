@@ -27,11 +27,11 @@ extern "C" {
 /* forward decl */
 struct timeval;
 
-extern void timeval_add (struct timeval *result,
-			 const struct timeval *a, const struct timeval *b);
+extern void timeval_add(struct timeval *result, const struct timeval *a,
+                        const struct timeval *b);
 
-extern void timeval_sub (struct timeval *result,
-			 const struct timeval *a, const struct timeval *b);
+extern void timeval_sub(struct timeval *result, const struct timeval *a,
+                        const struct timeval *b);
 
 #ifdef __cplusplus
 }

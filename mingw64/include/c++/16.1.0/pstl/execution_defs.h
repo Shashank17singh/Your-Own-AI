@@ -12,31 +12,20 @@
 
 #include <type_traits>
 
-namespace __pstl
-{
-namespace execution
-{
-inline namespace v1
-{
+namespace __pstl {
+namespace execution {
+inline namespace v1 {
 
 // 2.4, Sequential execution policy
-class sequenced_policy
-{
-};
+class sequenced_policy {};
 
 // 2.5, Parallel execution policy
-class parallel_policy
-{
-};
+class parallel_policy {};
 
 // 2.6, Parallel+Vector execution policy
-class parallel_unsequenced_policy
-{
-};
+class parallel_unsequenced_policy {};
 
-class unsequenced_policy
-{
-};
+class unsequenced_policy {};
 
 // 2.8, Execution policy objects
 _GLIBCXX17_INLINE constexpr sequenced_policy seq{};
@@ -45,53 +34,46 @@ _GLIBCXX17_INLINE constexpr parallel_unsequenced_policy par_unseq{};
 _GLIBCXX17_INLINE constexpr unsequenced_policy unseq{};
 
 // 2.3, Execution policy type trait
-template <class _Tp>
-struct is_execution_policy : std::false_type
-{
-};
+template <class _Tp> struct is_execution_policy : std::false_type {};
 
 template <>
-struct is_execution_policy<__pstl::execution::sequenced_policy> : std::true_type
-{
-};
+struct is_execution_policy<__pstl::execution::sequenced_policy>
+    : std::true_type {};
 template <>
-struct is_execution_policy<__pstl::execution::parallel_policy> : std::true_type
-{
-};
+struct is_execution_policy<__pstl::execution::parallel_policy>
+    : std::true_type {};
 template <>
-struct is_execution_policy<__pstl::execution::parallel_unsequenced_policy> : std::true_type
-{
-};
+struct is_execution_policy<__pstl::execution::parallel_unsequenced_policy>
+    : std::true_type {};
 template <>
-struct is_execution_policy<__pstl::execution::unsequenced_policy> : std::true_type
-{
-};
+struct is_execution_policy<__pstl::execution::unsequenced_policy>
+    : std::true_type {};
 
-#if defined (_PSTL_CPP14_VARIABLE_TEMPLATES_PRESENT)
+#if defined(_PSTL_CPP14_VARIABLE_TEMPLATES_PRESENT)
 template <class _Tp>
-constexpr bool is_execution_policy_v = __pstl::execution::is_execution_policy<_Tp>::value;
+constexpr bool is_execution_policy_v =
+    __pstl::execution::is_execution_policy<_Tp>::value;
 #endif
 
 } // namespace v1
 } // namespace execution
 
-namespace __internal
-{
+namespace __internal {
 template <class _ExecPolicy, class _Tp>
 #if _GLIBCXX_RELEASE >= 9
 using __enable_if_execution_policy =
-    typename std::enable_if<__pstl::execution::is_execution_policy<std::__remove_cvref_t<_ExecPolicy>>::value,
+    typename std::enable_if<__pstl::execution::is_execution_policy<
+                                std::__remove_cvref_t<_ExecPolicy>>::value,
                             _Tp>::type;
 #else
 using __enable_if_execution_policy =
-    typename std::enable_if<__pstl::execution::is_execution_policy<typename std::decay<_ExecPolicy>::type>::value,
+    typename std::enable_if<__pstl::execution::is_execution_policy<
+                                typename std::decay<_ExecPolicy>::type>::value,
                             _Tp>::type;
 #endif
 
-template <class _IsVector>
-struct __serial_tag;
-template <class _IsVector>
-struct __parallel_tag;
+template <class _IsVector> struct __serial_tag;
+template <class _IsVector> struct __parallel_tag;
 
 } // namespace __internal
 

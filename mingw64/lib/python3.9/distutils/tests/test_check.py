@@ -1,4 +1,5 @@
 """Tests for distutils.command.check."""
+
 import os
 import textwrap
 import unittest
@@ -17,9 +18,7 @@ except ImportError:
 HERE = os.path.dirname(__file__)
 
 
-class CheckTestCase(support.LoggingSilencer,
-                    support.TempdirManager,
-                    unittest.TestCase):
+class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.TestCase):
 
     def _run(self, metadata=None, cwd=None, **options):
         if metadata is None:
@@ -48,26 +47,34 @@ class CheckTestCase(support.LoggingSilencer,
         # now let's add the required fields
         # and run it again, to make sure we don't get
         # any warning anymore
-        metadata = {'url': 'xxx', 'author': 'xxx',
-                    'author_email': 'xxx',
-                    'name': 'xxx', 'version': 'xxx'}
+        metadata = {
+            "url": "xxx",
+            "author": "xxx",
+            "author_email": "xxx",
+            "name": "xxx",
+            "version": "xxx",
+        }
         cmd = self._run(metadata)
         self.assertEqual(cmd._warnings, 0)
 
         # now with the strict mode, we should
         # get an error if there are missing metadata
-        self.assertRaises(DistutilsSetupError, self._run, {}, **{'strict': 1})
+        self.assertRaises(DistutilsSetupError, self._run, {}, **{"strict": 1})
 
         # and of course, no error when all metadata are present
         cmd = self._run(metadata, strict=1)
         self.assertEqual(cmd._warnings, 0)
 
         # now a test with non-ASCII characters
-        metadata = {'url': 'xxx', 'author': '\u00c9ric',
-                    'author_email': 'xxx', 'name': 'xxx',
-                    'version': 'xxx',
-                    'description': 'Something about esszet \u00df',
-                    'long_description': 'More things about esszet \u00df'}
+        metadata = {
+            "url": "xxx",
+            "author": "\u00c9ric",
+            "author_email": "xxx",
+            "name": "xxx",
+            "version": "xxx",
+            "description": "Something about esszet \u00df",
+            "long_description": "More things about esszet \u00df",
+        }
         cmd = self._run(metadata)
         self.assertEqual(cmd._warnings, 0)
 
@@ -77,39 +84,47 @@ class CheckTestCase(support.LoggingSilencer,
         cmd = check(dist)
 
         # let's see if it detects broken rest
-        broken_rest = 'title\n===\n\ntest'
+        broken_rest = "title\n===\n\ntest"
         msgs = cmd._check_rst_data(broken_rest)
         self.assertEqual(len(msgs), 1)
 
         # and non-broken rest
-        rest = 'title\n=====\n\ntest'
+        rest = "title\n=====\n\ntest"
         msgs = cmd._check_rst_data(rest)
         self.assertEqual(len(msgs), 0)
 
     @unittest.skipUnless(HAS_DOCUTILS, "won't test without docutils")
     def test_check_restructuredtext(self):
         # let's see if it detects broken rest in long_description
-        broken_rest = 'title\n===\n\ntest'
+        broken_rest = "title\n===\n\ntest"
         pkg_info, dist = self.create_dist(long_description=broken_rest)
         cmd = check(dist)
         cmd.check_restructuredtext()
         self.assertEqual(cmd._warnings, 1)
 
         # let's see if we have an error with strict=1
-        metadata = {'url': 'xxx', 'author': 'xxx',
-                    'author_email': 'xxx',
-                    'name': 'xxx', 'version': 'xxx',
-                    'long_description': broken_rest}
-        self.assertRaises(DistutilsSetupError, self._run, metadata,
-                          **{'strict': 1, 'restructuredtext': 1})
+        metadata = {
+            "url": "xxx",
+            "author": "xxx",
+            "author_email": "xxx",
+            "name": "xxx",
+            "version": "xxx",
+            "long_description": broken_rest,
+        }
+        self.assertRaises(
+            DistutilsSetupError,
+            self._run,
+            metadata,
+            **{"strict": 1, "restructuredtext": 1}
+        )
 
         # and non-broken rest, including a non-ASCII character to test #12114
-        metadata['long_description'] = 'title\n=====\n\ntest \u00df'
+        metadata["long_description"] = "title\n=====\n\ntest \u00df"
         cmd = self._run(metadata, strict=1, restructuredtext=1)
         self.assertEqual(cmd._warnings, 0)
 
         # check that includes work to test #31292
-        metadata['long_description'] = 'title\n=====\n\n.. include:: includetest.rst'
+        metadata["long_description"] = "title\n=====\n\n.. include:: includetest.rst"
         cmd = self._run(metadata, cwd=HERE, strict=1, restructuredtext=1)
         self.assertEqual(cmd._warnings, 0)
 
@@ -145,19 +160,20 @@ class CheckTestCase(support.LoggingSilencer,
             else:
                 self.assertEqual(len(msgs), 1)
                 self.assertEqual(
-                    str(msgs[0][1]),
-                    'Cannot analyze code. Pygments package not found.'
+                    str(msgs[0][1]), "Cannot analyze code. Pygments package not found."
                 )
 
     def test_check_all(self):
 
-        metadata = {'url': 'xxx', 'author': 'xxx'}
-        self.assertRaises(DistutilsSetupError, self._run,
-                          {}, **{'strict': 1,
-                                 'restructuredtext': 1})
+        metadata = {"url": "xxx", "author": "xxx"}
+        self.assertRaises(
+            DistutilsSetupError, self._run, {}, **{"strict": 1, "restructuredtext": 1}
+        )
+
 
 def test_suite():
     return unittest.makeSuite(CheckTestCase)
+
 
 if __name__ == "__main__":
     run_unittest(test_suite())

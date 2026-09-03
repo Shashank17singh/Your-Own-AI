@@ -23,55 +23,46 @@ along with GCC; see the file COPYING3.  If not see
 
 #include "json.h"
 
-namespace json
-{
+namespace json {
 
 /* Declarations for parsing JSON to a json::value * tree.  */
 
 /* Abstract base class for recording what the locations of JSON values
    were as they parsed.  */
 
-class location_map
-{
+class location_map {
 public:
   /* A point within the JSON input file.  */
-  struct point
-  {
+  struct point {
     size_t m_unichar_idx; /* zero-based.  */
-    int m_line;   /* one-based.  */
-    int m_column; /* zero-based unichar count.  */
+    int m_line;           /* one-based.  */
+    int m_column;         /* zero-based unichar count.  */
   };
 
   /* A range of points within the JSON input file.
      Both endpoints are part of the range.  */
-  struct range
-  {
+  struct range {
     point m_start;
     point m_end;
   };
 
-  virtual ~location_map () {}
-  virtual void record_range_for_value (json::value *jv, const range &r) = 0;
-  virtual void on_finished_parsing () {}
+  virtual ~location_map() {}
+  virtual void record_range_for_value(json::value *jv, const range &r) = 0;
+  virtual void on_finished_parsing() {}
 };
 
 /* Implementation of json::location_map that records ranges to a std::map.  */
 
-class simple_location_map : public location_map
-{
+class simple_location_map : public location_map {
 public:
-  void
-  record_range_for_value (json::value *jv,
-			  const range &r) final override
-  {
+  void record_range_for_value(json::value *jv, const range &r) final override {
     m_map_jv_to_range[jv] = r;
   }
 
   const json::location_map::range &
-  get_range_for_value (const json::value &jv) const
-  {
-    auto iter = m_map_jv_to_range.find (&jv);
-    gcc_assert (iter != m_map_jv_to_range.end ());
+  get_range_for_value(const json::value &jv) const {
+    auto iter = m_map_jv_to_range.find(&jv);
+    gcc_assert(iter != m_map_jv_to_range.end());
     return iter->second;
   }
 
@@ -81,20 +72,13 @@ private:
 
 /* Class for recording an error within a JSON file.  */
 
-class error
-{
+class error {
 public:
-  error (const location_map::range &r, char *msg)
-  : m_range (r), m_msg (msg)
-  {
-  }
-  ~error ()
-  {
-    free (m_msg);
-  }
+  error(const location_map::range &r, char *msg) : m_range(r), m_msg(msg) {}
+  ~error() { free(m_msg); }
 
-  const location_map::range &get_range () const { return m_range; }
-  const char *get_msg () const { return m_msg; }
+  const location_map::range &get_range() const { return m_range; }
+  const char *get_msg() const { return m_msg; }
 
 private:
   location_map::range m_range;
@@ -105,11 +89,9 @@ private:
    (or both null for the case of "successful nullptr").
    The types must be default-constructible.  */
 
-template <typename ValueType, typename ErrorType>
-struct result
-{
-  result (ValueType val) : m_val (std::move (val)), m_err () {}
-  result (ErrorType err) : m_val (), m_err (std::move (err)) {}
+template <typename ValueType, typename ErrorType> struct result {
+  result(ValueType val) : m_val(std::move(val)), m_err() {}
+  result(ErrorType err) : m_val(), m_err(std::move(err)) {}
 
   ValueType m_val;
   ErrorType m_err;
@@ -117,21 +99,16 @@ struct result
 
 /* Typedef for the result of parsing JSON: ownership of either a
    json::value * or of a json::error *.  */
-typedef result<std::unique_ptr<value>,
-	       std::unique_ptr<error>> parser_result_t;
+typedef result<std::unique_ptr<value>, std::unique_ptr<error>> parser_result_t;
 
 /* Functions for parsing JSON buffers.  */
 
-extern parser_result_t
-parse_utf8_string (size_t length,
-		   const char *utf8_buf,
-		   bool allow_comments,
-		   location_map *out_loc_map);
-extern parser_result_t
-parse_utf8_string (const char *utf8,
-		   bool allow_comments,
-		   location_map *out_loc_map);
+extern parser_result_t parse_utf8_string(size_t length, const char *utf8_buf,
+                                         bool allow_comments,
+                                         location_map *out_loc_map);
+extern parser_result_t parse_utf8_string(const char *utf8, bool allow_comments,
+                                         location_map *out_loc_map);
 
 } // namespace json
 
-#endif  /* GCC_JSON_PARSING_H  */
+#endif /* GCC_JSON_PARSING_H  */

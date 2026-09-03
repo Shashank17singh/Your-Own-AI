@@ -4,7 +4,7 @@ Generic framework path manipulation
 
 import re
 
-__all__ = ['framework_info']
+__all__ = ["framework_info"]
 
 STRICT_FRAMEWORK_RE = re.compile(r"""(?x)
 (?P<location>^.*)(?:^|/)
@@ -15,6 +15,7 @@ STRICT_FRAMEWORK_RE = re.compile(r"""(?x)
     (?:_(?P<suffix>[^_]+))?
 )$
 """)
+
 
 def framework_info(filename):
     """
@@ -41,6 +42,7 @@ def framework_info(filename):
         return None
     return is_framework.groupdict()
 
+
 def test_framework_info():
     def d(location=None, name=None, shortname=None, version=None, suffix=None):
         return dict(
@@ -48,18 +50,26 @@ def test_framework_info():
             name=name,
             shortname=shortname,
             version=version,
-            suffix=suffix
+            suffix=suffix,
         )
-    assert framework_info('completely/invalid') is None
-    assert framework_info('completely/invalid/_debug') is None
-    assert framework_info('P/F.framework') is None
-    assert framework_info('P/F.framework/_debug') is None
-    assert framework_info('P/F.framework/F') == d('P', 'F.framework/F', 'F')
-    assert framework_info('P/F.framework/F_debug') == d('P', 'F.framework/F_debug', 'F', suffix='debug')
-    assert framework_info('P/F.framework/Versions') is None
-    assert framework_info('P/F.framework/Versions/A') is None
-    assert framework_info('P/F.framework/Versions/A/F') == d('P', 'F.framework/Versions/A/F', 'F', 'A')
-    assert framework_info('P/F.framework/Versions/A/F_debug') == d('P', 'F.framework/Versions/A/F_debug', 'F', 'A', 'debug')
 
-if __name__ == '__main__':
+    assert framework_info("completely/invalid") is None
+    assert framework_info("completely/invalid/_debug") is None
+    assert framework_info("P/F.framework") is None
+    assert framework_info("P/F.framework/_debug") is None
+    assert framework_info("P/F.framework/F") == d("P", "F.framework/F", "F")
+    assert framework_info("P/F.framework/F_debug") == d(
+        "P", "F.framework/F_debug", "F", suffix="debug"
+    )
+    assert framework_info("P/F.framework/Versions") is None
+    assert framework_info("P/F.framework/Versions/A") is None
+    assert framework_info("P/F.framework/Versions/A/F") == d(
+        "P", "F.framework/Versions/A/F", "F", "A"
+    )
+    assert framework_info("P/F.framework/Versions/A/F_debug") == d(
+        "P", "F.framework/Versions/A/F_debug", "F", "A", "debug"
+    )
+
+
+if __name__ == "__main__":
     test_framework_info()

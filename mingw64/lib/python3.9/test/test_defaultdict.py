@@ -8,8 +8,10 @@ import unittest
 
 from collections import defaultdict
 
+
 def foobar():
     return list
+
 
 class TestDefaultDict(unittest.TestCase):
 
@@ -66,7 +68,10 @@ class TestDefaultDict(unittest.TestCase):
         self.assertEqual(d2.default_factory, int)
         d2[12] = 42
         self.assertEqual(repr(d2), "defaultdict(<class 'int'>, {12: 42})")
-        def foo(): return 43
+
+        def foo():
+            return 43
+
         d3 = defaultdict(foo)
         self.assertTrue(d3.default_factory is foo)
         d3[13]
@@ -74,7 +79,10 @@ class TestDefaultDict(unittest.TestCase):
 
     def test_print(self):
         d1 = defaultdict()
-        def foo(): return 42
+
+        def foo():
+            return 42
+
         d2 = defaultdict(foo, {1: 2})
         # NOTE: We can't use tempfile.[Named]TemporaryFile since this
         # code must exercise the tp_print C code, which only gets
@@ -114,9 +122,9 @@ class TestDefaultDict(unittest.TestCase):
 
         # Issue 6637: Copy fails for empty default dict
         d = defaultdict()
-        d['a'] = 42
+        d["a"] = 42
         e = d.copy()
-        self.assertEqual(e['a'], 42)
+        self.assertEqual(e["a"], 42)
 
     def test_shallow_copy(self):
         d1 = defaultdict(foobar, {1: 1})
@@ -153,12 +161,15 @@ class TestDefaultDict(unittest.TestCase):
         class sub(defaultdict):
             def __init__(self):
                 self.default_factory = self._factory
+
             def _factory(self):
                 return []
+
         d = sub()
-        self.assertRegex(repr(d),
-            r"sub\(<bound method .*sub\._factory "
-            r"of sub\(\.\.\., \{\}\)>, \{\}\)")
+        self.assertRegex(
+            repr(d),
+            r"sub\(<bound method .*sub\._factory " r"of sub\(\.\.\., \{\}\)>, \{\}\)",
+        )
 
         # NOTE: printing a subclass of a builtin type does not call its
         # tp_print slot. So this part is essentially the same test as above.
@@ -220,6 +231,7 @@ class TestDefaultDict(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             i |= None
+
 
 if __name__ == "__main__":
     unittest.main()

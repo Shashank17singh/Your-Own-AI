@@ -5,21 +5,22 @@
  */
 #ifndef __SPORDER_H__
 #define __SPORDER_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  typedef int (WSPAPI *LPWSCWRITEPROVIDERORDER)(LPDWORD lpwdCatalogEntryId,DWORD dwNumberOfEntries);
-  typedef int (WSPAPI *LPWSCWRITENAMESPACEORDER)(LPGUID lpProviderId,DWORD dwNumberOfEntries);
-
-  int WSPAPI WSCWriteProviderOrder(LPDWORD lpwdCatalogEntryId,DWORD dwNumberOfEntries);
-  int WSPAPI WSCWriteNameSpaceOrder(LPGUID lpProviderId,DWORD dwNumberOfEntries);
+typedef int(WSPAPI *LPWSCWRITEPROVIDERORDER)(LPDWORD lpwdCatalogEntryId,
+                                             DWORD dwNumberOfEntries);
+typedef int(WSPAPI *LPWSCWRITENAMESPACEORDER)(LPGUID lpProviderId,
+                                              DWORD dwNumberOfEntries);
+int WSPAPI WSCWriteProviderOrder(LPDWORD lpwdCatalogEntryId,
+                                 DWORD dwNumberOfEntries);
+int WSPAPI WSCWriteNameSpaceOrder(LPGUID lpProviderId, DWORD dwNumberOfEntries);
 #ifdef _WIN64
-  int WSPAPI WSCWriteProviderOrder32(LPDWORD lpwdCatalogEntryId,DWORD dwNumberOfEntries);
-  int WSPAPI WSCWriteNameSpaceOrder32(LPGUID lpProviderId,DWORD dwNumberOfEntries);
+int WSPAPI WSCWriteProviderOrder32(LPDWORD lpwdCatalogEntryId,
+                                   DWORD dwNumberOfEntries);
+int WSPAPI WSCWriteNameSpaceOrder32(LPGUID lpProviderId,
+                                    DWORD dwNumberOfEntries);
 #endif
-
 #ifdef __cplusplus
 }
 #endif

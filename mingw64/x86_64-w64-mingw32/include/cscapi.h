@@ -10,16 +10,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-DWORD OfflineFilesEnable(
-  WINBOOL bEnable,
-  WINBOOL *pbRebootRequired
-);
-DWORD OfflineFilesQueryStatus(
-  WINBOOL *pbActive,
-  WINBOOL *pbEnabled
-);
-
+DWORD OfflineFilesEnable(WINBOOL bEnable, WINBOOL *pbRebootRequired);
+DWORD OfflineFilesQueryStatus(WINBOOL *pbActive, WINBOOL *pbEnabled);
 #ifdef __cplusplus
 }
 #endif

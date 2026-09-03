@@ -1,5 +1,4 @@
 """Response classes used by urllib.
-
 The base class, addbase, defines a minimal file-like interface,
 including read() and readline().  The typical response object is an
 addinfourl instance, which defines an info() method that returns
@@ -8,22 +7,22 @@ headers and a geturl() method that returns the url.
 
 import tempfile
 
-__all__ = ['addbase', 'addclosehook', 'addinfo', 'addinfourl']
+__all__ = ["addbase", "addclosehook", "addinfo", "addinfourl"]
 
 
 class addbase(tempfile._TemporaryFileWrapper):
     """Base class for addinfo and addclosehook. Is a good idea for garbage collection."""
 
-    # XXX Add a method to expose the timeout on the underlying socket?
-
     def __init__(self, fp):
-        super(addbase,  self).__init__(fp, '<urllib response>', delete=False)
-        # Keep reference around as this was part of the original API.
+        super(addbase, self).__init__(fp, "<urllib response>", delete=False)
         self.fp = fp
 
     def __repr__(self):
-        return '<%s at %r whose fp = %r>' % (self.__class__.__name__,
-                                             id(self), self.file)
+        return "<%s at %r whose fp = %r>" % (
+            self.__class__.__name__,
+            id(self),
+            self.file,
+        )
 
     def __enter__(self):
         if self.fp.closed:

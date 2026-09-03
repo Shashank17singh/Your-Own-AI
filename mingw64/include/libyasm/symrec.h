@@ -39,22 +39,22 @@
  * with a visibility of #YASM_SYM_EXTERN or #YASM_SYM_COMMON.
  */
 typedef enum yasm_sym_status {
-    YASM_SYM_NOSTATUS = 0,          /**< no status */
-    YASM_SYM_USED = 1 << 0,         /**< for use before definition */
-    YASM_SYM_DEFINED = 1 << 1,      /**< once it's been defined in the file */
-    YASM_SYM_VALUED = 1 << 2,       /**< once its value has been determined */
-    YASM_SYM_NOTINTABLE = 1 << 3    /**< if it's not in sym_table (ex. '$') */
+  YASM_SYM_NOSTATUS = 0,       /**< no status */
+  YASM_SYM_USED = 1 << 0,      /**< for use before definition */
+  YASM_SYM_DEFINED = 1 << 1,   /**< once it's been defined in the file */
+  YASM_SYM_VALUED = 1 << 2,    /**< once its value has been determined */
+  YASM_SYM_NOTINTABLE = 1 << 3 /**< if it's not in sym_table (ex. '$') */
 } yasm_sym_status;
 
 /** Symbol record visibility.
  * \note YASM_SYM_EXTERN and YASM_SYM_COMMON are mutually exclusive.
  */
 typedef enum yasm_sym_vis {
-    YASM_SYM_LOCAL = 0,         /**< Default, local only */
-    YASM_SYM_GLOBAL = 1 << 0,   /**< If symbol is declared GLOBAL */
-    YASM_SYM_COMMON = 1 << 1,   /**< If symbol is declared COMMON */
-    YASM_SYM_EXTERN = 1 << 2,   /**< If symbol is declared EXTERN */
-    YASM_SYM_DLOCAL = 1 << 3    /**< If symbol is explicitly declared LOCAL */
+  YASM_SYM_LOCAL = 0,       /**< Default, local only */
+  YASM_SYM_GLOBAL = 1 << 0, /**< If symbol is declared GLOBAL */
+  YASM_SYM_COMMON = 1 << 1, /**< If symbol is declared COMMON */
+  YASM_SYM_EXTERN = 1 << 2, /**< If symbol is declared EXTERN */
+  YASM_SYM_DLOCAL = 1 << 3  /**< If symbol is explicitly declared LOCAL */
 } yasm_sym_vis;
 
 /** Create a new symbol table. */
@@ -95,8 +95,8 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_use
-    (yasm_symtab *symtab, const char *name, unsigned long line);
+/*@dependent@*/ yasm_symrec *
+yasm_symtab_use(yasm_symtab *symtab, const char *name, unsigned long line);
 
 /** Get a reference to a symbol, without "using" it.  Should be used for cases
  * when an internal assembler usage of a symbol shouldn't be treated like a
@@ -107,8 +107,8 @@ YASM_LIB_DECL
  *         doesn't exist.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@dependent@*/ yasm_symrec *yasm_symtab_get
-    (yasm_symtab *symtab, const char *name);
+/*@null@*/ /*@dependent@*/ yasm_symrec *yasm_symtab_get(yasm_symtab *symtab,
+                                                        const char *name);
 
 /** Define a symbol as an EQU value.
  * \param symtab    symbol table
@@ -118,9 +118,10 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_define_equ
-    (yasm_symtab *symtab, const char *name, /*@keep@*/ yasm_expr *e,
-     unsigned long line);
+/*@dependent@*/ yasm_symrec *yasm_symtab_define_equ(yasm_symtab *symtab,
+                                                    const char *name,
+                                                    /*@keep@*/ yasm_expr *e,
+                                                    unsigned long line);
 
 /** Define a symbol as a label.
  * \param symtab    symbol table
@@ -132,9 +133,10 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_define_label
-    (yasm_symtab *symtab, const char *name,
-     /*@dependent@*/ yasm_bytecode *precbc, int in_table, unsigned long line);
+/*@dependent@*/ yasm_symrec *
+yasm_symtab_define_label(yasm_symtab *symtab, const char *name,
+                         /*@dependent@*/ yasm_bytecode *precbc, int in_table,
+                         unsigned long line);
 
 /** Define a symbol as a label representing the current assembly position.
  * This should be used for this purpose instead of yasm_symtab_define_label()
@@ -147,9 +149,10 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_define_curpos
-    (yasm_symtab *symtab, const char *name,
-     /*@dependent@*/ yasm_bytecode *precbc, unsigned long line);
+/*@dependent@*/ yasm_symrec *
+yasm_symtab_define_curpos(yasm_symtab *symtab, const char *name,
+                          /*@dependent@*/ yasm_bytecode *precbc,
+                          unsigned long line);
 
 /** Define a special symbol that will appear in the symbol table and have a
  * defined name, but have no other data associated with it within the
@@ -160,8 +163,9 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_define_special
-    (yasm_symtab *symtab, const char *name, yasm_sym_vis vis);
+/*@dependent@*/ yasm_symrec *yasm_symtab_define_special(yasm_symtab *symtab,
+                                                        const char *name,
+                                                        yasm_sym_vis vis);
 
 /** Declare external visibility of a symbol.
  * \note Not all visibility combinations are allowed.
@@ -172,9 +176,10 @@ YASM_LIB_DECL
  * \return Symbol (dependent pointer, do not free).
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_symrec *yasm_symtab_declare
-    (yasm_symtab *symtab, const char *name, yasm_sym_vis vis,
-     unsigned long line);
+/*@dependent@*/ yasm_symrec *yasm_symtab_declare(yasm_symtab *symtab,
+                                                 const char *name,
+                                                 yasm_sym_vis vis,
+                                                 unsigned long line);
 
 /** Declare external visibility of a symbol.
  * \note Not all visibility combinations are allowed.
@@ -191,8 +196,8 @@ void yasm_symrec_declare(yasm_symrec *symrec, yasm_sym_vis vis,
  * \param d         data passed into yasm_symrec_traverse()
  * \return Nonzero to stop symbol traversal.
  */
-typedef int (*yasm_symtab_traverse_callback)
-    (yasm_symrec *sym, /*@null@*/ void *d);
+typedef int (*yasm_symtab_traverse_callback)(yasm_symrec *sym,
+                                             /*@null@*/ void *d);
 
 /** Traverse all symbols in the symbol table.
  * \param symtab    symbol table
@@ -202,9 +207,8 @@ typedef int (*yasm_symtab_traverse_callback)
  *         nonzero.
  */
 YASM_LIB_DECL
-int /*@alt void@*/ yasm_symtab_traverse
-    (yasm_symtab *symtab, /*@null@*/ void *d,
-     yasm_symtab_traverse_callback func);
+int /*@alt void@*/ yasm_symtab_traverse(yasm_symtab *symtab, /*@null@*/ void *d,
+                                        yasm_symtab_traverse_callback func);
 
 /** Symbol table iterator (opaque type). */
 typedef struct yasm_symtab_iter yasm_symtab_iter;
@@ -221,8 +225,8 @@ const yasm_symtab_iter *yasm_symtab_first(const yasm_symtab *symtab);
  * \return Next iterator value, or NULL if no more symbols in the table.
  */
 YASM_LIB_DECL
-/*@null@*/ const yasm_symtab_iter *yasm_symtab_next
-    (const yasm_symtab_iter *prev);
+/*@null@*/ const yasm_symtab_iter *
+yasm_symtab_next(const yasm_symtab_iter *prev);
 
 /** Get the symbol corresponding to the current symbol table iterator value.
  * \param cur           iterator value
@@ -306,8 +310,8 @@ unsigned long yasm_symrec_get_use_line(const yasm_symrec *sym);
  * \return EQU value, or NULL if symbol is not an EQU or is not defined.
  */
 YASM_LIB_DECL
-/*@observer@*/ /*@null@*/ const yasm_expr *yasm_symrec_get_equ
-    (const yasm_symrec *sym);
+/*@observer@*/ /*@null@*/ const yasm_expr *
+yasm_symrec_get_equ(const yasm_symrec *sym);
 
 /** Dependent pointer to a bytecode. */
 typedef /*@dependent@*/ yasm_bytecode *yasm_symrec_get_label_bytecodep;
@@ -377,8 +381,8 @@ int yasm_symrec_is_curpos(const yasm_symrec *sym);
  * \param objext_valparams      object-extended valparams
  */
 YASM_LIB_DECL
-void yasm_symrec_set_objext_valparams
-    (yasm_symrec *sym, /*@only@*/ yasm_valparamhead *objext_valparams);
+void yasm_symrec_set_objext_valparams(
+    yasm_symrec *sym, /*@only@*/ yasm_valparamhead *objext_valparams);
 
 /** Get object-extended valparams, if any, associated with symbol's
  * declaration.
@@ -386,16 +390,16 @@ void yasm_symrec_set_objext_valparams
  * \return Object-extended valparams (NULL if none).
  */
 YASM_LIB_DECL
-/*@null@*/ /*@dependent@*/ yasm_valparamhead *yasm_symrec_get_objext_valparams
-    (yasm_symrec *sym);
+/*@null@*/ /*@dependent@*/ yasm_valparamhead *
+yasm_symrec_get_objext_valparams(yasm_symrec *sym);
 
 /** Set common size of symbol.
  * \param sym           symbol
  * \param common_size   common size expression
  */
 YASM_LIB_DECL
-void yasm_symrec_set_common_size
-    (yasm_symrec *sym, /*@only@*/ yasm_expr *common_size);
+void yasm_symrec_set_common_size(yasm_symrec *sym,
+                                 /*@only@*/ yasm_expr *common_size);
 
 /** Get common size of symbol, if symbol is declared COMMON and a size was set
  * for it.
@@ -403,8 +407,8 @@ void yasm_symrec_set_common_size
  * \return Common size (NULL if none).
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ yasm_expr **yasm_symrec_get_common_size
-    (yasm_symrec *sym);
+/*@dependent@*/ /*@null@*/ yasm_expr **
+yasm_symrec_get_common_size(yasm_symrec *sym);
 
 /** Get associated data for a symbol and data callback.
  * \param sym       symbol
@@ -412,8 +416,9 @@ YASM_LIB_DECL
  * \return Associated data (NULL if none).
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ void *yasm_symrec_get_data
-    (yasm_symrec *sym, const yasm_assoc_data_callback *callback);
+/*@dependent@*/ /*@null@*/ void *
+yasm_symrec_get_data(yasm_symrec *sym,
+                     const yasm_assoc_data_callback *callback);
 
 /** Add associated data to a symbol.
  * \attention Deletes any existing associated data for that data callback.

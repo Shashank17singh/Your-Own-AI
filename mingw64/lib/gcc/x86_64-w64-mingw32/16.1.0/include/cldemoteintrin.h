@@ -22,7 +22,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <cldemoteintrin.h> directly; include <x86gprintrin.h> instead."
+#error                                                                         \
+    "Never use <cldemoteintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _CLDEMOTE_H_INCLUDED
@@ -34,10 +35,9 @@
 #define __DISABLE_CLDEMOTE__
 #endif /* __CLDEMOTE__ */
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_cldemote (void *__A)
-{
-  __builtin_ia32_cldemote (__A);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _cldemote(void *__A) {
+  __builtin_ia32_cldemote(__A);
 }
 #ifdef __DISABLE_CLDEMOTE__
 #undef __DISABLE_CLDEMOTE__

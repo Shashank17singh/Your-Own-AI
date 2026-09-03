@@ -30,12 +30,11 @@
 #ifndef _GLIBCXX_ALIGN_H
 #define _GLIBCXX_ALIGN_H 1
 
-#include <bit>          // std::has_single_bit
-#include <debug/assertions.h> // _GLIBCXX_DEBUG_ASSERT
+#include <bit> // std::has_single_bit
 #include <bits/version.h>
+#include <debug/assertions.h> // _GLIBCXX_DEBUG_ASSERT
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 /**
@@ -56,9 +55,8 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
  *
  *  @ingroup memory
  */
-inline void*
-align(size_t __align, size_t __size, void*& __ptr, size_t& __space) noexcept
-{
+inline void *align(size_t __align, size_t __size, void *&__ptr,
+                   size_t &__space) noexcept {
   if (__space < __size)
     return nullptr;
   const auto __intptr = reinterpret_cast<__UINTPTR_TYPE__>(__ptr);
@@ -66,63 +64,57 @@ align(size_t __align, size_t __size, void*& __ptr, size_t& __space) noexcept
   const auto __diff = __aligned - __intptr;
   if (__diff > (__space - __size))
     return nullptr;
-  else
-    {
-      __space -= __diff;
-      return __ptr = reinterpret_cast<void*>(__aligned);
-    }
+  else {
+    __space -= __diff;
+    return __ptr = reinterpret_cast<void *>(__aligned);
+  }
 }
 
 #ifdef __glibcxx_assume_aligned // C++ >= 20
-  /** @brief Inform the compiler that a pointer is aligned.
-   *
-   *  @tparam _Align An alignment value (i.e. a power of two)
-   *  @tparam _Tp    An object type
-   *  @param  __ptr  A pointer that is aligned to _Align
-   *
-   *  C++20 20.10.6 [ptr.align]
-   *
-   *  @ingroup memory
-   */
-  template<size_t _Align, class _Tp>
-    [[nodiscard,__gnu__::__always_inline__]]
-    constexpr _Tp*
-    assume_aligned(_Tp* __ptr) noexcept
-    {
-      static_assert(std::has_single_bit(_Align));
-      if (std::is_constant_evaluated())
-	return __ptr;
-      else
-	{
-	  // This function is expected to be used in hot code, where
-	  // __glibcxx_assert would add unwanted overhead.
-	  _GLIBCXX_DEBUG_ASSERT((__UINTPTR_TYPE__)__ptr % _Align == 0);
-	  return static_cast<_Tp*>(__builtin_assume_aligned(__ptr, _Align));
-	}
-    }
+/** @brief Inform the compiler that a pointer is aligned.
+ *
+ *  @tparam _Align An alignment value (i.e. a power of two)
+ *  @tparam _Tp    An object type
+ *  @param  __ptr  A pointer that is aligned to _Align
+ *
+ *  C++20 20.10.6 [ptr.align]
+ *
+ *  @ingroup memory
+ */
+template <size_t _Align, class _Tp>
+[[nodiscard, __gnu__::__always_inline__]]
+constexpr _Tp *assume_aligned(_Tp *__ptr) noexcept {
+  static_assert(std::has_single_bit(_Align));
+  if (std::is_constant_evaluated())
+    return __ptr;
+  else {
+    // This function is expected to be used in hot code, where
+    // __glibcxx_assert would add unwanted overhead.
+    _GLIBCXX_DEBUG_ASSERT((__UINTPTR_TYPE__)__ptr % _Align == 0);
+    return static_cast<_Tp *>(__builtin_assume_aligned(__ptr, _Align));
+  }
+}
 #endif // __glibcxx_assume_aligned
 
 #ifdef __glibcxx_is_sufficiently_aligned // C++ >= 26
-  /** @brief Is `__ptr` aligned to an _Align byte boundary?
-   *
-   *  @tparam _Align An alignment value
-   *  @tparam _Tp    An object type
-   *
-   *  C++26 20.2.5 [ptr.align]
-   *
-   *  @ingroup memory
-   */
-  template<size_t _Align, class _Tp>
-    [[nodiscard,__gnu__::__always_inline__]]
-    inline bool
-    is_sufficiently_aligned(_Tp* __ptr)
-    {
-      static_assert(std::has_single_bit(_Align));
-      return reinterpret_cast<__UINTPTR_TYPE__>(__ptr) % _Align == 0;
-    }
+/** @brief Is `__ptr` aligned to an _Align byte boundary?
+ *
+ *  @tparam _Align An alignment value
+ *  @tparam _Tp    An object type
+ *
+ *  C++26 20.2.5 [ptr.align]
+ *
+ *  @ingroup memory
+ */
+template <size_t _Align, class _Tp>
+[[nodiscard, __gnu__::__always_inline__]]
+inline bool is_sufficiently_aligned(_Tp *__ptr) {
+  static_assert(std::has_single_bit(_Align));
+  return reinterpret_cast<__UINTPTR_TYPE__>(__ptr) % _Align == 0;
+}
 #endif // __glibcxx_is_sufficiently_aligned
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif /* _GLIBCXX_ALIGN_H */

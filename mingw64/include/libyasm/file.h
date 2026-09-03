@@ -36,13 +36,13 @@
 
 /** Re2c scanner state. */
 typedef struct yasm_scanner {
-    unsigned char *bot;     /**< Bottom of scan buffer */
-    unsigned char *tok;     /**< Start of token */
-    unsigned char *ptr;     /**< Scan marker */
-    unsigned char *cur;     /**< Cursor (1 past end of token) */
-    unsigned char *lim;     /**< Limit of good data */
-    unsigned char *top;     /**< Top of scan buffer */
-    unsigned char *eof;     /**< End of file */
+  unsigned char *bot; /**< Bottom of scan buffer */
+  unsigned char *tok; /**< Start of token */
+  unsigned char *ptr; /**< Scan marker */
+  unsigned char *cur; /**< Cursor (1 past end of token) */
+  unsigned char *lim; /**< Limit of good data */
+  unsigned char *top; /**< Top of scan buffer */
+  unsigned char *eof; /**< End of file */
 } yasm_scanner;
 
 /** Initialize scanner state.
@@ -67,10 +67,10 @@ void yasm_scanner_delete(yasm_scanner *scanner);
  *         scanner state, 0 otherwise.
  */
 YASM_LIB_DECL
-int yasm_fill_helper
-    (yasm_scanner *scanner, unsigned char **cursor,
-     size_t (*input_func) (void *d, unsigned char *buf, size_t max),
-     void *input_func_data);
+int yasm_fill_helper(yasm_scanner *scanner, unsigned char **cursor,
+                     size_t (*input_func)(void *d, unsigned char *buf,
+                                          size_t max),
+                     void *input_func_data);
 
 /** Unescape a string with C-style escapes.  Handles b, f, n, r, t, and hex
  * and octal escapes.  String is updated in-place.
@@ -112,12 +112,12 @@ size_t yasm__splitpath_win(const char *path, /*@out@*/ const char **tail);
  * \return Length of head (directory).
  */
 #ifndef yasm__splitpath
-# if defined (_WIN32) || defined (WIN32) || defined (__MSDOS__) || \
- defined (__DJGPP__) || defined (__OS2__)
-#  define yasm__splitpath(path, tail)   yasm__splitpath_win(path, tail)
-# else
-#  define yasm__splitpath(path, tail)   yasm__splitpath_unix(path, tail)
-# endif
+#if defined(_WIN32) || defined(WIN32) || defined(__MSDOS__) ||                 \
+    defined(__DJGPP__) || defined(__OS2__)
+#define yasm__splitpath(path, tail) yasm__splitpath_win(path, tail)
+#else
+#define yasm__splitpath(path, tail) yasm__splitpath_unix(path, tail)
+#endif
 #endif
 
 /** Get the current working directory.
@@ -167,12 +167,12 @@ char *yasm__combpath_win(const char *from, const char *to);
  * \return Combined path (newly allocated).
  */
 #ifndef yasm__combpath
-# if defined (_WIN32) || defined (WIN32) || defined (__MSDOS__) || \
- defined (__DJGPP__) || defined (__OS2__)
-#  define yasm__combpath(from, to)      yasm__combpath_win(from, to)
-# else
-#  define yasm__combpath(from, to)      yasm__combpath_unix(from, to)
-# endif
+#if defined(_WIN32) || defined(WIN32) || defined(__MSDOS__) ||                 \
+    defined(__DJGPP__) || defined(__OS2__)
+#define yasm__combpath(from, to) yasm__combpath_win(from, to)
+#else
+#define yasm__combpath(from, to) yasm__combpath_unix(from, to)
+#endif
 #endif
 
 /** Recursively create tree of directories needed for pathname.
@@ -191,12 +191,12 @@ size_t yasm__createpath_common(const char *path, int win);
  * \return Length of directory portion of pathname.
  */
 #ifndef yasm__createpath
-# if defined (_WIN32) || defined (WIN32) || defined (__MSDOS__) || \
- defined (__DJGPP__) || defined (__OS2__)
-#  define yasm__createpath(path)    yasm__createpath_common(path, 1)
-# else
-#  define yasm__createpath(path)    yasm__createpath_common(path, 0)
-# endif
+#if defined(_WIN32) || defined(WIN32) || defined(__MSDOS__) ||                 \
+    defined(__DJGPP__) || defined(__OS2__)
+#define yasm__createpath(path) yasm__createpath_common(path, 1)
+#else
+#define yasm__createpath(path) yasm__createpath_common(path, 0)
+#endif
 #endif
 
 /** Try to find and open an include file, searching through include paths.
@@ -218,9 +218,9 @@ size_t yasm__createpath_common(const char *path, int win);
  * \return fopen'ed include file, or NULL if not found.
  */
 YASM_LIB_DECL
-/*@null@*/ FILE *yasm_fopen_include
-    (const char *iname, const char *from, const char *mode,
-     /*@null@*/ /*@out@*/ /*@only@*/ char **oname);
+/*@null@*/ FILE *
+yasm_fopen_include(const char *iname, const char *from, const char *mode,
+                   /*@null@*/ /*@out@*/ /*@only@*/ char **oname);
 
 /** Delete any stored include paths added by yasm_add_include_path().
  */
@@ -228,9 +228,9 @@ YASM_LIB_DECL
 void yasm_delete_include_paths(void);
 
 /** Iterate through include paths.
-*/
+ */
 YASM_LIB_DECL
-const char * yasm_get_include_dir(void **iter);
+const char *yasm_get_include_dir(void **iter);
 
 /** Add an include path for use by yasm_fopen_include().
  * If path is relative, it is treated by yasm_fopen_include() as relative to
@@ -246,8 +246,7 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   8-bit value
  */
-#define YASM_WRITE_8(ptr, val)                  \
-        *((ptr)++) = (unsigned char)((val) & 0xFF)
+#define YASM_WRITE_8(ptr, val) *((ptr)++) = (unsigned char)((val) & 0xFF)
 
 /** Write a 16-bit value to a buffer in little endian, incrementing buffer
  * pointer.
@@ -255,11 +254,11 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_WRITE_16_L(ptr, val)               \
-        do {                                    \
-            *((ptr)++) = (unsigned char)((val) & 0xFF);         \
-            *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);  \
-        } while (0)
+#define YASM_WRITE_16_L(ptr, val)                                              \
+  do {                                                                         \
+    *((ptr)++) = (unsigned char)((val) & 0xFF);                                \
+    *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);                         \
+  } while (0)
 
 /** Write a 32-bit value to a buffer in little endian, incrementing buffer
  * pointer.
@@ -267,13 +266,13 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_WRITE_32_L(ptr, val)               \
-        do {                                    \
-            *((ptr)++) = (unsigned char)((val) & 0xFF);         \
-            *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);  \
-            *((ptr)++) = (unsigned char)(((val) >> 16) & 0xFF); \
-            *((ptr)++) = (unsigned char)(((val) >> 24) & 0xFF); \
-        } while (0)
+#define YASM_WRITE_32_L(ptr, val)                                              \
+  do {                                                                         \
+    *((ptr)++) = (unsigned char)((val) & 0xFF);                                \
+    *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);                         \
+    *((ptr)++) = (unsigned char)(((val) >> 16) & 0xFF);                        \
+    *((ptr)++) = (unsigned char)(((val) >> 24) & 0xFF);                        \
+  } while (0)
 
 /** Write a 16-bit value to a buffer in big endian, incrementing buffer
  * pointer.
@@ -281,11 +280,11 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_WRITE_16_B(ptr, val)               \
-        do {                                    \
-            *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);  \
-            *((ptr)++) = (unsigned char)((val) & 0xFF);         \
-        } while (0)
+#define YASM_WRITE_16_B(ptr, val)                                              \
+  do {                                                                         \
+    *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);                         \
+    *((ptr)++) = (unsigned char)((val) & 0xFF);                                \
+  } while (0)
 
 /** Write a 32-bit value to a buffer in big endian, incrementing buffer
  * pointer.
@@ -293,22 +292,20 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_WRITE_32_B(ptr, val)               \
-        do {                                    \
-            *((ptr)++) = (unsigned char)(((val) >> 24) & 0xFF); \
-            *((ptr)++) = (unsigned char)(((val) >> 16) & 0xFF); \
-            *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);  \
-            *((ptr)++) = (unsigned char)((val) & 0xFF);         \
-        } while (0)
-
+#define YASM_WRITE_32_B(ptr, val)                                              \
+  do {                                                                         \
+    *((ptr)++) = (unsigned char)(((val) >> 24) & 0xFF);                        \
+    *((ptr)++) = (unsigned char)(((val) >> 16) & 0xFF);                        \
+    *((ptr)++) = (unsigned char)(((val) >> 8) & 0xFF);                         \
+    *((ptr)++) = (unsigned char)((val) & 0xFF);                                \
+  } while (0)
 
 /** Write an 8-bit value to a buffer.  Does not increment buffer pointer.
  * \note Only works properly if ptr is an (unsigned char *).
  * \param ptr   buffer
  * \param val   8-bit value
  */
-#define YASM_SAVE_8(ptr, val)                   \
-        *(ptr) = (unsigned char)((val) & 0xFF)
+#define YASM_SAVE_8(ptr, val) *(ptr) = (unsigned char)((val) & 0xFF)
 
 /** Write a 16-bit value to a buffer in little endian.  Does not increment
  * buffer pointer.
@@ -316,11 +313,11 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_SAVE_16_L(ptr, val)                \
-        do {                                    \
-            *(ptr) = (unsigned char)((val) & 0xFF);             \
-            *((ptr)+1) = (unsigned char)(((val) >> 8) & 0xFF);  \
-        } while (0)
+#define YASM_SAVE_16_L(ptr, val)                                               \
+  do {                                                                         \
+    *(ptr) = (unsigned char)((val) & 0xFF);                                    \
+    *((ptr) + 1) = (unsigned char)(((val) >> 8) & 0xFF);                       \
+  } while (0)
 
 /** Write a 32-bit value to a buffer in little endian.  Does not increment
  * buffer pointer.
@@ -328,13 +325,13 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_SAVE_32_L(ptr, val)                \
-        do {                                    \
-            *(ptr) = (unsigned char)((val) & 0xFF);             \
-            *((ptr)+1) = (unsigned char)(((val) >> 8) & 0xFF);  \
-            *((ptr)+2) = (unsigned char)(((val) >> 16) & 0xFF); \
-            *((ptr)+3) = (unsigned char)(((val) >> 24) & 0xFF); \
-        } while (0)
+#define YASM_SAVE_32_L(ptr, val)                                               \
+  do {                                                                         \
+    *(ptr) = (unsigned char)((val) & 0xFF);                                    \
+    *((ptr) + 1) = (unsigned char)(((val) >> 8) & 0xFF);                       \
+    *((ptr) + 2) = (unsigned char)(((val) >> 16) & 0xFF);                      \
+    *((ptr) + 3) = (unsigned char)(((val) >> 24) & 0xFF);                      \
+  } while (0)
 
 /** Write a 16-bit value to a buffer in big endian.  Does not increment buffer
  * pointer.
@@ -342,11 +339,11 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_SAVE_16_B(ptr, val)                \
-        do {                                    \
-            *(ptr) = (unsigned char)(((val) >> 8) & 0xFF);      \
-            *((ptr)+1) = (unsigned char)((val) & 0xFF);         \
-        } while (0)
+#define YASM_SAVE_16_B(ptr, val)                                               \
+  do {                                                                         \
+    *(ptr) = (unsigned char)(((val) >> 8) & 0xFF);                             \
+    *((ptr) + 1) = (unsigned char)((val) & 0xFF);                              \
+  } while (0)
 
 /** Write a 32-bit value to a buffer in big endian.  Does not increment buffer
  * pointer.
@@ -354,13 +351,13 @@ void yasm_add_include_path(const char *path);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_SAVE_32_B(ptr, val)                \
-        do {                                    \
-            *(ptr) = (unsigned char)(((val) >> 24) & 0xFF);     \
-            *((ptr)+1) = (unsigned char)(((val) >> 16) & 0xFF); \
-            *((ptr)+2) = (unsigned char)(((val) >> 8) & 0xFF);  \
-            *((ptr)+3) = (unsigned char)((val) & 0xFF);         \
-        } while (0)
+#define YASM_SAVE_32_B(ptr, val)                                               \
+  do {                                                                         \
+    *(ptr) = (unsigned char)(((val) >> 24) & 0xFF);                            \
+    *((ptr) + 1) = (unsigned char)(((val) >> 16) & 0xFF);                      \
+    *((ptr) + 2) = (unsigned char)(((val) >> 8) & 0xFF);                       \
+    *((ptr) + 3) = (unsigned char)((val) & 0xFF);                              \
+  } while (0)
 
 /** Direct-to-file version of YASM_SAVE_16_L().
  * \note Using the macro multiple times with a single fwrite() call will
@@ -407,8 +404,7 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   8-bit value
  */
-#define YASM_READ_8(val, ptr)                   \
-        (val) = *((ptr)++) & 0xFF
+#define YASM_READ_8(val, ptr) (val) = *((ptr)++) & 0xFF
 
 /** Read a 16-bit value from a buffer in little endian, incrementing buffer
  * pointer.
@@ -416,11 +412,11 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_READ_16_L(val, ptr)                \
-        do {                                    \
-            (val) = *((ptr)++) & 0xFF;          \
-            (val) |= (*((ptr)++) & 0xFF) << 8;  \
-        } while (0)
+#define YASM_READ_16_L(val, ptr)                                               \
+  do {                                                                         \
+    (val) = *((ptr)++) & 0xFF;                                                 \
+    (val) |= (*((ptr)++) & 0xFF) << 8;                                         \
+  } while (0)
 
 /** Read a 32-bit value from a buffer in little endian, incrementing buffer
  * pointer.
@@ -428,13 +424,13 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_READ_32_L(val, ptr)                \
-        do {                                    \
-            (val) = *((ptr)++) & 0xFF;          \
-            (val) |= (*((ptr)++) & 0xFF) << 8;  \
-            (val) |= (*((ptr)++) & 0xFF) << 16; \
-            (val) |= (*((ptr)++) & 0xFF) << 24; \
-        } while (0)
+#define YASM_READ_32_L(val, ptr)                                               \
+  do {                                                                         \
+    (val) = *((ptr)++) & 0xFF;                                                 \
+    (val) |= (*((ptr)++) & 0xFF) << 8;                                         \
+    (val) |= (*((ptr)++) & 0xFF) << 16;                                        \
+    (val) |= (*((ptr)++) & 0xFF) << 24;                                        \
+  } while (0)
 
 /** Read a 16-bit value from a buffer in big endian, incrementing buffer
  * pointer.
@@ -442,11 +438,11 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_READ_16_B(val, ptr)                \
-        do {                                    \
-            (val) = (*((ptr)++) & 0xFF) << 8;   \
-            (val) |= *((ptr)++) & 0xFF;         \
-        } while (0)
+#define YASM_READ_16_B(val, ptr)                                               \
+  do {                                                                         \
+    (val) = (*((ptr)++) & 0xFF) << 8;                                          \
+    (val) |= *((ptr)++) & 0xFF;                                                \
+  } while (0)
 
 /** Read a 32-bit value from a buffer in big endian, incrementing buffer
  * pointer.
@@ -454,21 +450,20 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_READ_32_B(val, ptr)                \
-        do {                                    \
-            (val) = (*((ptr)++) & 0xFF) << 24;  \
-            (val) |= (*((ptr)++) & 0xFF) << 16; \
-            (val) |= (*((ptr)++) & 0xFF) << 8;  \
-            (val) |= *((ptr)++) & 0xFF;         \
-        } while (0)
+#define YASM_READ_32_B(val, ptr)                                               \
+  do {                                                                         \
+    (val) = (*((ptr)++) & 0xFF) << 24;                                         \
+    (val) |= (*((ptr)++) & 0xFF) << 16;                                        \
+    (val) |= (*((ptr)++) & 0xFF) << 8;                                         \
+    (val) |= *((ptr)++) & 0xFF;                                                \
+  } while (0)
 
 /** Read an 8-bit value from a buffer.  Does not increment buffer pointer.
  * \note Only works properly if ptr is an (unsigned char *).
  * \param ptr   buffer
  * \param val   8-bit value
  */
-#define YASM_LOAD_8(val, ptr)                   \
-        (val) = *(ptr) & 0xFF
+#define YASM_LOAD_8(val, ptr) (val) = *(ptr) & 0xFF
 
 /** Read a 16-bit value from a buffer in little endian.  Does not increment
  * buffer pointer.
@@ -476,11 +471,11 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_LOAD_16_L(val, ptr)                \
-        do {                                    \
-            (val) = *(ptr) & 0xFF;              \
-            (val) |= (*((ptr)+1) & 0xFF) << 8;  \
-        } while (0)
+#define YASM_LOAD_16_L(val, ptr)                                               \
+  do {                                                                         \
+    (val) = *(ptr) & 0xFF;                                                     \
+    (val) |= (*((ptr) + 1) & 0xFF) << 8;                                       \
+  } while (0)
 
 /** Read a 32-bit value from a buffer in little endian.  Does not increment
  * buffer pointer.
@@ -488,13 +483,13 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_LOAD_32_L(val, ptr)                \
-        do {                                    \
-            (val) = (unsigned long)(*(ptr) & 0xFF);                 \
-            (val) |= (unsigned long)((*((ptr)+1) & 0xFF) << 8);     \
-            (val) |= (unsigned long)((*((ptr)+2) & 0xFF) << 16);    \
-            (val) |= (unsigned long)((*((ptr)+3) & 0xFF) << 24);    \
-        } while (0)
+#define YASM_LOAD_32_L(val, ptr)                                               \
+  do {                                                                         \
+    (val) = (unsigned long)(*(ptr) & 0xFF);                                    \
+    (val) |= (unsigned long)((*((ptr) + 1) & 0xFF) << 8);                      \
+    (val) |= (unsigned long)((*((ptr) + 2) & 0xFF) << 16);                     \
+    (val) |= (unsigned long)((*((ptr) + 3) & 0xFF) << 24);                     \
+  } while (0)
 
 /** Read a 16-bit value from a buffer in big endian.  Does not increment buffer
  * pointer.
@@ -502,11 +497,11 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   16-bit value
  */
-#define YASM_LOAD_16_B(val, ptr)                \
-        do {                                    \
-            (val) = (*(ptr) & 0xFF) << 8;       \
-            (val) |= *((ptr)+1) & 0xFF;         \
-        } while (0)
+#define YASM_LOAD_16_B(val, ptr)                                               \
+  do {                                                                         \
+    (val) = (*(ptr) & 0xFF) << 8;                                              \
+    (val) |= *((ptr) + 1) & 0xFF;                                              \
+  } while (0)
 
 /** Read a 32-bit value from a buffer in big endian.  Does not increment buffer
  * pointer.
@@ -514,12 +509,12 @@ size_t yasm_fwrite_32_b(unsigned long val, FILE *f);
  * \param ptr   buffer
  * \param val   32-bit value
  */
-#define YASM_LOAD_32_B(val, ptr)                \
-        do {                                    \
-            (val) = (unsigned long)((*(ptr) & 0xFF) << 24);         \
-            (val) |= (unsigned long)((*((ptr)+1) & 0xFF) << 16);    \
-            (val) |= (unsigned long)((*((ptr)+2) & 0xFF) << 8);     \
-            (val) |= (unsigned long)(*((ptr)+3) & 0xFF);            \
-        } while (0)
+#define YASM_LOAD_32_B(val, ptr)                                               \
+  do {                                                                         \
+    (val) = (unsigned long)((*(ptr) & 0xFF) << 24);                            \
+    (val) |= (unsigned long)((*((ptr) + 1) & 0xFF) << 16);                     \
+    (val) |= (unsigned long)((*((ptr) + 2) & 0xFF) << 8);                      \
+    (val) |= (unsigned long)(*((ptr) + 3) & 0xFF);                             \
+  } while (0)
 
 #endif

@@ -25,17 +25,15 @@ along with GCC; see the file COPYING3.  If not see
 /* Concrete subclass of libcpp's range_label.
    Simple implementation using a string literal.  */
 
-class text_range_label : public range_label
-{
- public:
-  text_range_label (const char *text) : m_text (text) {}
+class text_range_label : public range_label {
+public:
+  text_range_label(const char *text) : m_text(text) {}
 
-  label_text get_text (unsigned /*range_idx*/) const final override
-  {
-    return label_text::borrow (m_text);
+  label_text get_text(unsigned /*range_idx*/) const final override {
+    return label_text::borrow(m_text);
   }
 
- private:
+private:
   const char *m_text;
 };
 

@@ -27,7 +27,7 @@ namespace diagnostics {
 
 class per_sink_buffer;
 class sink;
-  class text_sink;
+class text_sink;
 
 /* Class representing a buffer of zero or more diagnostics that
    have been reported to a diagnostics::context, but which haven't
@@ -55,28 +55,26 @@ class sink;
    to change buffering on a diagnostics::context whilst within a
    diagnostic group.  */
 
-class buffer
-{
- public:
+class buffer {
+public:
   friend class context;
 
-  buffer (context &ctxt);
-  ~buffer ();
+  buffer(context &ctxt);
+  ~buffer();
 
-  void dump (FILE *out, int indent) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  void dump(FILE *out, int indent) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
-  int diagnostic_count (enum kind kind) const
-  {
-    return m_diagnostic_counters.get_count (kind);
+  int diagnostic_count(enum kind kind) const {
+    return m_diagnostic_counters.get_count(kind);
   }
 
-  bool empty_p () const;
+  bool empty_p() const;
 
-  void move_to (buffer &dest);
+  void move_to(buffer &dest);
 
- private:
-  void ensure_per_sink_buffers ();
+private:
+  void ensure_per_sink_buffers();
 
   context &m_ctxt;
   auto_vec<per_sink_buffer *> *m_per_sink_buffers;
@@ -94,18 +92,17 @@ class buffer
    Each diagnostics::sink subclass should implement its own
    subclass for handling diagnostics::buffer.  */
 
-class per_sink_buffer
-{
+class per_sink_buffer {
 public:
-  virtual ~per_sink_buffer () {}
+  virtual ~per_sink_buffer() {}
 
-  virtual void dump (FILE *out, int indent) const = 0;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  virtual void dump(FILE *out, int indent) const = 0;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
-  virtual bool empty_p () const = 0;
-  virtual void move_to (per_sink_buffer &dest) = 0;
-  virtual void clear () = 0;
-  virtual void flush () = 0;
+  virtual bool empty_p() const = 0;
+  virtual void move_to(per_sink_buffer &dest) = 0;
+  virtual void clear() = 0;
+  virtual void flush() = 0;
 };
 
 } // namespace diagnostics

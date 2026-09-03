@@ -19,52 +19,65 @@ import gdb
 import os
 import os.path
 
-pythondir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/..') + '/share/gcc-16.1.0/python'
-libdir = os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + '/..') + '/lib/../lib'
+pythondir = (
+    os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")
+    + "/share/gcc-16.1.0/python"
+)
+libdir = (
+    os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")
+    + "/lib/../lib"
+)
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't
 # update sys.path; instead we just hope the user managed to do that
 # beforehand.
-if gdb.current_objfile () is not None:
+if gdb.current_objfile() is not None:
     # Update module path.  We want to find the relative path from libdir
     # to pythondir, and then we want to apply that relative path to the
     # directory holding the objfile with which this file is associated.
     # This preserves relocatability of the gcc tree.
 
     # Do a simple normalization that removes duplicate separators.
-    pythondir = os.path.normpath (pythondir)
-    libdir = os.path.normpath (libdir)
+    pythondir = os.path.normpath(pythondir)
+    libdir = os.path.normpath(libdir)
 
-    prefix = os.path.commonprefix ([libdir, pythondir])
+    prefix = os.path.commonprefix([libdir, pythondir])
     # In some bizarre configuration we might have found a match in the
     # middle of a directory name.
-    if prefix[-1] != '/':
-        prefix = os.path.dirname (prefix) + '/'
+    if prefix[-1] != "/":
+        prefix = os.path.dirname(prefix) + "/"
 
     # Strip off the prefix.
-    pythondir = pythondir[len (prefix):]
-    libdir = libdir[len (prefix):]
+    pythondir = pythondir[len(prefix) :]
+    libdir = libdir[len(prefix) :]
 
     # Compute the ".."s needed to get from libdir to the prefix.
-    dotdots = ('..' + os.sep) * len (libdir.split (os.sep))
+    dotdots = (".." + os.sep) * len(libdir.split(os.sep))
 
-    objfile = gdb.current_objfile ().filename
-    dir_ = os.path.join (os.path.dirname (objfile), dotdots, pythondir)
+    objfile = gdb.current_objfile().filename
+    dir_ = os.path.join(os.path.dirname(objfile), dotdots, pythondir)
 
     if not dir_ in sys.path:
         sys.path.insert(0, dir_)
 
-    gdb.execute('skip -rfu ^std::(move|forward|as_const|(__)?addressof)',
-                to_string=True)
-    gdb.execute('skip -rfu ^std::(shared|unique)_ptr<.*>::(get|operator)',
-                to_string=True)
-    gdb.execute('skip -rfu ^std::(basic_string|vector|array|deque|(forward_)?list|(unordered_|flat_)?(multi)?(map|set)|span)<.*>::(c?r?(begin|end)|front|back|data|size|empty)',
-                to_string=True)
-    gdb.execute('skip -rfu ^std::(basic_string|vector|array|deque|span)<.*>::operator.]',
-                to_string=True)
+    gdb.execute(
+        "skip -rfu ^std::(move|forward|as_const|(__)?addressof)", to_string=True
+    )
+    gdb.execute(
+        "skip -rfu ^std::(shared|unique)_ptr<.*>::(get|operator)", to_string=True
+    )
+    gdb.execute(
+        "skip -rfu ^std::(basic_string|vector|array|deque|(forward_)?list|(unordered_|flat_)?(multi)?(map|set)|span)<.*>::(c?r?(begin|end)|front|back|data|size|empty)",
+        to_string=True,
+    )
+    gdb.execute(
+        "skip -rfu ^std::(basic_string|vector|array|deque|span)<.*>::operator.]",
+        to_string=True,
+    )
 
 # Call a function as a plain import would not execute body of the included file
 # on repeated reloads of this object file.
 from libstdcxx.v6 import register_libstdcxx_printers
+
 register_libstdcxx_printers(gdb.current_objfile())

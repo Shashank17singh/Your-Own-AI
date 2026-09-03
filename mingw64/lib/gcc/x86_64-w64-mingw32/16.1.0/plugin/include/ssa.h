@@ -23,12 +23,12 @@ along with GCC; see the file COPYING3.  If not see
 /* This is an aggregation header file. This means it should contain only
    other include files.  */
 
-#include "stringpool.h"
 #include "gimple-ssa.h"
-#include "tree-vrp.h"
 #include "range.h"
-#include "tree-ssanames.h"
-#include "tree-phinodes.h"
 #include "ssa-iterators.h"
+#include "stringpool.h"
+#include "tree-phinodes.h"
+#include "tree-ssanames.h"
+#include "tree-vrp.h"
 
-#endif  /* GCC_SSA_H  */
+#endif /* GCC_SSA_H  */

@@ -28,12 +28,12 @@
 #define INCLUDE_ALGORITHM
 #define INCLUDE_FUNCTIONAL
 #define INCLUDE_ARRAY
-#include "config.h"
-#include "system.h"
-#include "coretypes.h"
 #include "backend.h"
-#include "rtl.h"
+#include "config.h"
+#include "coretypes.h"
 #include "df.h"
+#include "rtl.h"
+#include "system.h"
 #endif
 
 // Needed by splay-tree-utils.h and directly by rtl-ssa.
@@ -43,33 +43,33 @@
 #include "insn-config.h"
 
 // Needed directly by rtl-ssa.
-#include "splay-tree-utils.h"
+#include "cfgbuild.h"
+#include "function-abi.h"
+#include "hash-set.h"
+#include "mux-utils.h"
+#include "obstack-utils.h"
 #include "recog.h"
 #include "regs.h"
-#include "function-abi.h"
-#include "obstack-utils.h"
-#include "mux-utils.h"
 #include "rtlanal.h"
-#include "cfgbuild.h"
-#include "hash-set.h"
+#include "splay-tree-utils.h"
 
 // Provides the global crtl->ssa.
+#include "emit-rtl.h"
 #include "memmodel.h"
 #include "tm_p.h"
-#include "emit-rtl.h"
 
 // The rtl-ssa files themselves.
+#include "rtl-ssa/access-utils.h"
 #include "rtl-ssa/accesses.h"
-#include "rtl-ssa/insns.h"
 #include "rtl-ssa/blocks.h"
+#include "rtl-ssa/change-utils.h"
 #include "rtl-ssa/changes.h"
 #include "rtl-ssa/functions.h"
-#include "rtl-ssa/predicates.h"
-#include "rtl-ssa/is-a.inl"
-#include "rtl-ssa/access-utils.h"
 #include "rtl-ssa/insn-utils.h"
-#include "rtl-ssa/movement.h"
-#include "rtl-ssa/change-utils.h"
+#include "rtl-ssa/insns.h"
+#include "rtl-ssa/is-a.inl"
 #include "rtl-ssa/member-fns.inl"
+#include "rtl-ssa/movement.h"
+#include "rtl-ssa/predicates.h"
 
 #endif

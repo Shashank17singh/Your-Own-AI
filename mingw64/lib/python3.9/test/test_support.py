@@ -57,8 +57,9 @@ class TestSupport(unittest.TestCase):
         support.import_fresh_module("ftplib")
 
     def test_get_attribute(self):
-        self.assertEqual(support.get_attribute(self, "test_get_attribute"),
-                        self.test_get_attribute)
+        self.assertEqual(
+            support.get_attribute(self, "test_get_attribute"), self.test_get_attribute
+        )
         self.assertRaises(unittest.SkipTest, support.get_attribute, self, "foo")
 
     @unittest.skip("failing buildbots")
@@ -67,6 +68,7 @@ class TestSupport(unittest.TestCase):
 
     def test_unload(self):
         import sched
+
         self.assertIn("sched", sys.modules)
         support.unload("sched")
         self.assertNotIn("sched", sys.modules)
@@ -79,33 +81,33 @@ class TestSupport(unittest.TestCase):
         support.unlink(TESTFN)
 
     def test_rmtree(self):
-        dirpath = support.TESTFN + 'd'
-        subdirpath = os.path.join(dirpath, 'subdir')
+        dirpath = support.TESTFN + "d"
+        subdirpath = os.path.join(dirpath, "subdir")
         os.mkdir(dirpath)
         os.mkdir(subdirpath)
         support.rmtree(dirpath)
         self.assertFalse(os.path.exists(dirpath))
-        with support.swap_attr(support, 'verbose', 0):
+        with support.swap_attr(support, "verbose", 0):
             support.rmtree(dirpath)
 
         os.mkdir(dirpath)
         os.mkdir(subdirpath)
-        os.chmod(dirpath, stat.S_IRUSR|stat.S_IXUSR)
-        with support.swap_attr(support, 'verbose', 0):
+        os.chmod(dirpath, stat.S_IRUSR | stat.S_IXUSR)
+        with support.swap_attr(support, "verbose", 0):
             support.rmtree(dirpath)
         self.assertFalse(os.path.exists(dirpath))
 
         os.mkdir(dirpath)
         os.mkdir(subdirpath)
         os.chmod(dirpath, 0)
-        with support.swap_attr(support, 'verbose', 0):
+        with support.swap_attr(support, "verbose", 0):
             support.rmtree(dirpath)
         self.assertFalse(os.path.exists(dirpath))
 
     def test_forget(self):
-        mod_filename = TESTFN + '.py'
-        with open(mod_filename, 'w') as f:
-            print('foo = 1', file=f)
+        mod_filename = TESTFN + ".py"
+        with open(mod_filename, "w") as f:
+            print("foo = 1", file=f)
         sys.path.insert(0, os.curdir)
         importlib.invalidate_caches()
         try:
@@ -117,7 +119,7 @@ class TestSupport(unittest.TestCase):
         finally:
             del sys.path[0]
             support.unlink(mod_filename)
-            support.rmtree('__pycache__')
+            support.rmtree("__pycache__")
 
     def test_HOST(self):
         s = socket.create_server((socket_helper.HOST, 0))
@@ -142,7 +144,7 @@ class TestSupport(unittest.TestCase):
         parent_dir = os.path.realpath(parent_dir)
 
         try:
-            path = os.path.join(parent_dir, 'temp')
+            path = os.path.join(parent_dir, "temp")
             self.assertFalse(os.path.isdir(path))
             with support.temp_dir(path) as temp_path:
                 self.assertEqual(temp_path, path)
@@ -159,6 +161,7 @@ class TestSupport(unittest.TestCase):
 
     def test_temp_dir__existing_dir__quiet_default(self):
         """Test passing a directory that already exists."""
+
         def call_temp_dir(path):
             with support.temp_dir(path) as temp_path:
                 raise Exception("should not get here")
@@ -190,16 +193,21 @@ class TestSupport(unittest.TestCase):
 
         self.assertEqual(len(warnings), 1, warnings)
         warn = warnings[0]
-        self.assertTrue(warn.startswith(f'tests may fail, unable to create '
-                                        f'temporary directory {path!r}: '),
-                        warn)
+        self.assertTrue(
+            warn.startswith(
+                f"tests may fail, unable to create " f"temporary directory {path!r}: "
+            ),
+            warn,
+        )
 
     @unittest.skipUnless(hasattr(os, "fork"), "test requires os.fork")
     def test_temp_dir__forked_child(self):
         """Test that a forked child process does not remove the directory."""
         # See bpo-30028 for details.
         # Run the test as an external script, because it uses fork.
-        script_helper.assert_python_ok("-c", textwrap.dedent("""
+        script_helper.assert_python_ok(
+            "-c",
+            textwrap.dedent("""
             import os
             from test import support
             with support.temp_cwd() as temp_path:
@@ -216,7 +224,8 @@ class TestSupport(unittest.TestCase):
                     # directory.
                     if not os.path.isdir(temp_path):
                         raise AssertionError("Child removed temp_path.")
-        """))
+        """),
+        )
 
     # Tests for change_cwd()
 
@@ -239,9 +248,8 @@ class TestSupport(unittest.TestCase):
                 raise Exception("should not get here")
 
         with support.temp_dir() as parent_dir:
-            non_existent_dir = os.path.join(parent_dir, 'does_not_exist')
-            self.assertRaises(FileNotFoundError, call_change_cwd,
-                              non_existent_dir)
+            non_existent_dir = os.path.join(parent_dir, "does_not_exist")
+            self.assertRaises(FileNotFoundError, call_change_cwd, non_existent_dir)
 
         self.assertEqual(os.getcwd(), original_cwd)
 
@@ -250,7 +258,7 @@ class TestSupport(unittest.TestCase):
         original_cwd = os.getcwd()
 
         with support.temp_dir() as parent_dir:
-            bad_dir = os.path.join(parent_dir, 'does_not_exist')
+            bad_dir = os.path.join(parent_dir, "does_not_exist")
             with support.check_warnings() as recorder:
                 with support.change_cwd(bad_dir, quiet=True) as new_cwd:
                     self.assertEqual(new_cwd, original_cwd)
@@ -259,16 +267,20 @@ class TestSupport(unittest.TestCase):
 
         self.assertEqual(len(warnings), 1, warnings)
         warn = warnings[0]
-        self.assertTrue(warn.startswith(f'tests may fail, unable to change '
-                                        f'the current working directory '
-                                        f'to {bad_dir!r}: '),
-                        warn)
+        self.assertTrue(
+            warn.startswith(
+                f"tests may fail, unable to change "
+                f"the current working directory "
+                f"to {bad_dir!r}: "
+            ),
+            warn,
+        )
 
     # Tests for change_cwd()
 
     def test_change_cwd__chdir_warning(self):
         """Check the warning message when os.chdir() fails."""
-        path = TESTFN + '_does_not_exist'
+        path = TESTFN + "_does_not_exist"
         with support.check_warnings() as recorder:
             with support.change_cwd(path=path, quiet=True):
                 pass
@@ -276,10 +288,14 @@ class TestSupport(unittest.TestCase):
 
         self.assertEqual(len(messages), 1, messages)
         msg = messages[0]
-        self.assertTrue(msg.startswith(f'tests may fail, unable to change '
-                                       f'the current working directory '
-                                       f'to {path!r}: '),
-                        msg)
+        self.assertTrue(
+            msg.startswith(
+                f"tests may fail, unable to change "
+                f"the current working directory "
+                f"to {path!r}: "
+            ),
+            msg,
+        )
 
     # Tests for temp_cwd()
 
@@ -289,7 +305,6 @@ class TestSupport(unittest.TestCase):
             self.assertEqual(os.path.basename(os.getcwd()), TESTFN)
         self.assertFalse(os.path.exists(TESTFN))
         self.assertEqual(os.getcwd(), here)
-
 
     def test_temp_cwd__name_none(self):
         """Test passing None to temp_cwd()."""
@@ -301,7 +316,7 @@ class TestSupport(unittest.TestCase):
         self.assertEqual(os.getcwd(), original_cwd)
 
     def test_sortdict(self):
-        self.assertEqual(support.sortdict({3:3, 2:2, 1:1}), "{1: 1, 2: 2, 3: 3}")
+        self.assertEqual(support.sortdict({3: 3, 2: 2, 1: 1}), "{1: 1, 2: 2, 3: 3}")
 
     def test_make_bad_fd(self):
         fd = support.make_bad_fd()
@@ -316,11 +331,12 @@ class TestSupport(unittest.TestCase):
 
     def test_CleanImport(self):
         import importlib
+
         with support.CleanImport("asyncore"):
             importlib.import_module("asyncore")
 
     def test_DirsOnSysPath(self):
-        with support.DirsOnSysPath('foo', 'bar'):
+        with support.DirsOnSysPath("foo", "bar"):
             self.assertIn("foo", sys.path)
             self.assertIn("bar", sys.path)
         self.assertNotIn("foo", sys.path)
@@ -338,7 +354,7 @@ class TestSupport(unittest.TestCase):
 
     def test_captured_stdin(self):
         with support.captured_stdin() as stdin:
-            stdin.write('hello\n')
+            stdin.write("hello\n")
             stdin.seek(0)
             # call test code that consumes from sys.stdin
             captured = input()
@@ -353,6 +369,7 @@ class TestSupport(unittest.TestCase):
     def test_swap_attr(self):
         class Obj:
             pass
+
         obj = Obj()
         obj.x = 1
         with support.swap_attr(obj, "x", 5) as x:
@@ -362,13 +379,13 @@ class TestSupport(unittest.TestCase):
         with support.swap_attr(obj, "y", 5) as y:
             self.assertEqual(obj.y, 5)
             self.assertIsNone(y)
-        self.assertFalse(hasattr(obj, 'y'))
+        self.assertFalse(hasattr(obj, "y"))
         with support.swap_attr(obj, "y", 5):
             del obj.y
-        self.assertFalse(hasattr(obj, 'y'))
+        self.assertFalse(hasattr(obj, "y"))
 
     def test_swap_item(self):
-        D = {"x":1}
+        D = {"x": 1}
         with support.swap_item(D, "x", 5) as x:
             self.assertEqual(D["x"], 5)
             self.assertEqual(x, 1)
@@ -394,49 +411,56 @@ class TestSupport(unittest.TestCase):
         __magic_2__ = None
 
     def test_detect_api_mismatch(self):
-        missing_items = support.detect_api_mismatch(self.RefClass,
-                                                    self.OtherClass)
-        self.assertEqual({'attribute1'}, missing_items)
+        missing_items = support.detect_api_mismatch(self.RefClass, self.OtherClass)
+        self.assertEqual({"attribute1"}, missing_items)
 
-        missing_items = support.detect_api_mismatch(self.OtherClass,
-                                                    self.RefClass)
-        self.assertEqual({'attribute3', '__magic_2__'}, missing_items)
+        missing_items = support.detect_api_mismatch(self.OtherClass, self.RefClass)
+        self.assertEqual({"attribute3", "__magic_2__"}, missing_items)
 
     def test_detect_api_mismatch__ignore(self):
-        ignore = ['attribute1', 'attribute3', '__magic_2__', 'not_in_either']
+        ignore = ["attribute1", "attribute3", "__magic_2__", "not_in_either"]
 
         missing_items = support.detect_api_mismatch(
-                self.RefClass, self.OtherClass, ignore=ignore)
+            self.RefClass, self.OtherClass, ignore=ignore
+        )
         self.assertEqual(set(), missing_items)
 
         missing_items = support.detect_api_mismatch(
-                self.OtherClass, self.RefClass, ignore=ignore)
+            self.OtherClass, self.RefClass, ignore=ignore
+        )
         self.assertEqual(set(), missing_items)
 
     def test_check__all__(self):
-        extra = {'tempdir'}
-        blacklist = {'template'}
-        support.check__all__(self,
-                             tempfile,
-                             extra=extra,
-                             blacklist=blacklist)
+        extra = {"tempdir"}
+        blacklist = {"template"}
+        support.check__all__(self, tempfile, extra=extra, blacklist=blacklist)
 
-        extra = {'TextTestResult', 'installHandler'}
-        blacklist = {'load_tests', "TestProgram", "BaseTestSuite"}
+        extra = {"TextTestResult", "installHandler"}
+        blacklist = {"load_tests", "TestProgram", "BaseTestSuite"}
 
-        support.check__all__(self,
-                             unittest,
-                             ("unittest.result", "unittest.case",
-                              "unittest.suite", "unittest.loader",
-                              "unittest.main", "unittest.runner",
-                              "unittest.signals", "unittest.async_case"),
-                             extra=extra,
-                             blacklist=blacklist)
+        support.check__all__(
+            self,
+            unittest,
+            (
+                "unittest.result",
+                "unittest.case",
+                "unittest.suite",
+                "unittest.loader",
+                "unittest.main",
+                "unittest.runner",
+                "unittest.signals",
+                "unittest.async_case",
+            ),
+            extra=extra,
+            blacklist=blacklist,
+        )
 
         self.assertRaises(AssertionError, support.check__all__, self, unittest)
 
-    @unittest.skipUnless(hasattr(os, 'waitpid') and hasattr(os, 'WNOHANG'),
-                         'need os.waitpid() and os.WNOHANG')
+    @unittest.skipUnless(
+        hasattr(os, "waitpid") and hasattr(os, "WNOHANG"),
+        "need os.waitpid() and os.WNOHANG",
+    )
     def test_reap_children(self):
         # Make sure that there is no other pending child process
         support.reap_children()
@@ -485,15 +509,20 @@ class TestSupport(unittest.TestCase):
         support.reap_children()
 
     def check_options(self, args, func, expected=None):
-        code = f'from test.support import {func}; print(repr({func}()))'
-        cmd = [sys.executable, *args, '-c', code]
-        env = {key: value for key, value in os.environ.items()
-               if not key.startswith('PYTHON')}
-        proc = subprocess.run(cmd,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.DEVNULL,
-                              universal_newlines=True,
-                              env=env)
+        code = f"from test.support import {func}; print(repr({func}()))"
+        cmd = [sys.executable, *args, "-c", code]
+        env = {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith("PYTHON")
+        }
+        proc = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            universal_newlines=True,
+            env=env,
+        )
         if expected is None:
             expected = args
         self.assertEqual(proc.stdout.rstrip(), repr(expected))
@@ -505,45 +534,44 @@ class TestSupport(unittest.TestCase):
             # no option
             [],
             # single option
-            ['-B'],
-            ['-s'],
-            ['-S'],
-            ['-E'],
-            ['-v'],
-            ['-b'],
-            ['-q'],
-            ['-I'],
+            ["-B"],
+            ["-s"],
+            ["-S"],
+            ["-E"],
+            ["-v"],
+            ["-b"],
+            ["-q"],
+            ["-I"],
             # same option multiple times
-            ['-bb'],
-            ['-vvv'],
+            ["-bb"],
+            ["-vvv"],
             # -W options
-            ['-Wignore'],
+            ["-Wignore"],
             # -X options
-            ['-X', 'dev'],
-            ['-Wignore', '-X', 'dev'],
-            ['-X', 'faulthandler'],
-            ['-X', 'importtime'],
-            ['-X', 'showrefcount'],
-            ['-X', 'tracemalloc'],
-            ['-X', 'tracemalloc=3'],
+            ["-X", "dev"],
+            ["-Wignore", "-X", "dev"],
+            ["-X", "faulthandler"],
+            ["-X", "importtime"],
+            ["-X", "showrefcount"],
+            ["-X", "tracemalloc"],
+            ["-X", "tracemalloc=3"],
         ):
             with self.subTest(opts=opts):
-                self.check_options(opts, 'args_from_interpreter_flags')
+                self.check_options(opts, "args_from_interpreter_flags")
 
-        self.check_options(['-I', '-E', '-s'], 'args_from_interpreter_flags',
-                           ['-I'])
+        self.check_options(["-I", "-E", "-s"], "args_from_interpreter_flags", ["-I"])
 
     def test_optim_args_from_interpreter_flags(self):
         # Test test.support.optim_args_from_interpreter_flags()
         for opts in (
             # no option
             [],
-            ['-O'],
-            ['-OO'],
-            ['-OOOO'],
+            ["-O"],
+            ["-OO"],
+            ["-OOOO"],
         ):
             with self.subTest(opts=opts):
-                self.check_options(opts, 'optim_args_from_interpreter_flags')
+                self.check_options(opts, "optim_args_from_interpreter_flags")
 
     def test_match_test(self):
         class Test:
@@ -553,11 +581,11 @@ class TestSupport(unittest.TestCase):
             def id(self):
                 return self.test_id
 
-        test_access = Test('test.test_os.FileTests.test_access')
-        test_chdir = Test('test.test_os.Win32ErrorTests.test_chdir')
+        test_access = Test("test.test_os.FileTests.test_access")
+        test_chdir = Test("test.test_os.Win32ErrorTests.test_chdir")
 
         # Test acceptance
-        with support.swap_attr(support, '_match_test_func', None):
+        with support.swap_attr(support, "_match_test_func", None):
             # match all
             support.set_match_tests([])
             self.assertTrue(support.match_test(test_access))
@@ -574,23 +602,23 @@ class TestSupport(unittest.TestCase):
             self.assertFalse(support.match_test(test_chdir))
 
             # match the module name
-            support.set_match_tests(['test_os'], None)
+            support.set_match_tests(["test_os"], None)
             self.assertTrue(support.match_test(test_access))
             self.assertTrue(support.match_test(test_chdir))
 
             # Test '*' pattern
-            support.set_match_tests(['test_*'], None)
+            support.set_match_tests(["test_*"], None)
             self.assertTrue(support.match_test(test_access))
             self.assertTrue(support.match_test(test_chdir))
 
             # Test case sensitivity
-            support.set_match_tests(['filetests'], None)
+            support.set_match_tests(["filetests"], None)
             self.assertFalse(support.match_test(test_access))
-            support.set_match_tests(['FileTests'], None)
+            support.set_match_tests(["FileTests"], None)
             self.assertTrue(support.match_test(test_access))
 
             # Test pattern containing '.' and a '*' metacharacter
-            support.set_match_tests(['*test_os.*.test_*'], None)
+            support.set_match_tests(["*test_os.*.test_*"], None)
             self.assertTrue(support.match_test(test_access))
             self.assertTrue(support.match_test(test_chdir))
 
@@ -599,12 +627,12 @@ class TestSupport(unittest.TestCase):
             self.assertTrue(support.match_test(test_access))
             self.assertTrue(support.match_test(test_chdir))
 
-            support.set_match_tests(['test_access', 'DONTMATCH'], None)
+            support.set_match_tests(["test_access", "DONTMATCH"], None)
             self.assertTrue(support.match_test(test_access))
             self.assertFalse(support.match_test(test_chdir))
 
         # Test rejection
-        with support.swap_attr(support, '_match_test_func', None):
+        with support.swap_attr(support, "_match_test_func", None):
             # match all
             support.set_match_tests(ignore_patterns=[])
             self.assertTrue(support.match_test(test_access))
@@ -621,23 +649,23 @@ class TestSupport(unittest.TestCase):
             self.assertTrue(support.match_test(test_chdir))
 
             # match the module name
-            support.set_match_tests(None, ['test_os'])
+            support.set_match_tests(None, ["test_os"])
             self.assertFalse(support.match_test(test_access))
             self.assertFalse(support.match_test(test_chdir))
 
             # Test '*' pattern
-            support.set_match_tests(None, ['test_*'])
+            support.set_match_tests(None, ["test_*"])
             self.assertFalse(support.match_test(test_access))
             self.assertFalse(support.match_test(test_chdir))
 
             # Test case sensitivity
-            support.set_match_tests(None, ['filetests'])
+            support.set_match_tests(None, ["filetests"])
             self.assertTrue(support.match_test(test_access))
-            support.set_match_tests(None, ['FileTests'])
+            support.set_match_tests(None, ["FileTests"])
             self.assertFalse(support.match_test(test_access))
 
             # Test pattern containing '.' and a '*' metacharacter
-            support.set_match_tests(None, ['*test_os.*.test_*'])
+            support.set_match_tests(None, ["*test_os.*.test_*"])
             self.assertFalse(support.match_test(test_access))
             self.assertFalse(support.match_test(test_chdir))
 
@@ -646,7 +674,7 @@ class TestSupport(unittest.TestCase):
             self.assertFalse(support.match_test(test_access))
             self.assertFalse(support.match_test(test_chdir))
 
-            support.set_match_tests(None, ['test_access', 'DONTMATCH'])
+            support.set_match_tests(None, ["test_access", "DONTMATCH"])
             self.assertFalse(support.match_test(test_access))
             self.assertTrue(support.match_test(test_chdir))
 
@@ -675,10 +703,8 @@ class TestSupport(unittest.TestCase):
         self.assertEqual(stderr.getvalue(), expected)
 
     def test_print_warning(self):
-        self.check_print_warning("msg",
-                                 "Warning -- msg\n")
-        self.check_print_warning("a\nb",
-                                 'Warning -- a\nWarning -- b\n')
+        self.check_print_warning("msg", "Warning -- msg\n")
+        self.check_print_warning("a\nb", "Warning -- a\nWarning -- b\n")
 
     # XXX -follows a list of untested API
     # make_legacy_pyc
@@ -720,5 +746,6 @@ def test_main():
     tests = [TestSupport]
     support.run_unittest(*tests)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_main()

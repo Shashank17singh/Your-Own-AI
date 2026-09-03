@@ -31,7 +31,6 @@ a copy of the GCC Runtime Library Exception along with this program;
 see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 <http://www.gnu.org/licenses/>.  */
 
-
 #ifndef _SSP_UNISTD_H
 #define _SSP_UNISTD_H 1
 
@@ -44,40 +43,38 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #undef readlink
 #undef getcwd
 
-extern ssize_t __SSP_REDIRECT (__read_alias, (int __fd, void *__buf,
-					      size_t __nbytes), read);
+extern ssize_t __SSP_REDIRECT(__read_alias,
+                              (int __fd, void *__buf, size_t __nbytes), read);
 
-extern inline __attribute__((__always_inline__)) ssize_t
-read (int __fd, void *__buf, size_t __nbytes)
-{
-  if (__ssp_bos0 (__buf) != (size_t) -1 && __nbytes > __ssp_bos0 (__buf))
-    __chk_fail ();
-  return __read_alias (__fd, __buf, __nbytes);
+extern inline __attribute__((__always_inline__)) ssize_t read(int __fd,
+                                                              void *__buf,
+                                                              size_t __nbytes) {
+  if (__ssp_bos0(__buf) != (size_t)-1 && __nbytes > __ssp_bos0(__buf))
+    __chk_fail();
+  return __read_alias(__fd, __buf, __nbytes);
 }
 
-extern int __SSP_REDIRECT (__readlink_alias,
-			   (const char *__restrict__ __path,
-			    char *__restrict__ __buf, size_t __len),
-			   readlink);
+extern int __SSP_REDIRECT(__readlink_alias,
+                          (const char *__restrict__ __path,
+                           char *__restrict__ __buf, size_t __len),
+                          readlink);
 
 extern inline __attribute__((__always_inline__)) int
-readlink (const char *__restrict__ __path, char *__restrict__ __buf,
-	  size_t __len)
-{
-  if (__ssp_bos (__buf) != (size_t) -1 && __len > __ssp_bos (__buf))
-    __chk_fail ();
-  return __readlink_alias (__path, __buf, __len);
+readlink(const char *__restrict__ __path, char *__restrict__ __buf,
+         size_t __len) {
+  if (__ssp_bos(__buf) != (size_t)-1 && __len > __ssp_bos(__buf))
+    __chk_fail();
+  return __readlink_alias(__path, __buf, __len);
 }
 
-extern char *__SSP_REDIRECT (__getcwd_alias,
-			     (char *__buf, size_t __size), getcwd);
+extern char *__SSP_REDIRECT(__getcwd_alias, (char *__buf, size_t __size),
+                            getcwd);
 
-extern inline __attribute__((__always_inline__)) char *
-getcwd (char *__buf, size_t __size)
-{
-  if (__ssp_bos (__buf) != (size_t) -1 && __size > __ssp_bos (__buf))
-    __chk_fail ();
-  return __getcwd_alias (__buf, __size);
+extern inline __attribute__((__always_inline__)) char *getcwd(char *__buf,
+                                                              size_t __size) {
+  if (__ssp_bos(__buf) != (size_t)-1 && __size > __ssp_bos(__buf))
+    __chk_fail();
+  return __getcwd_alias(__buf, __size);
 }
 
 #endif /* __SSP_FORTIFY_LEVEL > 0 */

@@ -38,7 +38,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define GCC_CORETYPES_H
 
 #ifndef GTY
-#define GTY(x)  /* nothing - marker for gengtype */
+#define GTY(x) /* nothing - marker for gengtype */
 #endif
 
 #ifndef USED_FOR_TARGET
@@ -61,11 +61,11 @@ class scalar_int_mode;
 class scalar_float_mode;
 class complex_mode;
 class fixed_size_mode;
-template<typename> class opt_mode;
+template <typename> class opt_mode;
 typedef opt_mode<scalar_mode> opt_scalar_mode;
 typedef opt_mode<scalar_int_mode> opt_scalar_int_mode;
 typedef opt_mode<scalar_float_mode> opt_scalar_float_mode;
-template<typename> struct pod_mode;
+template <typename> struct pod_mode;
 typedef pod_mode<scalar_mode> scalar_mode_pod;
 typedef pod_mode<scalar_int_mode> scalar_int_mode_pod;
 typedef pod_mode<fixed_size_mode> fixed_size_mode_pod;
@@ -74,18 +74,18 @@ typedef pod_mode<fixed_size_mode> fixed_size_mode_pod;
    hierarchy, along with the relevant invariant.
    Where possible, keep this list in the same order as in rtl.def.  */
 struct rtx_def;
-  struct rtx_expr_list;           /* GET_CODE (X) == EXPR_LIST */
-  struct rtx_insn_list;           /* GET_CODE (X) == INSN_LIST */
-  struct rtx_sequence;            /* GET_CODE (X) == SEQUENCE */
-  struct rtx_insn;
-    struct rtx_debug_insn;      /* DEBUG_INSN_P (X) */
-    struct rtx_nonjump_insn;    /* NONJUMP_INSN_P (X) */
-    struct rtx_jump_insn;       /* JUMP_P (X) */
-    struct rtx_call_insn;       /* CALL_P (X) */
-    struct rtx_jump_table_data; /* JUMP_TABLE_DATA_P (X) */
-    struct rtx_barrier;         /* BARRIER_P (X) */
-    struct rtx_code_label;      /* LABEL_P (X) */
-    struct rtx_note;            /* NOTE_P (X) */
+struct rtx_expr_list; /* GET_CODE (X) == EXPR_LIST */
+struct rtx_insn_list; /* GET_CODE (X) == INSN_LIST */
+struct rtx_sequence;  /* GET_CODE (X) == SEQUENCE */
+struct rtx_insn;
+struct rtx_debug_insn;      /* DEBUG_INSN_P (X) */
+struct rtx_nonjump_insn;    /* NONJUMP_INSN_P (X) */
+struct rtx_jump_insn;       /* JUMP_P (X) */
+struct rtx_call_insn;       /* CALL_P (X) */
+struct rtx_jump_table_data; /* JUMP_TABLE_DATA_P (X) */
+struct rtx_barrier;         /* BARRIER_P (X) */
+struct rtx_code_label;      /* LABEL_P (X) */
+struct rtx_note;            /* NOTE_P (X) */
 
 struct rtvec_def;
 typedef struct rtvec_def *rtvec;
@@ -144,17 +144,17 @@ struct gomp_teams;
 /* Forward declaration of CFI's and DWARF's types.  */
 struct dw_cfi_node;
 using dw_cfi_ref = struct dw_cfi_node *;
-enum dw_cfi_oprnd_type: int;
-enum dwarf_call_frame_info: int;
+enum dw_cfi_oprnd_type : int;
+enum dwarf_call_frame_info : int;
 
 /* Subclasses of toplevel_node, using indentation to show the class
    hierarchy.  */
 
 struct toplevel_node;
-  struct asm_node;
-  struct symtab_node;
-    struct cgraph_node;
-    struct varpool_node;
+struct asm_node;
+struct symtab_node;
+struct cgraph_node;
+struct varpool_node;
 struct cgraph_edge;
 
 union section;
@@ -167,21 +167,23 @@ struct cl_decoded_option;
 struct cl_option_handlers;
 class rich_location;
 namespace diagnostics {
-  class context;
-  class text_sink;
+class context;
+class text_sink;
 } // namespace diagnostics
 class pretty_printer;
 class diagnostic_event_id_t;
-typedef const char * (*diagnostic_input_charset_callback)(const char *);
-namespace pp_markup { class element; }
+typedef const char *(*diagnostic_input_charset_callback)(const char *);
+namespace pp_markup {
+class element;
+}
 typedef pp_markup::element pp_element;
 
-template<typename T> struct array_traits;
+template <typename T> struct array_traits;
 
 /* Provides a read-only bitmap view of a single integer bitmask or an
    array of integer bitmasks, or of a wrapper around such bitmasks.  */
-template<typename T, typename Traits = array_traits<T>,
-	 bool has_constant_size = Traits::has_constant_size>
+template <typename T, typename Traits = array_traits<T>,
+          bool has_constant_size = Traits::has_constant_size>
 class bitmap_view;
 
 /* Address space number for named address space support.  */
@@ -192,11 +194,7 @@ typedef unsigned char addr_space_t;
 #define ADDR_SPACE_GENERIC_P(AS) ((AS) == ADDR_SPACE_GENERIC)
 
 /* The major intermediate representations of GCC.  */
-enum ir_type {
-  IR_GIMPLE,
-  IR_RTL_CFGRTL,
-  IR_RTL_CFGLAYOUT
-};
+enum ir_type { IR_GIMPLE, IR_RTL_CFGRTL, IR_RTL_CFGLAYOUT };
 
 /* Provide forward struct declaration so that we don't have to include
    all of cpplib.h whenever a random prototype includes a pointer.
@@ -220,17 +218,10 @@ enum tls_model {
 };
 
 /* Types of trampoline implementation.  */
-enum trampoline_impl {
-  TRAMPOLINE_IMPL_STACK,
-  TRAMPOLINE_IMPL_HEAP
-};
+enum trampoline_impl { TRAMPOLINE_IMPL_STACK, TRAMPOLINE_IMPL_HEAP };
 
 /* Types of ABI for an offload compiler.  */
-enum offload_abi {
-  OFFLOAD_ABI_UNSET,
-  OFFLOAD_ABI_LP64,
-  OFFLOAD_ABI_ILP32
-};
+enum offload_abi { OFFLOAD_ABI_UNSET, OFFLOAD_ABI_LP64, OFFLOAD_ABI_ILP32 };
 
 /* Types of profile update methods.  */
 enum profile_update {
@@ -241,9 +232,9 @@ enum profile_update {
 
 /* Type of profile reproducibility methods.  */
 enum profile_reproducibility {
-    PROFILE_REPRODUCIBILITY_SERIAL,
-    PROFILE_REPRODUCIBILITY_PARALLEL_RUNS,
-    PROFILE_REPRODUCIBILITY_MULTITHREADED
+  PROFILE_REPRODUCIBILITY_SERIAL,
+  PROFILE_REPRODUCIBILITY_PARALLEL_RUNS,
+  PROFILE_REPRODUCIBILITY_MULTITHREADED
 };
 
 /* Type of -fstack-protector-*.  */
@@ -258,22 +249,15 @@ enum stack_protector {
    Note that a UI_TARGET (or larger) setting is considered to be
    incompatible with -freorder-blocks-and-partition.  */
 
-enum unwind_info_type
-{
-  UI_NONE,
-  UI_SJLJ,
-  UI_DWARF2,
-  UI_SEH,
-  UI_TARGET
-};
+enum unwind_info_type { UI_NONE, UI_SJLJ, UI_DWARF2, UI_SEH, UI_TARGET };
 
 /* Callgraph node profile representation.  */
 enum node_frequency {
   /* This function most likely won't be executed at all.
      (set only when profile feedback is available or via function attribute). */
   NODE_FREQUENCY_UNLIKELY_EXECUTED,
-  /* For functions that are known to be executed once (i.e. constructors, destructors
-     and main function.  */
+  /* For functions that are known to be executed once (i.e. constructors,
+     destructors and main function.  */
   NODE_FREQUENCY_EXECUTED_ONCE,
   /* The default value.  */
   NODE_FREQUENCY_NORMAL,
@@ -313,8 +297,7 @@ enum pad_direction {
 /* Possible initialization status of a variable.   When requested
    by the user, this information is tracked and recorded in the DWARF
    debug information, along with the variable's location.  */
-enum var_init_status
-{
+enum var_init_status {
   VAR_INIT_STATUS_UNKNOWN,
   VAR_INIT_STATUS_UNINITIALIZED,
   VAR_INIT_STATUS_INITIALIZED
@@ -322,8 +305,7 @@ enum var_init_status
 
 /* Names for the different levels of -Wstrict-overflow=N.  The numeric
    values here correspond to N.  */
-enum warn_strict_overflow_code
-{
+enum warn_strict_overflow_code {
   /* Overflow warning that should be issued with -Wall: a questionable
      construct that is easy to avoid even when using macros.  Example:
      folding (x + CONSTANT > x) to 1.  */
@@ -347,8 +329,7 @@ enum warn_strict_overflow_code
 /* Kind of artificial, compiler-generated lookup table.  Type of the
    second argument of TARGET_ADDR_SPACE_FOR_ARTIFICIAL_RODATA resp.
    targetm.addr_space.for_artificial_rodata.  */
-enum artificial_rodata
-{
+enum artificial_rodata {
   /* Generated by tree-switch-conversion.cc: Lowered GIMPLE_SWITCH expressions
      to something more efficient than a jump table.  */
   ARTIFICIAL_RODATA_CSWITCH,
@@ -372,20 +353,19 @@ struct basic_block_def;
 typedef struct basic_block_def *basic_block;
 typedef const struct basic_block_def *const_basic_block;
 
-#if !defined (GENERATOR_FILE)
-# define OBSTACK_CHUNK_SIZE     memory_block_pool::block_size
-# define obstack_chunk_alloc    mempool_obstack_chunk_alloc
-# define obstack_chunk_free     mempool_obstack_chunk_free
+#if !defined(GENERATOR_FILE)
+#define OBSTACK_CHUNK_SIZE memory_block_pool::block_size
+#define obstack_chunk_alloc mempool_obstack_chunk_alloc
+#define obstack_chunk_free mempool_obstack_chunk_free
 #else
-# define OBSTACK_CHUNK_SIZE     0
-# define obstack_chunk_alloc    xmalloc
-# define obstack_chunk_free     free
+#define OBSTACK_CHUNK_SIZE 0
+#define obstack_chunk_alloc xmalloc
+#define obstack_chunk_free free
 #endif
 
-#define gcc_obstack_init(OBSTACK)				\
-  obstack_specify_allocation ((OBSTACK), OBSTACK_CHUNK_SIZE, 0,	\
-			      obstack_chunk_alloc,		\
-			      obstack_chunk_free)
+#define gcc_obstack_init(OBSTACK)                                              \
+  obstack_specify_allocation((OBSTACK), OBSTACK_CHUNK_SIZE, 0,                 \
+                             obstack_chunk_alloc, obstack_chunk_free)
 
 /* enum reg_class is target specific, so it should not appear in
    target-independent code or interfaces, like the target hook declarations
@@ -395,18 +375,16 @@ typedef int reg_class_t;
 class rtl_opt_pass;
 
 namespace gcc {
-  class context;
+class context;
 }
 
-typedef std::pair <tree, tree> tree_pair;
-typedef std::pair <const char *, int> string_int_pair;
+typedef std::pair<tree, tree> tree_pair;
+typedef std::pair<const char *, int> string_int_pair;
 
 /* Define a name->value mapping.  */
-template <typename ValueType>
-struct kv_pair
-{
-  const char *const name;	/* the name of the value */
-  const ValueType value;	/* the value of the name */
+template <typename ValueType> struct kv_pair {
+  const char *const name; /* the name of the value */
+  const ValueType value;  /* the value of the name */
 };
 
 #else
@@ -444,8 +422,7 @@ enum function_class {
 
 /* Enumerate visibility settings.  This is deliberately ordered from most
    to least visibility.  */
-enum symbol_visibility
-{
+enum symbol_visibility {
   VISIBILITY_DEFAULT,
   VISIBILITY_PROTECTED,
   VISIBILITY_HIDDEN,
@@ -454,8 +431,7 @@ enum symbol_visibility
 
 /* enums used by the targetm.excess_precision hook.  */
 
-enum flt_eval_method
-{
+enum flt_eval_method {
   FLT_EVAL_METHOD_UNPREDICTABLE = -1,
   FLT_EVAL_METHOD_PROMOTE_TO_FLOAT = 0,
   FLT_EVAL_METHOD_PROMOTE_TO_DOUBLE = 1,
@@ -463,8 +439,7 @@ enum flt_eval_method
   FLT_EVAL_METHOD_PROMOTE_TO_FLOAT16 = 16
 };
 
-enum excess_precision_type
-{
+enum excess_precision_type {
   EXCESS_PRECISION_TYPE_IMPLICIT,
   EXCESS_PRECISION_TYPE_STANDARD,
   EXCESS_PRECISION_TYPE_FAST,
@@ -473,8 +448,7 @@ enum excess_precision_type
 
 /* Level of size optimization.  */
 
-enum optimize_size_level
-{
+enum optimize_size_level {
   /* Do not optimize for size.  */
   OPTIMIZE_SIZE_NO,
   /* Optimize for size but not at extreme performance costs.  */
@@ -487,48 +461,48 @@ enum optimize_size_level
    is a pointer to a pointer, the second either NULL if the pointer to
    pointer points into a GC object or the actual pointer address if
    the first argument points to a temporary and the third a cookie.  */
-typedef void (*gt_pointer_operator) (void *, void *, void *);
+typedef void (*gt_pointer_operator)(void *, void *, void *);
 
-#if !defined (HAVE_UCHAR)
+#if !defined(HAVE_UCHAR)
 typedef unsigned char uchar;
 #endif
 
 /* Most source files will require the following headers.  */
-#if !defined (USED_FOR_TARGET)
+#if !defined(USED_FOR_TARGET)
 #include "insn-modes.h"
 #include "signop.h"
-#include "wide-int.h"
 #include "wide-int-print.h"
+#include "wide-int.h"
 
 /* On targets that don't need polynomial offsets, target-specific code
    should be able to treat poly_int like a normal constant, with a
    conversion operator going from the former to the latter.  We also
    allow this for gencondmd.cc for all targets, so that we can treat
    machine_modes as enums without causing build failures.  */
-#if (defined (IN_TARGET_CODE) \
-     && (defined (USE_ENUM_MODES) || NUM_POLY_INT_COEFFS == 1))
+#if (defined(IN_TARGET_CODE) &&                                                \
+     (defined(USE_ENUM_MODES) || NUM_POLY_INT_COEFFS == 1))
 #define POLY_INT_CONVERSION 1
 #else
 #define POLY_INT_CONVERSION 0
 #endif
 
-#include "poly-int.h"
-#include "poly-int-types.h"
+#include "align.h"
+#include "double-int.h"
 #include "insn-modes-inline.h"
 #include "machmode.h"
-#include "double-int.h"
-#include "align.h"
+#include "poly-int-types.h"
+#include "poly-int.h"
 /* Most host source files will require the following headers.  */
-#if !defined (GENERATOR_FILE)
-#include "iterator-utils.h"
-#include "real.h"
+#if !defined(GENERATOR_FILE)
+#include "dumpfile.h"
 #include "fixed-value.h"
-#include "hash-table.h"
 #include "hash-set.h"
+#include "hash-table.h"
 #include "input.h"
 #include "is-a.h"
+#include "iterator-utils.h"
 #include "memory-block.h"
-#include "dumpfile.h"
+#include "real.h"
 #endif
 #endif /* GENERATOR_FILE && !USED_FOR_TARGET */
 

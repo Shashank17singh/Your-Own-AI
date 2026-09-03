@@ -41,15 +41,9 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-Cmp_Fn& 
-PB_DS_CLASS_C_DEC::
-get_cmp_fn()
-{ return (*this); }
+Cmp_Fn &PB_DS_CLASS_C_DEC::get_cmp_fn() { return (*this); }
 
 PB_DS_CLASS_T_DEC
-const Cmp_Fn& 
-PB_DS_CLASS_C_DEC::
-get_cmp_fn() const
-{ return (*this); }
+const Cmp_Fn &PB_DS_CLASS_C_DEC::get_cmp_fn() const { return (*this); }
 
 #endif

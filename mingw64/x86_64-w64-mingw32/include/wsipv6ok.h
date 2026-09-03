@@ -5,12 +5,9 @@
  */
 #ifndef _WSIPV6OK_
 #define _WSIPV6OK_
-
 #ifdef IPV6STRICT
-
 #include <ws2tcpip.h>
 #include <wspiapi.h>
-
 #undef AF_INET
 #define AF_INET AF_INET_IPV6INCOMPATIBLE
 #undef PF_INET
@@ -64,7 +61,7 @@
 #undef inet_addr
 #define inet_addr(a) inet_addr_IPV6INCOMPATIBLE
 #undef gethostbyaddr
-#define gethostbyaddr(a,b,c) gethostbyaddr_IPV6INCOMPATIBLE
+#define gethostbyaddr(a, b, c) gethostbyaddr_IPV6INCOMPATIBLE
 #undef inet_ntoa
 #define inet_ntoa(a) inet_ntoa_IPV6INCOMPATIBLE
 #undef IN_MULTICAST
@@ -82,8 +79,10 @@
 #undef INADDR_BROADCAST
 #define INADDR_BROADCAST(a) INADDR_BROADCAST_IPV6INCOMPATIBLE
 #undef WSAAsyncGetHostByAddr
-#define WSAAsyncGetHostByAddr(a,b,c,d,e,f,g) WSAAsyncGetHostByAddr_IPV6INCOMPATIBLE
+#define WSAAsyncGetHostByAddr(a, b, c, d, e, f, g)                             \
+  WSAAsyncGetHostByAddr_IPV6INCOMPATIBLE
 #undef WSAAsyncGetHostByName
-#define WSAAsyncGetHostByName(a,b,c,d,e) WSAAsyncGetHostByName_IPV6INCOMPATIBLE
+#define WSAAsyncGetHostByName(a, b, c, d, e)                                   \
+  WSAAsyncGetHostByName_IPV6INCOMPATIBLE
 #endif
 #endif

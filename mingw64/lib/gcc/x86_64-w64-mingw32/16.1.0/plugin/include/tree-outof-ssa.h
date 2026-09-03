@@ -17,16 +17,13 @@ You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING3.  If not see
 <http://www.gnu.org/licenses/>.  */
 
-
 #ifndef GCC_TREE_OUTOF_SSA_H
 #define GCC_TREE_OUTOF_SSA_H
-
 
 /* This structure (of which only a singleton SA exists) is used to
    pass around information between the outof-SSA functions, cfgexpand
    and expand itself.  */
-struct ssaexpand
-{
+struct ssaexpand {
   /* The computed partitions of SSA names are stored here.  */
   var_map map;
 
@@ -53,30 +50,26 @@ extern struct ssaexpand SA;
 
 /* Returns the RTX expression representing the storage of the outof-SSA
    partition that the SSA name EXP is a member of.  */
-inline rtx
-get_rtx_for_ssa_name (tree exp)
-{
-  int p = partition_find (SA.map->var_partition, SSA_NAME_VERSION (exp));
+inline rtx get_rtx_for_ssa_name(tree exp) {
+  int p = partition_find(SA.map->var_partition, SSA_NAME_VERSION(exp));
   if (SA.map->partition_to_view)
     p = SA.map->partition_to_view[p];
-  gcc_assert (p != NO_PARTITION);
+  gcc_assert(p != NO_PARTITION);
   return SA.partition_to_pseudo[p];
 }
 
 /* If TER decided to forward the definition of SSA name EXP this function
    returns the defining statement, otherwise NULL.  */
-inline gimple *
-get_gimple_for_ssa_name (tree exp)
-{
-  int v = SSA_NAME_VERSION (exp);
-  if (SA.values && bitmap_bit_p (SA.values, v))
-    return SSA_NAME_DEF_STMT (exp);
+inline gimple *get_gimple_for_ssa_name(tree exp) {
+  int v = SSA_NAME_VERSION(exp);
+  if (SA.values && bitmap_bit_p(SA.values, v))
+    return SSA_NAME_DEF_STMT(exp);
   return NULL;
 }
 
-extern bool ssa_is_replaceable_p (gimple *stmt);
-extern void finish_out_of_ssa (struct ssaexpand *sa);
-extern unsigned int rewrite_out_of_ssa (struct ssaexpand *sa);
-extern void expand_phi_nodes (struct ssaexpand *sa);
+extern bool ssa_is_replaceable_p(gimple *stmt);
+extern void finish_out_of_ssa(struct ssaexpand *sa);
+extern unsigned int rewrite_out_of_ssa(struct ssaexpand *sa);
+extern void expand_phi_nodes(struct ssaexpand *sa);
 
 #endif /* GCC_TREE_OUTOF_SSA_H */

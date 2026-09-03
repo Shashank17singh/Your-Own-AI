@@ -10,13 +10,12 @@ from tkinter import Tk, Text
 from idlelib import config
 from idlelib.percolator import Percolator
 
-
 usercfg = colorizer.idleConf.userCfg
 testcfg = {
-    'main': config.IdleUserConfParser(''),
-    'highlight': config.IdleUserConfParser(''),
-    'keys': config.IdleUserConfParser(''),
-    'extensions': config.IdleUserConfParser(''),
+    "main": config.IdleUserConfParser(""),
+    "highlight": config.IdleUserConfParser(""),
+    "keys": config.IdleUserConfParser(""),
+    "extensions": config.IdleUserConfParser(""),
 }
 
 source = (
@@ -27,7 +26,7 @@ source = (
     "if'': x or''  # valid string-keyword no-space combinations\n"
     "async def f(): await g()\n"
     "'x', '''x''', \"x\", \"\"\"x\"\"\"\n"
-    )
+)
 
 
 def setUpModule():
@@ -41,8 +40,7 @@ def tearDownModule():
 class FunctionTest(unittest.TestCase):
 
     def test_any(self):
-        self.assertEqual(colorizer.any('test', ('a', 'b', 'cd')),
-                         '(?P<test>a|b|cd)')
+        self.assertEqual(colorizer.any("test", ("a", "b", "cd")), "(?P<test>a|b|cd)")
 
     def test_make_pat(self):
         # Tested in more detail by testing prog.
@@ -53,29 +51,29 @@ class FunctionTest(unittest.TestCase):
         eq = self.assertEqual
         line = 'def f():\n    print("hello")\n'
         m = prog.search(line)
-        eq(m.groupdict()['KEYWORD'], 'def')
+        eq(m.groupdict()["KEYWORD"], "def")
         m = prog.search(line, m.end())
-        eq(m.groupdict()['SYNC'], '\n')
+        eq(m.groupdict()["SYNC"], "\n")
         m = prog.search(line, m.end())
-        eq(m.groupdict()['BUILTIN'], 'print')
+        eq(m.groupdict()["BUILTIN"], "print")
         m = prog.search(line, m.end())
-        eq(m.groupdict()['STRING'], '"hello"')
+        eq(m.groupdict()["STRING"], '"hello"')
         m = prog.search(line, m.end())
-        eq(m.groupdict()['SYNC'], '\n')
+        eq(m.groupdict()["SYNC"], "\n")
 
     def test_idprog(self):
         idprog = colorizer.idprog
-        m = idprog.match('nospace')
+        m = idprog.match("nospace")
         self.assertIsNone(m)
-        m = idprog.match(' space')
-        self.assertEqual(m.group(0), ' space')
+        m = idprog.match(" space")
+        self.assertEqual(m.group(0), " space")
 
 
 class ColorConfigTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        requires('gui')
+        requires("gui")
         root = cls.root = Tk()
         root.withdraw()
         cls.text = Text(root)
@@ -92,19 +90,19 @@ class ColorConfigTest(unittest.TestCase):
         eq = self.assertEqual
         colorizer.color_config(text)
         # Uses IDLE Classic theme as default.
-        eq(text['background'], '#ffffff')
-        eq(text['foreground'], '#000000')
-        eq(text['selectbackground'], 'gray')
-        eq(text['selectforeground'], '#000000')
-        eq(text['insertbackground'], 'black')
-        eq(text['inactiveselectbackground'], 'gray')
+        eq(text["background"], "#ffffff")
+        eq(text["foreground"], "#000000")
+        eq(text["selectbackground"], "gray")
+        eq(text["selectforeground"], "#000000")
+        eq(text["insertbackground"], "black")
+        eq(text["inactiveselectbackground"], "gray")
 
 
 class ColorDelegatorInstantiationTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        requires('gui')
+        requires("gui")
         root = cls.root = Tk()
         root.withdraw()
         text = cls.text = Text(root)
@@ -121,7 +119,7 @@ class ColorDelegatorInstantiationTest(unittest.TestCase):
 
     def tearDown(self):
         self.color.close()
-        self.text.delete('1.0', 'end')
+        self.text.delete("1.0", "end")
         self.color.resetcache()
         del self.color
 
@@ -143,7 +141,7 @@ class ColorDelegatorTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        requires('gui')
+        requires("gui")
         root = cls.root = Tk()
         root.withdraw()
         text = cls.text = Text(root)
@@ -166,7 +164,7 @@ class ColorDelegatorTest(unittest.TestCase):
     def tearDown(self):
         self.color.close()
         self.percolator.removefilter(self.color)
-        self.text.delete('1.0', 'end')
+        self.text.delete("1.0", "end")
         self.color.resetcache()
         del self.color
 
@@ -175,58 +173,59 @@ class ColorDelegatorTest(unittest.TestCase):
         color = self.color
         self.assertIsInstance(color.delegate, colorizer.Delegator)
         # It is too late to mock notify_range, so test side effect.
-        self.assertEqual(self.root.tk.call(
-            'after', 'info', color.after_id)[1], 'timer')
+        self.assertEqual(self.root.tk.call("after", "info", color.after_id)[1], "timer")
 
     def test_LoadTagDefs(self):
-        highlight = partial(config.idleConf.GetHighlight, theme='IDLE Classic')
+        highlight = partial(config.idleConf.GetHighlight, theme="IDLE Classic")
         for tag, colors in self.color.tagdefs.items():
             with self.subTest(tag=tag):
-                self.assertIn('background', colors)
-                self.assertIn('foreground', colors)
-                if tag not in ('SYNC', 'TODO'):
+                self.assertIn("background", colors)
+                self.assertIn("foreground", colors)
+                if tag not in ("SYNC", "TODO"):
                     self.assertEqual(colors, highlight(element=tag.lower()))
 
     def test_config_colors(self):
         text = self.text
-        highlight = partial(config.idleConf.GetHighlight, theme='IDLE Classic')
+        highlight = partial(config.idleConf.GetHighlight, theme="IDLE Classic")
         for tag in self.color.tagdefs:
-            for plane in ('background', 'foreground'):
+            for plane in ("background", "foreground"):
                 with self.subTest(tag=tag, plane=plane):
-                    if tag in ('SYNC', 'TODO'):
-                        self.assertEqual(text.tag_cget(tag, plane), '')
+                    if tag in ("SYNC", "TODO"):
+                        self.assertEqual(text.tag_cget(tag, plane), "")
                     else:
-                        self.assertEqual(text.tag_cget(tag, plane),
-                                         highlight(element=tag.lower())[plane])
+                        self.assertEqual(
+                            text.tag_cget(tag, plane),
+                            highlight(element=tag.lower())[plane],
+                        )
         # 'sel' is marked as the highest priority.
-        self.assertEqual(text.tag_names()[-1], 'sel')
+        self.assertEqual(text.tag_names()[-1], "sel")
 
-    @mock.patch.object(colorizer.ColorDelegator, 'notify_range')
+    @mock.patch.object(colorizer.ColorDelegator, "notify_range")
     def test_insert(self, mock_notify):
         text = self.text
         # Initial text.
-        text.insert('insert', 'foo')
-        self.assertEqual(text.get('1.0', 'end'), 'foo\n')
-        mock_notify.assert_called_with('1.0', '1.0+3c')
+        text.insert("insert", "foo")
+        self.assertEqual(text.get("1.0", "end"), "foo\n")
+        mock_notify.assert_called_with("1.0", "1.0+3c")
         # Additional text.
-        text.insert('insert', 'barbaz')
-        self.assertEqual(text.get('1.0', 'end'), 'foobarbaz\n')
-        mock_notify.assert_called_with('1.3', '1.3+6c')
+        text.insert("insert", "barbaz")
+        self.assertEqual(text.get("1.0", "end"), "foobarbaz\n")
+        mock_notify.assert_called_with("1.3", "1.3+6c")
 
-    @mock.patch.object(colorizer.ColorDelegator, 'notify_range')
+    @mock.patch.object(colorizer.ColorDelegator, "notify_range")
     def test_delete(self, mock_notify):
         text = self.text
         # Initialize text.
-        text.insert('insert', 'abcdefghi')
-        self.assertEqual(text.get('1.0', 'end'), 'abcdefghi\n')
+        text.insert("insert", "abcdefghi")
+        self.assertEqual(text.get("1.0", "end"), "abcdefghi\n")
         # Delete single character.
-        text.delete('1.7')
-        self.assertEqual(text.get('1.0', 'end'), 'abcdefgi\n')
-        mock_notify.assert_called_with('1.7')
+        text.delete("1.7")
+        self.assertEqual(text.get("1.0", "end"), "abcdefgi\n")
+        mock_notify.assert_called_with("1.7")
         # Delete multiple characters.
-        text.delete('1.3', '1.6')
-        self.assertEqual(text.get('1.0', 'end'), 'abcgi\n')
-        mock_notify.assert_called_with('1.3')
+        text.delete("1.3", "1.6")
+        self.assertEqual(text.get("1.0", "end"), "abcgi\n")
+        mock_notify.assert_called_with("1.3")
 
     def test_notify_range(self):
         text = self.text
@@ -235,24 +234,24 @@ class ColorDelegatorTest(unittest.TestCase):
 
         # Colorizing already scheduled.
         save_id = color.after_id
-        eq(self.root.tk.call('after', 'info', save_id)[1], 'timer')
+        eq(self.root.tk.call("after", "info", save_id)[1], "timer")
         self.assertFalse(color.colorizing)
         self.assertFalse(color.stop_colorizing)
         self.assertTrue(color.allow_colorizing)
 
         # Coloring scheduled and colorizing in progress.
         color.colorizing = True
-        color.notify_range('1.0', 'end')
+        color.notify_range("1.0", "end")
         self.assertFalse(color.stop_colorizing)
         eq(color.after_id, save_id)
 
         # No colorizing scheduled and colorizing in progress.
         text.after_cancel(save_id)
         color.after_id = None
-        color.notify_range('1.0', '1.0+3c')
+        color.notify_range("1.0", "1.0+3c")
         self.assertTrue(color.stop_colorizing)
         self.assertIsNotNone(color.after_id)
-        eq(self.root.tk.call('after', 'info', color.after_id)[1], 'timer')
+        eq(self.root.tk.call("after", "info", color.after_id)[1], "timer")
         # New event scheduled.
         self.assertNotEqual(color.after_id, save_id)
 
@@ -260,7 +259,7 @@ class ColorDelegatorTest(unittest.TestCase):
         text.after_cancel(color.after_id)
         color.after_id = None
         color.allow_colorizing = False
-        color.notify_range('1.4', '1.4+10c')
+        color.notify_range("1.4", "1.4+10c")
         # Nothing scheduled when colorizing is off.
         self.assertIsNone(color.after_id)
 
@@ -272,7 +271,7 @@ class ColorDelegatorTest(unittest.TestCase):
         self.assertFalse(color.colorizing)
         self.assertFalse(color.stop_colorizing)
         self.assertTrue(color.allow_colorizing)
-        eq(self.root.tk.call('after', 'info', color.after_id)[1], 'timer')
+        eq(self.root.tk.call("after", "info", color.after_id)[1], "timer")
 
         # Toggle colorizing off.
         color.toggle_colorize_event()
@@ -299,12 +298,12 @@ class ColorDelegatorTest(unittest.TestCase):
         # Toggle on while colorizing not in progress.
         color.colorizing = False
         color.toggle_colorize_event()
-        eq(self.root.tk.call('after', 'info', color.after_id)[1], 'timer')
+        eq(self.root.tk.call("after", "info", color.after_id)[1], "timer")
         self.assertFalse(color.colorizing)
         self.assertTrue(color.stop_colorizing)
         self.assertTrue(color.allow_colorizing)
 
-    @mock.patch.object(colorizer.ColorDelegator, 'recolorize_main')
+    @mock.patch.object(colorizer.ColorDelegator, "recolorize_main")
     def test_recolorize(self, mock_recmain):
         text = self.text
         color = self.color
@@ -338,10 +337,10 @@ class ColorDelegatorTest(unittest.TestCase):
         mock_recmain.assert_called()
         eq(mock_recmain.call_count, 1)
         # Rescheduled when TODO tag still exists.
-        eq(self.root.tk.call('after', 'info', color.after_id)[1], 'timer')
+        eq(self.root.tk.call("after", "info", color.after_id)[1], "timer")
 
         # No changes to text, so no scheduling added.
-        text.tag_remove('TODO', '1.0', 'end')
+        text.tag_remove("TODO", "1.0", "end")
         color.recolorize()
         self.assertFalse(color.stop_colorizing)
         self.assertFalse(color.colorizing)
@@ -349,36 +348,56 @@ class ColorDelegatorTest(unittest.TestCase):
         eq(mock_recmain.call_count, 2)
         self.assertIsNone(color.after_id)
 
-    @mock.patch.object(colorizer.ColorDelegator, 'notify_range')
+    @mock.patch.object(colorizer.ColorDelegator, "notify_range")
     def test_recolorize_main(self, mock_notify):
         text = self.text
         color = self.color
         eq = self.assertEqual
 
-        text.insert('insert', source)
-        expected = (('1.0', ('KEYWORD',)), ('1.2', ()), ('1.3', ('KEYWORD',)),
-                    ('1.7', ()), ('1.9', ('BUILTIN',)), ('1.14', ('STRING',)),
-                    ('1.19', ('COMMENT',)),
-                    ('2.1', ('KEYWORD',)), ('2.18', ()), ('2.25', ('COMMENT',)),
-                    ('3.6', ('BUILTIN',)), ('3.12', ('KEYWORD',)), ('3.21', ('COMMENT',)),
-                    ('4.0', ('KEYWORD',)), ('4.3', ()), ('4.6', ()),
-                    ('5.2', ('STRING',)), ('5.8', ('KEYWORD',)), ('5.10', ('STRING',)),
-                    ('6.0', ('KEYWORD',)), ('6.10', ('DEFINITION',)), ('6.11', ()),
-                    ('7.0', ('STRING',)), ('7.4', ()), ('7.5', ('STRING',)),
-                    ('7.12', ()), ('7.14', ('STRING',)),
-                    # SYNC at the end of every line.
-                    ('1.55', ('SYNC',)), ('2.50', ('SYNC',)), ('3.34', ('SYNC',)),
-                   )
+        text.insert("insert", source)
+        expected = (
+            ("1.0", ("KEYWORD",)),
+            ("1.2", ()),
+            ("1.3", ("KEYWORD",)),
+            ("1.7", ()),
+            ("1.9", ("BUILTIN",)),
+            ("1.14", ("STRING",)),
+            ("1.19", ("COMMENT",)),
+            ("2.1", ("KEYWORD",)),
+            ("2.18", ()),
+            ("2.25", ("COMMENT",)),
+            ("3.6", ("BUILTIN",)),
+            ("3.12", ("KEYWORD",)),
+            ("3.21", ("COMMENT",)),
+            ("4.0", ("KEYWORD",)),
+            ("4.3", ()),
+            ("4.6", ()),
+            ("5.2", ("STRING",)),
+            ("5.8", ("KEYWORD",)),
+            ("5.10", ("STRING",)),
+            ("6.0", ("KEYWORD",)),
+            ("6.10", ("DEFINITION",)),
+            ("6.11", ()),
+            ("7.0", ("STRING",)),
+            ("7.4", ()),
+            ("7.5", ("STRING",)),
+            ("7.12", ()),
+            ("7.14", ("STRING",)),
+            # SYNC at the end of every line.
+            ("1.55", ("SYNC",)),
+            ("2.50", ("SYNC",)),
+            ("3.34", ("SYNC",)),
+        )
 
         # Nothing marked to do therefore no tags in text.
-        text.tag_remove('TODO', '1.0', 'end')
+        text.tag_remove("TODO", "1.0", "end")
         color.recolorize_main()
         for tag in text.tag_names():
             with self.subTest(tag=tag):
                 eq(text.tag_ranges(tag), ())
 
         # Source marked for processing.
-        text.tag_add('TODO', '1.0', 'end')
+        text.tag_add("TODO", "1.0", "end")
         # Check some indexes.
         color.recolorize_main()
         for index, expected_tags in expected:
@@ -386,23 +405,23 @@ class ColorDelegatorTest(unittest.TestCase):
                 eq(text.tag_names(index), expected_tags)
 
         # Check for some tags for ranges.
-        eq(text.tag_nextrange('TODO', '1.0'), ())
-        eq(text.tag_nextrange('KEYWORD', '1.0'), ('1.0', '1.2'))
-        eq(text.tag_nextrange('COMMENT', '2.0'), ('2.22', '2.43'))
-        eq(text.tag_nextrange('SYNC', '2.0'), ('2.43', '3.0'))
-        eq(text.tag_nextrange('STRING', '2.0'), ('4.17', '4.53'))
-        eq(text.tag_nextrange('STRING', '7.0'), ('7.0', '7.3'))
-        eq(text.tag_nextrange('STRING', '7.3'), ('7.5', '7.12'))
-        eq(text.tag_nextrange('STRING', '7.12'), ('7.14', '7.17'))
-        eq(text.tag_nextrange('STRING', '7.17'), ('7.19', '7.26'))
-        eq(text.tag_nextrange('SYNC', '7.0'), ('7.26', '9.0'))
+        eq(text.tag_nextrange("TODO", "1.0"), ())
+        eq(text.tag_nextrange("KEYWORD", "1.0"), ("1.0", "1.2"))
+        eq(text.tag_nextrange("COMMENT", "2.0"), ("2.22", "2.43"))
+        eq(text.tag_nextrange("SYNC", "2.0"), ("2.43", "3.0"))
+        eq(text.tag_nextrange("STRING", "2.0"), ("4.17", "4.53"))
+        eq(text.tag_nextrange("STRING", "7.0"), ("7.0", "7.3"))
+        eq(text.tag_nextrange("STRING", "7.3"), ("7.5", "7.12"))
+        eq(text.tag_nextrange("STRING", "7.12"), ("7.14", "7.17"))
+        eq(text.tag_nextrange("STRING", "7.17"), ("7.19", "7.26"))
+        eq(text.tag_nextrange("SYNC", "7.0"), ("7.26", "9.0"))
 
-    @mock.patch.object(colorizer.ColorDelegator, 'recolorize')
-    @mock.patch.object(colorizer.ColorDelegator, 'notify_range')
+    @mock.patch.object(colorizer.ColorDelegator, "recolorize")
+    @mock.patch.object(colorizer.ColorDelegator, "notify_range")
     def test_removecolors(self, mock_notify, mock_recolorize):
         text = self.text
         color = self.color
-        text.insert('insert', source)
+        text.insert("insert", source)
 
         color.recolorize_main()
         # recolorize_main doesn't add these tags.
@@ -419,5 +438,5 @@ class ColorDelegatorTest(unittest.TestCase):
                 self.assertEqual(text.tag_ranges(tag), ())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

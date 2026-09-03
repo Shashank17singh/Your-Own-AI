@@ -5,15 +5,13 @@ extern "C" {
 #endif
 
 #ifndef Py_BUILD_CORE
-#  error "this header requires Py_BUILD_CORE define"
+#error "this header requires Py_BUILD_CORE define"
 #endif
 
 // Fast inlined version of PyIndex_Check()
-static inline int
-_PyIndex_Check(PyObject *obj)
-{
-    PyNumberMethods *tp_as_number = Py_TYPE(obj)->tp_as_number;
-    return (tp_as_number != NULL && tp_as_number->nb_index != NULL);
+static inline int _PyIndex_Check(PyObject *obj) {
+  PyNumberMethods *tp_as_number = Py_TYPE(obj)->tp_as_number;
+  return (tp_as_number != NULL && tp_as_number->nb_index != NULL);
 }
 
 #ifdef __cplusplus

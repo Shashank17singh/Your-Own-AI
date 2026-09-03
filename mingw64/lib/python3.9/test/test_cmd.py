@@ -3,12 +3,12 @@ Test script for the 'cmd' module
 Original by Michael Schneider
 """
 
-
 import cmd
 import sys
 import unittest
 import io
 from test import support
+
 
 class samplecmdclass(cmd.Cmd):
     """
@@ -158,7 +158,7 @@ class samplecmdclass(cmd.Cmd):
         except ValueError:
             print("*** arguments should be numbers")
             return
-        print(l[0]+l[1])
+        print(l[0] + l[1])
 
     def help_add(self):
         print("help text for add")
@@ -178,13 +178,11 @@ class TestAlternateInput(unittest.TestCase):
         def do_EOF(self, args):
             return True
 
-
     class simplecmd2(simplecmd):
 
         def do_EOF(self, args):
-            print('*** Unknown syntax: EOF', file=self.stdout)
+            print("*** Unknown syntax: EOF", file=self.stdout)
             return True
-
 
     def test_file_with_missing_final_nl(self):
         input = io.StringIO("print test\nprint test2")
@@ -192,11 +190,9 @@ class TestAlternateInput(unittest.TestCase):
         cmd = self.simplecmd(stdin=input, stdout=output)
         cmd.use_rawinput = False
         cmd.cmdloop()
-        self.assertMultiLineEqual(output.getvalue(),
-            ("(Cmd) test\n"
-             "(Cmd) test2\n"
-             "(Cmd) "))
-
+        self.assertMultiLineEqual(
+            output.getvalue(), ("(Cmd) test\n" "(Cmd) test2\n" "(Cmd) ")
+        )
 
     def test_input_reset_at_EOF(self):
         input = io.StringIO("print test\nprint test2")
@@ -204,38 +200,46 @@ class TestAlternateInput(unittest.TestCase):
         cmd = self.simplecmd2(stdin=input, stdout=output)
         cmd.use_rawinput = False
         cmd.cmdloop()
-        self.assertMultiLineEqual(output.getvalue(),
-            ("(Cmd) test\n"
-             "(Cmd) test2\n"
-             "(Cmd) *** Unknown syntax: EOF\n"))
+        self.assertMultiLineEqual(
+            output.getvalue(),
+            ("(Cmd) test\n" "(Cmd) test2\n" "(Cmd) *** Unknown syntax: EOF\n"),
+        )
         input = io.StringIO("print \n\n")
         output = io.StringIO()
         cmd.stdin = input
         cmd.stdout = output
         cmd.cmdloop()
-        self.assertMultiLineEqual(output.getvalue(),
-            ("(Cmd) \n"
-             "(Cmd) \n"
-             "(Cmd) *** Unknown syntax: EOF\n"))
+        self.assertMultiLineEqual(
+            output.getvalue(), ("(Cmd) \n" "(Cmd) \n" "(Cmd) *** Unknown syntax: EOF\n")
+        )
 
 
 def test_main(verbose=None):
     from test import test_cmd
+
     support.run_doctest(test_cmd, verbose)
     support.run_unittest(TestAlternateInput)
 
+
 def test_coverage(coverdir):
-    trace = support.import_module('trace')
-    tracer=trace.Trace(ignoredirs=[sys.base_prefix, sys.base_exec_prefix,],
-                        trace=0, count=1)
-    tracer.run('import importlib; importlib.reload(cmd); test_main()')
-    r=tracer.results()
+    trace = support.import_module("trace")
+    tracer = trace.Trace(
+        ignoredirs=[
+            sys.base_prefix,
+            sys.base_exec_prefix,
+        ],
+        trace=0,
+        count=1,
+    )
+    tracer.run("import importlib; importlib.reload(cmd); test_main()")
+    r = tracer.results()
     print("Writing coverage results...")
     r.write_results(show_missing=True, summary=True, coverdir=coverdir)
 
+
 if __name__ == "__main__":
     if "-c" in sys.argv:
-        test_coverage('/tmp/cmd.cover')
+        test_coverage("/tmp/cmd.cover")
     elif "-i" in sys.argv:
         samplecmdclass().cmdloop()
     else:

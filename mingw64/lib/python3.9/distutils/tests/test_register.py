@@ -1,4 +1,5 @@
 """Tests for distutils.command.register."""
+
 import os
 import unittest
 import getpass
@@ -39,20 +40,24 @@ username:tarek
 password:password
 """
 
+
 class Inputs(object):
     """Fakes user inputs."""
+
     def __init__(self, *answers):
         self.answers = answers
         self.index = 0
 
-    def __call__(self, prompt=''):
+    def __call__(self, prompt=""):
         try:
             return self.answers[self.index]
         finally:
             self.index += 1
 
+
 class FakeOpener(object):
     """Fakes a PyPI server"""
+
     def __init__(self):
         self.reqs = []
 
@@ -64,12 +69,12 @@ class FakeOpener(object):
         return self
 
     def read(self):
-        return b'xxx'
+        return b"xxx"
 
     def getheader(self, name, default=None):
         return {
-            'content-type': 'text/plain; charset=utf-8',
-            }.get(name.lower(), default)
+            "content-type": "text/plain; charset=utf-8",
+        }.get(name.lower(), default)
 
 
 class RegisterTestCase(BasePyPIRCCommandTestCase):
@@ -78,8 +83,10 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         super(RegisterTestCase, self).setUp()
         # patching the password prompt
         self._old_getpass = getpass.getpass
+
         def _getpass(prompt):
-            return 'password'
+            return "password"
+
         getpass.getpass = _getpass
         urllib.request._opener = None
         self.old_opener = urllib.request.build_opener
@@ -93,9 +100,13 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
 
     def _get_cmd(self, metadata=None):
         if metadata is None:
-            metadata = {'url': 'xxx', 'author': 'xxx',
-                        'author_email': 'xxx',
-                        'name': 'xxx', 'version': 'xxx'}
+            metadata = {
+                "url": "xxx",
+                "author": "xxx",
+                "author_email": "xxx",
+                "name": "xxx",
+                "version": "xxx",
+            }
         pkg_info, dist = self.create_dist(**metadata)
         return register(dist)
 
@@ -117,7 +128,7 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         # Username : 'tarek'
         # Password : 'password'
         # Save your login (y/N)? : 'y'
-        inputs = Inputs('1', 'tarek', 'y')
+        inputs = Inputs("1", "tarek", "y")
         register_module.input = inputs.__call__
         # let's run the command
         try:
@@ -139,8 +150,9 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         # now let's make sure the .pypirc file generated
         # really works : we shouldn't be asked anything
         # if we run the command again
-        def _no_way(prompt=''):
+        def _no_way(prompt=""):
             raise AssertionError(prompt)
+
         register_module.input = _no_way
 
         cmd.show_response = 1
@@ -152,9 +164,9 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         req1 = dict(self.conn.reqs[0].headers)
         req2 = dict(self.conn.reqs[1].headers)
 
-        self.assertEqual(req1['Content-length'], '1374')
-        self.assertEqual(req2['Content-length'], '1374')
-        self.assertIn(b'xxx', self.conn.reqs[1].data)
+        self.assertEqual(req1["Content-length"], "1374")
+        self.assertEqual(req2["Content-length"], "1374")
+        self.assertIn(b"xxx", self.conn.reqs[1].data)
 
     def test_password_not_in_file(self):
 
@@ -166,12 +178,12 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
 
         # dist.password should be set
         # therefore used afterwards by other commands
-        self.assertEqual(cmd.distribution.password, 'password')
+        self.assertEqual(cmd.distribution.password, "password")
 
     def test_registering(self):
         # this test runs choice 2
         cmd = self._get_cmd()
-        inputs = Inputs('2', 'tarek', 'tarek@ziade.org')
+        inputs = Inputs("2", "tarek", "tarek@ziade.org")
         register_module.input = inputs.__call__
         try:
             # let's run the command
@@ -183,13 +195,13 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         self.assertEqual(len(self.conn.reqs), 1)
         req = self.conn.reqs[0]
         headers = dict(req.headers)
-        self.assertEqual(headers['Content-length'], '608')
-        self.assertIn(b'tarek', req.data)
+        self.assertEqual(headers["Content-length"], "608")
+        self.assertIn(b"tarek", req.data)
 
     def test_password_reset(self):
         # this test runs choice 3
         cmd = self._get_cmd()
-        inputs = Inputs('3', 'tarek@ziade.org')
+        inputs = Inputs("3", "tarek@ziade.org")
         register_module.input = inputs.__call__
         try:
             # let's run the command
@@ -201,10 +213,10 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         self.assertEqual(len(self.conn.reqs), 1)
         req = self.conn.reqs[0]
         headers = dict(req.headers)
-        self.assertEqual(headers['Content-length'], '290')
-        self.assertIn(b'tarek', req.data)
+        self.assertEqual(headers["Content-length"], "290")
+        self.assertIn(b"tarek", req.data)
 
-    @unittest.skipUnless(docutils is not None, 'needs docutils')
+    @unittest.skipUnless(docutils is not None, "needs docutils")
     def test_strict(self):
         # testing the script option
         # when on, the register command stops if
@@ -218,10 +230,14 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         self.assertRaises(DistutilsSetupError, cmd.run)
 
         # metadata are OK but long_description is broken
-        metadata = {'url': 'xxx', 'author': 'xxx',
-                    'author_email': 'éxéxé',
-                    'name': 'xxx', 'version': 'xxx',
-                    'long_description': 'title\n==\n\ntext'}
+        metadata = {
+            "url": "xxx",
+            "author": "xxx",
+            "author_email": "éxéxé",
+            "name": "xxx",
+            "version": "xxx",
+            "long_description": "title\n==\n\ntext",
+        }
 
         cmd = self._get_cmd(metadata)
         cmd.ensure_finalized()
@@ -229,11 +245,11 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         self.assertRaises(DistutilsSetupError, cmd.run)
 
         # now something that works
-        metadata['long_description'] = 'title\n=====\n\ntext'
+        metadata["long_description"] = "title\n=====\n\ntext"
         cmd = self._get_cmd(metadata)
         cmd.ensure_finalized()
         cmd.strict = 1
-        inputs = Inputs('1', 'tarek', 'y')
+        inputs = Inputs("1", "tarek", "y")
         register_module.input = inputs.__call__
         # let's run the command
         try:
@@ -244,7 +260,7 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         # strict is not by default
         cmd = self._get_cmd()
         cmd.ensure_finalized()
-        inputs = Inputs('1', 'tarek', 'y')
+        inputs = Inputs("1", "tarek", "y")
         register_module.input = inputs.__call__
         # let's run the command
         try:
@@ -253,16 +269,20 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
             del register_module.input
 
         # and finally a Unicode test (bug #12114)
-        metadata = {'url': 'xxx', 'author': '\u00c9ric',
-                    'author_email': 'xxx', 'name': 'xxx',
-                    'version': 'xxx',
-                    'description': 'Something about esszet \u00df',
-                    'long_description': 'More things about esszet \u00df'}
+        metadata = {
+            "url": "xxx",
+            "author": "\u00c9ric",
+            "author_email": "xxx",
+            "name": "xxx",
+            "version": "xxx",
+            "description": "Something about esszet \u00df",
+            "long_description": "More things about esszet \u00df",
+        }
 
         cmd = self._get_cmd(metadata)
         cmd.ensure_finalized()
         cmd.strict = 1
-        inputs = Inputs('1', 'tarek', 'y')
+        inputs = Inputs("1", "tarek", "y")
         register_module.input = inputs.__call__
         # let's run the command
         try:
@@ -270,19 +290,23 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         finally:
             del register_module.input
 
-    @unittest.skipUnless(docutils is not None, 'needs docutils')
+    @unittest.skipUnless(docutils is not None, "needs docutils")
     def test_register_invalid_long_description(self):
-        description = ':funkie:`str`'  # mimic Sphinx-specific markup
-        metadata = {'url': 'xxx', 'author': 'xxx',
-                    'author_email': 'xxx',
-                    'name': 'xxx', 'version': 'xxx',
-                    'long_description': description}
+        description = ":funkie:`str`"  # mimic Sphinx-specific markup
+        metadata = {
+            "url": "xxx",
+            "author": "xxx",
+            "author_email": "xxx",
+            "name": "xxx",
+            "version": "xxx",
+            "long_description": description,
+        }
         cmd = self._get_cmd(metadata)
         cmd.ensure_finalized()
         cmd.strict = True
-        inputs = Inputs('2', 'tarek', 'tarek@ziade.org')
+        inputs = Inputs("2", "tarek", "tarek@ziade.org")
         register_module.input = inputs
-        self.addCleanup(delattr, register_module, 'input')
+        self.addCleanup(delattr, register_module, "input")
 
         self.assertRaises(DistutilsSetupError, cmd.run)
 
@@ -299,12 +323,12 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         cmd.list_classifiers = 1
         cmd.run()
         results = self.get_logs(INFO)
-        self.assertEqual(results, ['running check', 'xxx'])
+        self.assertEqual(results, ["running check", "xxx"])
 
     def test_show_response(self):
         # test that the --show-response option return a well formatted response
         cmd = self._get_cmd()
-        inputs = Inputs('1', 'tarek', 'y')
+        inputs = Inputs("1", "tarek", "y")
         register_module.input = inputs.__call__
         cmd.show_response = 1
         try:
@@ -313,11 +337,12 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
             del register_module.input
 
         results = self.get_logs(INFO)
-        self.assertEqual(results[3], 75 * '-' + '\nxxx\n' + 75 * '-')
+        self.assertEqual(results[3], 75 * "-" + "\nxxx\n" + 75 * "-")
 
 
 def test_suite():
     return unittest.makeSuite(RegisterTestCase)
+
 
 if __name__ == "__main__":
     run_unittest(test_suite())

@@ -40,45 +40,44 @@
 
 /* Performs 1 round of AES decryption of the first m128i using
    the second m128i as a round key.  */
-#define _mm_aesdec_si128(X, Y) \
-  (__m128i) __builtin_ia32_aesdec128 ((__v2di) (X), (__v2di) (Y))
+#define _mm_aesdec_si128(X, Y)                                                 \
+  (__m128i) __builtin_ia32_aesdec128((__v2di)(X), (__v2di)(Y))
 
 /* Performs the last round of AES decryption of the first m128i
    using the second m128i as a round key.  */
-#define _mm_aesdeclast_si128(X, Y) \
-  (__m128i) __builtin_ia32_aesdeclast128 ((__v2di) (X), (__v2di) (Y))
+#define _mm_aesdeclast_si128(X, Y)                                             \
+  (__m128i) __builtin_ia32_aesdeclast128((__v2di)(X), (__v2di)(Y))
 
 /* Performs 1 round of AES encryption of the first m128i using
    the second m128i as a round key.  */
-#define _mm_aesenc_si128(X, Y) \
-  (__m128i) __builtin_ia32_aesenc128 ((__v2di) (X), (__v2di) (Y))
+#define _mm_aesenc_si128(X, Y)                                                 \
+  (__m128i) __builtin_ia32_aesenc128((__v2di)(X), (__v2di)(Y))
 
 /* Performs the last round of AES encryption of the first m128i
    using the second m128i as a round key.  */
-#define _mm_aesenclast_si128(X, Y) \
-  (__m128i) __builtin_ia32_aesenclast128 ((__v2di) (X), (__v2di) (Y))
+#define _mm_aesenclast_si128(X, Y)                                             \
+  (__m128i) __builtin_ia32_aesenclast128((__v2di)(X), (__v2di)(Y))
 
 /* Performs the InverseMixColumn operation on the source m128i
    and stores the result into m128i destination.  */
-extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_aesimc_si128 (__m128i __X)
-{
-  return (__m128i) __builtin_ia32_aesimc128 ((__v2di)__X);
+extern __inline __m128i
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_aesimc_si128(__m128i __X) {
+  return (__m128i)__builtin_ia32_aesimc128((__v2di)__X);
 }
 
 /* Generates a m128i round key for the input m128i AES cipher key and
    byte round constant.  The second parameter must be a compile time
    constant.  */
 #ifdef __OPTIMIZE__
-extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_aeskeygenassist_si128 (__m128i __X, const int __C)
-{
-  return (__m128i) __builtin_ia32_aeskeygenassist128 ((__v2di)__X, __C);
+extern __inline __m128i
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_aeskeygenassist_si128(__m128i __X, const int __C) {
+  return (__m128i)__builtin_ia32_aeskeygenassist128((__v2di)__X, __C);
 }
 #else
-#define _mm_aeskeygenassist_si128(X, C)					\
-  ((__m128i) __builtin_ia32_aeskeygenassist128 ((__v2di)(__m128i)(X),	\
-						(int)(C)))
+#define _mm_aeskeygenassist_si128(X, C)                                        \
+  ((__m128i)__builtin_ia32_aeskeygenassist128((__v2di)(__m128i)(X), (int)(C)))
 #endif
 
 #ifdef __DISABLE_AES__
@@ -99,16 +98,15 @@ _mm_aeskeygenassist_si128 (__m128i __X, const int __C)
    haves of the input parameters v1 and v2 should be used. It must be
    a compile time constant.  */
 #ifdef __OPTIMIZE__
-extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_clmulepi64_si128 (__m128i __X, __m128i __Y, const int __I)
-{
-  return (__m128i) __builtin_ia32_pclmulqdq128 ((__v2di)__X,
-						(__v2di)__Y, __I);
+extern __inline __m128i
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_clmulepi64_si128(__m128i __X, __m128i __Y, const int __I) {
+  return (__m128i)__builtin_ia32_pclmulqdq128((__v2di)__X, (__v2di)__Y, __I);
 }
 #else
-#define _mm_clmulepi64_si128(X, Y, I)					\
-  ((__m128i) __builtin_ia32_pclmulqdq128 ((__v2di)(__m128i)(X),		\
-					  (__v2di)(__m128i)(Y), (int)(I)))
+#define _mm_clmulepi64_si128(X, Y, I)                                          \
+  ((__m128i)__builtin_ia32_pclmulqdq128((__v2di)(__m128i)(X),                  \
+                                        (__v2di)(__m128i)(Y), (int)(I)))
 #endif
 
 #ifdef __DISABLE_PCLMUL__

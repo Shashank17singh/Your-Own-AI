@@ -26,54 +26,41 @@ typedef struct ifsese_s *ifsese;
 
 /* A Single Entry, Single Exit region is a part of the CFG delimited
    by two edges.  */
-class sese_l
-{
+class sese_l {
 public:
-  sese_l (edge e, edge x) : entry (e), exit (x) {}
+  sese_l(edge e, edge x) : entry(e), exit(x) {}
 
-  operator bool () const { return entry && exit; }
+  operator bool() const { return entry && exit; }
 
   edge entry;
   edge exit;
 };
 
-void print_edge (FILE *file, const_edge e);
-void print_sese (FILE *file, const sese_l &s);
-void dump_edge (const_edge e);
-void dump_sese (const sese_l &);
+void print_edge(FILE *file, const_edge e);
+void print_sese(FILE *file, const sese_l &s);
+void dump_edge(const_edge e);
+void dump_sese(const sese_l &);
 
 /* Get the entry of an sese S.  */
 
-inline basic_block
-get_entry_bb (const sese_l &s)
-{
-  return s.entry->dest;
-}
+inline basic_block get_entry_bb(const sese_l &s) { return s.entry->dest; }
 
 /* Get the exit of an sese S.  */
 
-inline basic_block
-get_exit_bb (const sese_l &s)
-{
-  return s.exit->src;
-}
+inline basic_block get_exit_bb(const sese_l &s) { return s.exit->src; }
 
 /* Returns the index of V where ELEM can be found. -1 Otherwise.  */
-template<typename T>
-int
-vec_find (const vec<T> &v, const T &elem)
-{
+template <typename T> int vec_find(const vec<T> &v, const T &elem) {
   int i;
   T t;
-  FOR_EACH_VEC_ELT (v, i, t)
-    if (elem == t)
-      return i;
+  FOR_EACH_VEC_ELT(v, i, t)
+  if (elem == t)
+    return i;
   return -1;
 }
 
 /* A helper structure for bookkeeping information about a scop in graphite.  */
-typedef class sese_info_t
-{
+typedef class sese_info_t {
 public:
   /* The SESE region.  */
   sese_l region;
@@ -98,68 +85,57 @@ public:
 
 } *sese_info_p;
 
-extern sese_info_p new_sese_info (edge, edge);
-extern void free_sese_info (sese_info_p);
-extern void sese_insert_phis_for_liveouts (sese_info_p, basic_block, edge, edge);
-extern class loop *outermost_loop_in_sese (sese_l &, basic_block);
-extern tree scalar_evolution_in_region (const sese_l &, loop_p, tree);
-extern bool scev_analyzable_p (tree, sese_l &);
-extern bool invariant_in_sese_p_rec (tree, const sese_l &, bool *);
-extern void sese_build_liveouts (sese_info_p);
-extern bool sese_trivially_empty_bb_p (basic_block);
+extern sese_info_p new_sese_info(edge, edge);
+extern void free_sese_info(sese_info_p);
+extern void sese_insert_phis_for_liveouts(sese_info_p, basic_block, edge, edge);
+extern class loop *outermost_loop_in_sese(sese_l &, basic_block);
+extern tree scalar_evolution_in_region(const sese_l &, loop_p, tree);
+extern bool scev_analyzable_p(tree, sese_l &);
+extern bool invariant_in_sese_p_rec(tree, const sese_l &, bool *);
+extern void sese_build_liveouts(sese_info_p);
+extern bool sese_trivially_empty_bb_p(basic_block);
 
 /* The number of parameters in REGION. */
 
-inline unsigned
-sese_nb_params (sese_info_p region)
-{
-  return region->params.length ();
+inline unsigned sese_nb_params(sese_info_p region) {
+  return region->params.length();
 }
 
 /* Checks whether BB is contained in the region delimited by ENTRY and
    EXIT blocks.  */
 
-inline bool
-bb_in_region (const_basic_block bb, const_basic_block entry, const_basic_block exit)
-{
-  return dominated_by_p (CDI_DOMINATORS, bb, entry)
-	 && !(dominated_by_p (CDI_DOMINATORS, bb, exit)
-	      && !dominated_by_p (CDI_DOMINATORS, entry, exit));
+inline bool bb_in_region(const_basic_block bb, const_basic_block entry,
+                         const_basic_block exit) {
+  return dominated_by_p(CDI_DOMINATORS, bb, entry) &&
+         !(dominated_by_p(CDI_DOMINATORS, bb, exit) &&
+           !dominated_by_p(CDI_DOMINATORS, entry, exit));
 }
 
 /* Checks whether BB is contained in the region delimited by ENTRY and
    EXIT blocks.  */
 
-inline bool
-bb_in_sese_p (basic_block bb, const sese_l &r)
-{
-  return bb_in_region (bb, r.entry->dest, r.exit->dest);
+inline bool bb_in_sese_p(basic_block bb, const sese_l &r) {
+  return bb_in_region(bb, r.entry->dest, r.exit->dest);
 }
 
 /* Returns true when STMT is defined in REGION.  */
 
-inline bool
-stmt_in_sese_p (gimple *stmt, const sese_l &r)
-{
-  basic_block bb = gimple_bb (stmt);
-  return bb && bb_in_sese_p (bb, r);
+inline bool stmt_in_sese_p(gimple *stmt, const sese_l &r) {
+  basic_block bb = gimple_bb(stmt);
+  return bb && bb_in_sese_p(bb, r);
 }
 
 /* Returns true when NAME is defined in REGION.  */
 
-inline bool
-defined_in_sese_p (tree name, const sese_l &r)
-{
-  return stmt_in_sese_p (SSA_NAME_DEF_STMT (name), r);
+inline bool defined_in_sese_p(tree name, const sese_l &r) {
+  return stmt_in_sese_p(SSA_NAME_DEF_STMT(name), r);
 }
 
 /* Returns true when LOOP is in REGION.  */
 
-inline bool
-loop_in_sese_p (class loop *loop, const sese_l &region)
-{
-  return (bb_in_sese_p (loop->header, region)
-	  && bb_in_sese_p (loop->latch, region));
+inline bool loop_in_sese_p(class loop *loop, const sese_l &region) {
+  return (bb_in_sese_p(loop->header, region) &&
+          bb_in_sese_p(loop->latch, region));
 }
 
 /* Returns the loop depth of LOOP in REGION.  The loop depth
@@ -185,16 +161,13 @@ loop_in_sese_p (class loop *loop, const sese_l &region)
     loop_1 exists, but is not completely contained in the region -> depth 0
     loop_2 is completely contained -> depth 1  */
 
-inline unsigned int
-sese_loop_depth (const sese_l &region, loop_p loop)
-{
+inline unsigned int sese_loop_depth(const sese_l &region, loop_p loop) {
   unsigned int depth = 0;
 
-  while (loop_in_sese_p (loop, region))
-    {
-      depth++;
-      loop = loop_outer (loop);
-    }
+  while (loop_in_sese_p(loop, region)) {
+    depth++;
+    loop = loop_outer(loop);
+  }
 
   return depth;
 }
@@ -207,33 +180,26 @@ typedef struct ifsese_s {
   sese_info_p false_region;
 } *ifsese;
 
-extern ifsese move_sese_in_condition (sese_info_p);
-extern void set_ifsese_condition (ifsese, tree);
-extern edge get_true_edge_from_guard_bb (basic_block);
-extern edge get_false_edge_from_guard_bb (basic_block);
+extern ifsese move_sese_in_condition(sese_info_p);
+extern void set_ifsese_condition(ifsese, tree);
+extern edge get_true_edge_from_guard_bb(basic_block);
+extern edge get_false_edge_from_guard_bb(basic_block);
 
-inline edge
-if_region_entry (ifsese if_region)
-{
+inline edge if_region_entry(ifsese if_region) {
   return if_region->region->region.entry;
 }
 
-inline edge
-if_region_exit (ifsese if_region)
-{
+inline edge if_region_exit(ifsese if_region) {
   return if_region->region->region.exit;
 }
 
-inline basic_block
-if_region_get_condition_block (ifsese if_region)
-{
-  return if_region_entry (if_region)->dest;
+inline basic_block if_region_get_condition_block(ifsese if_region) {
+  return if_region_entry(if_region)->dest;
 }
 
-typedef std::pair <gimple *, tree> scalar_use;
+typedef std::pair<gimple *, tree> scalar_use;
 
-typedef struct gimple_poly_bb
-{
+typedef struct gimple_poly_bb {
   basic_block bb;
   struct poly_bb *pbb;
 
@@ -272,39 +238,35 @@ typedef struct gimple_poly_bb
 
 /* Return the innermost loop that contains the basic block GBB.  */
 
-inline class loop *
-gbb_loop (gimple_poly_bb_p gbb)
-{
-  return GBB_BB (gbb)->loop_father;
+inline class loop *gbb_loop(gimple_poly_bb_p gbb) {
+  return GBB_BB(gbb)->loop_father;
 }
 
 /* Returns the gimple loop, that corresponds to the loop_iterator_INDEX.
    If there is no corresponding gimple loop, we return NULL.  */
 
-inline loop_p
-gbb_loop_at_index (gimple_poly_bb_p gbb, sese_l &region, int index)
-{
-  loop_p loop = gbb_loop (gbb);
-  int depth = sese_loop_depth (region, loop);
+inline loop_p gbb_loop_at_index(gimple_poly_bb_p gbb, sese_l &region,
+                                int index) {
+  loop_p loop = gbb_loop(gbb);
+  int depth = sese_loop_depth(region, loop);
 
   while (--depth > index)
-    loop = loop_outer (loop);
+    loop = loop_outer(loop);
 
-  gcc_assert (loop_in_sese_p (loop, region));
+  gcc_assert(loop_in_sese_p(loop, region));
 
   return loop;
 }
 
 /* The number of common loops in REGION for GBB1 and GBB2.  */
 
-inline int
-nb_common_loops (sese_l &region, gimple_poly_bb_p gbb1, gimple_poly_bb_p gbb2)
-{
-  loop_p l1 = gbb_loop (gbb1);
-  loop_p l2 = gbb_loop (gbb2);
-  loop_p common = find_common_loop (l1, l2);
+inline int nb_common_loops(sese_l &region, gimple_poly_bb_p gbb1,
+                           gimple_poly_bb_p gbb2) {
+  loop_p l1 = gbb_loop(gbb1);
+  loop_p l2 = gbb_loop(gbb2);
+  loop_p common = find_common_loop(l1, l2);
 
-  return sese_loop_depth (region, common);
+  return sese_loop_depth(region, common);
 }
 
 #endif

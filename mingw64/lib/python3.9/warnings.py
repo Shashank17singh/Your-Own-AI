@@ -2,20 +2,29 @@
 
 import sys
 
+__all__ = [
+    "warn",
+    "warn_explicit",
+    "showwarning",
+    "formatwarning",
+    "filterwarnings",
+    "simplefilter",
+    "resetwarnings",
+    "catch_warnings",
+]
 
-__all__ = ["warn", "warn_explicit", "showwarning",
-           "formatwarning", "filterwarnings", "simplefilter",
-           "resetwarnings", "catch_warnings"]
 
 def showwarning(message, category, filename, lineno, file=None, line=None):
     """Hook to write a warning to a file; replace if you like."""
     msg = WarningMessage(message, category, filename, lineno, file, line)
     _showwarnmsg_impl(msg)
 
+
 def formatwarning(message, category, filename, lineno, line=None):
     """Function to format a warning the standard way."""
     msg = WarningMessage(message, category, filename, lineno, None, line)
     return _formatwarnmsg_impl(msg)
+
 
 def _showwarnmsg_impl(msg):
     file = msg.file
@@ -32,13 +41,15 @@ def _showwarnmsg_impl(msg):
         # the file (probably stderr) is invalid - this warning gets lost.
         pass
 
+
 def _formatwarnmsg_impl(msg):
     category = msg.category.__name__
-    s =  f"{msg.filename}:{msg.lineno}: {category}: {msg.message}\n"
+    s = f"{msg.filename}:{msg.lineno}: {category}: {msg.message}\n"
 
     if msg.line is None:
         try:
             import linecache
+
             line = linecache.getline(msg.filename, msg.lineno)
         except Exception:
             # When a warning is logged during Python shutdown, linecache
@@ -70,10 +81,9 @@ def _formatwarnmsg_impl(msg):
                 tb = None
 
         if tb is not None:
-            s += 'Object allocated at (most recent call last):\n'
+            s += "Object allocated at (most recent call last):\n"
             for frame in tb:
-                s += ('  File "%s", lineno %s\n'
-                      % (frame.filename, frame.lineno))
+                s += '  File "%s", lineno %s\n' % (frame.filename, frame.lineno)
 
                 try:
                     if linecache is not None:
@@ -84,14 +94,18 @@ def _formatwarnmsg_impl(msg):
                     line = None
                 if line:
                     line = line.strip()
-                    s += '    %s\n' % line
+                    s += "    %s\n" % line
         elif not tracing:
-            s += (f'{category}: Enable tracemalloc to get the object '
-                  f'allocation traceback\n')
+            s += (
+                f"{category}: Enable tracemalloc to get the object "
+                f"allocation traceback\n"
+            )
     return s
+
 
 # Keep a reference to check if the function was replaced
 _showwarning_orig = showwarning
+
 
 def _showwarnmsg(msg):
     """Hook to write a warning to a file; replace if you like."""
@@ -103,16 +117,18 @@ def _showwarnmsg(msg):
         if sw is not _showwarning_orig:
             # warnings.showwarning() was replaced
             if not callable(sw):
-                raise TypeError("warnings.showwarning() must be set to a "
-                                "function or method")
+                raise TypeError(
+                    "warnings.showwarning() must be set to a " "function or method"
+                )
 
-            sw(msg.message, msg.category, msg.filename, msg.lineno,
-               msg.file, msg.line)
+            sw(msg.message, msg.category, msg.filename, msg.lineno, msg.file, msg.line)
             return
     _showwarnmsg_impl(msg)
 
+
 # Keep a reference to check if the function was replaced
 _formatwarning_orig = formatwarning
+
 
 def _formatwarnmsg(msg):
     """Function to format a warning the standard way."""
@@ -123,12 +139,13 @@ def _formatwarnmsg(msg):
     else:
         if fw is not _formatwarning_orig:
             # warnings.formatwarning() was replaced
-            return fw(msg.message, msg.category,
-                      msg.filename, msg.lineno, msg.line)
+            return fw(msg.message, msg.category, msg.filename, msg.lineno, msg.line)
     return _formatwarnmsg_impl(msg)
 
-def filterwarnings(action, message="", category=Warning, module="", lineno=0,
-                   append=False):
+
+def filterwarnings(
+    action, message="", category=Warning, module="", lineno=0, append=False
+):
     """Insert an entry into the list of warnings filters (at the front).
 
     'action' -- one of "error", "ignore", "always", "default", "module",
@@ -139,14 +156,19 @@ def filterwarnings(action, message="", category=Warning, module="", lineno=0,
     'lineno' -- an integer line number, 0 matches all warnings
     'append' -- if true, append to the list of filters
     """
-    assert action in ("error", "ignore", "always", "default", "module",
-                      "once"), "invalid action: %r" % (action,)
+    assert action in (
+        "error",
+        "ignore",
+        "always",
+        "default",
+        "module",
+        "once",
+    ), "invalid action: %r" % (action,)
     assert isinstance(message, str), "message must be a string"
     assert isinstance(category, type), "category must be a class"
     assert issubclass(category, Warning), "category must be a Warning subclass"
     assert isinstance(module, str), "module must be a string"
-    assert isinstance(lineno, int) and lineno >= 0, \
-           "lineno must be an int >= 0"
+    assert isinstance(lineno, int) and lineno >= 0, "lineno must be an int >= 0"
 
     if message or module:
         import re
@@ -162,6 +184,7 @@ def filterwarnings(action, message="", category=Warning, module="", lineno=0,
 
     _add_filter(action, message, category, module, lineno, append=append)
 
+
 def simplefilter(action, category=Warning, lineno=0, append=False):
     """Insert a simple entry into the list of warnings filters (at the front).
 
@@ -172,11 +195,17 @@ def simplefilter(action, category=Warning, lineno=0, append=False):
     'lineno' -- an integer line number, 0 matches all warnings
     'append' -- if true, append to the list of filters
     """
-    assert action in ("error", "ignore", "always", "default", "module",
-                      "once"), "invalid action: %r" % (action,)
-    assert isinstance(lineno, int) and lineno >= 0, \
-           "lineno must be an int >= 0"
+    assert action in (
+        "error",
+        "ignore",
+        "always",
+        "default",
+        "module",
+        "once",
+    ), "invalid action: %r" % (action,)
+    assert isinstance(lineno, int) and lineno >= 0, "lineno must be an int >= 0"
     _add_filter(action, None, category, None, lineno, append=append)
+
 
 def _add_filter(*item, append):
     # Remove possible duplicate filters, so new one will be placed
@@ -192,14 +221,18 @@ def _add_filter(*item, append):
             filters.append(item)
     _filters_mutated()
 
+
 def resetwarnings():
     """Clear the list of warning filters, so that no filters are active."""
     filters[:] = []
     _filters_mutated()
 
+
 class _OptionError(Exception):
     """Exception used by option processing helpers."""
+
     pass
+
 
 # Helper to process -W options passed via sys.warnoptions
 def _processoptions(args):
@@ -209,15 +242,15 @@ def _processoptions(args):
         except _OptionError as msg:
             print("Invalid -W option ignored:", msg, file=sys.stderr)
 
+
 # Helper for _processoptions()
 def _setoption(arg):
-    parts = arg.split(':')
+    parts = arg.split(":")
     if len(parts) > 5:
         raise _OptionError("too many fields (max 5): %r" % (arg,))
     while len(parts) < 5:
-        parts.append('')
-    action, message, category, module, lineno = [s.strip()
-                                                 for s in parts]
+        parts.append("")
+    action, message, category, module, lineno = [s.strip() for s in parts]
     action = _getaction(action)
     category = _getcategory(category)
     if message or module:
@@ -225,7 +258,7 @@ def _setoption(arg):
     if message:
         message = re.escape(message)
     if module:
-        module = re.escape(module) + r'\Z'
+        module = re.escape(module) + r"\Z"
     if lineno:
         try:
             lineno = int(lineno)
@@ -237,25 +270,29 @@ def _setoption(arg):
         lineno = 0
     filterwarnings(action, message, category, module, lineno)
 
+
 # Helper for _setoption()
 def _getaction(action):
     if not action:
         return "default"
-    if action == "all": return "always" # Alias
-    for a in ('default', 'always', 'ignore', 'module', 'once', 'error'):
+    if action == "all":
+        return "always"  # Alias
+    for a in ("default", "always", "ignore", "module", "once", "error"):
         if a.startswith(action):
             return a
     raise _OptionError("invalid action: %r" % (action,))
+
 
 # Helper for _setoption()
 def _getcategory(category):
     if not category:
         return Warning
-    if '.' not in category:
+    if "." not in category:
         import builtins as m
+
         klass = category
     else:
-        module, _, klass = category.rpartition('.')
+        module, _, klass = category.rpartition(".")
         try:
             m = __import__(module, None, None, [klass])
         except ImportError:
@@ -272,7 +309,7 @@ def _getcategory(category):
 def _is_internal_frame(frame):
     """Signal whether the frame is an internal CPython implementation detail."""
     filename = frame.f_code.co_filename
-    return 'importlib' in filename and '_bootstrap' in filename
+    return "importlib" in filename and "_bootstrap" in filename
 
 
 def _next_external_frame(frame):
@@ -293,8 +330,10 @@ def warn(message, category=None, stacklevel=1, source=None):
     if category is None:
         category = UserWarning
     if not (isinstance(category, type) and issubclass(category, Warning)):
-        raise TypeError("category must be a Warning subclass, "
-                        "not '{:s}'".format(type(category).__name__))
+        raise TypeError(
+            "category must be a Warning subclass, "
+            "not '{:s}'".format(type(category).__name__)
+        )
     # Get context information
     try:
         if stacklevel <= 1 or _is_internal_frame(sys._getframe(1)):
@@ -304,7 +343,7 @@ def warn(message, category=None, stacklevel=1, source=None):
         else:
             frame = sys._getframe(1)
             # Look for one frame less since the above line starts us off.
-            for x in range(stacklevel-1):
+            for x in range(stacklevel - 1):
                 frame = _next_external_frame(frame)
                 if frame is None:
                     raise ValueError
@@ -316,27 +355,36 @@ def warn(message, category=None, stacklevel=1, source=None):
         globals = frame.f_globals
         filename = frame.f_code.co_filename
         lineno = frame.f_lineno
-    if '__name__' in globals:
-        module = globals['__name__']
+    if "__name__" in globals:
+        module = globals["__name__"]
     else:
         module = "<string>"
     registry = globals.setdefault("__warningregistry__", {})
-    warn_explicit(message, category, filename, lineno, module, registry,
-                  globals, source)
+    warn_explicit(
+        message, category, filename, lineno, module, registry, globals, source
+    )
 
-def warn_explicit(message, category, filename, lineno,
-                  module=None, registry=None, module_globals=None,
-                  source=None):
+
+def warn_explicit(
+    message,
+    category,
+    filename,
+    lineno,
+    module=None,
+    registry=None,
+    module_globals=None,
+    source=None,
+):
     lineno = int(lineno)
     if module is None:
         module = filename or "<unknown>"
         if module[-3:].lower() == ".py":
-            module = module[:-3] # XXX What about leading pathname?
+            module = module[:-3]  # XXX What about leading pathname?
     if registry is None:
         registry = {}
-    if registry.get('version', 0) != _filters_version:
+    if registry.get("version", 0) != _filters_version:
         registry.clear()
-        registry['version'] = _filters_version
+        registry["version"] = _filters_version
     if isinstance(message, Warning):
         text = str(message)
         category = message.__class__
@@ -350,10 +398,12 @@ def warn_explicit(message, category, filename, lineno,
     # Search the filters
     for item in filters:
         action, msg, cat, mod, ln = item
-        if ((msg is None or msg.match(text)) and
-            issubclass(category, cat) and
-            (mod is None or mod.match(module)) and
-            (ln == 0 or lineno == ln)):
+        if (
+            (msg is None or msg.match(text))
+            and issubclass(category, cat)
+            and (mod is None or mod.match(module))
+            and (ln == 0 or lineno == ln)
+        ):
             break
     else:
         action = defaultaction
@@ -364,6 +414,7 @@ def warn_explicit(message, category, filename, lineno,
     # Prime the linecache for formatting, in case the
     # "file" is actually in a zipfile or something.
     import linecache
+
     linecache.getlines(filename, module_globals)
 
     if action == "error":
@@ -388,8 +439,8 @@ def warn_explicit(message, category, filename, lineno,
     else:
         # Unrecognized actions are errors
         raise RuntimeError(
-              "Unrecognized action (%r) in warnings.filters:\n %s" %
-              (action, item))
+            "Unrecognized action (%r) in warnings.filters:\n %s" % (action, item)
+        )
     # Print message and context
     msg = WarningMessage(message, category, filename, lineno, source)
     _showwarnmsg(msg)
@@ -397,11 +448,19 @@ def warn_explicit(message, category, filename, lineno,
 
 class WarningMessage(object):
 
-    _WARNING_DETAILS = ("message", "category", "filename", "lineno", "file",
-                        "line", "source")
+    _WARNING_DETAILS = (
+        "message",
+        "category",
+        "filename",
+        "lineno",
+        "file",
+        "line",
+        "source",
+    )
 
-    def __init__(self, message, category, filename, lineno, file=None,
-                 line=None, source=None):
+    def __init__(
+        self, message, category, filename, lineno, file=None, line=None, source=None
+    ):
         self.message = message
         self.category = category
         self.filename = filename
@@ -412,13 +471,14 @@ class WarningMessage(object):
         self._category_name = category.__name__ if category else None
 
     def __str__(self):
-        return ("{message : %r, category : %r, filename : %r, lineno : %s, "
-                    "line : %r}" % (self.message, self._category_name,
-                                    self.filename, self.lineno, self.line))
+        return (
+            "{message : %r, category : %r, filename : %r, lineno : %s, "
+            "line : %r}"
+            % (self.message, self._category_name, self.filename, self.lineno, self.line)
+        )
 
 
 class catch_warnings(object):
-
     """A context manager that copies and restores the warnings filter upon
     exiting the context.
 
@@ -443,14 +503,14 @@ class catch_warnings(object):
 
         """
         self._record = record
-        self._module = sys.modules['warnings'] if module is None else module
+        self._module = sys.modules["warnings"] if module is None else module
         self._entered = False
 
     def __repr__(self):
         args = []
         if self._record:
             args.append("record=True")
-        if self._module is not sys.modules['warnings']:
+        if self._module is not sys.modules["warnings"]:
             args.append("module=%r" % self._module)
         name = type(self).__name__
         return "%s(%s)" % (name, ", ".join(args))
@@ -485,15 +545,15 @@ class catch_warnings(object):
 
 # Private utility function called by _PyErr_WarnUnawaitedCoroutine
 def _warn_unawaited_coroutine(coro):
-    msg_lines = [
-        f"coroutine '{coro.__qualname__}' was never awaited\n"
-    ]
+    msg_lines = [f"coroutine '{coro.__qualname__}' was never awaited\n"]
     if coro.cr_origin is not None:
         import linecache, traceback
+
         def extract():
             for filename, lineno, funcname in reversed(coro.cr_origin):
                 line = linecache.getline(filename, lineno)
                 yield (filename, lineno, funcname, line)
+
         msg_lines.append("Coroutine created at (most recent call last)\n")
         msg_lines += traceback.format_list(list(extract()))
     msg = "".join(msg_lines).rstrip("\n")
@@ -515,8 +575,15 @@ def _warn_unawaited_coroutine(coro):
 # - a line number for the line being warning, or 0 to mean any line
 # If either if the compiled regexs are None, match anything.
 try:
-    from _warnings import (filters, _defaultaction, _onceregistry,
-                           warn, warn_explicit, _filters_mutated)
+    from _warnings import (
+        filters,
+        _defaultaction,
+        _onceregistry,
+        warn,
+        warn_explicit,
+        _filters_mutated,
+    )
+
     defaultaction = _defaultaction
     onceregistry = _onceregistry
     _warnings_defaults = True
@@ -538,9 +605,10 @@ except ImportError:
 _processoptions(sys.warnoptions)
 if not _warnings_defaults:
     # Several warning categories are ignored by default in regular builds
-    if not hasattr(sys, 'gettotalrefcount'):
-        filterwarnings("default", category=DeprecationWarning,
-                       module="__main__", append=1)
+    if not hasattr(sys, "gettotalrefcount"):
+        filterwarnings(
+            "default", category=DeprecationWarning, module="__main__", append=1
+        )
         simplefilter("ignore", category=DeprecationWarning, append=1)
         simplefilter("ignore", category=PendingDeprecationWarning, append=1)
         simplefilter("ignore", category=ImportWarning, append=1)

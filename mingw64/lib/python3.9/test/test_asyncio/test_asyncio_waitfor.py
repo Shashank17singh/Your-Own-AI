@@ -2,12 +2,14 @@ import asyncio
 import unittest
 import time
 
+
 def tearDownModule():
     asyncio.set_event_loop_policy(None)
 
 
 class SlowTask:
-    """ Task will run for this defined time, ignoring cancel requests """
+    """Task will run for this defined time, ignoring cancel requests"""
+
     TASK_TIMEOUT = 0.2
 
     def __init__(self):
@@ -28,10 +30,11 @@ class SlowTask:
 
         self.exited = True
 
+
 class AsyncioWaitForTest(unittest.TestCase):
 
     async def atest_asyncio_wait_for_cancelled(self):
-        t  = SlowTask()
+        t = SlowTask()
 
         waitfortask = asyncio.create_task(asyncio.wait_for(t.run(), t.TASK_TIMEOUT * 2))
         await asyncio.sleep(0)
@@ -44,7 +47,7 @@ class AsyncioWaitForTest(unittest.TestCase):
         asyncio.run(self.atest_asyncio_wait_for_cancelled())
 
     async def atest_asyncio_wait_for_timeout(self):
-        t  = SlowTask()
+        t = SlowTask()
 
         try:
             await asyncio.wait_for(t.run(), t.TASK_TIMEOUT / 2)
@@ -57,5 +60,5 @@ class AsyncioWaitForTest(unittest.TestCase):
         asyncio.run(self.atest_asyncio_wait_for_timeout())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

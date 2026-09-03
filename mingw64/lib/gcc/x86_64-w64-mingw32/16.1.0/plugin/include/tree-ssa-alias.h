@@ -25,8 +25,7 @@
 
    The points-to solution is a union of pt_vars and the abstract
    sets specified by the flags.  */
-struct GTY(()) pt_solution
-{
+struct GTY(()) pt_solution {
   /* Nonzero if points-to analysis couldn't determine where this pointer
      is pointing to.  */
   unsigned int anything : 1;
@@ -69,12 +68,10 @@ struct GTY(()) pt_solution
   bitmap vars;
 };
 
-
 /* Simplified and cached information about a memory reference tree.
    Used by the alias-oracle internally and externally in alternate
    interfaces.  */
-class ao_ref
-{
+class ao_ref {
 public:
   /* The original full memory reference tree or NULL_TREE if that is
      not available.  */
@@ -101,95 +98,87 @@ public:
   /* Whether the memory is considered a volatile access.  */
   bool volatile_p;
 
-  bool max_size_known_p () const;
+  bool max_size_known_p() const;
 };
 
 /* Return true if the maximum size is known, rather than the special -1
    marker.  */
 
-inline bool
-ao_ref::max_size_known_p () const
-{
-  return known_size_p (max_size);
-}
+inline bool ao_ref::max_size_known_p() const { return known_size_p(max_size); }
 
 /* In tree-ssa-alias.cc  */
-extern void ao_ref_init (ao_ref *, tree);
-extern void ao_ref_init_from_ptr_and_size (ao_ref *, tree, tree);
-extern void ao_ref_init_from_ptr_and_range (ao_ref *, tree, bool,
-					    poly_int64, poly_int64,
-					    poly_int64);
-extern tree ao_ref_base (ao_ref *);
-extern alias_set_type ao_ref_alias_set (ao_ref *);
-extern alias_set_type ao_ref_base_alias_set (ao_ref *);
-extern tree ao_ref_alias_ptr_type (ao_ref *);
-extern tree ao_ref_base_alias_ptr_type (ao_ref *);
-extern bool ao_ref_alignment (ao_ref *, unsigned int *,
-			      unsigned HOST_WIDE_INT *);
-extern bool ptr_deref_may_alias_global_p (tree, bool);
-extern bool ptr_derefs_may_alias_p (tree, tree);
-extern bool ptrs_compare_unequal (tree, tree);
-extern bool ref_may_alias_global_p (tree, bool);
-extern bool ref_may_alias_global_p (ao_ref *, bool);
-extern bool refs_may_alias_p (tree, tree, bool = true);
-extern bool refs_may_alias_p_1 (ao_ref *, ao_ref *, bool);
-extern bool refs_anti_dependent_p (tree, tree);
-extern bool refs_output_dependent_p (tree, tree);
-extern bool ref_maybe_used_by_stmt_p (gimple *, tree, bool = true);
-extern bool ref_maybe_used_by_stmt_p (gimple *, ao_ref *, bool = true);
-extern bool stmt_may_clobber_global_p (gimple *, bool);
-extern bool stmt_may_clobber_ref_p (gimple *, tree, bool = true);
-extern bool stmt_may_clobber_ref_p_1 (gimple *, ao_ref *, bool = true);
-extern bool call_may_clobber_ref_p (gcall *, tree, bool = true);
-extern bool call_may_clobber_ref_p_1 (gcall *, ao_ref *, bool = true);
-extern bool stmt_kills_ref_p (gimple *, tree);
-extern bool stmt_kills_ref_p (gimple *, ao_ref *);
-extern bool ref_can_have_store_data_races (tree);
+extern void ao_ref_init(ao_ref *, tree);
+extern void ao_ref_init_from_ptr_and_size(ao_ref *, tree, tree);
+extern void ao_ref_init_from_ptr_and_range(ao_ref *, tree, bool, poly_int64,
+                                           poly_int64, poly_int64);
+extern tree ao_ref_base(ao_ref *);
+extern alias_set_type ao_ref_alias_set(ao_ref *);
+extern alias_set_type ao_ref_base_alias_set(ao_ref *);
+extern tree ao_ref_alias_ptr_type(ao_ref *);
+extern tree ao_ref_base_alias_ptr_type(ao_ref *);
+extern bool ao_ref_alignment(ao_ref *, unsigned int *,
+                             unsigned HOST_WIDE_INT *);
+extern bool ptr_deref_may_alias_global_p(tree, bool);
+extern bool ptr_derefs_may_alias_p(tree, tree);
+extern bool ptrs_compare_unequal(tree, tree);
+extern bool ref_may_alias_global_p(tree, bool);
+extern bool ref_may_alias_global_p(ao_ref *, bool);
+extern bool refs_may_alias_p(tree, tree, bool = true);
+extern bool refs_may_alias_p_1(ao_ref *, ao_ref *, bool);
+extern bool refs_anti_dependent_p(tree, tree);
+extern bool refs_output_dependent_p(tree, tree);
+extern bool ref_maybe_used_by_stmt_p(gimple *, tree, bool = true);
+extern bool ref_maybe_used_by_stmt_p(gimple *, ao_ref *, bool = true);
+extern bool stmt_may_clobber_global_p(gimple *, bool);
+extern bool stmt_may_clobber_ref_p(gimple *, tree, bool = true);
+extern bool stmt_may_clobber_ref_p_1(gimple *, ao_ref *, bool = true);
+extern bool call_may_clobber_ref_p(gcall *, tree, bool = true);
+extern bool call_may_clobber_ref_p_1(gcall *, ao_ref *, bool = true);
+extern bool stmt_kills_ref_p(gimple *, tree);
+extern bool stmt_kills_ref_p(gimple *, ao_ref *);
+extern bool ref_can_have_store_data_races(tree);
 
-enum translate_flags
-  { TR_TRANSLATE, TR_VALUEIZE_AND_DISAMBIGUATE, TR_DISAMBIGUATE };
-extern tree get_continuation_for_phi (gphi *, ao_ref *, bool,
-				      unsigned int &, bitmap *, bool,
-				      void *(*)(ao_ref *, tree, void *,
-						translate_flags *),
-				      void *,
-				      bool (*)(edge, void *) = nullptr,
-				      translate_flags
-				        = TR_VALUEIZE_AND_DISAMBIGUATE);
-extern void *walk_non_aliased_vuses (ao_ref *, tree, bool,
-				     void *(*)(ao_ref *, tree, void *),
-				     void *(*)(ao_ref *, tree, void *,
-					       translate_flags *),
-				     bool (*)(edge, void *),
-				     tree (*)(tree), unsigned &, void *);
-extern int walk_aliased_vdefs (ao_ref *, tree,
-			       bool (*)(ao_ref *, tree, void *),
-			       void *, bitmap *,
-			       bool *function_entry_reached = NULL,
-			       unsigned int limit = 0);
-extern void dump_alias_info (FILE *);
-extern void debug_alias_info (void);
-extern void dump_points_to_solution (FILE *, struct pt_solution *);
-extern void debug (pt_solution &ref);
-extern void debug (pt_solution *ptr);
-extern void dump_points_to_info_for (FILE *, tree);
-extern void debug_points_to_info_for (tree);
-extern void dump_alias_stats (FILE *);
-
+enum translate_flags {
+  TR_TRANSLATE,
+  TR_VALUEIZE_AND_DISAMBIGUATE,
+  TR_DISAMBIGUATE
+};
+extern tree
+get_continuation_for_phi(gphi *, ao_ref *, bool, unsigned int &, bitmap *, bool,
+                         void *(*)(ao_ref *, tree, void *, translate_flags *),
+                         void *, bool (*)(edge, void *) = nullptr,
+                         translate_flags = TR_VALUEIZE_AND_DISAMBIGUATE);
+extern void *
+walk_non_aliased_vuses(ao_ref *, tree, bool, void *(*)(ao_ref *, tree, void *),
+                       void *(*)(ao_ref *, tree, void *, translate_flags *),
+                       bool (*)(edge, void *), tree (*)(tree), unsigned &,
+                       void *);
+extern int walk_aliased_vdefs(ao_ref *, tree, bool (*)(ao_ref *, tree, void *),
+                              void *, bitmap *,
+                              bool *function_entry_reached = NULL,
+                              unsigned int limit = 0);
+extern void dump_alias_info(FILE *);
+extern void debug_alias_info(void);
+extern void dump_points_to_solution(FILE *, struct pt_solution *);
+extern void debug(pt_solution &ref);
+extern void debug(pt_solution *ptr);
+extern void dump_points_to_info_for(FILE *, tree);
+extern void debug_points_to_info_for(tree);
+extern void dump_alias_stats(FILE *);
 
 /* In tree-ssa-structalias.cc  */
-extern unsigned int compute_may_aliases (void);
-extern bool pt_solution_empty_p (const pt_solution *);
-extern bool pt_solution_singleton_or_null_p (struct pt_solution *, unsigned *);
-extern bool pt_solution_includes_global (struct pt_solution *, bool);
-extern bool pt_solution_includes (struct pt_solution *, const_tree);
-extern bool pt_solution_includes_const_pool (struct pt_solution *);
-extern bool pt_solutions_intersect (struct pt_solution *, struct pt_solution *);
-extern void pt_solution_reset (struct pt_solution *);
-extern void pt_solution_set (struct pt_solution *, bitmap, bool);
-extern void pt_solution_set_var (struct pt_solution *, tree);
+extern unsigned int compute_may_aliases(void);
+extern bool pt_solution_empty_p(const pt_solution *);
+extern bool pt_solution_singleton_or_null_p(struct pt_solution *, unsigned *);
+extern bool pt_solution_includes_global(struct pt_solution *, bool);
+extern bool pt_solution_includes(struct pt_solution *, const_tree);
+extern bool pt_solution_includes_const_pool(struct pt_solution *);
+extern bool pt_solutions_intersect(struct pt_solution *, struct pt_solution *);
+extern void pt_solution_reset(struct pt_solution *);
+extern void pt_solution_set(struct pt_solution *, bitmap, bool);
+extern void pt_solution_set_var(struct pt_solution *, tree);
 
-extern void dump_pta_stats (FILE *);
+extern void dump_pta_stats(FILE *);
 
 extern GTY(()) struct pt_solution ipa_escaped_pt;
 
@@ -197,26 +186,18 @@ extern GTY(()) struct pt_solution ipa_escaped_pt;
    overlap.  SIZE1 and/or SIZE2 can be (unsigned)-1 in which case the
    range is open-ended.  Otherwise return false.  */
 
-inline bool
-ranges_overlap_p (HOST_WIDE_INT pos1,
-		  unsigned HOST_WIDE_INT size1,
-		  HOST_WIDE_INT pos2,
-		  unsigned HOST_WIDE_INT size2)
-{
+inline bool ranges_overlap_p(HOST_WIDE_INT pos1, unsigned HOST_WIDE_INT size1,
+                             HOST_WIDE_INT pos2, unsigned HOST_WIDE_INT size2) {
   if (size1 == 0 || size2 == 0)
     return false;
-  if (pos1 >= pos2
-      && (size2 == (unsigned HOST_WIDE_INT)-1
-	  || pos1 < (pos2 + (HOST_WIDE_INT) size2)))
+  if (pos1 >= pos2 && (size2 == (unsigned HOST_WIDE_INT) - 1 ||
+                       pos1 < (pos2 + (HOST_WIDE_INT)size2)))
     return true;
-  if (pos2 >= pos1
-      && (size1 == (unsigned HOST_WIDE_INT)-1
-	  || pos2 < (pos1 + (HOST_WIDE_INT) size1)))
+  if (pos2 >= pos1 && (size1 == (unsigned HOST_WIDE_INT) - 1 ||
+                       pos2 < (pos1 + (HOST_WIDE_INT)size1)))
     return true;
 
   return false;
 }
-
-
 
 #endif /* TREE_SSA_ALIAS_H  */

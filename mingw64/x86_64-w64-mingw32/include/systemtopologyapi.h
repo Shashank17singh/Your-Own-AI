@@ -4,26 +4,23 @@
  */
 #ifndef _SYSTEMTOPOLOGY_H_
 #define _SYSTEMTOPOLOGY_H_
-
 #include <apiset.h>
 #include <apisetcconv.h>
-#include <minwindef.h>
 #include <minwinbase.h>
-
+#include <minwindef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP) || NTDDI_VERSION >= NTDDI_WIN10_19H1
-  WINBASEAPI WINBOOL WINAPI GetNumaHighestNodeNumber (PULONG HighestNodeNumber);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) ||                       \
+    NTDDI_VERSION >= NTDDI_WIN10_19H1
+WINBASEAPI WINBOOL WINAPI GetNumaHighestNodeNumber(PULONG HighestNodeNumber);
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #if _WIN32_WINNT >= 0x0601
-  WINBASEAPI WINBOOL WINAPI GetNumaNodeProcessorMaskEx (USHORT Node, PGROUP_AFFINITY ProcessorMask);
+WINBASEAPI WINBOOL WINAPI
+GetNumaNodeProcessorMaskEx(USHORT Node, PGROUP_AFFINITY ProcessorMask);
 #endif
 #endif
-
 #ifdef __cplusplus
 }
 #endif

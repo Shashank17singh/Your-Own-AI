@@ -25,8 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
 /* Processor Vendor and Models. */
 
-enum processor_vendor
-{
+enum processor_vendor {
   VENDOR_INTEL = 1,
   VENDOR_AMD,
   VENDOR_ZHAOXIN,
@@ -42,8 +41,7 @@ enum processor_vendor
 
 /* Any new types or subtypes have to be inserted at the end. */
 
-enum processor_types
-{
+enum processor_types {
   INTEL_BONNELL = 1,
   INTEL_CORE2,
   INTEL_COREI7,
@@ -66,8 +64,7 @@ enum processor_types
   BUILTIN_CPU_TYPE_MAX = CPU_TYPE_MAX
 };
 
-enum processor_subtypes
-{
+enum processor_subtypes {
   INTEL_COREI7_NEHALEM = 1,
   INTEL_COREI7_WESTMERE,
   INTEL_COREI7_SANDYBRIDGE,
@@ -115,8 +112,7 @@ enum processor_subtypes
    used to decide the order in which function dispatch must happen.  For
    instance, a version specialized for SSE4.2 should be checked for dispatch
    before a version for SSE3.  */
-enum feature_priority
-{
+enum feature_priority {
   P_NONE = 0,
   P_MMX,
   P_SSE,
@@ -157,8 +153,7 @@ enum feature_priority
 
 /* ISA Features supported. New features have to be inserted at the end.  */
 
-enum processor_features
-{
+enum processor_features {
   FEATURE_CMOV = 0,
   FEATURE_MMX,
   FEATURE_POPCNT,
@@ -286,8 +281,7 @@ enum processor_features
    value.  */
 
 #define M_CPU_TYPE_START (BUILTIN_VENDOR_MAX)
-#define M_CPU_SUBTYPE_START \
-  (M_CPU_TYPE_START + int (BUILTIN_CPU_TYPE_MAX))
+#define M_CPU_SUBTYPE_START (M_CPU_TYPE_START + int(BUILTIN_CPU_TYPE_MAX))
 #define M_VENDOR(a) (a)
-#define M_CPU_TYPE(a) (M_CPU_TYPE_START + int (a))
+#define M_CPU_TYPE(a) (M_CPU_TYPE_START + int(a))
 #define M_CPU_SUBTYPE(a) (M_CPU_SUBTYPE_START + a)

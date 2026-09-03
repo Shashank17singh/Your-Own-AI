@@ -23,33 +23,27 @@ along with GCC; see the file COPYING3.  If not see
 #include "cfgloopmanip.h"
 
 /* Structure to hold decision about unrolling/peeling.  */
-enum lpt_dec
-{
+enum lpt_dec {
   LPT_NONE,
   LPT_UNROLL_CONSTANT,
   LPT_UNROLL_RUNTIME,
   LPT_UNROLL_STUPID
 };
 
-struct GTY (()) lpt_decision {
+struct GTY(()) lpt_decision {
   enum lpt_dec decision;
   unsigned times;
 };
 
 /* The type of extend applied to an IV.  */
-enum iv_extend_code
-{
-  IV_SIGN_EXTEND,
-  IV_ZERO_EXTEND,
-  IV_UNKNOWN_EXTEND
-};
+enum iv_extend_code { IV_SIGN_EXTEND, IV_ZERO_EXTEND, IV_UNKNOWN_EXTEND };
 
-typedef generic_wide_int <fixed_wide_int_storage <WIDE_INT_MAX_INL_PRECISION> >
-  bound_wide_int;
+typedef generic_wide_int<fixed_wide_int_storage<WIDE_INT_MAX_INL_PRECISION>>
+    bound_wide_int;
 
 /* The structure describing a bound on number of iterations of a loop.  */
 
-class GTY ((chain_next ("%h.next"))) nb_iter_bound {
+class GTY((chain_next("%h.next"))) nb_iter_bound {
 public:
   /* The statement STMT is executed at most ...  */
   gimple *stmt;
@@ -59,7 +53,7 @@ public:
 
      a) 0 would otherwise be unused, while we would need to care more about
         overflows (as MAX + 1 is sometimes produced as the estimate on number
-	of executions of STMT).
+        of executions of STMT).
      b) it is consistent with the result of number_of_iterations_exit.  */
   bound_wide_int bound;
 
@@ -74,7 +68,7 @@ public:
 
 /* Description of the loop exit.  */
 
-struct GTY ((for_user)) loop_exit {
+struct GTY((for_user)) loop_exit {
   /* The exit edge.  */
   edge e;
 
@@ -86,21 +80,19 @@ struct GTY ((for_user)) loop_exit {
   struct loop_exit *next_e;
 };
 
-struct loop_exit_hasher : ggc_ptr_hash<loop_exit>
-{
+struct loop_exit_hasher : ggc_ptr_hash<loop_exit> {
   typedef edge compare_type;
 
-  static hashval_t hash (loop_exit *);
-  static bool equal (loop_exit *, edge);
-  static void remove (loop_exit *);
+  static hashval_t hash(loop_exit *);
+  static bool equal(loop_exit *, edge);
+  static void remove(loop_exit *);
 };
 
 typedef class loop *loop_p;
 
 /* An integer estimation of the number of iterations.  Estimate_state
    describes what is the state of the estimation.  */
-enum loop_estimation
-{
+enum loop_estimation {
   /* Estimate was not computed yet.  */
   EST_NOT_COMPUTED,
   /* Estimate is ready.  */
@@ -110,14 +102,14 @@ enum loop_estimation
 
 /* The structure describing non-overflow control induction variable for
    loop's exit edge.  */
-struct GTY ((chain_next ("%h.next"))) control_iv {
+struct GTY((chain_next("%h.next"))) control_iv {
   tree base;
   tree step;
   struct control_iv *next;
 };
 
 /* Structure to hold information for each natural loop.  */
-class GTY ((chain_next ("%h.next"))) loop {
+class GTY((chain_next("%h.next"))) loop {
 public:
   /* Index into loops array.  Note indices will never be reused after loop
      is destroyed.  */
@@ -151,7 +143,7 @@ public:
   class loop *next;
 
   /* Auxiliary info specific to a pass.  */
-  void *GTY ((skip (""))) aux;
+  void *GTY((skip(""))) aux;
 
   /* The number of times the latch of the loop is executed.  This can be an
      INTEGER_CST, or a symbolic expression representing the number of
@@ -188,17 +180,17 @@ public:
      use case of constraints is to vectorize possibly infinite loop:
 
        1) Compute niter->assumptions by calling niter analyzer API and
-	  record it as possible condition for loop versioning.
+          record it as possible condition for loop versioning.
        2) Clear buffered result of niter/scev analyzer.
        3) Set constraint LOOP_C_FINITE assuming the loop is finite.
        4) Analyze data references.  Since data reference analysis depends
-	  on niter/scev analyzer, the point is that niter/scev analysis
-	  is done under circumstance of LOOP_C_FINITE constraint.
+          on niter/scev analyzer, the point is that niter/scev analysis
+          is done under circumstance of LOOP_C_FINITE constraint.
        5) Version the loop with niter->assumptions computed in step 1).
        6) Vectorize the versioned loop in which niter->assumptions is
-	  checked to be true.
+          checked to be true.
        7) Update constraints in versioned loops so that niter analyzer
-	  in following passes can use it.
+          in following passes can use it.
 
      Note consumers are usually the loop optimizers and it is consumers'
      responsibility to set/clear constraints correctly.  Failing to do
@@ -278,34 +270,27 @@ public:
 };
 
 /* Set if the loop is known to be infinite.  */
-#define LOOP_C_INFINITE		(1 << 0)
+#define LOOP_C_INFINITE (1 << 0)
 /* Set if the loop is known to be finite without any assumptions.  */
-#define LOOP_C_FINITE		(1 << 1)
+#define LOOP_C_FINITE (1 << 1)
 
 /* Set C to the LOOP constraint.  */
-inline void
-loop_constraint_set (class loop *loop, unsigned c)
-{
+inline void loop_constraint_set(class loop *loop, unsigned c) {
   loop->constraints |= c;
 }
 
 /* Clear C from the LOOP constraint.  */
-inline void
-loop_constraint_clear (class loop *loop, unsigned c)
-{
+inline void loop_constraint_clear(class loop *loop, unsigned c) {
   loop->constraints &= ~c;
 }
 
 /* Check if C is set in the LOOP constraint.  */
-inline bool
-loop_constraint_set_p (class loop *loop, unsigned c)
-{
+inline bool loop_constraint_set_p(class loop *loop, unsigned c) {
   return (loop->constraints & c) == c;
 }
 
 /* Flags for state of loop structure.  */
-enum
-{
+enum {
   LOOPS_HAVE_PREHEADERS = 1,
   LOOPS_HAVE_SIMPLE_LATCHES = 2,
   LOOPS_HAVE_MARKED_IRREDUCIBLE_REGIONS = 4,
@@ -316,12 +301,13 @@ enum
   LOOPS_HAVE_FALLTHRU_PREHEADERS = 128
 };
 
-#define LOOPS_NORMAL (LOOPS_HAVE_PREHEADERS | LOOPS_HAVE_SIMPLE_LATCHES \
-		      | LOOPS_HAVE_MARKED_IRREDUCIBLE_REGIONS)
+#define LOOPS_NORMAL                                                           \
+  (LOOPS_HAVE_PREHEADERS | LOOPS_HAVE_SIMPLE_LATCHES |                         \
+   LOOPS_HAVE_MARKED_IRREDUCIBLE_REGIONS)
 #define AVOID_CFG_MODIFICATIONS (LOOPS_MAY_HAVE_MULTIPLE_LATCHES)
 
 /* Structure to hold CFG information about natural loops within a function.  */
-struct GTY (()) loops {
+struct GTY(()) loops {
   /* State of loops.  */
   int state;
 
@@ -338,84 +324,86 @@ struct GTY (()) loops {
 };
 
 /* Loop recognition.  */
-bool bb_loop_header_p (basic_block);
-void init_loops_structure (struct function *, struct loops *, unsigned);
-extern struct loops *flow_loops_find (struct loops *);
-extern void disambiguate_loops_with_multiple_latches (void);
-extern void flow_loops_free (struct loops *);
-extern void flow_loops_dump (FILE *,
-			     void (*)(const class loop *, FILE *, int), int);
-extern void flow_loop_dump (const class loop *, FILE *,
-			    void (*)(const class loop *, FILE *, int), int);
-class loop *alloc_loop (void);
-extern void flow_loop_free (class loop *);
-int flow_loop_nodes_find (basic_block, class loop *);
-unsigned fix_loop_structure (bitmap changed_bbs);
-bool mark_irreducible_loops (void);
-void release_recorded_exits (function *);
-void record_loop_exits (void);
-void rescan_loop_exit (edge, bool, bool);
-void sort_sibling_loops (function *);
+bool bb_loop_header_p(basic_block);
+void init_loops_structure(struct function *, struct loops *, unsigned);
+extern struct loops *flow_loops_find(struct loops *);
+extern void disambiguate_loops_with_multiple_latches(void);
+extern void flow_loops_free(struct loops *);
+extern void flow_loops_dump(FILE *, void (*)(const class loop *, FILE *, int),
+                            int);
+extern void flow_loop_dump(const class loop *, FILE *,
+                           void (*)(const class loop *, FILE *, int), int);
+class loop *alloc_loop(void);
+extern void flow_loop_free(class loop *);
+int flow_loop_nodes_find(basic_block, class loop *);
+unsigned fix_loop_structure(bitmap changed_bbs);
+bool mark_irreducible_loops(void);
+void release_recorded_exits(function *);
+void record_loop_exits(void);
+void rescan_loop_exit(edge, bool, bool);
+void sort_sibling_loops(function *);
 
 /* Loop data structure manipulation/querying.  */
-extern void flow_loop_tree_node_add (class loop *, class loop *,
-				     class loop * = NULL);
-extern void flow_loop_tree_node_remove (class loop *);
-extern bool flow_loop_nested_p	(const class loop *, const class loop *);
-extern bool flow_bb_inside_loop_p (const class loop *, const_basic_block);
-extern class loop * find_common_loop (class loop *, class loop *);
-class loop *superloop_at_depth (class loop *, unsigned);
+extern void flow_loop_tree_node_add(class loop *, class loop *,
+                                    class loop * = NULL);
+extern void flow_loop_tree_node_remove(class loop *);
+extern bool flow_loop_nested_p(const class loop *, const class loop *);
+extern bool flow_bb_inside_loop_p(const class loop *, const_basic_block);
+extern class loop *find_common_loop(class loop *, class loop *);
+class loop *superloop_at_depth(class loop *, unsigned);
 struct eni_weights;
-extern int num_loop_insns (const class loop *);
-extern int average_num_loop_insns (const class loop *);
-extern unsigned get_loop_level (const class loop *);
-extern bool loop_exit_edge_p (const class loop *, const_edge);
-extern edge loop_exits_to_bb_p (class loop *, basic_block);
-extern edge loop_exits_from_bb_p (class loop *, basic_block);
-extern void mark_loop_exit_edges (void);
-extern dump_user_location_t get_loop_location (class loop *loop);
+extern int num_loop_insns(const class loop *);
+extern int average_num_loop_insns(const class loop *);
+extern unsigned get_loop_level(const class loop *);
+extern bool loop_exit_edge_p(const class loop *, const_edge);
+extern edge loop_exits_to_bb_p(class loop *, basic_block);
+extern edge loop_exits_from_bb_p(class loop *, basic_block);
+extern void mark_loop_exit_edges(void);
+extern dump_user_location_t get_loop_location(class loop *loop);
 
 /* Loops & cfg manipulation.  */
-extern basic_block *get_loop_body (const class loop *);
-extern unsigned get_loop_body_with_size (const class loop *, basic_block *,
-					 unsigned);
-extern basic_block *get_loop_body_in_dom_order (const class loop *);
-extern basic_block *get_loop_body_in_bfs_order (const class loop *);
-extern basic_block *get_loop_body_in_custom_order (const class loop *,
-			       int (*) (const void *, const void *));
-extern basic_block *get_loop_body_in_custom_order (const class loop *, void *,
-			       int (*) (const void *, const void *, void *));
+extern basic_block *get_loop_body(const class loop *);
+extern unsigned get_loop_body_with_size(const class loop *, basic_block *,
+                                        unsigned);
+extern basic_block *get_loop_body_in_dom_order(const class loop *);
+extern basic_block *get_loop_body_in_bfs_order(const class loop *);
+extern basic_block *get_loop_body_in_custom_order(const class loop *,
+                                                  int (*)(const void *,
+                                                          const void *));
+extern basic_block *
+get_loop_body_in_custom_order(const class loop *, void *,
+                              int (*)(const void *, const void *, void *));
 
-extern auto_vec<edge> get_loop_exit_edges (const class loop *, basic_block * = NULL);
-extern edge single_exit (const class loop *);
-extern edge single_likely_exit (class loop *loop, const vec<edge> &);
-extern unsigned num_loop_branches (const class loop *);
+extern auto_vec<edge> get_loop_exit_edges(const class loop *,
+                                          basic_block * = NULL);
+extern edge single_exit(const class loop *);
+extern edge single_likely_exit(class loop *loop, const vec<edge> &);
+extern unsigned num_loop_branches(const class loop *);
 
-extern edge loop_preheader_edge (const class loop *);
-extern edge loop_latch_edge (const class loop *);
+extern edge loop_preheader_edge(const class loop *);
+extern edge loop_latch_edge(const class loop *);
 
-extern void add_bb_to_loop (basic_block, class loop *);
-extern void remove_bb_from_loops (basic_block);
+extern void add_bb_to_loop(basic_block, class loop *);
+extern void remove_bb_from_loops(basic_block);
 
-extern void cancel_loop_tree (class loop *);
-extern void delete_loop (class loop *);
+extern void cancel_loop_tree(class loop *);
+extern void delete_loop(class loop *);
 
-
-extern void verify_loop_structure (void);
+extern void verify_loop_structure(void);
 
 /* Loop analysis.  */
-extern bool just_once_each_iteration_p (const class loop *, const_basic_block);
-gcov_type expected_loop_iterations_unbounded (const class loop *,
-					      bool *read_profile_p = NULL);
-extern bool expected_loop_iterations_by_profile (const class loop *loop,
-						 sreal *ret,
-						 bool *reliable = NULL);
-extern bool maybe_flat_loop_profile (const class loop *);
-extern unsigned expected_loop_iterations (class loop *);
-extern rtx doloop_condition_get (rtx_insn *);
+extern bool just_once_each_iteration_p(const class loop *, const_basic_block);
+gcov_type expected_loop_iterations_unbounded(const class loop *,
+                                             bool *read_profile_p = NULL);
+extern bool expected_loop_iterations_by_profile(const class loop *loop,
+                                                sreal *ret,
+                                                bool *reliable = NULL);
+extern bool maybe_flat_loop_profile(const class loop *);
+extern unsigned expected_loop_iterations(class loop *);
+extern rtx doloop_condition_get(rtx_insn *);
 
-void mark_loop_for_removal (loop_p);
-void print_loop_info (FILE *file, const class loop *loop, const char *);
+void mark_loop_for_removal(loop_p);
+void print_loop_info(FILE *file, const class loop *loop, const char *);
 
 /* Induction variable analysis.  */
 
@@ -429,8 +417,8 @@ void print_loop_info (FILE *file, const class loop *loop, const char *);
    If first_special is true, the value in the first iteration is
      delta + mult * base
 
-   If extend = UNKNOWN, first_special must be false, delta 0, mult 1 and value is
-     subreg_{mode} (base + i * step)
+   If extend = UNKNOWN, first_special must be false, delta 0, mult 1 and value
+   is subreg_{mode} (base + i * step)
 
    The get_iv_value function can be used to obtain these expressions.
 
@@ -438,8 +426,7 @@ void print_loop_info (FILE *file, const class loop *loop, const char *);
    computation is done, which would enable it to be different from the
    outer one?  */
 
-class rtx_iv
-{
+class rtx_iv {
 public:
   /* Its base and step (mode of base and step is supposed to be extend_mode,
      see the description above).  */
@@ -465,8 +452,7 @@ public:
 /* The description of an exit from the loop and of the number of iterations
    till we take the exit.  */
 
-class GTY(()) niter_desc
-{
+class GTY(()) niter_desc {
 public:
   /* The edge out of the loop.  */
   edge out_edge;
@@ -504,21 +490,18 @@ public:
   rtx niter_expr;
 };
 
-extern void iv_analysis_loop_init (class loop *);
-extern bool iv_analyze (rtx_insn *, scalar_int_mode, rtx, class rtx_iv *);
-extern bool iv_analyze_result (rtx_insn *, rtx, class rtx_iv *);
-extern bool iv_analyze_expr (rtx_insn *, scalar_int_mode, rtx,
-			     class rtx_iv *);
-extern rtx get_iv_value (class rtx_iv *, rtx);
-extern bool biv_p (rtx_insn *, scalar_int_mode, rtx);
-extern void iv_analysis_done (void);
+extern void iv_analysis_loop_init(class loop *);
+extern bool iv_analyze(rtx_insn *, scalar_int_mode, rtx, class rtx_iv *);
+extern bool iv_analyze_result(rtx_insn *, rtx, class rtx_iv *);
+extern bool iv_analyze_expr(rtx_insn *, scalar_int_mode, rtx, class rtx_iv *);
+extern rtx get_iv_value(class rtx_iv *, rtx);
+extern bool biv_p(rtx_insn *, scalar_int_mode, rtx);
+extern void iv_analysis_done(void);
 
-extern class niter_desc *get_simple_loop_desc (class loop *loop);
-extern void free_simple_loop_desc (class loop *loop);
+extern class niter_desc *get_simple_loop_desc(class loop *loop);
+extern void free_simple_loop_desc(class loop *loop);
 
-inline class niter_desc *
-simple_loop_desc (class loop *loop)
-{
+inline class niter_desc *simple_loop_desc(class loop *loop) {
   return loop->simple_loop_desc;
 }
 
@@ -526,27 +509,21 @@ simple_loop_desc (class loop *loop)
 
 /* Returns the loop with index NUM from FNs loop tree.  */
 
-inline class loop *
-get_loop (struct function *fn, unsigned num)
-{
-  return (*loops_for_fn (fn)->larray)[num];
+inline class loop *get_loop(struct function *fn, unsigned num) {
+  return (*loops_for_fn(fn)->larray)[num];
 }
 
 /* Returns the number of superloops of LOOP.  */
 
-inline unsigned
-loop_depth (const class loop *loop)
-{
-  return vec_safe_length (loop->superloops);
+inline unsigned loop_depth(const class loop *loop) {
+  return vec_safe_length(loop->superloops);
 }
 
 /* Returns the immediate superloop of LOOP, or NULL if LOOP is the outermost
    loop.  */
 
-inline class loop *
-loop_outer (const class loop *loop)
-{
-  unsigned n = vec_safe_length (loop->superloops);
+inline class loop *loop_outer(const class loop *loop) {
+  unsigned n = vec_safe_length(loop->superloops);
 
   if (n == 0)
     return NULL;
@@ -556,18 +533,14 @@ loop_outer (const class loop *loop)
 
 /* Returns true if LOOP has at least one exit edge.  */
 
-inline bool
-loop_has_exit_edges (const class loop *loop)
-{
+inline bool loop_has_exit_edges(const class loop *loop) {
   return loop->exits->next->e != NULL;
 }
 
 /* Returns the list of loops in FN.  */
 
-inline vec<loop_p, va_gc> *
-get_loops (struct function *fn)
-{
-  struct loops *loops = loops_for_fn (fn);
+inline vec<loop_p, va_gc> *get_loops(struct function *fn) {
+  struct loops *loops = loops_for_fn(fn);
   if (!loops)
     return NULL;
 
@@ -577,67 +550,49 @@ get_loops (struct function *fn)
 /* Returns the number of loops in FN (including the removed
    ones and the fake loop that forms the root of the loop tree).  */
 
-inline unsigned
-number_of_loops (struct function *fn)
-{
-  struct loops *loops = loops_for_fn (fn);
+inline unsigned number_of_loops(struct function *fn) {
+  struct loops *loops = loops_for_fn(fn);
   if (!loops)
     return 0;
 
-  return vec_safe_length (loops->larray);
+  return vec_safe_length(loops->larray);
 }
 
 /* Returns true if state of the loops satisfies all properties
    described by FLAGS.  */
 
-inline bool
-loops_state_satisfies_p (function *fn, unsigned flags)
-{
-  return (loops_for_fn (fn)->state & flags) == flags;
+inline bool loops_state_satisfies_p(function *fn, unsigned flags) {
+  return (loops_for_fn(fn)->state & flags) == flags;
 }
 
-inline bool
-loops_state_satisfies_p (unsigned flags)
-{
-  return loops_state_satisfies_p (cfun, flags);
+inline bool loops_state_satisfies_p(unsigned flags) {
+  return loops_state_satisfies_p(cfun, flags);
 }
 
 /* Sets FLAGS to the loops state.  */
 
-inline void
-loops_state_set (function *fn, unsigned flags)
-{
-  loops_for_fn (fn)->state |= flags;
+inline void loops_state_set(function *fn, unsigned flags) {
+  loops_for_fn(fn)->state |= flags;
 }
 
-inline void
-loops_state_set (unsigned flags)
-{
-  loops_state_set (cfun, flags);
-}
+inline void loops_state_set(unsigned flags) { loops_state_set(cfun, flags); }
 
 /* Clears FLAGS from the loops state.  */
 
-inline void
-loops_state_clear (function *fn, unsigned flags)
-{
-  loops_for_fn (fn)->state &= ~flags;
+inline void loops_state_clear(function *fn, unsigned flags) {
+  loops_for_fn(fn)->state &= ~flags;
 }
 
-inline void
-loops_state_clear (unsigned flags)
-{
+inline void loops_state_clear(unsigned flags) {
   if (!current_loops)
     return;
-  loops_state_clear (cfun, flags);
+  loops_state_clear(cfun, flags);
 }
 
 /* Check loop structure invariants, if internal consistency checks are
    enabled.  */
 
-inline void
-checking_verify_loop_structure (void)
-{
+inline void checking_verify_loop_structure(void) {
   /* VERIFY_LOOP_STRUCTURE essentially asserts that no loops need fixups.
 
      The loop optimizers should never make changes to the CFG which
@@ -649,32 +604,26 @@ checking_verify_loop_structure (void)
      structures VERIFY_LOOP_STRUCTURE will detect it.
 
      This also avoid the compile time cost of excessive fixups.  */
-  loops_state_clear (LOOPS_NEED_FIXUP);
+  loops_state_clear(LOOPS_NEED_FIXUP);
   if (flag_checking)
-    verify_loop_structure ();
+    verify_loop_structure();
 }
 
 /* Loop iterators.  */
 
 /* Flags for loop iteration.  */
 
-enum li_flags
-{
-  LI_INCLUDE_ROOT = 1,		/* Include the fake root of the loop tree.  */
-  LI_FROM_INNERMOST = 2,	/* Iterate over the loops in the reverse order,
-				   starting from innermost ones.  */
-  LI_ONLY_INNERMOST = 4		/* Iterate only over innermost loops.  */
+enum li_flags {
+  LI_INCLUDE_ROOT = 1,   /* Include the fake root of the loop tree.  */
+  LI_FROM_INNERMOST = 2, /* Iterate over the loops in the reverse order,
+                            starting from innermost ones.  */
+  LI_ONLY_INNERMOST = 4  /* Iterate only over innermost loops.  */
 };
 
 /* Provide the functionality of std::as_const to support range-based for
    to use const iterator.  (We can't use std::as_const itself because it's
    a C++17 feature.)  */
-template <typename T>
-constexpr const T &
-as_const (T &t)
-{
-  return t;
-}
+template <typename T> constexpr const T &as_const(T &t) { return t; }
 
 /* A list for visiting loops, which contains the loop numbers instead of
    the loop pointers.  If the loop ROOT is offered (non-null), the visiting
@@ -682,45 +631,36 @@ as_const (T &t)
    loops_for_fn (FN) instead.  The scope is restricted in function FN and
    the visiting order is specified by FLAGS.  */
 
-class loops_list
-{
+class loops_list {
 public:
-  loops_list (function *fn, unsigned flags, class loop *root = nullptr);
+  loops_list(function *fn, unsigned flags, class loop *root = nullptr);
 
-  template <typename T> class Iter
-  {
+  template <typename T> class Iter {
   public:
-    Iter (const loops_list &l, unsigned idx) : list (l), curr_idx (idx)
-    {
-      fill_curr_loop ();
+    Iter(const loops_list &l, unsigned idx) : list(l), curr_idx(idx) {
+      fill_curr_loop();
     }
 
-    T operator* () const { return curr_loop; }
+    T operator*() const { return curr_loop; }
 
-    Iter &
-    operator++ ()
-    {
-      if (curr_idx < list.to_visit.length ())
-	{
-	  /* Bump the index and fill a new one.  */
-	  curr_idx++;
-	  fill_curr_loop ();
-	}
-      else
-	gcc_assert (!curr_loop);
+    Iter &operator++() {
+      if (curr_idx < list.to_visit.length()) {
+        /* Bump the index and fill a new one.  */
+        curr_idx++;
+        fill_curr_loop();
+      } else
+        gcc_assert(!curr_loop);
 
       return *this;
     }
 
-    bool
-    operator!= (const Iter &rhs) const
-    {
+    bool operator!=(const Iter &rhs) const {
       return this->curr_idx != rhs.curr_idx;
     }
 
   private:
     /* Fill the current loop starting from the current index.  */
-    void fill_curr_loop ();
+    void fill_curr_loop();
 
     /* Reference to the loop list to visit.  */
     const loops_list &list;
@@ -735,34 +675,20 @@ public:
   using iterator = Iter<class loop *>;
   using const_iterator = Iter<const class loop *>;
 
-  iterator
-  begin ()
-  {
-    return iterator (*this, 0);
-  }
+  iterator begin() { return iterator(*this, 0); }
 
-  iterator
-  end ()
-  {
-    return iterator (*this, to_visit.length ());
-  }
+  iterator end() { return iterator(*this, to_visit.length()); }
 
-  const_iterator
-  begin () const
-  {
-    return const_iterator (*this, 0);
-  }
+  const_iterator begin() const { return const_iterator(*this, 0); }
 
-  const_iterator
-  end () const
-  {
-    return const_iterator (*this, to_visit.length ());
+  const_iterator end() const {
+    return const_iterator(*this, to_visit.length());
   }
 
 private:
   /* Walk loop tree starting from ROOT as the visiting order specified
      by FLAGS.  */
-  void walk_loop_tree (class loop *root, unsigned flags);
+  void walk_loop_tree(class loop *root, unsigned flags);
 
   /* The function we are visiting.  */
   function *fn;
@@ -775,22 +701,17 @@ private:
    which stands for one valid loop and fill the found loop as CURR_LOOP,
    if we can't find one, set CURR_LOOP as null.  */
 
-template <typename T>
-inline void
-loops_list::Iter<T>::fill_curr_loop ()
-{
+template <typename T> inline void loops_list::Iter<T>::fill_curr_loop() {
   int anum;
 
-  while (this->list.to_visit.iterate (this->curr_idx, &anum))
-    {
-      class loop *loop = get_loop (this->list.fn, anum);
-      if (loop)
-	{
-	  curr_loop = loop;
-	  return;
-	}
-      this->curr_idx++;
+  while (this->list.to_visit.iterate(this->curr_idx, &anum)) {
+    class loop *loop = get_loop(this->list.fn, anum);
+    if (loop) {
+      curr_loop = loop;
+      return;
     }
+    this->curr_idx++;
+  }
 
   curr_loop = nullptr;
 }
@@ -800,14 +721,13 @@ loops_list::Iter<T>::fill_curr_loop ()
    not null, the visiting would start from it, otherwise it
    will start from tree_root of loops_for_fn (FN).  */
 
-inline loops_list::loops_list (function *fn, unsigned flags, class loop *root)
-{
-  struct loops *loops = loops_for_fn (fn);
-  gcc_assert (!root || loops);
+inline loops_list::loops_list(function *fn, unsigned flags, class loop *root) {
+  struct loops *loops = loops_for_fn(fn);
+  gcc_assert(!root || loops);
 
   /* Check mutually exclusive flags should not co-exist.  */
   unsigned checked_flags = LI_ONLY_INNERMOST | LI_FROM_INNERMOST;
-  gcc_assert ((flags & checked_flags) != checked_flags);
+  gcc_assert((flags & checked_flags) != checked_flags);
 
   this->fn = fn;
   if (!loops)
@@ -815,31 +735,28 @@ inline loops_list::loops_list (function *fn, unsigned flags, class loop *root)
 
   class loop *tree_root = root ? root : loops->tree_root;
 
-  this->to_visit.reserve_exact (number_of_loops (fn));
+  this->to_visit.reserve_exact(number_of_loops(fn));
 
   /* When root is tree_root of loops_for_fn (fn) and the visiting
      order is LI_ONLY_INNERMOST, we would like to use linear
      search here since it has a more stable bound than the
      walk_loop_tree.  */
-  if (flags & LI_ONLY_INNERMOST && tree_root == loops->tree_root)
-    {
-      gcc_assert (tree_root->num == 0);
-      if (tree_root->inner == NULL)
-	{
-	  if (flags & LI_INCLUDE_ROOT)
-	    this->to_visit.quick_push (0);
+  if (flags & LI_ONLY_INNERMOST && tree_root == loops->tree_root) {
+    gcc_assert(tree_root->num == 0);
+    if (tree_root->inner == NULL) {
+      if (flags & LI_INCLUDE_ROOT)
+        this->to_visit.quick_push(0);
 
-	  return;
-	}
-
-      class loop *aloop;
-      unsigned int i;
-      for (i = 1; vec_safe_iterate (loops->larray, i, &aloop); i++)
-	if (aloop != NULL && aloop->inner == NULL)
-	  this->to_visit.quick_push (aloop->num);
+      return;
     }
-  else
-    walk_loop_tree (tree_root, flags);
+
+    class loop *aloop;
+    unsigned int i;
+    for (i = 1; vec_safe_iterate(loops->larray, i, &aloop); i++)
+      if (aloop != NULL && aloop->inner == NULL)
+        this->to_visit.quick_push(aloop->num);
+  } else
+    walk_loop_tree(tree_root, flags);
 }
 
 /* The properties of the target.  */
@@ -868,47 +785,35 @@ extern struct target_cfgloop *this_target_cfgloop;
 #define this_target_cfgloop (&default_target_cfgloop)
 #endif
 
-#define target_avail_regs \
-  (this_target_cfgloop->x_target_avail_regs)
-#define target_clobbered_regs \
-  (this_target_cfgloop->x_target_clobbered_regs)
-#define target_res_regs \
-  (this_target_cfgloop->x_target_res_regs)
-#define target_reg_cost \
-  (this_target_cfgloop->x_target_reg_cost)
-#define target_spill_cost \
-  (this_target_cfgloop->x_target_spill_cost)
+#define target_avail_regs (this_target_cfgloop->x_target_avail_regs)
+#define target_clobbered_regs (this_target_cfgloop->x_target_clobbered_regs)
+#define target_res_regs (this_target_cfgloop->x_target_res_regs)
+#define target_reg_cost (this_target_cfgloop->x_target_reg_cost)
+#define target_spill_cost (this_target_cfgloop->x_target_spill_cost)
 
 /* Register pressure estimation for induction variable optimizations & loop
    invariant motion.  */
-extern unsigned estimate_reg_pressure_cost (unsigned, unsigned, bool, bool);
-extern void init_set_costs (void);
+extern unsigned estimate_reg_pressure_cost(unsigned, unsigned, bool, bool);
+extern void init_set_costs(void);
 
 /* Loop optimizer initialization.  */
-extern void loop_optimizer_init (unsigned);
-extern void loop_optimizer_finalize (function *, bool = false);
-inline void
-loop_optimizer_finalize ()
-{
-  loop_optimizer_finalize (cfun);
-}
+extern void loop_optimizer_init(unsigned);
+extern void loop_optimizer_finalize(function *, bool = false);
+inline void loop_optimizer_finalize() { loop_optimizer_finalize(cfun); }
 
 /* Optimization passes.  */
-enum
-{
-  UAP_UNROLL = 1,	/* Enables unrolling of loops if it seems profitable.  */
-  UAP_UNROLL_ALL = 2	/* Enables unrolling of all loops.  */
+enum {
+  UAP_UNROLL = 1,    /* Enables unrolling of loops if it seems profitable.  */
+  UAP_UNROLL_ALL = 2 /* Enables unrolling of all loops.  */
 };
 
-extern void doloop_optimize_loops (void);
-extern void move_loop_invariants (void);
-extern auto_vec<basic_block> get_loop_hot_path (const class loop *loop);
+extern void doloop_optimize_loops(void);
+extern void move_loop_invariants(void);
+extern auto_vec<basic_block> get_loop_hot_path(const class loop *loop);
 
 /* Returns the outermost loop of the loop nest that contains LOOP.*/
-inline class loop *
-loop_outermost (class loop *loop)
-{
-  unsigned n = vec_safe_length (loop->superloops);
+inline class loop *loop_outermost(class loop *loop) {
+  unsigned n = vec_safe_length(loop->superloops);
 
   if (n <= 1)
     return loop;
@@ -916,31 +821,29 @@ loop_outermost (class loop *loop)
   return (*loop->superloops)[1];
 }
 
-extern void record_niter_bound (class loop *, const widest_int &, bool, bool);
-extern HOST_WIDE_INT get_estimated_loop_iterations_int (class loop *);
-extern HOST_WIDE_INT get_max_loop_iterations_int (const class loop *);
-extern HOST_WIDE_INT get_likely_max_loop_iterations_int (class loop *);
-extern bool get_estimated_loop_iterations (class loop *loop, widest_int *nit);
-extern bool get_max_loop_iterations (const class loop *loop, widest_int *nit);
-extern bool get_likely_max_loop_iterations (class loop *loop, widest_int *nit);
-extern int bb_loop_depth (const_basic_block);
-extern edge single_dom_exit (class loop *);
-extern profile_count loop_count_in (const class loop *loop);
+extern void record_niter_bound(class loop *, const widest_int &, bool, bool);
+extern HOST_WIDE_INT get_estimated_loop_iterations_int(class loop *);
+extern HOST_WIDE_INT get_max_loop_iterations_int(const class loop *);
+extern HOST_WIDE_INT get_likely_max_loop_iterations_int(class loop *);
+extern bool get_estimated_loop_iterations(class loop *loop, widest_int *nit);
+extern bool get_max_loop_iterations(const class loop *loop, widest_int *nit);
+extern bool get_likely_max_loop_iterations(class loop *loop, widest_int *nit);
+extern int bb_loop_depth(const_basic_block);
+extern edge single_dom_exit(class loop *);
+extern profile_count loop_count_in(const class loop *loop);
 
 /* Converts VAL to widest_int.  */
 
-inline widest_int
-gcov_type_to_wide_int (gcov_type val)
-{
+inline widest_int gcov_type_to_wide_int(gcov_type val) {
   HOST_WIDE_INT a[2];
 
-  a[0] = (unsigned HOST_WIDE_INT) val;
+  a[0] = (unsigned HOST_WIDE_INT)val;
   /* If HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_WIDEST_INT, avoid shifting by
      the size of type.  */
   val >>= HOST_BITS_PER_WIDE_INT - 1;
   val >>= 1;
-  a[1] = (unsigned HOST_WIDE_INT) val;
+  a[1] = (unsigned HOST_WIDE_INT)val;
 
-  return widest_int::from_array (a, 2);
+  return widest_int::from_array(a, 2);
 }
 #endif /* GCC_CFGLOOP_H */

@@ -14,7 +14,7 @@ except ImportError:  # pragma: no cover
 def _aix_tag(vrtl, bd):
     # type: (List[int], int) -> str
     # Infer the ABI bitwidth from maxsize (assuming 64 bit as the default)
-    _sz = 32 if sys.maxsize == (2**31-1) else 64
+    _sz = 32 if sys.maxsize == (2**31 - 1) else 64
     _bd = bd if bd != 0 else 9988
     # vrtl[version, release, technology_level]
     return "aix-{:1x}{:1d}{:02d}-{:04d}-{}".format(vrtl[0], vrtl[1], vrtl[2], _bd, _sz)
@@ -39,7 +39,7 @@ def _aix_bos_rte():
     out = subprocess.check_output(["/usr/bin/lslpp", "-Lqc", "bos.rte"])
     out = out.decode("utf-8")
     out = out.strip().split(":")  # type: ignore
-    _bd = int(out[-1]) if out[-1] != '' else 9988
+    _bd = int(out[-1]) if out[-1] != "" else 9988
     return (str(out[2]), _bd)
 
 
@@ -86,6 +86,5 @@ def aix_buildtag():
     try:
         build_date = int(build_date)
     except (ValueError, TypeError):
-        raise ValueError(f"AIX_BUILDDATE is not defined or invalid: "
-                         f"{build_date!r}")
+        raise ValueError(f"AIX_BUILDDATE is not defined or invalid: " f"{build_date!r}")
     return _aix_tag(_aix_bgt(), build_date)

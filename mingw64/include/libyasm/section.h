@@ -40,39 +40,39 @@
 typedef struct yasm_reloc yasm_reloc;
 
 struct yasm_reloc {
-    /*@reldef@*/ STAILQ_ENTRY(yasm_reloc) link; /**< Link to next reloc */
-    yasm_intnum *addr;          /**< Offset (address) within section */
-    /*@dependent@*/ yasm_symrec *sym;       /**< Relocated symbol */
+  /*@reldef@*/ STAILQ_ENTRY(yasm_reloc) link; /**< Link to next reloc */
+  yasm_intnum *addr;                /**< Offset (address) within section */
+  /*@dependent@*/ yasm_symrec *sym; /**< Relocated symbol */
 };
 
 /** An object.  This is the internal representation of an object file. */
 struct yasm_object {
-    /*@owned@*/ char *src_filename;     /**< Source filename */
-    /*@owned@*/ char *obj_filename;     /**< Object filename */
+  /*@owned@*/ char *src_filename; /**< Source filename */
+  /*@owned@*/ char *obj_filename; /**< Object filename */
 
-    /*@owned@*/ yasm_symtab *symtab;    /**< Symbol table */
-    /*@owned@*/ yasm_arch *arch;        /**< Target architecture */
-    /*@owned@*/ yasm_objfmt *objfmt;    /**< Object format */
-    /*@owned@*/ yasm_dbgfmt *dbgfmt;    /**< Debug format */
+  /*@owned@*/ yasm_symtab *symtab; /**< Symbol table */
+  /*@owned@*/ yasm_arch *arch;     /**< Target architecture */
+  /*@owned@*/ yasm_objfmt *objfmt; /**< Object format */
+  /*@owned@*/ yasm_dbgfmt *dbgfmt; /**< Debug format */
 
-    /** Currently active section.  Used by some directives.  NULL if no
-     * section active.
-     */
-    /*@dependent@*/ /*@null@*/ yasm_section *cur_section;
+  /** Currently active section.  Used by some directives.  NULL if no
+   * section active.
+   */
+  /*@dependent@*/ /*@null@*/ yasm_section *cur_section;
 
-    /** Linked list of sections. */
-    /*@reldef@*/ STAILQ_HEAD(yasm_sectionhead, yasm_section) sections;
+  /** Linked list of sections. */
+  /*@reldef@*/ STAILQ_HEAD(yasm_sectionhead, yasm_section) sections;
 
-    /** Directives, organized as two level HAMT; first level is parser,
-     * second level is directive name.
-     */
-    /*@owned@*/ struct HAMT *directives;
+  /** Directives, organized as two level HAMT; first level is parser,
+   * second level is directive name.
+   */
+  /*@owned@*/ struct HAMT *directives;
 
-    /** Prefix prepended to externally-visible symbols (empty string if none) */
-    /*@owned@*/ char *global_prefix;
+  /** Prefix prepended to externally-visible symbols (empty string if none) */
+  /*@owned@*/ char *global_prefix;
 
-    /** Suffix appended to externally-visible symbols (empty string if none) */
-    /*@owned@*/ char *global_suffix;
+  /** Suffix appended to externally-visible symbols (empty string if none) */
+  /*@owned@*/ char *global_suffix;
 };
 
 /** Create a new object.  A default section is created as the first section.
@@ -86,11 +86,11 @@ struct yasm_object {
  * \return Newly allocated object, or NULL on error.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@only@*/ yasm_object *yasm_object_create
-    (const char *src_filename, const char *obj_filename,
-     /*@kept@*/ yasm_arch *arch,
-     const yasm_objfmt_module *objfmt_module,
-     const yasm_dbgfmt_module *dbgfmt_module);
+/*@null@*/ /*@only@*/ yasm_object *
+yasm_object_create(const char *src_filename, const char *obj_filename,
+                   /*@kept@*/ yasm_arch *arch,
+                   const yasm_objfmt_module *objfmt_module,
+                   const yasm_dbgfmt_module *dbgfmt_module);
 
 /** Create a new, or continue an existing, general section.  The section is
  * added to the object if there's not already a section by that name.
@@ -107,9 +107,10 @@ YASM_LIB_DECL
  * \return New section.
  */
 YASM_LIB_DECL
-/*@dependent@*/ yasm_section *yasm_object_get_general
-    (yasm_object *object, const char *name, unsigned long align, int code,
-     int res_only, /*@out@*/ int *isnew, unsigned long line);
+/*@dependent@*/ yasm_section *
+yasm_object_get_general(yasm_object *object, const char *name,
+                        unsigned long align, int code, int res_only,
+                        /*@out@*/ int *isnew, unsigned long line);
 
 /** Handle a directive.  Passed down to object format, debug format, or
  * architecture as appropriate.
@@ -158,9 +159,9 @@ void yasm_object_finalize(yasm_object *object, yasm_errwarns *errwarns);
  *         nonzero value; otherwise 0.
  */
 YASM_LIB_DECL
-int yasm_object_sections_traverse
-    (yasm_object *object, /*@null@*/ void *d,
-     int (*func) (yasm_section *sect, /*@null@*/ void *d));
+int yasm_object_sections_traverse(yasm_object *object, /*@null@*/ void *d,
+                                  int (*func)(yasm_section *sect,
+                                              /*@null@*/ void *d));
 
 /** Find a general section in an object, based on its name.
  * \param object        object
@@ -168,8 +169,8 @@ int yasm_object_sections_traverse
  * \return Section matching name, or NULL if no match found.
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ yasm_section *yasm_object_find_general
-    (yasm_object *object, const char *name);
+/*@dependent@*/ /*@null@*/ yasm_section *
+yasm_object_find_general(yasm_object *object, const char *name);
 
 /** Change the source filename for an object.
  * \param object        object
@@ -250,8 +251,9 @@ yasm_object *yasm_section_get_object(const yasm_section *sect);
  * \return Associated data (NULL if none).
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ void *yasm_section_get_data
-    (yasm_section *sect, const yasm_assoc_data_callback *callback);
+/*@dependent@*/ /*@null@*/ void *
+yasm_section_get_data(yasm_section *sect,
+                      const yasm_assoc_data_callback *callback);
 
 /** Add associated data to a section.
  * \attention Deletes any existing associated data for that data callback.
@@ -275,7 +277,7 @@ void yasm_section_add_data(yasm_section *sect,
  */
 YASM_LIB_DECL
 void yasm_section_add_reloc(yasm_section *sect, yasm_reloc *reloc,
-    void (*destroy_func) (/*@only@*/ void *reloc));
+                            void (*destroy_func)(/*@only@*/ void *reloc));
 
 /** Get the first relocation for a section.
  * \param sect          section
@@ -290,7 +292,7 @@ YASM_LIB_DECL
  */
 /*@null@*/ yasm_reloc *yasm_section_reloc_next(yasm_reloc *reloc);
 #ifndef YASM_DOXYGEN
-#define yasm_section_reloc_next(x)      STAILQ_NEXT((x), link)
+#define yasm_section_reloc_next(x) STAILQ_NEXT((x), link)
 #endif
 
 /** Get the basic relocation information for a relocation.
@@ -328,9 +330,9 @@ yasm_bytecode *yasm_section_bcs_last(yasm_section *sect);
  *         bytecode; otherwise NULL.
  */
 YASM_LIB_DECL
-/*@only@*/ /*@null@*/ yasm_bytecode *yasm_section_bcs_append
-    (yasm_section *sect,
-     /*@returned@*/ /*@only@*/ /*@null@*/ yasm_bytecode *bc);
+/*@only@*/ /*@null@*/ yasm_bytecode *
+yasm_section_bcs_append(yasm_section *sect,
+                        /*@returned@*/ /*@only@*/ /*@null@*/ yasm_bytecode *bc);
 
 /** Traverses all bytecodes in a section, calling a function on each bytecode.
  * \param sect      section
@@ -343,9 +345,9 @@ YASM_LIB_DECL
  *       each call to func (with the bytecode's line number).
  */
 YASM_LIB_DECL
-int yasm_section_bcs_traverse
-    (yasm_section *sect, /*@null@*/ yasm_errwarns *errwarns,
-     /*@null@*/ void *d, int (*func) (yasm_bytecode *bc, /*@null@*/ void *d));
+int yasm_section_bcs_traverse(
+    yasm_section *sect, /*@null@*/ yasm_errwarns *errwarns,
+    /*@null@*/ void *d, int (*func)(yasm_bytecode *bc, /*@null@*/ void *d));
 
 /** Get name of a section.
  * \param   sect    section

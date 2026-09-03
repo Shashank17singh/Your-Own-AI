@@ -41,16 +41,11 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-swap(PB_DS_CLASS_C_DEC& other)
-{ }
+inline void PB_DS_CLASS_C_DEC::swap(PB_DS_CLASS_C_DEC &other) {}
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::size_type
-PB_DS_CLASS_C_DEC::
-operator()(size_type i) const
-{
-  return (i*  i);
+PB_DS_CLASS_C_DEC::operator()(size_type i) const {
+  return (i * i);
 }
 #endif

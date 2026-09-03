@@ -17,22 +17,23 @@
    <http://www.gnu.org/licenses/>.  */
 
 #if !defined _IMMINTRIN_H_INCLUDED
-#error "Never use <avx10_2copyintrin.h> directly; include <immintrin.h> instead."
+#error                                                                         \
+    "Never use <avx10_2copyintrin.h> directly; include <immintrin.h> instead."
 #endif
 
 #ifndef _AVX10_2COPYINTRIN_H_INCLUDED
 #define _AVX10_2COPYINTRIN_H_INCLUDED
 
-extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_move_epi32 (__m128i __A)
-{
-  return _mm_set_epi32 (0, 0, 0, ((__v4si) __A)[0]);
+extern __inline __m128i
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_move_epi32(__m128i __A) {
+  return _mm_set_epi32(0, 0, 0, ((__v4si)__A)[0]);
 }
 
-extern __inline __m128i __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_move_epi16 (__m128i __A)
-{
-  return _mm_set_epi16 (0, 0, 0, 0, 0, 0, 0, ((__v8hi) __A)[0]);
+extern __inline __m128i
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_move_epi16(__m128i __A) {
+  return _mm_set_epi16(0, 0, 0, 0, 0, 0, 0, ((__v8hi)__A)[0]);
 }
 
 #endif /* _AVX10_2COPYINTRIN_H_INCLUDED */

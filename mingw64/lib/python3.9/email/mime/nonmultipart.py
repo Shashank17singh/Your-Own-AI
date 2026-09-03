@@ -4,11 +4,10 @@
 
 """Base class for MIME type messages that are not multipart."""
 
-__all__ = ['MIMENonMultipart']
+__all__ = ["MIMENonMultipart"]
 
 from email import errors
 from email.mime.base import MIMEBase
-
 
 
 class MIMENonMultipart(MIMEBase):
@@ -19,4 +18,5 @@ class MIMENonMultipart(MIMEBase):
         # derived subtypes since none of them are, by definition, of content
         # type multipart/*
         raise errors.MultipartConversionError(
-            'Cannot attach additional subparts to non-multipart/*')
+            "Cannot attach additional subparts to non-multipart/*"
+        )

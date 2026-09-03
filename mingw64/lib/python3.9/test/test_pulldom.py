@@ -8,7 +8,6 @@ from xml.dom import pulldom
 
 from test.support import findfile
 
-
 tstfile = findfile("test.xml", subdir="xmltestdata")
 
 # A handy XML snippet, containing attributes, a namespace prefix, and a
@@ -52,10 +51,11 @@ class PullDOMTestCase(unittest.TestCase):
         self.assertEqual(pulldom.START_ELEMENT, evt)
         self.assertEqual("html", node.tagName)
         self.assertEqual(2, len(node.attributes))
-        self.assertEqual(node.attributes.getNamedItem("xmlns:xdc").value,
-              "http://www.xml.com/books")
+        self.assertEqual(
+            node.attributes.getNamedItem("xmlns:xdc").value, "http://www.xml.com/books"
+        )
         evt, node = next(items)
-        self.assertEqual(pulldom.CHARACTERS, evt) # Line break
+        self.assertEqual(pulldom.CHARACTERS, evt)  # Line break
         evt, node = next(items)
         # XXX - A comment should be reported here!
         # self.assertEqual(pulldom.COMMENT, evt)
@@ -99,8 +99,8 @@ class PullDOMTestCase(unittest.TestCase):
         evt, node = next(items)
         self.assertEqual(pulldom.END_ELEMENT, evt)
         # XXX No END_DOCUMENT item is ever obtained:
-        #evt, node = next(items)
-        #self.assertEqual(pulldom.END_DOCUMENT, evt)
+        # evt, node = next(items)
+        # self.assertEqual(pulldom.END_DOCUMENT, evt)
 
     def test_expandItem(self):
         """Ensure expandItem works as expected."""
@@ -112,20 +112,23 @@ class PullDOMTestCase(unittest.TestCase):
                 self.assertEqual(1, len(item.childNodes))
                 break
         else:
-            self.fail("No \"title\" element detected in SMALL_SAMPLE!")
+            self.fail('No "title" element detected in SMALL_SAMPLE!')
         # Loop until we get to the next start-element:
         for evt, node in items:
             if evt == pulldom.START_ELEMENT:
                 break
-        self.assertEqual("hr", node.tagName,
-            "expandNode did not leave DOMEventStream in the correct state.")
+        self.assertEqual(
+            "hr",
+            node.tagName,
+            "expandNode did not leave DOMEventStream in the correct state.",
+        )
         # Attempt to expand a standalone element:
         items.expandNode(node)
         self.assertEqual(next(items)[0], pulldom.CHARACTERS)
         evt, node = next(items)
         self.assertEqual(node.tagName, "p")
         items.expandNode(node)
-        next(items) # Skip character data
+        next(items)  # Skip character data
         evt, node = next(items)
         self.assertEqual(node.tagName, "html")
         with self.assertRaises(StopIteration):
@@ -157,13 +160,13 @@ class PullDOMTestCase(unittest.TestCase):
             evt, node = next(items)
             self.assertEqual(pulldom.END_DOCUMENT, evt)
         except StopIteration:
-            self.fail(
-                "Ran out of events, but should have received END_DOCUMENT")
+            self.fail("Ran out of events, but should have received END_DOCUMENT")
 
     def test_getitem_deprecation(self):
         parser = pulldom.parseString(SMALL_SAMPLE)
-        with self.assertWarnsRegex(DeprecationWarning,
-                                   r'Use iterator protocol instead'):
+        with self.assertWarnsRegex(
+            DeprecationWarning, r"Use iterator protocol instead"
+        ):
             # This should have returned 'END_ELEMENT'.
             self.assertEqual(parser[-1][0], pulldom.START_DOCUMENT)
 
@@ -269,6 +272,7 @@ class SAXExerciser(object):
     def stub(self, *args, **kwargs):
         """Stub method. Does nothing."""
         pass
+
     setProperty = stub
     setFeature = stub
 
@@ -308,8 +312,7 @@ class SAX2DOMTestCase(unittest.TestCase):
     def test_basic(self):
         """Ensure SAX2DOM can parse from a stream."""
         with io.StringIO(SMALL_SAMPLE) as fin:
-            sd = SAX2DOMTestHelper(fin, xml.sax.make_parser(),
-                                   len(SMALL_SAMPLE))
+            sd = SAX2DOMTestHelper(fin, xml.sax.make_parser(), len(SMALL_SAMPLE))
             for evt, node in sd:
                 if evt == pulldom.START_ELEMENT and node.tagName == "html":
                     break
@@ -332,7 +335,7 @@ class SAX2DOMTestCase(unittest.TestCase):
 
         doc = sax2dom.document
         root = doc.documentElement
-        (text1, elm1, text2) = root.childNodes
+        text1, elm1, text2 = root.childNodes
         text3 = elm1.childNodes[0]
 
         self.assertIsNone(text1.previousSibling)

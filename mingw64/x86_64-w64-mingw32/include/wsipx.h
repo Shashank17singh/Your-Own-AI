@@ -5,14 +5,12 @@
  */
 #ifndef _WSIPX_
 #define _WSIPX_
-
 typedef struct sockaddr_ipx {
   short sa_family;
   char sa_netnum[4];
   char sa_nodenum[6];
   unsigned short sa_socket;
-} SOCKADDR_IPX,*PSOCKADDR_IPX,*LPSOCKADDR_IPX;
-
+} SOCKADDR_IPX, *PSOCKADDR_IPX, *LPSOCKADDR_IPX;
 #define NSPROTO_IPX 1000
 #define NSPROTO_SPX 1256
 #define NSPROTO_SPXII 1257

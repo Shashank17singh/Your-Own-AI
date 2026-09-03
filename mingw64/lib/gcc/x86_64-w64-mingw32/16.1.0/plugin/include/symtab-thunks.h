@@ -35,45 +35,27 @@ along with GCC; see the file COPYING3.  If not see
 
 struct GTY(()) thunk_info {
   /* Constructor.  */
-  thunk_info ()
-    : fixed_offset (0),
-      virtual_value (0),
-      indirect_offset (0),
-      alias (NULL),
-      this_adjusting (false),
-      virtual_offset_p (false)
-  {
-  }
+  thunk_info()
+      : fixed_offset(0), virtual_value(0), indirect_offset(0), alias(NULL),
+        this_adjusting(false), virtual_offset_p(false) {}
   /* Copy constructor.  */
-  thunk_info (const thunk_info &t)
-    : fixed_offset (t.fixed_offset),
-      virtual_value (t.virtual_value),
-      indirect_offset (t.indirect_offset),
-      alias (t.alias),
-      this_adjusting (t.this_adjusting),
-      virtual_offset_p (t.virtual_offset_p)
-  {
+  thunk_info(const thunk_info &t)
+      : fixed_offset(t.fixed_offset), virtual_value(t.virtual_value),
+        indirect_offset(t.indirect_offset), alias(t.alias),
+        this_adjusting(t.this_adjusting), virtual_offset_p(t.virtual_offset_p) {
   }
 
   /* Compare for equiality.  */
-  bool
-  operator==(const thunk_info &other) const
-  {
-    return fixed_offset == other.fixed_offset
-	   && virtual_value == other.virtual_value
-	   && indirect_offset == other.indirect_offset
-	   && this_adjusting == other.this_adjusting
-	   && virtual_offset_p == other.virtual_offset_p;
+  bool operator==(const thunk_info &other) const {
+    return fixed_offset == other.fixed_offset &&
+           virtual_value == other.virtual_value &&
+           indirect_offset == other.indirect_offset &&
+           this_adjusting == other.this_adjusting &&
+           virtual_offset_p == other.virtual_offset_p;
   }
-  bool
-  operator!=(const thunk_info &other) const
-  {
-    return !(*this == other);
-  }
+  bool operator!=(const thunk_info &other) const { return !(*this == other); }
   /* Copy operator.  */
-  thunk_info &
-  operator=(const thunk_info &other)
-  {
+  thunk_info &operator=(const thunk_info &other) {
     fixed_offset = other.fixed_offset;
     virtual_value = other.virtual_value;
     indirect_offset = other.indirect_offset;
@@ -105,69 +87,59 @@ struct GTY(()) thunk_info {
   /* If true, this thunk is what we call a virtual thunk.  In this case:
      * for this-adjusting thunks, after the FIXED_OFFSET based adjustment is
        done, add to the result the offset found in the vtable at:
-	 vptr + VIRTUAL_VALUE
+         vptr + VIRTUAL_VALUE
      * for result-adjusting thunks, the FIXED_OFFSET adjustment is done after
        the virtual one.  */
   bool virtual_offset_p;
 
-
-
   /* Dump thunk_info.  */
-  void dump (FILE *);
+  void dump(FILE *);
 
   /* Stream out thunk_info.  */
-  void stream_out (class lto_simple_output_block *);
+  void stream_out(class lto_simple_output_block *);
 
   /* Stream in trunk_info.  */
-  void stream_in (class lto_input_block *);
+  void stream_in(class lto_input_block *);
 
-  hashval_t hash ();
-
-
+  hashval_t hash();
 
   /* Return thunk_info, if available.  */
-  static thunk_info *get (cgraph_node *node);
+  static thunk_info *get(cgraph_node *node);
 
   /* Return thunk_info possibly creating new one.  */
-  static thunk_info *get_create (cgraph_node *node);
+  static thunk_info *get_create(cgraph_node *node);
 
   /* Remove thunk_info.  */
-  static void remove (cgraph_node *node);
+  static void remove(cgraph_node *node);
 
   /* Add unprocessed thunk.  */
-  void register_early (cgraph_node *node);
+  void register_early(cgraph_node *node);
 
   /* Attach recorded thunks to cgraph_nodes.  */
-  static void process_early_thunks ();
+  static void process_early_thunks();
 
   /* Release all thunk_infos.  */
-  static void release (void);
+  static void release(void);
 };
 
-bool expand_thunk (cgraph_node *, bool, bool);
+bool expand_thunk(cgraph_node *, bool, bool);
 
 /* Return thunk_info, if available.  */
-inline thunk_info *
-thunk_info::get (cgraph_node *node)
-{
+inline thunk_info *thunk_info::get(cgraph_node *node) {
   if (!symtab->m_thunks)
     return NULL;
-  return symtab->m_thunks->get (node);
+  return symtab->m_thunks->get(node);
 }
 
 /* Remove thunk_info association for NODE.  */
-inline void
-thunk_info::remove (cgraph_node *node)
-{
-  symtab->m_thunks->remove (node);
+inline void thunk_info::remove(cgraph_node *node) {
+  symtab->m_thunks->remove(node);
 }
 
 /* Free thunk info summaries.  */
-inline void
-thunk_info::release ()
-{
+inline void thunk_info::release() {
   if (symtab->m_thunks)
-    ggc_delete (symtab->m_thunks);
+    ggc_delete(symtab->m_thunks);
   symtab->m_thunks = NULL;
 }
-#endif  /* GCC_SYMTAB_THUNKS_H  */
+#endif /* GCC_SYMTAB_THUNKS_H  */

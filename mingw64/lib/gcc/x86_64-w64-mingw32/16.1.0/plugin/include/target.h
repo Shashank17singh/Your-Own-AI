@@ -19,7 +19,6 @@
    You are forbidden to forbid anyone else to use, share and improve
    what you give them.   Help stamp out software-hoarding!  */
 
-
 /* This file contains a data structure that describes a GCC target.
    At present it is incomplete, but in future it should grow to
    contain most or all target machine and target O/S specific
@@ -48,13 +47,16 @@
 #ifndef GCC_TARGET_H
 #define GCC_TARGET_H
 
+#include "hard-reg-set.h"
 #include "insn-codes.h"
 #include "tm.h"
-#include "hard-reg-set.h"
 
 #if CHECKING_P
 
-struct cumulative_args_t { void *magic; void *p; };
+struct cumulative_args_t {
+  void *magic;
+  void *p;
+};
 
 #else /* !CHECKING_P */
 
@@ -64,7 +66,9 @@ struct cumulative_args_t { void *magic; void *p; };
    efficient way of argument passing otherwise.  However, that would come
    at the cost of less type-safe !CHECKING_P compilation.  */
 
-union cumulative_args_t { void *p; };
+union cumulative_args_t {
+  void *p;
+};
 
 #endif /* !CHECKING_P */
 
@@ -103,8 +107,7 @@ struct bitint_info {
    Used by the TARGET_USE_BY_PIECES_INFRASTRUCTURE_P target hook and
    internally by the functions in expr.cc.  */
 
-enum by_pieces_operation
-{
+enum by_pieces_operation {
   CLEAR_BY_PIECES,
   MOVE_BY_PIECES,
   SET_BY_PIECES,
@@ -112,23 +115,22 @@ enum by_pieces_operation
   COMPARE_BY_PIECES
 };
 
-extern unsigned HOST_WIDE_INT by_pieces_ninsns (unsigned HOST_WIDE_INT,
-						unsigned int,
-						unsigned int,
-						by_pieces_operation);
+extern unsigned HOST_WIDE_INT by_pieces_ninsns(unsigned HOST_WIDE_INT,
+                                               unsigned int, unsigned int,
+                                               by_pieces_operation);
 
 /* An example implementation for ELF targets.  Defined in varasm.cc  */
-extern void elf_record_gcc_switches (const char *);
+extern void elf_record_gcc_switches(const char *);
 
 /* Some places still assume that all pointer or address modes are the
    standard Pmode and ptr_mode.  These optimizations become invalid if
    the target actually supports multiple different modes.  For now,
    we disable such optimizations on such targets, using this function.  */
-extern bool target_default_pointer_address_modes_p (void);
+extern bool target_default_pointer_address_modes_p(void);
 
 /* For hooks which use the MOVE_RATIO macro, this gives the legacy default
    behavior.  */
-extern unsigned int get_move_ratio (bool);
+extern unsigned int get_move_ratio(bool);
 
 struct stdarg_info;
 struct spec_info_def;
@@ -137,13 +139,12 @@ struct cgraph_node;
 struct cgraph_simd_clone;
 
 /* The struct used by the secondary_reload target hook.  */
-struct secondary_reload_info
-{
+struct secondary_reload_info {
   /* icode is actually an enum insn_code, but we don't want to force every
      file that includes target.h to include optabs.h .  */
   int icode;
   int extra_cost; /* Cost for using (a) scratch register(s) to be taken
-		     into account by copy_cost.  */
+                     into account by copy_cost.  */
   /* The next two members are for the use of the backward
      compatibility hook.  */
   struct secondary_reload_info *prev_sri;
@@ -178,12 +179,11 @@ class predefined_function_abi;
 struct store_fwd_info;
 
 /* These are defined in tree-vect-stmts.cc.  */
-extern bool stmt_in_inner_loop_p (class vec_info *, class _stmt_vec_info *);
+extern bool stmt_in_inner_loop_p(class vec_info *, class _stmt_vec_info *);
 
 /* Assembler instructions for creating various kinds of integer object.  */
 
-struct asm_int_op
-{
+struct asm_int_op {
   const char *hi;
   const char *psi;
   const char *si;
@@ -194,8 +194,7 @@ struct asm_int_op
 };
 
 /* Types of costs for vectorizer cost model.  */
-enum vect_cost_for_stmt
-{
+enum vect_cost_for_stmt {
   scalar_stmt,
   scalar_load,
   scalar_store,
@@ -302,33 +301,24 @@ enum type_context_kind {
 
 };
 
-enum poly_value_estimate_kind
-{
+enum poly_value_estimate_kind {
   POLY_VALUE_MIN,
   POLY_VALUE_MAX,
   POLY_VALUE_LIKELY
 };
 
-enum class spill_cost_type
-{
-  SAVE,
-  RESTORE
-};
+enum class spill_cost_type { SAVE, RESTORE };
 
-enum class frame_cost_type
-{
-  ALLOCATION,
-  DEALLOCATION
-};
+enum class frame_cost_type { ALLOCATION, DEALLOCATION };
 
-typedef void (*emit_support_tinfos_callback) (tree);
+typedef void (*emit_support_tinfos_callback)(tree);
 
-extern bool verify_type_context (location_t, type_context_kind, const_tree,
-				 bool = false);
+extern bool verify_type_context(location_t, type_context_kind, const_tree,
+                                bool = false);
 
 /* The target structure.  This holds all the backend hooks.  */
 #define DEFHOOKPOD(NAME, DOC, TYPE, INIT) TYPE NAME;
-#define DEFHOOK(NAME, DOC, TYPE, PARAMS, INIT) TYPE (* NAME) PARAMS;
+#define DEFHOOK(NAME, DOC, TYPE, PARAMS, INIT) TYPE(*NAME) PARAMS;
 #define DEFHOOK_UNDOC DEFHOOK
 #define HOOKSTRUCT(FRAGMENT) FRAGMENT
 
@@ -343,73 +333,63 @@ extern struct gcc_target targetm;
    provides a rough guess.  */
 
 inline HOST_WIDE_INT
-estimated_poly_value (poly_int64 x,
-		      poly_value_estimate_kind kind = POLY_VALUE_LIKELY)
-{
+estimated_poly_value(poly_int64 x,
+                     poly_value_estimate_kind kind = POLY_VALUE_LIKELY) {
   if (NUM_POLY_INT_COEFFS == 1)
     return x.coeffs[0];
   else
-    return targetm.estimated_poly_value (x, kind);
+    return targetm.estimated_poly_value(x, kind);
 }
 
 /* Return true when MODE can be used to copy GET_MODE_BITSIZE bits
    unchanged.  */
 
-inline bool
-mode_can_transfer_bits (machine_mode mode)
-{
+inline bool mode_can_transfer_bits(machine_mode mode) {
   if (mode == BLKmode)
     return true;
-  if (maybe_ne (GET_MODE_BITSIZE (mode),
-		GET_MODE_UNIT_PRECISION (mode) * GET_MODE_NUNITS (mode)))
+  if (maybe_ne(GET_MODE_BITSIZE(mode),
+               GET_MODE_UNIT_PRECISION(mode) * GET_MODE_NUNITS(mode)))
     return false;
   if (targetm.mode_can_transfer_bits)
-    return targetm.mode_can_transfer_bits (mode);
+    return targetm.mode_can_transfer_bits(mode);
   return true;
 }
 
 /* Return true if OpenMP context types.  */
 
-inline bool
-omp_type_context (type_context_kind context)
-{
-  switch (context)
-    {
-    case TCTX_OMP_MAP:
-    case TCTX_OMP_MAP_IMP_REF:
-    case TCTX_OMP_PRIVATE:
-    case TCTX_OMP_FIRSTPRIVATE:
-    case TCTX_OMP_DEVICE_ADDR:
-      return true;
-    default:
-      return false;
-    }
+inline bool omp_type_context(type_context_kind context) {
+  switch (context) {
+  case TCTX_OMP_MAP:
+  case TCTX_OMP_MAP_IMP_REF:
+  case TCTX_OMP_PRIVATE:
+  case TCTX_OMP_FIRSTPRIVATE:
+  case TCTX_OMP_DEVICE_ADDR:
+    return true;
+  default:
+    return false;
+  }
 }
 
 #ifdef GCC_TM_H
 
 #ifndef CUMULATIVE_ARGS_MAGIC
-#define CUMULATIVE_ARGS_MAGIC ((void *) &targetm.calls)
+#define CUMULATIVE_ARGS_MAGIC ((void *)&targetm.calls)
 #endif
 
-inline CUMULATIVE_ARGS *
-get_cumulative_args (cumulative_args_t arg)
-{
+inline CUMULATIVE_ARGS *get_cumulative_args(cumulative_args_t arg) {
 #if CHECKING_P
-  gcc_assert (arg.magic == CUMULATIVE_ARGS_MAGIC);
+  gcc_assert(arg.magic == CUMULATIVE_ARGS_MAGIC);
 #endif /* CHECKING_P */
-  return (CUMULATIVE_ARGS *) arg.p;
+  return (CUMULATIVE_ARGS *)arg.p;
 }
 
-inline cumulative_args_t
-pack_cumulative_args (CUMULATIVE_ARGS *arg)
-{
+inline cumulative_args_t pack_cumulative_args(CUMULATIVE_ARGS *arg) {
   cumulative_args_t ret;
 
 #if CHECKING_P
   ret.magic = CUMULATIVE_ARGS_MAGIC;
 #endif /* CHECKING_P */
-  ret.p = (void *) arg;
+  ret.p = (void *)arg;
   return ret;
 }
 #endif /* GCC_TM_H */

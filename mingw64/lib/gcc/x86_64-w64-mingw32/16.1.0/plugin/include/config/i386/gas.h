@@ -52,10 +52,11 @@ along with GCC; see the file COPYING3.  If not see
 
 #ifdef HAVE_GAS_BALIGN_AND_P2ALIGN
 #undef ASM_OUTPUT_ALIGN
-#define ASM_OUTPUT_ALIGN(FILE,LOG) \
-  if ((LOG)!=0) fprintf ((FILE), "\t.balign %d\n", 1 << (LOG))
+#define ASM_OUTPUT_ALIGN(FILE, LOG)                                            \
+  if ((LOG) != 0)                                                              \
+  fprintf((FILE), "\t.balign %d\n", 1 << (LOG))
 #endif
-
+
 /* A C statement or statements which output an assembler instruction
    opcode to the stdio stream STREAM.  The macro-operand PTR is a
    variable of type `char *' which points to the opcode name in its
@@ -65,26 +66,19 @@ along with GCC; see the file COPYING3.  If not see
    So use `repe' instead.  */
 
 #undef ASM_OUTPUT_OPCODE
-#define ASM_OUTPUT_OPCODE(STREAM, PTR)	\
-{									\
-  if ((PTR)[0] == 'r'							\
-      && (PTR)[1] == 'e'						\
-      && (PTR)[2] == 'p')						\
-    {									\
-      if ((PTR)[3] == 'z')						\
-	{								\
-	  fputs ("repe", (STREAM));					\
-	  (PTR) += 4;							\
-	}								\
-      else if ((PTR)[3] == 'n' && (PTR)[4] == 'z')			\
-	{								\
-	  fputs ("repne", (STREAM));					\
-	  (PTR) += 5;							\
-	}								\
-    }									\
-  else									\
-    ASM_OUTPUT_AVX_PREFIX ((STREAM), (PTR));				\
-}
+#define ASM_OUTPUT_OPCODE(STREAM, PTR)                                         \
+  {                                                                            \
+    if ((PTR)[0] == 'r' && (PTR)[1] == 'e' && (PTR)[2] == 'p') {               \
+      if ((PTR)[3] == 'z') {                                                   \
+        fputs("repe", (STREAM));                                               \
+        (PTR) += 4;                                                            \
+      } else if ((PTR)[3] == 'n' && (PTR)[4] == 'z') {                         \
+        fputs("repne", (STREAM));                                              \
+        (PTR) += 5;                                                            \
+      }                                                                        \
+    } else                                                                     \
+      ASM_OUTPUT_AVX_PREFIX((STREAM), (PTR));                                  \
+  }
 
 /* Define macro used to output shift-double opcodes when the shift
    count is in %cl.  Some assemblers require %cl as an argument;

@@ -26,27 +26,22 @@ namespace diagnostics {
 /* Abstract base class for describing special effects when printing
    a label when quoting source code.  */
 
-class label_effects
-{
+class label_effects {
 public:
-  virtual ~label_effects () {}
+  virtual ~label_effects() {}
 
   /* Adding links between labels, e.g. for visualizing control flow
      in execution paths.  */
-  virtual bool has_in_edge (unsigned range_idx) const = 0;
-  virtual bool has_out_edge (unsigned range_idx) const = 0;
+  virtual bool has_in_edge(unsigned range_idx) const = 0;
+  virtual bool has_out_edge(unsigned range_idx) const = 0;
 };
 
 /* A class to hold state when quoting a run of lines of source code.  */
 
-class source_effect_info
-{
+class source_effect_info {
 public:
-  source_effect_info ()
-  : m_leading_in_edge_column (-1),
-    m_trailing_out_edge_column (-1)
-  {
-  }
+  source_effect_info()
+      : m_leading_in_edge_column(-1), m_trailing_out_edge_column(-1) {}
 
   /* The column for an incoming link to the first label,
      or -1 if no such link.  */

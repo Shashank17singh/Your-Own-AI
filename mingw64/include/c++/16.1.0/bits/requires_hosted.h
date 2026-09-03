@@ -31,7 +31,7 @@
 #include <bits/c++config.h>
 
 #if !_GLIBCXX_HOSTED
-#  error "This header is not available in freestanding mode."
+#error "This header is not available in freestanding mode."
 #endif
 
 #endif

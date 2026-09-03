@@ -22,16 +22,15 @@
 // <http://www.gnu.org/licenses/>.
 
 namespace rtl_ssa {
-  class def_info;
-  class insn_info;
-  class insn_range_info;
-  class bb_info;
-}
+class def_info;
+class insn_info;
+class insn_range_info;
+class bb_info;
+} // namespace rtl_ssa
 
 // Information about a potential base candidate, used in try_fuse_pair.
 // There may be zero, one, or two viable RTL bases for a given pair.
-struct base_cand
-{
+struct base_cand {
   // DEF is the def of the base register to be used by the pair.
   rtl_ssa::def_info *def;
 
@@ -62,13 +61,13 @@ struct base_cand
   // HAZARDS accordingly.
   rtl_ssa::insn_info *hazards[2];
 
-  base_cand (rtl_ssa::def_info *def, int insn)
-    : def (def), from_insn (insn), hazards {nullptr, nullptr} {}
+  base_cand(rtl_ssa::def_info *def, int insn)
+      : def(def), from_insn(insn), hazards{nullptr, nullptr} {}
 
-  base_cand (rtl_ssa::def_info *def) : base_cand (def, -1) {}
+  base_cand(rtl_ssa::def_info *def) : base_cand(def, -1) {}
 
   // Test if this base candidate is viable according to HAZARDS.
-  bool viable () const;
+  bool viable() const;
 };
 
 struct alias_walker;
@@ -91,7 +90,7 @@ enum class writeback_type {
 // The target can override the various virtual functions to customize
 // the behaviour of the pass as appropriate for the target.
 struct pair_fusion {
-  pair_fusion ();
+  pair_fusion();
 
   // Given:
   // - an rtx REG_OP, the non-memory operand in a load/store insn,
@@ -100,67 +99,58 @@ struct pair_fusion {
   // return true if the access should be considered an FP/SIMD access.
   // Such accesses are segregated from GPR accesses, since we only want
   // to form pairs for accesses that use the same register file.
-  virtual bool fpsimd_op_p (rtx, machine_mode, bool)
-  {
-    return false;
-  }
+  virtual bool fpsimd_op_p(rtx, machine_mode, bool) { return false; }
 
   // Return true if we should consider forming pairs from memory
   // accesses with operand mode MODE at this stage in compilation.
-  virtual bool pair_operand_mode_ok_p (machine_mode mode) = 0;
+  virtual bool pair_operand_mode_ok_p(machine_mode mode) = 0;
 
   // Return true iff REG_OP is a suitable register operand for a paired
   // memory access, where LOAD_P is true if we're asking about loads and
   // false for stores.  MODE gives the mode of the operand.
-  virtual bool pair_reg_operand_ok_p (bool load_p, rtx reg_op,
-				      machine_mode mode) = 0;
+  virtual bool pair_reg_operand_ok_p(bool load_p, rtx reg_op,
+                                     machine_mode mode) = 0;
 
   // Return alias check limit.
   // This is needed to avoid unbounded quadratic behaviour when
   // performing alias analysis.
-  virtual int pair_mem_alias_check_limit () = 0;
+  virtual int pair_mem_alias_check_limit() = 0;
 
   // Return true if we should try to handle writeback opportunities.
   // WHICH determines the kinds of writeback opportunities the caller
   // is asking about.
-  virtual bool should_handle_writeback (writeback_type which) = 0;
+  virtual bool should_handle_writeback(writeback_type which) = 0;
 
   // Given BASE_MEM, the mem from the lower candidate access for a pair,
   // and LOAD_P (true if the access is a load), check if we should proceed
   // to form the pair given the target's code generation policy on
   // paired accesses.
-  virtual bool pair_mem_ok_with_policy (rtx base_mem, bool load_p) = 0;
+  virtual bool pair_mem_ok_with_policy(rtx base_mem, bool load_p) = 0;
 
   // Generate the pattern for a paired access.  PATS gives the patterns
   // for the individual memory accesses (which by this point must share a
   // common base register).  If WRITEBACK is non-NULL, then this rtx
   // describes the update to the base register that should be performed by
   // the resulting insn.  LOAD_P is true iff the accesses are loads.
-  virtual rtx gen_pair (rtx *pats, rtx writeback, bool load_p) = 0;
+  virtual rtx gen_pair(rtx *pats, rtx writeback, bool load_p) = 0;
 
   // Return true if INSN is a paired memory access.  If so, set LOAD_P to
   // true iff INSN is a load pair.
-  virtual bool pair_mem_insn_p (rtx_insn *insn, bool &load_p) = 0;
+  virtual bool pair_mem_insn_p(rtx_insn *insn, bool &load_p) = 0;
 
   // Return true if we should track loads.
-  virtual bool track_loads_p ()
-  {
-    return true;
-  }
+  virtual bool track_loads_p() { return true; }
 
   // Return true if we should track stores.
-  virtual bool track_stores_p ()
-  {
-    return true;
-  }
+  virtual bool track_stores_p() { return true; }
 
   // Return true if OFFSET is in range for a paired memory access.
-  virtual bool pair_mem_in_range_p (HOST_WIDE_INT offset) = 0;
+  virtual bool pair_mem_in_range_p(HOST_WIDE_INT offset) = 0;
 
   // Given a load/store pair insn in PATTERN, unpack the insn, storing
   // the register operands in REGS, and returning the mem.  LOAD_P is
   // true for loads and false for stores.
-  virtual rtx destructure_pair (rtx regs[2], rtx pattern, bool load_p) = 0;
+  virtual rtx destructure_pair(rtx regs[2], rtx pattern, bool load_p) = 0;
 
   // Given a pair mem in MEM, register operands in REGS, and an rtx
   // representing the effect of writeback on the base register in WB_EFFECT,
@@ -168,28 +158,21 @@ struct pair_fusion {
   // LOAD_P is true iff the pair is a load.
   // This is used when promoting existing non-writeback pairs to writeback
   // variants.
-  virtual rtx gen_promote_writeback_pair (rtx wb_effect, rtx mem,
-					  rtx regs[2], bool load_p) = 0;
+  virtual rtx gen_promote_writeback_pair(rtx wb_effect, rtx mem, rtx regs[2],
+                                         bool load_p) = 0;
 
-  void process_block (rtl_ssa::bb_info *bb);
-  rtl_ssa::insn_info *find_trailing_add (rtl_ssa::insn_info *insns[2],
-					 const rtl_ssa::insn_range_info
-					 &pair_range,
-					 int initial_writeback,
-					 rtx *writeback_effect,
-					 rtl_ssa::def_info **add_def,
-					 rtl_ssa::def_info *base_def,
-					 poly_int64 initial_offset,
-					 unsigned access_size);
-  int get_viable_bases (rtl_ssa::insn_info *insns[2],
-			vec<base_cand> &base_cands,
-			rtx cand_mems[2],
-			unsigned access_size,
-			bool reversed);
-  void do_alias_analysis (rtl_ssa::insn_info *alias_hazards[4],
-			  alias_walker *walkers[4],
-			  bool load_p);
-  void try_promote_writeback (rtl_ssa::insn_info *insn, bool load_p);
-  void run ();
-  ~pair_fusion ();
+  void process_block(rtl_ssa::bb_info *bb);
+  rtl_ssa::insn_info *
+  find_trailing_add(rtl_ssa::insn_info *insns[2],
+                    const rtl_ssa::insn_range_info &pair_range,
+                    int initial_writeback, rtx *writeback_effect,
+                    rtl_ssa::def_info **add_def, rtl_ssa::def_info *base_def,
+                    poly_int64 initial_offset, unsigned access_size);
+  int get_viable_bases(rtl_ssa::insn_info *insns[2], vec<base_cand> &base_cands,
+                       rtx cand_mems[2], unsigned access_size, bool reversed);
+  void do_alias_analysis(rtl_ssa::insn_info *alias_hazards[4],
+                         alias_walker *walkers[4], bool load_p);
+  void try_promote_writeback(rtl_ssa::insn_info *insn, bool load_p);
+  void run();
+  ~pair_fusion();
 };

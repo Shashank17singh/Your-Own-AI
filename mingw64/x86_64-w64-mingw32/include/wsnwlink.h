@@ -5,9 +5,7 @@
  */
 #ifndef _WSNWLINK_
 #define _WSNWLINK_
-
 #define IPX_PTYPE 0x4000
-
 #define IPX_FILTERPTYPE 0x4001
 #define IPX_STOPFILTERPTYPE 0x4003
 #define IPX_DSTYPE 0x4002
@@ -15,7 +13,6 @@
 #define IPX_RECVHDR 0x4005
 #define IPX_MAXSIZE 0x4006
 #define IPX_ADDRESS 0x4007
-
 typedef struct _IPX_ADDRESS_DATA {
   INT adapternum;
   UCHAR netnum[4];
@@ -24,21 +21,17 @@ typedef struct _IPX_ADDRESS_DATA {
   BOOLEAN status;
   INT maxpkt;
   ULONG linkspeed;
-} IPX_ADDRESS_DATA,*PIPX_ADDRESS_DATA;
-
+} IPX_ADDRESS_DATA, *PIPX_ADDRESS_DATA;
 #define IPX_GETNETINFO 0x4008
-
 typedef struct _IPX_NETNUM_DATA {
   UCHAR netnum[4];
   USHORT hopcount;
   USHORT netdelay;
   INT cardnum;
   UCHAR router[6];
-} IPX_NETNUM_DATA,*PIPX_NETNUM_DATA;
-
+} IPX_NETNUM_DATA, *PIPX_NETNUM_DATA;
 #define IPX_GETNETINFO_NORIP 0x4009
 #define IPX_SPXGETCONNECTIONSTATUS 0x400B
-
 typedef struct _IPX_SPXCONNSTATUS_DATA {
   UCHAR ConnectionState;
   UCHAR WatchDogActive;
@@ -58,8 +51,7 @@ typedef struct _IPX_SPXCONNSTATUS_DATA {
   USHORT EstimatedRoundTripDelay;
   USHORT RetransmittedPackets;
   USHORT SuppressedPacket;
-} IPX_SPXCONNSTATUS_DATA,*PIPX_SPXCONNSTATUS_DATA;
-
+} IPX_SPXCONNSTATUS_DATA, *PIPX_SPXCONNSTATUS_DATA;
 #define IPX_ADDRESS_NOTIFY 0x400C
 #define IPX_MAX_ADAPTER_NUM 0x400D
 #define IPX_RERIPNETNUMBER 0x400E

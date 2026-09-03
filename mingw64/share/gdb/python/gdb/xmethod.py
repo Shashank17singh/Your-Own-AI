@@ -1,29 +1,11 @@
-# Python side of the support for xmethods.
-# Copyright (C) 2013-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """Utilities for defining xmethods"""
 
 import re
-
 import gdb
 
 
 class XMethod(object):
     """Base class (or a template) for an xmethod description.
-
     Currently, the description requires only the 'name' and 'enabled'
     attributes.  Description objects are managed by 'XMethodMatcher'
     objects (see below).  Note that this is only a template for the
@@ -31,7 +13,6 @@ class XMethod(object):
     this class or choose to use an object which supports this exact same
     interface.  Also, an XMethodMatcher can choose not use it 'methods'
     attribute.  In such cases this class (or an equivalent) is not used.
-
     Attributes:
         name: The name of the xmethod.
         enabled: A boolean indicating if the xmethod is enabled.
@@ -44,13 +25,11 @@ class XMethod(object):
 
 class XMethodMatcher(object):
     """Abstract base class for matching an xmethod.
-
     When looking for xmethods, GDB invokes the `match' method of a
     registered xmethod matcher to match the object type and method name.
     The `match' method in concrete classes derived from this class should
     return an `XMethodWorker' object, or a list of `XMethodWorker'
     objects if there is a match (see below for 'XMethodWorker' class).
-
     Attributes:
         name: The name of the matcher.
         enabled: A boolean indicating if the matcher is enabled.
@@ -75,12 +54,10 @@ class XMethodMatcher(object):
 
     def match(self, class_type, method_name):
         """Match class type and method name.
-
         In derived classes, it should return an XMethodWorker object, or a
         sequence of 'XMethodWorker' objects.  Only those xmethod workers
         whose corresponding 'XMethod' descriptor object is enabled should be
         returned.
-
         Args:
             class_type: The class type (gdb.Type object) to match.
             method_name: The name (string) of the method to match.
@@ -90,21 +67,18 @@ class XMethodMatcher(object):
 
 class XMethodWorker(object):
     """Base class for all xmethod workers defined in Python.
-
     An xmethod worker is an object which matches the method arguments, and
     invokes the method when GDB wants it to.  Internally, GDB first invokes the
     'get_arg_types' method to perform overload resolution.  If GDB selects to
     invoke this Python xmethod, then it invokes it via the overridden
     '__call__' method.  The 'get_result_type' method is used to implement
     'ptype' on the xmethod.
-
     Derived classes should override the 'get_arg_types', 'get_result_type'
     and '__call__' methods.
     """
 
     def get_arg_types(self):
         """Return arguments types of an xmethod.
-
         A sequence of gdb.Type objects corresponding to the arguments of the
         xmethod are returned.  If the xmethod takes no arguments, then 'None'
         or an empty sequence is returned.  If the xmethod takes only a single
@@ -115,12 +89,10 @@ class XMethodWorker(object):
 
     def get_result_type(self, *args):
         """Return the type of the result of the xmethod.
-
         Args:
             args: Arguments to the method.  Each element of the tuple is a
                 gdb.Value object.  The first element is the 'this' pointer
                 value.  These are the same arguments passed to '__call__'.
-
         Returns:
             A gdb.Type object representing the type of the result of the
             xmethod.
@@ -129,12 +101,10 @@ class XMethodWorker(object):
 
     def __call__(self, *args):
         """Invoke the xmethod.
-
         Args:
             args: Arguments to the method.  Each element of the tuple is a
                 gdb.Value object.  The first element is the 'this' pointer
                 value.
-
         Returns:
             A gdb.Value corresponding to the value returned by the xmethod.
             Returns 'None' if the method does not return anything.
@@ -144,10 +114,8 @@ class XMethodWorker(object):
 
 class SimpleXMethodMatcher(XMethodMatcher):
     """A utility class to implement simple xmethod mathers and workers.
-
     See the __init__ method below for information on how instances of this
     class can be used.
-
     For simple classes and methods, one can choose to use this class.  For
     complex xmethods, which need to replace/implement template methods on
     possibly template classes, one should implement their own xmethod
@@ -205,11 +173,6 @@ class SimpleXMethodMatcher(XMethodMatcher):
             )
 
 
-# A helper function for register_xmethod_matcher which returns an error
-# object if MATCHER is not having the requisite attributes in the proper
-# format.
-
-
 def _validate_xmethod_matcher(matcher):
     if not hasattr(matcher, "match"):
         return TypeError("Xmethod matcher is missing method: match")
@@ -223,12 +186,6 @@ def _validate_xmethod_matcher(matcher):
         return ValueError("Xmethod matcher name cannot contain ';' in it")
 
 
-# A helper function for register_xmethod_matcher which looks up an
-# xmethod matcher with NAME in LOCUS.  Returns the index of the xmethod
-# matcher in 'xmethods' sequence attribute of the LOCUS.  If NAME is not
-# found in LOCUS, then -1 is returned.
-
-
 def _lookup_xmethod_matcher(locus, name):
     for i in range(0, len(locus.xmethods)):
         if locus.xmethods[i].name == name:
@@ -238,7 +195,6 @@ def _lookup_xmethod_matcher(locus, name):
 
 def register_xmethod_matcher(locus, matcher, replace=False):
     """Registers a xmethod matcher MATCHER with a LOCUS.
-
     Arguments:
         locus: The locus in which the xmethods should be registered.
             It can be 'None' to indicate that the xmethods should be

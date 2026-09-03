@@ -31,35 +31,33 @@ a copy of the GCC Runtime Library Exception along with this program;
 see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 <http://www.gnu.org/licenses/>.  */
 
-
 #ifndef _SSP_H
 #define _SSP_H 1
 
-#if _FORTIFY_SOURCE > 0 && __OPTIMIZE__ > 0 \
-    && defined __GNUC__ \
-    && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)) \
-    && !defined __cplusplus
-# if _FORTIFY_SOURCE == 1
-#  define __SSP_FORTIFY_LEVEL 1
-# elif _FORTIFY_SOURCE > 1
-#  define __SSP_FORTIFY_LEVEL 2
-# endif
+#if _FORTIFY_SOURCE > 0 && __OPTIMIZE__ > 0 && defined __GNUC__ &&             \
+    (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)) &&                \
+    !defined __cplusplus
+#if _FORTIFY_SOURCE == 1
+#define __SSP_FORTIFY_LEVEL 1
+#elif _FORTIFY_SOURCE > 1
+#define __SSP_FORTIFY_LEVEL 2
+#endif
 #endif
 
 #if __SSP_FORTIFY_LEVEL > 0
-# include <stddef.h>
-# define __ssp_bos(ptr) __builtin_object_size (ptr, __SSP_FORTIFY_LEVEL > 1)
-# define __ssp_bos0(ptr) __builtin_object_size (ptr, 0)
+#include <stddef.h>
+#define __ssp_bos(ptr) __builtin_object_size(ptr, __SSP_FORTIFY_LEVEL > 1)
+#define __ssp_bos0(ptr) __builtin_object_size(ptr, 0)
 
-# define __SSP_REDIRECT(name, proto, alias) \
-  name proto __asm__ (__SSP_ASMNAME (#alias))
-# define __SSP_ASMNAME(cname)  __SSP_ASMNAME2 (__USER_LABEL_PREFIX__, cname)
-# define __SSP_ASMNAME2(prefix, cname) __SSP_ASMNAME3 (prefix) cname
-# define __SSP_ASMNAME3(prefix) #prefix
+#define __SSP_REDIRECT(name, proto, alias)                                     \
+  name proto __asm__(__SSP_ASMNAME(#alias))
+#define __SSP_ASMNAME(cname) __SSP_ASMNAME2(__USER_LABEL_PREFIX__, cname)
+#define __SSP_ASMNAME2(prefix, cname) __SSP_ASMNAME3(prefix) cname
+#define __SSP_ASMNAME3(prefix) #prefix
 
-# define __SSP_HAVE_VSNPRINTF
+#define __SSP_HAVE_VSNPRINTF
 
-extern void __chk_fail (void) __attribute__((__noreturn__));
+extern void __chk_fail(void) __attribute__((__noreturn__));
 #endif
 
 #endif /* _SSP_H */

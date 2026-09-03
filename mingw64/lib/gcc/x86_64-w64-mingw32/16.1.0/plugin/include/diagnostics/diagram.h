@@ -21,9 +21,8 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTICS_DIAGRAM_H
 #define GCC_DIAGNOSTICS_DIAGRAM_H
 
-namespace text_art
-{
-  class canvas;
+namespace text_art {
+class canvas;
 } // namespace text_art
 
 namespace diagnostics {
@@ -31,21 +30,17 @@ namespace diagnostics {
 /* A text art diagram, along with an "alternative text" string
    describing it.  */
 
-class diagram
-{
- public:
-  diagram (const text_art::canvas &canvas,
-	   const char *alt_text)
-  : m_canvas (canvas),
-    m_alt_text (alt_text)
-  {
-    gcc_assert (alt_text);
+class diagram {
+public:
+  diagram(const text_art::canvas &canvas, const char *alt_text)
+      : m_canvas(canvas), m_alt_text(alt_text) {
+    gcc_assert(alt_text);
   }
 
-  const text_art::canvas &get_canvas () const { return m_canvas; }
-  const char *get_alt_text () const { return m_alt_text; }
+  const text_art::canvas &get_canvas() const { return m_canvas; }
+  const char *get_alt_text() const { return m_alt_text; }
 
- private:
+private:
   const text_art::canvas &m_canvas;
   const char *const m_alt_text;
 };

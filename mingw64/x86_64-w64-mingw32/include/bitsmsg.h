@@ -5,7 +5,6 @@
  */
 #ifndef _BGCPYMSG_
 #define _BGCPYMSG_
-
 #ifndef BG_E_NOT_FOUND
 #define BG_E_NOT_FOUND __MSABI_LONG(0x80200001)
 #define BG_E_INVALID_STATE __MSABI_LONG(0x80200002)

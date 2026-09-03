@@ -4,7 +4,5 @@
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _WINERROR_
-
 #include <winerror.h>
-
 #endif

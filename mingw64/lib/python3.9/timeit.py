@@ -76,9 +76,11 @@ def inner(_it, _timer{init}):
     return _t1 - _t0
 """
 
+
 def reindent(src, indent):
     """Helper to reindent a multi-line statement."""
-    return src.replace("\n", "\n" + " "*indent)
+    return src.replace("\n", "\n" + " " * indent)
+
 
 class Timer:
     """Class for timing execution speed of small code snippets.
@@ -98,23 +100,22 @@ class Timer:
     multi-line string literals.
     """
 
-    def __init__(self, stmt="pass", setup="pass", timer=default_timer,
-                 globals=None):
+    def __init__(self, stmt="pass", setup="pass", timer=default_timer, globals=None):
         """Constructor.  See class doc string."""
         self.timer = timer
         local_ns = {}
         global_ns = _globals() if globals is None else globals
-        init = ''
+        init = ""
         if isinstance(setup, str):
             # Check that the code can be compiled outside a function
             compile(setup, dummy_src_name, "exec")
-            stmtprefix = setup + '\n'
+            stmtprefix = setup + "\n"
             setup = reindent(setup, 4)
         elif callable(setup):
-            local_ns['_setup'] = setup
-            init += ', _setup=_setup'
-            stmtprefix = ''
-            setup = '_setup()'
+            local_ns["_setup"] = setup
+            init += ", _setup=_setup"
+            stmtprefix = ""
+            setup = "_setup()"
         else:
             raise ValueError("setup is neither a string nor callable")
         if isinstance(stmt, str):
@@ -122,9 +123,9 @@ class Timer:
             compile(stmtprefix + stmt, dummy_src_name, "exec")
             stmt = reindent(stmt, 8)
         elif callable(stmt):
-            local_ns['_stmt'] = stmt
-            init += ', _stmt=_stmt'
-            stmt = '_stmt()'
+            local_ns["_stmt"] = stmt
+            init += ", _stmt=_stmt"
+            stmt = "_stmt()"
         else:
             raise ValueError("stmt is neither a string nor callable")
         src = template.format(stmt=stmt, setup=setup, init=init)
@@ -151,11 +152,14 @@ class Timer:
         sent; it defaults to sys.stderr.
         """
         import linecache, traceback
+
         if self.src is not None:
-            linecache.cache[dummy_src_name] = (len(self.src),
-                                               None,
-                                               self.src.split("\n"),
-                                               dummy_src_name)
+            linecache.cache[dummy_src_name] = (
+                len(self.src),
+                None,
+                self.src.split("\n"),
+                dummy_src_name,
+            )
         # else the source is already stored somewhere else
 
         traceback.print_exc(file=file)
@@ -227,15 +231,25 @@ class Timer:
                     return (number, time_taken)
             i *= 10
 
-def timeit(stmt="pass", setup="pass", timer=default_timer,
-           number=default_number, globals=None):
+
+def timeit(
+    stmt="pass", setup="pass", timer=default_timer, number=default_number, globals=None
+):
     """Convenience function to create Timer object and call timeit method."""
     return Timer(stmt, setup, timer, globals).timeit(number)
 
-def repeat(stmt="pass", setup="pass", timer=default_timer,
-           repeat=default_repeat, number=default_number, globals=None):
+
+def repeat(
+    stmt="pass",
+    setup="pass",
+    timer=default_timer,
+    repeat=default_repeat,
+    number=default_number,
+    globals=None,
+):
     """Convenience function to create Timer object and call repeat method."""
     return Timer(stmt, setup, timer, globals).repeat(repeat, number)
+
 
 def main(args=None, *, _wrap_timer=None):
     """Main program, used when run as a script.
@@ -257,11 +271,23 @@ def main(args=None, *, _wrap_timer=None):
     if args is None:
         args = sys.argv[1:]
     import getopt
+
     try:
-        opts, args = getopt.getopt(args, "n:u:s:r:tcpvh",
-                                   ["number=", "setup=", "repeat=",
-                                    "time", "clock", "process",
-                                    "verbose", "unit=", "help"])
+        opts, args = getopt.getopt(
+            args,
+            "n:u:s:r:tcpvh",
+            [
+                "number=",
+                "setup=",
+                "repeat=",
+                "time",
+                "clock",
+                "process",
+                "verbose",
+                "unit=",
+                "help",
+            ],
+        )
     except getopt.error as err:
         print(err)
         print("use -h/--help for command line help")
@@ -269,7 +295,7 @@ def main(args=None, *, _wrap_timer=None):
 
     timer = default_timer
     stmt = "\n".join(args) or "pass"
-    number = 0 # auto-determine
+    number = 0  # auto-determine
     setup = []
     repeat = default_repeat
     verbose = 0
@@ -285,8 +311,10 @@ def main(args=None, *, _wrap_timer=None):
             if a in units:
                 time_unit = a
             else:
-                print("Unrecognized unit. Please select nsec, usec, msec, or sec.",
-                    file=sys.stderr)
+                print(
+                    "Unrecognized unit. Please select nsec, usec, msec, or sec.",
+                    file=sys.stderr,
+                )
                 return 2
         if o in ("-r", "--repeat"):
             repeat = int(a)
@@ -299,7 +327,7 @@ def main(args=None, *, _wrap_timer=None):
                 precision += 1
             verbose += 1
         if o in ("-h", "--help"):
-            print(__doc__, end=' ')
+            print(__doc__, end=" ")
             return 0
     setup = "\n".join(setup) or "pass"
 
@@ -307,6 +335,7 @@ def main(args=None, *, _wrap_timer=None):
     # contains the directory of this script, rather than the current
     # directory)
     import os
+
     sys.path.insert(0, os.curdir)
     if _wrap_timer is not None:
         timer = _wrap_timer(timer)
@@ -316,11 +345,19 @@ def main(args=None, *, _wrap_timer=None):
         # determine number so that 0.2 <= total time < 2.0
         callback = None
         if verbose:
+
             def callback(number, time_taken):
                 msg = "{num} loop{s} -> {secs:.{prec}g} secs"
-                plural = (number != 1)
-                print(msg.format(num=number, s='s' if plural else '',
-                                  secs=time_taken, prec=precision))
+                plural = number != 1
+                print(
+                    msg.format(
+                        num=number,
+                        s="s" if plural else "",
+                        secs=time_taken,
+                        prec=precision,
+                    )
+                )
+
         try:
             number, _ = t.autorange(callback)
         except:
@@ -356,20 +393,26 @@ def main(args=None, *, _wrap_timer=None):
     timings = [dt / number for dt in raw_timings]
 
     best = min(timings)
-    print("%d loop%s, best of %d: %s per loop"
-          % (number, 's' if number != 1 else '',
-             repeat, format_time(best)))
+    print(
+        "%d loop%s, best of %d: %s per loop"
+        % (number, "s" if number != 1 else "", repeat, format_time(best))
+    )
 
     best = min(timings)
     worst = max(timings)
     if worst >= best * 4:
         import warnings
-        warnings.warn_explicit("The test results are likely unreliable. "
-                               "The worst time (%s) was more than four times "
-                               "slower than the best time (%s)."
-                               % (format_time(worst), format_time(best)),
-                               UserWarning, '', 0)
+
+        warnings.warn_explicit(
+            "The test results are likely unreliable. "
+            "The worst time (%s) was more than four times "
+            "slower than the best time (%s)." % (format_time(worst), format_time(best)),
+            UserWarning,
+            "",
+            0,
+        )
     return None
+
 
 if __name__ == "__main__":
     sys.exit(main())

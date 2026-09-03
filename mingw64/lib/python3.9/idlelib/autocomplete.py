@@ -3,6 +3,7 @@
 Either on demand or after a user-selected delay after a key character,
 pop up a list of candidates.
 """
+
 import __main__
 import keyword
 import os
@@ -17,10 +18,10 @@ from idlelib.hyperparser import HyperParser
 
 # Tuples passed to open_completions.
 #       EvalFunc, Complete, WantWin, Mode
-FORCE = True,     False,    True,    None   # Control-Space.
-TAB   = False,    True,     True,    None   # Tab.
-TRY_A = False,    False,    False,   ATTRS  # '.' for attributes.
-TRY_F = False,    False,    False,   FILES  # '/' in quotes for file name.
+FORCE = True, False, True, None  # Control-Space.
+TAB = False, True, True, None  # Tab.
+TRY_A = False, False, False, ATTRS  # '.' for attributes.
+TRY_F = False, False, False, FILES  # '/' in quotes for file name.
 
 # This string includes all chars that may be in an identifier.
 # TODO Update this here and elsewhere.
@@ -29,11 +30,12 @@ ID_CHARS = string.ascii_letters + string.digits + "_"
 SEPS = f"{os.sep}{os.altsep if os.altsep else ''}"
 TRIGGERS = f".{SEPS}"
 
+
 class AutoComplete:
 
     def __init__(self, editwin=None):
         self.editwin = editwin
-        if editwin is not None:   # not in subprocess or no-gui test
+        if editwin is not None:  # not in subprocess or no-gui test
             self.text = editwin.text
         self.autocompletewindow = None
         # id of delayed call, and the index of the text insert when
@@ -45,7 +47,8 @@ class AutoComplete:
     @classmethod
     def reload(cls):
         cls.popupwait = idleConf.GetOption(
-            "extensions", "AutoComplete", "popupwait", type="int", default=0)
+            "extensions", "AutoComplete", "popupwait", type="int", default=0
+        )
 
     def _make_autocomplete_window(self):  # Makes mocking easier.
         return autocomplete_w.AutoCompleteWindow(self.text)
@@ -62,8 +65,11 @@ class AutoComplete:
 
     def autocomplete_event(self, event):
         "(tab) Complete word or open list if multiple options."
-        if hasattr(event, "mc_state") and event.mc_state or\
-                not self.text.get("insert linestart", "insert").strip():
+        if (
+            hasattr(event, "mc_state")
+            and event.mc_state
+            or not self.text.get("insert linestart", "insert").strip()
+        ):
             # A modifier was pressed along with the tab or
             # there is only previous whitespace on this line, so tab.
             return None
@@ -83,7 +89,8 @@ class AutoComplete:
             if self._delayed_completion_id is not None:
                 self.text.after_cancel(self._delayed_completion_id)
             self._delayed_completion_id = self.text.after(
-                self.popupwait, self._delayed_open_completions, args)
+                self.popupwait, self._delayed_open_completions, args
+            )
 
     def _delayed_open_completions(self, args):
         "Call open_completions if index unchanged."
@@ -107,7 +114,7 @@ class AutoComplete:
         hp = HyperParser(self.editwin, "insert")
         curline = self.text.get("insert linestart", "insert")
         i = j = len(curline)
-        if hp.is_in_string() and (not mode or mode==FILES):
+        if hp.is_in_string() and (not mode or mode == FILES):
             # Find the beginning of the string.
             # fetch_completions will look at the file system to determine
             # whether the string value constitutes an actual file name
@@ -116,25 +123,24 @@ class AutoComplete:
             self._remove_autocomplete_window()
             mode = FILES
             # Find last separator or string start
-            while i and curline[i-1] not in "'\"" + SEPS:
+            while i and curline[i - 1] not in "'\"" + SEPS:
                 i -= 1
             comp_start = curline[i:j]
             j = i
             # Find string start
-            while i and curline[i-1] not in "'\"":
+            while i and curline[i - 1] not in "'\"":
                 i -= 1
             comp_what = curline[i:j]
-        elif hp.is_in_code() and (not mode or mode==ATTRS):
+        elif hp.is_in_code() and (not mode or mode == ATTRS):
             self._remove_autocomplete_window()
             mode = ATTRS
-            while i and (curline[i-1] in ID_CHARS or ord(curline[i-1]) > 127):
+            while i and (curline[i - 1] in ID_CHARS or ord(curline[i - 1]) > 127):
                 i -= 1
             comp_start = curline[i:j]
-            if i and curline[i-1] == '.':  # Need object with attributes.
-                hp.set_index("insert-%dc" % (len(curline)-(i-1)))
+            if i and curline[i - 1] == ".":  # Need object with attributes.
+                hp.set_index("insert-%dc" % (len(curline) - (i - 1)))
                 comp_what = hp.get_expression()
-                if (not comp_what or
-                   (not evalfuncs and comp_what.find('(') != -1)):
+                if not comp_what or (not evalfuncs and comp_what.find("(") != -1):
                     return None
             else:
                 comp_what = ""
@@ -148,8 +154,8 @@ class AutoComplete:
             return None
         self.autocompletewindow = self._make_autocomplete_window()
         return not self.autocompletewindow.show_window(
-                comp_lists, "insert-%dc" % len(comp_start),
-                complete, mode, wantwin)
+            comp_lists, "insert-%dc" % len(comp_start), complete, mode, wantwin
+        )
 
     def fetch_completions(self, what, mode):
         """Return a pair of lists of completions for something. The first list
@@ -168,22 +174,23 @@ class AutoComplete:
         except:
             rpcclt = None
         if rpcclt:
-            return rpcclt.remotecall("exec", "get_the_completion_list",
-                                     (what, mode), {})
+            return rpcclt.remotecall(
+                "exec", "get_the_completion_list", (what, mode), {}
+            )
         else:
             if mode == ATTRS:
                 if what == "":  # Main module names.
-                    namespace = {**__main__.__builtins__.__dict__,
-                                 **__main__.__dict__}
+                    namespace = {**__main__.__builtins__.__dict__, **__main__.__dict__}
                     bigl = eval("dir()", namespace)
-                    kwds = (s for s in keyword.kwlist
-                            if s not in {'True', 'False', 'None'})
+                    kwds = (
+                        s for s in keyword.kwlist if s not in {"True", "False", "None"}
+                    )
                     bigl.extend(kwds)
                     bigl.sort()
                     if "__all__" in bigl:
                         smalll = sorted(eval("__all__", namespace))
                     else:
-                        smalll = [s for s in bigl if s[:1] != '_']
+                        smalll = [s for s in bigl if s[:1] != "_"]
                 else:
                     try:
                         entity = self.get_entity(what)
@@ -192,7 +199,7 @@ class AutoComplete:
                         if "__all__" in bigl:
                             smalll = sorted(entity.__all__)
                         else:
-                            smalll = [s for s in bigl if s[:1] != '_']
+                            smalll = [s for s in bigl if s[:1] != "_"]
                     except:
                         return [], []
 
@@ -203,7 +210,7 @@ class AutoComplete:
                     expandedpath = os.path.expanduser(what)
                     bigl = os.listdir(expandedpath)
                     bigl.sort()
-                    smalll = [s for s in bigl if s[:1] != '.']
+                    smalll = [s for s in bigl if s[:1] != "."]
                 except OSError:
                     return [], []
 
@@ -218,6 +225,7 @@ class AutoComplete:
 
 AutoComplete.reload()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from unittest import main
-    main('idlelib.idle_test.test_autocomplete', verbosity=2)
+
+    main("idlelib.idle_test.test_autocomplete", verbosity=2)

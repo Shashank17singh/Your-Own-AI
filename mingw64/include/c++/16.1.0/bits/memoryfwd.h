@@ -50,50 +50,42 @@
 #include <bits/c++config.h>
 #include <bits/version.h>
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
-  /**
-   * @defgroup allocators Allocators
-   * @ingroup memory
-   *
-   * Classes encapsulating memory operations.
-   *
-   * @{
-   */
+/**
+ * @defgroup allocators Allocators
+ * @ingroup memory
+ *
+ * Classes encapsulating memory operations.
+ *
+ * @{
+ */
 
-  // Included in freestanding as a libstdc++ extension.
-  template<typename>
-    class allocator;
+// Included in freestanding as a libstdc++ extension.
+template <typename> class allocator;
 
-  template<>
-    class allocator<void>;
+template <> class allocator<void>;
 
 #if __cplusplus >= 201103L
-  /// Declare uses_allocator so it can be specialized in `<queue>` etc.
-  template<typename, typename>
-    struct uses_allocator;
+/// Declare uses_allocator so it can be specialized in `<queue>` etc.
+template <typename, typename> struct uses_allocator;
 
-  template<typename>
-    struct allocator_traits;
+template <typename> struct allocator_traits;
 #endif
 
-#ifdef __glibcxx_allocate_at_least  // C++23
-  // Result of, specifically, allocate_at_least(). `count` is the number
-  // of objects that may be indexed from `ptr`, not bytes.
-  template <typename _Pointer, typename _Size = size_t>
-    struct allocation_result
-    {
-      _Pointer ptr;
-      _Size count;
-    };
+#ifdef __glibcxx_allocate_at_least // C++23
+// Result of, specifically, allocate_at_least(). `count` is the number
+// of objects that may be indexed from `ptr`, not bytes.
+template <typename _Pointer, typename _Size = size_t> struct allocation_result {
+  _Pointer ptr;
+  _Size count;
+};
 #endif
 
-
-  /// @} group memory
+/// @} group memory
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif

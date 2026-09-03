@@ -1,20 +1,4 @@
-# Copyright 2022-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import gdb
-
 from .frames import frame_for_id
 from .globalvars import get_global_scope
 from .server import export_line, request
@@ -22,18 +6,10 @@ from .sources import make_source
 from .startup import in_gdb_thread
 from .varref import BaseReference
 
-# Map DAP frame IDs to scopes.  This ensures that scopes are reused.
 frame_to_scope = {}
-
-
-# If the most recent stop was due to a 'finish', and the return value
-# could be computed, then this holds that value.  Otherwise it holds
-# None.
 _last_return_value = None
 
 
-# When the inferior is re-started, we erase all scope references.  See
-# the section "Lifetime of Objects References" in the spec.
 @in_gdb_thread
 def clear_scopes(event):
     global frame_to_scope
@@ -52,23 +28,13 @@ def set_finish_value(val):
     _last_return_value = val
 
 
-# A helper function to compute the value of a symbol.  SYM is either a
-# gdb.Symbol, or an object implementing the SymValueWrapper interface.
-# FRAME is a frame wrapper, as produced by a frame filter.  Returns a
-# tuple of the form (NAME, VALUE), where NAME is the symbol's name and
-# VALUE is a gdb.Value.
 @in_gdb_thread
 def symbol_value(sym, frame):
     inf_frame = frame.inferior_frame()
-    # Make sure to select the frame first.  Ideally this would not
-    # be needed, but this is a way to set the current language
-    # properly so that language-dependent APIs will work.
     inf_frame.select()
     name = str(sym.symbol())
     val = sym.value()
     if val is None:
-        # No synthetic value, so must read the symbol value
-        # ourselves.
         val = sym.symbol().value(inf_frame)
     elif not isinstance(val, gdb.Value):
         val = gdb.Value(val)
@@ -80,14 +46,11 @@ class _ScopeReference(BaseReference):
         super().__init__(name)
         self._hint = hint
         self._frameId = frameId
-        # VAR_LIST might be any kind of iterator, but it's convenient
-        # here if it is just a collection.
         self._var_list = tuple(var_list)
 
     def to_object(self):
         result = super().to_object()
         result["presentationHint"] = self._hint
-        # How would we know?
         result["expensive"] = False
         result["namedVariables"] = self.child_count()
         frame = frame_for_id(self._frameId)
@@ -109,8 +72,6 @@ class _ScopeReference(BaseReference):
         return symbol_value(self._var_list[idx], frame_for_id(self._frameId))
 
 
-# A _ScopeReference that wraps the 'finish' value.  Note that this
-# object is only created if such a value actually exists.
 class _FinishScopeReference(_ScopeReference):
     def __init__(self, frameId):
         super().__init__("Return", "returnValue", frameId, ())
@@ -149,14 +110,10 @@ def scopes(*, frameId: int, **extra):
     else:
         frame = frame_for_id(frameId)
         scopes = []
-        # Make sure to handle the None case as well as the empty
-        # iterator case.
         args = tuple(frame.frame_args() or ())
         if args:
             scopes.append(_ScopeReference("Arguments", "arguments", frameId, args))
         has_return_value = frameId == 0 and _last_return_value is not None
-        # Make sure to handle the None case as well as the empty
-        # iterator case.
         locs = tuple(frame.frame_locals() or ())
         if locs:
             scopes.append(_ScopeReference("Locals", "locals", frameId, locs))

@@ -395,14 +395,17 @@ new_parser_doctests = """\
 """
 
 if use_old_parser():
-    __test__ = {'doctests' : doctests}
+    __test__ = {"doctests": doctests}
 else:
-    __test__ = {'doctests' : doctests + new_parser_doctests}
+    __test__ = {"doctests": doctests + new_parser_doctests}
+
 
 def test_main(verbose=False):
     from test import support
     from test import test_unpack_ex
+
     support.run_doctest(test_unpack_ex, verbose)
+
 
 if __name__ == "__main__":
     test_main(verbose=True)

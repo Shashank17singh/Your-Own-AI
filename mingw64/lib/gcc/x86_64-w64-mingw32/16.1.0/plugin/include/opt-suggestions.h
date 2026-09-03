@@ -26,15 +26,13 @@ along with GCC; see the file COPYING3.  If not see
    intended to be invoked by BASH in order to provide better option
    completion support.  */
 
-class option_proposer
-{
+class option_proposer {
 public:
   /* Default constructor.  */
-  option_proposer (): m_option_suggestions (NULL)
-  {}
+  option_proposer() : m_option_suggestions(NULL) {}
 
   /* Default destructor.  */
-  ~option_proposer ();
+  ~option_proposer();
 
   /* Helper function for driver::handle_unrecognized_options.
 
@@ -43,17 +41,17 @@ public:
      leading dash), or NULL.
 
      The returned string is owned by the option_proposer instance.  */
-  const char *suggest_option (const char *bad_opt);
+  const char *suggest_option(const char *bad_opt);
 
   /* Print on stdout a list of valid options that begin with OPTION_PREFIX,
      one per line, suitable for use by Bash completion.
 
      Implementation of the "-completion=" option.  */
-  void suggest_completion (const char *option_prefix);
+  void suggest_completion(const char *option_prefix);
 
   /* Populate RESULTS with valid completions of options that begin
      with OPTION_PREFIX.  */
-  void get_completions (const char *option_prefix, auto_string_vec &results);
+  void get_completions(const char *option_prefix, auto_string_vec &results);
 
 private:
   /* Helper function for option_proposer::suggest_option.  Populate
@@ -61,11 +59,11 @@ private:
      The strings will be freed by the option_proposer's dtor.
      PREFIX is used for bash completion suggestions, otherwise
      it's set to NULL.  */
-  void build_option_suggestions (const char *prefix);
+  void build_option_suggestions(const char *prefix);
 
 private:
   /* Cache with all suggestions.  */
   auto_string_vec *m_option_suggestions;
 };
 
-#endif  /* GCC_OPT_PROPOSER_H */
+#endif /* GCC_OPT_PROPOSER_H */

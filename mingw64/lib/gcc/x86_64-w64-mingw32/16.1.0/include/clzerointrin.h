@@ -30,10 +30,10 @@
 #define __DISABLE_CLZERO__
 #endif /* __CLZERO__ */
 
-extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_clzero (void * __I)
-{
-  __builtin_ia32_clzero (__I);
+extern __inline void
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_clzero(void *__I) {
+  __builtin_ia32_clzero(__I);
 }
 
 #ifdef __DISABLE_CLZERO__

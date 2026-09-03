@@ -20,7 +20,7 @@ warnings.warn(
     stacklevel=2,
 )
 
-#--start constants--
+# --start constants--
 single_input = 256
 file_input = 257
 eval_input = 258
@@ -113,7 +113,7 @@ func_body_suite = 344
 func_type_input = 345
 func_type = 346
 typelist = 347
-#--end constants--
+# --end constants--
 
 sym_name = {}
 for _name, _value in list(globals().items()):

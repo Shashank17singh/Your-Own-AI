@@ -3,17 +3,19 @@ import sys
 
 from test.support import import_fresh_module, run_unittest
 
-TESTS = 'test.datetimetester'
+TESTS = "test.datetimetester"
 
 try:
-    pure_tests = import_fresh_module(TESTS, fresh=['datetime', '_strptime'],
-                                     blocked=['_datetime'])
-    fast_tests = import_fresh_module(TESTS, fresh=['datetime',
-                                                   '_datetime', '_strptime'])
+    pure_tests = import_fresh_module(
+        TESTS, fresh=["datetime", "_strptime"], blocked=["_datetime"]
+    )
+    fast_tests = import_fresh_module(
+        TESTS, fresh=["datetime", "_datetime", "_strptime"]
+    )
 finally:
     # XXX: import_fresh_module() is supposed to leave sys.module cache untouched,
     # XXX: but it does not, so we have to cleanup ourselves.
-    for modname in ['datetime', '_datetime', '_strptime']:
+    for modname in ["datetime", "_datetime", "_strptime"]:
         sys.modules.pop(modname, None)
 test_modules = [pure_tests, fast_tests]
 test_suffixes = ["_Pure", "_Fast"]
@@ -36,22 +38,27 @@ for module, suffix in zip(test_modules, test_suffixes):
     for cls in test_classes:
         cls.__name__ += suffix
         cls.__qualname__ += suffix
+
         @classmethod
         def setUpClass(cls_, module=module):
             cls_._save_sys_modules = sys.modules.copy()
             sys.modules[TESTS] = module
-            sys.modules['datetime'] = module.datetime_module
-            sys.modules['_strptime'] = module._strptime
+            sys.modules["datetime"] = module.datetime_module
+            sys.modules["_strptime"] = module._strptime
+
         @classmethod
         def tearDownClass(cls_):
             sys.modules.clear()
             sys.modules.update(cls_._save_sys_modules)
+
         cls.setUpClass = setUpClass
         cls.tearDownClass = tearDownClass
     all_test_classes.extend(test_classes)
 
+
 def test_main():
     run_unittest(*all_test_classes)
+
 
 if __name__ == "__main__":
     test_main()

@@ -41,10 +41,7 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline typename PB_DS_CLASS_C_DEC::iterator
-PB_DS_CLASS_C_DEC::
-begin()
-{
+inline typename PB_DS_CLASS_C_DEC::iterator PB_DS_CLASS_C_DEC::begin() {
   node_pointer p_nd = m_p_root;
 
   if (p_nd == 0)
@@ -58,9 +55,7 @@ begin()
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::const_iterator
-PB_DS_CLASS_C_DEC::
-begin() const
-{
+PB_DS_CLASS_C_DEC::begin() const {
   node_pointer p_nd = m_p_root;
 
   if (p_nd == 0)
@@ -73,18 +68,13 @@ begin() const
 }
 
 PB_DS_CLASS_T_DEC
-inline typename PB_DS_CLASS_C_DEC::iterator
-PB_DS_CLASS_C_DEC::
-end()
-{
+inline typename PB_DS_CLASS_C_DEC::iterator PB_DS_CLASS_C_DEC::end() {
   return (iterator(0));
 }
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::const_iterator
-PB_DS_CLASS_C_DEC::
-end() const
-{
+PB_DS_CLASS_C_DEC::end() const {
   return (const_iterator(0));
 }
 

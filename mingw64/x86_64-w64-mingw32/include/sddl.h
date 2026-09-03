@@ -5,26 +5,20 @@
  */
 #ifndef __SDDL_H__
 #define __SDDL_H__
-
 #include <_mingw_unicode.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define SDDL_REVISION_1 1
 #define SDDL_REVISION SDDL_REVISION_1
-
 #define SDDL_OWNER TEXT("O")
 #define SDDL_GROUP TEXT("G")
 #define SDDL_DACL TEXT("D")
 #define SDDL_SACL TEXT("S")
-
 #define SDDL_PROTECTED TEXT("P")
 #define SDDL_AUTO_INHERIT_REQ TEXT("AR")
 #define SDDL_AUTO_INHERITED TEXT("AI")
 #define SDDL_NULL_ACL TEXT("NO_ACCESS_CONTROL")
-
 #define SDDL_ACCESS_ALLOWED TEXT("A")
 #define SDDL_ACCESS_DENIED TEXT("D")
 #define SDDL_OBJECT_ACCESS_ALLOWED TEXT("OA")
@@ -40,7 +34,6 @@ extern "C" {
 #define SDDL_SCOPED_POLICY_ID TEXT("SP")
 #define SDDL_CALLBACK_AUDIT TEXT("XU")
 #define SDDL_CALLBACK_OBJECT_ACCESS_ALLOWED TEXT("ZA")
-
 #define SDDL_CONTAINER_INHERIT TEXT("CI")
 #define SDDL_OBJECT_INHERIT TEXT("OI")
 #define SDDL_NO_PROPAGATE TEXT("NP")
@@ -48,7 +41,6 @@ extern "C" {
 #define SDDL_INHERITED TEXT("ID")
 #define SDDL_AUDIT_SUCCESS TEXT("SA")
 #define SDDL_AUDIT_FAILURE TEXT("FA")
-
 #define SDDL_READ_PROPERTY TEXT("RP")
 #define SDDL_WRITE_PROPERTY TEXT("WP")
 #define SDDL_CREATE_CHILD TEXT("CC")
@@ -74,9 +66,7 @@ extern "C" {
 #define SDDL_KEY_READ TEXT("KR")
 #define SDDL_KEY_WRITE TEXT("KW")
 #define SDDL_KEY_EXECUTE TEXT("KX")
-
 #define SDDL_ALIAS_SIZE 2
-
 #define SDDL_DOMAIN_ADMINISTRATORS TEXT("DA")
 #define SDDL_DOMAIN_GUESTS TEXT("DG")
 #define SDDL_DOMAIN_USERS TEXT("DU")
@@ -117,31 +107,38 @@ extern "C" {
 #define SDDL_NETWORK_CONFIGURATION_OPS TEXT("NO")
 #define SDDL_PERFMON_USERS TEXT("MU")
 #define SDDL_PERFLOG_USERS TEXT("LU")
-
 #define SDDL_SEPERATORC TEXT(';')
 #define SDDL_DELIMINATORC TEXT(':')
 #define SDDL_ACE_BEGINC TEXT('(')
 #define SDDL_ACE_ENDC TEXT(')')
-
 #define SDDL_SEPERATOR TEXT(";")
 #define SDDL_DELIMINATOR TEXT(":")
 #define SDDL_ACE_BEGIN TEXT("(")
 #define SDDL_ACE_END TEXT(")")
-
 #define ConvertSidToStringSid __MINGW_NAME_AW(ConvertSidToStringSid)
 #define ConvertStringSidToSid __MINGW_NAME_AW(ConvertStringSidToSid)
-#define ConvertStringSecurityDescriptorToSecurityDescriptor __MINGW_NAME_AW(ConvertStringSecurityDescriptorToSecurityDescriptor)
-#define ConvertSecurityDescriptorToStringSecurityDescriptor __MINGW_NAME_AW(ConvertSecurityDescriptorToStringSecurityDescriptor)
-
-  WINADVAPI WINBOOL WINAPI ConvertSidToStringSidA(PSID Sid,LPSTR *StringSid);
-  WINADVAPI WINBOOL WINAPI ConvertSidToStringSidW(PSID Sid,LPWSTR *StringSid);
-  WINADVAPI WINBOOL WINAPI ConvertStringSidToSidA(LPCSTR StringSid,PSID *Sid);
-  WINADVAPI WINBOOL WINAPI ConvertStringSidToSidW(LPCWSTR StringSid,PSID *Sid);
-  WINADVAPI WINBOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorA(LPCSTR StringSecurityDescriptor,DWORD StringSDRevision,PSECURITY_DESCRIPTOR *SecurityDescriptor,PULONG SecurityDescriptorSize);
-  WINADVAPI WINBOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorW(LPCWSTR StringSecurityDescriptor,DWORD StringSDRevision,PSECURITY_DESCRIPTOR *SecurityDescriptor,PULONG SecurityDescriptorSize);
-  WINADVAPI WINBOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(PSECURITY_DESCRIPTOR SecurityDescriptor,DWORD RequestedStringSDRevision,SECURITY_INFORMATION SecurityInformation,LPSTR *StringSecurityDescriptor,PULONG StringSecurityDescriptorLen);
-  WINADVAPI WINBOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(PSECURITY_DESCRIPTOR SecurityDescriptor,DWORD RequestedStringSDRevision,SECURITY_INFORMATION SecurityInformation,LPWSTR *StringSecurityDescriptor,PULONG StringSecurityDescriptorLen);
-
+#define ConvertStringSecurityDescriptorToSecurityDescriptor                    \
+  __MINGW_NAME_AW(ConvertStringSecurityDescriptorToSecurityDescriptor)
+#define ConvertSecurityDescriptorToStringSecurityDescriptor                    \
+  __MINGW_NAME_AW(ConvertSecurityDescriptorToStringSecurityDescriptor)
+WINADVAPI WINBOOL WINAPI ConvertSidToStringSidA(PSID Sid, LPSTR *StringSid);
+WINADVAPI WINBOOL WINAPI ConvertSidToStringSidW(PSID Sid, LPWSTR *StringSid);
+WINADVAPI WINBOOL WINAPI ConvertStringSidToSidA(LPCSTR StringSid, PSID *Sid);
+WINADVAPI WINBOOL WINAPI ConvertStringSidToSidW(LPCWSTR StringSid, PSID *Sid);
+WINADVAPI WINBOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorA(
+    LPCSTR StringSecurityDescriptor, DWORD StringSDRevision,
+    PSECURITY_DESCRIPTOR *SecurityDescriptor, PULONG SecurityDescriptorSize);
+WINADVAPI WINBOOL WINAPI ConvertStringSecurityDescriptorToSecurityDescriptorW(
+    LPCWSTR StringSecurityDescriptor, DWORD StringSDRevision,
+    PSECURITY_DESCRIPTOR *SecurityDescriptor, PULONG SecurityDescriptorSize);
+WINADVAPI WINBOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorA(
+    PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD RequestedStringSDRevision,
+    SECURITY_INFORMATION SecurityInformation, LPSTR *StringSecurityDescriptor,
+    PULONG StringSecurityDescriptorLen);
+WINADVAPI WINBOOL WINAPI ConvertSecurityDescriptorToStringSecurityDescriptorW(
+    PSECURITY_DESCRIPTOR SecurityDescriptor, DWORD RequestedStringSDRevision,
+    SECURITY_INFORMATION SecurityInformation, LPWSTR *StringSecurityDescriptor,
+    PULONG StringSecurityDescriptorLen);
 #ifdef __cplusplus
 }
 #endif

@@ -1,21 +1,4 @@
-# Xmethod commands.
-# Copyright 2013-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import re
-
 import gdb
 
 """GDB commands for working with xmethods."""
@@ -30,10 +13,8 @@ def validate_xm_regexp(part_name, regexp):
 
 def parse_xm_command_args(arg):
     """Parses the arguments passed to a xmethod command.
-
     Arguments:
         arg: The argument string passed to a xmethod command.
-
     Returns:
         A 3-tuple: (<locus matching regular expression>,
                     <matcher matching regular expression>,
@@ -66,13 +47,11 @@ def parse_xm_command_args(arg):
 
 def get_global_method_matchers(locus_re, matcher_re):
     """Returns a dict of matching globally registered xmethods.
-
     Arguments:
         locus_re: Even though only globally registered xmethods are
                   looked up, they will be looked up only if 'global' matches
                   LOCUS_RE.
         matcher_re: The regular expression matching the names of xmethods.
-
     Returns:
         A dict of matching globally registered xmethod matchers.  The only
         key in the dict will be 'global'.
@@ -86,7 +65,6 @@ def get_global_method_matchers(locus_re, matcher_re):
 
 def get_method_matchers_in_loci(loci, locus_re, matcher_re):
     """Returns a dict of matching registered xmethods in the LOCI.
-
     Arguments:
         loci: The list of loci to lookup matching xmethods in.
         locus_re: If a locus is an objfile, then xmethod matchers will be
@@ -96,7 +74,6 @@ def get_method_matchers_in_loci(loci, locus_re, matcher_re):
                   string "progspace" matches LOCUS_RE.
         matcher_re: The regular expression to match the xmethod matcher
                     names.
-
     Returns:
         A dict of matching xmethod matchers.  The keys of the dict are the
         filenames of the loci the xmethod matchers belong to.
@@ -145,12 +122,9 @@ def set_xm_status1(xm_dict, name_re, status):
     for locus_str, matchers in xm_dict.items():
         for matcher in matchers:
             if not name_re:
-                # If the name regex is missing, then set the status of the
-                # matcher and move on.
                 matcher.enabled = status
                 continue
             if not matcher.methods:
-                # The methods attribute could be None.  Move on.
                 continue
             for m in matcher.methods:
                 if name_re.match(m.name):
@@ -178,16 +152,13 @@ def set_xm_status(arg, status):
 
 class InfoXMethod(gdb.Command):
     """GDB command to list registered xmethod matchers.
-
     Usage: info xmethod [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression matching the location of the
     xmethod matchers.  If it is omitted, all registered xmethod matchers
     from all loci are listed.  A locus could be 'global', a regular expression
     matching the current program space's filename, or a regular expression
     matching filenames of objfiles.  Locus could be 'progspace' to specify that
     only xmethods from the current progspace should be listed.
-
     NAME-REGEXP is a regular expression matching the names of xmethod
     matchers.  If this omitted for a specified locus, then all registered
     xmethods in the locus are listed.  To list only a certain xmethods
@@ -213,16 +184,13 @@ class InfoXMethod(gdb.Command):
 
 class EnableXMethod(gdb.Command):
     """GDB command to enable a specified (group of) xmethod(s).
-
     Usage: enable xmethod [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression matching the location of the
     xmethod matchers.  If it is omitted, all registered xmethods matchers
     from all loci are enabled.  A locus could be 'global', a regular expression
     matching the current program space's filename, or a regular expression
     matching filenames of objfiles.  Locus could be 'progspace' to specify that
     only xmethods from the current progspace should be enabled.
-
     NAME-REGEXP is a regular expression matching the names of xmethods
     within a given locus.  If this omitted for a specified locus, then all
     registered xmethod matchers in the locus are enabled.  To enable only
@@ -238,16 +206,13 @@ class EnableXMethod(gdb.Command):
 
 class DisableXMethod(gdb.Command):
     """GDB command to disable a specified (group of) xmethod(s).
-
     Usage: disable xmethod [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression matching the location of the
     xmethod matchers.  If it is omitted, all registered xmethod matchers
     from all loci are disabled.  A locus could be 'global', a regular
     expression matching the current program space's filename, or a regular
     expression filenames of objfiles. Locus could be 'progspace' to specify
     that only xmethods from the current progspace should be disabled.
-
     NAME-REGEXP is a regular expression matching the names of xmethods
     within a given locus.  If this omitted for a specified locus, then all
     registered xmethod matchers in the locus are disabled.  To disable

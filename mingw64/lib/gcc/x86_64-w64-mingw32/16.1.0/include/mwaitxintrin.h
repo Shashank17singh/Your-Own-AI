@@ -30,16 +30,16 @@
 #define __DISABLE_MWAITX__
 #endif /* __MWAITX__ */
 
-extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_monitorx (void const * __P, unsigned int __E, unsigned int __H)
-{
-  __builtin_ia32_monitorx (__P, __E, __H);
+extern __inline void
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_monitorx(void const *__P, unsigned int __E, unsigned int __H) {
+  __builtin_ia32_monitorx(__P, __E, __H);
 }
 
-extern __inline void __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_mwaitx (unsigned int __E, unsigned int __H, unsigned int __C)
-{
-  __builtin_ia32_mwaitx (__E, __H, __C);
+extern __inline void
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_mwaitx(unsigned int __E, unsigned int __H, unsigned int __C) {
+  __builtin_ia32_mwaitx(__E, __H, __C);
 }
 
 #ifdef __DISABLE_MWAITX__

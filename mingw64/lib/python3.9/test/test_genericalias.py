@@ -2,9 +2,7 @@
 
 import unittest
 import pickle
-from collections import (
-    defaultdict, deque, OrderedDict, Counter, UserDict, UserList
-)
+from collections import defaultdict, deque, OrderedDict, Counter, UserDict, UserList
 from collections.abc import *
 from concurrent.futures import Future
 from concurrent.futures.thread import _WorkItem
@@ -13,6 +11,7 @@ from contextvars import ContextVar, Token
 from dataclasses import Field
 from functools import partial, partialmethod, cached_property
 from mailbox import Mailbox, _PartialFile
+
 try:
     import ctypes
 except ImportError:
@@ -24,6 +23,7 @@ from itertools import chain
 from http.cookies import Morsel
 from multiprocessing.managers import ValueProxy
 from multiprocessing.pool import ApplyResult
+
 try:
     from multiprocessing.shared_memory import ShareableList
 except ImportError:
@@ -41,46 +41,87 @@ from weakref import WeakSet, ReferenceType, ref
 import typing
 
 from typing import TypeVar
-T = TypeVar('T')
-K = TypeVar('K')
-V = TypeVar('V')
+
+T = TypeVar("T")
+K = TypeVar("K")
+V = TypeVar("V")
+
 
 class BaseTest(unittest.TestCase):
     """Test basics."""
-    generic_types = [type, tuple, list, dict, set, frozenset, enumerate,
-                     defaultdict, deque,
-                     SequenceMatcher,
-                     dircmp,
-                     FileInput,
-                     OrderedDict, Counter, UserDict, UserList,
-                     Pattern, Match,
-                     partial, partialmethod, cached_property,
-                     AbstractContextManager, AbstractAsyncContextManager,
-                     Awaitable, Coroutine,
-                     AsyncIterable, AsyncIterator,
-                     AsyncGenerator, Generator,
-                     Iterable, Iterator,
-                     Reversible,
-                     Container, Collection,
-                     Mailbox, _PartialFile,
-                     ContextVar, Token,
-                     Field,
-                     Set, MutableSet,
-                     Mapping, MutableMapping, MappingView,
-                     KeysView, ItemsView, ValuesView,
-                     Sequence, MutableSequence,
-                     MappingProxyType, AsyncGeneratorType,
-                     DirEntry,
-                     chain,
-                     TemporaryDirectory, SpooledTemporaryFile,
-                     Queue, SimpleQueue,
-                     _AssertRaisesContext,
-                     SplitResult, ParseResult,
-                     ValueProxy, ApplyResult,
-                     WeakSet, ReferenceType, ref,
-                     ShareableList, MPSimpleQueue,
-                     Future, _WorkItem,
-                     Morsel]
+
+    generic_types = [
+        type,
+        tuple,
+        list,
+        dict,
+        set,
+        frozenset,
+        enumerate,
+        defaultdict,
+        deque,
+        SequenceMatcher,
+        dircmp,
+        FileInput,
+        OrderedDict,
+        Counter,
+        UserDict,
+        UserList,
+        Pattern,
+        Match,
+        partial,
+        partialmethod,
+        cached_property,
+        AbstractContextManager,
+        AbstractAsyncContextManager,
+        Awaitable,
+        Coroutine,
+        AsyncIterable,
+        AsyncIterator,
+        AsyncGenerator,
+        Generator,
+        Iterable,
+        Iterator,
+        Reversible,
+        Container,
+        Collection,
+        Mailbox,
+        _PartialFile,
+        ContextVar,
+        Token,
+        Field,
+        Set,
+        MutableSet,
+        Mapping,
+        MutableMapping,
+        MappingView,
+        KeysView,
+        ItemsView,
+        ValuesView,
+        Sequence,
+        MutableSequence,
+        MappingProxyType,
+        AsyncGeneratorType,
+        DirEntry,
+        chain,
+        TemporaryDirectory,
+        SpooledTemporaryFile,
+        Queue,
+        SimpleQueue,
+        _AssertRaisesContext,
+        SplitResult,
+        ParseResult,
+        ValueProxy,
+        ApplyResult,
+        WeakSet,
+        ReferenceType,
+        ref,
+        ShareableList,
+        MPSimpleQueue,
+        Future,
+        _WorkItem,
+        Morsel,
+    ]
     if ctypes is not None:
         generic_types.extend((ctypes.Array, ctypes.LibraryLoader))
 
@@ -109,36 +150,41 @@ class BaseTest(unittest.TestCase):
                 alias = t[int]
                 self.assertEqual(alias(), t())
                 if t is dict:
-                    self.assertEqual(alias(iter([('a', 1), ('b', 2)])), dict(a=1, b=2))
+                    self.assertEqual(alias(iter([("a", 1), ("b", 2)])), dict(a=1, b=2))
                     self.assertEqual(alias(a=1, b=2), dict(a=1, b=2))
                 elif t is defaultdict:
+
                     def default():
-                        return 'value'
+                        return "value"
+
                     a = alias(default)
                     d = defaultdict(default)
-                    self.assertEqual(a['test'], d['test'])
+                    self.assertEqual(a["test"], d["test"])
                 else:
                     self.assertEqual(alias(iter((1, 2, 3))), t((1, 2, 3)))
 
     def test_unbound_methods(self):
         t = list[int]
         a = t()
-        t.append(a, 'foo')
-        self.assertEqual(a, ['foo'])
+        t.append(a, "foo")
+        self.assertEqual(a, ["foo"])
         x = t.__getitem__(a, 0)
-        self.assertEqual(x, 'foo')
+        self.assertEqual(x, "foo")
         self.assertEqual(t.__len__(a), 1)
 
     def test_subclassing(self):
         class C(list[int]):
             pass
+
         self.assertEqual(C.__bases__, (list,))
         self.assertEqual(C.__class__, type)
 
     def test_class_methods(self):
         t = dict[int, None]
         self.assertEqual(dict.fromkeys(range(2)), {0: None, 1: None})  # This works
-        self.assertEqual(t.fromkeys(range(2)), {0: None, 1: None})  # Should be equivalent
+        self.assertEqual(
+            t.fromkeys(range(2)), {0: None, 1: None}
+        )  # Should be equivalent
 
     def test_no_chaining(self):
         t = list[int]
@@ -148,6 +194,7 @@ class BaseTest(unittest.TestCase):
     def test_generic_subclass(self):
         class MyList(list):
             pass
+
         t = MyList[int]
         self.assertIs(t.__origin__, MyList)
         self.assertEqual(t.__args__, (int,))
@@ -156,22 +203,29 @@ class BaseTest(unittest.TestCase):
     def test_repr(self):
         class MyList(list):
             pass
-        self.assertEqual(repr(list[str]), 'list[str]')
-        self.assertEqual(repr(list[()]), 'list[()]')
-        self.assertEqual(repr(tuple[int, ...]), 'tuple[int, ...]')
-        self.assertTrue(repr(MyList[int]).endswith('.BaseTest.test_repr.<locals>.MyList[int]'))
-        self.assertEqual(repr(list[str]()), '[]')  # instances should keep their normal repr
+
+        self.assertEqual(repr(list[str]), "list[str]")
+        self.assertEqual(repr(list[()]), "list[()]")
+        self.assertEqual(repr(tuple[int, ...]), "tuple[int, ...]")
+        self.assertTrue(
+            repr(MyList[int]).endswith(".BaseTest.test_repr.<locals>.MyList[int]")
+        )
+        self.assertEqual(
+            repr(list[str]()), "[]"
+        )  # instances should keep their normal repr
 
     def test_exposed_type(self):
         import types
+
         a = types.GenericAlias(list, int)
-        self.assertEqual(str(a), 'list[int]')
+        self.assertEqual(str(a), "list[int]")
         self.assertIs(a.__origin__, list)
         self.assertEqual(a.__args__, (int,))
         self.assertEqual(a.__parameters__, ())
 
     def test_parameters(self):
         from typing import List, Dict, Callable
+
         D0 = dict[str, int]
         self.assertEqual(D0.__args__, (str, int))
         self.assertEqual(D0.__parameters__, ())
@@ -211,6 +265,7 @@ class BaseTest(unittest.TestCase):
 
     def test_parameter_chaining(self):
         from typing import List, Dict, Union, Callable
+
         self.assertEqual(list[T][int], list[int])
         self.assertEqual(dict[str, T][int], dict[str, int])
         self.assertEqual(dict[T, int][str], dict[str, int])
@@ -226,8 +281,9 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(list[List[T]][int], list[List[int]])
         self.assertEqual(list[Dict[K, V]][str, int], list[Dict[str, int]])
         self.assertEqual(list[Union[K, V]][str, int], list[Union[str, int]])
-        self.assertEqual(list[Callable[[K, V], K]][str, int],
-                         list[Callable[[str, int], str]])
+        self.assertEqual(
+            list[Callable[[K, V], K]][str, int], list[Callable[[str, int], str]]
+        )
         self.assertEqual(dict[T, List[int]][str], dict[str, List[int]])
 
         with self.assertRaises(TypeError):
@@ -250,13 +306,14 @@ class BaseTest(unittest.TestCase):
 
     def test_issubclass(self):
         class L(list): ...
+
         self.assertTrue(issubclass(L, list))
         with self.assertRaises(TypeError):
             issubclass(L, list[str])
 
     def test_type_generic(self):
         t = type[int]
-        Test = t('Test', (), {})
+        Test = t("Test", (), {})
         self.assertTrue(isinstance(Test, type))
         test = Test()
         self.assertEqual(t(test), Test)
@@ -265,6 +322,7 @@ class BaseTest(unittest.TestCase):
     def test_type_subclass_generic(self):
         class MyType(type):
             pass
+
         with self.assertRaises(TypeError):
             MyType[int]
 
@@ -308,7 +366,9 @@ class BaseTest(unittest.TestCase):
 
     def test_subclassing_types_genericalias(self):
         class SubClass(GenericAlias): ...
+
         alias = SubClass(list, int)
+
         class Bad(GenericAlias):
             def __new__(cls, *args, **kwargs):
                 super().__new__(cls, *args, **kwargs)
@@ -350,20 +410,25 @@ class BaseTest(unittest.TestCase):
             # multi chaining
             C4 = C2[int, V, str]
             self.assertEqual(repr(C4).split(".")[-1], "Callable[[int, ~V], str]")
-            self.assertEqual(repr(C4[dict]).split(".")[-1], "Callable[[int, dict], str]")
+            self.assertEqual(
+                repr(C4[dict]).split(".")[-1], "Callable[[int, dict], str]"
+            )
             self.assertEqual(C4[dict], Callable[[int, dict], str])
 
         with self.subTest("Testing type erasure"):
+
             class C1(Callable):
                 def __call__(self):
                     return None
+
             a = C1[[int], T]
             self.assertIs(a().__class__, C1)
             self.assertEqual(a().__orig_class__, C1[[int], T])
 
         # bpo-42195
-        with self.subTest("Testing collections.abc.Callable's consistency "
-                          "with typing.Callable"):
+        with self.subTest(
+            "Testing collections.abc.Callable's consistency " "with typing.Callable"
+        ):
             c1 = typing.Callable[[int, str], dict]
             c2 = Callable[[int, str], dict]
             self.assertEqual(c1.__args__, c2.__args__)

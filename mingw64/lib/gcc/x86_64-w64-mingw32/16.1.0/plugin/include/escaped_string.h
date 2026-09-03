@@ -26,18 +26,24 @@ along with GCC; see the file COPYING3.  If not see
    control characters, (eg newline, form-feed, etc), into one
    in which contains escape sequences instead.  */
 
-class escaped_string
-{
- public:
-  escaped_string () { m_owned = false; m_str = NULL; };
-  ~escaped_string () { if (m_owned) free (m_str); }
+class escaped_string {
+public:
+  escaped_string() {
+    m_owned = false;
+    m_str = NULL;
+  };
+  ~escaped_string() {
+    if (m_owned)
+      free(m_str);
+  }
   operator const char *() const { return m_str; }
-  void escape (const char *);
- private:
-  escaped_string(const escaped_string&) {}
-  escaped_string& operator=(const escaped_string&) { return *this; }
+  void escape(const char *);
+
+private:
+  escaped_string(const escaped_string &) {}
+  escaped_string &operator=(const escaped_string &) { return *this; }
   char *m_str;
-  bool  m_owned;
+  bool m_owned;
 };
 
 #endif /* ! GCC_ESCAPED_STRING_H */

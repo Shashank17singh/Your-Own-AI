@@ -41,63 +41,53 @@ along with GCC; see the file COPYING3.  If not see
    Compare with lhd_print_error_function, cp_print_error_function,
    and optrecord_json_writer::inlining_chain_to_json.  */
 
-class inlining_iterator
-{
+class inlining_iterator {
 public:
-  inlining_iterator (location_t loc)
-  : m_abstract_origin (LOCATION_BLOCK (loc)),
-    m_callsite (UNKNOWN_LOCATION), m_fndecl (NULL_TREE),
-    m_next_abstract_origin (NULL)
-  {
-    prepare_iteration ();
+  inlining_iterator(location_t loc)
+      : m_abstract_origin(LOCATION_BLOCK(loc)), m_callsite(UNKNOWN_LOCATION),
+        m_fndecl(NULL_TREE), m_next_abstract_origin(NULL) {
+    prepare_iteration();
   }
 
-  bool done_p () const { return m_abstract_origin == NULL; }
+  bool done_p() const { return m_abstract_origin == NULL; }
 
-  void next ()
-  {
+  void next() {
     m_abstract_origin = m_next_abstract_origin;
-    prepare_iteration ();
+    prepare_iteration();
   }
 
-  tree get_fndecl () const { return m_fndecl; }
-  location_t get_callsite () const { return m_callsite; }
-  tree get_block () const { return m_abstract_origin; }
+  tree get_fndecl() const { return m_fndecl; }
+  location_t get_callsite() const { return m_callsite; }
+  tree get_block() const { return m_abstract_origin; }
 
 private:
-  void prepare_iteration ()
-  {
-    if (done_p ())
+  void prepare_iteration() {
+    if (done_p())
       return;
     tree block = m_abstract_origin;
-    m_callsite = BLOCK_SOURCE_LOCATION (block);
+    m_callsite = BLOCK_SOURCE_LOCATION(block);
     m_fndecl = NULL_TREE;
-    block = BLOCK_SUPERCONTEXT (block);
-    while (block && TREE_CODE (block) == BLOCK
-	   && BLOCK_ABSTRACT_ORIGIN (block))
-      {
-	tree ao = BLOCK_ABSTRACT_ORIGIN (block);
-	if (TREE_CODE (ao) == FUNCTION_DECL)
-	  {
-	    m_fndecl = ao;
-	    break;
-	  }
-	else if (TREE_CODE (ao) != BLOCK)
-	  break;
+    block = BLOCK_SUPERCONTEXT(block);
+    while (block && TREE_CODE(block) == BLOCK && BLOCK_ABSTRACT_ORIGIN(block)) {
+      tree ao = BLOCK_ABSTRACT_ORIGIN(block);
+      if (TREE_CODE(ao) == FUNCTION_DECL) {
+        m_fndecl = ao;
+        break;
+      } else if (TREE_CODE(ao) != BLOCK)
+        break;
 
-	block = BLOCK_SUPERCONTEXT (block);
-      }
+      block = BLOCK_SUPERCONTEXT(block);
+    }
     if (m_fndecl)
       m_next_abstract_origin = block;
-    else
-      {
-	while (block && TREE_CODE (block) == BLOCK)
-	  block = BLOCK_SUPERCONTEXT (block);
+    else {
+      while (block && TREE_CODE(block) == BLOCK)
+        block = BLOCK_SUPERCONTEXT(block);
 
-	if (block && TREE_CODE (block) == FUNCTION_DECL)
-	  m_fndecl = block;
-	m_next_abstract_origin = NULL;
-      }
+      if (block && TREE_CODE(block) == FUNCTION_DECL)
+        m_fndecl = block;
+      m_next_abstract_origin = NULL;
+    }
   }
 
   tree m_abstract_origin;
@@ -117,28 +107,25 @@ private:
    This class lets us offset the depth and fix up the reported fndecl and
    stack depth to better reflect the user's original code.  */
 
-class inlining_info
-{
+class inlining_info {
 public:
-  inlining_info (location_t loc)
-  {
-    inlining_iterator iter (loc);
-    m_inner_fndecl = iter.get_fndecl ();
+  inlining_info(location_t loc) {
+    inlining_iterator iter(loc);
+    m_inner_fndecl = iter.get_fndecl();
     int num_frames = 0;
-    while (!iter.done_p ())
-      {
-	m_outer_fndecl = iter.get_fndecl ();
-	num_frames++;
-	iter.next ();
-      }
+    while (!iter.done_p()) {
+      m_outer_fndecl = iter.get_fndecl();
+      num_frames++;
+      iter.next();
+    }
     if (num_frames > 1)
       m_extra_frames = num_frames - 1;
     else
       m_extra_frames = 0;
   }
 
-  tree get_inner_fndecl () const { return m_inner_fndecl; }
-  int get_extra_frames () const { return m_extra_frames; }
+  tree get_inner_fndecl() const { return m_inner_fndecl; }
+  int get_extra_frames() const { return m_extra_frames; }
 
 private:
   tree m_outer_fndecl;

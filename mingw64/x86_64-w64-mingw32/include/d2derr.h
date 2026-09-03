@@ -2,16 +2,14 @@
  * This file has no copyright assigned and is placed in the Public Domain.
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
-
  * d2derr.h - Header file for the Direct2D API
  * No original Microsoft headers were used in the creation of this
  * file.
- *API docs available at: http://msdn.microsoft.com/en-us/library/dd372349%28v=VS.85%29.aspx
+ *API docs available at:
+ * http://msdn.microsoft.com/en-us/library/dd372349%28v=VS.85%29.aspx
  */
-
 #ifndef _D2DERR_H
 #define _D2DERR_H
-
 /* error codes */
 #ifndef D2DERR_WRONG_STATE
 /* may be defined from winerror.h */
@@ -28,7 +26,7 @@
 #define D2DERR_NOT_INITIALIZED 0x88990002
 #define D2DERR_POP_CALL_DID_NOT_MATCH_PUSH 0x88990014
 #define D2DERR_PUSH_POP_UNBALANCED 0x88990016
-#define D2DERR_RECREATE_TARGET	 0x8899000C
+#define D2DERR_RECREATE_TARGET 0x8899000C
 #define D2DERR_RENDER_TARGET_HAS_LAYER_OR_CLIPRECT 0x88990017
 #define D2DERR_SCANNER_FAILED 0x88990004
 #define D2DERR_SCREEN_ACCESS_DENIED 0x88990005
@@ -45,8 +43,6 @@
 #define D2DERR_WRONG_STATE 0x88990001
 #define D2DERR_ZERO_VECTOR 0x88990007
 #endif
-
 #define D2DERR_INSUFFICIENT_BUFFER HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)
 #define D2DERR_UNSUPPORTED_PIXEL_FORMAT WINCODEC_ERR_UNSUPPORTEDPIXELFORMAT
-
 #endif /* _D2DERR_H */

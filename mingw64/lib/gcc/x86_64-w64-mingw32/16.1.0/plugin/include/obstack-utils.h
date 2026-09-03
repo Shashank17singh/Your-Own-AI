@@ -65,18 +65,17 @@
 //       obstack_watermark watermark = foo ();
 //       ...
 //     }
-class obstack_watermark
-{
+class obstack_watermark {
 public:
-  obstack_watermark (obstack *ob) : m_obstack (ob) { keep (); }
-  constexpr obstack_watermark (obstack_watermark &&) = default;
-  ~obstack_watermark () { obstack_free (m_obstack, m_start); }
+  obstack_watermark(obstack *ob) : m_obstack(ob) { keep(); }
+  constexpr obstack_watermark(obstack_watermark &&) = default;
+  ~obstack_watermark() { obstack_free(m_obstack, m_start); }
 
   operator obstack *() const { return m_obstack; }
-  void keep () { m_start = XOBNEWVAR (m_obstack, char, 0); }
+  void keep() { m_start = XOBNEWVAR(m_obstack, char, 0); }
 
 private:
-  DISABLE_COPY_AND_ASSIGN (obstack_watermark);
+  DISABLE_COPY_AND_ASSIGN(obstack_watermark);
 
 protected:
   obstack *m_obstack;

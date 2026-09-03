@@ -23,8 +23,7 @@ along with GCC; see the file COPYING3.  If not see
 
 #define __GNU_SYMS__
 
-enum sdb_storage_class
-{
+enum sdb_storage_class {
   C_EFCN = -1,
   C_NULL = 0,
   C_AUTO = 1,
@@ -55,8 +54,7 @@ enum sdb_storage_class
   C_HIDDEN = 106
 };
 
-enum sdb_type
-{
+enum sdb_type {
   T_NULL = 0,
   T_ARG = 1,
   T_VOID = 1,
@@ -76,16 +74,9 @@ enum sdb_type
   T_ULONG = 15
 };
 
-enum sdb_type_class
-{
-  DT_NON = 0,
-  DT_PTR = 1,
-  DT_FCN = 2,
-  DT_ARY = 3
-};
+enum sdb_type_class { DT_NON = 0, DT_PTR = 1, DT_FCN = 2, DT_ARY = 3 };
 
-enum sdb_masks
-{
+enum sdb_masks {
   N_BTMASK = 017,
   N_TMASK = 060,
   N_TMASK1 = 0300,

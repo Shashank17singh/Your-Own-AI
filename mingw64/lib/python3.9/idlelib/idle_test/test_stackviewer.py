@@ -17,10 +17,9 @@ class StackBrowserTest(unittest.TestCase):
         try:
             abc
         except NameError:
-            svs.last_type, svs.last_value, svs.last_traceback = (
-                sys.exc_info())
+            svs.last_type, svs.last_value, svs.last_traceback = sys.exc_info()
 
-        requires('gui')
+        requires("gui")
         cls.root = Tk()
         cls.root.withdraw()
 
@@ -30,8 +29,8 @@ class StackBrowserTest(unittest.TestCase):
         del svs.last_traceback, svs.last_type, svs.last_value
 
         cls.root.update_idletasks()
-##        for id in cls.root.tk.call('after', 'info'):
-##            cls.root.after_cancel(id)  # Need for EditorWindow.
+        ##        for id in cls.root.tk.call('after', 'info'):
+        ##            cls.root.after_cancel(id)  # Need for EditorWindow.
         cls.root.destroy()
         del cls.root
 
@@ -43,5 +42,5 @@ class StackBrowserTest(unittest.TestCase):
         isi(stackviewer.node, TreeNode)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

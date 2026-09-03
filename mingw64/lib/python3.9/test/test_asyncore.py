@@ -17,7 +17,8 @@ if support.PGO:
     raise unittest.SkipTest("test is not helpful for PGO")
 
 
-HAS_UNIX_SOCKETS = hasattr(socket, 'AF_UNIX')
+HAS_UNIX_SOCKETS = hasattr(socket, "AF_UNIX")
+
 
 class dummysocket:
     def __init__(self):
@@ -29,12 +30,14 @@ class dummysocket:
     def fileno(self):
         return 42
 
+
 class dummychannel:
     def __init__(self):
         self.socket = dummysocket()
 
     def close(self):
         self.socket.close()
+
 
 class exitingdummy:
     def __init__(self):
@@ -46,6 +49,7 @@ class exitingdummy:
     handle_write_event = handle_read_event
     handle_close = handle_read_event
     handle_expt_event = handle_read_event
+
 
 class crashingdummy:
     def __init__(self):
@@ -60,6 +64,7 @@ class crashingdummy:
 
     def handle_error(self):
         self.error_handled = True
+
 
 # used when testing senders; just collects what it gets until newline is sent
 def capture_server(evt, buf, serv):
@@ -77,8 +82,8 @@ def capture_server(evt, buf, serv):
                 n -= 1
                 data = conn.recv(10)
                 # keep everything except for the newline terminator
-                buf.write(data.replace(b'\n', b''))
-                if b'\n' in data:
+                buf.write(data.replace(b"\n", b""))
+                if b"\n" in data:
                     break
             time.sleep(0.01)
 
@@ -86,6 +91,7 @@ def capture_server(evt, buf, serv):
     finally:
         serv.close()
         evt.set()
+
 
 def bind_af_aware(sock, addr):
     """Helper function to bind a socket according to its family."""
@@ -127,20 +133,20 @@ class HelperFunctionTests(unittest.TestCase):
     # http://mail.python.org/pipermail/python-list/2001-October/109973.html)
     # These constants should be present as long as poll is available
 
-    @unittest.skipUnless(hasattr(select, 'poll'), 'select.poll required')
+    @unittest.skipUnless(hasattr(select, "poll"), "select.poll required")
     def test_readwrite(self):
         # Check that correct methods are called by readwrite()
 
-        attributes = ('read', 'expt', 'write', 'closed', 'error_handled')
+        attributes = ("read", "expt", "write", "closed", "error_handled")
 
         expected = (
-            (select.POLLIN, 'read'),
-            (select.POLLPRI, 'expt'),
-            (select.POLLOUT, 'write'),
-            (select.POLLERR, 'closed'),
-            (select.POLLHUP, 'closed'),
-            (select.POLLNVAL, 'closed'),
-            )
+            (select.POLLIN, "read"),
+            (select.POLLPRI, "expt"),
+            (select.POLLOUT, "write"),
+            (select.POLLERR, "closed"),
+            (select.POLLHUP, "closed"),
+            (select.POLLNVAL, "closed"),
+        )
 
         class testobj:
             def __init__(self):
@@ -173,7 +179,7 @@ class HelperFunctionTests(unittest.TestCase):
             # Only the attribute modified by the routine we expect to be
             # called should be True.
             for attr in attributes:
-                self.assertEqual(getattr(tobj, attr), attr==expectedattr)
+                self.assertEqual(getattr(tobj, attr), attr == expectedattr)
 
             # check that ExitNow exceptions in the object handler method
             # bubbles all the way up through asyncore readwrite call
@@ -229,11 +235,11 @@ class HelperFunctionTests(unittest.TestCase):
             self.fail("Expected exception")
 
         (f, function, line), t, v, info = r
-        self.assertEqual(os.path.split(f)[-1], 'test_asyncore.py')
-        self.assertEqual(function, 'test_compact_traceback')
+        self.assertEqual(os.path.split(f)[-1], "test_asyncore.py")
+        self.assertEqual(function, "test_compact_traceback")
         self.assertEqual(t, real_t)
         self.assertEqual(v, real_v)
-        self.assertEqual(info, '[%s|%s|%s]' % (f, function, line))
+        self.assertEqual(info, "[%s|%s|%s]" % (f, function, line))
 
 
 class DispatcherTests(unittest.TestCase):
@@ -250,7 +256,7 @@ class DispatcherTests(unittest.TestCase):
 
     def test_repr(self):
         d = asyncore.dispatcher()
-        self.assertEqual(repr(d), '<asyncore.dispatcher at %#x>' % id(d))
+        self.assertEqual(repr(d), "<asyncore.dispatcher at %#x>" % id(d))
 
     def test_log(self):
         d = asyncore.dispatcher()
@@ -263,7 +269,7 @@ class DispatcherTests(unittest.TestCase):
             d.log(l2)
 
         lines = stderr.getvalue().splitlines()
-        self.assertEqual(lines, ['log: %s' % l1, 'log: %s' % l2])
+        self.assertEqual(lines, ["log: %s" % l1, "log: %s" % l2])
 
     def test_log_info(self):
         d = asyncore.dispatcher()
@@ -273,12 +279,12 @@ class DispatcherTests(unittest.TestCase):
         l2 = "Why can't she have egg bacon spam and sausage?"
         l3 = "THAT'S got spam in it!"
         with support.captured_stdout() as stdout:
-            d.log_info(l1, 'EGGS')
+            d.log_info(l1, "EGGS")
             d.log_info(l2)
-            d.log_info(l3, 'SPAM')
+            d.log_info(l3, "SPAM")
 
         lines = stdout.getvalue().splitlines()
-        expected = ['EGGS: %s' % l1, 'info: %s' % l2, 'SPAM: %s' % l3]
+        expected = ["EGGS: %s" % l1, "info: %s" % l2, "SPAM: %s" % l3]
         self.assertEqual(lines, expected)
 
     def test_unhandled(self):
@@ -293,16 +299,18 @@ class DispatcherTests(unittest.TestCase):
             d.handle_connect()
 
         lines = stdout.getvalue().splitlines()
-        expected = ['warning: unhandled incoming priority event',
-                    'warning: unhandled read event',
-                    'warning: unhandled write event',
-                    'warning: unhandled connect event']
+        expected = [
+            "warning: unhandled incoming priority event",
+            "warning: unhandled read event",
+            "warning: unhandled write event",
+            "warning: unhandled connect event",
+        ]
         self.assertEqual(lines, expected)
 
     def test_strerror(self):
         # refers to bug #8573
         err = asyncore._strerror(errno.EPERM)
-        if hasattr(os, 'strerror'):
+        if hasattr(os, "strerror"):
             self.assertEqual(err, os.strerror(errno.EPERM))
         err = asyncore._strerror(-1)
         self.assertTrue(err != "")
@@ -349,7 +357,7 @@ class DispatcherWithSendTests(unittest.TestCase):
 
             d.send(data)
             d.send(data)
-            d.send(b'\n')
+            d.send(b"\n")
 
             n = 1000
             while d.out_buffer and n > 0:
@@ -358,17 +366,18 @@ class DispatcherWithSendTests(unittest.TestCase):
 
             evt.wait()
 
-            self.assertEqual(cap.getvalue(), data*2)
+            self.assertEqual(cap.getvalue(), data * 2)
         finally:
             support.join_thread(t)
 
 
-@unittest.skipUnless(hasattr(asyncore, 'file_wrapper'),
-                     'asyncore.file_wrapper required')
+@unittest.skipUnless(
+    hasattr(asyncore, "file_wrapper"), "asyncore.file_wrapper required"
+)
 class FileWrapperTest(unittest.TestCase):
     def setUp(self):
         self.d = b"It's not dead, it's sleeping!"
-        with open(support.TESTFN, 'wb') as file:
+        with open(support.TESTFN, "wb") as file:
             file.write(self.d)
 
     def tearDown(self):
@@ -396,17 +405,20 @@ class FileWrapperTest(unittest.TestCase):
         w.write(d1)
         w.send(d2)
         w.close()
-        with open(support.TESTFN, 'rb') as file:
+        with open(support.TESTFN, "rb") as file:
             self.assertEqual(file.read(), self.d + d1 + d2)
 
-    @unittest.skipUnless(hasattr(asyncore, 'file_dispatcher'),
-                         'asyncore.file_dispatcher required')
+    @unittest.skipUnless(
+        hasattr(asyncore, "file_dispatcher"), "asyncore.file_dispatcher required"
+    )
     def test_dispatcher(self):
         fd = os.open(support.TESTFN, os.O_RDONLY)
         data = []
+
         class FileDispatcher(asyncore.file_dispatcher):
             def handle_read(self):
                 data.append(self.recv(29))
+
         s = FileDispatcher(fd)
         os.close(fd)
         asyncore.loop(timeout=0.01, use_poll=True, count=2)
@@ -418,7 +430,7 @@ class FileWrapperTest(unittest.TestCase):
         f = asyncore.file_wrapper(fd)
 
         os.close(fd)
-        with support.check_warnings(('', ResourceWarning)):
+        with support.check_warnings(("", ResourceWarning)):
             f = None
             support.gc_collect()
 
@@ -565,7 +577,6 @@ class BaseTestAPI:
         client = BaseClient(self.family, server.address)
         self.loop_waiting_for_flag(server)
 
-
     def test_handle_read(self):
         # make sure handle_read is called on data received
 
@@ -576,7 +587,7 @@ class BaseTestAPI:
         class TestHandler(BaseTestHandler):
             def __init__(self, conn):
                 BaseTestHandler.__init__(self, conn)
-                self.send(b'x' * 1024)
+                self.send(b"x" * 1024)
 
         server = BaseServer(self.family, self.addr, TestHandler)
         client = TestClient(self.family, server.address)
@@ -621,7 +632,7 @@ class BaseTestAPI:
         # Check that ECONNRESET/EPIPE is correctly handled (issues #5661 and
         # #11265).
 
-        data = b'\0' * 128
+        data = b"\0" * 128
 
         class TestClient(BaseClient):
 
@@ -649,8 +660,9 @@ class BaseTestAPI:
         client = TestClient(self.family, server.address)
         self.loop_waiting_for_flag(client)
 
-    @unittest.skipIf(sys.platform.startswith("sunos"),
-                     "OOB support is broken on Solaris")
+    @unittest.skipIf(
+        sys.platform.startswith("sunos"), "OOB support is broken on Solaris"
+    )
     def test_handle_expt(self):
         # Make sure handle_expt is called on OOB data received.
         # Note: this might fail on some platforms as OOB data is
@@ -669,7 +681,7 @@ class BaseTestAPI:
         class TestHandler(BaseTestHandler):
             def __init__(self, conn):
                 BaseTestHandler.__init__(self, conn)
-                self.socket.send(bytes(chr(244), 'latin-1'), socket.MSG_OOB)
+                self.socket.send(bytes(chr(244), "latin-1"), socket.MSG_OOB)
 
         server = BaseServer(self.family, self.addr, TestHandler)
         client = TestClient(self.family, server.address)
@@ -680,6 +692,7 @@ class BaseTestAPI:
         class TestClient(BaseClient):
             def handle_write(self):
                 1.0 / 0
+
             def handle_error(self):
                 self.flag = True
                 try:
@@ -701,7 +714,7 @@ class BaseTestAPI:
         self.assertFalse(server.connected)
         self.assertTrue(server.accepting)
         # this can't be taken for granted across all platforms
-        #self.assertFalse(client.connected)
+        # self.assertFalse(client.connected)
         self.assertFalse(client.accepting)
 
         # execute some loops so that client connects to server
@@ -758,13 +771,15 @@ class BaseTestAPI:
                 # if SO_REUSEADDR succeeded for sock we expect asyncore
                 # to do the same
                 s = asyncore.dispatcher(socket.socket(self.family))
-                self.assertFalse(s.socket.getsockopt(socket.SOL_SOCKET,
-                                                     socket.SO_REUSEADDR))
+                self.assertFalse(
+                    s.socket.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR)
+                )
                 s.socket.close()
                 s.create_socket(self.family)
                 s.set_reuse_addr()
-                self.assertTrue(s.socket.getsockopt(socket.SOL_SOCKET,
-                                                     socket.SO_REUSEADDR))
+                self.assertTrue(
+                    s.socket.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR)
+                )
 
     @support.reap_threads
     def test_quick_connect(self):
@@ -774,14 +789,14 @@ class BaseTestAPI:
 
         server = BaseServer(self.family, self.addr)
         # run the thread 500 ms: the socket should be connected in 200 ms
-        t = threading.Thread(target=lambda: asyncore.loop(timeout=0.1,
-                                                          count=5))
+        t = threading.Thread(target=lambda: asyncore.loop(timeout=0.1, count=5))
         t.start()
         try:
             with socket.socket(self.family, socket.SOCK_STREAM) as s:
-                s.settimeout(.2)
-                s.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER,
-                             struct.pack('ii', 1, 0))
+                s.settimeout(0.2)
+                s.setsockopt(
+                    socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("ii", 1, 0)
+                )
 
                 try:
                     s.connect(server.address)
@@ -790,16 +805,19 @@ class BaseTestAPI:
         finally:
             support.join_thread(t)
 
+
 class TestAPI_UseIPv4Sockets(BaseTestAPI):
     family = socket.AF_INET
     addr = (socket_helper.HOST, 0)
 
-@unittest.skipUnless(socket_helper.IPV6_ENABLED, 'IPv6 support required')
+
+@unittest.skipUnless(socket_helper.IPV6_ENABLED, "IPv6 support required")
 class TestAPI_UseIPv6Sockets(BaseTestAPI):
     family = socket.AF_INET6
     addr = (socket_helper.HOSTv6, 0)
 
-@unittest.skipUnless(HAS_UNIX_SOCKETS, 'Unix sockets required')
+
+@unittest.skipUnless(HAS_UNIX_SOCKETS, "Unix sockets required")
 class TestAPI_UseUnixSockets(BaseTestAPI):
     if HAS_UNIX_SOCKETS:
         family = socket.AF_UNIX
@@ -809,26 +827,33 @@ class TestAPI_UseUnixSockets(BaseTestAPI):
         support.unlink(self.addr)
         BaseTestAPI.tearDown(self)
 
+
 class TestAPI_UseIPv4Select(TestAPI_UseIPv4Sockets, unittest.TestCase):
     use_poll = False
 
-@unittest.skipUnless(hasattr(select, 'poll'), 'select.poll required')
+
+@unittest.skipUnless(hasattr(select, "poll"), "select.poll required")
 class TestAPI_UseIPv4Poll(TestAPI_UseIPv4Sockets, unittest.TestCase):
     use_poll = True
+
 
 class TestAPI_UseIPv6Select(TestAPI_UseIPv6Sockets, unittest.TestCase):
     use_poll = False
 
-@unittest.skipUnless(hasattr(select, 'poll'), 'select.poll required')
+
+@unittest.skipUnless(hasattr(select, "poll"), "select.poll required")
 class TestAPI_UseIPv6Poll(TestAPI_UseIPv6Sockets, unittest.TestCase):
     use_poll = True
+
 
 class TestAPI_UseUnixSocketsSelect(TestAPI_UseUnixSockets, unittest.TestCase):
     use_poll = False
 
-@unittest.skipUnless(hasattr(select, 'poll'), 'select.poll required')
+
+@unittest.skipUnless(hasattr(select, "poll"), "select.poll required")
 class TestAPI_UseUnixSocketsPoll(TestAPI_UseUnixSockets, unittest.TestCase):
     use_poll = True
+
 
 if __name__ == "__main__":
     unittest.main()

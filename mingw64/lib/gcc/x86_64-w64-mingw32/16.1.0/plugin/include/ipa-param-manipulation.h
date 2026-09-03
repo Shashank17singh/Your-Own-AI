@@ -120,13 +120,12 @@ have extraneous arguments.  */
 
 /* Indices into ipa_param_prefixes to identify a human-readable prefix for newly
    synthesized parameters.  Keep in sync with the array.  */
-enum ipa_param_name_prefix_indices
-  {
-   IPA_PARAM_PREFIX_SYNTH,
-   IPA_PARAM_PREFIX_ISRA,
-   IPA_PARAM_PREFIX_SIMD,
-   IPA_PARAM_PREFIX_MASK,
-   IPA_PARAM_PREFIX_COUNT
+enum ipa_param_name_prefix_indices {
+  IPA_PARAM_PREFIX_SYNTH,
+  IPA_PARAM_PREFIX_ISRA,
+  IPA_PARAM_PREFIX_SIMD,
+  IPA_PARAM_PREFIX_MASK,
+  IPA_PARAM_PREFIX_COUNT
 };
 
 /* We do not support manipulating functions with more than
@@ -136,8 +135,7 @@ enum ipa_param_name_prefix_indices
 /* Operation to be performed for the parameter in ipa_parm_adjustment
    below.  */
 
-enum ipa_parm_op
-{
+enum ipa_parm_op {
   /* Do not use or you will trigger an assert.  */
   IPA_PARAM_OP_UNDEFINED,
 
@@ -148,15 +146,14 @@ enum ipa_parm_op
      original parameters, the user needs to manage the transition itself.  */
   IPA_PARAM_OP_NEW,
 
-    /* Split parameter as indicated by fields base_index, offset and type.  */
+  /* Split parameter as indicated by fields base_index, offset and type.  */
   IPA_PARAM_OP_SPLIT
 };
 
 /* Structure that describes one parameter of a function after transformation.
    Omitted parameters will be removed.  */
 
-struct GTY(()) ipa_adjusted_param
-{
+struct GTY(()) ipa_adjusted_param {
   /* Type of the new parameter.  Required for all operations except
      IPA_PARM_OP_COPY when the original type will be preserved.  */
   tree type;
@@ -199,16 +196,15 @@ struct GTY(()) ipa_adjusted_param
   unsigned user_flag : 1;
 };
 
-void ipa_dump_adjusted_parameters (FILE *f,
-				   vec<ipa_adjusted_param, va_gc> *adj_params);
+void ipa_dump_adjusted_parameters(FILE *f,
+                                  vec<ipa_adjusted_param, va_gc> *adj_params);
 
 /* Class used to record planned modifications to parameters of a function and
    also to perform necessary modifications at the caller side at the gimple
    level.  Used to describe all cgraph node clones that have their parameters
    changed, therefore the class should only have a small memory footprint.  */
 
-class GTY(()) ipa_param_adjustments
-{
+class GTY(()) ipa_param_adjustments {
 public:
   /* Constructor from NEW_PARAMS showing how new parameters should look like
       plus copying any pre-existing actual arguments starting from argument
@@ -216,34 +212,33 @@ public:
       anything beyond what is described in NEW_PARAMS), and SKIP_RETURN, which
       indicates that the function should return void after transformation.  */
 
-  ipa_param_adjustments (vec<ipa_adjusted_param, va_gc> *new_params,
-			 int always_copy_start, bool skip_return)
-    : m_adj_params (new_params), m_always_copy_start (always_copy_start),
-    m_skip_return (skip_return)
-    {}
+  ipa_param_adjustments(vec<ipa_adjusted_param, va_gc> *new_params,
+                        int always_copy_start, bool skip_return)
+      : m_adj_params(new_params), m_always_copy_start(always_copy_start),
+        m_skip_return(skip_return) {}
 
   /* Modify a call statement arguments (and possibly remove the return value)
      as described in the data fields of this class.  */
-  gcall *modify_call (cgraph_edge *cs, bool update_references,
-		      hash_set <tree> *killed_ssas);
+  gcall *modify_call(cgraph_edge *cs, bool update_references,
+                     hash_set<tree> *killed_ssas);
   /* Return if the first parameter is left intact.  */
-  bool first_param_intact_p ();
+  bool first_param_intact_p();
   /* Build a function type corresponding to the modified call.  */
-  tree build_new_function_type (tree old_type, bool type_is_original_p,
-				bool *args_modified = NULL);
+  tree build_new_function_type(tree old_type, bool type_is_original_p,
+                               bool *args_modified = NULL);
   /* Build a declaration corresponding to the target of the modified call.  */
-  tree adjust_decl (tree orig_decl);
+  tree adjust_decl(tree orig_decl);
   /* Fill a vector marking which parameters are intact by the described
      modifications. */
-  void get_surviving_params (vec<bool> *surviving_params);
+  void get_surviving_params(vec<bool> *surviving_params);
   /* Fill a vector with new indices of surviving original parameters.  */
-  void get_updated_indices (vec<int> *new_indices);
+  void get_updated_indices(vec<int> *new_indices);
   /* Return the original index for the given new parameter index.  Return a
      negative number if not available.  */
-  int get_original_index (int newidx);
+  int get_original_index(int newidx);
 
-  void dump (FILE *f);
-  void debug ();
+  void dump(FILE *f);
+  void debug();
 
   /* How the known part of arguments should look like.  */
   vec<ipa_adjusted_param, va_gc> *m_adj_params;
@@ -256,20 +251,20 @@ public:
   /* If true, make the function not return any value.  */
   bool m_skip_return;
 
-  static bool type_attribute_allowed_p (tree);
-private:
-  ipa_param_adjustments () {}
+  static bool type_attribute_allowed_p(tree);
 
-  void init (vec<tree> *cur_params);
-  int get_max_base_index ();
-  bool method2func_p (tree orig_type);
+private:
+  ipa_param_adjustments() {}
+
+  void init(vec<tree> *cur_params);
+  int get_max_base_index();
+  bool method2func_p(tree orig_type);
 };
 
 /* Structure used to map expressions accessing split or replaced parameters to
    new PARM_DECLs.  */
 
-struct ipa_param_body_replacement
-{
+struct ipa_param_body_replacement {
   /* The old decl of the original parameter.   */
   tree base;
   /* The new decl it should be replaced with.  */
@@ -293,57 +288,55 @@ struct ipa_replace_map;
    unified way in both modes, there are many aspects of the processs that
    requires distinct paths.  */
 
-class ipa_param_body_adjustments
-{
+class ipa_param_body_adjustments {
 public:
   /* Constructor to use from within tree-inline.  */
-  ipa_param_body_adjustments (ipa_param_adjustments *adjustments,
-			      tree fndecl, tree old_fndecl,
-			      struct copy_body_data *id, tree *vars,
-			      vec<ipa_replace_map *, va_gc> *tree_map);
+  ipa_param_body_adjustments(ipa_param_adjustments *adjustments, tree fndecl,
+                             tree old_fndecl, struct copy_body_data *id,
+                             tree *vars,
+                             vec<ipa_replace_map *, va_gc> *tree_map);
   /* Constructor to use for modifying a function outside of tree-inline from an
      instance of ipa_param_adjustments.  */
-  ipa_param_body_adjustments (ipa_param_adjustments *adjustments,
-			      tree fndecl);
+  ipa_param_body_adjustments(ipa_param_adjustments *adjustments, tree fndecl);
   /* Constructor to use for modifying a function outside of tree-inline from a
      simple vector of desired parameter modification.  */
-  ipa_param_body_adjustments (vec<ipa_adjusted_param, va_gc> *adj_params,
-			      tree fndecl);
+  ipa_param_body_adjustments(vec<ipa_adjusted_param, va_gc> *adj_params,
+                             tree fndecl);
 
   /* The do-it-all function for modifying a function outside of
      tree-inline.  */
-  bool perform_cfun_body_modifications ();
+  bool perform_cfun_body_modifications();
 
   /* Change the PARM_DECLs.  */
-  void modify_formal_parameters ();
+  void modify_formal_parameters();
   /* Register a REPLACEMENT for accesses to BASE at UNIT_OFFSET.  */
-  void register_replacement (tree base, unsigned unit_offset, tree replacement);
+  void register_replacement(tree base, unsigned unit_offset, tree replacement);
   /* Register a replacement decl for the transformation done in APM.  */
-  void register_replacement (ipa_adjusted_param *apm, tree replacement);
+  void register_replacement(ipa_adjusted_param *apm, tree replacement);
   /* Sort m_replacements and set m_sorted_replacements_p to true.  Users that
      call register_replacement themselves must call the method before any
      lookup and thus also any statement or expression modification.  */
-  void sort_replacements ();
+  void sort_replacements();
   /* Lookup a replacement for a given offset within a given parameter.  */
-  tree lookup_replacement (tree base, unsigned unit_offset);
+  tree lookup_replacement(tree base, unsigned unit_offset);
   /* Lookup a replacement for an expression, if there is one.  */
-  ipa_param_body_replacement *get_expr_replacement (tree expr,
-						    bool ignore_default_def);
+  ipa_param_body_replacement *get_expr_replacement(tree expr,
+                                                   bool ignore_default_def);
   /* Lookup the new base for surviving names previously belonging to a
      parameter. */
-  tree get_replacement_ssa_base (tree old_decl);
+  tree get_replacement_ssa_base(tree old_decl);
   /* Modify a statement.  */
-  bool modify_gimple_stmt (gimple **stmt, gimple_seq *extra_stmts,
-			   gimple *orig_stmt);
+  bool modify_gimple_stmt(gimple **stmt, gimple_seq *extra_stmts,
+                          gimple *orig_stmt);
   /* Return the new chain of parameters.  */
-  tree get_new_param_chain ();
+  tree get_new_param_chain();
   /* Replace all occurances of SSAs in m_dead_ssa_debug_equiv in t with what
      they are mapped to.  */
-  void remap_with_debug_expressions (tree *t);
+  void remap_with_debug_expressions(tree *t);
 
   /* If there are any initialization statements that need to be emitted into
      the basic block BB right at ther start of the new function, do so.  */
-  void append_init_stmts (basic_block bb);
+  void append_init_stmts(basic_block bb);
 
   /* Pointers to data structures defining how the function should be
      modified.  */
@@ -367,23 +360,23 @@ public:
   hash_map<gimple *, tree> m_dead_stmt_debug_equiv;
 
 private:
-  void common_initialization (tree old_fndecl, tree *vars,
-			      vec<ipa_replace_map *, va_gc> *tree_map);
-  tree carry_over_param (tree t);
-  unsigned get_base_index (ipa_adjusted_param *apm);
-  ipa_param_body_replacement *lookup_replacement_1 (tree base,
-						    unsigned unit_offset);
-  ipa_param_body_replacement *lookup_first_base_replacement (tree base);
-  tree replace_removed_params_ssa_names (tree old_name, gimple *stmt);
-  bool modify_expression (tree *expr_p, bool convert, gimple_seq * = nullptr);
-  bool modify_assignment (gimple *stmt, gimple_seq *extra_stmts);
-  bool modify_call_stmt (gcall **stmt_p, gimple *orig_stmt);
-  bool modify_cfun_body ();
-  void reset_debug_stmts ();
-  tree get_ddef_if_exists_and_is_used (tree decl);
-  void mark_dead_statements (tree dead_param, vec<tree> *debugstack);
-  void mark_clobbers_dead (tree dead_param);
-  bool prepare_debug_expressions (tree dead_ssa);
+  void common_initialization(tree old_fndecl, tree *vars,
+                             vec<ipa_replace_map *, va_gc> *tree_map);
+  tree carry_over_param(tree t);
+  unsigned get_base_index(ipa_adjusted_param *apm);
+  ipa_param_body_replacement *lookup_replacement_1(tree base,
+                                                   unsigned unit_offset);
+  ipa_param_body_replacement *lookup_first_base_replacement(tree base);
+  tree replace_removed_params_ssa_names(tree old_name, gimple *stmt);
+  bool modify_expression(tree *expr_p, bool convert, gimple_seq * = nullptr);
+  bool modify_assignment(gimple *stmt, gimple_seq *extra_stmts);
+  bool modify_call_stmt(gcall **stmt_p, gimple *orig_stmt);
+  bool modify_cfun_body();
+  void reset_debug_stmts();
+  tree get_ddef_if_exists_and_is_used(tree decl);
+  void mark_dead_statements(tree dead_param, vec<tree> *debugstack);
+  void mark_clobbers_dead(tree dead_param);
+  bool prepare_debug_expressions(tree dead_ssa);
 
   /* Declaration of the function that is being transformed.  */
 
@@ -440,10 +433,10 @@ private:
   bool m_sorted_replacements_p;
 };
 
-void push_function_arg_decls (vec<tree> *args, tree fndecl);
-void push_function_arg_types (vec<tree> *types, tree fntype);
-void ipa_verify_edge_has_no_modifications (cgraph_edge *cs);
-void ipa_edge_modifications_finalize ();
-void ipa_release_ssas_in_hash (hash_set <tree> *killed_ssas);
+void push_function_arg_decls(vec<tree> *args, tree fndecl);
+void push_function_arg_types(vec<tree> *types, tree fntype);
+void ipa_verify_edge_has_no_modifications(cgraph_edge *cs);
+void ipa_edge_modifications_finalize();
+void ipa_release_ssas_in_hash(hash_set<tree> *killed_ssas);
 
-#endif	/* IPA_PARAM_MANIPULATION_H */
+#endif /* IPA_PARAM_MANIPULATION_H */

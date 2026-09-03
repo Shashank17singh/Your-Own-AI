@@ -26,6 +26,7 @@ class QueueBasicTests(_QueueTestBase):
         fn is repr or str. expect_id is True if we expect the Queue's id to
         appear in fn(Queue()).
         """
+
         def gen():
             when = yield
             self.assertAlmostEqual(0.1, when)
@@ -37,7 +38,7 @@ class QueueBasicTests(_QueueTestBase):
 
         with self.assertWarns(DeprecationWarning):
             q = asyncio.Queue(loop=loop)
-        self.assertTrue(fn(q).startswith('<Queue'), fn(q))
+        self.assertTrue(fn(q).startswith("<Queue"), fn(q))
         id_is_present = hex(id(q)) in fn(q)
         self.assertEqual(expect_id, id_is_present)
 
@@ -47,7 +48,7 @@ class QueueBasicTests(_QueueTestBase):
             loop.create_task(q.get())
             # Let it start waiting.
             await asyncio.sleep(0.1)
-            self.assertTrue('_getters[1]' in fn(q))
+            self.assertTrue("_getters[1]" in fn(q))
             # resume q.get coroutine to finish generator
             q.put_nowait(0)
 
@@ -61,7 +62,7 @@ class QueueBasicTests(_QueueTestBase):
             loop.create_task(q.put(2))
             # Let it start waiting.
             await asyncio.sleep(0.1)
-            self.assertTrue('_putters[1]' in fn(q))
+            self.assertTrue("_putters[1]" in fn(q))
             # resume q.put coroutine to finish generator
             q.get_nowait()
 
@@ -69,7 +70,7 @@ class QueueBasicTests(_QueueTestBase):
             loop.run_until_complete(add_putter())
             q = asyncio.Queue(loop=loop)
         q.put_nowait(1)
-        self.assertTrue('_queue=[1]' in fn(q))
+        self.assertTrue("_queue=[1]" in fn(q))
 
     def test_ctor_loop(self):
         loop = mock.Mock()
@@ -271,18 +272,18 @@ class QueueGetTests(_QueueTestBase):
         t1.cancel()
         test_utils.run_briefly(self.loop)
         self.assertTrue(t1.done())
-        q.put_nowait('a')
+        q.put_nowait("a")
         test_utils.run_briefly(self.loop)
-        self.assertEqual(t2.result(), 'a')
+        self.assertEqual(t2.result(), "a")
 
     def test_get_with_waiting_putters(self):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.Queue(loop=self.loop, maxsize=1)
-        self.loop.create_task(q.put('a'))
-        self.loop.create_task(q.put('b'))
+        self.loop.create_task(q.put("a"))
+        self.loop.create_task(q.put("b"))
         test_utils.run_briefly(self.loop)
-        self.assertEqual(self.loop.run_until_complete(q.get()), 'a')
-        self.assertEqual(self.loop.run_until_complete(q.get()), 'b')
+        self.assertEqual(self.loop.run_until_complete(q.get()), "a")
+        self.assertEqual(self.loop.run_until_complete(q.get()), "b")
 
     def test_why_are_getters_waiting(self):
         # From issue #268.
@@ -302,10 +303,12 @@ class QueueGetTests(_QueueTestBase):
             q = asyncio.Queue(queue_size, loop=self.loop)
 
         self.loop.run_until_complete(
-            asyncio.gather(producer(q, producer_num_items),
-                           consumer(q, producer_num_items),
-                           loop=self.loop),
-            )
+            asyncio.gather(
+                producer(q, producer_num_items),
+                consumer(q, producer_num_items),
+                loop=self.loop,
+            ),
+        )
 
     def test_cancelled_getters_not_being_held_in_self_getters(self):
         def a_generator():
@@ -489,6 +492,7 @@ class QueuePutTests(_QueueTestBase):
             await q.put(1)
             await q.put(2)
             self.assertTrue(q.full())
+
         self.loop.run_until_complete(queue_put())
 
     def test_put_cancelled(self):
@@ -511,9 +515,9 @@ class QueuePutTests(_QueueTestBase):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.Queue(loop=self.loop, maxsize=1)
 
-        put_a = self.loop.create_task(q.put('a'))
-        put_b = self.loop.create_task(q.put('b'))
-        put_c = self.loop.create_task(q.put('X'))
+        put_a = self.loop.create_task(q.put("a"))
+        put_b = self.loop.create_task(q.put("b"))
+        put_c = self.loop.create_task(q.put("X"))
 
         test_utils.run_briefly(self.loop)
         self.assertTrue(put_a.done())
@@ -522,9 +526,9 @@ class QueuePutTests(_QueueTestBase):
         put_c.cancel()
         test_utils.run_briefly(self.loop)
         self.assertTrue(put_c.done())
-        self.assertEqual(q.get_nowait(), 'a')
+        self.assertEqual(q.get_nowait(), "a")
         test_utils.run_briefly(self.loop)
-        self.assertEqual(q.get_nowait(), 'b')
+        self.assertEqual(q.get_nowait(), "b")
 
         self.loop.run_until_complete(put_b)
 
@@ -533,8 +537,8 @@ class QueuePutTests(_QueueTestBase):
             q = asyncio.Queue(loop=self.loop)
         t = self.loop.create_task(q.get())
         test_utils.run_briefly(self.loop)
-        self.loop.run_until_complete(q.put('a'))
-        self.assertEqual(self.loop.run_until_complete(t), 'a')
+        self.loop.run_until_complete(q.put("a"))
+        self.assertEqual(self.loop.run_until_complete(t), "a")
 
     def test_why_are_putters_waiting(self):
         # From issue #265.
@@ -556,7 +560,8 @@ class QueuePutTests(_QueueTestBase):
         t2 = putter(2)
         t3 = putter(3)
         self.loop.run_until_complete(
-            asyncio.gather(getter(), t0, t1, t2, t3, loop=self.loop))
+            asyncio.gather(getter(), t0, t1, t2, t3, loop=self.loop)
+        )
 
     def test_cancelled_puts_not_being_held_in_self_putters(self):
         def a_generator():
@@ -665,8 +670,7 @@ class _QueueJoinTestMixin:
                 q.task_done()
 
         async def test():
-            tasks = [self.loop.create_task(worker())
-                     for index in range(2)]
+            tasks = [self.loop.create_task(worker()) for index in range(2)]
 
             await q.join()
             return tasks
@@ -696,10 +700,10 @@ class _QueueJoinTestMixin:
     def test_format(self):
         with self.assertWarns(DeprecationWarning):
             q = self.q_class(loop=self.loop)
-        self.assertEqual(q._format(), 'maxsize=0')
+        self.assertEqual(q._format(), "maxsize=0")
 
         q._unfinished_tasks = 2
-        self.assertEqual(q._format(), 'maxsize=0 tasks=2')
+        self.assertEqual(q._format(), "maxsize=0 tasks=2")
 
 
 class QueueJoinTests(_QueueJoinTestMixin, _QueueTestBase):
@@ -714,5 +718,5 @@ class PriorityQueueJoinTests(_QueueJoinTestMixin, _QueueTestBase):
     q_class = asyncio.PriorityQueue
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,21 +1,4 @@
-# Unwinder commands.
-# Copyright 2015-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import re
-
 import gdb
 
 
@@ -28,18 +11,14 @@ def validate_regexp(exp, idstring):
 
 def parse_unwinder_command_args(arg):
     """Internal utility to parse unwinder command argv.
-
     Arguments:
         arg: The arguments to the command. The format is:
              [locus-regexp [name-regexp]]
-
     Returns:
         A 2-tuple of compiled regular expressions.
-
     Raises:
         SyntaxError: an error processing ARG
     """
-
     argv = gdb.string_to_argv(arg)
     argc = len(argv)
     if argc > 2:
@@ -58,15 +37,12 @@ def parse_unwinder_command_args(arg):
 
 class InfoUnwinder(gdb.Command):
     """GDB command to list unwinders.
-
     Usage: info unwinder [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression matching the location of the
     unwinder.  If it is omitted, all registered unwinders from all
     loci are listed.  A locus can be 'global', 'progspace' to list
     the unwinders from the current progspace, or a regular expression
     matching filenames of objfiles.
-
     NAME-REGEXP is a regular expression to filter unwinder names.  If
     this omitted for a specified locus, then all registered unwinders
     in the locus are listed."""
@@ -76,7 +52,6 @@ class InfoUnwinder(gdb.Command):
 
     def list_unwinders(self, title, unwinders, name_re):
         """Lists the unwinders whose name matches regexp.
-
         Arguments:
             title: The line to print before the list.
             unwinders: The list of the unwinders.
@@ -110,12 +85,10 @@ class InfoUnwinder(gdb.Command):
 
 def do_enable_unwinder1(unwinders, name_re, flag):
     """Enable/disable unwinders whose names match given regex.
-
     Arguments:
         unwinders: The list of unwinders.
         name_re: Unwinder name filter.
         flag: Enable/disable.
-
     Returns:
         The number of unwinders affected.
     """
@@ -129,7 +102,7 @@ def do_enable_unwinder1(unwinders, name_re, flag):
 
 def do_enable_unwinder(arg, flag):
     """Enable/disable unwinder(s)."""
-    (locus_re, name_re) = parse_unwinder_command_args(arg)
+    locus_re, name_re = parse_unwinder_command_args(arg)
     total = 0
     if locus_re.match("global"):
         total += do_enable_unwinder1(gdb.frame_unwinders, name_re, flag)
@@ -150,13 +123,10 @@ def do_enable_unwinder(arg, flag):
 
 class EnableUnwinder(gdb.Command):
     """GDB command to enable unwinders.
-
     Usage: enable unwinder [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression specifying the unwinders to
     enable.  It can 'global', 'progspace', or the name of an objfile
     within that progspace.
-
     NAME_REGEXP is a regular expression to filter unwinder names.  If
     this omitted for a specified locus, then all registered unwinders
     in the locus are affected."""
@@ -171,13 +141,10 @@ class EnableUnwinder(gdb.Command):
 
 class DisableUnwinder(gdb.Command):
     """GDB command to disable the specified unwinder.
-
     Usage: disable unwinder [LOCUS-REGEXP [NAME-REGEXP]]
-
     LOCUS-REGEXP is a regular expression specifying the unwinders to
     disable.  It can 'global', 'progspace', or the name of an objfile
     within that progspace.
-
     NAME_REGEXP is a regular expression to filter unwinder names.  If
     this omitted for a specified locus, then all registered unwinders
     in the locus are affected."""

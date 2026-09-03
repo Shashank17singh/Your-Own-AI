@@ -50,22 +50,22 @@ enum ubsan_encode_value_phase {
   UBSAN_ENCODE_VALUE_RTL
 };
 
-extern bool ubsan_expand_bounds_ifn (gimple_stmt_iterator *);
-extern bool ubsan_expand_null_ifn (gimple_stmt_iterator *);
-extern bool ubsan_expand_objsize_ifn (gimple_stmt_iterator *);
-extern bool ubsan_expand_ptr_ifn (gimple_stmt_iterator *);
-extern bool ubsan_expand_vptr_ifn (gimple_stmt_iterator *);
-extern bool ubsan_instrument_unreachable (gimple_stmt_iterator *);
-extern tree ubsan_create_data (const char *, int, const location_t *, ...);
-extern tree ubsan_type_descriptor (tree, ubsan_print_style
-					 = UBSAN_PRINT_NORMAL);
-extern tree ubsan_encode_value (tree, ubsan_encode_value_phase
-				      = UBSAN_ENCODE_VALUE_GENERIC);
-extern bool is_ubsan_builtin_p (tree);
-extern tree ubsan_build_overflow_builtin (tree_code, location_t, tree, tree,
-					  tree, tree *);
-extern tree ubsan_instrument_float_cast (location_t, tree, tree);
-extern tree ubsan_get_source_location_type (void);
-extern tree sanitize_unreachable_fn (tree *data, location_t loc);
+extern bool ubsan_expand_bounds_ifn(gimple_stmt_iterator *);
+extern bool ubsan_expand_null_ifn(gimple_stmt_iterator *);
+extern bool ubsan_expand_objsize_ifn(gimple_stmt_iterator *);
+extern bool ubsan_expand_ptr_ifn(gimple_stmt_iterator *);
+extern bool ubsan_expand_vptr_ifn(gimple_stmt_iterator *);
+extern bool ubsan_instrument_unreachable(gimple_stmt_iterator *);
+extern tree ubsan_create_data(const char *, int, const location_t *, ...);
+extern tree ubsan_type_descriptor(tree, ubsan_print_style = UBSAN_PRINT_NORMAL);
+extern tree
+    ubsan_encode_value(tree,
+                       ubsan_encode_value_phase = UBSAN_ENCODE_VALUE_GENERIC);
+extern bool is_ubsan_builtin_p(tree);
+extern tree ubsan_build_overflow_builtin(tree_code, location_t, tree, tree,
+                                         tree, tree *);
+extern tree ubsan_instrument_float_cast(location_t, tree, tree);
+extern tree ubsan_get_source_location_type(void);
+extern tree sanitize_unreachable_fn(tree *data, location_t loc);
 
-#endif  /* GCC_UBSAN_H  */
+#endif /* GCC_UBSAN_H  */

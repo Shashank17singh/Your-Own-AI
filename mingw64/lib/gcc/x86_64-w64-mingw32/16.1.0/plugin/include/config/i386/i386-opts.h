@@ -26,51 +26,37 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define I386_OPTS_H
 
 /* Algorithm to expand string function with.  */
-enum stringop_alg
-{
+enum stringop_alg {
 #undef DEF_ALG
 #define DEF_ALG(alg, name) alg,
 
 #include "stringop.def"
-last_alg
+  last_alg
 
 #undef DEF_ALG
 };
 
 /* Available call abi.  */
-enum calling_abi
-{
-  SYSV_ABI = 0,
-  MS_ABI = 1
-};
+enum calling_abi { SYSV_ABI = 0, MS_ABI = 1 };
 
-enum fpmath_unit
-{
-  FPMATH_387 = 1,
-  FPMATH_SSE = 2
-};
+enum fpmath_unit { FPMATH_387 = 1, FPMATH_SSE = 2 };
 
-enum tls_dialect
-{
-  TLS_DIALECT_GNU,
-  TLS_DIALECT_GNU2,
-  TLS_DIALECT_SUN
-};
+enum tls_dialect { TLS_DIALECT_GNU, TLS_DIALECT_GNU2, TLS_DIALECT_SUN };
 
 enum cmodel {
-  CM_32,	/* The traditional 32-bit ABI.  */
-  CM_SMALL,	/* Assumes all code and data fits in the low 31 bits.  */
-  CM_KERNEL,	/* Assumes all code and data fits in the high 31 bits.  */
-  CM_MEDIUM,	/* Assumes code fits in the low 31 bits; data unlimited.  */
-  CM_LARGE,	/* No assumptions.  */
-  CM_SMALL_PIC,	/* Assumes code+data+got/plt fits in a 31 bit region.  */
-  CM_MEDIUM_PIC,/* Assumes code+got/plt fits in a 31 bit region.  */
-  CM_LARGE_PIC	/* No assumptions.  */
+  CM_32,         /* The traditional 32-bit ABI.  */
+  CM_SMALL,      /* Assumes all code and data fits in the low 31 bits.  */
+  CM_KERNEL,     /* Assumes all code and data fits in the high 31 bits.  */
+  CM_MEDIUM,     /* Assumes code fits in the low 31 bits; data unlimited.  */
+  CM_LARGE,      /* No assumptions.  */
+  CM_SMALL_PIC,  /* Assumes code+data+got/plt fits in a 31 bit region.  */
+  CM_MEDIUM_PIC, /* Assumes code+got/plt fits in a 31 bit region.  */
+  CM_LARGE_PIC   /* No assumptions.  */
 };
 
 enum pmode {
-  PMODE_SI,	/* Pmode == SImode. */
-  PMODE_DI 	/* Pmode == DImode. */
+  PMODE_SI, /* Pmode == SImode. */
+  PMODE_DI  /* Pmode == DImode. */
 };
 
 enum ix86_align_data {
@@ -79,10 +65,7 @@ enum ix86_align_data {
   ix86_align_data_type_cacheline
 };
 
-enum asm_dialect {
-  ASM_ATT,
-  ASM_INTEL
-};
+enum asm_dialect { ASM_ATT, ASM_INTEL };
 
 enum ix86_veclibabi {
   ix86_veclibabi_type_none,
@@ -92,16 +75,11 @@ enum ix86_veclibabi {
 };
 
 enum stack_protector_guard {
-  SSP_TLS,      /* per-thread canary in TLS block */
-  SSP_GLOBAL    /* global canary */
+  SSP_TLS,   /* per-thread canary in TLS block */
+  SSP_GLOBAL /* global canary */
 };
 
-enum prefer_vector_width {
-    PVW_NONE,
-    PVW_AVX128,
-    PVW_AVX256,
-    PVW_AVX512
-};
+enum prefer_vector_width { PVW_NONE, PVW_AVX128, PVW_AVX256, PVW_AVX512 };
 
 /* This is used to mitigate variant #2 of the speculative execution
    vulnerabilities on x86 processors identified by CVE-2017-5715, aka
@@ -129,11 +107,7 @@ enum harden_sls {
   harden_sls_all = harden_sls_return | harden_sls_indirect_jmp
 };
 
-enum lam_type {
-  lam_none = 0,
-  lam_u48 = 1,
-  lam_u57
-};
+enum lam_type { lam_none = 0, lam_u48 = 1, lam_u57 };
 
 enum apx_features {
   apx_none = 0,
@@ -144,8 +118,8 @@ enum apx_features {
   apx_nf = 1 << 4,
   apx_ccmp = 1 << 5,
   apx_zu = 1 << 6,
-  apx_all = apx_egpr | apx_push2pop2 | apx_ndd
-	    | apx_ppx | apx_nf | apx_ccmp | apx_zu,
+  apx_all = apx_egpr | apx_push2pop2 | apx_ndd | apx_ppx | apx_nf | apx_ccmp |
+      apx_zu,
 };
 
 #endif

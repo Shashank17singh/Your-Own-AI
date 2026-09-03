@@ -20,7 +20,7 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_REGS_H
 #define GCC_REGS_H
 
-#define REG_BYTES(R) mode_size[(int) GET_MODE (R)]
+#define REG_BYTES(R) mode_size[(int)GET_MODE(R)]
 
 /* When you only have the mode of a pseudo register before it has a hard
    register chosen for it, this reports the size of each hard register
@@ -28,7 +28,7 @@ along with GCC; see the file COPYING3.  If not see
    override this.  */
 
 #ifndef REGMODE_NATURAL_SIZE
-#define REGMODE_NATURAL_SIZE(MODE)	UNITS_PER_WORD
+#define REGMODE_NATURAL_SIZE(MODE) UNITS_PER_WORD
 #endif
 
 /* Maximum register number used in this function, plus one.  */
@@ -51,62 +51,50 @@ extern int max_regno;
    REG_N_SETS for three address insns.  Other passes seem to have
    other special values.  */
 
-
-
 /* Structure to hold values for REG_N_SETS (i) and REG_N_REFS (i). */
 
-struct regstat_n_sets_and_refs_t
-{
-  int sets;			/* # of times (REG n) is set */
-  int refs;			/* # of times (REG n) is used or set */
+struct regstat_n_sets_and_refs_t {
+  int sets; /* # of times (REG n) is set */
+  int refs; /* # of times (REG n) is used or set */
 };
 
 extern struct regstat_n_sets_and_refs_t *regstat_n_sets_and_refs;
 
 /* Indexed by n, gives number of times (REG n) is used or set.  */
-inline int
-REG_N_REFS (int regno)
-{
-  return regstat_n_sets_and_refs[regno].refs;
-}
+inline int REG_N_REFS(int regno) { return regstat_n_sets_and_refs[regno].refs; }
 
 /* Indexed by n, gives number of times (REG n) is used or set.  */
-#define SET_REG_N_REFS(N,V) (regstat_n_sets_and_refs[N].refs = V)
-#define INC_REG_N_REFS(N,V) (regstat_n_sets_and_refs[N].refs += V)
+#define SET_REG_N_REFS(N, V) (regstat_n_sets_and_refs[N].refs = V)
+#define INC_REG_N_REFS(N, V) (regstat_n_sets_and_refs[N].refs += V)
 
 /* Indexed by n, gives number of times (REG n) is set.  */
-inline int
-REG_N_SETS (int regno)
-{
-  return regstat_n_sets_and_refs[regno].sets;
-}
+inline int REG_N_SETS(int regno) { return regstat_n_sets_and_refs[regno].sets; }
 
 /* Indexed by n, gives number of times (REG n) is set.  */
-#define SET_REG_N_SETS(N,V) (regstat_n_sets_and_refs[N].sets = V)
-#define INC_REG_N_SETS(N,V) (regstat_n_sets_and_refs[N].sets += V)
+#define SET_REG_N_SETS(N, V) (regstat_n_sets_and_refs[N].sets = V)
+#define INC_REG_N_SETS(N, V) (regstat_n_sets_and_refs[N].sets += V)
 
 /* Given a REG, return TRUE if the reg is a PARM_DECL, FALSE otherwise.  */
-extern bool reg_is_parm_p (rtx);
+extern bool reg_is_parm_p(rtx);
 
 /* Functions defined in regstat.cc.  */
-extern void regstat_init_n_sets_and_refs (void);
-extern void regstat_free_n_sets_and_refs (void);
-extern void regstat_compute_ri (void);
-extern void regstat_free_ri (void);
-extern bitmap regstat_get_setjmp_crosses (void);
-extern void regstat_compute_calls_crossed (void);
-extern void regstat_free_calls_crossed (void);
-extern void dump_reg_info (FILE *);
+extern void regstat_init_n_sets_and_refs(void);
+extern void regstat_free_n_sets_and_refs(void);
+extern void regstat_compute_ri(void);
+extern void regstat_free_ri(void);
+extern bitmap regstat_get_setjmp_crosses(void);
+extern void regstat_compute_calls_crossed(void);
+extern void regstat_free_calls_crossed(void);
+extern void dump_reg_info(FILE *);
 
 /* Register information indexed by register number.  This structure is
    initialized by calling regstat_compute_ri and is destroyed by
    calling regstat_free_ri.  */
-struct reg_info_t
-{
-  int freq;			/* # estimated frequency (REG n) is used or set */
-  int deaths;			/* # of times (REG n) dies */
-  int calls_crossed;		/* # of calls (REG n) is live across */
-  int basic_block;		/* # of basic blocks (REG n) is used in */
+struct reg_info_t {
+  int freq;          /* # estimated frequency (REG n) is used or set */
+  int deaths;        /* # of times (REG n) dies */
+  int calls_crossed; /* # of calls (REG n) is live across */
+  int basic_block;   /* # of basic blocks (REG n) is used in */
 };
 
 extern struct reg_info_t *reg_info_p;
@@ -128,14 +116,13 @@ extern size_t reg_info_p_size;
    or profile driven feedback is available and the function is never executed,
    frequency is always equivalent.  Otherwise rescale the basic block
    frequency.  */
-#define REG_FREQ_FROM_BB(bb) ((optimize_function_for_size_p (cfun)	      \
-			       || !cfun->cfg->count_max.initialized_p ())     \
-			      ? REG_FREQ_MAX				      \
-			      : ((bb)->count.to_frequency (cfun)	      \
-				* REG_FREQ_MAX / BB_FREQ_MAX)		      \
-			      ? ((bb)->count.to_frequency (cfun)	      \
-				 * REG_FREQ_MAX / BB_FREQ_MAX)		      \
-			      : 1)
+#define REG_FREQ_FROM_BB(bb)                                                   \
+  ((optimize_function_for_size_p(cfun) ||                                      \
+    !cfun->cfg->count_max.initialized_p())                                     \
+       ? REG_FREQ_MAX                                                          \
+   : ((bb)->count.to_frequency(cfun) * REG_FREQ_MAX / BB_FREQ_MAX)             \
+       ? ((bb)->count.to_frequency(cfun) * REG_FREQ_MAX / BB_FREQ_MAX)         \
+       : 1)
 
 /* Indexed by N, gives number of insns in which register N dies.
    Note that if register N is live around loops, it can die
@@ -147,22 +134,20 @@ extern size_t reg_info_p_size;
 
 /* Get the number of consecutive words required to hold pseudo-reg N.  */
 
-#define PSEUDO_REGNO_SIZE(N) \
-  ((GET_MODE_SIZE (PSEUDO_REGNO_MODE (N)) + UNITS_PER_WORD - 1)		\
-   / UNITS_PER_WORD)
+#define PSEUDO_REGNO_SIZE(N)                                                   \
+  ((GET_MODE_SIZE(PSEUDO_REGNO_MODE(N)) + UNITS_PER_WORD - 1) / UNITS_PER_WORD)
 
 /* Get the number of bytes required to hold pseudo-reg N.  */
 
-#define PSEUDO_REGNO_BYTES(N) \
-  GET_MODE_SIZE (PSEUDO_REGNO_MODE (N))
+#define PSEUDO_REGNO_BYTES(N) GET_MODE_SIZE(PSEUDO_REGNO_MODE(N))
 
 /* Get the machine mode of pseudo-reg N.  */
 
-#define PSEUDO_REGNO_MODE(N) GET_MODE (regno_reg_rtx[N])
+#define PSEUDO_REGNO_MODE(N) GET_MODE(regno_reg_rtx[N])
 
 /* Indexed by N, gives number of CALL_INSNS across which (REG n) is live.  */
 
-#define REG_N_CALLS_CROSSED(N)  (reg_info_p[N].calls_crossed)
+#define REG_N_CALLS_CROSSED(N) (reg_info_p[N].calls_crossed)
 
 /* Indexed by n, gives number of basic block that  (REG n) is used in.
    If the value is REG_BLOCK_GLOBAL (-1),
@@ -192,8 +177,8 @@ extern int caller_save_needed;
 
 /* Select a register mode required for caller save of hard regno REGNO.  */
 #ifndef HARD_REGNO_CALLER_SAVE_MODE
-#define HARD_REGNO_CALLER_SAVE_MODE(REGNO, NREGS, MODE) \
-  choose_hard_reg_mode (REGNO, NREGS, NULL)
+#define HARD_REGNO_CALLER_SAVE_MODE(REGNO, NREGS, MODE)                        \
+  choose_hard_reg_mode(REGNO, NREGS, NULL)
 #endif
 
 /* Target-dependent globals.  */
@@ -238,89 +223,73 @@ extern struct target_regs *this_target_regs;
 #else
 #define this_target_regs (&default_target_regs)
 #endif
-#define hard_regno_max_nregs \
-  (this_target_regs->x_hard_regno_max_nregs)
-#define reg_raw_mode \
-  (this_target_regs->x_reg_raw_mode)
-#define have_regs_of_mode \
-  (this_target_regs->x_have_regs_of_mode)
-#define contains_reg_of_mode \
-  (this_target_regs->x_contains_reg_of_mode)
-#define contains_allocatable_reg_of_mode \
+#define hard_regno_max_nregs (this_target_regs->x_hard_regno_max_nregs)
+#define reg_raw_mode (this_target_regs->x_reg_raw_mode)
+#define have_regs_of_mode (this_target_regs->x_have_regs_of_mode)
+#define contains_reg_of_mode (this_target_regs->x_contains_reg_of_mode)
+#define contains_allocatable_reg_of_mode                                       \
   (this_target_regs->x_contains_allocatable_reg_of_mode)
-#define direct_load \
-  (this_target_regs->x_direct_load)
-#define direct_store \
-  (this_target_regs->x_direct_store)
-#define float_extend_from_mem \
-  (this_target_regs->x_float_extend_from_mem)
+#define direct_load (this_target_regs->x_direct_load)
+#define direct_store (this_target_regs->x_direct_store)
+#define float_extend_from_mem (this_target_regs->x_float_extend_from_mem)
 
 /* Return the number of hard registers in (reg:MODE REGNO).  */
 
-ALWAYS_INLINE unsigned char
-hard_regno_nregs (unsigned int regno, machine_mode mode)
-{
+ALWAYS_INLINE unsigned char hard_regno_nregs(unsigned int regno,
+                                             machine_mode mode) {
   return this_target_regs->x_hard_regno_nregs[regno][mode];
 }
 
 /* Return an exclusive upper bound on the registers occupied by hard
    register (reg:MODE REGNO).  */
 
-inline unsigned int
-end_hard_regno (machine_mode mode, unsigned int regno)
-{
-  return regno + hard_regno_nregs (regno, mode);
+inline unsigned int end_hard_regno(machine_mode mode, unsigned int regno) {
+  return regno + hard_regno_nregs(regno, mode);
 }
 
 /* Add to REGS all the registers required to store a value of mode MODE
    in register REGNO.  */
 
-inline void
-add_to_hard_reg_set (HARD_REG_SET *regs, machine_mode mode,
-		     unsigned int regno)
-{
+inline void add_to_hard_reg_set(HARD_REG_SET *regs, machine_mode mode,
+                                unsigned int regno) {
   unsigned int end_regno;
 
-  end_regno = end_hard_regno (mode, regno);
+  end_regno = end_hard_regno(mode, regno);
   do
-    SET_HARD_REG_BIT (*regs, regno);
+    SET_HARD_REG_BIT(*regs, regno);
   while (++regno < end_regno);
 }
 
 /* Likewise, but remove the registers.  */
 
-inline void
-remove_from_hard_reg_set (HARD_REG_SET *regs, machine_mode mode,
-			  unsigned int regno)
-{
+inline void remove_from_hard_reg_set(HARD_REG_SET *regs, machine_mode mode,
+                                     unsigned int regno) {
   unsigned int end_regno;
 
-  end_regno = end_hard_regno (mode, regno);
+  end_regno = end_hard_regno(mode, regno);
   do
-    CLEAR_HARD_REG_BIT (*regs, regno);
+    CLEAR_HARD_REG_BIT(*regs, regno);
   while (++regno < end_regno);
 }
 
 /* Return true if REGS contains the whole of (reg:MODE REGNO).  */
 
-inline bool
-in_hard_reg_set_p (const_hard_reg_set regs, machine_mode mode,
-		   unsigned int regno)
-{
+inline bool in_hard_reg_set_p(const_hard_reg_set regs, machine_mode mode,
+                              unsigned int regno) {
   unsigned int end_regno;
 
-  gcc_assert (HARD_REGISTER_NUM_P (regno));
+  gcc_assert(HARD_REGISTER_NUM_P(regno));
 
-  if (!TEST_HARD_REG_BIT (regs, regno))
+  if (!TEST_HARD_REG_BIT(regs, regno))
     return false;
 
-  end_regno = end_hard_regno (mode, regno);
+  end_regno = end_hard_regno(mode, regno);
 
-  if (!HARD_REGISTER_NUM_P (end_regno - 1))
+  if (!HARD_REGISTER_NUM_P(end_regno - 1))
     return false;
 
   while (++regno < end_regno)
-    if (!TEST_HARD_REG_BIT (regs, regno))
+    if (!TEST_HARD_REG_BIT(regs, regno))
       return false;
 
   return true;
@@ -328,18 +297,16 @@ in_hard_reg_set_p (const_hard_reg_set regs, machine_mode mode,
 
 /* Return true if (reg:MODE REGNO) includes an element of REGS.  */
 
-inline bool
-overlaps_hard_reg_set_p (const_hard_reg_set regs, machine_mode mode,
-			 unsigned int regno)
-{
+inline bool overlaps_hard_reg_set_p(const_hard_reg_set regs, machine_mode mode,
+                                    unsigned int regno) {
   unsigned int end_regno;
 
-  if (TEST_HARD_REG_BIT (regs, regno))
+  if (TEST_HARD_REG_BIT(regs, regno))
     return true;
 
-  end_regno = end_hard_regno (mode, regno);
+  end_regno = end_hard_regno(mode, regno);
   while (++regno < end_regno)
-    if (TEST_HARD_REG_BIT (regs, regno))
+    if (TEST_HARD_REG_BIT(regs, regno))
       return true;
 
   return false;
@@ -348,43 +315,36 @@ overlaps_hard_reg_set_p (const_hard_reg_set regs, machine_mode mode,
 /* Like add_to_hard_reg_set, but use a REGNO/NREGS range instead of
    REGNO and MODE.  */
 
-inline void
-add_range_to_hard_reg_set (HARD_REG_SET *regs, unsigned int regno,
-			   int nregs)
-{
+inline void add_range_to_hard_reg_set(HARD_REG_SET *regs, unsigned int regno,
+                                      int nregs) {
   while (nregs-- > 0)
-    SET_HARD_REG_BIT (*regs, regno + nregs);
+    SET_HARD_REG_BIT(*regs, regno + nregs);
 }
 
 /* Likewise, but remove the registers.  */
 
-inline void
-remove_range_from_hard_reg_set (HARD_REG_SET *regs, unsigned int regno,
-				int nregs)
-{
+inline void remove_range_from_hard_reg_set(HARD_REG_SET *regs,
+                                           unsigned int regno, int nregs) {
   while (nregs-- > 0)
-    CLEAR_HARD_REG_BIT (*regs, regno + nregs);
+    CLEAR_HARD_REG_BIT(*regs, regno + nregs);
 }
 
 /* Like overlaps_hard_reg_set_p, but use a REGNO/NREGS range instead of
    REGNO and MODE.  */
-inline bool
-range_overlaps_hard_reg_set_p (const_hard_reg_set set, unsigned regno,
-			       int nregs)
-{
+inline bool range_overlaps_hard_reg_set_p(const_hard_reg_set set,
+                                          unsigned regno, int nregs) {
   while (nregs-- > 0)
-    if (TEST_HARD_REG_BIT (set, regno + nregs))
+    if (TEST_HARD_REG_BIT(set, regno + nregs))
       return true;
   return false;
 }
 
 /* Like in_hard_reg_set_p, but use a REGNO/NREGS range instead of
    REGNO and MODE.  */
-inline bool
-range_in_hard_reg_set_p (const_hard_reg_set set, unsigned regno, int nregs)
-{
+inline bool range_in_hard_reg_set_p(const_hard_reg_set set, unsigned regno,
+                                    int nregs) {
   while (nregs-- > 0)
-    if (!TEST_HARD_REG_BIT (set, regno + nregs))
+    if (!TEST_HARD_REG_BIT(set, regno + nregs))
       return false;
   return true;
 }

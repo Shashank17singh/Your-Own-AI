@@ -13,21 +13,21 @@ def format_duration(seconds):
 
     parts = []
     if hours:
-        parts.append('%s hour' % hours)
+        parts.append("%s hour" % hours)
     if minutes:
-        parts.append('%s min' % minutes)
+        parts.append("%s min" % minutes)
     if seconds:
         if parts:
             # 2 min 1 sec
-            parts.append('%s sec' % seconds)
+            parts.append("%s sec" % seconds)
         else:
             # 1.0 sec
-            parts.append('%.1f sec' % (seconds + ms / 1000))
+            parts.append("%.1f sec" % (seconds + ms / 1000))
     if not parts:
-        return '%s ms' % ms
+        return "%s ms" % ms
 
     parts = parts[:2]
-    return ' '.join(parts)
+    return " ".join(parts)
 
 
 def removepy(names):
@@ -35,7 +35,7 @@ def removepy(names):
         return
     for idx, name in enumerate(names):
         basename, ext = os.path.splitext(name)
-        if ext == '.py':
+        if ext == ".py":
             names[idx] = basename
 
 
@@ -54,11 +54,17 @@ def printlist(x, width=70, indent=4, file=None):
     begin each line.
     """
 
-    blanks = ' ' * indent
+    blanks = " " * indent
     # Print the sorted list: 'x' may be a '--random' list or a set()
-    print(textwrap.fill(' '.join(str(elt) for elt in sorted(x)), width,
-                        initial_indent=blanks, subsequent_indent=blanks),
-          file=file)
+    print(
+        textwrap.fill(
+            " ".join(str(elt) for elt in sorted(x)),
+            width,
+            initial_indent=blanks,
+            subsequent_indent=blanks,
+        ),
+        file=file,
+    )
 
 
 def print_warning(msg):

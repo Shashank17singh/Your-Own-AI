@@ -27,21 +27,12 @@ namespace text_art {
    The referenced objects are expected to outlive the widgets
    themselves.  */
 
-struct dump_widget_info
-{
-  dump_widget_info (text_art::style_manager &sm,
-		    const text_art::theme &theme,
-		    text_art::style::id_t tree_style_id)
-  : m_sm (sm),
-    m_theme (theme),
-    m_tree_style_id (tree_style_id)
-  {
-  }
+struct dump_widget_info {
+  dump_widget_info(text_art::style_manager &sm, const text_art::theme &theme,
+                   text_art::style::id_t tree_style_id)
+      : m_sm(sm), m_theme(theme), m_tree_style_id(tree_style_id) {}
 
-  text_art::style::id_t get_tree_style_id () const
-  {
-    return m_tree_style_id;
-  }
+  text_art::style::id_t get_tree_style_id() const { return m_tree_style_id; }
 
   text_art::style_manager &m_sm;
   const text_art::theme &m_theme;

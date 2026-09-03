@@ -44,118 +44,102 @@
 #ifdef __glibcxx_print // C++ >= 23
 #include <format>
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 #ifdef _GLIBCXX_NO_INLINE_PRINT
-# define _GLIBCXX_PRINT_INLINE_USED [[__gnu__::__used__]]
+#define _GLIBCXX_PRINT_INLINE_USED [[__gnu__::__used__]]
 #else
-# define _GLIBCXX_PRINT_INLINE_USED
+#define _GLIBCXX_PRINT_INLINE_USED
 #endif
 
-  _GLIBCXX_PRINT_INLINE_USED
-  inline void
-  vprint_nonunicode(ostream& __os, string_view __fmt, format_args __args)
-  {
-    ostream::sentry __cerb(__os);
-    if (__cerb)
-      {
-	__format::_Str_sink<char> __buf;
-	std::vformat_to(__buf.out(), __os.getloc(), __fmt, __args);
-	auto __out = __buf.view();
+_GLIBCXX_PRINT_INLINE_USED
+inline void vprint_nonunicode(ostream &__os, string_view __fmt,
+                              format_args __args) {
+  ostream::sentry __cerb(__os);
+  if (__cerb) {
+    __format::_Str_sink<char> __buf;
+    std::vformat_to(__buf.out(), __os.getloc(), __fmt, __args);
+    auto __out = __buf.view();
 
-	__try
-	  {
-	    std::__ostream_write(__os, __out.data(), __out.size());
-	  }
-	__catch(const __cxxabiv1::__forced_unwind&)
-	  {
-	    __os._M_setstate(ios_base::badbit);
-	    __throw_exception_again;
-	  }
-	__catch(...)
-	  { __os._M_setstate(ios_base::badbit); }
-      }
+    __try {
+      std::__ostream_write(__os, __out.data(), __out.size());
+    }
+    __catch(const __cxxabiv1::__forced_unwind &) {
+      __os._M_setstate(ios_base::badbit);
+      __throw_exception_again;
+    }
+    __catch(...) { __os._M_setstate(ios_base::badbit); }
   }
+}
 
-  _GLIBCXX_PRINT_INLINE_USED
-  inline void
-  vprint_unicode(ostream& __os, string_view __fmt, format_args __args)
-  {
+_GLIBCXX_PRINT_INLINE_USED
+inline void vprint_unicode(ostream &__os, string_view __fmt,
+                           format_args __args) {
 #if !defined(_WIN32) || defined(__CYGWIN__)
-    // For most targets we don't need to do anything special to write
-    // Unicode to a terminal.
-    std::vprint_nonunicode(__os, __fmt, __args);
+  // For most targets we don't need to do anything special to write
+  // Unicode to a terminal.
+  std::vprint_nonunicode(__os, __fmt, __args);
 #else
-    ostream::sentry __cerb(__os);
-    if (__cerb)
-      {
-	__format::_Str_sink<char> __buf;
-	std::vformat_to(__buf.out(), __os.getloc(), __fmt, __args);
-	auto __out = __buf._M_span();
+  ostream::sentry __cerb(__os);
+  if (__cerb) {
+    __format::_Str_sink<char> __buf;
+    std::vformat_to(__buf.out(), __os.getloc(), __fmt, __args);
+    auto __out = __buf._M_span();
 
-	void* __open_terminal(streambuf*);
-	error_code __write_to_terminal(void*, span<char>);
-	// If stream refers to a terminal, write a Unicode string to it.
-	if (auto __term = __open_terminal(__os.rdbuf()))
-	  {
+    void *__open_terminal(streambuf *);
+    error_code __write_to_terminal(void *, span<char>);
+    // If stream refers to a terminal, write a Unicode string to it.
+    if (auto __term = __open_terminal(__os.rdbuf())) {
 #if !defined(_WIN32) || defined(__CYGWIN__)
-	    // For POSIX, __open_terminal(streambuf*) uses fdopen to open a
-	    // new file, so we would need to close it here. This code is not
-	    // actually compiled because it's inside an #ifdef _WIN32 group,
-	    // but just in case that changes in future ...
-	    struct _Guard
-	    {
-	      _Guard(void* __p) : _M_f((FILE*)__p) { }
-	      ~_Guard() { std::fclose(_M_f); }
-	      _Guard(_Guard&&) = delete;
-	      _Guard& operator=(_Guard&&) = delete;
-	      FILE* _M_f;
-	    };
-	    _Guard __g(__term);
+      // For POSIX, __open_terminal(streambuf*) uses fdopen to open a
+      // new file, so we would need to close it here. This code is not
+      // actually compiled because it's inside an #ifdef _WIN32 group,
+      // but just in case that changes in future ...
+      struct _Guard {
+        _Guard(void *__p) : _M_f((FILE *)__p) {}
+        ~_Guard() { std::fclose(_M_f); }
+        _Guard(_Guard &&) = delete;
+        _Guard &operator=(_Guard &&) = delete;
+        FILE *_M_f;
+      };
+      _Guard __g(__term);
 #endif
 
-	    ios_base::iostate __err = ios_base::goodbit;
-	    __try
-	      {
-		if (__os.rdbuf()->pubsync() == -1)
-		  __err = ios::badbit;
-		else if (auto __e = __write_to_terminal(__term, __out))
-		  if (__e != std::make_error_code(errc::illegal_byte_sequence))
-		    __err = ios::badbit;
-	      }
-	    __catch(const __cxxabiv1::__forced_unwind&)
-	      {
-		__os._M_setstate(ios_base::badbit);
-		__throw_exception_again;
-	      }
-	    __catch(...)
-	      { __os._M_setstate(ios_base::badbit); }
-
-	    if (__err)
-	      __os.setstate(__err);
-	    return;
-	  }
-
-	// Otherwise just insert the string as vprint_nonunicode does.
-	__try
-	  {
-	    std::__ostream_write(__os, __out.data(), __out.size());
-	  }
-	__catch(const __cxxabiv1::__forced_unwind&)
-	  {
-	    __os._M_setstate(ios_base::badbit);
-	    __throw_exception_again;
-	  }
-	__catch(...)
-	  { __os._M_setstate(ios_base::badbit); }
+      ios_base::iostate __err = ios_base::goodbit;
+      __try {
+        if (__os.rdbuf()->pubsync() == -1)
+          __err = ios::badbit;
+        else if (auto __e = __write_to_terminal(__term, __out))
+          if (__e != std::make_error_code(errc::illegal_byte_sequence))
+            __err = ios::badbit;
       }
+      __catch(const __cxxabiv1::__forced_unwind &) {
+        __os._M_setstate(ios_base::badbit);
+        __throw_exception_again;
+      }
+      __catch(...) { __os._M_setstate(ios_base::badbit); }
+
+      if (__err)
+        __os.setstate(__err);
+      return;
+    }
+
+    // Otherwise just insert the string as vprint_nonunicode does.
+    __try {
+      std::__ostream_write(__os, __out.data(), __out.size());
+    }
+    __catch(const __cxxabiv1::__forced_unwind &) {
+      __os._M_setstate(ios_base::badbit);
+      __throw_exception_again;
+    }
+    __catch(...) { __os._M_setstate(ios_base::badbit); }
+  }
 #endif // _WIN32
-  }
+}
 #undef _GLIBCXX_PRINT_INLINE_USED
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)
 #endif // __glibcxx_print
 #endif // _GLIBCXX_OSTREAM_PRINT_H

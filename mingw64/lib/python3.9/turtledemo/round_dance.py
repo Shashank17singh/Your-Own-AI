@@ -1,21 +1,15 @@
-"""      turtle-example-suite:
-
+"""turtle-example-suite:
          tdemo_round_dance.py
-
 (Needs version 1.1 of the turtle module that
 comes with Python 3.1)
-
 Dancing turtles have a compound shape
 consisting of a series of triangles of
 decreasing size.
-
 Turtles march along a circle while rotating
 pairwise in opposite direction, with one
 exception. Does that breaking of symmetry
 enhance the attractiveness of the example?
-
 Press any key to stop the animation.
-
 Technically: demonstrates use of compound
 shapes, transformation of shapes as well as
 cloning turtles. The animation is
@@ -24,9 +18,11 @@ controlled through update().
 
 from turtle import *
 
+
 def stop():
     global running
     running = False
+
 
 def main():
     global running
@@ -34,21 +30,19 @@ def main():
     bgcolor("gray10")
     tracer(False)
     shape("triangle")
-    f =   0.793402
+    f = 0.793402
     phi = 9.064678
     s = 5
     c = 1
-    # create compound shape
     sh = Shape("compound")
     for i in range(10):
         shapesize(s)
-        p =get_shapepoly()
+        p = get_shapepoly()
         s *= f
         c *= f
         tilt(-phi)
-        sh.addcomponent(p, (c, 0.25, 1-c), "black")
+        sh.addcomponent(p, (c, 0.25, 1 - c), "black")
     register_shape("multitri", sh)
-    # create dancers
     shapesize(1)
     shape("multitri")
     pu()
@@ -62,7 +56,6 @@ def main():
         if i % 12 == 0:
             dancers.append(clone())
     home()
-    # dance
     running = True
     onkeypress(stop)
     listen()
@@ -81,6 +74,7 @@ def main():
         update()
     return "DONE!"
 
-if __name__=='__main__':
+
+if __name__ == "__main__":
     print(main())
     mainloop()

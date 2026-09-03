@@ -13,20 +13,19 @@ from typing import ContextManager, Iterable, Optional, Union
 from typing import cast
 from typing.io import BinaryIO, TextIO
 
-
 __all__ = [
-    'Package',
-    'Resource',
-    'as_file',
-    'contents',
-    'files',
-    'is_resource',
-    'open_binary',
-    'open_text',
-    'path',
-    'read_binary',
-    'read_text',
-    ]
+    "Package",
+    "Resource",
+    "as_file",
+    "contents",
+    "files",
+    "is_resource",
+    "open_binary",
+    "open_text",
+    "path",
+    "read_binary",
+    "read_text",
+]
 
 
 Package = Union[str, ModuleType]
@@ -35,7 +34,7 @@ Resource = Union[str, os.PathLike]
 
 def _resolve(name) -> ModuleType:
     """If name is a string, resolve to a module."""
-    if hasattr(name, '__spec__'):
+    if hasattr(name, "__spec__"):
         return name
     return import_module(name)
 
@@ -48,7 +47,7 @@ def _get_package(package) -> ModuleType:
     """
     module = _resolve(package)
     if module.__spec__.submodule_search_locations is None:
-        raise TypeError('{!r} is not a package'.format(package))
+        raise TypeError("{!r} is not a package".format(package))
     return module
 
 
@@ -59,27 +58,27 @@ def _normalize_path(path) -> str:
     """
     parent, file_name = os.path.split(path)
     if parent:
-        raise ValueError('{!r} must be only a file name'.format(path))
+        raise ValueError("{!r} must be only a file name".format(path))
     return file_name
 
 
-def _get_resource_reader(
-        package: ModuleType) -> Optional[resources_abc.ResourceReader]:
+def _get_resource_reader(package: ModuleType) -> Optional[resources_abc.ResourceReader]:
     # Return the package's loader if it's a ResourceReader.  We can't use
     # a issubclass() check here because apparently abc.'s __subclasscheck__()
     # hook wants to create a weak reference to the object, but
     # zipimport.zipimporter does not support weak references, resulting in a
     # TypeError.  That seems terrible.
     spec = package.__spec__
-    if hasattr(spec.loader, 'get_resource_reader'):
-        return cast(resources_abc.ResourceReader,
-                    spec.loader.get_resource_reader(spec.name))
+    if hasattr(spec.loader, "get_resource_reader"):
+        return cast(
+            resources_abc.ResourceReader, spec.loader.get_resource_reader(spec.name)
+        )
     return None
 
 
 def _check_location(package):
     if package.__spec__.origin is None or not package.__spec__.has_location:
-        raise FileNotFoundError(f'Package has no location {package!r}')
+        raise FileNotFoundError(f"Package has no location {package!r}")
 
 
 def open_binary(package: Package, resource: Resource) -> BinaryIO:
@@ -90,35 +89,38 @@ def open_binary(package: Package, resource: Resource) -> BinaryIO:
     if reader is not None:
         return reader.open_resource(resource)
     absolute_package_path = os.path.abspath(
-        package.__spec__.origin or 'non-existent file')
+        package.__spec__.origin or "non-existent file"
+    )
     package_path = os.path.dirname(absolute_package_path)
     full_path = os.path.join(package_path, resource)
     try:
-        return open(full_path, mode='rb')
+        return open(full_path, mode="rb")
     except OSError:
         # Just assume the loader is a resource loader; all the relevant
         # importlib.machinery loaders are and an AttributeError for
         # get_data() will make it clear what is needed from the loader.
         loader = cast(ResourceLoader, package.__spec__.loader)
         data = None
-        if hasattr(package.__spec__.loader, 'get_data'):
+        if hasattr(package.__spec__.loader, "get_data"):
             with suppress(OSError):
                 data = loader.get_data(full_path)
         if data is None:
             package_name = package.__spec__.name
-            message = '{!r} resource not found in {!r}'.format(
-                resource, package_name)
+            message = "{!r} resource not found in {!r}".format(resource, package_name)
             raise FileNotFoundError(message)
         return BytesIO(data)
 
 
-def open_text(package: Package,
-              resource: Resource,
-              encoding: str = 'utf-8',
-              errors: str = 'strict') -> TextIO:
+def open_text(
+    package: Package,
+    resource: Resource,
+    encoding: str = "utf-8",
+    errors: str = "strict",
+) -> TextIO:
     """Return a file-like object opened for text reading of the resource."""
     return TextIOWrapper(
-        open_binary(package, resource), encoding=encoding, errors=errors)
+        open_binary(package, resource), encoding=encoding, errors=errors
+    )
 
 
 def read_binary(package: Package, resource: Resource) -> bytes:
@@ -127,10 +129,12 @@ def read_binary(package: Package, resource: Resource) -> bytes:
         return fp.read()
 
 
-def read_text(package: Package,
-              resource: Resource,
-              encoding: str = 'utf-8',
-              errors: str = 'strict') -> str:
+def read_text(
+    package: Package,
+    resource: Resource,
+    encoding: str = "utf-8",
+    errors: str = "strict",
+) -> str:
     """Return the decoded string of the resource.
 
     The decoding-related arguments have the same semantics as those of
@@ -148,8 +152,9 @@ def files(package: Package) -> resources_abc.Traversable:
 
 
 def path(
-        package: Package, resource: Resource,
-        ) -> 'ContextManager[Path]':
+    package: Package,
+    resource: Resource,
+) -> "ContextManager[Path]":
     """A context manager providing a file path object to the resource.
 
     If the resource does not already exist on its own on the file system,
@@ -161,9 +166,9 @@ def path(
     reader = _get_resource_reader(_get_package(package))
     return (
         _path_from_reader(reader, resource)
-        if reader else
-        _common.as_file(files(package).joinpath(_normalize_path(resource)))
-        )
+        if reader
+        else _common.as_file(files(package).joinpath(_normalize_path(resource)))
+    )
 
 
 @contextmanager
@@ -207,9 +212,8 @@ def contents(package: Package) -> Iterable[str]:
     # Is the package a namespace package?  By definition, namespace packages
     # cannot have resources.
     namespace = (
-        package.__spec__.origin is None or
-        package.__spec__.origin == 'namespace'
-        )
+        package.__spec__.origin is None or package.__spec__.origin == "namespace"
+    )
     if namespace or not package.__spec__.has_location:
         return ()
     return list(item.name for item in _common.from_package(package).iterdir())

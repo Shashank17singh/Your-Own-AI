@@ -22,7 +22,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #if !defined _IMMINTRIN_H_INCLUDED
-# error "Never use <avx512bmmvlintrin.h> directly; include <immintrin.h> instead."
+#error                                                                         \
+    "Never use <avx512bmmvlintrin.h> directly; include <immintrin.h> instead."
 #endif
 
 #ifndef _AVX512BMMVLINTRIN_H_INCLUDED
@@ -35,79 +36,59 @@
 #endif /* __AVX512BMM__ */
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_bmacor16x16x16 (__m256i __A, __m256i __B, __m256i __C)
-{
-   return (__m256i) __builtin_ia32_vbmacor16x16x16_v16hi ((__v16hi) __A,
-							  (__v16hi) __B,
-							  (__v16hi) __C);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_bmacor16x16x16(__m256i __A, __m256i __B, __m256i __C) {
+  return (__m256i)__builtin_ia32_vbmacor16x16x16_v16hi(
+      (__v16hi)__A, (__v16hi)__B, (__v16hi)__C);
 }
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_bmacxor16x16x16 (__m256i __A, __m256i __B, __m256i __C)
-{
-  return (__m256i) __builtin_ia32_vbmacxor16x16x16_v16hi ((__v16hi) __A,
-							  (__v16hi) __B,
-							  (__v16hi) __C);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_bmacxor16x16x16(__m256i __A, __m256i __B, __m256i __C) {
+  return (__m256i)__builtin_ia32_vbmacxor16x16x16_v16hi(
+      (__v16hi)__A, (__v16hi)__B, (__v16hi)__C);
 }
 
 extern __inline __m128i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm128_mask_bitrev_epi8 (__mmask16 __U, __m128i __A, __m128i __B)
-{
-  return (__m128i) __builtin_ia32_vbitrevb128_mask ((__v16qi) __A,
-						    (__v16qi) __B,
-						    (__mmask16) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm128_mask_bitrev_epi8(__mmask16 __U, __m128i __A, __m128i __B) {
+  return (__m128i)__builtin_ia32_vbitrevb128_mask((__v16qi)__A, (__v16qi)__B,
+                                                  (__mmask16)__U);
 }
 
 extern __inline __m128i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm128_maskz_bitrev_epi8 (__mmask16 __U, __m128i __A)
-{
-  return (__m128i) __builtin_ia32_vbitrevb128_mask ((__v16qi) __A,
-						    (__v16qi)(__m128i)
-						    _mm_setzero_si128 (),
-						    (__mmask16) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm128_maskz_bitrev_epi8(__mmask16 __U, __m128i __A) {
+  return (__m128i)__builtin_ia32_vbitrevb128_mask(
+      (__v16qi)__A, (__v16qi)(__m128i)_mm_setzero_si128(), (__mmask16)__U);
 }
 
 extern __inline __m128i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm128_bitrev_epi8 (__m128i __A)
-{
-  return (__m128i) __builtin_ia32_vbitrevb128_mask ((__v16qi) __A,
-						    (__v16qi)(__m128i)
-						    _mm_undefined_si128 (),
-						    (__mmask16) -1);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm128_bitrev_epi8(__m128i __A) {
+  return (__m128i)__builtin_ia32_vbitrevb128_mask(
+      (__v16qi)__A, (__v16qi)(__m128i)_mm_undefined_si128(), (__mmask16)-1);
 }
 
 extern __inline __m256i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_mask_bitrev_epi8 (__mmask32 __U, __m256i __A, __m256i __B)
-{
-  return (__m256i) __builtin_ia32_vbitrevb256_mask ((__v32qi) __A,
-						    (__v32qi) __B,
-						    (__mmask32) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_mask_bitrev_epi8(__mmask32 __U, __m256i __A, __m256i __B) {
+  return (__m256i)__builtin_ia32_vbitrevb256_mask((__v32qi)__A, (__v32qi)__B,
+                                                  (__mmask32)__U);
 }
 
 extern __inline __m256i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_maskz_bitrev_epi8 (__mmask32 __U, __m256i __A)
-{
-  return (__m256i) __builtin_ia32_vbitrevb256_mask ((__v32qi) __A,
-						    (__v32qi)(__m256i)
-						    _mm256_setzero_si256 (),
-						    (__mmask32) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_maskz_bitrev_epi8(__mmask32 __U, __m256i __A) {
+  return (__m256i)__builtin_ia32_vbitrevb256_mask(
+      (__v32qi)__A, (__v32qi)(__m256i)_mm256_setzero_si256(), (__mmask32)__U);
 }
 
 extern __inline __m256i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_bitrev_epi8 (__m256i __A)
-{
-  return (__m256i) __builtin_ia32_vbitrevb256_mask ((__v32qi) __A,
-						    (__v32qi)(__m256i)
-						    _mm256_undefined_si256 (),
-						    (__mmask32) -1);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_bitrev_epi8(__m256i __A) {
+  return (__m256i)__builtin_ia32_vbitrevb256_mask(
+      (__v32qi)__A, (__v32qi)(__m256i)_mm256_undefined_si256(), (__mmask32)-1);
 }
 
 #ifdef __DISABLE_AVX512BMMVL__

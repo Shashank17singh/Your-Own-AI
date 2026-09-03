@@ -109,6 +109,7 @@ def test_block_add_hook_baseexception():
 
 def test_marshal():
     import marshal
+
     o = ("a", "b", "c", 1, 2, 3)
     payload = marshal.dumps(o)
 
@@ -343,7 +344,7 @@ def test_socket():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         # Don't care if this fails, we just want the audit message
-        sock.bind(('127.0.0.1', 8080))
+        sock.bind(("127.0.0.1", 8080))
     except Exception:
         pass
     finally:

@@ -5,33 +5,24 @@ extern "C" {
 #endif
 
 #ifndef Py_BUILD_CORE
-#  error "Py_BUILD_CORE must be defined to include this header"
+#error "Py_BUILD_CORE must be defined to include this header"
 #endif
 
-#include <locale.h>   /* struct lconv */
+#include <locale.h> /* struct lconv */
 
 PyAPI_DATA(int) _Py_HasFileSystemDefaultEncodeErrors;
 
-PyAPI_FUNC(int) _Py_DecodeUTF8Ex(
-    const char *arg,
-    Py_ssize_t arglen,
-    wchar_t **wstr,
-    size_t *wlen,
-    const char **reason,
-    _Py_error_handler errors);
+PyAPI_FUNC(int) _Py_DecodeUTF8Ex(const char *arg, Py_ssize_t arglen,
+                                 wchar_t **wstr, size_t *wlen,
+                                 const char **reason, _Py_error_handler errors);
 
-PyAPI_FUNC(int) _Py_EncodeUTF8Ex(
-    const wchar_t *text,
-    char **str,
-    size_t *error_pos,
-    const char **reason,
-    int raw_malloc,
-    _Py_error_handler errors);
+PyAPI_FUNC(int) _Py_EncodeUTF8Ex(const wchar_t *text, char **str,
+                                 size_t *error_pos, const char **reason,
+                                 int raw_malloc, _Py_error_handler errors);
 
-PyAPI_FUNC(wchar_t*) _Py_DecodeUTF8_surrogateescape(
-    const char *arg,
-    Py_ssize_t arglen,
-    size_t *wlen);
+PyAPI_FUNC(wchar_t *)
+    _Py_DecodeUTF8_surrogateescape(const char *arg, Py_ssize_t arglen,
+                                   size_t *wlen);
 
 PyAPI_FUNC(int) _Py_GetForceASCII(void);
 
@@ -42,22 +33,17 @@ PyAPI_FUNC(int) _Py_GetForceASCII(void);
    encoding. */
 PyAPI_FUNC(void) _Py_ResetForceASCII(void);
 
-
-PyAPI_FUNC(int) _Py_GetLocaleconvNumeric(
-    struct lconv *lc,
-    PyObject **decimal_point,
-    PyObject **thousands_sep);
+PyAPI_FUNC(int)
+    _Py_GetLocaleconvNumeric(struct lconv *lc, PyObject **decimal_point,
+                             PyObject **thousands_sep);
 
 #ifdef HAVE_NON_UNICODE_WCHAR_T_REPRESENTATION
 extern int _Py_LocaleUsesNonUnicodeWchar(void);
 
-extern wchar_t* _Py_DecodeNonUnicodeWchar(
-    const wchar_t* native,
-    Py_ssize_t size);
+extern wchar_t *_Py_DecodeNonUnicodeWchar(const wchar_t *native,
+                                          Py_ssize_t size);
 
-extern int _Py_EncodeNonUnicodeWchar_InPlace(
-    wchar_t* unicode,
-    Py_ssize_t size);
+extern int _Py_EncodeNonUnicodeWchar_InPlace(wchar_t *unicode, Py_ssize_t size);
 #endif
 
 #ifdef __cplusplus

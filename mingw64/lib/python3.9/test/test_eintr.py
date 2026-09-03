@@ -25,8 +25,10 @@ class EINTRTests(unittest.TestCase):
             # to see output in realtime and reduce the risk of losing output.
             args = [sys.executable, "-E", "-X", "faulthandler", *args]
             proc = subprocess.run(args)
-            print(f"--- eintr_tester.py completed: "
-                  f"exit code {proc.returncode} ---", flush=True)
+            print(
+                f"--- eintr_tester.py completed: " f"exit code {proc.returncode} ---",
+                flush=True,
+            )
             if proc.returncode:
                 self.fail("eintr_tester.py failed")
         else:

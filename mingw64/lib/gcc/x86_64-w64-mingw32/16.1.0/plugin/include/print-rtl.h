@@ -24,37 +24,40 @@ along with GCC; see the file COPYING3.  If not see
 #include "bitmap.h"
 #endif /* #ifndef GENERATOR_FILE */
 
-namespace diagnostics { class sarif_builder; }
-namespace json { class object; }
+namespace diagnostics {
+class sarif_builder;
+}
+namespace json {
+class object;
+}
 
 class rtx_reuse_manager;
 
 /* A class for writing rtx to a FILE *.  */
 
-class rtx_writer
-{
- public:
-  rtx_writer (FILE *outfile, int ind, bool simple, bool compact,
-	      rtx_reuse_manager *reuse_manager);
+class rtx_writer {
+public:
+  rtx_writer(FILE *outfile, int ind, bool simple, bool compact,
+             rtx_reuse_manager *reuse_manager);
 
-  void print_rtx (const_rtx in_rtx);
-  void print_rtl (const_rtx rtx_first);
-  void print_rtl_single_with_indent (const_rtx x, int ind);
+  void print_rtx(const_rtx in_rtx);
+  void print_rtl(const_rtx rtx_first);
+  void print_rtl_single_with_indent(const_rtx x, int ind);
 
-  void finish_directive ();
+  void finish_directive();
 
- private:
-  void print_rtx_operand_code_0 (const_rtx in_rtx, int idx);
-  void print_rtx_operand_code_e (const_rtx in_rtx, int idx);
-  void print_rtx_operand_codes_E_and_V (const_rtx in_rtx, int idx);
-  void print_rtx_operand_code_i (const_rtx in_rtx, int idx);
-  void print_rtx_operand_code_L (const_rtx in_rtx, int idx);
-  void print_rtx_operand_code_r (const_rtx in_rtx);
-  void print_rtx_operand_code_u (const_rtx in_rtx, int idx);
-  void print_rtx_operand (const_rtx in_rtx, int idx);
-  bool operand_has_default_value_p (const_rtx in_rtx, int idx);
+private:
+  void print_rtx_operand_code_0(const_rtx in_rtx, int idx);
+  void print_rtx_operand_code_e(const_rtx in_rtx, int idx);
+  void print_rtx_operand_codes_E_and_V(const_rtx in_rtx, int idx);
+  void print_rtx_operand_code_i(const_rtx in_rtx, int idx);
+  void print_rtx_operand_code_L(const_rtx in_rtx, int idx);
+  void print_rtx_operand_code_r(const_rtx in_rtx);
+  void print_rtx_operand_code_u(const_rtx in_rtx, int idx);
+  void print_rtx_operand(const_rtx in_rtx, int idx);
+  bool operand_has_default_value_p(const_rtx in_rtx, int idx);
 
- private:
+private:
   FILE *m_outfile;
   int m_indent;
   bool m_sawclose;
@@ -79,27 +82,24 @@ class rtx_writer
 };
 
 #ifdef BUFSIZ
-extern void print_rtl (FILE *, const_rtx);
+extern void print_rtl(FILE *, const_rtx);
 #endif
-extern void print_rtx_insn_vec (FILE *file, const vec<rtx_insn *> &vec);
+extern void print_rtx_insn_vec(FILE *file, const vec<rtx_insn *> &vec);
 
-extern void dump_value_slim (FILE *, const_rtx, int);
-extern void dump_insn_slim (FILE *, const rtx_insn *);
-extern void dump_rtl_slim (FILE *, const rtx_insn *, const rtx_insn *,
-			   int, int);
-extern void print_value (pretty_printer *, const_rtx, int);
-extern void print_pattern (pretty_printer *, const_rtx, int);
-extern void print_insn (pretty_printer *pp, const rtx_insn *x, int verbose);
-extern void print_insn_with_notes (pretty_printer *, const rtx_insn *);
+extern void dump_value_slim(FILE *, const_rtx, int);
+extern void dump_insn_slim(FILE *, const rtx_insn *);
+extern void dump_rtl_slim(FILE *, const rtx_insn *, const rtx_insn *, int, int);
+extern void print_value(pretty_printer *, const_rtx, int);
+extern void print_pattern(pretty_printer *, const_rtx, int);
+extern void print_insn(pretty_printer *pp, const rtx_insn *x, int verbose);
+extern void print_insn_with_notes(pretty_printer *, const rtx_insn *);
 
-extern void rtl_dump_bb_for_graph (pretty_printer *, basic_block);
-extern void
-rtl_dump_bb_as_sarif_properties (diagnostics::sarif_builder *,
-				 json::object &,
-				 basic_block);
-extern const char *str_pattern_slim (const_rtx);
+extern void rtl_dump_bb_for_graph(pretty_printer *, basic_block);
+extern void rtl_dump_bb_as_sarif_properties(diagnostics::sarif_builder *,
+                                            json::object &, basic_block);
+extern const char *str_pattern_slim(const_rtx);
 
-extern void print_rtx_function (FILE *file, function *fn, bool compact);
+extern void print_rtx_function(FILE *file, function *fn, bool compact);
 
 #ifndef GENERATOR_FILE
 
@@ -148,20 +148,19 @@ extern void print_rtx_function (FILE *file, function *fn, bool compact);
    The first phase is needed since otherwise there would be no way to tell
    if an rtx will be reused when first encountering it.  */
 
-class rtx_reuse_manager
-{
- public:
-  rtx_reuse_manager ();
+class rtx_reuse_manager {
+public:
+  rtx_reuse_manager();
 
   /* The first pass.  */
-  void preprocess (const_rtx x);
+  void preprocess(const_rtx x);
 
   /* The second pass (within print_rtx).  */
-  bool has_reuse_id (const_rtx x, int *out);
-  bool seen_def_p (int reuse_id);
-  void set_seen_def (int reuse_id);
+  bool has_reuse_id(const_rtx x, int *out);
+  bool seen_def_p(int reuse_id);
+  void set_seen_def(int reuse_id);
 
- private:
+private:
   hash_map<const_rtx, int> m_rtx_occurrence_count;
   hash_map<const_rtx, int> m_rtx_reuse_ids;
   auto_bitmap m_defs_seen;
@@ -170,4 +169,4 @@ class rtx_reuse_manager
 
 #endif /* #ifndef GENERATOR_FILE */
 
-#endif  // GCC_PRINT_RTL_H
+#endif // GCC_PRINT_RTL_H

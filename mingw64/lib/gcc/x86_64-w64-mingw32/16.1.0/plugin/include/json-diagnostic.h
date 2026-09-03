@@ -28,19 +28,13 @@ along with GCC; see the file COPYING3.  If not see
    Stores location information for json::value * from parsing, and
    can generate location_t values for the.  */
 
-class gcc_json_context : public json::simple_location_map
-{
+class gcc_json_context : public json::simple_location_map {
 public:
-  gcc_json_context (const char *filename)
-  : m_filename (filename)
-  {
-  }
+  gcc_json_context(const char *filename) : m_filename(filename) {}
 
-  location_t
-  make_location_for_point (const json::location_map::point &);
+  location_t make_location_for_point(const json::location_map::point &);
 
-  location_t
-  make_location_for_range (const json::location_map::range &);
+  location_t make_location_for_range(const json::location_map::range &);
 
 private:
   const char *m_filename;
@@ -48,27 +42,18 @@ private:
 
 /* Emit an error on gcc's global_dc relating to JS_VAL.  */
 
-extern void
-json_error (gcc_json_context &ctxt,
-	    const json::value &js_val,
-	    const char *gmsgid, ...)
-  ATTRIBUTE_GCC_DIAG(3,4);
+extern void json_error(gcc_json_context &ctxt, const json::value &js_val,
+                       const char *gmsgid, ...) ATTRIBUTE_GCC_DIAG(3, 4);
 
 /* Emit a warning on gcc's global_dc relating to JS_VAL.  */
 
-extern bool
-json_warning (gcc_json_context &ctxt,
-	      const json::value &js_val,
-	      diagnostics::option_id option_id,
-	      const char *gmsgid, ...)
-  ATTRIBUTE_GCC_DIAG(4,5);
+extern bool json_warning(gcc_json_context &ctxt, const json::value &js_val,
+                         diagnostics::option_id option_id, const char *gmsgid,
+                         ...) ATTRIBUTE_GCC_DIAG(4, 5);
 
 /* Emit a note on gcc's global_dc relating to JS_VAL.  */
 
-extern void
-json_note (gcc_json_context &ctxt,
-	   const json::value &js_val,
-	   const char *gmsgid, ...)
-  ATTRIBUTE_GCC_DIAG(3,4);
+extern void json_note(gcc_json_context &ctxt, const json::value &js_val,
+                      const char *gmsgid, ...) ATTRIBUTE_GCC_DIAG(3, 4);
 
-#endif  /* GCC_JSON_DIAGNOSTIC_H  */
+#endif /* GCC_JSON_DIAGNOSTIC_H  */

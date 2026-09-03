@@ -31,124 +31,97 @@ namespace diagnostics {
    Uses diagnostics::context.m_text_callbacks to provide client-specific
    textual output (e.g. include paths, macro expansions, etc).  */
 
-class text_sink : public sink
-{
+class text_sink : public sink {
 public:
-  text_sink (context &dc,
-	     source_printing_options *source_printing = nullptr,
-	     bool follows_reference_printer = false)
-  : sink (dc),
-    m_saved_output_buffer (nullptr),
-    m_column_policy (dc),
-    m_last_module (nullptr),
-    m_includes_seen (nullptr),
-    m_source_printing (source_printing
-		       ? *source_printing
-		       : dc.get_source_printing_options ()),
-    m_follows_reference_printer (follows_reference_printer),
-    m_show_nesting (false),
-    m_show_nesting_levels (false)
-  {}
-  ~text_sink ();
+  text_sink(context &dc, source_printing_options *source_printing = nullptr,
+            bool follows_reference_printer = false)
+      : sink(dc), m_saved_output_buffer(nullptr), m_column_policy(dc),
+        m_last_module(nullptr), m_includes_seen(nullptr),
+        m_source_printing(source_printing ? *source_printing
+                                          : dc.get_source_printing_options()),
+        m_follows_reference_printer(follows_reference_printer),
+        m_show_nesting(false), m_show_nesting_levels(false) {}
+  ~text_sink();
 
-  text_sink *dyn_cast_text_sink () final override { return this; }
+  text_sink *dyn_cast_text_sink() final override { return this; }
 
-  void dump_kind (FILE *out) const override
-  {
-    fprintf (out, "text_sink");
-  }
-  void dump (FILE *out, int indent) const override;
+  void dump_kind(FILE *out) const override { fprintf(out, "text_sink"); }
+  void dump(FILE *out, int indent) const override;
 
-  std::unique_ptr<per_sink_buffer>
-  make_per_sink_buffer () final override;
-  void set_buffer (per_sink_buffer *) final override;
+  std::unique_ptr<per_sink_buffer> make_per_sink_buffer() final override;
+  void set_buffer(per_sink_buffer *) final override;
 
-  void on_begin_group () override {}
-  void on_end_group () override {}
-  void on_report_diagnostic (const diagnostic_info &,
-			     enum kind orig_diag_kind) override;
-  void on_report_verbatim (text_info &) final override;
-  void on_diagram (const diagram &d) override;
-  void after_diagnostic (const diagnostic_info &) override;
-  bool machine_readable_stderr_p () const final override
-  {
-    return false;
-  }
-  bool follows_reference_printer_p () const final override;
+  void on_begin_group() override {}
+  void on_end_group() override {}
+  void on_report_diagnostic(const diagnostic_info &,
+                            enum kind orig_diag_kind) override;
+  void on_report_verbatim(text_info &) final override;
+  void on_diagram(const diagram &d) override;
+  void after_diagnostic(const diagnostic_info &) override;
+  bool machine_readable_stderr_p() const final override { return false; }
+  bool follows_reference_printer_p() const final override;
 
-  void update_printer () override;
+  void update_printer() override;
 
-  void
-  report_global_digraph (const lazily_created<digraphs::digraph> &)
-    final override
-  {
+  void report_global_digraph(
+      const lazily_created<digraphs::digraph> &) final override {
     // no-op for text
   }
 
   void
-  report_digraph_for_logical_location (const lazily_created<digraphs::digraph> &,
-				       logical_locations::key) final override
-  {
+  report_digraph_for_logical_location(const lazily_created<digraphs::digraph> &,
+                                      logical_locations::key) final override {
     // no-op for text
   }
 
   /* Helpers for writing lang-specific starters/finalizers for text output.  */
-  char *build_prefix (const diagnostic_info &) const;
-  void report_current_module (location_t where);
-  void append_note (location_t location,
-		    const char * gmsgid, ...) ATTRIBUTE_GCC_DIAG(3,4);
+  char *build_prefix(const diagnostic_info &) const;
+  void report_current_module(location_t where);
+  void append_note(location_t location, const char *gmsgid, ...)
+      ATTRIBUTE_GCC_DIAG(3, 4);
 
+  char *file_name_as_prefix(const char *) const;
 
-  char *file_name_as_prefix (const char *) const;
+  char *build_indent_prefix(bool with_bullet) const;
 
-  char *build_indent_prefix (bool with_bullet) const;
+  void print_path(const paths::path &path);
 
-  void print_path (const paths::path &path);
+  bool show_column_p() const { return get_context().m_show_column; }
 
-  bool show_column_p () const { return get_context ().m_show_column; }
+  const column_policy &get_column_policy() const { return m_column_policy; }
+  location_print_policy get_location_print_policy() const;
 
-  const column_policy &get_column_policy () const
-  {
-    return m_column_policy;
-  }
-  location_print_policy get_location_print_policy () const;
-
-  bool show_nesting_p () const { return m_show_nesting; }
-  bool show_locations_in_nesting_p () const
-  {
+  bool show_nesting_p() const { return m_show_nesting; }
+  bool show_locations_in_nesting_p() const {
     return m_show_locations_in_nesting;
   }
 
-  void set_show_nesting (bool show_nesting) { m_show_nesting = show_nesting; }
-  void set_show_locations_in_nesting (bool val)
-  {
+  void set_show_nesting(bool show_nesting) { m_show_nesting = show_nesting; }
+  void set_show_locations_in_nesting(bool val) {
     m_show_locations_in_nesting = val;
   }
-  void set_show_nesting_levels (bool show_nesting_levels)
-  {
+  void set_show_nesting_levels(bool show_nesting_levels) {
     m_show_nesting_levels = show_nesting_levels;
   }
 
-  label_text get_location_text (const expanded_location &s) const;
+  label_text get_location_text(const expanded_location &s) const;
 
-  source_printing_options &get_source_printing_options ()
-  {
+  source_printing_options &get_source_printing_options() {
     return m_source_printing;
   }
-  const source_printing_options &get_source_printing_options () const
-  {
+  const source_printing_options &get_source_printing_options() const {
     return m_source_printing;
   }
 
-  static const char *maybe_line_and_column (int line, int col);
+  static const char *maybe_line_and_column(int line, int col);
 
 protected:
-  void print_any_cwe (const diagnostic_info &diagnostic);
-  void print_any_rules (const diagnostic_info &diagnostic);
-  void print_option_information (const diagnostic_info &diagnostic,
-				 enum kind orig_diag_kind);
+  void print_any_cwe(const diagnostic_info &diagnostic);
+  void print_any_rules(const diagnostic_info &diagnostic);
+  void print_option_information(const diagnostic_info &diagnostic,
+                                enum kind orig_diag_kind);
 
-  bool includes_seen_p (const line_map_ordinary *map);
+  bool includes_seen_p(const line_map_ordinary *map);
 
   /* For handling diagnostics::buffer.  */
   output_buffer *m_saved_output_buffer;

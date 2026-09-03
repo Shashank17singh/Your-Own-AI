@@ -1,7 +1,7 @@
 /* Copyright (C) 2024-2026 Free Software Foundation, Inc.
 
    This file is part of GCC.
- 
+
    GCC is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 3, or (at your option)
@@ -11,7 +11,7 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
- 
+
    Under Section 7 of GPL version 3, you are granted additional
    permissions described in the GCC Runtime Library Exception, version
    3.1, as published by the Free Software Foundation.
@@ -36,22 +36,22 @@
 #define __DISABLE_AMX_MOVRS__
 #endif /* __AMX_MOVRS__ */
 
-#define _tile_loaddrs_internal(tdst, base, stride)			\
-__asm__ volatile							\
-  ("{tileloaddrs\t(%0,%1,1), %%tmm%c[_tdst]				\
-    |tileloaddrs\ttmm%c[_tdst], [%0+%1*1]}"				\
-    :: "r" ((const void*) (base)), "r" ((__PTRDIFF_TYPE__) (stride)), [_tdst]"i"(tdst))
+#define _tile_loaddrs_internal(tdst, base, stride)                             \
+  __asm__ volatile(                                                            \
+      "{tileloaddrs\t(%0,%1,1), %%tmm%c[_tdst]				\
+    |tileloaddrs\ttmm%c[_tdst], [%0+%1*1]}" ::"r"((const void *)(base)),       \
+      "r"((__PTRDIFF_TYPE__)(stride)), [_tdst] "i"(tdst))
 
-#define _tile_loaddrst1_internal(tdst, base, stride)			\
-__asm__ volatile							\
-  ("{tileloaddrst1\t(%0,%1,1), %%tmm%c[_tdst]				\
-    |tileloaddrst1\ttmm%c[_tdst], [%0+%1*1]}"				\
-    :: "r" ((const void*) (base)), "r" ((__PTRDIFF_TYPE__) (stride)), [_tdst]"i"(tdst))
+#define _tile_loaddrst1_internal(tdst, base, stride)                           \
+  __asm__ volatile(                                                            \
+      "{tileloaddrst1\t(%0,%1,1), %%tmm%c[_tdst]				\
+    |tileloaddrst1\ttmm%c[_tdst], [%0+%1*1]}" ::"r"((const void *)(base)),     \
+      "r"((__PTRDIFF_TYPE__)(stride)), [_tdst] "i"(tdst))
 
-#define _tile_loaddrs(tdst, base, stride)		  \
+#define _tile_loaddrs(tdst, base, stride)                                      \
   _tile_loaddrs_internal(tdst, base, stride)
 
-#define _tile_loaddrst1(tdst, base, stride)		  \
+#define _tile_loaddrst1(tdst, base, stride)                                    \
   _tile_loaddrst1_internal(tdst, base, stride)
 
 #ifdef __DISABLE_AMX_MOVRS__

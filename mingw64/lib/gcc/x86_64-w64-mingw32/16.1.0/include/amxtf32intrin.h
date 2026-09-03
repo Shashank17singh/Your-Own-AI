@@ -30,14 +30,15 @@
 #endif /* __AMX_TF32__ */
 
 #if defined(__x86_64__)
-#define _tile_mmultf32ps_internal(src1_dst,src2,src3)			\
-  __asm__ volatile						    	\
-  ("{tmmultf32ps\t%%tmm%c[_src3], %%tmm%c[_src2], %%tmm%c[_src1_dst]	\
-    |tmmultf32ps\ttmm%c[_src1_dst], tmm%c[_src2], tmm%c[_src3]}"	\
-    :: [_src1_dst]"i"(src1_dst), [_src2]"i"(src2), [_src3]"i"(src3))
+#define _tile_mmultf32ps_internal(src1_dst, src2, src3)                        \
+  __asm__ volatile(                                                            \
+      "{tmmultf32ps\t%%tmm%c[_src3], %%tmm%c[_src2], %%tmm%c[_src1_dst]	\
+    |tmmultf32ps\ttmm%c[_src1_dst], tmm%c[_src2], tmm%c[_src3]}" ::            \
+          [_src1_dst] "i"(src1_dst),                                           \
+      [_src2] "i"(src2), [_src3] "i"(src3))
 
-#define _tile_mmultf32ps(src1_dst,src2,src3)				\
-  _tile_mmultf32ps_internal (src1_dst, src2, src3)
+#define _tile_mmultf32ps(src1_dst, src2, src3)                                 \
+  _tile_mmultf32ps_internal(src1_dst, src2, src3)
 
 #endif
 

@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 """Python interface for the 'lsprof' profiler.
-   Compatible with the 'profile' module.
+Compatible with the 'profile' module.
 """
 
 __all__ = ["run", "runctx", "Profile"]
@@ -12,17 +12,20 @@ import profile as _pyprofile
 # ____________________________________________________________
 # Simple interface
 
+
 def run(statement, filename=None, sort=-1):
     return _pyprofile._Utils(Profile).run(statement, filename, sort)
 
+
 def runctx(statement, globals, locals, filename=None, sort=-1):
-    return _pyprofile._Utils(Profile).runctx(statement, globals, locals,
-                                             filename, sort)
+    return _pyprofile._Utils(Profile).runctx(statement, globals, locals, filename, sort)
+
 
 run.__doc__ = _pyprofile.run.__doc__
 runctx.__doc__ = _pyprofile.runctx.__doc__
 
 # ____________________________________________________________
+
 
 class Profile(_lsprof.Profiler):
     """Profile(timer=None, timeunit=None, subcalls=True, builtins=True)
@@ -39,11 +42,13 @@ class Profile(_lsprof.Profiler):
 
     def print_stats(self, sort=-1):
         import pstats
+
         pstats.Stats(self).strip_dirs().sort_stats(sort).print_stats()
 
     def dump_stats(self, file):
         import marshal
-        with open(file, 'wb') as f:
+
+        with open(file, "wb") as f:
             self.create_stats()
             marshal.dump(self.stats, f)
 
@@ -58,10 +63,10 @@ class Profile(_lsprof.Profiler):
         # call information
         for entry in entries:
             func = label(entry.code)
-            nc = entry.callcount         # ncalls column of pstats (before '/')
-            cc = nc - entry.reccallcount # ncalls column of pstats (after '/')
-            tt = entry.inlinetime        # tottime column of pstats
-            ct = entry.totaltime         # cumtime column of pstats
+            nc = entry.callcount  # ncalls column of pstats (before '/')
+            cc = nc - entry.reccallcount  # ncalls column of pstats (after '/')
+            tt = entry.inlinetime  # tottime column of pstats
+            ct = entry.totaltime  # cumtime column of pstats
             callers = {}
             callersdicts[id(entry.code)] = callers
             self.stats[func] = cc, nc, tt, ct, callers
@@ -91,6 +96,7 @@ class Profile(_lsprof.Profiler):
 
     def run(self, cmd):
         import __main__
+
         dict = __main__.__dict__
         return self.runctx(cmd, dict, dict)
 
@@ -117,15 +123,19 @@ class Profile(_lsprof.Profiler):
     def __exit__(self, *exc_info):
         self.disable()
 
+
 # ____________________________________________________________
+
 
 def label(code):
     if isinstance(code, str):
-        return ('~', 0, code)    # built-in functions ('~' sorts at the end)
+        return ("~", 0, code)  # built-in functions ('~' sorts at the end)
     else:
         return (code.co_filename, code.co_firstlineno, code.co_name)
 
+
 # ____________________________________________________________
+
 
 def main():
     import os
@@ -133,23 +143,36 @@ def main():
     import runpy
     import pstats
     from optparse import OptionParser
-    usage = "cProfile.py [-o output_file_path] [-s sort] [-m module | scriptfile] [arg] ..."
+
+    usage = (
+        "cProfile.py [-o output_file_path] [-s sort] [-m module | scriptfile] [arg] ..."
+    )
     parser = OptionParser(usage=usage)
     parser.allow_interspersed_args = False
-    parser.add_option('-o', '--outfile', dest="outfile",
-        help="Save stats to <outfile>", default=None)
-    parser.add_option('-s', '--sort', dest="sort",
+    parser.add_option(
+        "-o", "--outfile", dest="outfile", help="Save stats to <outfile>", default=None
+    )
+    parser.add_option(
+        "-s",
+        "--sort",
+        dest="sort",
         help="Sort order when printing to stdout, based on pstats.Stats class",
         default=-1,
-        choices=sorted(pstats.Stats.sort_arg_dict_default))
-    parser.add_option('-m', dest="module", action="store_true",
-        help="Profile a library module", default=False)
+        choices=sorted(pstats.Stats.sort_arg_dict_default),
+    )
+    parser.add_option(
+        "-m",
+        dest="module",
+        action="store_true",
+        help="Profile a library module",
+        default=False,
+    )
 
     if not sys.argv[1:]:
         parser.print_usage()
         sys.exit(2)
 
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
     sys.argv[:] = args
 
     # The script that we're profiling may chdir, so capture the absolute path
@@ -160,20 +183,17 @@ def main():
     if len(args) > 0:
         if options.module:
             code = "run_module(modname, run_name='__main__')"
-            globs = {
-                'run_module': runpy.run_module,
-                'modname': args[0]
-            }
+            globs = {"run_module": runpy.run_module, "modname": args[0]}
         else:
             progname = args[0]
             sys.path.insert(0, os.path.dirname(progname))
-            with open(progname, 'rb') as fp:
-                code = compile(fp.read(), progname, 'exec')
+            with open(progname, "rb") as fp:
+                code = compile(fp.read(), progname, "exec")
             globs = {
-                '__file__': progname,
-                '__name__': '__main__',
-                '__package__': None,
-                '__cached__': None,
+                "__file__": progname,
+                "__name__": "__main__",
+                "__package__": None,
+                "__cached__": None,
             }
         try:
             runctx(code, globs, None, options.outfile, options.sort)
@@ -185,6 +205,7 @@ def main():
         parser.print_usage()
     return parser
 
+
 # When invoked as main program, invoke the profiler on a script
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

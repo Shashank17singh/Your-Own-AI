@@ -22,35 +22,37 @@ along with GCC; see the file COPYING3.  If not see
 /* Enable -municode feature and support optional pthread support.  */
 
 #undef CPP_SPEC
-#define CPP_SPEC "%{posix:-D_POSIX_SOURCE} %{mthreads:-D_MT} " \
-		 "%{municode:-DUNICODE} " \
-		 "%{" SPEC_PTHREAD1 ":-D_REENTRANT} " \
-		 "%{" SPEC_PTHREAD2 ":-U_REENTRANT} " \
-		 "%{mcrtdll=crtdll*:-U__MSVCRT__ -D__CRTDLL__} " \
-		 "%{mcrtdll=msvcrt10*:-D__MSVCRT_VERSION__=0x100} " \
-		 "%{mcrtdll=msvcrt20*:-D__MSVCRT_VERSION__=0x200} " \
-		 "%{mcrtdll=msvcrt40*:-D__MSVCRT_VERSION__=0x400} " \
-		 "%{mcrtdll=msvcr40*:-D__MSVCRT_VERSION__=0x400} " \
-		 "%{mcrtdll=msvcrtd*:-D__MSVCRT_VERSION__=0x600} " \
-		 "%{mcrtdll=msvcrt-os*:-D__MSVCRT_VERSION__=0x700} " \
-		 "%{mcrtdll=msvcr70*:-D__MSVCRT_VERSION__=0x700} " \
-		 "%{mcrtdll=msvcr71*:-D__MSVCRT_VERSION__=0x701} " \
-		 "%{mcrtdll=msvcr80*:-D__MSVCRT_VERSION__=0x800} " \
-		 "%{mcrtdll=msvcr90*:-D__MSVCRT_VERSION__=0x900} " \
-		 "%{mcrtdll=msvcr100*:-D__MSVCRT_VERSION__=0xA00} " \
-		 "%{mcrtdll=msvcr110*:-D__MSVCRT_VERSION__=0xB00} " \
-		 "%{mcrtdll=msvcr120*:-D__MSVCRT_VERSION__=0xC00} " \
-		 "%{mcrtdll=ucrt*:-D_UCRT} "
+#define CPP_SPEC                                                               \
+  "%{posix:-D_POSIX_SOURCE} %{mthreads:-D_MT} "                                \
+  "%{municode:-DUNICODE} "                                                     \
+  "%{" SPEC_PTHREAD1 ":-D_REENTRANT} "                                         \
+  "%{" SPEC_PTHREAD2 ":-U_REENTRANT} "                                         \
+  "%{mcrtdll=crtdll*:-U__MSVCRT__ -D__CRTDLL__} "                              \
+  "%{mcrtdll=msvcrt10*:-D__MSVCRT_VERSION__=0x100} "                           \
+  "%{mcrtdll=msvcrt20*:-D__MSVCRT_VERSION__=0x200} "                           \
+  "%{mcrtdll=msvcrt40*:-D__MSVCRT_VERSION__=0x400} "                           \
+  "%{mcrtdll=msvcr40*:-D__MSVCRT_VERSION__=0x400} "                            \
+  "%{mcrtdll=msvcrtd*:-D__MSVCRT_VERSION__=0x600} "                            \
+  "%{mcrtdll=msvcrt-os*:-D__MSVCRT_VERSION__=0x700} "                          \
+  "%{mcrtdll=msvcr70*:-D__MSVCRT_VERSION__=0x700} "                            \
+  "%{mcrtdll=msvcr71*:-D__MSVCRT_VERSION__=0x701} "                            \
+  "%{mcrtdll=msvcr80*:-D__MSVCRT_VERSION__=0x800} "                            \
+  "%{mcrtdll=msvcr90*:-D__MSVCRT_VERSION__=0x900} "                            \
+  "%{mcrtdll=msvcr100*:-D__MSVCRT_VERSION__=0xA00} "                           \
+  "%{mcrtdll=msvcr110*:-D__MSVCRT_VERSION__=0xB00} "                           \
+  "%{mcrtdll=msvcr120*:-D__MSVCRT_VERSION__=0xC00} "                           \
+  "%{mcrtdll=ucrt*:-D_UCRT} "
 
 #undef REAL_LIBGCC_SPEC
-#define REAL_LIBGCC_SPEC \
+#define REAL_LIBGCC_SPEC                                                       \
   "%{mthreads:-lmingwthrd} -lmingw32 \
    " SHARED_LIBGCC_SPEC " \
    -lmingwex %{!mcrtdll=*:-lmsvcrt} %{mcrtdll=*:-l%*} \
    -lkernel32 " MCFGTHREAD_SPEC
 
 #undef STARTFILE_SPEC
-#define STARTFILE_SPEC "%{shared|mdll:dllcrt2%O%s} \
+#define STARTFILE_SPEC                                                         \
+  "%{shared|mdll:dllcrt2%O%s} \
   %{!shared:%{!mdll:%{!municode:crt2%O%s}}} \
   %{!shared:%{!mdll:%{municode:crt2u%O%s}}} \
   %{pg:gcrt2%O%s} \
@@ -65,12 +67,13 @@ along with GCC; see the file COPYING3.  If not see
 #define ASM_SPEC "%{m32:--32} %{m64:--64}"
 
 #undef LIB_SPEC
-#define LIB_SPEC "%{pg:-lgmon} %{" SPEC_PTHREAD1 ":-lpthread} " \
-		 "%{" SPEC_PTHREAD2 ": } " \
-		 "%{mwindows:-lgdi32 -lcomdlg32} " \
-     "%{fvtable-verify=preinit:-lvtv -lpsapi; \
-        fvtable-verify=std:-lvtv -lpsapi} " \
-		 "-ladvapi32 -lshell32 -luser32 -lkernel32"
+#define LIB_SPEC                                                               \
+  "%{pg:-lgmon} %{" SPEC_PTHREAD1 ":-lpthread} "                               \
+  "%{" SPEC_PTHREAD2 ": } "                                                    \
+  "%{mwindows:-lgdi32 -lcomdlg32} "                                            \
+  "%{fvtable-verify=preinit:-lvtv -lpsapi; \
+        fvtable-verify=std:-lvtv -lpsapi} "                                  \
+  "-ladvapi32 -lshell32 -luser32 -lkernel32"
 
 #undef SPEC_32
 #undef SPEC_64
@@ -94,33 +97,35 @@ along with GCC; see the file COPYING3.  If not see
 #undef SUB_LINK_SPEC
 #undef SUB_LINK_ENTRY
 #define SUB_LINK_SPEC "%{" SPEC_64 ":-m i386pep} %{" SPEC_32 ":-m i386pe}"
-#define SUB_LINK_ENTRY "%{" SPEC_64 ":" SUB_LINK_ENTRY64 "} %{" SPEC_32 ":" SUB_LINK_ENTRY32 "}"
+#define SUB_LINK_ENTRY                                                         \
+  "%{" SPEC_64 ":" SUB_LINK_ENTRY64 "} %{" SPEC_32 ":" SUB_LINK_ENTRY32 "}"
 
 #undef MULTILIB_DEFAULTS
 #if TARGET_64BIT_DEFAULT
-#define MULTILIB_DEFAULTS { "m64" }
+#define MULTILIB_DEFAULTS {"m64"}
 #else
-#define MULTILIB_DEFAULTS { "m32" }
+#define MULTILIB_DEFAULTS {"m32"}
 #endif
 
 #undef LINK_SPEC_LARGE_ADDR_AWARE
 #if MINGW_DEFAULT_LARGE_ADDR_AWARE
-# define LINK_SPEC_LARGE_ADDR_AWARE \
+#define LINK_SPEC_LARGE_ADDR_AWARE                                             \
   "%{!shared:%{!mdll:%{" SPEC_32 ":--large-address-aware}}}"
 #else
-# define LINK_SPEC_LARGE_ADDR_AWARE ""
+#define LINK_SPEC_LARGE_ADDR_AWARE ""
 #endif
 
 #undef LINK_SPEC_DISABLE_DYNAMICBASE
 #if HAVE_LD_PE_DISABLE_DYNAMICBASE
-# define LINK_SPEC_DISABLE_DYNAMICBASE \
+#define LINK_SPEC_DISABLE_DYNAMICBASE                                          \
   "%{!shared:%{!mdll:%{no-pie:--disable-dynamicbase}}}"
 #else
-# define LINK_SPEC_DISABLE_DYNAMICBASE ""
+#define LINK_SPEC_DISABLE_DYNAMICBASE ""
 #endif
 
 #undef LINK_SPEC
-#define LINK_SPEC SUB_LINK_SPEC " %{mwindows:--subsystem windows} \
+#define LINK_SPEC                                                              \
+  SUB_LINK_SPEC " %{mwindows:--subsystem windows} \
   %{mconsole:--subsystem console} \
   %{shared: %{mdll: %eshared and mdll are not compatible}} \
   %{shared: --shared} %{mdll:--dll} \

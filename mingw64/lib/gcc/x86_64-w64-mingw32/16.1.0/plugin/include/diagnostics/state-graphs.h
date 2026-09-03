@@ -33,14 +33,16 @@ along with GCC; see the file COPYING3.  If not see
    in these nodes to stash extra properties (e.g. what kind of memory region
    a node is e.g. stack vs heap).  */
 
-namespace dot { class graph; }
+namespace dot {
+class graph;
+}
 
 namespace diagnostics {
 namespace state_graphs {
 
 extern std::unique_ptr<dot::graph>
-make_dot_graph (const diagnostics::digraphs::digraph &state_graph,
-		const logical_locations::manager &logical_loc_mgr);
+make_dot_graph(const diagnostics::digraphs::digraph &state_graph,
+               const logical_locations::manager &logical_loc_mgr);
 
 } // namespace state_graphs
 } // namespace diagnostics

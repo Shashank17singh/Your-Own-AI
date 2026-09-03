@@ -21,8 +21,8 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_PRETTY_PRINT_FORMAT_IMPL_H
 #define GCC_PRETTY_PRINT_FORMAT_IMPL_H
 
-#include "pretty-print.h"
 #include "diagnostics/event-id.h"
+#include "pretty-print.h"
 
 /* A struct representing a pending item to be printed within
    pp_format.
@@ -58,11 +58,9 @@ along with GCC; see the file COPYING3.  If not see
    they must not outlive phase 3 of formatting of the given
    pp_formatted_chunks level.  */
 
-struct pp_token
-{
+struct pp_token {
 public:
-  enum class kind
-  {
+  enum class kind {
     text,
 
     begin_color,
@@ -81,21 +79,21 @@ public:
     NUM_KINDS
   };
 
-  pp_token (enum kind k);
+  pp_token(enum kind k);
 
-  pp_token (const pp_token &) = delete;
-  pp_token (pp_token &&) = delete;
+  pp_token(const pp_token &) = delete;
+  pp_token(pp_token &&) = delete;
 
-  virtual ~pp_token () = default;
+  virtual ~pp_token() = default;
 
-  pp_token &operator= (const pp_token &) = delete;
-  pp_token &operator= (pp_token &&) = delete;
+  pp_token &operator=(const pp_token &) = delete;
+  pp_token &operator=(pp_token &&) = delete;
 
-  void dump (FILE *out) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr); }
+  void dump(FILE *out) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr); }
 
-  static void *operator new (size_t sz, obstack &s);
-  static void operator delete (void *);
+  static void *operator new(size_t sz, obstack &s);
+  static void operator delete(void *);
 
   enum kind m_kind;
 
@@ -106,13 +104,10 @@ public:
 
 /* Subclasses of pp_token for the various kinds of token.  */
 
-struct pp_token_text : public pp_token
-{
-  pp_token_text (label_text &&value)
-  : pp_token (kind::text),
-    m_value (std::move (value))
-  {
-    gcc_assert (m_value.get ());
+struct pp_token_text : public pp_token {
+  pp_token_text(label_text &&value)
+      : pp_token(kind::text), m_value(std::move(value)) {
+    gcc_assert(m_value.get());
   }
 
   label_text m_value;
@@ -120,27 +115,20 @@ struct pp_token_text : public pp_token
 
 template <>
 template <>
-inline bool
-is_a_helper <pp_token_text *>::test (pp_token *tok)
-{
+inline bool is_a_helper<pp_token_text *>::test(pp_token *tok) {
   return tok->m_kind == pp_token::kind::text;
 }
 
 template <>
 template <>
-inline bool
-is_a_helper <const pp_token_text *>::test (const pp_token *tok)
-{
+inline bool is_a_helper<const pp_token_text *>::test(const pp_token *tok) {
   return tok->m_kind == pp_token::kind::text;
 }
 
-struct pp_token_begin_color : public pp_token
-{
-  pp_token_begin_color (label_text &&value)
-  : pp_token (kind::begin_color),
-    m_value (std::move (value))
-  {
-    gcc_assert (m_value.get ());
+struct pp_token_begin_color : public pp_token {
+  pp_token_begin_color(label_text &&value)
+      : pp_token(kind::begin_color), m_value(std::move(value)) {
+    gcc_assert(m_value.get());
   }
 
   label_text m_value;
@@ -148,51 +136,33 @@ struct pp_token_begin_color : public pp_token
 
 template <>
 template <>
-inline bool
-is_a_helper <pp_token_begin_color *>::test (pp_token *tok)
-{
+inline bool is_a_helper<pp_token_begin_color *>::test(pp_token *tok) {
   return tok->m_kind == pp_token::kind::begin_color;
 }
 
 template <>
 template <>
 inline bool
-is_a_helper <const pp_token_begin_color *>::test (const pp_token *tok)
-{
+is_a_helper<const pp_token_begin_color *>::test(const pp_token *tok) {
   return tok->m_kind == pp_token::kind::begin_color;
 }
 
-struct pp_token_end_color : public pp_token
-{
-  pp_token_end_color ()
-  : pp_token (kind::end_color)
-  {
-  }
+struct pp_token_end_color : public pp_token {
+  pp_token_end_color() : pp_token(kind::end_color) {}
 };
 
-struct pp_token_begin_quote : public pp_token
-{
-  pp_token_begin_quote ()
-  : pp_token (kind::begin_quote)
-  {
-  }
+struct pp_token_begin_quote : public pp_token {
+  pp_token_begin_quote() : pp_token(kind::begin_quote) {}
 };
 
-struct pp_token_end_quote : public pp_token
-{
-  pp_token_end_quote ()
-  : pp_token (kind::end_quote)
-  {
-  }
+struct pp_token_end_quote : public pp_token {
+  pp_token_end_quote() : pp_token(kind::end_quote) {}
 };
 
-struct pp_token_begin_url : public pp_token
-{
-  pp_token_begin_url (label_text &&value)
-  : pp_token (kind::begin_url),
-    m_value (std::move (value))
-  {
-    gcc_assert (m_value.get ());
+struct pp_token_begin_url : public pp_token {
+  pp_token_begin_url(label_text &&value)
+      : pp_token(kind::begin_url), m_value(std::move(value)) {
+    gcc_assert(m_value.get());
   }
 
   label_text m_value;
@@ -200,35 +170,24 @@ struct pp_token_begin_url : public pp_token
 
 template <>
 template <>
-inline bool
-is_a_helper <pp_token_begin_url*>::test (pp_token *tok)
-{
+inline bool is_a_helper<pp_token_begin_url *>::test(pp_token *tok) {
   return tok->m_kind == pp_token::kind::begin_url;
 }
 
 template <>
 template <>
-inline bool
-is_a_helper <const pp_token_begin_url*>::test (const pp_token *tok)
-{
+inline bool is_a_helper<const pp_token_begin_url *>::test(const pp_token *tok) {
   return tok->m_kind == pp_token::kind::begin_url;
 }
 
-struct pp_token_end_url : public pp_token
-{
-  pp_token_end_url ()
-    : pp_token (kind::end_url)
-  {
-  }
+struct pp_token_end_url : public pp_token {
+  pp_token_end_url() : pp_token(kind::end_url) {}
 };
 
-struct pp_token_event_id : public pp_token
-{
-  pp_token_event_id (diagnostics::paths::event_id_t event_id)
-  : pp_token (kind::event_id),
-    m_event_id (event_id)
-  {
-    gcc_assert (event_id.known_p ());
+struct pp_token_event_id : public pp_token {
+  pp_token_event_id(diagnostics::paths::event_id_t event_id)
+      : pp_token(kind::event_id), m_event_id(event_id) {
+    gcc_assert(event_id.known_p());
   }
 
   diagnostics::paths::event_id_t m_event_id;
@@ -236,40 +195,32 @@ struct pp_token_event_id : public pp_token
 
 template <>
 template <>
-inline bool
-is_a_helper <pp_token_event_id *>::test (pp_token *tok)
-{
+inline bool is_a_helper<pp_token_event_id *>::test(pp_token *tok) {
   return tok->m_kind == pp_token::kind::event_id;
 }
 
 template <>
 template <>
-inline bool
-is_a_helper <const pp_token_event_id *>::test (const pp_token *tok)
-{
+inline bool is_a_helper<const pp_token_event_id *>::test(const pp_token *tok) {
   return tok->m_kind == pp_token::kind::event_id;
 }
 
-struct pp_token_custom_data : public pp_token
-{
-  class value
-  {
+struct pp_token_custom_data : public pp_token {
+  class value {
   public:
-    virtual ~value () {}
-    virtual void dump (FILE *out) const = 0;
+    virtual ~value() {}
+    virtual void dump(FILE *out) const = 0;
 
     /* Hook for lowering a custom_data token to standard tokens.
        Return true and write to OUT if possible.
        Return false for custom_data that is to be handled by
        the token_printer.  */
-    virtual bool as_standard_tokens (pp_token_list &out) = 0;
+    virtual bool as_standard_tokens(pp_token_list &out) = 0;
   };
 
-  pp_token_custom_data (std::unique_ptr<value> val)
-  : pp_token (kind::custom_data),
-    m_value (std::move (val))
-  {
-    gcc_assert (m_value.get ());
+  pp_token_custom_data(std::unique_ptr<value> val)
+      : pp_token(kind::custom_data), m_value(std::move(val)) {
+    gcc_assert(m_value.get());
   }
 
   std::unique_ptr<value> m_value;
@@ -277,17 +228,14 @@ struct pp_token_custom_data : public pp_token
 
 template <>
 template <>
-inline bool
-is_a_helper <pp_token_custom_data *>::test (pp_token *tok)
-{
+inline bool is_a_helper<pp_token_custom_data *>::test(pp_token *tok) {
   return tok->m_kind == pp_token::kind::custom_data;
 }
 
 template <>
 template <>
 inline bool
-is_a_helper <const pp_token_custom_data *>::test (const pp_token *tok)
-{
+is_a_helper<const pp_token_custom_data *>::test(const pp_token *tok) {
   return tok->m_kind == pp_token::kind::custom_data;
 }
 
@@ -296,61 +244,53 @@ is_a_helper <const pp_token_custom_data *>::test (const pp_token *tok)
    also allocated on the obstack during formatting (or, occasionally,
    the stack).  */
 
-class pp_token_list
-{
+class pp_token_list {
 public:
   // Allocate a new pp_token_list within S.
-  static pp_token_list *make (obstack &s)
-  {
-    return new (s) pp_token_list (s);
-  }
-  static void *operator new (size_t sz, obstack &s);
-  static void operator delete (void *);
+  static pp_token_list *make(obstack &s) { return new (s) pp_token_list(s); }
+  static void *operator new(size_t sz, obstack &s);
+  static void operator delete(void *);
 
-  pp_token_list (obstack &s);
-  pp_token_list (const pp_token_list &) = delete;
-  pp_token_list (pp_token_list &&);
+  pp_token_list(obstack &s);
+  pp_token_list(const pp_token_list &) = delete;
+  pp_token_list(pp_token_list &&);
 
-  ~pp_token_list ();
+  ~pp_token_list();
 
-  pp_token &operator= (const pp_token_list &) = delete;
-  pp_token &operator= (pp_token_list &&) = delete;
+  pp_token &operator=(const pp_token_list &) = delete;
+  pp_token &operator=(pp_token_list &&) = delete;
 
-/* Make a pp_token of the given subclass, using the relevant obstack to provide
-   the memory.  The pp_token must therefore not outlive the current
-   pp_formatted_chunks level during formatting.  */
-  template<typename Subclass, typename... Args>
-  std::unique_ptr<pp_token>
-  make_token (Args&&... args)
-  {
-    return std::unique_ptr<pp_token>
-      (new (m_obstack) Subclass (std::forward<Args> (args)...));
+  /* Make a pp_token of the given subclass, using the relevant obstack to
+     provide the memory.  The pp_token must therefore not outlive the current
+     pp_formatted_chunks level during formatting.  */
+  template <typename Subclass, typename... Args>
+  std::unique_ptr<pp_token> make_token(Args &&...args) {
+    return std::unique_ptr<pp_token>(new (m_obstack)
+                                         Subclass(std::forward<Args>(args)...));
   }
 
-  template<typename Subclass, typename... Args>
-  void push_back (Args&&... args)
-  {
-    auto tok = make_token<Subclass> (std::forward<Args> (args)...);
-    push_back (std::move (tok));
+  template <typename Subclass, typename... Args>
+  void push_back(Args &&...args) {
+    auto tok = make_token<Subclass>(std::forward<Args>(args)...);
+    push_back(std::move(tok));
   }
-  void push_back_text (label_text &&text);
-  void push_back_byte (char ch);
-  void push_back (std::unique_ptr<pp_token> tok);
-  void push_back_list (pp_token_list &&list);
+  void push_back_text(label_text &&text);
+  void push_back_byte(char ch);
+  void push_back(std::unique_ptr<pp_token> tok);
+  void push_back_list(pp_token_list &&list);
 
-  std::unique_ptr<pp_token> pop_front ();
+  std::unique_ptr<pp_token> pop_front();
 
-  std::unique_ptr<pp_token> remove_token (pp_token *tok);
+  std::unique_ptr<pp_token> remove_token(pp_token *tok);
 
-  void insert_after (std::unique_ptr<pp_token> new_tok,
-		     pp_token *relative_tok);
+  void insert_after(std::unique_ptr<pp_token> new_tok, pp_token *relative_tok);
 
-  void replace_custom_tokens ();
-  void merge_consecutive_text_tokens ();
-  void apply_urlifier (const urlifier &urlifier);
+  void replace_custom_tokens();
+  void merge_consecutive_text_tokens();
+  void apply_urlifier(const urlifier &urlifier);
 
-  void dump (FILE *out) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr); }
+  void dump(FILE *out) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr); }
 
   obstack &m_obstack;
 
@@ -363,22 +303,21 @@ public:
    output (pp_output_formatted_text).  A stack is necessary because
    the diagnostic starter may decide to generate its own output by way
    of the formatter.  */
-class pp_formatted_chunks
-{
+class pp_formatted_chunks {
   friend class pretty_printer;
   friend class pp_markup::context;
   friend class output_buffer;
 
 public:
-  pp_token_list * const * get_token_lists () const { return m_args; }
+  pp_token_list *const *get_token_lists() const { return m_args; }
 
-  void append_formatted_chunk (obstack &s, const char *content);
+  void append_formatted_chunk(obstack &s, const char *content);
 
-  void dump (FILE *out, int indent) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  void dump(FILE *out, int indent) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
   // For use in selftests
-  pp_formatted_chunks *get_prev () const { return m_prev; }
+  pp_formatted_chunks *get_prev() const { return m_prev; }
 
 private:
   /* Pointer to previous level on the stack.  */
@@ -393,8 +332,8 @@ private:
      to be output verbatim, odd-numbered chunks are format specifiers.
      For example, given:
        pp_format (pp,
-		  "foo: %i, bar: %s, opt: %qs",
-		  42, "baz", "-foption");
+                  "foo: %i, bar: %s, opt: %qs",
+                  42, "baz", "-foption");
 
      after phase 1 we might have:
        (gdb) call buffer->cur_chunk_array->dump()

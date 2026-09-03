@@ -11,7 +11,7 @@ class IOBindingTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        requires('gui')
+        requires("gui")
         cls.root = Tk()
         cls.root.withdraw()
         cls.editwin = EditorWindow(root=cls.root)
@@ -23,7 +23,7 @@ class IOBindingTest(unittest.TestCase):
         cls.editwin._close()
         del cls.editwin
         cls.root.update_idletasks()
-        for id in cls.root.tk.call('after', 'info'):
+        for id in cls.root.tk.call("after", "info"):
             cls.root.after_cancel(id)  # Need for EditorWindow.
         cls.root.destroy()
         del cls.root
@@ -37,13 +37,13 @@ class IOBindingTest(unittest.TestCase):
         fix = io.fixnewlines
         text = io.editwin.text
         self.editwin.interp = None
-        eq(fix(), '')
+        eq(fix(), "")
         del self.editwin.interp
-        text.insert(1.0, 'a')
-        eq(fix(), 'a'+io.eol_convention)
-        eq(text.get('1.0', 'end-1c'), 'a\n')
-        eq(fix(), 'a'+io.eol_convention)
+        text.insert(1.0, "a")
+        eq(fix(), "a" + io.eol_convention)
+        eq(text.get("1.0", "end-1c"), "a\n")
+        eq(fix(), "a" + io.eol_convention)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

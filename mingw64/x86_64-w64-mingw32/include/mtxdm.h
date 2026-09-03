@@ -5,15 +5,11 @@
  */
 #ifndef __MTXDM_H__
 #define __MTXDM_H__
-
 #include "comsvcs.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  __declspec(dllimport) HRESULT __cdecl GetDispenserManager(IDispenserManager **);
-
+__declspec(dllimport) HRESULT __cdecl GetDispenserManager(IDispenserManager **);
 #ifdef __cplusplus
 }
 #endif

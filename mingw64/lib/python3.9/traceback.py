@@ -5,16 +5,32 @@ import itertools
 import linecache
 import sys
 
-__all__ = ['extract_stack', 'extract_tb', 'format_exception',
-           'format_exception_only', 'format_list', 'format_stack',
-           'format_tb', 'print_exc', 'format_exc', 'print_exception',
-           'print_last', 'print_stack', 'print_tb', 'clear_frames',
-           'FrameSummary', 'StackSummary', 'TracebackException',
-           'walk_stack', 'walk_tb']
+__all__ = [
+    "extract_stack",
+    "extract_tb",
+    "format_exception",
+    "format_exception_only",
+    "format_list",
+    "format_stack",
+    "format_tb",
+    "print_exc",
+    "format_exc",
+    "print_exception",
+    "print_last",
+    "print_stack",
+    "print_tb",
+    "clear_frames",
+    "FrameSummary",
+    "StackSummary",
+    "TracebackException",
+    "walk_stack",
+    "walk_tb",
+]
 
 #
 # Formatting and printing lists of traceback lines.
 #
+
 
 def print_list(extracted_list, file=None):
     """Print the list of tuples as returned by extract_tb() or
@@ -23,6 +39,7 @@ def print_list(extracted_list, file=None):
         file = sys.stderr
     for item in StackSummary.from_list(extracted_list).format():
         print(item, file=file, end="")
+
 
 def format_list(extracted_list):
     """Format a list of tuples or FrameSummary objects for printing.
@@ -38,9 +55,11 @@ def format_list(extracted_list):
     """
     return StackSummary.from_list(extracted_list).format()
 
+
 #
 # Printing and Extracting Tracebacks.
 #
+
 
 def print_tb(tb, limit=None, file=None):
     """Print up to 'limit' stack trace entries from the traceback 'tb'.
@@ -52,9 +71,11 @@ def print_tb(tb, limit=None, file=None):
     """
     print_list(extract_tb(tb, limit=limit), file=file)
 
+
 def format_tb(tb, limit=None):
     """A shorthand for 'format_list(extract_tb(tb, limit))'."""
     return extract_tb(tb, limit=limit).format()
+
 
 def extract_tb(tb, limit=None):
     """
@@ -71,17 +92,18 @@ def extract_tb(tb, limit=None):
     """
     return StackSummary.extract(walk_tb(tb), limit=limit)
 
+
 #
 # Exception formatting and output.
 #
 
 _cause_message = (
-    "\nThe above exception was the direct cause "
-    "of the following exception:\n\n")
+    "\nThe above exception was the direct cause " "of the following exception:\n\n"
+)
 
 _context_message = (
-    "\nDuring handling of the above exception, "
-    "another exception occurred:\n\n")
+    "\nDuring handling of the above exception, " "another exception occurred:\n\n"
+)
 
 
 def print_exception(etype, value, tb, limit=None, file=None, chain=True):
@@ -100,8 +122,9 @@ def print_exception(etype, value, tb, limit=None, file=None, chain=True):
     # ignore it here (rather than in the new TracebackException API).
     if file is None:
         file = sys.stderr
-    for line in TracebackException(
-            type(value), value, tb, limit=limit).format(chain=chain):
+    for line in TracebackException(type(value), value, tb, limit=limit).format(
+        chain=chain
+    ):
         print(line, file=file, end="")
 
 
@@ -117,8 +140,9 @@ def format_exception(etype, value, tb, limit=None, chain=True):
     # format_exception has ignored etype for some time, and code such as cgitb
     # passes in bogus values as a result. For compatibility with such code we
     # ignore it here (rather than in the new TracebackException API).
-    return list(TracebackException(
-        type(value), value, tb, limit=limit).format(chain=chain))
+    return list(
+        TracebackException(type(value), value, tb, limit=limit).format(chain=chain)
+    )
 
 
 def format_exception_only(etype, value):
@@ -142,6 +166,7 @@ def format_exception_only(etype, value):
 
 # -- not official API but folk probably use these two functions.
 
+
 def _format_final_exc_line(etype, value):
     valuestr = _some_str(value)
     if value is None or not valuestr:
@@ -150,33 +175,41 @@ def _format_final_exc_line(etype, value):
         line = "%s: %s\n" % (etype, valuestr)
     return line
 
+
 def _some_str(value):
     try:
         return str(value)
     except:
-        return '<unprintable %s object>' % type(value).__name__
+        return "<unprintable %s object>" % type(value).__name__
+
 
 # --
+
 
 def print_exc(limit=None, file=None, chain=True):
     """Shorthand for 'print_exception(*sys.exc_info(), limit, file)'."""
     print_exception(*sys.exc_info(), limit=limit, file=file, chain=chain)
 
+
 def format_exc(limit=None, chain=True):
     """Like print_exc() but return a string."""
     return "".join(format_exception(*sys.exc_info(), limit=limit, chain=chain))
+
 
 def print_last(limit=None, file=None, chain=True):
     """This is a shorthand for 'print_exception(sys.last_type,
     sys.last_value, sys.last_traceback, limit, file)'."""
     if not hasattr(sys, "last_type"):
         raise ValueError("no last exception")
-    print_exception(sys.last_type, sys.last_value, sys.last_traceback,
-                    limit, file, chain)
+    print_exception(
+        sys.last_type, sys.last_value, sys.last_traceback, limit, file, chain
+    )
+
 
 #
 # Printing and Extracting Stacks.
 #
+
 
 def print_stack(f=None, limit=None, file=None):
     """Print a stack trace from its invocation point.
@@ -238,10 +271,11 @@ class FrameSummary:
       mapping the name to the repr() of the variable.
     """
 
-    __slots__ = ('filename', 'lineno', 'name', '_line', 'locals')
+    __slots__ = ("filename", "lineno", "name", "_line", "locals")
 
-    def __init__(self, filename, lineno, name, *, lookup_line=True,
-            locals=None, line=None):
+    def __init__(
+        self, filename, lineno, name, *, lookup_line=True, locals=None, line=None
+    ):
         """Construct a FrameSummary.
 
         :param lookup_line: If True, `linecache` is consulted for the source
@@ -261,10 +295,12 @@ class FrameSummary:
 
     def __eq__(self, other):
         if isinstance(other, FrameSummary):
-            return (self.filename == other.filename and
-                    self.lineno == other.lineno and
-                    self.name == other.name and
-                    self.locals == other.locals)
+            return (
+                self.filename == other.filename
+                and self.lineno == other.lineno
+                and self.name == other.name
+                and self.locals == other.locals
+            )
         if isinstance(other, tuple):
             return (self.filename, self.lineno, self.name, self.line) == other
         return NotImplemented
@@ -277,7 +313,8 @@ class FrameSummary:
 
     def __repr__(self):
         return "<FrameSummary file {filename}, line {lineno} in {name}>".format(
-            filename=self.filename, lineno=self.lineno, name=self.name)
+            filename=self.filename, lineno=self.lineno, name=self.name
+        )
 
     def __len__(self):
         return 4
@@ -313,14 +350,16 @@ def walk_tb(tb):
         tb = tb.tb_next
 
 
-_RECURSIVE_CUTOFF = 3 # Also hardcoded in traceback.c.
+_RECURSIVE_CUTOFF = 3  # Also hardcoded in traceback.c.
+
 
 class StackSummary(list):
     """A stack of frames."""
 
     @classmethod
-    def extract(klass, frame_gen, *, limit=None, lookup_lines=True,
-            capture_locals=False):
+    def extract(
+        klass, frame_gen, *, limit=None, lookup_lines=True, capture_locals=False
+    ):
         """Create a StackSummary from a traceback or stack object.
 
         :param frame_gen: A generator that yields (frame, lineno) tuples to
@@ -333,7 +372,7 @@ class StackSummary(list):
             be captured as object representations into the FrameSummary.
         """
         if limit is None:
-            limit = getattr(sys, 'tracebacklimit', None)
+            limit = getattr(sys, "tracebacklimit", None)
             if limit is not None and limit < 0:
                 limit = 0
         if limit is not None:
@@ -356,8 +395,9 @@ class StackSummary(list):
                 f_locals = f.f_locals
             else:
                 f_locals = None
-            result.append(FrameSummary(
-                filename, lineno, name, lookup_line=False, locals=f_locals))
+            result.append(
+                FrameSummary(filename, lineno, name, lookup_line=False, locals=f_locals)
+            )
         for filename in fnames:
             linecache.checkcache(filename)
         # If immediate lookup was desired, trigger lookups now.
@@ -403,13 +443,18 @@ class StackSummary(list):
         last_name = None
         count = 0
         for frame in self:
-            if (last_file is None or last_file != frame.filename or
-                last_line is None or last_line != frame.lineno or
-                last_name is None or last_name != frame.name):
+            if (
+                last_file is None
+                or last_file != frame.filename
+                or last_line is None
+                or last_line != frame.lineno
+                or last_name is None
+                or last_name != frame.name
+            ):
                 if count > _RECURSIVE_CUTOFF:
                     count -= _RECURSIVE_CUTOFF
                     result.append(
-                        f'  [Previous line repeated {count} more '
+                        f"  [Previous line repeated {count} more "
                         f'time{"s" if count > 1 else ""}]\n'
                     )
                 last_file = frame.filename
@@ -420,18 +465,21 @@ class StackSummary(list):
             if count > _RECURSIVE_CUTOFF:
                 continue
             row = []
-            row.append('  File "{}", line {}, in {}\n'.format(
-                frame.filename, frame.lineno, frame.name))
+            row.append(
+                '  File "{}", line {}, in {}\n'.format(
+                    frame.filename, frame.lineno, frame.name
+                )
+            )
             if frame.line:
-                row.append('    {}\n'.format(frame.line.strip()))
+                row.append("    {}\n".format(frame.line.strip()))
             if frame.locals:
                 for name, value in sorted(frame.locals.items()):
-                    row.append('    {name} = {value}\n'.format(name=name, value=value))
-            result.append(''.join(row))
+                    row.append("    {name} = {value}\n".format(name=name, value=value))
+            result.append("".join(row))
         if count > _RECURSIVE_CUTOFF:
             count -= _RECURSIVE_CUTOFF
             result.append(
-                f'  [Previous line repeated {count} more '
+                f"  [Previous line repeated {count} more "
                 f'time{"s" if count > 1 else ""}]\n'
             )
         return result
@@ -465,8 +513,17 @@ class TracebackException:
     - :attr:`msg` For syntax errors - the compiler error message.
     """
 
-    def __init__(self, exc_type, exc_value, exc_traceback, *, limit=None,
-            lookup_lines=True, capture_locals=False, _seen=None):
+    def __init__(
+        self,
+        exc_type,
+        exc_value,
+        exc_traceback,
+        *,
+        limit=None,
+        lookup_lines=True,
+        capture_locals=False,
+        _seen=None,
+    ):
         # NB: we need to accept exc_traceback, exc_value, exc_traceback to
         # permit backwards compat with the existing API, otherwise we
         # need stub thunk objects just to glue it together.
@@ -478,8 +535,11 @@ class TracebackException:
         # being called with no type or value (None, None, None).
         self._truncated = False
         try:
-            if (exc_value and exc_value.__cause__ is not None
-                and id(exc_value.__cause__) not in _seen):
+            if (
+                exc_value
+                and exc_value.__cause__ is not None
+                and id(exc_value.__cause__) not in _seen
+            ):
                 cause = TracebackException(
                     type(exc_value.__cause__),
                     exc_value.__cause__,
@@ -487,11 +547,15 @@ class TracebackException:
                     limit=limit,
                     lookup_lines=False,
                     capture_locals=capture_locals,
-                    _seen=_seen)
+                    _seen=_seen,
+                )
             else:
                 cause = None
-            if (exc_value and exc_value.__context__ is not None
-                and id(exc_value.__context__) not in _seen):
+            if (
+                exc_value
+                and exc_value.__context__ is not None
+                and id(exc_value.__context__) not in _seen
+            ):
                 context = TracebackException(
                     type(exc_value.__context__),
                     exc_value.__context__,
@@ -499,7 +563,8 @@ class TracebackException:
                     limit=limit,
                     lookup_lines=False,
                     capture_locals=capture_locals,
-                    _seen=_seen)
+                    _seen=_seen,
+                )
             else:
                 context = None
         except RecursionError:
@@ -511,12 +576,16 @@ class TracebackException:
             context = None
         self.__cause__ = cause
         self.__context__ = context
-        self.__suppress_context__ = \
+        self.__suppress_context__ = (
             exc_value.__suppress_context__ if exc_value else False
+        )
         # TODO: locals.
         self.stack = StackSummary.extract(
-            walk_tb(exc_traceback), limit=limit, lookup_lines=lookup_lines,
-            capture_locals=capture_locals)
+            walk_tb(exc_traceback),
+            limit=limit,
+            lookup_lines=lookup_lines,
+            capture_locals=capture_locals,
+        )
         self.exc_type = exc_type
         # Capture now to permit freeing resources: only complication is in the
         # unofficial API _format_final_exc_line
@@ -574,7 +643,7 @@ class TracebackException:
         stype = self.exc_type.__qualname__
         smod = self.exc_type.__module__
         if smod not in ("__main__", "builtins"):
-            stype = smod + '.' + stype
+            stype = smod + "." + stype
 
         if not issubclass(self.exc_type, SyntaxError):
             yield _format_final_exc_line(stype, self._str)
@@ -584,28 +653,29 @@ class TracebackException:
     def _format_syntax_error(self, stype):
         """Format SyntaxError exceptions (internal helper)."""
         # Show exactly where the problem was found.
-        filename_suffix = ''
+        filename_suffix = ""
         if self.lineno is not None:
             yield '  File "{}", line {}\n'.format(
-                self.filename or "<string>", self.lineno)
+                self.filename or "<string>", self.lineno
+            )
         elif self.filename is not None:
-            filename_suffix = ' ({})'.format(self.filename)
+            filename_suffix = " ({})".format(self.filename)
 
         text = self.text
         if text is not None:
             # text  = "   foo\n"
             # rtext = "   foo"
             # ltext =    "foo"
-            rtext = text.rstrip('\n')
-            ltext = rtext.lstrip(' \n\f')
+            rtext = text.rstrip("\n")
+            ltext = rtext.lstrip(" \n\f")
             spaces = len(rtext) - len(ltext)
-            yield '    {}\n'.format(ltext)
+            yield "    {}\n".format(ltext)
             # Convert 1-based column offset to 0-based index into stripped text
             caret = (self.offset or 0) - 1 - spaces
             if caret >= 0:
                 # non-space whitespace (likes tabs) must be kept for alignment
-                caretspace = ((c if c.isspace() else ' ') for c in ltext[:caret])
-                yield '    {}^\n'.format(''.join(caretspace))
+                caretspace = ((c if c.isspace() else " ") for c in ltext[:caret])
+                yield "    {}^\n".format("".join(caretspace))
         msg = self.msg or "<no detail available>"
         yield "{}: {}{}\n".format(stype, msg, filename_suffix)
 
@@ -625,15 +695,15 @@ class TracebackException:
             if self.__cause__ is not None:
                 yield from self.__cause__.format(chain=chain)
                 yield _cause_message
-            elif (self.__context__ is not None and
-                not self.__suppress_context__):
+            elif self.__context__ is not None and not self.__suppress_context__:
                 yield from self.__context__.format(chain=chain)
                 yield _context_message
             if self._truncated:
                 yield (
-                    'Chained exceptions have been truncated to avoid '
-                    'stack overflow in traceback formatting:\n')
+                    "Chained exceptions have been truncated to avoid "
+                    "stack overflow in traceback formatting:\n"
+                )
         if self.stack:
-            yield 'Traceback (most recent call last):\n'
+            yield "Traceback (most recent call last):\n"
             yield from self.stack.format()
         yield from self.format_exception_only()

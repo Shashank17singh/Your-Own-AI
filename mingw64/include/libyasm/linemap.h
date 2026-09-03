@@ -77,8 +77,7 @@ int yasm_linemap_get_source(yasm_linemap *linemap, unsigned long line,
  */
 YASM_LIB_DECL
 void yasm_linemap_add_source(yasm_linemap *linemap,
-                             /*@null@*/ yasm_bytecode *bc,
-                             const char *source);
+                             /*@null@*/ yasm_bytecode *bc, const char *source);
 
 /** Go to the next line (increments the current virtual line).
  * \param linemap       line mapping repository
@@ -134,8 +133,7 @@ void yasm_linemap_lookup(yasm_linemap *linemap, unsigned long line,
  *         nonzero value; otherwise 0.
  */
 YASM_LIB_DECL
-int yasm_linemap_traverse_filenames
-    (yasm_linemap *linemap, /*@null@*/ void *d,
-     int (*func) (const char *filename, void *d));
+int yasm_linemap_traverse_filenames(yasm_linemap *linemap, /*@null@*/ void *d,
+                                    int (*func)(const char *filename, void *d));
 
 #endif

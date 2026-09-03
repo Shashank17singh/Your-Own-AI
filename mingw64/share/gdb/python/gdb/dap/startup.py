@@ -1,60 +1,27 @@
-# Copyright 2022-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-# Do not import other gdbdap modules here -- this module must come
-# first.
 import functools
 import queue
 import sys
 import threading
 import traceback
 from enum import IntEnum, auto
-
 import gdb
 
-# Adapt to different Queue types.  This is exported for use in other
-# modules as well.
 if sys.version_info[0] == 3 and sys.version_info[1] <= 6:
     DAPQueue = queue.Queue
 else:
     DAPQueue = queue.SimpleQueue
-
-
-# The GDB thread, aka the main thread.
 _gdb_thread = threading.current_thread()
-
-
-# The DAP thread.
 _dap_thread = None
 
 
-# "Known" exceptions are wrapped in a DAP exception, so that, by
-# default, only rogue exceptions are logged -- this is then used by
-# the test suite.
 class DAPException(Exception):
     pass
 
 
-# Wrapper for gdb.parse_and_eval that turns exceptions into
-# DAPException.
 def parse_and_eval(expression, global_context=False):
     try:
         return gdb.parse_and_eval(expression, global_context=global_context)
     except Exception as e:
-        # Be sure to preserve the summary, as this can propagate to
-        # the client.
         raise DAPException(str(e)) from e
 
 
@@ -64,9 +31,6 @@ def start_thread(name, target, args=()):
     correctly blocked."""
 
     def thread_wrapper(*args):
-        # Catch any exception, and log it.  If we let it escape here, it'll be
-        # printed in gdb_stderr, which is not safe to access from anywhere but
-        # gdb's main thread.
         try:
             target(*args)
         except Exception as err:
@@ -74,7 +38,6 @@ def start_thread(name, target, args=()):
             thread_log("caught exception: " + err_string)
             log_stack()
         finally:
-            # Log when a thread terminates.
             thread_log("terminating")
 
     result = gdb.Thread(name=name, target=thread_wrapper, args=args, daemon=True)
@@ -86,14 +49,11 @@ def start_dap(target):
     """Start the DAP thread and invoke TARGET there."""
     exec_and_log("set breakpoint pending on")
 
-    # Functions in this thread contain assertions that check for this
-    # global, so we must set it before letting these functions run.
     def really_start_dap():
         global _dap_thread
         _dap_thread = threading.current_thread()
         target()
 
-    # Note: unlike _dap_thread, dap_thread is a local variable.
     dap_thread = start_thread("DAP", really_start_dap)
 
     def _on_gdb_exiting(event):
@@ -126,7 +86,6 @@ def in_dap_thread(func):
     return ensure_dap_thread
 
 
-# Logging levels.
 class LogLevel(IntEnum):
     DEFAULT = auto()
     FULL = auto()
@@ -153,7 +112,6 @@ class LoggingParam(gdb.Parameter):
 
     set_doc = "Set the DAP logging status."
     show_doc = "Show the DAP logging status."
-
     lock = threading.Lock()
     log_file = None
 
@@ -165,7 +123,6 @@ class LoggingParam(gdb.Parameter):
 
     def get_set_string(self):
         with dap_log.lock:
-            # Close any existing log file, no matter what.
             if self.log_file is not None:
                 self.log_file.close()
                 self.log_file = None

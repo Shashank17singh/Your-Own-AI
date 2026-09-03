@@ -10,7 +10,7 @@ extern "C" {
  ***/
 
 #ifndef Py_BUILD_CORE
-#  error "this header requires Py_BUILD_CORE define"
+#error "this header requires Py_BUILD_CORE define"
 #endif
 
 /*
@@ -22,8 +22,8 @@ extern "C" {
 #undef small /* defined by some Windows headers */
 
 typedef struct {
-    PyObject *large;  /* A list of previously accumulated large strings */
-    PyObject *small;  /* Pending small strings */
+  PyObject *large; /* A list of previously accumulated large strings */
+  PyObject *small; /* Pending small strings */
 } _PyAccu;
 
 PyAPI_FUNC(int) _PyAccu_Init(_PyAccu *acc);

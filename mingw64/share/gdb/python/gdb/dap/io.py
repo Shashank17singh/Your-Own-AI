@@ -1,20 +1,4 @@
-# Copyright 2022-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import json
-
 from .startup import LogLevel, log, log_stack, start_thread
 
 
@@ -23,11 +7,9 @@ def read_json(stream):
     The decoded object is returned.
     None is returned on EOF."""
     try:
-        # First read and parse the header.
         content_length = None
         while True:
             line = stream.readline()
-            # If the line is empty, we hit EOF.
             if len(line) == 0:
                 log("EOF")
                 return None
@@ -42,15 +24,12 @@ def read_json(stream):
         data = bytes()
         while len(data) < content_length:
             new_data = stream.read(content_length - len(data))
-            # Maybe we hit EOF.
             if len(new_data) == 0:
                 log("EOF after reading the header")
                 return None
             data += new_data
         return json.loads(data)
     except OSError:
-        # Reading can also possibly throw an exception.  Treat this as
-        # EOF.
         log_stack(LogLevel.FULL)
         return None
 
@@ -65,9 +44,6 @@ def start_json_writer(stream, queue):
         while True:
             obj = queue.get()
             if obj is None:
-                # This is an exit request.  The stream is already
-                # flushed, so all that's left to do is request an
-                # exit.
                 break
             obj["seq"] = seq
             seq = seq + 1

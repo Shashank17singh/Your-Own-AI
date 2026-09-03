@@ -43,7 +43,7 @@ extern struct target_constraints *this_target_constraints;
 
 class GTY(()) target_globals {
 public:
-  ~target_globals ();
+  ~target_globals();
 
   class target_flag_state *GTY((skip)) flag_state;
   struct target_regs *GTY((skip)) regs;
@@ -68,12 +68,10 @@ public:
 #if SWITCHABLE_TARGET
 extern class target_globals default_target_globals;
 
-extern class target_globals *save_target_globals (void);
-extern class target_globals *save_target_globals_default_opts (void);
+extern class target_globals *save_target_globals(void);
+extern class target_globals *save_target_globals_default_opts(void);
 
-inline void
-restore_target_globals (class target_globals *g)
-{
+inline void restore_target_globals(class target_globals *g) {
   this_target_flag_state = g->flag_state;
   this_target_regs = g->regs;
   this_target_rtl = g->rtl;

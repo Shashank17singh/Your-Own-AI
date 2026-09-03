@@ -5,45 +5,46 @@
  */
 #ifndef _LMERRLOG_
 #define _LMERRLOG_
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-  typedef struct _ERROR_LOG {
-    DWORD el_len;
-    DWORD el_reserved;
-    DWORD el_time;
-    DWORD el_error;
-    LPWSTR el_name;
-    LPWSTR el_text;
-    LPBYTE el_data;
-    DWORD el_data_size;
-    DWORD el_nstrings;
-  } ERROR_LOG,*PERROR_LOG,*LPERROR_LOG;
-
+typedef struct _ERROR_LOG {
+  DWORD el_len;
+  DWORD el_reserved;
+  DWORD el_time;
+  DWORD el_error;
+  LPWSTR el_name;
+  LPWSTR el_text;
+  LPBYTE el_data;
+  DWORD el_data_size;
+  DWORD el_nstrings;
+} ERROR_LOG, *PERROR_LOG, *LPERROR_LOG;
 #define REVISED_ERROR_LOG_STRUCT
-
 #ifndef _LMHLOGDEFINED_
 #define _LMHLOGDEFINED_
-  typedef struct _HLOG {
-    DWORD time;
-    DWORD last_flags;
-    DWORD offset;
-    DWORD rec_offset;
-  } HLOG,*PHLOG,*LPHLOG;
-
+typedef struct _HLOG {
+  DWORD time;
+  DWORD last_flags;
+  DWORD offset;
+  DWORD rec_offset;
+} HLOG, *PHLOG, *LPHLOG;
 #define LOGFLAGS_FORWARD 0
 #define LOGFLAGS_BACKWARD 0x1
 #define LOGFLAGS_SEEK 0x2
 #endif
-
-  NET_API_STATUS WINAPI NetErrorLogClear(LPCWSTR server,LPCWSTR backupfile,LPBYTE reserved);
-  NET_API_STATUS WINAPI NetErrorLogRead(LPCWSTR server,LPWSTR reserved1,LPHLOG errloghandle,DWORD offset,LPDWORD reserved2,DWORD reserved3,DWORD offsetflag,LPBYTE *bufptr,DWORD prefmaxlen,LPDWORD bytesread,LPDWORD totalbytes);
-  NET_API_STATUS WINAPI NetErrorLogWrite(LPBYTE reserved1,DWORD code,LPCWSTR component,LPBYTE buffer,DWORD numbytes,LPBYTE msgbuf,DWORD strcount,LPBYTE reserved2);
-
+NET_API_STATUS WINAPI NetErrorLogClear(LPCWSTR server, LPCWSTR backupfile,
+                                       LPBYTE reserved);
+NET_API_STATUS WINAPI NetErrorLogRead(LPCWSTR server, LPWSTR reserved1,
+                                      LPHLOG errloghandle, DWORD offset,
+                                      LPDWORD reserved2, DWORD reserved3,
+                                      DWORD offsetflag, LPBYTE *bufptr,
+                                      DWORD prefmaxlen, LPDWORD bytesread,
+                                      LPDWORD totalbytes);
+NET_API_STATUS WINAPI NetErrorLogWrite(LPBYTE reserved1, DWORD code,
+                                       LPCWSTR component, LPBYTE buffer,
+                                       DWORD numbytes, LPBYTE msgbuf,
+                                       DWORD strcount, LPBYTE reserved2);
 #define ERRLOG_BASE 3100
-
 #define NELOG_Internal_Error (ERRLOG_BASE + 0)
 #define NELOG_Resource_Shortage (ERRLOG_BASE + 1)
 #define NELOG_Unable_To_Lock_Segment (ERRLOG_BASE + 2)
@@ -127,7 +128,7 @@ extern "C" {
 #define NELOG_ReplBadImport (ERRLOG_BASE + 118)
 #define NELOG_ReplBadExport (ERRLOG_BASE + 119)
 #define NELOG_ReplSignalFileErr (ERRLOG_BASE + 120)
-#define NELOG_DiskFT (ERRLOG_BASE+121)
+#define NELOG_DiskFT (ERRLOG_BASE + 121)
 #define NELOG_ReplAccessDenied (ERRLOG_BASE + 122)
 #define NELOG_NetlogonFailedPrimary (ERRLOG_BASE + 123)
 #define NELOG_NetlogonPasswdSetFailed (ERRLOG_BASE + 124)
@@ -137,7 +138,7 @@ extern "C" {
 #define NELOG_UPS_PowerOut (ERRLOG_BASE + 130)
 #define NELOG_UPS_Shutdown (ERRLOG_BASE + 131)
 #define NELOG_UPS_CmdFileError (ERRLOG_BASE + 132)
-#define NELOG_UPS_CannotOpenDriver (ERRLOG_BASE+133)
+#define NELOG_UPS_CannotOpenDriver (ERRLOG_BASE + 133)
 #define NELOG_UPS_PowerBack (ERRLOG_BASE + 134)
 #define NELOG_UPS_CmdFileConfig (ERRLOG_BASE + 135)
 #define NELOG_UPS_CmdFileExec (ERRLOG_BASE + 136)
@@ -265,7 +266,6 @@ extern "C" {
 #define NELOG_NetlogonNoSiteForClients (ERRLOG2_BASE + 107)
 #define NELOG_NetlogonDnsDeregAborted (ERRLOG2_BASE + 108)
 #define NELOG_NetlogonRpcPortRequestFailure (ERRLOG2_BASE + 109)
-
 #ifdef __cplusplus
 }
 #endif

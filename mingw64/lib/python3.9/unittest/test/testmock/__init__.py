@@ -2,9 +2,9 @@ import os
 import sys
 import unittest
 
-
 here = os.path.dirname(__file__)
 loader = unittest.defaultTestLoader
+
 
 def load_tests(*args):
     suite = unittest.TestSuite()

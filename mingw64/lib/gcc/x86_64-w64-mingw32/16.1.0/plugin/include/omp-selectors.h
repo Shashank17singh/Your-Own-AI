@@ -20,7 +20,6 @@ You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING3.  If not see
 <http://www.gnu.org/licenses/>.  */
 
-
 #ifndef GCC_OMP_SELECTORS_H
 #define GCC_OMP_SELECTORS_H
 
@@ -73,7 +72,7 @@ enum omp_tp_type {
 };
 
 /* Map trait set selector name keywords onto strings.  */
-extern const char *omp_tss_map [];
+extern const char *omp_tss_map[];
 
 /* Map trait selector keywords onto strings, allowed contexts, and
    allowed property names for OMP_TRAIT_PROPERTY_NAME_LIST and
@@ -86,11 +85,11 @@ struct omp_ts_info {
   unsigned int tss_mask;
   enum omp_tp_type tp_type;
   bool allow_score;
-  const char * const *valid_properties;
+  const char *const *valid_properties;
 };
 extern struct omp_ts_info omp_ts_map[];
 
-extern enum omp_tss_code omp_lookup_tss_code (const char *);
-extern enum omp_ts_code omp_lookup_ts_code (enum omp_tss_code, const char *);
+extern enum omp_tss_code omp_lookup_tss_code(const char *);
+extern enum omp_ts_code omp_lookup_ts_code(enum omp_tss_code, const char *);
 
 #endif /* GCC_OMP_SELECTORS_H */

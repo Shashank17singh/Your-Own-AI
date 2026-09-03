@@ -10,9 +10,10 @@ from test import lock_tests
 
 NUMTASKS = 10
 NUMTRIPS = 3
-POLL_SLEEP = 0.010 # seconds = 10 ms
+POLL_SLEEP = 0.010  # seconds = 10 ms
 
 _print_mutex = thread.allocate_lock()
+
 
 def verbose_print(arg):
     """Helper function for printing out debugging output."""
@@ -49,7 +50,7 @@ class ThreadRunningTests(BasicThreadTest):
     def task(self, ident):
         with self.random_mutex:
             delay = random.random() / 10000.0
-        verbose_print("task %s will run for %sus" % (ident, round(delay*1e6)))
+        verbose_print("task %s will run for %sus" % (ident, round(delay * 1e6)))
         time.sleep(delay)
         verbose_print("task %s done" % ident)
         with self.running_mutex:
@@ -73,16 +74,14 @@ class ThreadRunningTests(BasicThreadTest):
         thread.stack_size(0)
         self.assertEqual(thread.stack_size(), 0, "stack_size not reset to default")
 
-    @unittest.skipIf(os.name not in ("nt", "posix"), 'test meant for nt and posix')
+    @unittest.skipIf(os.name not in ("nt", "posix"), "test meant for nt and posix")
     def test_nt_and_posix_stack_size(self):
         try:
             thread.stack_size(4096)
         except ValueError:
-            verbose_print("caught expected ValueError setting "
-                            "stack_size(4096)")
+            verbose_print("caught expected ValueError setting " "stack_size(4096)")
         except thread.error:
-            self.skipTest("platform does not support changing thread stack "
-                          "size")
+            self.skipTest("platform does not support changing thread stack " "size")
 
         fail_msg = "stack_size(%d) failed - should succeed"
         for tss in (262144, 0x100000, 0):
@@ -148,8 +147,9 @@ class ThreadRunningTests(BasicThreadTest):
 
             self.assertEqual(str(cm.unraisable.exc_value), "task failed")
             self.assertIs(cm.unraisable.object, task)
-            self.assertEqual(cm.unraisable.err_msg,
-                             "Exception ignored in thread started by")
+            self.assertEqual(
+                cm.unraisable.err_msg, "Exception ignored in thread started by"
+            )
             self.assertIsNotNone(cm.unraisable.exc_traceback)
 
 
@@ -157,7 +157,7 @@ class Barrier:
     def __init__(self, num_threads):
         self.num_threads = num_threads
         self.waiting = 0
-        self.checkin_mutex  = thread.allocate_lock()
+        self.checkin_mutex = thread.allocate_lock()
         self.checkout_mutex = thread.allocate_lock()
         self.checkout_mutex.acquire()
 
@@ -200,8 +200,7 @@ class BarrierTest(BasicThreadTest):
             else:
                 with self.random_mutex:
                     delay = random.random() / 10000.0
-            verbose_print("task %s will run for %sus" %
-                          (ident, round(delay * 1e6)))
+            verbose_print("task %s will run for %sus" % (ident, round(delay * 1e6)))
             time.sleep(delay)
             verbose_print("task %s entering %s" % (ident, i))
             self.bar.enter()
@@ -215,6 +214,7 @@ class BarrierTest(BasicThreadTest):
         if finished:
             self.done_mutex.release()
 
+
 class LockTests(lock_tests.LockTests):
     locktype = thread.allocate_lock
 
@@ -223,7 +223,7 @@ class TestForkInThread(unittest.TestCase):
     def setUp(self):
         self.read_fd, self.write_fd = os.pipe()
 
-    @unittest.skipUnless(hasattr(os, 'fork'), 'need os.fork')
+    @unittest.skipUnless(hasattr(os, "fork"), "need os.fork")
     @support.reap_threads
     def test_forkinthread(self):
         pid = None

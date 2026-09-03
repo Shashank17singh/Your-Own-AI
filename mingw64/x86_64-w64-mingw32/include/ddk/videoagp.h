@@ -19,83 +19,45 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-
 #pragma once
-
 #define __VIDEOAGP_H__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define VIDEO_AGP_RATE_1X                 0x00000001
-#define VIDEO_AGP_RATE_2X                 0x00000002
-#define VIDEO_AGP_RATE_4X                 0x00000004
-#define VIDEO_AGP_RATE_8X                 0x00000008
-
+#define VIDEO_AGP_RATE_1X 0x00000001
+#define VIDEO_AGP_RATE_2X 0x00000002
+#define VIDEO_AGP_RATE_4X 0x00000004
+#define VIDEO_AGP_RATE_8X 0x00000008
 typedef enum _VIDEO_PORT_CACHE_TYPE {
   VpNonCached = 0,
   VpWriteCombined,
   VpCached
 } VIDEO_PORT_CACHE_TYPE;
-
-typedef BOOLEAN
-(NTAPI *PAGP_COMMIT_PHYSICAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID PhysicalReserveContext,
-  IN ULONG Pages,
-  IN ULONG Offset);
-
-typedef PVOID
-(NTAPI *PAGP_COMMIT_VIRTUAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID VirtualReserveContext,
-  IN ULONG Pages,
-  IN ULONG Offset);
-
-typedef VOID
-(NTAPI *PAGP_FREE_PHYSICAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID PhysicalReserveContext,
-  IN ULONG Pages,
-  IN ULONG Offset);
-
-typedef VOID
-(NTAPI *PAGP_FREE_VIRTUAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID VirtualReserveContext,
-  IN ULONG Pages,
-  IN ULONG Offset);
-
-typedef VOID
-(NTAPI *PAGP_RELEASE_PHYSICAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID PhysicalReserveContext);
-
-typedef VOID
-(NTAPI *PAGP_RELEASE_VIRTUAL)(
-  IN PVOID HwDeviceExtension,
-  IN PVOID VirtualReserveContext);
-
-typedef PHYSICAL_ADDRESS
-(NTAPI *PAGP_RESERVE_PHYSICAL)(
-  IN PVOID HwDeviceExtension,
-  IN ULONG Pages,
-  IN VIDEO_PORT_CACHE_TYPE  Caching,
-  OUT PVOID *PhysicalReserveContext);
-
-typedef PVOID
-(NTAPI *PAGP_RESERVE_VIRTUAL)(
-  IN PVOID HwDeviceExtension,
-  IN HANDLE ProcessHandle,
-  IN PVOID PhysicalReserveContext,
-  OUT PVOID *VirtualReserveContext);
-
-typedef BOOLEAN
-(NTAPI *PAGP_SET_RATE)(
-  IN PVOID HwDeviceExtension,
-  IN ULONG AgpRate);
-
+typedef BOOLEAN(NTAPI *PAGP_COMMIT_PHYSICAL)(IN PVOID HwDeviceExtension,
+                                             IN PVOID PhysicalReserveContext,
+                                             IN ULONG Pages, IN ULONG Offset);
+typedef PVOID(NTAPI *PAGP_COMMIT_VIRTUAL)(IN PVOID HwDeviceExtension,
+                                          IN PVOID VirtualReserveContext,
+                                          IN ULONG Pages, IN ULONG Offset);
+typedef VOID(NTAPI *PAGP_FREE_PHYSICAL)(IN PVOID HwDeviceExtension,
+                                        IN PVOID PhysicalReserveContext,
+                                        IN ULONG Pages, IN ULONG Offset);
+typedef VOID(NTAPI *PAGP_FREE_VIRTUAL)(IN PVOID HwDeviceExtension,
+                                       IN PVOID VirtualReserveContext,
+                                       IN ULONG Pages, IN ULONG Offset);
+typedef VOID(NTAPI *PAGP_RELEASE_PHYSICAL)(IN PVOID HwDeviceExtension,
+                                           IN PVOID PhysicalReserveContext);
+typedef VOID(NTAPI *PAGP_RELEASE_VIRTUAL)(IN PVOID HwDeviceExtension,
+                                          IN PVOID VirtualReserveContext);
+typedef PHYSICAL_ADDRESS(NTAPI *PAGP_RESERVE_PHYSICAL)(
+    IN PVOID HwDeviceExtension, IN ULONG Pages,
+    IN VIDEO_PORT_CACHE_TYPE Caching, OUT PVOID *PhysicalReserveContext);
+typedef PVOID(NTAPI *PAGP_RESERVE_VIRTUAL)(IN PVOID HwDeviceExtension,
+                                           IN HANDLE ProcessHandle,
+                                           IN PVOID PhysicalReserveContext,
+                                           OUT PVOID *VirtualReserveContext);
+typedef BOOLEAN(NTAPI *PAGP_SET_RATE)(IN PVOID HwDeviceExtension,
+                                      IN ULONG AgpRate);
 typedef struct _VIDEO_PORT_AGP_SERVICES {
   PAGP_RESERVE_PHYSICAL AgpReservePhysical;
   PAGP_RELEASE_PHYSICAL AgpReleasePhysical;
@@ -107,13 +69,10 @@ typedef struct _VIDEO_PORT_AGP_SERVICES {
   PAGP_FREE_VIRTUAL AgpFreeVirtual;
   ULONGLONG AllocationLimit;
 } VIDEO_PORT_AGP_SERVICES, *PVIDEO_PORT_AGP_SERVICES;
-
 BOOLEAN
 NTAPI
-VideoPortGetAgpServices(
-  IN PVOID HwDeviceExtension,
-  IN PVIDEO_PORT_AGP_SERVICES AgpServices);
-
+VideoPortGetAgpServices(IN PVOID HwDeviceExtension,
+                        IN PVIDEO_PORT_AGP_SERVICES AgpServices);
 #ifdef __cplusplus
 }
 #endif

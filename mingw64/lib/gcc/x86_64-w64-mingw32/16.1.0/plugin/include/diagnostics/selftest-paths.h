@@ -40,48 +40,32 @@ namespace selftest {
 
 /* An implementation of diagnostics::paths::event.  */
 
-class test_event : public event
-{
- public:
+class test_event : public event {
+public:
   using logical_location = logical_locations::key;
   using thread_id_t = paths::thread_id_t;
 
-  test_event (location_t loc,
-	      logical_location logical_loc,
-	      int depth,
-	      const char *desc,
-	      thread_id_t thread_id = 0);
-  ~test_event ();
+  test_event(location_t loc, logical_location logical_loc, int depth,
+             const char *desc, thread_id_t thread_id = 0);
+  ~test_event();
 
-  location_t get_location () const final override { return m_loc; }
-  int get_stack_depth () const final override { return m_depth; }
-  void print_desc (pretty_printer &pp) const final override
-  {
-    pp_string (&pp, m_desc);
+  location_t get_location() const final override { return m_loc; }
+  int get_stack_depth() const final override { return m_depth; }
+  void print_desc(pretty_printer &pp) const final override {
+    pp_string(&pp, m_desc);
   }
-  logical_location get_logical_location () const final override
-  {
+  logical_location get_logical_location() const final override {
     return m_logical_loc;
   }
-  meaning get_meaning () const final override
-  {
-    return meaning ();
-  }
-  bool connect_to_next_event_p () const final override
-  {
+  meaning get_meaning() const final override { return meaning(); }
+  bool connect_to_next_event_p() const final override {
     return m_connected_to_next_event;
   }
-  thread_id_t get_thread_id () const final override
-  {
-    return m_thread_id;
-  }
+  thread_id_t get_thread_id() const final override { return m_thread_id; }
 
-  void connect_to_next_event ()
-  {
-    m_connected_to_next_event = true;
-  }
+  void connect_to_next_event() { m_connected_to_next_event = true; }
 
- private:
+private:
   location_t m_loc;
   logical_location m_logical_loc;
   int m_depth;
@@ -92,13 +76,11 @@ class test_event : public event
 
 /* A simple implementation of diagnostics::paths::thread.  */
 
-class test_thread : public thread
-{
+class test_thread : public thread {
 public:
-  test_thread (const char *name) : m_name (name) {}
-  label_text get_name (bool) const final override
-  {
-    return label_text::borrow (m_name);
+  test_thread(const char *name) : m_name(name) {}
+  label_text get_name(bool) const final override {
+    return label_text::borrow(m_name);
   }
 
 private:
@@ -111,46 +93,36 @@ private:
    - does no translation of its events
    - has no dependency on "tree".  */
 
-class test_path : public path
-{
- public:
-  test_path (logical_locations::selftest::test_manager &logical_loc_mgr,
-	     pretty_printer *event_pp);
+class test_path : public path {
+public:
+  test_path(logical_locations::selftest::test_manager &logical_loc_mgr,
+            pretty_printer *event_pp);
 
-  unsigned num_events () const final override;
-  const event & get_event (int idx) const final override;
-  unsigned num_threads () const final override;
-  const thread &
-  get_thread (thread_id_t) const final override;
-  bool
-  same_function_p (int event_idx_a,
-		   int event_idx_b) const final override;
+  unsigned num_events() const final override;
+  const event &get_event(int idx) const final override;
+  unsigned num_threads() const final override;
+  const thread &get_thread(thread_id_t) const final override;
+  bool same_function_p(int event_idx_a, int event_idx_b) const final override;
 
-  thread_id_t add_thread (const char *name);
+  thread_id_t add_thread(const char *name);
 
-  event_id_t add_event (location_t loc, const char *funcname, int depth,
-			const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(5,6);
-  event_id_t
-  add_thread_event (thread_id_t thread_id,
-		    location_t loc, const char *funcname, int depth,
-		    const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(6,7);
+  event_id_t add_event(location_t loc, const char *funcname, int depth,
+                       const char *fmt, ...) ATTRIBUTE_GCC_DIAG(5, 6);
+  event_id_t add_thread_event(thread_id_t thread_id, location_t loc,
+                              const char *funcname, int depth, const char *fmt,
+                              ...) ATTRIBUTE_GCC_DIAG(6, 7);
 
-  void connect_to_next_event ();
+  void connect_to_next_event();
 
-  void add_entry (const char *callee_name, int stack_depth,
-		  thread_id_t thread_id = 0);
-  void add_return (const char *caller_name, int stack_depth,
-		   thread_id_t thread_id = 0);
-  void add_call (const char *caller_name,
-		 int caller_stack_depth,
-		 const char *callee_name,
-		 thread_id_t thread_id = 0);
+  void add_entry(const char *callee_name, int stack_depth,
+                 thread_id_t thread_id = 0);
+  void add_return(const char *caller_name, int stack_depth,
+                  thread_id_t thread_id = 0);
+  void add_call(const char *caller_name, int caller_stack_depth,
+                const char *callee_name, thread_id_t thread_id = 0);
 
- private:
-  logical_locations::key
-  logical_location_from_funcname (const char *funcname);
+private:
+  logical_locations::key logical_location_from_funcname(const char *funcname);
 
   logical_locations::selftest::test_manager &m_test_logical_loc_mgr;
   auto_delete_vec<test_thread> m_threads;
@@ -160,8 +132,8 @@ class test_path : public path
   pretty_printer *m_event_pp;
 };
 
-} // namespace diagnostics::paths::selftest
-} // namespace diagnostics::paths
+} // namespace selftest
+} // namespace paths
 } // namespace diagnostics
 
 #endif /* #if CHECKING_P */

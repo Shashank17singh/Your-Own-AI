@@ -41,11 +41,8 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-template<typename Pred>
-void
-PB_DS_CLASS_C_DEC::
-split(Pred pred, PB_DS_CLASS_C_DEC& other)
-{
+template <typename Pred>
+void PB_DS_CLASS_C_DEC::split(Pred pred, PB_DS_CLASS_C_DEC &other) {
   PB_DS_ASSERT_VALID((*this))
   PB_DS_ASSERT_VALID(other)
 
@@ -60,10 +57,7 @@ split(Pred pred, PB_DS_CLASS_C_DEC& other)
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-join(PB_DS_CLASS_C_DEC& other)
-{
+inline void PB_DS_CLASS_C_DEC::join(PB_DS_CLASS_C_DEC &other) {
   PB_DS_ASSERT_VALID((*this))
   PB_DS_ASSERT_VALID(other)
 

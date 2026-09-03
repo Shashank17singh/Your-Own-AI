@@ -23,11 +23,10 @@ along with GCC; see the file COPYING3.  If not see
 /* Abstract base class for optional use in pretty-printing for adding URLs
    to quoted text strings.  */
 
-class urlifier
-{
+class urlifier {
 public:
-  virtual ~urlifier () {}
-  virtual char *get_url_for_quoted_text (const char *p, size_t sz) const = 0;
+  virtual ~urlifier() {}
+  virtual char *get_url_for_quoted_text(const char *p, size_t sz) const = 0;
 };
 
 #endif /* GCC_PRETTY_PRINT_URLIFIER_H */

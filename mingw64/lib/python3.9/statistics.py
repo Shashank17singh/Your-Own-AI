@@ -81,23 +81,23 @@ A single exception is defined: StatisticsError is a subclass of ValueError.
 """
 
 __all__ = [
-    'NormalDist',
-    'StatisticsError',
-    'fmean',
-    'geometric_mean',
-    'harmonic_mean',
-    'mean',
-    'median',
-    'median_grouped',
-    'median_high',
-    'median_low',
-    'mode',
-    'multimode',
-    'pstdev',
-    'pvariance',
-    'quantiles',
-    'stdev',
-    'variance',
+    "NormalDist",
+    "StatisticsError",
+    "fmean",
+    "geometric_mean",
+    "harmonic_mean",
+    "mean",
+    "median",
+    "median_grouped",
+    "median_high",
+    "median_low",
+    "mode",
+    "multimode",
+    "pstdev",
+    "pvariance",
+    "quantiles",
+    "stdev",
+    "variance",
 ]
 
 import math
@@ -114,11 +114,13 @@ from collections import Counter
 
 # === Exceptions ===
 
+
 class StatisticsError(ValueError):
     pass
 
 
 # === Private utilities ===
+
 
 def _sum(data, start=0):
     """_sum(data [, start]) -> (type, sum, count)
@@ -196,16 +198,23 @@ def _coerce(T, S):
     # If the types are the same, no need to coerce anything. Put this
     # first, so that the usual case (no coercion needed) happens as soon
     # as possible.
-    if T is S:  return T
+    if T is S:
+        return T
     # Mixed int & other coerce to the other type.
-    if S is int or S is bool:  return T
-    if T is int:  return S
+    if S is int or S is bool:
+        return T
+    if T is int:
+        return S
     # If one is a (strict) subclass of the other, coerce to the subclass.
-    if issubclass(S, T):  return S
-    if issubclass(T, S):  return T
+    if issubclass(S, T):
+        return S
+    if issubclass(T, S):
+        return T
     # Ints coerce to the other type.
-    if issubclass(T, int):  return S
-    if issubclass(S, int):  return T
+    if issubclass(T, int):
+        return S
+    if issubclass(S, int):
+        return T
     # Mixed fraction & float coerces to float (or float subclass).
     if issubclass(T, Fraction) and issubclass(S, float):
         return S
@@ -267,7 +276,7 @@ def _convert(value, T):
 
 
 def _find_lteq(a, x):
-    'Locate the leftmost value exactly equal to x'
+    "Locate the leftmost value exactly equal to x"
     i = bisect_left(a, x)
     if i != len(a) and a[i] == x:
         return i
@@ -275,14 +284,14 @@ def _find_lteq(a, x):
 
 
 def _find_rteq(a, l, x):
-    'Locate the rightmost value exactly equal to x'
+    "Locate the rightmost value exactly equal to x"
     i = bisect_right(a, x, lo=l)
     if i != (len(a) + 1) and a[i - 1] == x:
         return i - 1
     raise ValueError
 
 
-def _fail_neg(values, errmsg='negative value'):
+def _fail_neg(values, errmsg="negative value"):
     """Iterate over values, failing if any are less than zero."""
     for x in values:
         if x < 0:
@@ -291,6 +300,7 @@ def _fail_neg(values, errmsg='negative value'):
 
 
 # === Measures of central tendency (averages) ===
+
 
 def mean(data):
     """Return the sample arithmetic mean of data.
@@ -312,7 +322,7 @@ def mean(data):
         data = list(data)
     n = len(data)
     if n < 1:
-        raise StatisticsError('mean requires at least one data point')
+        raise StatisticsError("mean requires at least one data point")
     T, total, count = _sum(data)
     assert count == n
     return _convert(total / n, T)
@@ -332,17 +342,19 @@ def fmean(data):
     except TypeError:
         # Handle iterators that do not define __len__().
         n = 0
+
         def count(iterable):
             nonlocal n
             for n, x in enumerate(iterable, start=1):
                 yield x
+
         total = fsum(count(data))
     else:
         total = fsum(data)
     try:
         return total / n
     except ZeroDivisionError:
-        raise StatisticsError('fmean requires at least one data point') from None
+        raise StatisticsError("fmean requires at least one data point") from None
 
 
 def geometric_mean(data):
@@ -360,8 +372,10 @@ def geometric_mean(data):
     try:
         return exp(fmean(map(log, data)))
     except ValueError:
-        raise StatisticsError('geometric mean requires a non-empty dataset '
-                              ' containing positive numbers') from None
+        raise StatisticsError(
+            "geometric mean requires a non-empty dataset "
+            " containing positive numbers"
+        ) from None
 
 
 def harmonic_mean(data):
@@ -390,10 +404,10 @@ def harmonic_mean(data):
     # http://papers.ssrn.com/sol3/papers.cfm?abstract_id=2621087
     if iter(data) is data:
         data = list(data)
-    errmsg = 'harmonic mean does not support negative values'
+    errmsg = "harmonic mean does not support negative values"
     n = len(data)
     if n < 1:
-        raise StatisticsError('harmonic_mean requires at least one data point')
+        raise StatisticsError("harmonic_mean requires at least one data point")
     elif n == 1:
         x = data[0]
         if isinstance(x, (numbers.Real, Decimal)):
@@ -401,7 +415,7 @@ def harmonic_mean(data):
                 raise StatisticsError(errmsg)
             return x
         else:
-            raise TypeError('unsupported type')
+            raise TypeError("unsupported type")
     try:
         T, total, count = _sum(1 / x for x in _fail_neg(data, errmsg))
     except ZeroDivisionError:
@@ -513,7 +527,7 @@ def median_grouped(data, interval=1):
     x = data[n // 2]
     for obj in (x, interval):
         if isinstance(obj, (str, bytes)):
-            raise TypeError('expected number but got %r' % obj)
+            raise TypeError("expected number but got %r" % obj)
     try:
         L = x - interval / 2  # The lower limit of the median interval.
     except TypeError:
@@ -558,7 +572,7 @@ def mode(data):
     try:
         return pairs[0][0]
     except IndexError:
-        raise StatisticsError('no mode for empty data') from None
+        raise StatisticsError("no mode for empty data") from None
 
 
 def multimode(data):
@@ -616,7 +630,8 @@ def multimode(data):
 # position is that fewer options make for easier choices and that
 # external packages can be used for anything more advanced.
 
-def quantiles(data, *, n=4, method='exclusive'):
+
+def quantiles(data, *, n=4, method="exclusive"):
     """Divide *data* into *n* continuous intervals with equal probability.
 
     Returns a list of (n - 1) cut points separating the intervals.
@@ -633,12 +648,12 @@ def quantiles(data, *, n=4, method='exclusive'):
     maximum value is treated as the 100th percentile.
     """
     if n < 1:
-        raise StatisticsError('n must be at least 1')
+        raise StatisticsError("n must be at least 1")
     data = sorted(data)
     ld = len(data)
     if ld < 2:
-        raise StatisticsError('must have at least two data points')
-    if method == 'inclusive':
+        raise StatisticsError("must have at least two data points")
+    if method == "inclusive":
         m = ld - 1
         result = []
         for i in range(1, n):
@@ -646,17 +661,17 @@ def quantiles(data, *, n=4, method='exclusive'):
             interpolated = (data[j] * (n - delta) + data[j + 1] * delta) / n
             result.append(interpolated)
         return result
-    if method == 'exclusive':
+    if method == "exclusive":
         m = ld + 1
         result = []
         for i in range(1, n):
-            j = i * m // n                               # rescale i to m/n
-            j = 1 if j < 1 else ld-1 if j > ld-1 else j  # clamp to 1 .. ld-1
-            delta = i*m - j*n                            # exact integer math
+            j = i * m // n  # rescale i to m/n
+            j = 1 if j < 1 else ld - 1 if j > ld - 1 else j  # clamp to 1 .. ld-1
+            delta = i * m - j * n  # exact integer math
             interpolated = (data[j - 1] * (n - delta) + data[j] * delta) / n
             result.append(interpolated)
         return result
-    raise ValueError(f'Unknown method: {method!r}')
+    raise ValueError(f"Unknown method: {method!r}")
 
 
 # === Measures of spread ===
@@ -672,6 +687,7 @@ def quantiles(data, *, n=4, method='exclusive'):
 # See a comparison of three computational methods here:
 # http://www.johndcook.com/blog/2008/09/26/comparing-three-methods-of-computing-standard-deviation/
 
+
 def _ss(data, c=None):
     """Return sum of square deviations of sequence data.
 
@@ -681,16 +697,16 @@ def _ss(data, c=None):
     lead to garbage results.
     """
     if c is not None:
-        T, total, count = _sum((x-c)**2 for x in data)
+        T, total, count = _sum((x - c) ** 2 for x in data)
         return (T, total)
     c = mean(data)
-    T, total, count = _sum((x-c)**2 for x in data)
+    T, total, count = _sum((x - c) ** 2 for x in data)
     # The following sum should mathematically equal zero, but due to rounding
     # error may not.
     U, total2, count2 = _sum((x - c) for x in data)
     assert T == U and count == count2
-    total -= total2 ** 2 / len(data)
-    assert not total < 0, 'negative sum of square deviations: %f' % total
+    total -= total2**2 / len(data)
+    assert not total < 0, "negative sum of square deviations: %f" % total
     return (T, total)
 
 
@@ -736,7 +752,7 @@ def variance(data, xbar=None):
         data = list(data)
     n = len(data)
     if n < 2:
-        raise StatisticsError('variance requires at least two data points')
+        raise StatisticsError("variance requires at least two data points")
     T, ss = _ss(data, xbar)
     return _convert(ss / (n - 1), T)
 
@@ -780,7 +796,7 @@ def pvariance(data, mu=None):
         data = list(data)
     n = len(data)
     if n < 1:
-        raise StatisticsError('pvariance requires at least one data point')
+        raise StatisticsError("pvariance requires at least one data point")
     T, ss = _ss(data, mu)
     return _convert(ss / n, T)
 
@@ -830,22 +846,58 @@ def _normal_dist_inv_cdf(p, mu, sigma):
     if fabs(q) <= 0.425:
         r = 0.180625 - q * q
         # Hash sum: 55.88319_28806_14901_4439
-        num = (((((((2.50908_09287_30122_6727e+3 * r +
-                     3.34305_75583_58812_8105e+4) * r +
-                     6.72657_70927_00870_0853e+4) * r +
-                     4.59219_53931_54987_1457e+4) * r +
-                     1.37316_93765_50946_1125e+4) * r +
-                     1.97159_09503_06551_4427e+3) * r +
-                     1.33141_66789_17843_7745e+2) * r +
-                     3.38713_28727_96366_6080e+0) * q
-        den = (((((((5.22649_52788_52854_5610e+3 * r +
-                     2.87290_85735_72194_2674e+4) * r +
-                     3.93078_95800_09271_0610e+4) * r +
-                     2.12137_94301_58659_5867e+4) * r +
-                     5.39419_60214_24751_1077e+3) * r +
-                     6.87187_00749_20579_0830e+2) * r +
-                     4.23133_30701_60091_1252e+1) * r +
-                     1.0)
+        num = (
+            (
+                (
+                    (
+                        (
+                            (
+                                (
+                                    2.50908_09287_30122_6727e3 * r
+                                    + 3.34305_75583_58812_8105e4
+                                )
+                                * r
+                                + 6.72657_70927_00870_0853e4
+                            )
+                            * r
+                            + 4.59219_53931_54987_1457e4
+                        )
+                        * r
+                        + 1.37316_93765_50946_1125e4
+                    )
+                    * r
+                    + 1.97159_09503_06551_4427e3
+                )
+                * r
+                + 1.33141_66789_17843_7745e2
+            )
+            * r
+            + 3.38713_28727_96366_6080e0
+        ) * q
+        den = (
+            (
+                (
+                    (
+                        (
+                            (
+                                5.22649_52788_52854_5610e3 * r
+                                + 2.87290_85735_72194_2674e4
+                            )
+                            * r
+                            + 3.93078_95800_09271_0610e4
+                        )
+                        * r
+                        + 2.12137_94301_58659_5867e4
+                    )
+                    * r
+                    + 5.39419_60214_24751_1077e3
+                )
+                * r
+                + 6.87187_00749_20579_0830e2
+            )
+            * r
+            + 4.23133_30701_60091_1252e1
+        ) * r + 1.0
         x = num / den
         return mu + (x * sigma)
     r = p if q <= 0.0 else 1.0 - p
@@ -853,41 +905,105 @@ def _normal_dist_inv_cdf(p, mu, sigma):
     if r <= 5.0:
         r = r - 1.6
         # Hash sum: 49.33206_50330_16102_89036
-        num = (((((((7.74545_01427_83414_07640e-4 * r +
-                     2.27238_44989_26918_45833e-2) * r +
-                     2.41780_72517_74506_11770e-1) * r +
-                     1.27045_82524_52368_38258e+0) * r +
-                     3.64784_83247_63204_60504e+0) * r +
-                     5.76949_72214_60691_40550e+0) * r +
-                     4.63033_78461_56545_29590e+0) * r +
-                     1.42343_71107_49683_57734e+0)
-        den = (((((((1.05075_00716_44416_84324e-9 * r +
-                     5.47593_80849_95344_94600e-4) * r +
-                     1.51986_66563_61645_71966e-2) * r +
-                     1.48103_97642_74800_74590e-1) * r +
-                     6.89767_33498_51000_04550e-1) * r +
-                     1.67638_48301_83803_84940e+0) * r +
-                     2.05319_16266_37758_82187e+0) * r +
-                     1.0)
+        num = (
+            (
+                (
+                    (
+                        (
+                            (
+                                7.74545_01427_83414_07640e-4 * r
+                                + 2.27238_44989_26918_45833e-2
+                            )
+                            * r
+                            + 2.41780_72517_74506_11770e-1
+                        )
+                        * r
+                        + 1.27045_82524_52368_38258e0
+                    )
+                    * r
+                    + 3.64784_83247_63204_60504e0
+                )
+                * r
+                + 5.76949_72214_60691_40550e0
+            )
+            * r
+            + 4.63033_78461_56545_29590e0
+        ) * r + 1.42343_71107_49683_57734e0
+        den = (
+            (
+                (
+                    (
+                        (
+                            (
+                                1.05075_00716_44416_84324e-9 * r
+                                + 5.47593_80849_95344_94600e-4
+                            )
+                            * r
+                            + 1.51986_66563_61645_71966e-2
+                        )
+                        * r
+                        + 1.48103_97642_74800_74590e-1
+                    )
+                    * r
+                    + 6.89767_33498_51000_04550e-1
+                )
+                * r
+                + 1.67638_48301_83803_84940e0
+            )
+            * r
+            + 2.05319_16266_37758_82187e0
+        ) * r + 1.0
     else:
         r = r - 5.0
         # Hash sum: 47.52583_31754_92896_71629
-        num = (((((((2.01033_43992_92288_13265e-7 * r +
-                     2.71155_55687_43487_57815e-5) * r +
-                     1.24266_09473_88078_43860e-3) * r +
-                     2.65321_89526_57612_30930e-2) * r +
-                     2.96560_57182_85048_91230e-1) * r +
-                     1.78482_65399_17291_33580e+0) * r +
-                     5.46378_49111_64114_36990e+0) * r +
-                     6.65790_46435_01103_77720e+0)
-        den = (((((((2.04426_31033_89939_78564e-15 * r +
-                     1.42151_17583_16445_88870e-7) * r +
-                     1.84631_83175_10054_68180e-5) * r +
-                     7.86869_13114_56132_59100e-4) * r +
-                     1.48753_61290_85061_48525e-2) * r +
-                     1.36929_88092_27358_05310e-1) * r +
-                     5.99832_20655_58879_37690e-1) * r +
-                     1.0)
+        num = (
+            (
+                (
+                    (
+                        (
+                            (
+                                2.01033_43992_92288_13265e-7 * r
+                                + 2.71155_55687_43487_57815e-5
+                            )
+                            * r
+                            + 1.24266_09473_88078_43860e-3
+                        )
+                        * r
+                        + 2.65321_89526_57612_30930e-2
+                    )
+                    * r
+                    + 2.96560_57182_85048_91230e-1
+                )
+                * r
+                + 1.78482_65399_17291_33580e0
+            )
+            * r
+            + 5.46378_49111_64114_36990e0
+        ) * r + 6.65790_46435_01103_77720e0
+        den = (
+            (
+                (
+                    (
+                        (
+                            (
+                                2.04426_31033_89939_78564e-15 * r
+                                + 1.42151_17583_16445_88870e-7
+                            )
+                            * r
+                            + 1.84631_83175_10054_68180e-5
+                        )
+                        * r
+                        + 7.86869_13114_56132_59100e-4
+                    )
+                    * r
+                    + 1.48753_61290_85061_48525e-2
+                )
+                * r
+                + 1.36929_88092_27358_05310e-1
+            )
+            * r
+            + 5.99832_20655_58879_37690e-1
+        ) * r + 1.0
     x = num / den
     if q < 0.0:
         x = -x
@@ -903,18 +1019,19 @@ except ImportError:
 
 class NormalDist:
     "Normal distribution of a random variable"
+
     # https://en.wikipedia.org/wiki/Normal_distribution
     # https://en.wikipedia.org/wiki/Variance#Properties
 
     __slots__ = {
-        '_mu': 'Arithmetic mean of a normal distribution',
-        '_sigma': 'Standard deviation of a normal distribution',
+        "_mu": "Arithmetic mean of a normal distribution",
+        "_sigma": "Standard deviation of a normal distribution",
     }
 
     def __init__(self, mu=0.0, sigma=1.0):
         "NormalDist where mu is the mean and sigma is the standard deviation."
         if sigma < 0.0:
-            raise StatisticsError('sigma must be non-negative')
+            raise StatisticsError("sigma must be non-negative")
         self._mu = float(mu)
         self._sigma = float(sigma)
 
@@ -934,15 +1051,15 @@ class NormalDist:
 
     def pdf(self, x):
         "Probability density function.  P(x <= X < x+dx) / dx"
-        variance = self._sigma ** 2.0
+        variance = self._sigma**2.0
         if not variance:
-            raise StatisticsError('pdf() not defined when sigma is zero')
-        return exp((x - self._mu)**2.0 / (-2.0*variance)) / sqrt(tau*variance)
+            raise StatisticsError("pdf() not defined when sigma is zero")
+        return exp((x - self._mu) ** 2.0 / (-2.0 * variance)) / sqrt(tau * variance)
 
     def cdf(self, x):
         "Cumulative distribution function.  P(X <= x)"
         if not self._sigma:
-            raise StatisticsError('cdf() not defined when sigma is zero')
+            raise StatisticsError("cdf() not defined when sigma is zero")
         return 0.5 * (1.0 + erf((x - self._mu) / (self._sigma * sqrt(2.0))))
 
     def inv_cdf(self, p):
@@ -956,9 +1073,9 @@ class NormalDist:
         function.
         """
         if p <= 0.0 or p >= 1.0:
-            raise StatisticsError('p must be in the range 0.0 < p < 1.0')
+            raise StatisticsError("p must be in the range 0.0 < p < 1.0")
         if self._sigma <= 0.0:
-            raise StatisticsError('cdf() not defined when sigma at or below zero')
+            raise StatisticsError("cdf() not defined when sigma at or below zero")
         return _normal_dist_inv_cdf(p, self._mu, self._sigma)
 
     def quantiles(self, n=4):
@@ -989,13 +1106,13 @@ class NormalDist:
         # normal densities" -- Henry F. Inman and Edwin L. Bradley Jr
         # http://dx.doi.org/10.1080/03610928908830127
         if not isinstance(other, NormalDist):
-            raise TypeError('Expected another NormalDist instance')
+            raise TypeError("Expected another NormalDist instance")
         X, Y = self, other
         if (Y._sigma, Y._mu) < (X._sigma, X._mu):  # sort to assure commutativity
             X, Y = Y, X
         X_var, Y_var = X.variance, Y.variance
         if not X_var or not Y_var:
-            raise StatisticsError('overlap() not defined when sigma is zero')
+            raise StatisticsError("overlap() not defined when sigma is zero")
         dv = Y_var - X_var
         dm = fabs(Y._mu - X._mu)
         if not dv:
@@ -1014,7 +1131,7 @@ class NormalDist:
         """
         # https://www.statisticshowto.com/probability-and-statistics/z-score/
         if not self._sigma:
-            raise StatisticsError('zscore() not defined when sigma is zero')
+            raise StatisticsError("zscore() not defined when sigma is zero")
         return (x - self._mu) / self._sigma
 
     @property
@@ -1044,7 +1161,7 @@ class NormalDist:
     @property
     def variance(self):
         "Square of the standard deviation."
-        return self._sigma ** 2.0
+        return self._sigma**2.0
 
     def __add__(x1, x2):
         """Add a constant or another NormalDist instance.
@@ -1117,4 +1234,4 @@ class NormalDist:
         return hash((self._mu, self._sigma))
 
     def __repr__(self):
-        return f'{type(self).__name__}(mu={self._mu!r}, sigma={self._sigma!r})'
+        return f"{type(self).__name__}(mu={self._mu!r}, sigma={self._sigma!r})"

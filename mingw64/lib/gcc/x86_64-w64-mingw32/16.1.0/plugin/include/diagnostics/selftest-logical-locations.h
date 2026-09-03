@@ -34,53 +34,38 @@ namespace selftest {
 
 /* Concrete subclass of logical_locations::manager for use in selftests.  */
 
-class test_manager : public manager
-{
+class test_manager : public manager {
 public:
-  ~test_manager ();
+  ~test_manager();
 
-  void dump (FILE *out, int indent) const final override;
+  void dump(FILE *out, int indent) const final override;
 
-  label_text get_short_name (key) const final override;
-  label_text get_name_with_scope (key) const final override;
-  label_text get_internal_name (key) const final override;
-  kind get_kind (key) const final override;
-  label_text get_name_for_path_output (key) const final override;
-  key get_parent (key) const final override
-  {
-    return key ();
-  }
+  label_text get_short_name(key) const final override;
+  label_text get_name_with_scope(key) const final override;
+  label_text get_internal_name(key) const final override;
+  kind get_kind(key) const final override;
+  label_text get_name_for_path_output(key) const final override;
+  key get_parent(key) const final override { return key(); }
 
-  key
-  logical_location_from_funcname (const char *funcname);
+  key logical_location_from_funcname(const char *funcname);
 
 private:
-  struct item
-  {
-    item (kind kind_,
-	  const char *name)
-    : m_kind (kind_),
-      m_name (name)
-    {
-    }
+  struct item {
+    item(kind kind_, const char *name) : m_kind(kind_), m_name(name) {}
 
     kind m_kind;
     const char *m_name;
   };
 
-  const item *
-  item_from_funcname (const char *funcname);
+  const item *item_from_funcname(const char *funcname);
 
-  static const item *item_from_key (key k)
-  {
-    return k.cast_to<const item *> ();
-  }
+  static const item *item_from_key(key k) { return k.cast_to<const item *>(); }
 
   hash_map<nofree_string_hash, item *> m_name_to_item_map;
 };
 
-} // namespace diagnostics::logical_locations::selftest
-} // namespace diagnostics::logical_locations::
+} // namespace selftest
+} // namespace logical_locations
 } // namespace diagnostics
 
 #endif /* #if CHECKING_P */

@@ -5,11 +5,9 @@
  */
 #ifndef _INC_STORDUID
 #define _INC_STORDUID
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef struct _STORAGE_DEVICE_UNIQUE_IDENTIFIER {
   ULONG Version;
   ULONG Size;
@@ -17,17 +15,15 @@ typedef struct _STORAGE_DEVICE_UNIQUE_IDENTIFIER {
   ULONG StorageDeviceOffset;
   ULONG DriveLayoutSignatureOffset;
 } STORAGE_DEVICE_UNIQUE_IDENTIFIER, *PSTORAGE_DEVICE_UNIQUE_IDENTIFIER;
-
 typedef struct _STORAGE_DEVICE_LAYOUT_SIGNATURE {
-  ULONG   Version;
-  ULONG   Size;
+  ULONG Version;
+  ULONG Size;
   BOOLEAN Mbr;
   union {
     ULONG MbrSignature;
-    GUID  GptDiskId;
+    GUID GptDiskId;
   } DeviceSpecific;
 } STORAGE_DEVICE_LAYOUT_SIGNATURE, *PSTORAGE_DEVICE_LAYOUT_SIGNATURE;
-
 #ifdef __cplusplus
 }
 #endif

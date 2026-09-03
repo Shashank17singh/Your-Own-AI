@@ -5,14 +5,11 @@ extern "C" {
 #endif
 
 #ifndef Py_BUILD_CORE
-#  error "this header requires Py_BUILD_CORE define"
+#error "this header requires Py_BUILD_CORE define"
 #endif
 
-PyAPI_FUNC(int) _PySys_Audit(
-    PyThreadState *tstate,
-    const char *event,
-    const char *argFormat,
-    ...);
+PyAPI_FUNC(int) _PySys_Audit(PyThreadState *tstate, const char *event,
+                             const char *argFormat, ...);
 
 /* We want minimal exposure of this function, so use extern rather than
    PyAPI_FUNC() to not export the symbol. */

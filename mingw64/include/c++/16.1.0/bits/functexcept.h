@@ -40,45 +40,36 @@
 #include <bits/exception_defines.h>
 
 #if _GLIBCXX_HOSTED
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
-  // Helper for exception objects in <except>
-  void
-  __throw_bad_exception(void) __attribute__((__noreturn__));
+// Helper for exception objects in <except>
+void __throw_bad_exception(void) __attribute__((__noreturn__));
 
-  // Helper for exception objects in <typeinfo>
-  void
-  __throw_bad_cast(void) __attribute__((__noreturn__,__cold__));
+// Helper for exception objects in <typeinfo>
+void __throw_bad_cast(void) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_bad_typeid(void) __attribute__((__noreturn__,__cold__));
+void __throw_bad_typeid(void) __attribute__((__noreturn__, __cold__));
 
-  // Helpers for exception objects in <stdexcept>
-  void
-  __throw_range_error(const char*) __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <stdexcept>
+void __throw_range_error(const char *) __attribute__((__noreturn__, __cold__));
 
-  // Helpers for exception objects in <ios>
-  void
-  __throw_ios_failure(const char*) __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <ios>
+void __throw_ios_failure(const char *) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_ios_failure(const char*, int) __attribute__((__noreturn__,__cold__));
+void __throw_ios_failure(const char *, int)
+    __attribute__((__noreturn__, __cold__));
 
-  // Helpers for exception objects in <system_error>
-  void
-  __throw_system_error(int) __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <system_error>
+void __throw_system_error(int) __attribute__((__noreturn__, __cold__));
 
-  // Helpers for exception objects in <future>
-  void
-  __throw_future_error(int) __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <future>
+void __throw_future_error(int) __attribute__((__noreturn__, __cold__));
 
-  // Helpers for exception objects in <functional>
-  void
-  __throw_bad_function_call() __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <functional>
+void __throw_bad_function_call() __attribute__((__noreturn__, __cold__));
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 #endif // HOSTED
 
 #endif

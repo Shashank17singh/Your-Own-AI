@@ -28,18 +28,14 @@ namespace diagnostics {
    This is just a wrapper around "int", but better documents
    the intent of the code.  */
 
-struct option_id
-{
-  option_id () : m_idx (0) {}
+struct option_id {
+  option_id() : m_idx(0) {}
 
-  option_id (int idx) : m_idx (idx) {}
+  option_id(int idx) : m_idx(idx) {}
   /* Ideally we'd take an enum opt_code here, but we don't
      want to depend on its decl.  */
 
-  bool operator== (option_id other) const
-  {
-    return m_idx == other.m_idx;
-  }
+  bool operator==(option_id other) const { return m_idx == other.m_idx; }
 
   int m_idx;
 };

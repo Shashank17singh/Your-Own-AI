@@ -1,5 +1,5 @@
 #ifndef Py_CPYTHON_PYSTATE_H
-#  error "this header file must not be included directly"
+#error "this header file must not be included directly"
 #endif
 
 #ifdef __cplusplus
@@ -32,112 +32,109 @@ typedef int (*Py_tracefunc)(PyObject *, PyFrameObject *, int, PyObject *);
 #define PyTrace_C_RETURN 6
 #define PyTrace_OPCODE 7
 
-
 typedef struct _err_stackitem {
-    /* This struct represents an entry on the exception stack, which is a
-     * per-coroutine state. (Coroutine in the computer science sense,
-     * including the thread and generators).
-     * This ensures that the exception state is not impacted by "yields"
-     * from an except handler.
-     */
-    PyObject *exc_type, *exc_value, *exc_traceback;
+  /* This struct represents an entry on the exception stack, which is a
+   * per-coroutine state. (Coroutine in the computer science sense,
+   * including the thread and generators).
+   * This ensures that the exception state is not impacted by "yields"
+   * from an except handler.
+   */
+  PyObject *exc_type, *exc_value, *exc_traceback;
 
-    struct _err_stackitem *previous_item;
+  struct _err_stackitem *previous_item;
 
 } _PyErr_StackItem;
 
-
 // The PyThreadState typedef is in Include/pystate.h.
 struct _ts {
-    /* See Python/ceval.c for comments explaining most fields */
+  /* See Python/ceval.c for comments explaining most fields */
 
-    struct _ts *prev;
-    struct _ts *next;
-    PyInterpreterState *interp;
+  struct _ts *prev;
+  struct _ts *next;
+  PyInterpreterState *interp;
 
-    /* Borrowed reference to the current frame (it can be NULL) */
-    PyFrameObject *frame;
-    int recursion_depth;
-    char overflowed; /* The stack has overflowed. Allow 50 more calls
-                        to handle the runtime error. */
-    char recursion_critical; /* The current calls must not cause
-                                a stack overflow. */
-    int stackcheck_counter;
+  /* Borrowed reference to the current frame (it can be NULL) */
+  PyFrameObject *frame;
+  int recursion_depth;
+  char overflowed;         /* The stack has overflowed. Allow 50 more calls
+                              to handle the runtime error. */
+  char recursion_critical; /* The current calls must not cause
+                              a stack overflow. */
+  int stackcheck_counter;
 
-    /* 'tracing' keeps track of the execution depth when tracing/profiling.
-       This is to prevent the actual trace/profile code from being recorded in
-       the trace/profile. */
-    int tracing;
-    int use_tracing;
+  /* 'tracing' keeps track of the execution depth when tracing/profiling.
+     This is to prevent the actual trace/profile code from being recorded in
+     the trace/profile. */
+  int tracing;
+  int use_tracing;
 
-    Py_tracefunc c_profilefunc;
-    Py_tracefunc c_tracefunc;
-    PyObject *c_profileobj;
-    PyObject *c_traceobj;
+  Py_tracefunc c_profilefunc;
+  Py_tracefunc c_tracefunc;
+  PyObject *c_profileobj;
+  PyObject *c_traceobj;
 
-    /* The exception currently being raised */
-    PyObject *curexc_type;
-    PyObject *curexc_value;
-    PyObject *curexc_traceback;
+  /* The exception currently being raised */
+  PyObject *curexc_type;
+  PyObject *curexc_value;
+  PyObject *curexc_traceback;
 
-    /* The exception currently being handled, if no coroutines/generators
-     * are present. Always last element on the stack referred to be exc_info.
-     */
-    _PyErr_StackItem exc_state;
+  /* The exception currently being handled, if no coroutines/generators
+   * are present. Always last element on the stack referred to be exc_info.
+   */
+  _PyErr_StackItem exc_state;
 
-    /* Pointer to the top of the stack of the exceptions currently
-     * being handled */
-    _PyErr_StackItem *exc_info;
+  /* Pointer to the top of the stack of the exceptions currently
+   * being handled */
+  _PyErr_StackItem *exc_info;
 
-    PyObject *dict;  /* Stores per-thread state */
+  PyObject *dict; /* Stores per-thread state */
 
-    int gilstate_counter;
+  int gilstate_counter;
 
-    PyObject *async_exc; /* Asynchronous exception to raise */
-    unsigned long thread_id; /* Thread id where this tstate was created */
+  PyObject *async_exc;     /* Asynchronous exception to raise */
+  unsigned long thread_id; /* Thread id where this tstate was created */
 
-    int trash_delete_nesting;
-    PyObject *trash_delete_later;
+  int trash_delete_nesting;
+  PyObject *trash_delete_later;
 
-    /* Called when a thread state is deleted normally, but not when it
-     * is destroyed after fork().
-     * Pain:  to prevent rare but fatal shutdown errors (issue 18808),
-     * Thread.join() must wait for the join'ed thread's tstate to be unlinked
-     * from the tstate chain.  That happens at the end of a thread's life,
-     * in pystate.c.
-     * The obvious way doesn't quite work:  create a lock which the tstate
-     * unlinking code releases, and have Thread.join() wait to acquire that
-     * lock.  The problem is that we _are_ at the end of the thread's life:
-     * if the thread holds the last reference to the lock, decref'ing the
-     * lock will delete the lock, and that may trigger arbitrary Python code
-     * if there's a weakref, with a callback, to the lock.  But by this time
-     * _PyRuntime.gilstate.tstate_current is already NULL, so only the simplest
-     * of C code can be allowed to run (in particular it must not be possible to
-     * release the GIL).
-     * So instead of holding the lock directly, the tstate holds a weakref to
-     * the lock:  that's the value of on_delete_data below.  Decref'ing a
-     * weakref is harmless.
-     * on_delete points to _threadmodule.c's static release_sentinel() function.
-     * After the tstate is unlinked, release_sentinel is called with the
-     * weakref-to-lock (on_delete_data) argument, and release_sentinel releases
-     * the indirectly held lock.
-     */
-    void (*on_delete)(void *);
-    void *on_delete_data;
+  /* Called when a thread state is deleted normally, but not when it
+   * is destroyed after fork().
+   * Pain:  to prevent rare but fatal shutdown errors (issue 18808),
+   * Thread.join() must wait for the join'ed thread's tstate to be unlinked
+   * from the tstate chain.  That happens at the end of a thread's life,
+   * in pystate.c.
+   * The obvious way doesn't quite work:  create a lock which the tstate
+   * unlinking code releases, and have Thread.join() wait to acquire that
+   * lock.  The problem is that we _are_ at the end of the thread's life:
+   * if the thread holds the last reference to the lock, decref'ing the
+   * lock will delete the lock, and that may trigger arbitrary Python code
+   * if there's a weakref, with a callback, to the lock.  But by this time
+   * _PyRuntime.gilstate.tstate_current is already NULL, so only the simplest
+   * of C code can be allowed to run (in particular it must not be possible to
+   * release the GIL).
+   * So instead of holding the lock directly, the tstate holds a weakref to
+   * the lock:  that's the value of on_delete_data below.  Decref'ing a
+   * weakref is harmless.
+   * on_delete points to _threadmodule.c's static release_sentinel() function.
+   * After the tstate is unlinked, release_sentinel is called with the
+   * weakref-to-lock (on_delete_data) argument, and release_sentinel releases
+   * the indirectly held lock.
+   */
+  void (*on_delete)(void *);
+  void *on_delete_data;
 
-    int coroutine_origin_tracking_depth;
+  int coroutine_origin_tracking_depth;
 
-    PyObject *async_gen_firstiter;
-    PyObject *async_gen_finalizer;
+  PyObject *async_gen_firstiter;
+  PyObject *async_gen_finalizer;
 
-    PyObject *context;
-    uint64_t context_ver;
+  PyObject *context;
+  uint64_t context_ver;
 
-    /* Unique thread state id. */
-    uint64_t id;
+  /* Unique thread state id. */
+  uint64_t id;
 
-    /* XXX signal handlers should also be here */
-
+  /* XXX signal handlers should also be here */
 };
 
 // Alias for backward compatibility with Python 3.8
@@ -184,20 +181,21 @@ PyAPI_FUNC(void) PyThreadState_DeleteCurrent(void);
 
 /* Frame evaluation API */
 
-typedef PyObject* (*_PyFrameEvalFunction)(PyThreadState *tstate, PyFrameObject *, int);
+typedef PyObject *(*_PyFrameEvalFunction)(PyThreadState *tstate,
+                                          PyFrameObject *, int);
 
-PyAPI_FUNC(_PyFrameEvalFunction) _PyInterpreterState_GetEvalFrameFunc(
-    PyInterpreterState *interp);
-PyAPI_FUNC(void) _PyInterpreterState_SetEvalFrameFunc(
-    PyInterpreterState *interp,
-    _PyFrameEvalFunction eval_frame);
+PyAPI_FUNC(_PyFrameEvalFunction)
+    _PyInterpreterState_GetEvalFrameFunc(PyInterpreterState *interp);
+PyAPI_FUNC(void)
+    _PyInterpreterState_SetEvalFrameFunc(PyInterpreterState *interp,
+                                         _PyFrameEvalFunction eval_frame);
 
-PyAPI_FUNC(const PyConfig*) _PyInterpreterState_GetConfig(PyInterpreterState *interp);
+PyAPI_FUNC(const PyConfig *)
+    _PyInterpreterState_GetConfig(PyInterpreterState *interp);
 
 // Get the configuration of the currrent interpreter.
 // The caller must hold the GIL.
-PyAPI_FUNC(const PyConfig*) _Py_GetConfig(void);
-
+PyAPI_FUNC(const PyConfig *) _Py_GetConfig(void);
 
 /* cross-interpreter data */
 
@@ -207,46 +205,48 @@ struct _xid;
 // opaque struct that holds data outside the object machinery.  This
 // is necessary to pass safely between interpreters in the same process.
 typedef struct _xid {
-    // data is the cross-interpreter-safe derivation of a Python object
-    // (see _PyObject_GetCrossInterpreterData).  It will be NULL if the
-    // new_object func (below) encodes the data.
-    void *data;
-    // obj is the Python object from which the data was derived.  This
-    // is non-NULL only if the data remains bound to the object in some
-    // way, such that the object must be "released" (via a decref) when
-    // the data is released.  In that case the code that sets the field,
-    // likely a registered "crossinterpdatafunc", is responsible for
-    // ensuring it owns the reference (i.e. incref).
-    PyObject *obj;
-    // interp is the ID of the owning interpreter of the original
-    // object.  It corresponds to the active interpreter when
-    // _PyObject_GetCrossInterpreterData() was called.  This should only
-    // be set by the cross-interpreter machinery.
-    //
-    // We use the ID rather than the PyInterpreterState to avoid issues
-    // with deleted interpreters.  Note that IDs are never re-used, so
-    // each one will always correspond to a specific interpreter
-    // (whether still alive or not).
-    int64_t interp;
-    // new_object is a function that returns a new object in the current
-    // interpreter given the data.  The resulting object (a new
-    // reference) will be equivalent to the original object.  This field
-    // is required.
-    PyObject *(*new_object)(struct _xid *);
-    // free is called when the data is released.  If it is NULL then
-    // nothing will be done to free the data.  For some types this is
-    // okay (e.g. bytes) and for those types this field should be set
-    // to NULL.  However, for most the data was allocated just for
-    // cross-interpreter use, so it must be freed when
-    // _PyCrossInterpreterData_Release is called or the memory will
-    // leak.  In that case, at the very least this field should be set
-    // to PyMem_RawFree (the default if not explicitly set to NULL).
-    // The call will happen with the original interpreter activated.
-    void (*free)(void *);
+  // data is the cross-interpreter-safe derivation of a Python object
+  // (see _PyObject_GetCrossInterpreterData).  It will be NULL if the
+  // new_object func (below) encodes the data.
+  void *data;
+  // obj is the Python object from which the data was derived.  This
+  // is non-NULL only if the data remains bound to the object in some
+  // way, such that the object must be "released" (via a decref) when
+  // the data is released.  In that case the code that sets the field,
+  // likely a registered "crossinterpdatafunc", is responsible for
+  // ensuring it owns the reference (i.e. incref).
+  PyObject *obj;
+  // interp is the ID of the owning interpreter of the original
+  // object.  It corresponds to the active interpreter when
+  // _PyObject_GetCrossInterpreterData() was called.  This should only
+  // be set by the cross-interpreter machinery.
+  //
+  // We use the ID rather than the PyInterpreterState to avoid issues
+  // with deleted interpreters.  Note that IDs are never re-used, so
+  // each one will always correspond to a specific interpreter
+  // (whether still alive or not).
+  int64_t interp;
+  // new_object is a function that returns a new object in the current
+  // interpreter given the data.  The resulting object (a new
+  // reference) will be equivalent to the original object.  This field
+  // is required.
+  PyObject *(*new_object)(struct _xid *);
+  // free is called when the data is released.  If it is NULL then
+  // nothing will be done to free the data.  For some types this is
+  // okay (e.g. bytes) and for those types this field should be set
+  // to NULL.  However, for most the data was allocated just for
+  // cross-interpreter use, so it must be freed when
+  // _PyCrossInterpreterData_Release is called or the memory will
+  // leak.  In that case, at the very least this field should be set
+  // to PyMem_RawFree (the default if not explicitly set to NULL).
+  // The call will happen with the original interpreter activated.
+  void (*free)(void *);
 } _PyCrossInterpreterData;
 
-PyAPI_FUNC(int) _PyObject_GetCrossInterpreterData(PyObject *, _PyCrossInterpreterData *);
-PyAPI_FUNC(PyObject *) _PyCrossInterpreterData_NewObject(_PyCrossInterpreterData *);
+PyAPI_FUNC(int)
+    _PyObject_GetCrossInterpreterData(PyObject *, _PyCrossInterpreterData *);
+PyAPI_FUNC(PyObject *)
+    _PyCrossInterpreterData_NewObject(_PyCrossInterpreterData *);
 PyAPI_FUNC(void) _PyCrossInterpreterData_Release(_PyCrossInterpreterData *);
 
 PyAPI_FUNC(int) _PyObject_CheckCrossInterpreterData(PyObject *);
@@ -255,7 +255,8 @@ PyAPI_FUNC(int) _PyObject_CheckCrossInterpreterData(PyObject *);
 
 typedef int (*crossinterpdatafunc)(PyObject *, struct _xid *);
 
-PyAPI_FUNC(int) _PyCrossInterpreterData_RegisterClass(PyTypeObject *, crossinterpdatafunc);
+PyAPI_FUNC(int)
+    _PyCrossInterpreterData_RegisterClass(PyTypeObject *, crossinterpdatafunc);
 PyAPI_FUNC(crossinterpdatafunc) _PyCrossInterpreterData_Lookup(PyObject *);
 
 #ifdef __cplusplus

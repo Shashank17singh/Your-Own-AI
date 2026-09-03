@@ -15,15 +15,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef __DMORT_H__
 #define __DMORT_H__
-
-HRESULT WINAPI MoCopyMediaType(DMO_MEDIA_TYPE*,const DMO_MEDIA_TYPE*);
-HRESULT WINAPI MoCreateMediaType(DMO_MEDIA_TYPE**,DWORD);
-HRESULT WINAPI MoDeleteMediaType(DMO_MEDIA_TYPE*);
-HRESULT WINAPI MoDuplicateMediaType(DMO_MEDIA_TYPE**,const DMO_MEDIA_TYPE*);
-HRESULT WINAPI MoFreeMediaType(DMO_MEDIA_TYPE*);
-HRESULT WINAPI MoInitMediaType(DMO_MEDIA_TYPE*,DWORD);
-
+HRESULT WINAPI MoCopyMediaType(DMO_MEDIA_TYPE *, const DMO_MEDIA_TYPE *);
+HRESULT WINAPI MoCreateMediaType(DMO_MEDIA_TYPE **, DWORD);
+HRESULT WINAPI MoDeleteMediaType(DMO_MEDIA_TYPE *);
+HRESULT WINAPI MoDuplicateMediaType(DMO_MEDIA_TYPE **, const DMO_MEDIA_TYPE *);
+HRESULT WINAPI MoFreeMediaType(DMO_MEDIA_TYPE *);
+HRESULT WINAPI MoInitMediaType(DMO_MEDIA_TYPE *, DWORD);
 #endif /* __DMORT_H__ */

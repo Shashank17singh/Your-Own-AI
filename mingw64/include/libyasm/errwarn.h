@@ -36,35 +36,35 @@
 
 /** Warning classes (that may be enabled/disabled). */
 typedef enum yasm_warn_class {
-    YASM_WARN_NONE = 0,     /**< No warning */
-    YASM_WARN_GENERAL,      /**< Non-specific warnings */
-    YASM_WARN_UNREC_CHAR,   /**< Unrecognized characters (while tokenizing) */
-    YASM_WARN_PREPROC,      /**< Preprocessor warnings */
-    YASM_WARN_ORPHAN_LABEL, /**< Label alone on a line without a colon */
-    YASM_WARN_UNINIT_CONTENTS, /**< Uninitialized space in code/data section */
-    YASM_WARN_SIZE_OVERRIDE,/**< Double size override */
-    YASM_WARN_IMPLICIT_SIZE_OVERRIDE /**< Implicit size override */
+  YASM_WARN_NONE = 0,        /**< No warning */
+  YASM_WARN_GENERAL,         /**< Non-specific warnings */
+  YASM_WARN_UNREC_CHAR,      /**< Unrecognized characters (while tokenizing) */
+  YASM_WARN_PREPROC,         /**< Preprocessor warnings */
+  YASM_WARN_ORPHAN_LABEL,    /**< Label alone on a line without a colon */
+  YASM_WARN_UNINIT_CONTENTS, /**< Uninitialized space in code/data section */
+  YASM_WARN_SIZE_OVERRIDE,   /**< Double size override */
+  YASM_WARN_IMPLICIT_SIZE_OVERRIDE /**< Implicit size override */
 } yasm_warn_class;
 
 /** Error classes.  Bitmask-based to support limited subclassing. */
 typedef enum yasm_error_class {
-    YASM_ERROR_NONE             = 0x0000, /**< No error */
-    YASM_ERROR_GENERAL          = 0xFFFF, /**< Non-specific */
-    YASM_ERROR_ARITHMETIC       = 0x0001, /**< Arithmetic error (general) */
-    YASM_ERROR_OVERFLOW         = 0x8001, /**< Arithmetic overflow */
-    YASM_ERROR_FLOATING_POINT   = 0x4001, /**< Floating point error */
-    YASM_ERROR_ZERO_DIVISION    = 0x2001, /**< Divide-by-zero */
-    YASM_ERROR_ASSERTION        = 0x0002, /**< Assertion error */
-    YASM_ERROR_VALUE            = 0x0004, /**< Value inappropriate
-                                           *   (e.g. not in range) */
-    YASM_ERROR_NOT_ABSOLUTE     = 0x8004, /**< Absolute expression required */
-    YASM_ERROR_TOO_COMPLEX      = 0x4004, /**< Expression too complex */
-    YASM_ERROR_NOT_CONSTANT     = 0x2004, /**< Constant expression required */
-    YASM_ERROR_IO               = 0x0008, /**< I/O error */
-    YASM_ERROR_NOT_IMPLEMENTED  = 0x0010, /**< Not implemented error */
-    YASM_ERROR_TYPE             = 0x0020, /**< Type error */
-    YASM_ERROR_SYNTAX           = 0x0040, /**< Syntax error */
-    YASM_ERROR_PARSE            = 0x8040  /**< Parser error */
+  YASM_ERROR_NONE = 0x0000,            /**< No error */
+  YASM_ERROR_GENERAL = 0xFFFF,         /**< Non-specific */
+  YASM_ERROR_ARITHMETIC = 0x0001,      /**< Arithmetic error (general) */
+  YASM_ERROR_OVERFLOW = 0x8001,        /**< Arithmetic overflow */
+  YASM_ERROR_FLOATING_POINT = 0x4001,  /**< Floating point error */
+  YASM_ERROR_ZERO_DIVISION = 0x2001,   /**< Divide-by-zero */
+  YASM_ERROR_ASSERTION = 0x0002,       /**< Assertion error */
+  YASM_ERROR_VALUE = 0x0004,           /**< Value inappropriate
+                                        *   (e.g. not in range) */
+  YASM_ERROR_NOT_ABSOLUTE = 0x8004,    /**< Absolute expression required */
+  YASM_ERROR_TOO_COMPLEX = 0x4004,     /**< Expression too complex */
+  YASM_ERROR_NOT_CONSTANT = 0x2004,    /**< Constant expression required */
+  YASM_ERROR_IO = 0x0008,              /**< I/O error */
+  YASM_ERROR_NOT_IMPLEMENTED = 0x0010, /**< Not implemented error */
+  YASM_ERROR_TYPE = 0x0020,            /**< Type error */
+  YASM_ERROR_SYNTAX = 0x0040,          /**< Syntax error */
+  YASM_ERROR_PARSE = 0x8040            /**< Parser error */
 } yasm_error_class;
 
 /** Initialize any internal data structures. */
@@ -86,15 +86,16 @@ void yasm_errwarn_cleanup(void);
  * \param message   internal error message
  */
 YASM_LIB_DECL
-extern /*@exits@*/ void (*yasm_internal_error_)
-    (const char *file, unsigned int line, const char *message);
+extern /*@exits@*/ void (*yasm_internal_error_)(const char *file,
+                                                unsigned int line,
+                                                const char *message);
 
 /** Easily-callable version of yasm_internal_error_().  Automatically uses
  * __FILE__ and __LINE__ as the file and line.
  * \param message   internal error message
  */
-#define yasm_internal_error(message) \
-    yasm_internal_error_(__FILE__, __LINE__, message)
+#define yasm_internal_error(message)                                           \
+  yasm_internal_error_(__FILE__, __LINE__, message)
 
 /** Reporting point of fatal errors.
  * \warning This function must NOT return to calling code; exit or longjmp
@@ -103,7 +104,7 @@ extern /*@exits@*/ void (*yasm_internal_error_)
  * \param va        va_list argument list for message
  */
 YASM_LIB_DECL
-extern /*@exits@*/ void (*yasm_fatal) (const char *message, va_list va);
+extern /*@exits@*/ void (*yasm_fatal)(const char *message, va_list va);
 
 /** Reporting point of fatal errors, with variable arguments (internal only).
  * \warning This function calls #yasm_fatal, and thus does not return to the
@@ -140,7 +141,7 @@ int yasm_error_matches(yasm_error_class eclass);
 #ifndef YASM_DOXYGEN
 YASM_LIB_DECL
 extern yasm_error_class yasm_eclass;
-#define yasm_error_occurred()       yasm_eclass
+#define yasm_error_occurred() yasm_eclass
 #endif
 
 /** Set the error indicator (va_list version).  Has no effect if the error
@@ -305,18 +306,19 @@ unsigned int yasm_errwarns_num_errors(yasm_errwarns *errwarns,
  * \param xref_line     cross-referenced line number
  * \param xref_msg      cross-referenced error message
  */
-typedef void (*yasm_print_error_func)
-    (const char *fn, unsigned long line, const char *msg,
-     /*@null@*/ const char *xref_fn, unsigned long xref_line,
-     /*@null@*/ const char *xref_msg);
+typedef void (*yasm_print_error_func)(const char *fn, unsigned long line,
+                                      const char *msg,
+                                      /*@null@*/ const char *xref_fn,
+                                      unsigned long xref_line,
+                                      /*@null@*/ const char *xref_msg);
 
 /** Print out a warning.
  * \param fn    filename of source file
  * \param line  line number
  * \param msg   warning message
  */
-typedef void (*yasm_print_warning_func)
-    (const char *fn, unsigned long line, const char *msg);
+typedef void (*yasm_print_warning_func)(const char *fn, unsigned long line,
+                                        const char *msg);
 
 /** Outputs error/warning set in sorted order (sorted by virtual line number).
  * \param errwarns          error/warning set
@@ -326,9 +328,10 @@ typedef void (*yasm_print_warning_func)
  * \param print_warning     function called to print out warnings
  */
 YASM_LIB_DECL
-void yasm_errwarns_output_all
-    (yasm_errwarns *errwarns, yasm_linemap *lm, int warning_as_error,
-     yasm_print_error_func print_error, yasm_print_warning_func print_warning);
+void yasm_errwarns_output_all(yasm_errwarns *errwarns, yasm_linemap *lm,
+                              int warning_as_error,
+                              yasm_print_error_func print_error,
+                              yasm_print_warning_func print_warning);
 
 /** Convert a possibly unprintable character into a printable string.
  * \internal
@@ -343,6 +346,6 @@ char *yasm__conv_unprint(int ch);
  * \return Translated message.
  */
 YASM_LIB_DECL
-extern const char * (*yasm_gettext_hook) (const char *msgid);
+extern const char *(*yasm_gettext_hook)(const char *msgid);
 
 #endif

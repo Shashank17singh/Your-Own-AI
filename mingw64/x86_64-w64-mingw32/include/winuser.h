@@ -2,123 +2,100 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #include <winapifamily.h>
-
 #ifndef _WINUSER_
 #define _WINUSER_
-
 #include <_mingw_unicode.h>
 #include <apisetcconv.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #ifndef WINVER
 #define WINVER 0x0502
 #endif
-
 #include <_mingw.h>
-#include <stdarg.h>
 #include <guiddef.h>
-
+#include <stdarg.h>
 #ifndef NOAPISET
 #include <libloaderapi.h>
 #endif
-
 #ifndef NOUSER
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef HANDLE HDWP;
-  typedef VOID MENUTEMPLATEA;
-  typedef VOID MENUTEMPLATEW;
-  typedef PVOID LPMENUTEMPLATEA;
-  typedef PVOID LPMENUTEMPLATEW;
-
-  __MINGW_TYPEDEF_AW(MENUTEMPLATE)
-  __MINGW_TYPEDEF_AW(LPMENUTEMPLATE)
-
-  typedef LRESULT (CALLBACK *WNDPROC)(HWND,UINT,WPARAM,LPARAM);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef HANDLE HDWP;
+typedef VOID MENUTEMPLATEA;
+typedef VOID MENUTEMPLATEW;
+typedef PVOID LPMENUTEMPLATEA;
+typedef PVOID LPMENUTEMPLATEW;
+__MINGW_TYPEDEF_AW(MENUTEMPLATE)
+__MINGW_TYPEDEF_AW(LPMENUTEMPLATE)
+typedef LRESULT(CALLBACK *WNDPROC)(HWND, UINT, WPARAM, LPARAM);
 #endif
-
 #ifdef STRICT
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef INT_PTR (CALLBACK *DLGPROC) (HWND, UINT, WPARAM, LPARAM);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef INT_PTR(CALLBACK *DLGPROC)(HWND, UINT, WPARAM, LPARAM);
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef VOID (CALLBACK *TIMERPROC) (HWND, UINT, UINT_PTR, DWORD);
-  typedef WINBOOL (CALLBACK *GRAYSTRINGPROC) (HDC, LPARAM, int);
-  typedef WINBOOL (CALLBACK *WNDENUMPROC) (HWND, LPARAM);
-  typedef LRESULT (CALLBACK *HOOKPROC) (int code, WPARAM wParam, LPARAM lParam);
-  typedef VOID (CALLBACK *SENDASYNCPROC) (HWND, UINT, ULONG_PTR, LRESULT);
-
-  typedef WINBOOL (CALLBACK *PROPENUMPROCA) (HWND, LPCSTR, HANDLE);
-  typedef WINBOOL (CALLBACK *PROPENUMPROCW) (HWND, LPCWSTR, HANDLE);
-
-  typedef WINBOOL (CALLBACK *PROPENUMPROCEXA) (HWND, LPSTR, HANDLE, ULONG_PTR);
-  typedef WINBOOL (CALLBACK *PROPENUMPROCEXW) (HWND, LPWSTR, HANDLE, ULONG_PTR);
-
-  typedef int (CALLBACK *EDITWORDBREAKPROCA) (LPSTR lpch, int ichCurrent, int cch, int code);
-  typedef int (CALLBACK *EDITWORDBREAKPROCW) (LPWSTR lpch, int ichCurrent, int cch, int code);
-
-  typedef WINBOOL (CALLBACK *DRAWSTATEPROC) (HDC hdc, LPARAM lData, WPARAM wData, int cx, int cy);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef VOID(CALLBACK *TIMERPROC)(HWND, UINT, UINT_PTR, DWORD);
+typedef WINBOOL(CALLBACK *GRAYSTRINGPROC)(HDC, LPARAM, int);
+typedef WINBOOL(CALLBACK *WNDENUMPROC)(HWND, LPARAM);
+typedef LRESULT(CALLBACK *HOOKPROC)(int code, WPARAM wParam, LPARAM lParam);
+typedef VOID(CALLBACK *SENDASYNCPROC)(HWND, UINT, ULONG_PTR, LRESULT);
+typedef WINBOOL(CALLBACK *PROPENUMPROCA)(HWND, LPCSTR, HANDLE);
+typedef WINBOOL(CALLBACK *PROPENUMPROCW)(HWND, LPCWSTR, HANDLE);
+typedef WINBOOL(CALLBACK *PROPENUMPROCEXA)(HWND, LPSTR, HANDLE, ULONG_PTR);
+typedef WINBOOL(CALLBACK *PROPENUMPROCEXW)(HWND, LPWSTR, HANDLE, ULONG_PTR);
+typedef int(CALLBACK *EDITWORDBREAKPROCA)(LPSTR lpch, int ichCurrent, int cch,
+                                          int code);
+typedef int(CALLBACK *EDITWORDBREAKPROCW)(LPWSTR lpch, int ichCurrent, int cch,
+                                          int code);
+typedef WINBOOL(CALLBACK *DRAWSTATEPROC)(HDC hdc, LPARAM lData, WPARAM wData,
+                                         int cx, int cy);
 #endif
 #else
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef FARPROC DLGPROC;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef FARPROC DLGPROC;
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef FARPROC TIMERPROC;
-  typedef FARPROC GRAYSTRINGPROC;
-  typedef FARPROC WNDENUMPROC;
-  typedef FARPROC HOOKPROC;
-  typedef FARPROC SENDASYNCPROC;
-
-  typedef FARPROC EDITWORDBREAKPROCA;
-  typedef FARPROC EDITWORDBREAKPROCW;
-
-  typedef FARPROC PROPENUMPROCA;
-  typedef FARPROC PROPENUMPROCW;
-
-  typedef FARPROC PROPENUMPROCEXA;
-  typedef FARPROC PROPENUMPROCEXW;
-
-  typedef FARPROC DRAWSTATEPROC;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef FARPROC TIMERPROC;
+typedef FARPROC GRAYSTRINGPROC;
+typedef FARPROC WNDENUMPROC;
+typedef FARPROC HOOKPROC;
+typedef FARPROC SENDASYNCPROC;
+typedef FARPROC EDITWORDBREAKPROCA;
+typedef FARPROC EDITWORDBREAKPROCW;
+typedef FARPROC PROPENUMPROCA;
+typedef FARPROC PROPENUMPROCW;
+typedef FARPROC PROPENUMPROCEXA;
+typedef FARPROC PROPENUMPROCEXW;
+typedef FARPROC DRAWSTATEPROC;
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  __MINGW_TYPEDEF_AW(PROPENUMPROC)
-  __MINGW_TYPEDEF_AW(PROPENUMPROCEX)
-  __MINGW_TYPEDEF_AW(EDITWORDBREAKPROC)
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+__MINGW_TYPEDEF_AW(PROPENUMPROC)
+__MINGW_TYPEDEF_AW(PROPENUMPROCEX)
+__MINGW_TYPEDEF_AW(EDITWORDBREAKPROC)
 #ifdef STRICT
-  typedef WINBOOL (CALLBACK *NAMEENUMPROCA) (LPSTR, LPARAM);
-  typedef WINBOOL (CALLBACK *NAMEENUMPROCW) (LPWSTR, LPARAM);
-  typedef NAMEENUMPROCA WINSTAENUMPROCA;
-  typedef NAMEENUMPROCW WINSTAENUMPROCW;
-  typedef NAMEENUMPROCA DESKTOPENUMPROCA;
-  typedef NAMEENUMPROCW DESKTOPENUMPROCW;
+typedef WINBOOL(CALLBACK *NAMEENUMPROCA)(LPSTR, LPARAM);
+typedef WINBOOL(CALLBACK *NAMEENUMPROCW)(LPWSTR, LPARAM);
+typedef NAMEENUMPROCA WINSTAENUMPROCA;
+typedef NAMEENUMPROCW WINSTAENUMPROCW;
+typedef NAMEENUMPROCA DESKTOPENUMPROCA;
+typedef NAMEENUMPROCW DESKTOPENUMPROCW;
 #else
-  typedef FARPROC NAMEENUMPROCA;
-  typedef FARPROC NAMEENUMPROCW;
-  typedef FARPROC WINSTAENUMPROCA;
-  typedef FARPROC WINSTAENUMPROCW;
-  typedef FARPROC DESKTOPENUMPROCA;
-  typedef FARPROC DESKTOPENUMPROCW;
+typedef FARPROC NAMEENUMPROCA;
+typedef FARPROC NAMEENUMPROCW;
+typedef FARPROC WINSTAENUMPROCA;
+typedef FARPROC WINSTAENUMPROCW;
+typedef FARPROC DESKTOPENUMPROCA;
+typedef FARPROC DESKTOPENUMPROCW;
 #endif
-
-  __MINGW_TYPEDEF_AW(WINSTAENUMPROC)
-  __MINGW_TYPEDEF_AW(DESKTOPENUMPROC)
+__MINGW_TYPEDEF_AW(WINSTAENUMPROC)
+__MINGW_TYPEDEF_AW(DESKTOPENUMPROC)
 #endif
-
-#define IS_INTRESOURCE(_r) ((((ULONG_PTR)(_r)) >> 16)==0)
+#define IS_INTRESOURCE(_r) ((((ULONG_PTR)(_r)) >> 16) == 0)
 #define MAKEINTRESOURCEA(i) ((LPSTR)((ULONG_PTR)((WORD)(i))))
 #define MAKEINTRESOURCEW(i) ((LPWSTR)((ULONG_PTR)((WORD)(i))))
 #define MAKEINTRESOURCE __MINGW_NAME_AW(MAKEINTRESOURCE)
-
 #ifndef NORESOURCE
 #define RT_CURSOR MAKEINTRESOURCE(1)
 #define RT_BITMAP MAKEINTRESOURCE(2)
@@ -131,10 +108,9 @@ extern "C" {
 #define RT_ACCELERATOR MAKEINTRESOURCE(9)
 #define RT_RCDATA MAKEINTRESOURCE(10)
 #define RT_MESSAGETABLE MAKEINTRESOURCE(11)
-
 #define DIFFERENCE 11
-#define RT_GROUP_CURSOR MAKEINTRESOURCE ((ULONG_PTR) (RT_CURSOR) + DIFFERENCE)
-#define RT_GROUP_ICON MAKEINTRESOURCE ((ULONG_PTR) (RT_ICON) + DIFFERENCE)
+#define RT_GROUP_CURSOR MAKEINTRESOURCE((ULONG_PTR)(RT_CURSOR) + DIFFERENCE)
+#define RT_GROUP_ICON MAKEINTRESOURCE((ULONG_PTR)(RT_ICON) + DIFFERENCE)
 #define RT_VERSION MAKEINTRESOURCE(16)
 #define RT_DLGINCLUDE MAKEINTRESOURCE(17)
 #define RT_PLUGPLAY MAKEINTRESOURCE(19)
@@ -144,7 +120,6 @@ extern "C" {
 #define RT_HTML MAKEINTRESOURCE(23)
 #ifdef RC_INVOKED
 #define RT_MANIFEST 24
-
 #define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
 #define ISOLATIONAWARE_MANIFEST_RESOURCE_ID 2
 #define ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID 3
@@ -152,7 +127,6 @@ extern "C" {
 #define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID 16
 #else
 #define RT_MANIFEST MAKEINTRESOURCE(24)
-
 #define CREATEPROCESS_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(1)
 #define ISOLATIONAWARE_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(2)
 #define ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(3)
@@ -160,25 +134,20 @@ extern "C" {
 #define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID MAKEINTRESOURCE(16)
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define wvsprintf __MINGW_NAME_AW(wvsprintf)
 #define wsprintf __MINGW_NAME_AW(wsprintf)
-
-  WINUSERAPI int WINAPI wvsprintfA(LPSTR,LPCSTR,va_list arglist);
-  WINUSERAPI int WINAPI wvsprintfW(LPWSTR,LPCWSTR,va_list arglist);
-  WINUSERAPI int WINAPIV wsprintfA(LPSTR,LPCSTR,...);
-  WINUSERAPI int WINAPIV wsprintfW(LPWSTR,LPCWSTR,...);
+WINUSERAPI int WINAPI wvsprintfA(LPSTR, LPCSTR, va_list arglist);
+WINUSERAPI int WINAPI wvsprintfW(LPWSTR, LPCWSTR, va_list arglist);
+WINUSERAPI int WINAPIV wsprintfA(LPSTR, LPCSTR, ...);
+WINUSERAPI int WINAPIV wsprintfW(LPWSTR, LPCWSTR, ...);
 #endif
-
-#define SETWALLPAPER_DEFAULT ((LPWSTR)-1)
-
+#define SETWALLPAPER_DEFAULT ((LPWSTR) - 1)
 #ifndef NOSCROLL
 #define SB_HORZ 0
 #define SB_VERT 1
 #define SB_CTL 2
 #define SB_BOTH 3
-
 #define SB_LINEUP 0
 #define SB_LINELEFT 0
 #define SB_LINEDOWN 1
@@ -195,7 +164,6 @@ extern "C" {
 #define SB_RIGHT 7
 #define SB_ENDSCROLL 8
 #endif
-
 #ifndef NOSHOWWINDOW
 #define SW_HIDE 0
 #define SW_SHOWNORMAL 1
@@ -212,19 +180,16 @@ extern "C" {
 #define SW_SHOWDEFAULT 10
 #define SW_FORCEMINIMIZE 11
 #define SW_MAX 11
-
 #define HIDE_WINDOW 0
 #define SHOW_OPENWINDOW 1
 #define SHOW_ICONWINDOW 2
 #define SHOW_FULLSCREEN 3
 #define SHOW_OPENNOACTIVATE 4
-
 #define SW_PARENTCLOSING 1
 #define SW_OTHERZOOM 2
 #define SW_PARENTOPENING 3
 #define SW_OTHERUNZOOM 4
 #endif
-
 #define AW_HOR_POSITIVE 0x00000001
 #define AW_HOR_NEGATIVE 0x00000002
 #define AW_VER_POSITIVE 0x00000004
@@ -234,16 +199,13 @@ extern "C" {
 #define AW_ACTIVATE 0x00020000
 #define AW_SLIDE 0x00040000
 #define AW_BLEND 0x00080000
-
 #define KF_EXTENDED 0x0100
 #define KF_DLGMODE 0x0800
 #define KF_MENUMODE 0x1000
 #define KF_ALTDOWN 0x2000
 #define KF_REPEAT 0x4000
 #define KF_UP 0x8000
-
 #ifndef NOVIRTUALKEYCODES
-
 #define VK_LBUTTON 0x01
 #define VK_RBUTTON 0x02
 #define VK_CANCEL 0x03
@@ -289,7 +251,6 @@ extern "C" {
 #define VK_INSERT 0x2D
 #define VK_DELETE 0x2E
 #define VK_HELP 0x2F
-
 #define VK_LWIN 0x5B
 #define VK_RWIN 0x5C
 #define VK_APPS 0x5D
@@ -444,9 +405,7 @@ extern "C" {
 #define VK_PA1 0xFD
 #define VK_OEM_CLEAR 0xFE
 #endif
-
 #ifndef NOWH
-
 #define WH_MIN (-1)
 #define WH_MSGFILTER (-1)
 #define WH_JOURNALRECORD 0
@@ -462,15 +421,11 @@ extern "C" {
 #define WH_SHELL 10
 #define WH_FOREGROUNDIDLE 11
 #define WH_CALLWNDPROCRET 12
-
 #define WH_KEYBOARD_LL 13
 #define WH_MOUSE_LL 14
-
 #define WH_MAX 14
-
 #define WH_MINHOOK WH_MIN
 #define WH_MAXHOOK WH_MAX
-
 #define HC_ACTION 0
 #define HC_GETNEXT 1
 #define HC_SKIP 2
@@ -478,7 +433,6 @@ extern "C" {
 #define HC_NOREM HC_NOREMOVE
 #define HC_SYSMODALON 4
 #define HC_SYSMODALOFF 5
-
 #define HCBT_MOVESIZE 0
 #define HCBT_MINMAX 1
 #define HCBT_QS 2
@@ -489,34 +443,28 @@ extern "C" {
 #define HCBT_KEYSKIPPED 7
 #define HCBT_SYSCOMMAND 8
 #define HCBT_SETFOCUS 9
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagCBT_CREATEWNDA {
-    struct tagCREATESTRUCTA *lpcs;
-    HWND hwndInsertAfter;
-  } CBT_CREATEWNDA,*LPCBT_CREATEWNDA;
-
-  typedef struct tagCBT_CREATEWNDW {
-    struct tagCREATESTRUCTW *lpcs;
-    HWND hwndInsertAfter;
-  } CBT_CREATEWNDW,*LPCBT_CREATEWNDW;
-
-  __MINGW_TYPEDEF_AW(CBT_CREATEWND)
-  __MINGW_TYPEDEF_AW(LPCBT_CREATEWND)
-
-  typedef struct tagCBTACTIVATESTRUCT {
-    WINBOOL fMouse;
-    HWND hWndActive;
-  } CBTACTIVATESTRUCT,*LPCBTACTIVATESTRUCT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagCBT_CREATEWNDA {
+  struct tagCREATESTRUCTA *lpcs;
+  HWND hwndInsertAfter;
+} CBT_CREATEWNDA, *LPCBT_CREATEWNDA;
+typedef struct tagCBT_CREATEWNDW {
+  struct tagCREATESTRUCTW *lpcs;
+  HWND hwndInsertAfter;
+} CBT_CREATEWNDW, *LPCBT_CREATEWNDW;
+__MINGW_TYPEDEF_AW(CBT_CREATEWND)
+__MINGW_TYPEDEF_AW(LPCBT_CREATEWND)
+typedef struct tagCBTACTIVATESTRUCT {
+  WINBOOL fMouse;
+  HWND hWndActive;
+} CBTACTIVATESTRUCT, *LPCBTACTIVATESTRUCT;
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagWTSSESSION_NOTIFICATION {
-    DWORD cbSize;
-    DWORD dwSessionId;
-  } WTSSESSION_NOTIFICATION,*PWTSSESSION_NOTIFICATION;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagWTSSESSION_NOTIFICATION {
+  DWORD cbSize;
+  DWORD dwSessionId;
+} WTSSESSION_NOTIFICATION, *PWTSSESSION_NOTIFICATION;
 #endif
-
 #define WTS_CONSOLE_CONNECT 0x1
 #define WTS_CONSOLE_DISCONNECT 0x2
 #define WTS_REMOTE_CONNECT 0x3
@@ -528,7 +476,6 @@ extern "C" {
 #define WTS_SESSION_REMOTE_CONTROL 0x9
 #define WTS_SESSION_CREATE 0xa
 #define WTS_SESSION_TERMINATE 0xb
-
 #define MSGF_DIALOGBOX 0
 #define MSGF_MESSAGEBOX 1
 #define MSGF_MENU 2
@@ -536,7 +483,6 @@ extern "C" {
 #define MSGF_NEXTWINDOW 6
 #define MSGF_MAX 8
 #define MSGF_USER 4096
-
 #define HSHELL_WINDOWCREATED 1
 #define HSHELL_WINDOWDESTROYED 2
 #define HSHELL_ACTIVATESHELLWINDOW 3
@@ -554,15 +500,12 @@ extern "C" {
 #if _WIN32_WINNT >= 0x0602
 #define HSHELL_MONITORCHANGED 16
 #endif
-
 #define HSHELL_HIGHBIT 0x8000
-#define HSHELL_FLASH (HSHELL_REDRAW|HSHELL_HIGHBIT)
-#define HSHELL_RUDEAPPACTIVATED (HSHELL_WINDOWACTIVATED|HSHELL_HIGHBIT)
-
+#define HSHELL_FLASH (HSHELL_REDRAW | HSHELL_HIGHBIT)
+#define HSHELL_RUDEAPPACTIVATED (HSHELL_WINDOWACTIVATED | HSHELL_HIGHBIT)
 #define ACCESS_STICKYKEYS 0x0001
 #define ACCESS_FILTERKEYS 0x0002
 #define ACCESS_MOUSEKEYS 0x0003
-
 #define APPCOMMAND_BROWSER_BACKWARD 1
 #define APPCOMMAND_BROWSER_FORWARD 2
 #define APPCOMMAND_BROWSER_REFRESH 3
@@ -619,114 +562,98 @@ extern "C" {
 #define APPCOMMAND_DELETE 53
 #define APPCOMMAND_DWM_FLIP3D 54
 #endif
-
 #define FAPPCOMMAND_MOUSE 0x8000
 #define FAPPCOMMAND_KEY 0
 #define FAPPCOMMAND_OEM 0x1000
 #define FAPPCOMMAND_MASK 0xF000
-
-#define GET_APPCOMMAND_LPARAM(lParam) ((short)(HIWORD(lParam) & ~FAPPCOMMAND_MASK))
+#define GET_APPCOMMAND_LPARAM(lParam)                                          \
+  ((short)(HIWORD(lParam) & ~FAPPCOMMAND_MASK))
 #define GET_DEVICE_LPARAM(lParam) ((WORD)(HIWORD(lParam) & FAPPCOMMAND_MASK))
 #define GET_MOUSEORKEY_LPARAM GET_DEVICE_LPARAM
 #define GET_FLAGS_LPARAM(lParam) (LOWORD(lParam))
 #define GET_KEYSTATE_LPARAM(lParam) GET_FLAGS_LPARAM(lParam)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct {
-    HWND hwnd;
-    RECT rc;
-  } SHELLHOOKINFO,*LPSHELLHOOKINFO;
-
-  typedef struct tagEVENTMSG {
-    UINT message;
-    UINT paramL;
-    UINT paramH;
-    DWORD time;
-    HWND hwnd;
-  } EVENTMSG,*PEVENTMSGMSG,*NPEVENTMSGMSG,*LPEVENTMSGMSG;
-
-  typedef struct tagEVENTMSG *PEVENTMSG,*NPEVENTMSG,*LPEVENTMSG;
-
-  typedef struct tagCWPSTRUCT {
-    LPARAM lParam;
-    WPARAM wParam;
-    UINT message;
-    HWND hwnd;
-  } CWPSTRUCT,*PCWPSTRUCT,*NPCWPSTRUCT,*LPCWPSTRUCT;
-
-  typedef struct tagCWPRETSTRUCT {
-    LRESULT lResult;
-    LPARAM lParam;
-    WPARAM wParam;
-    UINT message;
-    HWND hwnd;
-  } CWPRETSTRUCT,*PCWPRETSTRUCT,*NPCWPRETSTRUCT,*LPCWPRETSTRUCT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct {
+  HWND hwnd;
+  RECT rc;
+} SHELLHOOKINFO, *LPSHELLHOOKINFO;
+typedef struct tagEVENTMSG {
+  UINT message;
+  UINT paramL;
+  UINT paramH;
+  DWORD time;
+  HWND hwnd;
+} EVENTMSG, *PEVENTMSGMSG, *NPEVENTMSGMSG, *LPEVENTMSGMSG;
+typedef struct tagEVENTMSG *PEVENTMSG, *NPEVENTMSG, *LPEVENTMSG;
+typedef struct tagCWPSTRUCT {
+  LPARAM lParam;
+  WPARAM wParam;
+  UINT message;
+  HWND hwnd;
+} CWPSTRUCT, *PCWPSTRUCT, *NPCWPSTRUCT, *LPCWPSTRUCT;
+typedef struct tagCWPRETSTRUCT {
+  LRESULT lResult;
+  LPARAM lParam;
+  WPARAM wParam;
+  UINT message;
+  HWND hwnd;
+} CWPRETSTRUCT, *PCWPRETSTRUCT, *NPCWPRETSTRUCT, *LPCWPRETSTRUCT;
 #endif
-
 #define LLKHF_EXTENDED (KF_EXTENDED >> 8)
 #define LLKHF_INJECTED 0x00000010
 #define LLKHF_ALTDOWN (KF_ALTDOWN >> 8)
 #define LLKHF_UP (KF_UP >> 8)
 #define LLKHF_LOWER_IL_INJECTED 0x00000002
-
 #define LLMHF_INJECTED 0x00000001
 #define LLMHF_LOWER_IL_INJECTED 0x00000002
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagKBDLLHOOKSTRUCT {
-    DWORD vkCode;
-    DWORD scanCode;
-    DWORD flags;
-    DWORD time;
-    ULONG_PTR dwExtraInfo;
-  } KBDLLHOOKSTRUCT,*LPKBDLLHOOKSTRUCT,*PKBDLLHOOKSTRUCT;
-
-  typedef struct tagMSLLHOOKSTRUCT {
-    POINT pt;
-    DWORD mouseData;
-    DWORD flags;
-    DWORD time;
-    ULONG_PTR dwExtraInfo;
-  } MSLLHOOKSTRUCT,*LPMSLLHOOKSTRUCT,*PMSLLHOOKSTRUCT;
-
-  typedef struct tagDEBUGHOOKINFO {
-    DWORD idThread;
-    DWORD idThreadInstaller;
-    LPARAM lParam;
-    WPARAM wParam;
-    int code;
-  } DEBUGHOOKINFO,*PDEBUGHOOKINFO,*NPDEBUGHOOKINFO,*LPDEBUGHOOKINFO;
-
-  typedef struct tagMOUSEHOOKSTRUCT {
-    POINT pt;
-    HWND hwnd;
-    UINT wHitTestCode;
-    ULONG_PTR dwExtraInfo;
-  } MOUSEHOOKSTRUCT,*LPMOUSEHOOKSTRUCT,*PMOUSEHOOKSTRUCT;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagKBDLLHOOKSTRUCT {
+  DWORD vkCode;
+  DWORD scanCode;
+  DWORD flags;
+  DWORD time;
+  ULONG_PTR dwExtraInfo;
+} KBDLLHOOKSTRUCT, *LPKBDLLHOOKSTRUCT, *PKBDLLHOOKSTRUCT;
+typedef struct tagMSLLHOOKSTRUCT {
+  POINT pt;
+  DWORD mouseData;
+  DWORD flags;
+  DWORD time;
+  ULONG_PTR dwExtraInfo;
+} MSLLHOOKSTRUCT, *LPMSLLHOOKSTRUCT, *PMSLLHOOKSTRUCT;
+typedef struct tagDEBUGHOOKINFO {
+  DWORD idThread;
+  DWORD idThreadInstaller;
+  LPARAM lParam;
+  WPARAM wParam;
+  int code;
+} DEBUGHOOKINFO, *PDEBUGHOOKINFO, *NPDEBUGHOOKINFO, *LPDEBUGHOOKINFO;
+typedef struct tagMOUSEHOOKSTRUCT {
+  POINT pt;
+  HWND hwnd;
+  UINT wHitTestCode;
+  ULONG_PTR dwExtraInfo;
+} MOUSEHOOKSTRUCT, *LPMOUSEHOOKSTRUCT, *PMOUSEHOOKSTRUCT;
 #ifdef __cplusplus
-  typedef struct tagMOUSEHOOKSTRUCTEX : public tagMOUSEHOOKSTRUCT {
-    DWORD mouseData;
-  } MOUSEHOOKSTRUCTEX,*LPMOUSEHOOKSTRUCTEX,*PMOUSEHOOKSTRUCTEX;
+typedef struct tagMOUSEHOOKSTRUCTEX : public tagMOUSEHOOKSTRUCT {
+  DWORD mouseData;
+} MOUSEHOOKSTRUCTEX, *LPMOUSEHOOKSTRUCTEX, *PMOUSEHOOKSTRUCTEX;
 #else
-  typedef struct tagMOUSEHOOKSTRUCTEX {
-    MOUSEHOOKSTRUCT __unnamed;
-    DWORD mouseData;
-  } MOUSEHOOKSTRUCTEX,*LPMOUSEHOOKSTRUCTEX,*PMOUSEHOOKSTRUCTEX;
+typedef struct tagMOUSEHOOKSTRUCTEX {
+  MOUSEHOOKSTRUCT __unnamed;
+  DWORD mouseData;
+} MOUSEHOOKSTRUCTEX, *LPMOUSEHOOKSTRUCTEX, *PMOUSEHOOKSTRUCTEX;
 #endif
-
-  typedef struct tagHARDWAREHOOKSTRUCT {
-    HWND hwnd;
-    UINT message;
-    WPARAM wParam;
-    LPARAM lParam;
-  } HARDWAREHOOKSTRUCT,*LPHARDWAREHOOKSTRUCT,*PHARDWAREHOOKSTRUCT;
+typedef struct tagHARDWAREHOOKSTRUCT {
+  HWND hwnd;
+  UINT message;
+  WPARAM wParam;
+  LPARAM lParam;
+} HARDWAREHOOKSTRUCT, *LPHARDWAREHOOKSTRUCT, *PHARDWAREHOOKSTRUCT;
 #endif
 #endif
-
 #define HKL_PREV 0
 #define HKL_NEXT 1
-
 #define KLF_ACTIVATE 0x00000001
 #define KLF_SUBSTITUTE_OK 0x00000002
 #define KLF_REORDER 0x00000008
@@ -735,42 +662,37 @@ extern "C" {
 #define KLF_SETFORPROCESS 0x00000100
 #define KLF_SHIFTLOCK 0x00010000
 #define KLF_RESET 0x40000000
-
 #define INPUTLANGCHANGE_SYSCHARSET 0x0001
 #define INPUTLANGCHANGE_FORWARD 0x0002
 #define INPUTLANGCHANGE_BACKWARD 0x0004
-
 #define KL_NAMELENGTH 9
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadKeyboardLayout __MINGW_NAME_AW(LoadKeyboardLayout)
 #define GetKeyboardLayoutName __MINGW_NAME_AW(GetKeyboardLayoutName)
-
-  WINUSERAPI HKL WINAPI LoadKeyboardLayoutA(LPCSTR pwszKLID,UINT Flags);
-  WINUSERAPI HKL WINAPI LoadKeyboardLayoutW(LPCWSTR pwszKLID,UINT Flags);
-  WINUSERAPI HKL WINAPI ActivateKeyboardLayout(HKL hkl,UINT Flags);
-  WINUSERAPI int WINAPI ToUnicodeEx(UINT wVirtKey,UINT wScanCode,CONST BYTE *lpKeyState,LPWSTR pwszBuff,int cchBuff,UINT wFlags,HKL dwhkl);
-  WINUSERAPI WINBOOL WINAPI UnloadKeyboardLayout(HKL hkl);
-  WINUSERAPI WINBOOL WINAPI GetKeyboardLayoutNameA(LPSTR pwszKLID);
-  WINUSERAPI WINBOOL WINAPI GetKeyboardLayoutNameW(LPWSTR pwszKLID);
-  WINUSERAPI int WINAPI GetKeyboardLayoutList(int nBuff,HKL *lpList);
-  WINUSERAPI HKL WINAPI GetKeyboardLayout(DWORD idThread);
-
-  typedef struct tagMOUSEMOVEPOINT {
-    int x;
-    int y;
-    DWORD time;
-    ULONG_PTR dwExtraInfo;
-  } MOUSEMOVEPOINT,*PMOUSEMOVEPOINT,*LPMOUSEMOVEPOINT;
-
-  WINUSERAPI int WINAPI GetMouseMovePointsEx(UINT cbSize,LPMOUSEMOVEPOINT lppt,LPMOUSEMOVEPOINT lpptBuf,int nBufPoints,DWORD resolution);
+WINUSERAPI HKL WINAPI LoadKeyboardLayoutA(LPCSTR pwszKLID, UINT Flags);
+WINUSERAPI HKL WINAPI LoadKeyboardLayoutW(LPCWSTR pwszKLID, UINT Flags);
+WINUSERAPI HKL WINAPI ActivateKeyboardLayout(HKL hkl, UINT Flags);
+WINUSERAPI int WINAPI ToUnicodeEx(UINT wVirtKey, UINT wScanCode,
+                                  CONST BYTE *lpKeyState, LPWSTR pwszBuff,
+                                  int cchBuff, UINT wFlags, HKL dwhkl);
+WINUSERAPI WINBOOL WINAPI UnloadKeyboardLayout(HKL hkl);
+WINUSERAPI WINBOOL WINAPI GetKeyboardLayoutNameA(LPSTR pwszKLID);
+WINUSERAPI WINBOOL WINAPI GetKeyboardLayoutNameW(LPWSTR pwszKLID);
+WINUSERAPI int WINAPI GetKeyboardLayoutList(int nBuff, HKL *lpList);
+WINUSERAPI HKL WINAPI GetKeyboardLayout(DWORD idThread);
+typedef struct tagMOUSEMOVEPOINT {
+  int x;
+  int y;
+  DWORD time;
+  ULONG_PTR dwExtraInfo;
+} MOUSEMOVEPOINT, *PMOUSEMOVEPOINT, *LPMOUSEMOVEPOINT;
+WINUSERAPI int WINAPI GetMouseMovePointsEx(UINT cbSize, LPMOUSEMOVEPOINT lppt,
+                                           LPMOUSEMOVEPOINT lpptBuf,
+                                           int nBufPoints, DWORD resolution);
 #endif
-
 #define GMMP_USE_DISPLAY_POINTS 1
 #define GMMP_USE_HIGH_RESOLUTION_POINTS 2
-
 #ifndef NODESKTOP
-
 #define DESKTOP_READOBJECTS __MSABI_LONG(0x0001)
 #define DESKTOP_CREATEWINDOW __MSABI_LONG(0x0002)
 #define DESKTOP_CREATEMENU __MSABI_LONG(0x0004)
@@ -780,39 +702,57 @@ extern "C" {
 #define DESKTOP_ENUMERATE __MSABI_LONG(0x0040)
 #define DESKTOP_WRITEOBJECTS __MSABI_LONG(0x0080)
 #define DESKTOP_SWITCHDESKTOP __MSABI_LONG(0x0100)
-
 #define DF_ALLOWOTHERACCOUNTHOOK __MSABI_LONG(0x0001)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #ifdef _WINGDI_
 #ifndef NOGDI
-
 #define CreateDesktop __MINGW_NAME_AW(CreateDesktop)
 #define CreateDesktopEx __MINGW_NAME_AW(CreateDesktopEx)
-
-  WINUSERAPI HDESK WINAPI CreateDesktopA(LPCSTR lpszDesktop,LPCSTR lpszDevice,LPDEVMODEA pDevmode,DWORD dwFlags,ACCESS_MASK dwDesiredAccess,LPSECURITY_ATTRIBUTES lpsa);
-  WINUSERAPI HDESK WINAPI CreateDesktopW(LPCWSTR lpszDesktop,LPCWSTR lpszDevice,LPDEVMODEW pDevmode,DWORD dwFlags,ACCESS_MASK dwDesiredAccess,LPSECURITY_ATTRIBUTES lpsa);
-  WINUSERAPI HDESK WINAPI CreateDesktopExA (LPCSTR lpszDesktop, LPCSTR lpszDevice, DEVMODEA *pDevmode, DWORD dwFlags, ACCESS_MASK dwDesiredAccess, LPSECURITY_ATTRIBUTES lpsa, ULONG ulHeapSize, PVOID pvoid);
-  WINUSERAPI HDESK WINAPI CreateDesktopExW (LPCWSTR lpszDesktop, LPCWSTR lpszDevice, DEVMODEW *pDevmode, DWORD dwFlags, ACCESS_MASK dwDesiredAccess, LPSECURITY_ATTRIBUTES lpsa, ULONG ulHeapSize, PVOID pvoid);
+WINUSERAPI HDESK WINAPI CreateDesktopA(LPCSTR lpszDesktop, LPCSTR lpszDevice,
+                                       LPDEVMODEA pDevmode, DWORD dwFlags,
+                                       ACCESS_MASK dwDesiredAccess,
+                                       LPSECURITY_ATTRIBUTES lpsa);
+WINUSERAPI HDESK WINAPI CreateDesktopW(LPCWSTR lpszDesktop, LPCWSTR lpszDevice,
+                                       LPDEVMODEW pDevmode, DWORD dwFlags,
+                                       ACCESS_MASK dwDesiredAccess,
+                                       LPSECURITY_ATTRIBUTES lpsa);
+WINUSERAPI HDESK WINAPI CreateDesktopExA(LPCSTR lpszDesktop, LPCSTR lpszDevice,
+                                         DEVMODEA *pDevmode, DWORD dwFlags,
+                                         ACCESS_MASK dwDesiredAccess,
+                                         LPSECURITY_ATTRIBUTES lpsa,
+                                         ULONG ulHeapSize, PVOID pvoid);
+WINUSERAPI HDESK WINAPI CreateDesktopExW(LPCWSTR lpszDesktop,
+                                         LPCWSTR lpszDevice, DEVMODEW *pDevmode,
+                                         DWORD dwFlags,
+                                         ACCESS_MASK dwDesiredAccess,
+                                         LPSECURITY_ATTRIBUTES lpsa,
+                                         ULONG ulHeapSize, PVOID pvoid);
 #endif
 #endif
-
 #define OpenDesktop __MINGW_NAME_AW(OpenDesktop)
 #define EnumDesktops __MINGW_NAME_AW(EnumDesktops)
-
-  WINUSERAPI HDESK WINAPI OpenDesktopA(LPCSTR lpszDesktop,DWORD dwFlags,WINBOOL fInherit,ACCESS_MASK dwDesiredAccess);
-  WINUSERAPI HDESK WINAPI OpenDesktopW(LPCWSTR lpszDesktop,DWORD dwFlags,WINBOOL fInherit,ACCESS_MASK dwDesiredAccess);
-  WINUSERAPI HDESK WINAPI OpenInputDesktop(DWORD dwFlags,WINBOOL fInherit,ACCESS_MASK dwDesiredAccess);
-  WINUSERAPI WINBOOL WINAPI EnumDesktopsA(HWINSTA hwinsta,DESKTOPENUMPROCA lpEnumFunc,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI EnumDesktopsW(HWINSTA hwinsta,DESKTOPENUMPROCW lpEnumFunc,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI EnumDesktopWindows(HDESK hDesktop,WNDENUMPROC lpfn,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI SwitchDesktop(HDESK hDesktop);
-  WINUSERAPI WINBOOL WINAPI SetThreadDesktop(HDESK hDesktop);
-  WINUSERAPI WINBOOL WINAPI CloseDesktop(HDESK hDesktop);
-  WINUSERAPI HDESK WINAPI GetThreadDesktop(DWORD dwThreadId);
+WINUSERAPI HDESK WINAPI OpenDesktopA(LPCSTR lpszDesktop, DWORD dwFlags,
+                                     WINBOOL fInherit,
+                                     ACCESS_MASK dwDesiredAccess);
+WINUSERAPI HDESK WINAPI OpenDesktopW(LPCWSTR lpszDesktop, DWORD dwFlags,
+                                     WINBOOL fInherit,
+                                     ACCESS_MASK dwDesiredAccess);
+WINUSERAPI HDESK WINAPI OpenInputDesktop(DWORD dwFlags, WINBOOL fInherit,
+                                         ACCESS_MASK dwDesiredAccess);
+WINUSERAPI WINBOOL WINAPI EnumDesktopsA(HWINSTA hwinsta,
+                                        DESKTOPENUMPROCA lpEnumFunc,
+                                        LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI EnumDesktopsW(HWINSTA hwinsta,
+                                        DESKTOPENUMPROCW lpEnumFunc,
+                                        LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI EnumDesktopWindows(HDESK hDesktop, WNDENUMPROC lpfn,
+                                             LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI SwitchDesktop(HDESK hDesktop);
+WINUSERAPI WINBOOL WINAPI SetThreadDesktop(HDESK hDesktop);
+WINUSERAPI WINBOOL WINAPI CloseDesktop(HDESK hDesktop);
+WINUSERAPI HDESK WINAPI GetThreadDesktop(DWORD dwThreadId);
 #endif
 #endif
-
 #ifndef NOWINDOWSTATION
 #define WINSTA_ENUMDESKTOPS __MSABI_LONG(0x0001)
 #define WINSTA_READATTRIBUTES __MSABI_LONG(0x0002)
@@ -823,35 +763,45 @@ extern "C" {
 #define WINSTA_EXITWINDOWS __MSABI_LONG(0x0040)
 #define WINSTA_ENUMERATE __MSABI_LONG(0x0100)
 #define WINSTA_READSCREEN __MSABI_LONG(0x0200)
-#define WINSTA_ALL_ACCESS (WINSTA_ENUMDESKTOPS | WINSTA_READATTRIBUTES | WINSTA_ACCESSCLIPBOARD | WINSTA_CREATEDESKTOP | WINSTA_WRITEATTRIBUTES | WINSTA_ACCESSGLOBALATOMS | WINSTA_EXITWINDOWS | WINSTA_ENUMERATE | WINSTA_READSCREEN)
-
+#define WINSTA_ALL_ACCESS                                                      \
+  (WINSTA_ENUMDESKTOPS | WINSTA_READATTRIBUTES | WINSTA_ACCESSCLIPBOARD |      \
+   WINSTA_CREATEDESKTOP | WINSTA_WRITEATTRIBUTES | WINSTA_ACCESSGLOBALATOMS |  \
+   WINSTA_EXITWINDOWS | WINSTA_ENUMERATE | WINSTA_READSCREEN)
 #define CWF_CREATE_ONLY 0x00000001
-
 #define WSF_VISIBLE __MSABI_LONG(0x0001)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define CreateWindowStation __MINGW_NAME_AW(CreateWindowStation)
 #define OpenWindowStation __MINGW_NAME_AW(OpenWindowStation)
 #define EnumWindowStations __MINGW_NAME_AW(EnumWindowStations)
-
-  WINUSERAPI HWINSTA WINAPI CreateWindowStationA(LPCSTR lpwinsta,DWORD dwFlags,ACCESS_MASK dwDesiredAccess,LPSECURITY_ATTRIBUTES lpsa);
-  WINUSERAPI HWINSTA WINAPI CreateWindowStationW(LPCWSTR lpwinsta,DWORD dwFlags,ACCESS_MASK dwDesiredAccess,LPSECURITY_ATTRIBUTES lpsa);
-  WINUSERAPI HWINSTA WINAPI OpenWindowStationA(LPCSTR lpszWinSta,WINBOOL fInherit,ACCESS_MASK dwDesiredAccess);
-  WINUSERAPI HWINSTA WINAPI OpenWindowStationW(LPCWSTR lpszWinSta,WINBOOL fInherit,ACCESS_MASK dwDesiredAccess);
-  WINUSERAPI WINBOOL WINAPI EnumWindowStationsA(WINSTAENUMPROCA lpEnumFunc,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI EnumWindowStationsW(WINSTAENUMPROCW lpEnumFunc,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI CloseWindowStation(HWINSTA hWinSta);
-  WINUSERAPI WINBOOL WINAPI SetProcessWindowStation(HWINSTA hWinSta);
-  WINUSERAPI HWINSTA WINAPI GetProcessWindowStation(VOID);
+WINUSERAPI HWINSTA WINAPI CreateWindowStationA(LPCSTR lpwinsta, DWORD dwFlags,
+                                               ACCESS_MASK dwDesiredAccess,
+                                               LPSECURITY_ATTRIBUTES lpsa);
+WINUSERAPI HWINSTA WINAPI CreateWindowStationW(LPCWSTR lpwinsta, DWORD dwFlags,
+                                               ACCESS_MASK dwDesiredAccess,
+                                               LPSECURITY_ATTRIBUTES lpsa);
+WINUSERAPI HWINSTA WINAPI OpenWindowStationA(LPCSTR lpszWinSta,
+                                             WINBOOL fInherit,
+                                             ACCESS_MASK dwDesiredAccess);
+WINUSERAPI HWINSTA WINAPI OpenWindowStationW(LPCWSTR lpszWinSta,
+                                             WINBOOL fInherit,
+                                             ACCESS_MASK dwDesiredAccess);
+WINUSERAPI WINBOOL WINAPI EnumWindowStationsA(WINSTAENUMPROCA lpEnumFunc,
+                                              LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI EnumWindowStationsW(WINSTAENUMPROCW lpEnumFunc,
+                                              LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI CloseWindowStation(HWINSTA hWinSta);
+WINUSERAPI WINBOOL WINAPI SetProcessWindowStation(HWINSTA hWinSta);
+WINUSERAPI HWINSTA WINAPI GetProcessWindowStation(VOID);
 #endif
 #endif
-
 #ifndef NOSECURITY
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI SetUserObjectSecurity(HANDLE hObj,PSECURITY_INFORMATION pSIRequested,PSECURITY_DESCRIPTOR pSID);
-  WINUSERAPI WINBOOL WINAPI GetUserObjectSecurity(HANDLE hObj,PSECURITY_INFORMATION pSIRequested,PSECURITY_DESCRIPTOR pSID,DWORD nLength,LPDWORD lpnLengthNeeded);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI SetUserObjectSecurity(
+    HANDLE hObj, PSECURITY_INFORMATION pSIRequested, PSECURITY_DESCRIPTOR pSID);
+WINUSERAPI WINBOOL WINAPI GetUserObjectSecurity(
+    HANDLE hObj, PSECURITY_INFORMATION pSIRequested, PSECURITY_DESCRIPTOR pSID,
+    DWORD nLength, LPDWORD lpnLengthNeeded);
 #endif
-
 #define UOI_FLAGS 1
 #define UOI_NAME 2
 #define UOI_TYPE 3
@@ -861,115 +811,113 @@ extern "C" {
 #define UOI_IO 6
 #endif
 #define UOI_TIMERPROC_EXCEPTION_SUPPRESSION 7
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagUSEROBJECTFLAGS {
-    WINBOOL fInherit;
-    WINBOOL fReserved;
-    DWORD dwFlags;
-  } USEROBJECTFLAGS,*PUSEROBJECTFLAGS;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagUSEROBJECTFLAGS {
+  WINBOOL fInherit;
+  WINBOOL fReserved;
+  DWORD dwFlags;
+} USEROBJECTFLAGS, *PUSEROBJECTFLAGS;
 #define GetUserObjectInformation __MINGW_NAME_AW(GetUserObjectInformation)
 #define SetUserObjectInformation __MINGW_NAME_AW(SetUserObjectInformation)
-
-  WINUSERAPI WINBOOL WINAPI GetUserObjectInformationA(HANDLE hObj,int nIndex,PVOID pvInfo,DWORD nLength,LPDWORD lpnLengthNeeded);
-  WINUSERAPI WINBOOL WINAPI GetUserObjectInformationW(HANDLE hObj,int nIndex,PVOID pvInfo,DWORD nLength,LPDWORD lpnLengthNeeded);
-  WINUSERAPI WINBOOL WINAPI SetUserObjectInformationA(HANDLE hObj,int nIndex,PVOID pvInfo,DWORD nLength);
-  WINUSERAPI WINBOOL WINAPI SetUserObjectInformationW(HANDLE hObj,int nIndex,PVOID pvInfo,DWORD nLength);
+WINUSERAPI WINBOOL WINAPI GetUserObjectInformationA(HANDLE hObj, int nIndex,
+                                                    PVOID pvInfo, DWORD nLength,
+                                                    LPDWORD lpnLengthNeeded);
+WINUSERAPI WINBOOL WINAPI GetUserObjectInformationW(HANDLE hObj, int nIndex,
+                                                    PVOID pvInfo, DWORD nLength,
+                                                    LPDWORD lpnLengthNeeded);
+WINUSERAPI WINBOOL WINAPI SetUserObjectInformationA(HANDLE hObj, int nIndex,
+                                                    PVOID pvInfo,
+                                                    DWORD nLength);
+WINUSERAPI WINBOOL WINAPI SetUserObjectInformationW(HANDLE hObj, int nIndex,
+                                                    PVOID pvInfo,
+                                                    DWORD nLength);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagWNDCLASSEXA {
-    UINT cbSize;
-    UINT style;
-    WNDPROC lpfnWndProc;
-    int cbClsExtra;
-    int cbWndExtra;
-    HINSTANCE hInstance;
-    HICON hIcon;
-    HCURSOR hCursor;
-    HBRUSH hbrBackground;
-    LPCSTR lpszMenuName;
-    LPCSTR lpszClassName;
-    HICON hIconSm;
-  } WNDCLASSEXA,*PWNDCLASSEXA,*NPWNDCLASSEXA,*LPWNDCLASSEXA;
-
-  typedef struct tagWNDCLASSEXW {
-    UINT cbSize;
-    UINT style;
-    WNDPROC lpfnWndProc;
-    int cbClsExtra;
-    int cbWndExtra;
-    HINSTANCE hInstance;
-    HICON hIcon;
-    HCURSOR hCursor;
-    HBRUSH hbrBackground;
-    LPCWSTR lpszMenuName;
-    LPCWSTR lpszClassName;
-    HICON hIconSm;
-  } WNDCLASSEXW,*PWNDCLASSEXW,*NPWNDCLASSEXW,*LPWNDCLASSEXW;
-
-  __MINGW_TYPEDEF_AW(WNDCLASSEX)
-  __MINGW_TYPEDEF_AW(PWNDCLASSEX)
-  __MINGW_TYPEDEF_AW(NPWNDCLASSEX)
-  __MINGW_TYPEDEF_AW(LPWNDCLASSEX)
-
-  typedef struct tagWNDCLASSA {
-    UINT style;
-    WNDPROC lpfnWndProc;
-    int cbClsExtra;
-    int cbWndExtra;
-    HINSTANCE hInstance;
-    HICON hIcon;
-    HCURSOR hCursor;
-    HBRUSH hbrBackground;
-    LPCSTR lpszMenuName;
-    LPCSTR lpszClassName;
-  } WNDCLASSA,*PWNDCLASSA,*NPWNDCLASSA,*LPWNDCLASSA;
-
-  typedef struct tagWNDCLASSW {
-    UINT style;
-    WNDPROC lpfnWndProc;
-    int cbClsExtra;
-    int cbWndExtra;
-    HINSTANCE hInstance;
-    HICON hIcon;
-    HCURSOR hCursor;
-    HBRUSH hbrBackground;
-    LPCWSTR lpszMenuName;
-    LPCWSTR lpszClassName;
-  } WNDCLASSW,*PWNDCLASSW,*NPWNDCLASSW,*LPWNDCLASSW;
-
-  __MINGW_TYPEDEF_AW(WNDCLASS)
-  __MINGW_TYPEDEF_AW(PWNDCLASS)
-  __MINGW_TYPEDEF_AW(NPWNDCLASS)
-  __MINGW_TYPEDEF_AW(LPWNDCLASS)
-
-  WINUSERAPI WINBOOL WINAPI IsHungAppWindow(HWND hwnd);
-  WINUSERAPI VOID WINAPI DisableProcessWindowsGhosting(VOID);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagWNDCLASSEXA {
+  UINT cbSize;
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCSTR lpszMenuName;
+  LPCSTR lpszClassName;
+  HICON hIconSm;
+} WNDCLASSEXA, *PWNDCLASSEXA, *NPWNDCLASSEXA, *LPWNDCLASSEXA;
+typedef struct tagWNDCLASSEXW {
+  UINT cbSize;
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCWSTR lpszMenuName;
+  LPCWSTR lpszClassName;
+  HICON hIconSm;
+} WNDCLASSEXW, *PWNDCLASSEXW, *NPWNDCLASSEXW, *LPWNDCLASSEXW;
+__MINGW_TYPEDEF_AW(WNDCLASSEX)
+__MINGW_TYPEDEF_AW(PWNDCLASSEX)
+__MINGW_TYPEDEF_AW(NPWNDCLASSEX)
+__MINGW_TYPEDEF_AW(LPWNDCLASSEX)
+typedef struct tagWNDCLASSA {
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCSTR lpszMenuName;
+  LPCSTR lpszClassName;
+} WNDCLASSA, *PWNDCLASSA, *NPWNDCLASSA, *LPWNDCLASSA;
+typedef struct tagWNDCLASSW {
+  UINT style;
+  WNDPROC lpfnWndProc;
+  int cbClsExtra;
+  int cbWndExtra;
+  HINSTANCE hInstance;
+  HICON hIcon;
+  HCURSOR hCursor;
+  HBRUSH hbrBackground;
+  LPCWSTR lpszMenuName;
+  LPCWSTR lpszClassName;
+} WNDCLASSW, *PWNDCLASSW, *NPWNDCLASSW, *LPWNDCLASSW;
+__MINGW_TYPEDEF_AW(WNDCLASS)
+__MINGW_TYPEDEF_AW(PWNDCLASS)
+__MINGW_TYPEDEF_AW(NPWNDCLASS)
+__MINGW_TYPEDEF_AW(LPWNDCLASS)
+WINUSERAPI WINBOOL WINAPI IsHungAppWindow(HWND hwnd);
+WINUSERAPI VOID WINAPI DisableProcessWindowsGhosting(VOID);
 #endif
-
 #ifndef NOMSG
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef struct tagMSG {
-    HWND hwnd;
-    UINT message;
-    WPARAM wParam;
-    LPARAM lParam;
-    DWORD time;
-    POINT pt;
-  } MSG,*PMSG,*NPMSG,*LPMSG;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef struct tagMSG {
+  HWND hwnd;
+  UINT message;
+  WPARAM wParam;
+  LPARAM lParam;
+  DWORD time;
+  POINT pt;
+} MSG, *PMSG, *NPMSG, *LPMSG;
 #endif
-
-#define POINTSTOPOINT(pt,pts) { (pt).x = (LONG)(SHORT)LOWORD(*(LONG*)&pts); (pt).y = (LONG)(SHORT)HIWORD(*(LONG*)&pts); }
-
-#define POINTTOPOINTS(pt) (MAKELONG((short)((pt).x),(short)((pt).y)))
-#define MAKEWPARAM(l,h) ((WPARAM)(DWORD)MAKELONG(l,h))
-#define MAKELPARAM(l,h) ((LPARAM)(DWORD)MAKELONG(l,h))
-#define MAKELRESULT(l,h) ((LRESULT)(DWORD)MAKELONG(l,h))
+#define POINTSTOPOINT(pt, pts)                                                 \
+  {                                                                            \
+    (pt).x = (LONG)(SHORT)LOWORD(*(LONG *)&pts);                               \
+    (pt).y = (LONG)(SHORT)HIWORD(*(LONG *)&pts);                               \
+  }
+#define POINTTOPOINTS(pt) (MAKELONG((short)((pt).x), (short)((pt).y)))
+#define MAKEWPARAM(l, h) ((WPARAM)(DWORD)MAKELONG(l, h))
+#define MAKELPARAM(l, h) ((LPARAM)(DWORD)MAKELONG(l, h))
+#define MAKELRESULT(l, h) ((LRESULT)(DWORD)MAKELONG(l, h))
 #endif
-
 #ifndef NOWINOFFSETS
 #define GWL_WNDPROC (-4)
 #define GWL_HINSTANCE (-6)
@@ -978,20 +926,17 @@ extern "C" {
 #define GWL_EXSTYLE (-20)
 #define GWL_USERDATA (-21)
 #define GWL_ID (-12)
-
 #ifdef _WIN64
 #undef GWL_WNDPROC
 #undef GWL_HINSTANCE
 #undef GWL_HWNDPARENT
 #undef GWL_USERDATA
 #endif
-
 #define GWLP_WNDPROC (-4)
 #define GWLP_HINSTANCE (-6)
 #define GWLP_HWNDPARENT (-8)
 #define GWLP_USERDATA (-21)
 #define GWLP_ID (-12)
-
 #define GCL_MENUNAME (-8)
 #define GCL_HBRBACKGROUND (-10)
 #define GCL_HCURSOR (-12)
@@ -1003,7 +948,6 @@ extern "C" {
 #define GCL_STYLE (-26)
 #define GCW_ATOM (-32)
 #define GCL_HICONSM (-34)
-
 #ifdef _WIN64
 #undef GCL_MENUNAME
 #undef GCL_HBRBACKGROUND
@@ -1013,7 +957,6 @@ extern "C" {
 #undef GCL_WNDPROC
 #undef GCL_HICONSM
 #endif
-
 #define GCLP_MENUNAME (-8)
 #define GCLP_HBRBACKGROUND (-10)
 #define GCLP_HCURSOR (-12)
@@ -1022,21 +965,16 @@ extern "C" {
 #define GCLP_WNDPROC (-24)
 #define GCLP_HICONSM (-34)
 #endif
-
 #ifndef NOWINMESSAGES
-
 #define WM_NULL 0x0000
 #define WM_CREATE 0x0001
 #define WM_DESTROY 0x0002
 #define WM_MOVE 0x0003
 #define WM_SIZE 0x0005
-
 #define WM_ACTIVATE 0x0006
-
 #define WA_INACTIVE 0
 #define WA_ACTIVE 1
 #define WA_CLICKACTIVE 2
-
 #define WM_SETFOCUS 0x0007
 #define WM_KILLFOCUS 0x0008
 #define WM_ENABLE 0x000A
@@ -1067,17 +1005,15 @@ extern "C" {
 #define WM_CHILDACTIVATE 0x0022
 #define WM_QUEUESYNC 0x0023
 #define WM_GETMINMAXINFO 0x0024
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagMINMAXINFO {
-    POINT ptReserved;
-    POINT ptMaxSize;
-    POINT ptMaxPosition;
-    POINT ptMinTrackSize;
-    POINT ptMaxTrackSize;
-  } MINMAXINFO,*PMINMAXINFO,*LPMINMAXINFO;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagMINMAXINFO {
+  POINT ptReserved;
+  POINT ptMaxSize;
+  POINT ptMaxPosition;
+  POINT ptMinTrackSize;
+  POINT ptMaxTrackSize;
+} MINMAXINFO, *PMINMAXINFO, *LPMINMAXINFO;
 #endif
-
 #define WM_PAINTICON 0x0026
 #define WM_ICONERASEBKGND 0x0027
 #define WM_NEXTDLGCTL 0x0028
@@ -1101,30 +1037,25 @@ extern "C" {
 #define WM_WINDOWPOSCHANGING 0x0046
 #define WM_WINDOWPOSCHANGED 0x0047
 #define WM_POWER 0x0048
-
 #define PWR_OK 1
 #define PWR_FAIL (-1)
 #define PWR_SUSPENDREQUEST 1
 #define PWR_SUSPENDRESUME 2
 #define PWR_CRITICALRESUME 3
-
 #define WM_COPYDATA 0x004A
 #define WM_CANCELJOURNAL 0x004B
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagCOPYDATASTRUCT {
-    ULONG_PTR dwData;
-    DWORD cbData;
-    PVOID lpData;
-  } COPYDATASTRUCT,*PCOPYDATASTRUCT;
-
-  typedef struct tagMDINEXTMENU {
-    HMENU hmenuIn;
-    HMENU hmenuNext;
-    HWND hwndNext;
-  } MDINEXTMENU,*PMDINEXTMENU,*LPMDINEXTMENU;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagCOPYDATASTRUCT {
+  ULONG_PTR dwData;
+  DWORD cbData;
+  PVOID lpData;
+} COPYDATASTRUCT, *PCOPYDATASTRUCT;
+typedef struct tagMDINEXTMENU {
+  HMENU hmenuIn;
+  HMENU hmenuNext;
+  HWND hwndNext;
+} MDINEXTMENU, *PMDINEXTMENU, *LPMDINEXTMENU;
 #endif
-
 #define WM_NOTIFY 0x004E
 #define WM_INPUTLANGCHANGEREQUEST 0x0050
 #define WM_INPUTLANGCHANGE 0x0051
@@ -1132,19 +1063,16 @@ extern "C" {
 #define WM_HELP 0x0053
 #define WM_USERCHANGED 0x0054
 #define WM_NOTIFYFORMAT 0x0055
-
 #define NFR_ANSI 1
 #define NFR_UNICODE 2
 #define NF_QUERY 3
 #define NF_REQUERY 4
-
 #define WM_CONTEXTMENU 0x007B
 #define WM_STYLECHANGING 0x007C
 #define WM_STYLECHANGED 0x007D
 #define WM_DISPLAYCHANGE 0x007E
 #define WM_GETICON 0x007F
 #define WM_SETICON 0x0080
-
 #define WM_NCCREATE 0x0081
 #define WM_NCDESTROY 0x0082
 #define WM_NCCALCSIZE 0x0083
@@ -1165,7 +1093,6 @@ extern "C" {
 #define WM_NCMBUTTONDOWN 0x00A7
 #define WM_NCMBUTTONUP 0x00A8
 #define WM_NCMBUTTONDBLCLK 0x00A9
-
 #define WM_NCXBUTTONDOWN 0x00AB
 #define WM_NCXBUTTONUP 0x00AC
 #define WM_NCXBUTTONDBLCLK 0x00AD
@@ -1215,16 +1142,13 @@ extern "C" {
 #define WM_CHANGEUISTATE 0x0127
 #define WM_UPDATEUISTATE 0x0128
 #define WM_QUERYUISTATE 0x0129
-
 #define UIS_SET 1
 #define UIS_CLEAR 2
 #define UIS_INITIALIZE 3
-
 #define UISF_HIDEFOCUS 0x1
 #define UISF_HIDEACCEL 0x2
 #define UISF_ACTIVE 0x4
 #endif
-
 #define WM_CTLCOLORMSGBOX 0x0132
 #define WM_CTLCOLOREDIT 0x0133
 #define WM_CTLCOLORLISTBOX 0x0134
@@ -1233,7 +1157,6 @@ extern "C" {
 #define WM_CTLCOLORSCROLLBAR 0x0137
 #define WM_CTLCOLORSTATIC 0x0138
 #define MN_GETHMENU 0x01E1
-
 #define WM_MOUSEFIRST 0x0200
 #define WM_MOUSEMOVE 0x0200
 #define WM_LBUTTONDOWN 0x0201
@@ -1252,7 +1175,6 @@ extern "C" {
 #if _WIN32_WINNT >= 0x0600
 #define WM_MOUSEHWHEEL 0x020e
 #endif
-
 #if _WIN32_WINNT >= 0x0600
 #define WM_MOUSELAST 0x020e
 #elif _WIN32_WINNT >= 0x0500
@@ -1262,19 +1184,14 @@ extern "C" {
 #else
 #define WM_MOUSELAST 0x0209
 #endif
-
 #define WHEEL_DELTA 120
 #define GET_WHEEL_DELTA_WPARAM(wParam) ((short)HIWORD(wParam))
-
 #define WHEEL_PAGESCROLL (UINT_MAX)
-
 #define GET_KEYSTATE_WPARAM(wParam) (LOWORD(wParam))
 #define GET_NCHITTEST_WPARAM(wParam) ((short)LOWORD(wParam))
 #define GET_XBUTTON_WPARAM(wParam) (HIWORD(wParam))
-
 #define XBUTTON1 0x0001
 #define XBUTTON2 0x0002
-
 #define WM_PARENTNOTIFY 0x0210
 #define WM_ENTERMENULOOP 0x0211
 #define WM_EXITMENULOOP 0x0212
@@ -1283,45 +1200,35 @@ extern "C" {
 #define WM_CAPTURECHANGED 0x0215
 #define WM_MOVING 0x0216
 #define WM_POWERBROADCAST 0x0218
-
 #ifndef _WIN32_WCE
 #define PBT_APMQUERYSUSPEND 0x0000
 #define PBT_APMQUERYSTANDBY 0x0001
-
 #define PBT_APMQUERYSUSPENDFAILED 0x0002
 #define PBT_APMQUERYSTANDBYFAILED 0x0003
-
 #define PBT_APMSUSPEND 0x0004
 #define PBT_APMSTANDBY 0x0005
-
 #define PBT_APMRESUMECRITICAL 0x0006
 #define PBT_APMRESUMESUSPEND 0x0007
 #define PBT_APMRESUMESTANDBY 0x0008
-
 #define PBTF_APMRESUMEFROMFAILURE 0x00000001
-
 #define PBT_APMBATTERYLOW 0x0009
 #define PBT_APMPOWERSTATUSCHANGE 0x000A
-
 #define PBT_APMOEMEVENT 0x000B
 #define PBT_APMRESUMEAUTOMATIC 0x0012
 #if _WIN32_WINNT >= 0x0502
 #ifndef PBT_POWERSETTINGCHANGE
 #define PBT_POWERSETTINGCHANGE 32787
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct {
-    GUID PowerSetting;
-    DWORD DataLength;
-    UCHAR Data[1];
-  } POWERBROADCAST_SETTING,*PPOWERBROADCAST_SETTING;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct {
+  GUID PowerSetting;
+  DWORD DataLength;
+  UCHAR Data[1];
+} POWERBROADCAST_SETTING, *PPOWERBROADCAST_SETTING;
 #endif
 #endif
 #endif
 #endif
-
 #define WM_DEVICECHANGE 0x0219
-
 #define WM_MDICREATE 0x0220
 #define WM_MDIDESTROY 0x0221
 #define WM_MDIACTIVATE 0x0222
@@ -1332,7 +1239,6 @@ extern "C" {
 #define WM_MDICASCADE 0x0227
 #define WM_MDIICONARRANGE 0x0228
 #define WM_MDIGETACTIVE 0x0229
-
 #define WM_MDISETMENU 0x0230
 #define WM_ENTERSIZEMOVE 0x0231
 #define WM_EXITSIZEMOVE 0x0232
@@ -1365,7 +1271,6 @@ extern "C" {
 #define WM_POINTERROUTEDAWAY 0x0252
 #define WM_POINTERROUTEDRELEASED 0x0253
 #endif
-
 #define WM_IME_SETCONTEXT 0x0281
 #define WM_IME_NOTIFY 0x0282
 #define WM_IME_CONTROL 0x0283
@@ -1375,7 +1280,6 @@ extern "C" {
 #define WM_IME_REQUEST 0x0288
 #define WM_IME_KEYDOWN 0x0290
 #define WM_IME_KEYUP 0x0291
-
 #define WM_MOUSEHOVER 0x02A1
 #define WM_MOUSELEAVE 0x02A3
 #define WM_NCMOUSEHOVER 0x02A0
@@ -1428,7 +1332,6 @@ extern "C" {
 #if WINVER >= 0x0600
 #define WM_GETTITLEBARINFOEX 0x033f
 #endif
-
 #define WM_HANDHELDFIRST 0x0358
 #define WM_HANDHELDLAST 0x035F
 #define WM_AFXFIRST 0x0360
@@ -1437,7 +1340,6 @@ extern "C" {
 #define WM_PENWINLAST 0x038F
 #define WM_APP 0x8000
 #define WM_USER 0x0400
-
 #define WMSZ_LEFT 1
 #define WMSZ_RIGHT 2
 #define WMSZ_TOP 3
@@ -1446,9 +1348,7 @@ extern "C" {
 #define WMSZ_BOTTOM 6
 #define WMSZ_BOTTOMLEFT 7
 #define WMSZ_BOTTOMRIGHT 8
-
 #ifndef NONCMESSAGES
-
 #define HTERROR (-2)
 #define HTTRANSPARENT (-1)
 #define HTNOWHERE 0
@@ -1478,7 +1378,6 @@ extern "C" {
 #define HTOBJECT 19
 #define HTCLOSE 20
 #define HTHELP 21
-
 #define SMTO_NORMAL 0x0000
 #define SMTO_BLOCK 0x0001
 #define SMTO_ABORTIFHUNG 0x0002
@@ -1487,52 +1386,43 @@ extern "C" {
 #define SMTO_ERRORONEXIT 0x0020
 #endif
 #endif
-
 #define MA_ACTIVATE 1
 #define MA_ACTIVATEANDEAT 2
 #define MA_NOACTIVATE 3
 #define MA_NOACTIVATEANDEAT 4
-
 #define ICON_SMALL 0
 #define ICON_BIG 1
 #define ICON_SMALL2 2
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define RegisterWindowMessage __MINGW_NAME_AW(RegisterWindowMessage)
-
-  WINUSERAPI UINT WINAPI RegisterWindowMessageA(LPCSTR lpString);
-  WINUSERAPI UINT WINAPI RegisterWindowMessageW(LPCWSTR lpString);
+WINUSERAPI UINT WINAPI RegisterWindowMessageA(LPCSTR lpString);
+WINUSERAPI UINT WINAPI RegisterWindowMessageW(LPCWSTR lpString);
 #endif
-
 #define SIZE_RESTORED 0
 #define SIZE_MINIMIZED 1
 #define SIZE_MAXIMIZED 2
 #define SIZE_MAXSHOW 3
 #define SIZE_MAXHIDE 4
-
 #define SIZENORMAL SIZE_RESTORED
 #define SIZEICONIC SIZE_MINIMIZED
 #define SIZEFULLSCREEN SIZE_MAXIMIZED
 #define SIZEZOOMSHOW SIZE_MAXSHOW
 #define SIZEZOOMHIDE SIZE_MAXHIDE
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagWINDOWPOS {
-    HWND hwnd;
-    HWND hwndInsertAfter;
-    int x;
-    int y;
-    int cx;
-    int cy;
-    UINT flags;
-  } WINDOWPOS,*LPWINDOWPOS,*PWINDOWPOS;
-
-  typedef struct tagNCCALCSIZE_PARAMS {
-    RECT rgrc[3];
-    PWINDOWPOS lppos;
-  } NCCALCSIZE_PARAMS,*LPNCCALCSIZE_PARAMS;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagWINDOWPOS {
+  HWND hwnd;
+  HWND hwndInsertAfter;
+  int x;
+  int y;
+  int cx;
+  int cy;
+  UINT flags;
+} WINDOWPOS, *LPWINDOWPOS, *PWINDOWPOS;
+typedef struct tagNCCALCSIZE_PARAMS {
+  RECT rgrc[3];
+  PWINDOWPOS lppos;
+} NCCALCSIZE_PARAMS, *LPNCCALCSIZE_PARAMS;
 #endif
-
 #define WVR_ALIGNTOP 0x0010
 #define WVR_ALIGNLEFT 0x0020
 #define WVR_ALIGNBOTTOM 0x0040
@@ -1541,9 +1431,7 @@ extern "C" {
 #define WVR_VREDRAW 0x0200
 #define WVR_REDRAW (WVR_HREDRAW | WVR_VREDRAW)
 #define WVR_VALIDRECTS 0x0400
-
 #ifndef NOKEYSTATES
-
 #define MK_LBUTTON 0x0001
 #define MK_RBUTTON 0x0002
 #define MK_SHIFT 0x0004
@@ -1552,31 +1440,25 @@ extern "C" {
 #define MK_XBUTTON1 0x0020
 #define MK_XBUTTON2 0x0040
 #endif
-
 #ifndef NOTRACKMOUSEEVENT
 #define TME_HOVER 0x00000001
 #define TME_LEAVE 0x00000002
 #define TME_NONCLIENT 0x00000010
 #define TME_QUERY 0x40000000
 #define TME_CANCEL 0x80000000
-
 #define HOVER_DEFAULT 0xFFFFFFFF
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagTRACKMOUSEEVENT {
-    DWORD cbSize;
-    DWORD dwFlags;
-    HWND hwndTrack;
-    DWORD dwHoverTime;
-  } TRACKMOUSEEVENT,*LPTRACKMOUSEEVENT;
-
-  WINUSERAPI WINBOOL WINAPI TrackMouseEvent(LPTRACKMOUSEEVENT lpEventTrack);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagTRACKMOUSEEVENT {
+  DWORD cbSize;
+  DWORD dwFlags;
+  HWND hwndTrack;
+  DWORD dwHoverTime;
+} TRACKMOUSEEVENT, *LPTRACKMOUSEEVENT;
+WINUSERAPI WINBOOL WINAPI TrackMouseEvent(LPTRACKMOUSEEVENT lpEventTrack);
 #endif
 #endif
-
 #ifndef NOWINSTYLES
-
 #define WS_OVERLAPPED __MSABI_LONG(0x00000000)
 #define WS_POPUP __MSABI_LONG(0x80000000)
 #define WS_CHILD __MSABI_LONG(0x40000000)
@@ -1601,11 +1483,11 @@ extern "C" {
 #define WS_ICONIC WS_MINIMIZE
 #define WS_SIZEBOX WS_THICKFRAME
 #define WS_TILEDWINDOW WS_OVERLAPPEDWINDOW
-
-#define WS_OVERLAPPEDWINDOW (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
+#define WS_OVERLAPPEDWINDOW                                                    \
+  (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX |  \
+   WS_MAXIMIZEBOX)
 #define WS_POPUPWINDOW (WS_POPUP | WS_BORDER | WS_SYSMENU)
 #define WS_CHILDWINDOW (WS_CHILD)
-
 #define WS_EX_DLGMODALFRAME __MSABI_LONG(0x00000001)
 #define WS_EX_NOPARENTNOTIFY __MSABI_LONG(0x00000004)
 #define WS_EX_TOPMOST __MSABI_LONG(0x00000008)
@@ -1625,9 +1507,9 @@ extern "C" {
 #define WS_EX_CONTROLPARENT __MSABI_LONG(0x00010000)
 #define WS_EX_STATICEDGE __MSABI_LONG(0x00020000)
 #define WS_EX_APPWINDOW __MSABI_LONG(0x00040000)
-
 #define WS_EX_OVERLAPPEDWINDOW (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE)
-#define WS_EX_PALETTEWINDOW (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST)
+#define WS_EX_PALETTEWINDOW                                                    \
+  (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST)
 #define WS_EX_LAYERED 0x00080000
 #define WS_EX_NOINHERITLAYOUT __MSABI_LONG(0x00100000)
 #if WINVER >= 0x0602
@@ -1636,7 +1518,6 @@ extern "C" {
 #define WS_EX_LAYOUTRTL __MSABI_LONG(0x00400000)
 #define WS_EX_COMPOSITED __MSABI_LONG(0x02000000)
 #define WS_EX_NOACTIVATE __MSABI_LONG(0x08000000)
-
 #define CS_VREDRAW 0x0001
 #define CS_HREDRAW 0x0002
 #define CS_DBLCLKS 0x0008
@@ -1651,69 +1532,57 @@ extern "C" {
 #define CS_IME 0x00010000
 #define CS_DROPSHADOW 0x00020000
 #endif
-
 #define PRF_CHECKVISIBLE __MSABI_LONG(0x00000001)
 #define PRF_NONCLIENT __MSABI_LONG(0x00000002)
 #define PRF_CLIENT __MSABI_LONG(0x00000004)
 #define PRF_ERASEBKGND __MSABI_LONG(0x00000008)
 #define PRF_CHILDREN __MSABI_LONG(0x00000010)
 #define PRF_OWNED __MSABI_LONG(0x00000020)
-
 #define BDR_RAISEDOUTER 0x0001
 #define BDR_SUNKENOUTER 0x0002
 #define BDR_RAISEDINNER 0x0004
 #define BDR_SUNKENINNER 0x0008
-
 #define BDR_OUTER (BDR_RAISEDOUTER | BDR_SUNKENOUTER)
 #define BDR_INNER (BDR_RAISEDINNER | BDR_SUNKENINNER)
 #define BDR_RAISED (BDR_RAISEDOUTER | BDR_RAISEDINNER)
 #define BDR_SUNKEN (BDR_SUNKENOUTER | BDR_SUNKENINNER)
-
 #define EDGE_RAISED (BDR_RAISEDOUTER | BDR_RAISEDINNER)
 #define EDGE_SUNKEN (BDR_SUNKENOUTER | BDR_SUNKENINNER)
 #define EDGE_ETCHED (BDR_SUNKENOUTER | BDR_RAISEDINNER)
 #define EDGE_BUMP (BDR_RAISEDOUTER | BDR_SUNKENINNER)
-
 #define BF_LEFT 0x0001
 #define BF_TOP 0x0002
 #define BF_RIGHT 0x0004
 #define BF_BOTTOM 0x0008
-
 #define BF_TOPLEFT (BF_TOP | BF_LEFT)
 #define BF_TOPRIGHT (BF_TOP | BF_RIGHT)
 #define BF_BOTTOMLEFT (BF_BOTTOM | BF_LEFT)
 #define BF_BOTTOMRIGHT (BF_BOTTOM | BF_RIGHT)
 #define BF_RECT (BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM)
-
 #define BF_DIAGONAL 0x0010
-
 #define BF_DIAGONAL_ENDTOPRIGHT (BF_DIAGONAL | BF_TOP | BF_RIGHT)
 #define BF_DIAGONAL_ENDTOPLEFT (BF_DIAGONAL | BF_TOP | BF_LEFT)
 #define BF_DIAGONAL_ENDBOTTOMLEFT (BF_DIAGONAL | BF_BOTTOM | BF_LEFT)
 #define BF_DIAGONAL_ENDBOTTOMRIGHT (BF_DIAGONAL | BF_BOTTOM | BF_RIGHT)
-
 #define BF_MIDDLE 0x0800
 #define BF_SOFT 0x1000
 #define BF_ADJUST 0x2000
 #define BF_FLAT 0x4000
 #define BF_MONO 0x8000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI DrawEdge(HDC hdc,LPRECT qrc,UINT edge,UINT grfFlags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI DrawEdge(HDC hdc, LPRECT qrc, UINT edge,
+                                   UINT grfFlags);
 #endif
-
 #define DFC_CAPTION 1
 #define DFC_MENU 2
 #define DFC_SCROLL 3
 #define DFC_BUTTON 4
 #define DFC_POPUPMENU 5
-
 #define DFCS_CAPTIONCLOSE 0x0000
 #define DFCS_CAPTIONMIN 0x0001
 #define DFCS_CAPTIONMAX 0x0002
 #define DFCS_CAPTIONRESTORE 0x0003
 #define DFCS_CAPTIONHELP 0x0004
-
 #define DFCS_MENUARROW 0x0000
 #define DFCS_MENUCHECK 0x0001
 #define DFCS_MENUBULLET 0x0002
@@ -1725,29 +1594,23 @@ extern "C" {
 #define DFCS_SCROLLCOMBOBOX 0x0005
 #define DFCS_SCROLLSIZEGRIP 0x0008
 #define DFCS_SCROLLSIZEGRIPRIGHT 0x0010
-
 #define DFCS_BUTTONCHECK 0x0000
 #define DFCS_BUTTONRADIOIMAGE 0x0001
 #define DFCS_BUTTONRADIOMASK 0x0002
 #define DFCS_BUTTONRADIO 0x0004
 #define DFCS_BUTTON3STATE 0x0008
 #define DFCS_BUTTONPUSH 0x0010
-
 #define DFCS_INACTIVE 0x0100
 #define DFCS_PUSHED 0x0200
 #define DFCS_CHECKED 0x0400
-
 #define DFCS_TRANSPARENT 0x0800
 #define DFCS_HOT 0x1000
-
 #define DFCS_ADJUSTRECT 0x2000
 #define DFCS_FLAT 0x4000
 #define DFCS_MONO 0x8000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI DrawFrameControl(HDC,LPRECT,UINT,UINT);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI DrawFrameControl(HDC, LPRECT, UINT, UINT);
 #endif
-
 #define DC_ACTIVE 0x0001
 #define DC_SMALLCAP 0x0002
 #define DC_ICON 0x0004
@@ -1755,20 +1618,18 @@ extern "C" {
 #define DC_INBUTTON 0x0010
 #define DC_GRADIENT 0x0020
 #define DC_BUTTONS 0x1000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI DrawCaption(HWND hwnd,HDC hdc,CONST RECT *lprect,UINT flags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI DrawCaption(HWND hwnd, HDC hdc, CONST RECT *lprect,
+                                      UINT flags);
 #endif
-
 #define IDANI_OPEN 1
 #define IDANI_CAPTION 3
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI DrawAnimatedRects(HWND hwnd,int idAni,CONST RECT *lprcFrom,CONST RECT *lprcTo);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI DrawAnimatedRects(HWND hwnd, int idAni,
+                                            CONST RECT *lprcFrom,
+                                            CONST RECT *lprcTo);
 #endif
-
 #ifndef NOCLIPBOARD
-
 #define CF_TEXT 1
 #define CF_BITMAP 2
 #define CF_METAFILEPICT 3
@@ -1793,117 +1654,100 @@ extern "C" {
 #else
 #define CF_MAX 15
 #endif
-
 #define CF_OWNERDISPLAY 0x0080
 #define CF_DSPTEXT 0x0081
 #define CF_DSPBITMAP 0x0082
 #define CF_DSPMETAFILEPICT 0x0083
 #define CF_DSPENHMETAFILE 0x008E
-
 #define CF_PRIVATEFIRST 0x0200
 #define CF_PRIVATELAST 0x02FF
-
 #define CF_GDIOBJFIRST 0x0300
 #define CF_GDIOBJLAST 0x03FF
 #endif
-
 #define FVIRTKEY TRUE
 #define FNOINVERT 0x02
 #define FSHIFT 0x04
 #define FCONTROL 0x08
 #define FALT 0x10
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagACCEL {
-    BYTE fVirt;
-    WORD key;
-    WORD cmd;
-  } ACCEL,*LPACCEL;
-
-  typedef struct tagPAINTSTRUCT {
-    HDC hdc;
-    WINBOOL fErase;
-    RECT rcPaint;
-    WINBOOL fRestore;
-    WINBOOL fIncUpdate;
-    BYTE rgbReserved[32];
-  } PAINTSTRUCT,*PPAINTSTRUCT,*NPPAINTSTRUCT,*LPPAINTSTRUCT;
-
-  typedef struct tagCREATESTRUCTA {
-    LPVOID lpCreateParams;
-    HINSTANCE hInstance;
-    HMENU hMenu;
-    HWND hwndParent;
-    int cy;
-    int cx;
-    int y;
-    int x;
-    LONG style;
-    LPCSTR lpszName;
-    LPCSTR lpszClass;
-    DWORD dwExStyle;
-  } CREATESTRUCTA,*LPCREATESTRUCTA;
-
-  typedef struct tagCREATESTRUCTW {
-    LPVOID lpCreateParams;
-    HINSTANCE hInstance;
-    HMENU hMenu;
-    HWND hwndParent;
-    int cy;
-    int cx;
-    int y;
-    int x;
-    LONG style;
-    LPCWSTR lpszName;
-    LPCWSTR lpszClass;
-    DWORD dwExStyle;
-  } CREATESTRUCTW,*LPCREATESTRUCTW;
-
-  __MINGW_TYPEDEF_AW(CREATESTRUCT)
-  __MINGW_TYPEDEF_AW(LPCREATESTRUCT)
-
-  typedef struct tagWINDOWPLACEMENT {
-    UINT length;
-    UINT flags;
-    UINT showCmd;
-    POINT ptMinPosition;
-    POINT ptMaxPosition;
-    RECT rcNormalPosition;
-  } WINDOWPLACEMENT;
-  typedef WINDOWPLACEMENT *PWINDOWPLACEMENT,*LPWINDOWPLACEMENT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagACCEL {
+  BYTE fVirt;
+  WORD key;
+  WORD cmd;
+} ACCEL, *LPACCEL;
+typedef struct tagPAINTSTRUCT {
+  HDC hdc;
+  WINBOOL fErase;
+  RECT rcPaint;
+  WINBOOL fRestore;
+  WINBOOL fIncUpdate;
+  BYTE rgbReserved[32];
+} PAINTSTRUCT, *PPAINTSTRUCT, *NPPAINTSTRUCT, *LPPAINTSTRUCT;
+typedef struct tagCREATESTRUCTA {
+  LPVOID lpCreateParams;
+  HINSTANCE hInstance;
+  HMENU hMenu;
+  HWND hwndParent;
+  int cy;
+  int cx;
+  int y;
+  int x;
+  LONG style;
+  LPCSTR lpszName;
+  LPCSTR lpszClass;
+  DWORD dwExStyle;
+} CREATESTRUCTA, *LPCREATESTRUCTA;
+typedef struct tagCREATESTRUCTW {
+  LPVOID lpCreateParams;
+  HINSTANCE hInstance;
+  HMENU hMenu;
+  HWND hwndParent;
+  int cy;
+  int cx;
+  int y;
+  int x;
+  LONG style;
+  LPCWSTR lpszName;
+  LPCWSTR lpszClass;
+  DWORD dwExStyle;
+} CREATESTRUCTW, *LPCREATESTRUCTW;
+__MINGW_TYPEDEF_AW(CREATESTRUCT)
+__MINGW_TYPEDEF_AW(LPCREATESTRUCT)
+typedef struct tagWINDOWPLACEMENT {
+  UINT length;
+  UINT flags;
+  UINT showCmd;
+  POINT ptMinPosition;
+  POINT ptMaxPosition;
+  RECT rcNormalPosition;
+} WINDOWPLACEMENT;
+typedef WINDOWPLACEMENT *PWINDOWPLACEMENT, *LPWINDOWPLACEMENT;
 #endif
-
 #define WPF_SETMINPOSITION 0x0001
 #define WPF_RESTORETOMAXIMIZED 0x0002
 #define WPF_ASYNCWINDOWPLACEMENT 0x0004
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef struct tagNMHDR {
-    HWND hwndFrom;
-    UINT_PTR idFrom;
-    UINT code;
-  } NMHDR;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef struct tagNMHDR {
+  HWND hwndFrom;
+  UINT_PTR idFrom;
+  UINT code;
+} NMHDR;
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef NMHDR *LPNMHDR;
-
-  typedef struct tagSTYLESTRUCT {
-    DWORD styleOld;
-    DWORD styleNew;
-  } STYLESTRUCT,*LPSTYLESTRUCT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef NMHDR *LPNMHDR;
+typedef struct tagSTYLESTRUCT {
+  DWORD styleOld;
+  DWORD styleNew;
+} STYLESTRUCT, *LPSTYLESTRUCT;
 #endif
-
 #define ODT_MENU 1
 #define ODT_LISTBOX 2
 #define ODT_COMBOBOX 3
 #define ODT_BUTTON 4
 #define ODT_STATIC 5
-
 #define ODA_DRAWENTIRE 0x0001
 #define ODA_SELECT 0x0002
 #define ODA_FOCUS 0x0004
-
 #define ODS_SELECTED 0x0001
 #define ODS_GRAYED 0x0002
 #define ODS_DISABLED 0x0004
@@ -1915,80 +1759,77 @@ extern "C" {
 #define ODS_INACTIVE 0x0080
 #define ODS_NOACCEL 0x0100
 #define ODS_NOFOCUSRECT 0x0200
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagMEASUREITEMSTRUCT {
-    UINT CtlType;
-    UINT CtlID;
-    UINT itemID;
-    UINT itemWidth;
-    UINT itemHeight;
-    ULONG_PTR itemData;
-  } MEASUREITEMSTRUCT,*PMEASUREITEMSTRUCT,*LPMEASUREITEMSTRUCT;
-
-  typedef struct tagDRAWITEMSTRUCT {
-    UINT CtlType;
-    UINT CtlID;
-    UINT itemID;
-    UINT itemAction;
-    UINT itemState;
-    HWND hwndItem;
-    HDC hDC;
-    RECT rcItem;
-    ULONG_PTR itemData;
-  } DRAWITEMSTRUCT,*PDRAWITEMSTRUCT,*LPDRAWITEMSTRUCT;
-
-  typedef struct tagDELETEITEMSTRUCT {
-    UINT CtlType;
-    UINT CtlID;
-    UINT itemID;
-    HWND hwndItem;
-    ULONG_PTR itemData;
-  } DELETEITEMSTRUCT,*PDELETEITEMSTRUCT,*LPDELETEITEMSTRUCT;
-
-  typedef struct tagCOMPAREITEMSTRUCT {
-    UINT CtlType;
-    UINT CtlID;
-    HWND hwndItem;
-    UINT itemID1;
-    ULONG_PTR itemData1;
-    UINT itemID2;
-    ULONG_PTR itemData2;
-    DWORD dwLocaleId;
-  } COMPAREITEMSTRUCT,*PCOMPAREITEMSTRUCT,*LPCOMPAREITEMSTRUCT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagMEASUREITEMSTRUCT {
+  UINT CtlType;
+  UINT CtlID;
+  UINT itemID;
+  UINT itemWidth;
+  UINT itemHeight;
+  ULONG_PTR itemData;
+} MEASUREITEMSTRUCT, *PMEASUREITEMSTRUCT, *LPMEASUREITEMSTRUCT;
+typedef struct tagDRAWITEMSTRUCT {
+  UINT CtlType;
+  UINT CtlID;
+  UINT itemID;
+  UINT itemAction;
+  UINT itemState;
+  HWND hwndItem;
+  HDC hDC;
+  RECT rcItem;
+  ULONG_PTR itemData;
+} DRAWITEMSTRUCT, *PDRAWITEMSTRUCT, *LPDRAWITEMSTRUCT;
+typedef struct tagDELETEITEMSTRUCT {
+  UINT CtlType;
+  UINT CtlID;
+  UINT itemID;
+  HWND hwndItem;
+  ULONG_PTR itemData;
+} DELETEITEMSTRUCT, *PDELETEITEMSTRUCT, *LPDELETEITEMSTRUCT;
+typedef struct tagCOMPAREITEMSTRUCT {
+  UINT CtlType;
+  UINT CtlID;
+  HWND hwndItem;
+  UINT itemID1;
+  ULONG_PTR itemData1;
+  UINT itemID2;
+  ULONG_PTR itemData2;
+  DWORD dwLocaleId;
+} COMPAREITEMSTRUCT, *PCOMPAREITEMSTRUCT, *LPCOMPAREITEMSTRUCT;
 #endif
-
 #ifndef NOMSG
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define GetMessage __MINGW_NAME_AW(GetMessage)
 #define DispatchMessage __MINGW_NAME_AW(DispatchMessage)
 #define PeekMessage __MINGW_NAME_AW(PeekMessage)
-
-  WINUSERAPI WINBOOL WINAPI GetMessageA(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax);
-  WINUSERAPI WINBOOL WINAPI GetMessageW(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax);
-  WINUSERAPI WINBOOL WINAPI TranslateMessage(CONST MSG *lpMsg);
-  WINUSERAPI LRESULT WINAPI DispatchMessageA(CONST MSG *lpMsg);
-  WINUSERAPI LRESULT WINAPI DispatchMessageW(CONST MSG *lpMsg);
-  WINUSERAPI WINBOOL WINAPI SetMessageQueue(int cMessagesMax);
-  WINUSERAPI WINBOOL WINAPI PeekMessageA(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax,UINT wRemoveMsg);
-  WINUSERAPI WINBOOL WINAPI PeekMessageW(LPMSG lpMsg,HWND hWnd,UINT wMsgFilterMin,UINT wMsgFilterMax,UINT wRemoveMsg);
+WINUSERAPI WINBOOL WINAPI GetMessageA(LPMSG lpMsg, HWND hWnd,
+                                      UINT wMsgFilterMin, UINT wMsgFilterMax);
+WINUSERAPI WINBOOL WINAPI GetMessageW(LPMSG lpMsg, HWND hWnd,
+                                      UINT wMsgFilterMin, UINT wMsgFilterMax);
+WINUSERAPI WINBOOL WINAPI TranslateMessage(CONST MSG *lpMsg);
+WINUSERAPI LRESULT WINAPI DispatchMessageA(CONST MSG *lpMsg);
+WINUSERAPI LRESULT WINAPI DispatchMessageW(CONST MSG *lpMsg);
+WINUSERAPI WINBOOL WINAPI SetMessageQueue(int cMessagesMax);
+WINUSERAPI WINBOOL WINAPI PeekMessageA(LPMSG lpMsg, HWND hWnd,
+                                       UINT wMsgFilterMin, UINT wMsgFilterMax,
+                                       UINT wRemoveMsg);
+WINUSERAPI WINBOOL WINAPI PeekMessageW(LPMSG lpMsg, HWND hWnd,
+                                       UINT wMsgFilterMin, UINT wMsgFilterMax,
+                                       UINT wRemoveMsg);
 #endif
-
 #define PM_NOREMOVE 0x0000
 #define PM_REMOVE 0x0001
 #define PM_NOYIELD 0x0002
-
 #define PM_QS_INPUT (QS_INPUT << 16)
 #define PM_QS_POSTMESSAGE ((QS_POSTMESSAGE | QS_HOTKEY | QS_TIMER) << 16)
 #define PM_QS_PAINT (QS_PAINT << 16)
 #define PM_QS_SENDMESSAGE (QS_SENDMESSAGE << 16)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI RegisterHotKey(HWND hWnd,int id,UINT fsModifiers,UINT vk);
-  WINUSERAPI WINBOOL WINAPI UnregisterHotKey(HWND hWnd,int id);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI RegisterHotKey(HWND hWnd, int id, UINT fsModifiers,
+                                         UINT vk);
+WINUSERAPI WINBOOL WINAPI UnregisterHotKey(HWND hWnd, int id);
 #endif
-
 #define MOD_ALT 0x0001
 #define MOD_CONTROL 0x0002
 #define MOD_SHIFT 0x0004
@@ -1996,10 +1837,8 @@ extern "C" {
 #if WINVER >= 0x0601
 #define MOD_NOREPEAT 0x4000
 #endif
-
 #define IDHOT_SNAPWINDOW (-1)
 #define IDHOT_SNAPDESKTOP (-2)
-
 #ifdef WIN_INTERNAL
 #ifndef LSTRING
 #define NOLSTRING
@@ -2008,11 +1847,9 @@ extern "C" {
 #define NOLFILEIO
 #endif
 #endif
-
 #define ENDSESSION_CLOSEAPP 0x00000001
 #define ENDSESSION_CRITICAL 0x40000000
 #define ENDSESSION_LOGOFF 0x80000000
-
 #define EWX_LOGOFF 0x00000000
 #define EWX_SHUTDOWN 0x00000001
 #define EWX_REBOOT 0x00000002
@@ -2027,57 +1864,77 @@ extern "C" {
 #define EWX_BOOTOPTIONS 0x01000000
 #define EWX_ARSO 0x04000000
 #define EWX_CHECK_SAFE_FOR_SERVER 0x08000000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-#define ExitWindows(dwReserved,Code) ExitWindowsEx(EWX_LOGOFF,0xFFFFFFFF)
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#define ExitWindows(dwReserved, Code) ExitWindowsEx(EWX_LOGOFF, 0xFFFFFFFF)
 #define SendMessage __MINGW_NAME_AW(SendMessage)
 #define SendMessageTimeout __MINGW_NAME_AW(SendMessageTimeout)
 #define SendNotifyMessage __MINGW_NAME_AW(SendNotifyMessage)
 #define SendMessageCallback __MINGW_NAME_AW(SendMessageCallback)
-
-  WINUSERAPI WINBOOL WINAPI ExitWindowsEx(UINT uFlags,DWORD dwReason);
-  WINUSERAPI WINBOOL WINAPI SwapMouseButton(WINBOOL fSwap);
-  WINUSERAPI DWORD WINAPI GetMessagePos(VOID);
-  WINUSERAPI LONG WINAPI GetMessageTime(VOID);
-  WINUSERAPI LPARAM WINAPI GetMessageExtraInfo(VOID);
+WINUSERAPI WINBOOL WINAPI ExitWindowsEx(UINT uFlags, DWORD dwReason);
+WINUSERAPI WINBOOL WINAPI SwapMouseButton(WINBOOL fSwap);
+WINUSERAPI DWORD WINAPI GetMessagePos(VOID);
+WINUSERAPI LONG WINAPI GetMessageTime(VOID);
+WINUSERAPI LPARAM WINAPI GetMessageExtraInfo(VOID);
 #if _WIN32_WINNT >= 0x0602
-  WINUSERAPI DWORD WINAPI GetUnpredictedMessagePos (VOID);
+WINUSERAPI DWORD WINAPI GetUnpredictedMessagePos(VOID);
 #endif
-  WINUSERAPI WINBOOL WINAPI IsWow64Message(VOID);
-  WINUSERAPI LPARAM WINAPI SetMessageExtraInfo(LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI SendMessageA(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI SendMessageW(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam,UINT fuFlags,UINT uTimeout,PDWORD_PTR lpdwResult);
-  WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam,UINT fuFlags,UINT uTimeout,PDWORD_PTR lpdwResult);
-  WINUSERAPI WINBOOL WINAPI SendNotifyMessageA(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI SendNotifyMessageW(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI SendMessageCallbackA(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam,SENDASYNCPROC lpResultCallBack,ULONG_PTR dwData);
-  WINUSERAPI WINBOOL WINAPI SendMessageCallbackW(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam,SENDASYNCPROC lpResultCallBack,ULONG_PTR dwData);
-
-  typedef struct {
-    UINT cbSize;
-    HDESK hdesk;
-    HWND hwnd;
-    LUID luid;
-  } BSMINFO,*PBSMINFO;
-
+WINUSERAPI WINBOOL WINAPI IsWow64Message(VOID);
+WINUSERAPI LPARAM WINAPI SetMessageExtraInfo(LPARAM lParam);
+WINUSERAPI LRESULT WINAPI SendMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
+                                       LPARAM lParam);
+WINUSERAPI LRESULT WINAPI SendMessageW(HWND hWnd, UINT Msg, WPARAM wParam,
+                                       LPARAM lParam);
+WINUSERAPI LRESULT WINAPI SendMessageTimeoutA(HWND hWnd, UINT Msg,
+                                              WPARAM wParam, LPARAM lParam,
+                                              UINT fuFlags, UINT uTimeout,
+                                              PDWORD_PTR lpdwResult);
+WINUSERAPI LRESULT WINAPI SendMessageTimeoutW(HWND hWnd, UINT Msg,
+                                              WPARAM wParam, LPARAM lParam,
+                                              UINT fuFlags, UINT uTimeout,
+                                              PDWORD_PTR lpdwResult);
+WINUSERAPI WINBOOL WINAPI SendNotifyMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
+                                             LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI SendNotifyMessageW(HWND hWnd, UINT Msg, WPARAM wParam,
+                                             LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI SendMessageCallbackA(HWND hWnd, UINT Msg,
+                                               WPARAM wParam, LPARAM lParam,
+                                               SENDASYNCPROC lpResultCallBack,
+                                               ULONG_PTR dwData);
+WINUSERAPI WINBOOL WINAPI SendMessageCallbackW(HWND hWnd, UINT Msg,
+                                               WPARAM wParam, LPARAM lParam,
+                                               SENDASYNCPROC lpResultCallBack,
+                                               ULONG_PTR dwData);
+typedef struct {
+  UINT cbSize;
+  HDESK hdesk;
+  HWND hwnd;
+  LUID luid;
+} BSMINFO, *PBSMINFO;
 #define BroadcastSystemMessageEx __MINGW_NAME_AW(BroadcastSystemMessageEx)
 #define BroadcastSystemMessage __MINGW_NAME_AW(BroadcastSystemMessage)
-
-  WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageExA(DWORD flags,LPDWORD lpInfo,UINT Msg,WPARAM wParam,LPARAM lParam,PBSMINFO pbsmInfo);
-  WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageExW(DWORD flags,LPDWORD lpInfo,UINT Msg,WPARAM wParam,LPARAM lParam,PBSMINFO pbsmInfo);
-  WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageA(DWORD flags,LPDWORD lpInfo,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageW(DWORD flags,LPDWORD lpInfo,UINT Msg,WPARAM wParam,LPARAM lParam);
+WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageExA(DWORD flags,
+                                                     LPDWORD lpInfo, UINT Msg,
+                                                     WPARAM wParam,
+                                                     LPARAM lParam,
+                                                     PBSMINFO pbsmInfo);
+WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageExW(DWORD flags,
+                                                     LPDWORD lpInfo, UINT Msg,
+                                                     WPARAM wParam,
+                                                     LPARAM lParam,
+                                                     PBSMINFO pbsmInfo);
+WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageA(DWORD flags, LPDWORD lpInfo,
+                                                   UINT Msg, WPARAM wParam,
+                                                   LPARAM lParam);
+WINUSERAPI __LONG32 WINAPI BroadcastSystemMessageW(DWORD flags, LPDWORD lpInfo,
+                                                   UINT Msg, WPARAM wParam,
+                                                   LPARAM lParam);
 #endif
-
 #define BSM_ALLCOMPONENTS 0x00000000
 #define BSM_VXDS 0x00000001
 #define BSM_NETDRIVER 0x00000002
 #define BSM_INSTALLABLEDRIVERS 0x00000004
 #define BSM_APPLICATIONS 0x00000008
 #define BSM_ALLDESKTOPS 0x00000010
-
 #define BSF_QUERY 0x00000001
 #define BSF_IGNORECURRENTTASK 0x00000002
 #define BSF_FLUSHDISK 0x00000004
@@ -2089,19 +1946,15 @@ extern "C" {
 #define BSF_SENDNOTIFYMESSAGE 0x00000100
 #define BSF_RETURNHDESK 0x00000200
 #define BSF_LUID 0x00000400
-
 #define BROADCAST_QUERY_DENY 0x424D5144
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef PVOID HDEVNOTIFY;
-  typedef HDEVNOTIFY *PHDEVNOTIFY;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef PVOID HDEVNOTIFY;
+typedef HDEVNOTIFY *PHDEVNOTIFY;
 #endif
-
 #define DEVICE_NOTIFY_WINDOW_HANDLE 0x00000000
 #define DEVICE_NOTIFY_SERVICE_HANDLE 0x00000001
 #define DEVICE_NOTIFY_ALL_INTERFACE_CLASSES 0x00000004
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define RegisterDeviceNotification __MINGW_NAME_AW(RegisterDeviceNotification)
 #define PostMessage __MINGW_NAME_AW(PostMessage)
 #define PostThreadMessage __MINGW_NAME_AW(PostThreadMessage)
@@ -2113,204 +1966,232 @@ extern "C" {
 #define GetClassInfo __MINGW_NAME_AW(GetClassInfo)
 #define RegisterClassEx __MINGW_NAME_AW(RegisterClassEx)
 #define GetClassInfoEx __MINGW_NAME_AW(GetClassInfoEx)
-
 #if _WIN32_WINNT >= 0x0502
 #ifndef _HPOWERNOTIFY_DEF_
 #define _HPOWERNOTIFY_DEF_
-  typedef HANDLE HPOWERNOTIFY;
-  typedef HPOWERNOTIFY *PHPOWERNOTIFY;
+typedef HANDLE HPOWERNOTIFY;
+typedef HPOWERNOTIFY *PHPOWERNOTIFY;
 #endif
-
-  WINUSERAPI HPOWERNOTIFY WINAPI RegisterPowerSettingNotification (HANDLE hRecipient, LPCGUID PowerSettingGuid, DWORD Flags);
-  WINUSERAPI WINBOOL WINAPI UnregisterPowerSettingNotification (HPOWERNOTIFY Handle);
-  WINUSERAPI HPOWERNOTIFY WINAPI RegisterSuspendResumeNotification (HANDLE hRecipient, DWORD Flags);
-  WINUSERAPI WINBOOL WINAPI UnregisterSuspendResumeNotification (HPOWERNOTIFY Handle);
+WINUSERAPI HPOWERNOTIFY WINAPI RegisterPowerSettingNotification(
+    HANDLE hRecipient, LPCGUID PowerSettingGuid, DWORD Flags);
+WINUSERAPI WINBOOL WINAPI
+UnregisterPowerSettingNotification(HPOWERNOTIFY Handle);
+WINUSERAPI HPOWERNOTIFY WINAPI
+RegisterSuspendResumeNotification(HANDLE hRecipient, DWORD Flags);
+WINUSERAPI WINBOOL WINAPI
+UnregisterSuspendResumeNotification(HPOWERNOTIFY Handle);
 #endif
-
-  WINUSERAPI WINBOOL WINAPI PostMessageA (HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI PostMessageW (HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI PostThreadMessageA (DWORD idThread, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI PostThreadMessageW (DWORD idThread, UINT Msg, WPARAM wParam, LPARAM lParam);
-
-#define PostAppMessageA(idThread, wMsg, wParam, lParam) PostThreadMessageA ((DWORD)idThread, wMsg, wParam, lParam)
-#define PostAppMessageW(idThread, wMsg, wParam, lParam) PostThreadMessageW ((DWORD)idThread, wMsg, wParam, lParam)
-
-  WINUSERAPI WINBOOL WINAPI AttachThreadInput (DWORD idAttach, DWORD idAttachTo, WINBOOL fAttach);
-  WINUSERAPI WINBOOL WINAPI ReplyMessage (LRESULT lResult);
-  WINUSERAPI WINBOOL WINAPI WaitMessage (VOID);
-  WINUSERAPI DWORD WINAPI WaitForInputIdle (HANDLE hProcess, DWORD dwMilliseconds);
-  WINUSERAPI LRESULT WINAPI DefWindowProcA (HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI DefWindowProcW (HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI VOID WINAPI PostQuitMessage (int nExitCode);
-  WINUSERAPI WINBOOL WINAPI InSendMessage (VOID);
-  WINUSERAPI DWORD WINAPI InSendMessageEx (LPVOID lpReserved);
-  WINUSERAPI UINT WINAPI GetDoubleClickTime (VOID);
-  WINUSERAPI WINBOOL WINAPI SetDoubleClickTime (UINT);
-  WINUSERAPI ATOM WINAPI RegisterClassA (CONST WNDCLASSA *lpWndClass);
-  WINUSERAPI ATOM WINAPI RegisterClassW (CONST WNDCLASSW *lpWndClass);
-  WINUSERAPI WINBOOL WINAPI UnregisterClassA (LPCSTR lpClassName, HINSTANCE hInstance);
-  WINUSERAPI WINBOOL WINAPI UnregisterClassW (LPCWSTR lpClassName, HINSTANCE hInstance);
-  WINUSERAPI WINBOOL WINAPI GetClassInfoA (HINSTANCE hInstance, LPCSTR lpClassName, LPWNDCLASSA lpWndClass);
-  WINUSERAPI WINBOOL WINAPI GetClassInfoW (HINSTANCE hInstance, LPCWSTR lpClassName, LPWNDCLASSW lpWndClass);
-  WINUSERAPI ATOM WINAPI RegisterClassExA (CONST WNDCLASSEXA *);
-  WINUSERAPI ATOM WINAPI RegisterClassExW (CONST WNDCLASSEXW *);
-  WINUSERAPI WINBOOL WINAPI GetClassInfoExA (HINSTANCE hInstance, LPCSTR lpszClass, LPWNDCLASSEXA lpwcx);
-  WINUSERAPI WINBOOL WINAPI GetClassInfoExW (HINSTANCE hInstance, LPCWSTR lpszClass, LPWNDCLASSEXW lpwcx);
-
+WINUSERAPI WINBOOL WINAPI PostMessageA(HWND hWnd, UINT Msg, WPARAM wParam,
+                                       LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI PostMessageW(HWND hWnd, UINT Msg, WPARAM wParam,
+                                       LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI PostThreadMessageA(DWORD idThread, UINT Msg,
+                                             WPARAM wParam, LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI PostThreadMessageW(DWORD idThread, UINT Msg,
+                                             WPARAM wParam, LPARAM lParam);
+#define PostAppMessageA(idThread, wMsg, wParam, lParam)                        \
+  PostThreadMessageA((DWORD)idThread, wMsg, wParam, lParam)
+#define PostAppMessageW(idThread, wMsg, wParam, lParam)                        \
+  PostThreadMessageW((DWORD)idThread, wMsg, wParam, lParam)
+WINUSERAPI WINBOOL WINAPI AttachThreadInput(DWORD idAttach, DWORD idAttachTo,
+                                            WINBOOL fAttach);
+WINUSERAPI WINBOOL WINAPI ReplyMessage(LRESULT lResult);
+WINUSERAPI WINBOOL WINAPI WaitMessage(VOID);
+WINUSERAPI DWORD WINAPI WaitForInputIdle(HANDLE hProcess, DWORD dwMilliseconds);
+WINUSERAPI LRESULT WINAPI DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam,
+                                         LPARAM lParam);
+WINUSERAPI LRESULT WINAPI DefWindowProcW(HWND hWnd, UINT Msg, WPARAM wParam,
+                                         LPARAM lParam);
+WINUSERAPI VOID WINAPI PostQuitMessage(int nExitCode);
+WINUSERAPI WINBOOL WINAPI InSendMessage(VOID);
+WINUSERAPI DWORD WINAPI InSendMessageEx(LPVOID lpReserved);
+WINUSERAPI UINT WINAPI GetDoubleClickTime(VOID);
+WINUSERAPI WINBOOL WINAPI SetDoubleClickTime(UINT);
+WINUSERAPI ATOM WINAPI RegisterClassA(CONST WNDCLASSA *lpWndClass);
+WINUSERAPI ATOM WINAPI RegisterClassW(CONST WNDCLASSW *lpWndClass);
+WINUSERAPI WINBOOL WINAPI UnregisterClassA(LPCSTR lpClassName,
+                                           HINSTANCE hInstance);
+WINUSERAPI WINBOOL WINAPI UnregisterClassW(LPCWSTR lpClassName,
+                                           HINSTANCE hInstance);
+WINUSERAPI WINBOOL WINAPI GetClassInfoA(HINSTANCE hInstance, LPCSTR lpClassName,
+                                        LPWNDCLASSA lpWndClass);
+WINUSERAPI WINBOOL WINAPI GetClassInfoW(HINSTANCE hInstance,
+                                        LPCWSTR lpClassName,
+                                        LPWNDCLASSW lpWndClass);
+WINUSERAPI ATOM WINAPI RegisterClassExA(CONST WNDCLASSEXA *);
+WINUSERAPI ATOM WINAPI RegisterClassExW(CONST WNDCLASSEXW *);
+WINUSERAPI WINBOOL WINAPI GetClassInfoExA(HINSTANCE hInstance, LPCSTR lpszClass,
+                                          LPWNDCLASSEXA lpwcx);
+WINUSERAPI WINBOOL WINAPI GetClassInfoExW(HINSTANCE hInstance,
+                                          LPCWSTR lpszClass,
+                                          LPWNDCLASSEXW lpwcx);
 #ifdef STRICT
-  WINUSERAPI LRESULT WINAPI CallWindowProcA (WNDPROC lpPrevWndFunc, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI CallWindowProcW (WNDPROC lpPrevWndFunc, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+WINUSERAPI LRESULT WINAPI CallWindowProcA(WNDPROC lpPrevWndFunc, HWND hWnd,
+                                          UINT Msg, WPARAM wParam,
+                                          LPARAM lParam);
+WINUSERAPI LRESULT WINAPI CallWindowProcW(WNDPROC lpPrevWndFunc, HWND hWnd,
+                                          UINT Msg, WPARAM wParam,
+                                          LPARAM lParam);
 #else
-  WINUSERAPI LRESULT WINAPI CallWindowProcA (FARPROC lpPrevWndFunc, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI CallWindowProcW (FARPROC lpPrevWndFunc, HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+WINUSERAPI LRESULT WINAPI CallWindowProcA(FARPROC lpPrevWndFunc, HWND hWnd,
+                                          UINT Msg, WPARAM wParam,
+                                          LPARAM lParam);
+WINUSERAPI LRESULT WINAPI CallWindowProcW(FARPROC lpPrevWndFunc, HWND hWnd,
+                                          UINT Msg, WPARAM wParam,
+                                          LPARAM lParam);
 #endif
 #endif
-
 #define CW_USEDEFAULT ((int)0x80000000)
-
 #define HWND_BROADCAST ((HWND)0xffff)
-#define HWND_MESSAGE ((HWND)-3)
+#define HWND_MESSAGE ((HWND) - 3)
 #define HWND_DESKTOP ((HWND)0)
-
 #define ISMEX_NOSEND 0x00000000
 #define ISMEX_SEND 0x00000001
 #define ISMEX_NOTIFY 0x00000002
 #define ISMEX_CALLBACK 0x00000004
 #define ISMEX_REPLIED 0x00000008
-
 #if (_WIN32_WINNT >= 0x0502)
-  extern const GUID GUID_POWERSCHEME_PERSONALITY;
-  extern const GUID GUID_MIN_POWER_SAVINGS;
-  extern const GUID GUID_MAX_POWER_SAVINGS;
-  extern const GUID GUID_TYPICAL_POWER_SAVINGS;
-  extern const GUID GUID_ACDC_POWER_SOURCE;
-  extern const GUID GUID_BATTERY_PERCENTAGE_REMAINING;
-  extern const GUID GUID_IDLE_BACKGROUND_TASK;
-  extern const GUID GUID_SYSTEM_AWAYMODE;
-  extern const GUID GUID_MONITOR_POWER_ON;
+extern const GUID GUID_POWERSCHEME_PERSONALITY;
+extern const GUID GUID_MIN_POWER_SAVINGS;
+extern const GUID GUID_MAX_POWER_SAVINGS;
+extern const GUID GUID_TYPICAL_POWER_SAVINGS;
+extern const GUID GUID_ACDC_POWER_SOURCE;
+extern const GUID GUID_BATTERY_PERCENTAGE_REMAINING;
+extern const GUID GUID_IDLE_BACKGROUND_TASK;
+extern const GUID GUID_SYSTEM_AWAYMODE;
+extern const GUID GUID_MONITOR_POWER_ON;
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI HDEVNOTIFY WINAPI RegisterDeviceNotificationA(HANDLE hRecipient,LPVOID NotificationFilter,DWORD Flags);
-  WINUSERAPI HDEVNOTIFY WINAPI RegisterDeviceNotificationW(HANDLE hRecipient,LPVOID NotificationFilter,DWORD Flags);
-  WINUSERAPI WINBOOL WINAPI UnregisterDeviceNotification(HDEVNOTIFY Handle);
-
-  typedef BOOLEAN (WINAPI *PREGISTERCLASSNAMEW)(LPCWSTR);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI HDEVNOTIFY WINAPI RegisterDeviceNotificationA(
+    HANDLE hRecipient, LPVOID NotificationFilter, DWORD Flags);
+WINUSERAPI HDEVNOTIFY WINAPI RegisterDeviceNotificationW(
+    HANDLE hRecipient, LPVOID NotificationFilter, DWORD Flags);
+WINUSERAPI WINBOOL WINAPI UnregisterDeviceNotification(HDEVNOTIFY Handle);
+typedef BOOLEAN(WINAPI *PREGISTERCLASSNAMEW)(LPCWSTR);
 #define CreateWindowEx __MINGW_NAME_AW(CreateWindowEx)
 #define CreateWindow __MINGW_NAME_AW(CreateWindow)
-
-  WINUSERAPI HWND WINAPI CreateWindowExA(DWORD dwExStyle,LPCSTR lpClassName,LPCSTR lpWindowName,DWORD dwStyle,int X,int Y,int nWidth,int nHeight,HWND hWndParent,HMENU hMenu,HINSTANCE hInstance,LPVOID lpParam);
-  WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle,LPCWSTR lpClassName,LPCWSTR lpWindowName,DWORD dwStyle,int X,int Y,int nWidth,int nHeight,HWND hWndParent,HMENU hMenu,HINSTANCE hInstance,LPVOID lpParam);
-
-#define CreateWindowA(lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam) CreateWindowExA((DWORD)0,lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam)
-#define CreateWindowW(lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam) CreateWindowExW((DWORD)0,lpClassName,lpWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam)
-
-  WINUSERAPI WINBOOL WINAPI IsWindow(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI IsMenu(HMENU hMenu);
-  WINUSERAPI WINBOOL WINAPI IsChild(HWND hWndParent,HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI DestroyWindow(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI ShowWindow(HWND hWnd,int nCmdShow);
-  WINUSERAPI WINBOOL WINAPI AnimateWindow(HWND hWnd,DWORD dwTime,DWORD dwFlags);
+WINUSERAPI HWND WINAPI CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName,
+                                       LPCSTR lpWindowName, DWORD dwStyle,
+                                       int X, int Y, int nWidth, int nHeight,
+                                       HWND hWndParent, HMENU hMenu,
+                                       HINSTANCE hInstance, LPVOID lpParam);
+WINUSERAPI HWND WINAPI CreateWindowExW(DWORD dwExStyle, LPCWSTR lpClassName,
+                                       LPCWSTR lpWindowName, DWORD dwStyle,
+                                       int X, int Y, int nWidth, int nHeight,
+                                       HWND hWndParent, HMENU hMenu,
+                                       HINSTANCE hInstance, LPVOID lpParam);
+#define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth,        \
+                      nHeight, hWndParent, hMenu, hInstance, lpParam)          \
+  CreateWindowExA((DWORD)0, lpClassName, lpWindowName, dwStyle, x, y, nWidth,  \
+                  nHeight, hWndParent, hMenu, hInstance, lpParam)
+#define CreateWindowW(lpClassName, lpWindowName, dwStyle, x, y, nWidth,        \
+                      nHeight, hWndParent, hMenu, hInstance, lpParam)          \
+  CreateWindowExW((DWORD)0, lpClassName, lpWindowName, dwStyle, x, y, nWidth,  \
+                  nHeight, hWndParent, hMenu, hInstance, lpParam)
+WINUSERAPI WINBOOL WINAPI IsWindow(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI IsMenu(HMENU hMenu);
+WINUSERAPI WINBOOL WINAPI IsChild(HWND hWndParent, HWND hWnd);
+WINUSERAPI WINBOOL WINAPI DestroyWindow(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI ShowWindow(HWND hWnd, int nCmdShow);
+WINUSERAPI WINBOOL WINAPI AnimateWindow(HWND hWnd, DWORD dwTime, DWORD dwFlags);
 #endif
-
-#if defined (_WINGDI_) && !defined (NOGDI)
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI UpdateLayeredWindow (HWND hWnd, HDC hdcDst, POINT *pptDst, SIZE *psize, HDC hdcSrc, POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags);
-
-  typedef struct tagUPDATELAYEREDWINDOWINFO {
-    DWORD cbSize;
-    HDC hdcDst;
-    const POINT *pptDst;
-    const SIZE *psize;
-    HDC hdcSrc;
-    const POINT *pptSrc;
-    COLORREF crKey;
-    const BLENDFUNCTION *pblend;
-    DWORD dwFlags;
-    const RECT *prcDirty;
-  } UPDATELAYEREDWINDOWINFO,*PUPDATELAYEREDWINDOWINFO;
-
+#if defined(_WINGDI_) && !defined(NOGDI)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI UpdateLayeredWindow(
+    HWND hWnd, HDC hdcDst, POINT *pptDst, SIZE *psize, HDC hdcSrc,
+    POINT *pptSrc, COLORREF crKey, BLENDFUNCTION *pblend, DWORD dwFlags);
+typedef struct tagUPDATELAYEREDWINDOWINFO {
+  DWORD cbSize;
+  HDC hdcDst;
+  const POINT *pptDst;
+  const SIZE *psize;
+  HDC hdcSrc;
+  const POINT *pptSrc;
+  COLORREF crKey;
+  const BLENDFUNCTION *pblend;
+  DWORD dwFlags;
+  const RECT *prcDirty;
+} UPDATELAYEREDWINDOWINFO, *PUPDATELAYEREDWINDOWINFO;
 #if _WIN32_WINNT < 0x0502
-  typedef
+typedef
 #endif
-  WINUSERAPI WINBOOL WINAPI UpdateLayeredWindowIndirect (HWND hWnd, const UPDATELAYEREDWINDOWINFO *pULWInfo);
+    WINUSERAPI WINBOOL WINAPI UpdateLayeredWindowIndirect(
+        HWND hWnd, const UPDATELAYEREDWINDOWINFO *pULWInfo);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI GetLayeredWindowAttributes (HWND hwnd, COLORREF *pcrKey, BYTE *pbAlpha, DWORD *pdwFlags);
-
-#define PW_CLIENTONLY         0x00000001
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI GetLayeredWindowAttributes(HWND hwnd,
+                                                     COLORREF *pcrKey,
+                                                     BYTE *pbAlpha,
+                                                     DWORD *pdwFlags);
+#define PW_CLIENTONLY 0x00000001
 #if _WIN32_WINNT >= 0x0603
-#define PW_RENDERFULLCONTENT  0x00000002
+#define PW_RENDERFULLCONTENT 0x00000002
 #endif
-
-  WINUSERAPI WINBOOL WINAPI PrintWindow (HWND hwnd, HDC hdcBlt, UINT nFlags);
-  WINUSERAPI WINBOOL WINAPI SetLayeredWindowAttributes (HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI PrintWindow(HWND hwnd, HDC hdcBlt, UINT nFlags);
+WINUSERAPI WINBOOL WINAPI SetLayeredWindowAttributes(HWND hwnd, COLORREF crKey,
+                                                     BYTE bAlpha,
+                                                     DWORD dwFlags);
 #endif
-
 #define LWA_COLORKEY 0x00000001
 #define LWA_ALPHA 0x00000002
-
 #define ULW_COLORKEY 0x00000001
 #define ULW_ALPHA 0x00000002
 #define ULW_OPAQUE 0x00000004
 #define ULW_EX_NORESIZE 0x00000008
-
 #define FLASHW_STOP 0
 #define FLASHW_CAPTION 0x00000001
 #define FLASHW_TRAY 0x00000002
 #define FLASHW_ALL (FLASHW_CAPTION | FLASHW_TRAY)
 #define FLASHW_TIMER 0x00000004
 #define FLASHW_TIMERNOFG 0x0000000c
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct {
-    UINT cbSize;
-    HWND hwnd;
-    DWORD dwFlags;
-    UINT uCount;
-    DWORD dwTimeout;
-  } FLASHWINFO,*PFLASHWINFO;
-
-  WINUSERAPI WINBOOL WINAPI ShowWindowAsync (HWND hWnd, int nCmdShow);
-  WINUSERAPI WINBOOL WINAPI FlashWindow (HWND hWnd, WINBOOL bInvert);
-  WINUSERAPI WINBOOL WINAPI FlashWindowEx (PFLASHWINFO pfwi);
-  WINUSERAPI WINBOOL WINAPI ShowOwnedPopups (HWND hWnd, WINBOOL fShow);
-  WINUSERAPI WINBOOL WINAPI OpenIcon (HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI CloseWindow (HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI MoveWindow (HWND hWnd, int X, int Y, int nWidth, int nHeight, WINBOOL bRepaint);
-  WINUSERAPI WINBOOL WINAPI SetWindowPos (HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI GetWindowPlacement (HWND hWnd, WINDOWPLACEMENT *lpwndpl);
-  WINUSERAPI WINBOOL WINAPI SetWindowPlacement (HWND hWnd, CONST WINDOWPLACEMENT *lpwndpl);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct {
+  UINT cbSize;
+  HWND hwnd;
+  DWORD dwFlags;
+  UINT uCount;
+  DWORD dwTimeout;
+} FLASHWINFO, *PFLASHWINFO;
+WINUSERAPI WINBOOL WINAPI ShowWindowAsync(HWND hWnd, int nCmdShow);
+WINUSERAPI WINBOOL WINAPI FlashWindow(HWND hWnd, WINBOOL bInvert);
+WINUSERAPI WINBOOL WINAPI FlashWindowEx(PFLASHWINFO pfwi);
+WINUSERAPI WINBOOL WINAPI ShowOwnedPopups(HWND hWnd, WINBOOL fShow);
+WINUSERAPI WINBOOL WINAPI OpenIcon(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI CloseWindow(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI MoveWindow(HWND hWnd, int X, int Y, int nWidth,
+                                     int nHeight, WINBOOL bRepaint);
+WINUSERAPI WINBOOL WINAPI SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X,
+                                       int Y, int cx, int cy, UINT uFlags);
+WINUSERAPI WINBOOL WINAPI GetWindowPlacement(HWND hWnd,
+                                             WINDOWPLACEMENT *lpwndpl);
+WINUSERAPI WINBOOL WINAPI SetWindowPlacement(HWND hWnd,
+                                             CONST WINDOWPLACEMENT *lpwndpl);
 #if _WIN32_WINNT >= 0x0601
 #define WDA_NONE 0x00000000
 #define WDA_MONITOR 0x00000001
 #define WDA_EXCLUDEFROMCAPTURE 0x00000011
-
-  WINUSERAPI WINBOOL WINAPI GetWindowDisplayAffinity (HWND hWnd, DWORD *pdwAffinity);
-  WINUSERAPI WINBOOL WINAPI SetWindowDisplayAffinity (HWND hWnd, DWORD dwAffinity);
+WINUSERAPI WINBOOL WINAPI GetWindowDisplayAffinity(HWND hWnd,
+                                                   DWORD *pdwAffinity);
+WINUSERAPI WINBOOL WINAPI SetWindowDisplayAffinity(HWND hWnd, DWORD dwAffinity);
 #endif
 #endif
-
 #ifndef NODEFERWINDOWPOS
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI HDWP WINAPI BeginDeferWindowPos (int nNumWindows);
-  WINUSERAPI HDWP WINAPI DeferWindowPos (HDWP hWinPosInfo, HWND hWnd, HWND hWndInsertAfter, int x, int y, int cx, int cy, UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI EndDeferWindowPos (HDWP hWinPosInfo);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI HDWP WINAPI BeginDeferWindowPos(int nNumWindows);
+WINUSERAPI HDWP WINAPI DeferWindowPos(HDWP hWinPosInfo, HWND hWnd,
+                                      HWND hWndInsertAfter, int x, int y,
+                                      int cx, int cy, UINT uFlags);
+WINUSERAPI WINBOOL WINAPI EndDeferWindowPos(HDWP hWinPosInfo);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI IsWindowVisible (HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI IsIconic (HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI AnyPopup (VOID);
-  WINUSERAPI WINBOOL WINAPI BringWindowToTop (HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI IsZoomed (HWND hWnd);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI IsWindowVisible(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI IsIconic(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI AnyPopup(VOID);
+WINUSERAPI WINBOOL WINAPI BringWindowToTop(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI IsZoomed(HWND hWnd);
 #endif
-
 #define SWP_NOSIZE 0x0001
 #define SWP_NOMOVE 0x0002
 #define SWP_NOZORDER 0x0004
@@ -2322,72 +2203,56 @@ extern "C" {
 #define SWP_NOCOPYBITS 0x0100
 #define SWP_NOOWNERZORDER 0x0200
 #define SWP_NOSENDCHANGING 0x0400
-
 #define SWP_DRAWFRAME SWP_FRAMECHANGED
 #define SWP_NOREPOSITION SWP_NOOWNERZORDER
 #define SWP_DEFERERASE 0x2000
 #define SWP_ASYNCWINDOWPOS 0x4000
-
 #define HWND_TOP ((HWND)0)
 #define HWND_BOTTOM ((HWND)1)
-#define HWND_TOPMOST ((HWND)-1)
-#define HWND_NOTOPMOST ((HWND)-2)
-
+#define HWND_TOPMOST ((HWND) - 1)
+#define HWND_NOTOPMOST ((HWND) - 2)
 #ifndef NOCTLMGR
-
 #include <pshpack2.h>
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef struct {
-    DWORD style;
-    DWORD dwExtendedStyle;
-    WORD cdit;
-    short x;
-    short y;
-    short cx;
-    short cy;
-  } DLGTEMPLATE;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef struct {
+  DWORD style;
+  DWORD dwExtendedStyle;
+  WORD cdit;
+  short x;
+  short y;
+  short cx;
+  short cy;
+} DLGTEMPLATE;
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef DLGTEMPLATE *LPDLGTEMPLATEA;
-  typedef DLGTEMPLATE *LPDLGTEMPLATEW;
-
-  __MINGW_TYPEDEF_AW(LPDLGTEMPLATE)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef DLGTEMPLATE *LPDLGTEMPLATEA;
+typedef DLGTEMPLATE *LPDLGTEMPLATEW;
+__MINGW_TYPEDEF_AW(LPDLGTEMPLATE)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef CONST DLGTEMPLATE *LPCDLGTEMPLATEA;
-  typedef CONST DLGTEMPLATE *LPCDLGTEMPLATEW;
-
-  __MINGW_TYPEDEF_AW(LPCDLGTEMPLATE)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef CONST DLGTEMPLATE *LPCDLGTEMPLATEA;
+typedef CONST DLGTEMPLATE *LPCDLGTEMPLATEW;
+__MINGW_TYPEDEF_AW(LPCDLGTEMPLATE)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct {
-    DWORD style;
-    DWORD dwExtendedStyle;
-    short x;
-    short y;
-    short cx;
-    short cy;
-    WORD id;
-  } DLGITEMTEMPLATE;
-
-  typedef DLGITEMTEMPLATE *PDLGITEMTEMPLATEA;
-  typedef DLGITEMTEMPLATE *PDLGITEMTEMPLATEW;
-
-  __MINGW_TYPEDEF_AW(PDLGITEMTEMPLATE)
-
-  typedef DLGITEMTEMPLATE *LPDLGITEMTEMPLATEA;
-  typedef DLGITEMTEMPLATE *LPDLGITEMTEMPLATEW;
-
-  __MINGW_TYPEDEF_AW(LPDLGITEMTEMPLATE)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct {
+  DWORD style;
+  DWORD dwExtendedStyle;
+  short x;
+  short y;
+  short cx;
+  short cy;
+  WORD id;
+} DLGITEMTEMPLATE;
+typedef DLGITEMTEMPLATE *PDLGITEMTEMPLATEA;
+typedef DLGITEMTEMPLATE *PDLGITEMTEMPLATEW;
+__MINGW_TYPEDEF_AW(PDLGITEMTEMPLATE)
+typedef DLGITEMTEMPLATE *LPDLGITEMTEMPLATEA;
+typedef DLGITEMTEMPLATE *LPDLGITEMTEMPLATEW;
+__MINGW_TYPEDEF_AW(LPDLGITEMTEMPLATE)
 #endif
-
 #include <poppack.h>
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define CreateDialogParam __MINGW_NAME_AW(CreateDialogParam)
 #define CreateDialogIndirectParam __MINGW_NAME_AW(CreateDialogIndirectParam)
 #define CreateDialog __MINGW_NAME_AW(CreateDialog)
@@ -2400,110 +2265,161 @@ extern "C" {
 #define GetDlgItemText __MINGW_NAME_AW(GetDlgItemText)
 #define SendDlgItemMessage __MINGW_NAME_AW(SendDlgItemMessage)
 #define DefDlgProc __MINGW_NAME_AW(DefDlgProc)
-
-  WINUSERAPI HWND WINAPI CreateDialogParamA(HINSTANCE hInstance,LPCSTR lpTemplateName,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI HWND WINAPI CreateDialogParamW(HINSTANCE hInstance,LPCWSTR lpTemplateName,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInstance,LPCDLGTEMPLATEA lpTemplate,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI HWND WINAPI CreateDialogIndirectParamW(HINSTANCE hInstance,LPCDLGTEMPLATEW lpTemplate,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-
-#define CreateDialogA(hInstance,lpName,hWndParent,lpDialogFunc) CreateDialogParamA(hInstance,lpName,hWndParent,lpDialogFunc,(LPARAM)0)
-#define CreateDialogW(hInstance,lpName,hWndParent,lpDialogFunc) CreateDialogParamW(hInstance,lpName,hWndParent,lpDialogFunc,(LPARAM)0)
-#define CreateDialogIndirectA(hInstance,lpTemplate,hWndParent,lpDialogFunc) CreateDialogIndirectParamA(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-#define CreateDialogIndirectW(hInstance,lpTemplate,hWndParent,lpDialogFunc) CreateDialogIndirectParamW(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-
-  WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInstance,LPCSTR lpTemplateName,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInstance,LPCWSTR lpTemplateName,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(HINSTANCE hInstance,LPCDLGTEMPLATEA hDialogTemplate,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-  WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(HINSTANCE hInstance,LPCDLGTEMPLATEW hDialogTemplate,HWND hWndParent,DLGPROC lpDialogFunc,LPARAM dwInitParam);
-#define DialogBoxA(hInstance,lpTemplate,hWndParent,lpDialogFunc) DialogBoxParamA(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-#define DialogBoxW(hInstance,lpTemplate,hWndParent,lpDialogFunc) DialogBoxParamW(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-#define DialogBoxIndirectA(hInstance,lpTemplate,hWndParent,lpDialogFunc) DialogBoxIndirectParamA(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-#define DialogBoxIndirectW(hInstance,lpTemplate,hWndParent,lpDialogFunc) DialogBoxIndirectParamW(hInstance,lpTemplate,hWndParent,lpDialogFunc,(LPARAM)0)
-  WINUSERAPI WINBOOL WINAPI EndDialog(HWND hDlg,INT_PTR nResult);
-  WINUSERAPI HWND WINAPI GetDlgItem(HWND hDlg,int nIDDlgItem);
-  WINUSERAPI WINBOOL WINAPI SetDlgItemInt(HWND hDlg,int nIDDlgItem,UINT uValue,WINBOOL bSigned);
-  WINUSERAPI UINT WINAPI GetDlgItemInt(HWND hDlg,int nIDDlgItem,WINBOOL *lpTranslated,WINBOOL bSigned);
-  WINUSERAPI WINBOOL WINAPI SetDlgItemTextA(HWND hDlg,int nIDDlgItem,LPCSTR lpString);
-  WINUSERAPI WINBOOL WINAPI SetDlgItemTextW(HWND hDlg,int nIDDlgItem,LPCWSTR lpString);
-  WINUSERAPI UINT WINAPI GetDlgItemTextA(HWND hDlg,int nIDDlgItem,LPSTR lpString,int cchMax);
-  WINUSERAPI UINT WINAPI GetDlgItemTextW(HWND hDlg,int nIDDlgItem,LPWSTR lpString,int cchMax);
-  WINUSERAPI WINBOOL WINAPI CheckDlgButton(HWND hDlg,int nIDButton,UINT uCheck);
-  WINUSERAPI WINBOOL WINAPI CheckRadioButton(HWND hDlg,int nIDFirstButton,int nIDLastButton,int nIDCheckButton);
-  WINUSERAPI UINT WINAPI IsDlgButtonChecked(HWND hDlg,int nIDButton);
-  WINUSERAPI LRESULT WINAPI SendDlgItemMessageA(HWND hDlg,int nIDDlgItem,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI SendDlgItemMessageW(HWND hDlg,int nIDDlgItem,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI HWND WINAPI GetNextDlgGroupItem(HWND hDlg,HWND hCtl,WINBOOL bPrevious);
-  WINUSERAPI HWND WINAPI GetNextDlgTabItem(HWND hDlg,HWND hCtl,WINBOOL bPrevious);
-  WINUSERAPI int WINAPI GetDlgCtrlID(HWND hWnd);
-  WINUSERAPI __LONG32 WINAPI GetDialogBaseUnits(VOID);
-  WINUSERAPI LRESULT WINAPI DefDlgProcA(HWND hDlg,UINT Msg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI DefDlgProcW(HWND hDlg,UINT Msg,WPARAM wParam,LPARAM lParam);
+WINUSERAPI HWND WINAPI CreateDialogParamA(HINSTANCE hInstance,
+                                          LPCSTR lpTemplateName,
+                                          HWND hWndParent, DLGPROC lpDialogFunc,
+                                          LPARAM dwInitParam);
+WINUSERAPI HWND WINAPI CreateDialogParamW(HINSTANCE hInstance,
+                                          LPCWSTR lpTemplateName,
+                                          HWND hWndParent, DLGPROC lpDialogFunc,
+                                          LPARAM dwInitParam);
+WINUSERAPI HWND WINAPI CreateDialogIndirectParamA(HINSTANCE hInstance,
+                                                  LPCDLGTEMPLATEA lpTemplate,
+                                                  HWND hWndParent,
+                                                  DLGPROC lpDialogFunc,
+                                                  LPARAM dwInitParam);
+WINUSERAPI HWND WINAPI CreateDialogIndirectParamW(HINSTANCE hInstance,
+                                                  LPCDLGTEMPLATEW lpTemplate,
+                                                  HWND hWndParent,
+                                                  DLGPROC lpDialogFunc,
+                                                  LPARAM dwInitParam);
+#define CreateDialogA(hInstance, lpName, hWndParent, lpDialogFunc)             \
+  CreateDialogParamA(hInstance, lpName, hWndParent, lpDialogFunc, (LPARAM)0)
+#define CreateDialogW(hInstance, lpName, hWndParent, lpDialogFunc)             \
+  CreateDialogParamW(hInstance, lpName, hWndParent, lpDialogFunc, (LPARAM)0)
+#define CreateDialogIndirectA(hInstance, lpTemplate, hWndParent, lpDialogFunc) \
+  CreateDialogIndirectParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc,  \
+                             (LPARAM)0)
+#define CreateDialogIndirectW(hInstance, lpTemplate, hWndParent, lpDialogFunc) \
+  CreateDialogIndirectParamW(hInstance, lpTemplate, hWndParent, lpDialogFunc,  \
+                             (LPARAM)0)
+WINUSERAPI INT_PTR WINAPI DialogBoxParamA(HINSTANCE hInstance,
+                                          LPCSTR lpTemplateName,
+                                          HWND hWndParent, DLGPROC lpDialogFunc,
+                                          LPARAM dwInitParam);
+WINUSERAPI INT_PTR WINAPI DialogBoxParamW(HINSTANCE hInstance,
+                                          LPCWSTR lpTemplateName,
+                                          HWND hWndParent, DLGPROC lpDialogFunc,
+                                          LPARAM dwInitParam);
+WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamA(
+    HINSTANCE hInstance, LPCDLGTEMPLATEA hDialogTemplate, HWND hWndParent,
+    DLGPROC lpDialogFunc, LPARAM dwInitParam);
+WINUSERAPI INT_PTR WINAPI DialogBoxIndirectParamW(
+    HINSTANCE hInstance, LPCDLGTEMPLATEW hDialogTemplate, HWND hWndParent,
+    DLGPROC lpDialogFunc, LPARAM dwInitParam);
+#define DialogBoxA(hInstance, lpTemplate, hWndParent, lpDialogFunc)            \
+  DialogBoxParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc, (LPARAM)0)
+#define DialogBoxW(hInstance, lpTemplate, hWndParent, lpDialogFunc)            \
+  DialogBoxParamW(hInstance, lpTemplate, hWndParent, lpDialogFunc, (LPARAM)0)
+#define DialogBoxIndirectA(hInstance, lpTemplate, hWndParent, lpDialogFunc)    \
+  DialogBoxIndirectParamA(hInstance, lpTemplate, hWndParent, lpDialogFunc,     \
+                          (LPARAM)0)
+#define DialogBoxIndirectW(hInstance, lpTemplate, hWndParent, lpDialogFunc)    \
+  DialogBoxIndirectParamW(hInstance, lpTemplate, hWndParent, lpDialogFunc,     \
+                          (LPARAM)0)
+WINUSERAPI WINBOOL WINAPI EndDialog(HWND hDlg, INT_PTR nResult);
+WINUSERAPI HWND WINAPI GetDlgItem(HWND hDlg, int nIDDlgItem);
+WINUSERAPI WINBOOL WINAPI SetDlgItemInt(HWND hDlg, int nIDDlgItem, UINT uValue,
+                                        WINBOOL bSigned);
+WINUSERAPI UINT WINAPI GetDlgItemInt(HWND hDlg, int nIDDlgItem,
+                                     WINBOOL *lpTranslated, WINBOOL bSigned);
+WINUSERAPI WINBOOL WINAPI SetDlgItemTextA(HWND hDlg, int nIDDlgItem,
+                                          LPCSTR lpString);
+WINUSERAPI WINBOOL WINAPI SetDlgItemTextW(HWND hDlg, int nIDDlgItem,
+                                          LPCWSTR lpString);
+WINUSERAPI UINT WINAPI GetDlgItemTextA(HWND hDlg, int nIDDlgItem,
+                                       LPSTR lpString, int cchMax);
+WINUSERAPI UINT WINAPI GetDlgItemTextW(HWND hDlg, int nIDDlgItem,
+                                       LPWSTR lpString, int cchMax);
+WINUSERAPI WINBOOL WINAPI CheckDlgButton(HWND hDlg, int nIDButton, UINT uCheck);
+WINUSERAPI WINBOOL WINAPI CheckRadioButton(HWND hDlg, int nIDFirstButton,
+                                           int nIDLastButton,
+                                           int nIDCheckButton);
+WINUSERAPI UINT WINAPI IsDlgButtonChecked(HWND hDlg, int nIDButton);
+WINUSERAPI LRESULT WINAPI SendDlgItemMessageA(HWND hDlg, int nIDDlgItem,
+                                              UINT Msg, WPARAM wParam,
+                                              LPARAM lParam);
+WINUSERAPI LRESULT WINAPI SendDlgItemMessageW(HWND hDlg, int nIDDlgItem,
+                                              UINT Msg, WPARAM wParam,
+                                              LPARAM lParam);
+WINUSERAPI HWND WINAPI GetNextDlgGroupItem(HWND hDlg, HWND hCtl,
+                                           WINBOOL bPrevious);
+WINUSERAPI HWND WINAPI GetNextDlgTabItem(HWND hDlg, HWND hCtl,
+                                         WINBOOL bPrevious);
+WINUSERAPI int WINAPI GetDlgCtrlID(HWND hWnd);
+WINUSERAPI __LONG32 WINAPI GetDialogBaseUnits(VOID);
+WINUSERAPI LRESULT WINAPI DefDlgProcA(HWND hDlg, UINT Msg, WPARAM wParam,
+                                      LPARAM lParam);
+WINUSERAPI LRESULT WINAPI DefDlgProcW(HWND hDlg, UINT Msg, WPARAM wParam,
+                                      LPARAM lParam);
 #endif
-
-  typedef enum DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS {
-    DCDC_DEFAULT = 0x0000,
-    DCDC_DISABLE_FONT_UPDATE = 0x0001,
-    DCDC_DISABLE_RELAYOUT = 0x0002
-  } DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS;
-
-WINBOOL WINAPI SetDialogControlDpiChangeBehavior(HWND hWnd, DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS mask, DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS values);
-DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS WINAPI GetDialogControlDpiChangeBehavior(HWND hWnd);
-
-  typedef enum DIALOG_DPI_CHANGE_BEHAVIORS {
-    DDC_DEFAULT = 0x0000,
-    DDC_DISABLE_ALL = 0x0001,
-    DDC_DISABLE_RESIZE = 0x0002,
-    DDC_DISABLE_CONTROL_RELAYOUT = 0x0004
-  } DIALOG_DPI_CHANGE_BEHAVIORS;
-
-WINBOOL WINAPI SetDialogDpiChangeBehavior(HWND hDlg, DIALOG_DPI_CHANGE_BEHAVIORS mask, DIALOG_DPI_CHANGE_BEHAVIORS values);
+typedef enum DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS {
+  DCDC_DEFAULT = 0x0000,
+  DCDC_DISABLE_FONT_UPDATE = 0x0001,
+  DCDC_DISABLE_RELAYOUT = 0x0002
+} DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS;
+WINBOOL WINAPI SetDialogControlDpiChangeBehavior(
+    HWND hWnd, DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS mask,
+    DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS values);
+DIALOG_CONTROL_DPI_CHANGE_BEHAVIORS WINAPI
+GetDialogControlDpiChangeBehavior(HWND hWnd);
+typedef enum DIALOG_DPI_CHANGE_BEHAVIORS {
+  DDC_DEFAULT = 0x0000,
+  DDC_DISABLE_ALL = 0x0001,
+  DDC_DISABLE_RESIZE = 0x0002,
+  DDC_DISABLE_CONTROL_RELAYOUT = 0x0004
+} DIALOG_DPI_CHANGE_BEHAVIORS;
+WINBOOL WINAPI SetDialogDpiChangeBehavior(HWND hDlg,
+                                          DIALOG_DPI_CHANGE_BEHAVIORS mask,
+                                          DIALOG_DPI_CHANGE_BEHAVIORS values);
 DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
-
 #define DLGWINDOWEXTRA 30
 #endif /* !NOCTLMGR */
-
 #ifndef NOMSG
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define CallMsgFilter __MINGW_NAME_AW(CallMsgFilter)
-
-  WINUSERAPI WINBOOL WINAPI CallMsgFilterA(LPMSG lpMsg,int nCode);
-  WINUSERAPI WINBOOL WINAPI CallMsgFilterW(LPMSG lpMsg,int nCode);
+WINUSERAPI WINBOOL WINAPI CallMsgFilterA(LPMSG lpMsg, int nCode);
+WINUSERAPI WINBOOL WINAPI CallMsgFilterW(LPMSG lpMsg, int nCode);
 #endif
 #endif
-
 #ifndef NOCLIPBOARD
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define RegisterClipboardFormat __MINGW_NAME_AW(RegisterClipboardFormat)
 #define GetClipboardFormatName __MINGW_NAME_AW(GetClipboardFormatName)
-
-  WINUSERAPI WINBOOL WINAPI OpenClipboard(HWND hWndNewOwner);
-  WINUSERAPI WINBOOL WINAPI CloseClipboard(VOID);
-  WINUSERAPI DWORD WINAPI GetClipboardSequenceNumber(VOID);
-  WINUSERAPI HWND WINAPI GetClipboardOwner(VOID);
-  WINUSERAPI HWND WINAPI SetClipboardViewer(HWND hWndNewViewer);
-  WINUSERAPI HWND WINAPI GetClipboardViewer(VOID);
-  WINUSERAPI WINBOOL WINAPI ChangeClipboardChain(HWND hWndRemove, HWND hWndNewNext);
-  WINUSERAPI HANDLE WINAPI SetClipboardData(UINT uFormat, HANDLE hMem);
-  WINUSERAPI HANDLE WINAPI GetClipboardData(UINT uFormat);
-  WINUSERAPI UINT WINAPI RegisterClipboardFormatA(LPCSTR lpszFormat);
-  WINUSERAPI UINT WINAPI RegisterClipboardFormatW(LPCWSTR lpszFormat);
-  WINUSERAPI int WINAPI CountClipboardFormats(VOID);
-  WINUSERAPI UINT WINAPI EnumClipboardFormats(UINT format);
-  WINUSERAPI int WINAPI GetClipboardFormatNameA(UINT format, LPSTR lpszFormatName, int cchMaxCount);
-  WINUSERAPI int WINAPI GetClipboardFormatNameW(UINT format, LPWSTR lpszFormatName, int cchMaxCount);
-  WINUSERAPI WINBOOL WINAPI EmptyClipboard(VOID);
-  WINUSERAPI WINBOOL WINAPI IsClipboardFormatAvailable(UINT format);
-  WINUSERAPI int WINAPI GetPriorityClipboardFormat(UINT *paFormatPriorityList, int cFormats);
-  WINUSERAPI HWND WINAPI GetOpenClipboardWindow(VOID);
+WINUSERAPI WINBOOL WINAPI OpenClipboard(HWND hWndNewOwner);
+WINUSERAPI WINBOOL WINAPI CloseClipboard(VOID);
+WINUSERAPI DWORD WINAPI GetClipboardSequenceNumber(VOID);
+WINUSERAPI HWND WINAPI GetClipboardOwner(VOID);
+WINUSERAPI HWND WINAPI SetClipboardViewer(HWND hWndNewViewer);
+WINUSERAPI HWND WINAPI GetClipboardViewer(VOID);
+WINUSERAPI WINBOOL WINAPI ChangeClipboardChain(HWND hWndRemove,
+                                               HWND hWndNewNext);
+WINUSERAPI HANDLE WINAPI SetClipboardData(UINT uFormat, HANDLE hMem);
+WINUSERAPI HANDLE WINAPI GetClipboardData(UINT uFormat);
+WINUSERAPI UINT WINAPI RegisterClipboardFormatA(LPCSTR lpszFormat);
+WINUSERAPI UINT WINAPI RegisterClipboardFormatW(LPCWSTR lpszFormat);
+WINUSERAPI int WINAPI CountClipboardFormats(VOID);
+WINUSERAPI UINT WINAPI EnumClipboardFormats(UINT format);
+WINUSERAPI int WINAPI GetClipboardFormatNameA(UINT format, LPSTR lpszFormatName,
+                                              int cchMaxCount);
+WINUSERAPI int WINAPI GetClipboardFormatNameW(UINT format,
+                                              LPWSTR lpszFormatName,
+                                              int cchMaxCount);
+WINUSERAPI WINBOOL WINAPI EmptyClipboard(VOID);
+WINUSERAPI WINBOOL WINAPI IsClipboardFormatAvailable(UINT format);
+WINUSERAPI int WINAPI GetPriorityClipboardFormat(UINT *paFormatPriorityList,
+                                                 int cFormats);
+WINUSERAPI HWND WINAPI GetOpenClipboardWindow(VOID);
 #if WINVER >= 0x0600
-  WINUSERAPI WINBOOL WINAPI AddClipboardFormatListener (HWND hwnd);
-  WINUSERAPI WINBOOL WINAPI RemoveClipboardFormatListener (HWND hwnd);
-  WINUSERAPI WINBOOL WINAPI GetUpdatedClipboardFormats (PUINT lpuiFormats, UINT cFormats, PUINT pcFormatsOut);
+WINUSERAPI WINBOOL WINAPI AddClipboardFormatListener(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI RemoveClipboardFormatListener(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI GetUpdatedClipboardFormats(PUINT lpuiFormats,
+                                                     UINT cFormats,
+                                                     PUINT pcFormatsOut);
 #endif
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define CharToOem __MINGW_NAME_AW(CharToOem)
 #define OemToChar __MINGW_NAME_AW(OemToChar)
 #define CharToOemBuff __MINGW_NAME_AW(CharToOemBuff)
@@ -2514,31 +2430,35 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #define CharLowerBuff __MINGW_NAME_AW(CharLowerBuff)
 #define CharNext __MINGW_NAME_AW(CharNext)
 #define CharPrev __MINGW_NAME_AW(CharPrev)
-
-  WINUSERAPI WINBOOL WINAPI CharToOemA(LPCSTR lpszSrc,LPSTR lpszDst);
-  WINUSERAPI WINBOOL WINAPI CharToOemW(LPCWSTR lpszSrc,LPSTR lpszDst);
-  WINUSERAPI WINBOOL WINAPI OemToCharA(LPCSTR lpszSrc,LPSTR lpszDst);
-  WINUSERAPI WINBOOL WINAPI OemToCharW(LPCSTR lpszSrc,LPWSTR lpszDst);
-  WINUSERAPI WINBOOL WINAPI CharToOemBuffA(LPCSTR lpszSrc,LPSTR lpszDst,DWORD cchDstLength);
-  WINUSERAPI WINBOOL WINAPI CharToOemBuffW(LPCWSTR lpszSrc,LPSTR lpszDst,DWORD cchDstLength);
-  WINUSERAPI WINBOOL WINAPI OemToCharBuffA(LPCSTR lpszSrc,LPSTR lpszDst,DWORD cchDstLength);
-  WINUSERAPI WINBOOL WINAPI OemToCharBuffW(LPCSTR lpszSrc,LPWSTR lpszDst,DWORD cchDstLength);
-  WINUSERAPI LPSTR WINAPI CharUpperA(LPSTR lpsz);
-  WINUSERAPI LPWSTR WINAPI CharUpperW(LPWSTR lpsz);
-  WINUSERAPI DWORD WINAPI CharUpperBuffA(LPSTR lpsz,DWORD cchLength);
-  WINUSERAPI DWORD WINAPI CharUpperBuffW(LPWSTR lpsz,DWORD cchLength);
-  WINUSERAPI LPSTR WINAPI CharLowerA(LPSTR lpsz);
-  WINUSERAPI LPWSTR WINAPI CharLowerW(LPWSTR lpsz);
-  WINUSERAPI DWORD WINAPI CharLowerBuffA(LPSTR lpsz,DWORD cchLength);
-  WINUSERAPI DWORD WINAPI CharLowerBuffW(LPWSTR lpsz,DWORD cchLength);
-  WINUSERAPI LPSTR WINAPI CharNextA(LPCSTR lpsz);
-  WINUSERAPI LPWSTR WINAPI CharNextW(LPCWSTR lpsz);
-  WINUSERAPI LPSTR WINAPI CharPrevA(LPCSTR lpszStart,LPCSTR lpszCurrent);
-  WINUSERAPI LPWSTR WINAPI CharPrevW(LPCWSTR lpszStart,LPCWSTR lpszCurrent);
-  WINUSERAPI LPSTR WINAPI CharNextExA(WORD CodePage,LPCSTR lpCurrentChar,DWORD dwFlags);
-  WINUSERAPI LPSTR WINAPI CharPrevExA(WORD CodePage,LPCSTR lpStart,LPCSTR lpCurrentChar,DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI CharToOemA(LPCSTR lpszSrc, LPSTR lpszDst);
+WINUSERAPI WINBOOL WINAPI CharToOemW(LPCWSTR lpszSrc, LPSTR lpszDst);
+WINUSERAPI WINBOOL WINAPI OemToCharA(LPCSTR lpszSrc, LPSTR lpszDst);
+WINUSERAPI WINBOOL WINAPI OemToCharW(LPCSTR lpszSrc, LPWSTR lpszDst);
+WINUSERAPI WINBOOL WINAPI CharToOemBuffA(LPCSTR lpszSrc, LPSTR lpszDst,
+                                         DWORD cchDstLength);
+WINUSERAPI WINBOOL WINAPI CharToOemBuffW(LPCWSTR lpszSrc, LPSTR lpszDst,
+                                         DWORD cchDstLength);
+WINUSERAPI WINBOOL WINAPI OemToCharBuffA(LPCSTR lpszSrc, LPSTR lpszDst,
+                                         DWORD cchDstLength);
+WINUSERAPI WINBOOL WINAPI OemToCharBuffW(LPCSTR lpszSrc, LPWSTR lpszDst,
+                                         DWORD cchDstLength);
+WINUSERAPI LPSTR WINAPI CharUpperA(LPSTR lpsz);
+WINUSERAPI LPWSTR WINAPI CharUpperW(LPWSTR lpsz);
+WINUSERAPI DWORD WINAPI CharUpperBuffA(LPSTR lpsz, DWORD cchLength);
+WINUSERAPI DWORD WINAPI CharUpperBuffW(LPWSTR lpsz, DWORD cchLength);
+WINUSERAPI LPSTR WINAPI CharLowerA(LPSTR lpsz);
+WINUSERAPI LPWSTR WINAPI CharLowerW(LPWSTR lpsz);
+WINUSERAPI DWORD WINAPI CharLowerBuffA(LPSTR lpsz, DWORD cchLength);
+WINUSERAPI DWORD WINAPI CharLowerBuffW(LPWSTR lpsz, DWORD cchLength);
+WINUSERAPI LPSTR WINAPI CharNextA(LPCSTR lpsz);
+WINUSERAPI LPWSTR WINAPI CharNextW(LPCWSTR lpsz);
+WINUSERAPI LPSTR WINAPI CharPrevA(LPCSTR lpszStart, LPCSTR lpszCurrent);
+WINUSERAPI LPWSTR WINAPI CharPrevW(LPCWSTR lpszStart, LPCWSTR lpszCurrent);
+WINUSERAPI LPSTR WINAPI CharNextExA(WORD CodePage, LPCSTR lpCurrentChar,
+                                    DWORD dwFlags);
+WINUSERAPI LPSTR WINAPI CharPrevExA(WORD CodePage, LPCSTR lpStart,
+                                    LPCSTR lpCurrentChar, DWORD dwFlags);
 #endif
-
 #define AnsiToOem CharToOemA
 #define OemToAnsi OemToCharA
 #define AnsiToOemBuff CharToOemBuffA
@@ -2549,57 +2469,59 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #define AnsiLowerBuff CharLowerBuffA
 #define AnsiNext CharNextA
 #define AnsiPrev CharPrevA
-
 #ifndef NOLANGUAGE
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define IsCharAlpha __MINGW_NAME_AW(IsCharAlpha)
 #define IsCharAlphaNumeric __MINGW_NAME_AW(IsCharAlphaNumeric)
 #define IsCharUpper __MINGW_NAME_AW(IsCharUpper)
 #define IsCharLower __MINGW_NAME_AW(IsCharLower)
-
-  WINUSERAPI WINBOOL WINAPI IsCharAlphaA(CHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharAlphaW(WCHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharAlphaNumericA(CHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharAlphaNumericW(WCHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharUpperA(CHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharUpperW(WCHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharLowerA(CHAR ch);
-  WINUSERAPI WINBOOL WINAPI IsCharLowerW(WCHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharAlphaA(CHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharAlphaW(WCHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharAlphaNumericA(CHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharAlphaNumericW(WCHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharUpperA(CHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharUpperW(WCHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharLowerA(CHAR ch);
+WINUSERAPI WINBOOL WINAPI IsCharLowerW(WCHAR ch);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define GetKeyNameText __MINGW_NAME_AW(GetKeyNameText)
 #define VkKeyScan __MINGW_NAME_AW(VkKeyScan)
 #define VkKeyScanEx __MINGW_NAME_AW(VkKeyScanEx)
-
-  WINUSERAPI HWND WINAPI SetFocus(HWND hWnd);
-  WINUSERAPI HWND WINAPI GetActiveWindow(VOID);
-  WINUSERAPI HWND WINAPI GetFocus(VOID);
-  WINUSERAPI UINT WINAPI GetKBCodePage(VOID);
-  WINUSERAPI SHORT WINAPI GetKeyState(int nVirtKey);
-  WINUSERAPI SHORT WINAPI GetAsyncKeyState(int vKey);
-  WINUSERAPI WINBOOL WINAPI GetKeyboardState(PBYTE lpKeyState);
-  WINUSERAPI WINBOOL WINAPI SetKeyboardState(LPBYTE lpKeyState);
-  WINUSERAPI int WINAPI GetKeyNameTextA(LONG lParam,LPSTR lpString,int cchSize);
-  WINUSERAPI int WINAPI GetKeyNameTextW(LONG lParam,LPWSTR lpString,int cchSize);
-  WINUSERAPI int WINAPI GetKeyboardType(int nTypeFlag);
-  WINUSERAPI int WINAPI ToAscii(UINT uVirtKey,UINT uScanCode,CONST BYTE *lpKeyState,LPWORD lpChar,UINT uFlags);
-  WINUSERAPI int WINAPI ToAsciiEx(UINT uVirtKey,UINT uScanCode,CONST BYTE *lpKeyState,LPWORD lpChar,UINT uFlags,HKL dwhkl);
-  WINUSERAPI int WINAPI ToUnicode(UINT wVirtKey,UINT wScanCode,CONST BYTE *lpKeyState,LPWSTR pwszBuff,int cchBuff,UINT wFlags);
-  WINUSERAPI DWORD WINAPI OemKeyScan(WORD wOemChar);
-  WINUSERAPI SHORT WINAPI VkKeyScanA(CHAR ch);
-  WINUSERAPI SHORT WINAPI VkKeyScanW(WCHAR ch);
-  WINUSERAPI SHORT WINAPI VkKeyScanExA(CHAR ch,HKL dwhkl);
-  WINUSERAPI SHORT WINAPI VkKeyScanExW(WCHAR ch,HKL dwhkl);
-  WINUSERAPI VOID WINAPI keybd_event(BYTE bVk,BYTE bScan,DWORD dwFlags,ULONG_PTR dwExtraInfo);
+WINUSERAPI HWND WINAPI SetFocus(HWND hWnd);
+WINUSERAPI HWND WINAPI GetActiveWindow(VOID);
+WINUSERAPI HWND WINAPI GetFocus(VOID);
+WINUSERAPI UINT WINAPI GetKBCodePage(VOID);
+WINUSERAPI SHORT WINAPI GetKeyState(int nVirtKey);
+WINUSERAPI SHORT WINAPI GetAsyncKeyState(int vKey);
+WINUSERAPI WINBOOL WINAPI GetKeyboardState(PBYTE lpKeyState);
+WINUSERAPI WINBOOL WINAPI SetKeyboardState(LPBYTE lpKeyState);
+WINUSERAPI int WINAPI GetKeyNameTextA(LONG lParam, LPSTR lpString, int cchSize);
+WINUSERAPI int WINAPI GetKeyNameTextW(LONG lParam, LPWSTR lpString,
+                                      int cchSize);
+WINUSERAPI int WINAPI GetKeyboardType(int nTypeFlag);
+WINUSERAPI int WINAPI ToAscii(UINT uVirtKey, UINT uScanCode,
+                              CONST BYTE *lpKeyState, LPWORD lpChar,
+                              UINT uFlags);
+WINUSERAPI int WINAPI ToAsciiEx(UINT uVirtKey, UINT uScanCode,
+                                CONST BYTE *lpKeyState, LPWORD lpChar,
+                                UINT uFlags, HKL dwhkl);
+WINUSERAPI int WINAPI ToUnicode(UINT wVirtKey, UINT wScanCode,
+                                CONST BYTE *lpKeyState, LPWSTR pwszBuff,
+                                int cchBuff, UINT wFlags);
+WINUSERAPI DWORD WINAPI OemKeyScan(WORD wOemChar);
+WINUSERAPI SHORT WINAPI VkKeyScanA(CHAR ch);
+WINUSERAPI SHORT WINAPI VkKeyScanW(WCHAR ch);
+WINUSERAPI SHORT WINAPI VkKeyScanExA(CHAR ch, HKL dwhkl);
+WINUSERAPI SHORT WINAPI VkKeyScanExW(WCHAR ch, HKL dwhkl);
+WINUSERAPI VOID WINAPI keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags,
+                                   ULONG_PTR dwExtraInfo);
 #endif
-
 #define KEYEVENTF_EXTENDEDKEY 0x0001
 #define KEYEVENTF_KEYUP 0x0002
 #define KEYEVENTF_UNICODE 0x0004
 #define KEYEVENTF_SCANCODE 0x0008
-
 #define MOUSEEVENTF_MOVE 0x0001
 #define MOUSEEVENTF_LEFTDOWN 0x0002
 #define MOUSEEVENTF_LEFTUP 0x0004
@@ -2618,14 +2540,11 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #endif
 #define MOUSEEVENTF_VIRTUALDESK 0x4000
 #define MOUSEEVENTF_ABSOLUTE 0x8000
-
 #define INPUT_MOUSE 0
 #define INPUT_KEYBOARD 1
 #define INPUT_HARDWARE 2
-
 #if WINVER >= 0x0601
 #define TOUCH_COORD_TO_PIXEL(l) ((l) / 100)
-
 #define TOUCHEVENTF_MOVE 0x0001
 #define TOUCHEVENTF_DOWN 0x0002
 #define TOUCHEVENTF_UP 0x0004
@@ -2634,15 +2553,12 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #define TOUCHEVENTF_NOCOALESCE 0x0020
 #define TOUCHEVENTF_PEN 0x0040
 #define TOUCHEVENTF_PALM 0x0080
-
 #define TOUCHINPUTMASKF_TIMEFROMSYSTEM 0x0001
 #define TOUCHINPUTMASKF_EXTRAINFO 0x0002
 #define TOUCHINPUTMASKF_CONTACTAREA 0x0004
-
 #define TWF_FINETOUCH (0x00000001)
 #define TWF_WANTPALM (0x00000002)
 #endif
-
 #if WINVER >= 0x0602
 #define POINTER_FLAG_NONE 0x00000000
 #define POINTER_FLAG_NEW 0x00000001
@@ -2663,28 +2579,22 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #define POINTER_FLAG_HWHEEL 0x00100000
 #define POINTER_FLAG_CAPTURECHANGED 0x00200000
 #define POINTER_FLAG_HASTRANSFORM 0x00400000
-
 #define POINTER_MOD_SHIFT (0x0004)
 #define POINTER_MOD_CTRL (0x0008)
-
 #define TOUCH_FLAG_NONE 0x00000000
-
 #define TOUCH_MASK_NONE 0x00000000
 #define TOUCH_MASK_CONTACTAREA 0x00000001
 #define TOUCH_MASK_ORIENTATION 0x00000002
 #define TOUCH_MASK_PRESSURE 0x00000004
-
 #define PEN_FLAG_NONE 0x00000000
 #define PEN_FLAG_BARREL 0x00000001
 #define PEN_FLAG_INVERTED 0x00000002
 #define PEN_FLAG_ERASER 0x00000004
-
 #define PEN_MASK_NONE 0x00000000
 #define PEN_MASK_PRESSURE 0x00000001
 #define PEN_MASK_ROTATION 0x00000002
 #define PEN_MASK_TILT_X 0x00000004
 #define PEN_MASK_TILT_Y 0x00000008
-
 #define POINTER_MESSAGE_FLAG_NEW 0x00000001
 #define POINTER_MESSAGE_FLAG_INRANGE 0x00000002
 #define POINTER_MESSAGE_FLAG_INCONTACT 0x00000004
@@ -2696,300 +2606,333 @@ DIALOG_DPI_CHANGE_BEHAVIORS WINAPI GetDialogDpiChangeBehavior(HWND hDlg);
 #define POINTER_MESSAGE_FLAG_PRIMARY 0x00002000
 #define POINTER_MESSAGE_FLAG_CONFIDENCE 0x00004000
 #define POINTER_MESSAGE_FLAG_CANCELED 0x00008000
-
-#define GET_POINTERID_WPARAM(wParam) (LOWORD (wParam))
-#define IS_POINTER_FLAG_SET_WPARAM(wParam, flag) (((DWORD)HIWORD (wParam) &(flag)) == (flag))
-#define IS_POINTER_NEW_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_NEW)
-#define IS_POINTER_INRANGE_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_INRANGE)
-#define IS_POINTER_INCONTACT_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_INCONTACT)
-#define IS_POINTER_FIRSTBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_FIRSTBUTTON)
-#define IS_POINTER_SECONDBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_SECONDBUTTON)
-#define IS_POINTER_THIRDBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_THIRDBUTTON)
-#define IS_POINTER_FOURTHBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_FOURTHBUTTON)
-#define IS_POINTER_FIFTHBUTTON_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_FIFTHBUTTON)
-#define IS_POINTER_PRIMARY_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_PRIMARY)
-#define HAS_POINTER_CONFIDENCE_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_CONFIDENCE)
-#define IS_POINTER_CANCELED_WPARAM(wParam) IS_POINTER_FLAG_SET_WPARAM (wParam, POINTER_MESSAGE_FLAG_CANCELED)
-
+#define GET_POINTERID_WPARAM(wParam) (LOWORD(wParam))
+#define IS_POINTER_FLAG_SET_WPARAM(wParam, flag)                               \
+  (((DWORD)HIWORD(wParam) & (flag)) == (flag))
+#define IS_POINTER_NEW_WPARAM(wParam)                                          \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_NEW)
+#define IS_POINTER_INRANGE_WPARAM(wParam)                                      \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INRANGE)
+#define IS_POINTER_INCONTACT_WPARAM(wParam)                                    \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INCONTACT)
+#define IS_POINTER_FIRSTBUTTON_WPARAM(wParam)                                  \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FIRSTBUTTON)
+#define IS_POINTER_SECONDBUTTON_WPARAM(wParam)                                 \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_SECONDBUTTON)
+#define IS_POINTER_THIRDBUTTON_WPARAM(wParam)                                  \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_THIRDBUTTON)
+#define IS_POINTER_FOURTHBUTTON_WPARAM(wParam)                                 \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FOURTHBUTTON)
+#define IS_POINTER_FIFTHBUTTON_WPARAM(wParam)                                  \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_FIFTHBUTTON)
+#define IS_POINTER_PRIMARY_WPARAM(wParam)                                      \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_PRIMARY)
+#define HAS_POINTER_CONFIDENCE_WPARAM(wParam)                                  \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CONFIDENCE)
+#define IS_POINTER_CANCELED_WPARAM(wParam)                                     \
+  IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_CANCELED)
 #define PA_ACTIVATE MA_ACTIVATE
 #define PA_NOACTIVATE MA_NOACTIVATE
-
 #define MAX_TOUCH_COUNT 256
-
 #define TOUCH_FEEDBACK_DEFAULT 0x1
 #define TOUCH_FEEDBACK_INDIRECT 0x2
 #define TOUCH_FEEDBACK_NONE 0x3
-
 #define TOUCH_HIT_TESTING_DEFAULT 0x0
 #define TOUCH_HIT_TESTING_CLIENT 0x1
 #define TOUCH_HIT_TESTING_NONE 0x2
-
 #define TOUCH_HIT_TESTING_PROXIMITY_CLOSEST 0x0
 #define TOUCH_HIT_TESTING_PROXIMITY_FARTHEST 0xfff
-
 #define GWFS_INCLUDE_ANCESTORS 0x00000001
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI VOID WINAPI mouse_event(DWORD dwFlags,DWORD dx,DWORD dy,DWORD dwData,ULONG_PTR dwExtraInfo);
-
-  typedef struct tagMOUSEINPUT {
-    LONG dx;
-    LONG dy;
-    DWORD mouseData;
-    DWORD dwFlags;
-    DWORD time;
-    ULONG_PTR dwExtraInfo;
-  } MOUSEINPUT,*PMOUSEINPUT,*LPMOUSEINPUT;
-
-  typedef struct tagKEYBDINPUT {
-    WORD wVk;
-    WORD wScan;
-    DWORD dwFlags;
-    DWORD time;
-    ULONG_PTR dwExtraInfo;
-  } KEYBDINPUT,*PKEYBDINPUT,*LPKEYBDINPUT;
-
-  typedef struct tagHARDWAREINPUT {
-    DWORD uMsg;
-    WORD wParamL;
-    WORD wParamH;
-  } HARDWAREINPUT,*PHARDWAREINPUT,*LPHARDWAREINPUT;
-
-  typedef struct tagINPUT {
-    DWORD type;
-    __C89_NAMELESS union {
-      MOUSEINPUT mi;
-      KEYBDINPUT ki;
-      HARDWAREINPUT hi;
-    } DUMMYUNIONNAME;
-  } INPUT,*PINPUT,*LPINPUT;
-
-  WINUSERAPI UINT WINAPI SendInput(UINT cInputs,LPINPUT pInputs,int cbSize);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI VOID WINAPI mouse_event(DWORD dwFlags, DWORD dx, DWORD dy,
+                                   DWORD dwData, ULONG_PTR dwExtraInfo);
+typedef struct tagMOUSEINPUT {
+  LONG dx;
+  LONG dy;
+  DWORD mouseData;
+  DWORD dwFlags;
+  DWORD time;
+  ULONG_PTR dwExtraInfo;
+} MOUSEINPUT, *PMOUSEINPUT, *LPMOUSEINPUT;
+typedef struct tagKEYBDINPUT {
+  WORD wVk;
+  WORD wScan;
+  DWORD dwFlags;
+  DWORD time;
+  ULONG_PTR dwExtraInfo;
+} KEYBDINPUT, *PKEYBDINPUT, *LPKEYBDINPUT;
+typedef struct tagHARDWAREINPUT {
+  DWORD uMsg;
+  WORD wParamL;
+  WORD wParamH;
+} HARDWAREINPUT, *PHARDWAREINPUT, *LPHARDWAREINPUT;
+typedef struct tagINPUT {
+  DWORD type;
+  __C89_NAMELESS union {
+    MOUSEINPUT mi;
+    KEYBDINPUT ki;
+    HARDWAREINPUT hi;
+  } DUMMYUNIONNAME;
+} INPUT, *PINPUT, *LPINPUT;
+WINUSERAPI UINT WINAPI SendInput(UINT cInputs, LPINPUT pInputs, int cbSize);
 #if WINVER >= 0x0601
-  DECLARE_HANDLE (HTOUCHINPUT);
-
-  typedef struct tagTOUCHINPUT {
-    LONG x;
-    LONG y;
-    HANDLE hSource;
-    DWORD dwID;
-    DWORD dwFlags;
-    DWORD dwMask;
-    DWORD dwTime;
-    ULONG_PTR dwExtraInfo;
-    DWORD cxContact;
-    DWORD cyContact;
-  } TOUCHINPUT,*PTOUCHINPUT;
-
-  typedef const TOUCHINPUT *PCTOUCHINPUT;
-
-  WINUSERAPI WINBOOL WINAPI GetTouchInputInfo (HTOUCHINPUT hTouchInput, UINT cInputs, PTOUCHINPUT pInputs, int cbSize);
-  WINUSERAPI WINBOOL WINAPI CloseTouchInputHandle (HTOUCHINPUT hTouchInput);
-  WINUSERAPI WINBOOL WINAPI RegisterTouchWindow (HWND hwnd, ULONG ulFlags);
-  WINUSERAPI WINBOOL WINAPI UnregisterTouchWindow (HWND hwnd);
-  WINUSERAPI WINBOOL WINAPI IsTouchWindow (HWND hwnd, PULONG pulFlags);
+DECLARE_HANDLE(HTOUCHINPUT);
+typedef struct tagTOUCHINPUT {
+  LONG x;
+  LONG y;
+  HANDLE hSource;
+  DWORD dwID;
+  DWORD dwFlags;
+  DWORD dwMask;
+  DWORD dwTime;
+  ULONG_PTR dwExtraInfo;
+  DWORD cxContact;
+  DWORD cyContact;
+} TOUCHINPUT, *PTOUCHINPUT;
+typedef const TOUCHINPUT *PCTOUCHINPUT;
+WINUSERAPI WINBOOL WINAPI GetTouchInputInfo(HTOUCHINPUT hTouchInput,
+                                            UINT cInputs, PTOUCHINPUT pInputs,
+                                            int cbSize);
+WINUSERAPI WINBOOL WINAPI CloseTouchInputHandle(HTOUCHINPUT hTouchInput);
+WINUSERAPI WINBOOL WINAPI RegisterTouchWindow(HWND hwnd, ULONG ulFlags);
+WINUSERAPI WINBOOL WINAPI UnregisterTouchWindow(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI IsTouchWindow(HWND hwnd, PULONG pulFlags);
 #endif
-
 #if WINVER >= 0x0602
-  typedef DWORD POINTER_INPUT_TYPE;
-  typedef UINT32 POINTER_FLAGS;
-  typedef UINT32 TOUCH_FLAGS;
-  typedef UINT32 TOUCH_MASK;
-  typedef UINT32 PEN_FLAGS;
-  typedef UINT32 PEN_MASK;
-
-  enum tagPOINTER_INPUT_TYPE {
-    PT_POINTER = 0x00000001,
-    PT_TOUCH = 0x00000002,
-    PT_PEN = 0x00000003,
-    PT_MOUSE = 0x00000004
+typedef DWORD POINTER_INPUT_TYPE;
+typedef UINT32 POINTER_FLAGS;
+typedef UINT32 TOUCH_FLAGS;
+typedef UINT32 TOUCH_MASK;
+typedef UINT32 PEN_FLAGS;
+typedef UINT32 PEN_MASK;
+enum tagPOINTER_INPUT_TYPE {
+  PT_POINTER = 0x00000001,
+  PT_TOUCH = 0x00000002,
+  PT_PEN = 0x00000003,
+  PT_MOUSE = 0x00000004
 #if WINVER >= 0x0603
-    ,PT_TOUCHPAD = 0x00000005
+  ,
+  PT_TOUCHPAD = 0x00000005
 #endif
+};
+typedef enum tagFEEDBACK_TYPE {
+  FEEDBACK_TOUCH_CONTACTVISUALIZATION = 1,
+  FEEDBACK_PEN_BARRELVISUALIZATION = 2,
+  FEEDBACK_PEN_TAP = 3,
+  FEEDBACK_PEN_DOUBLETAP = 4,
+  FEEDBACK_PEN_PRESSANDHOLD = 5,
+  FEEDBACK_PEN_RIGHTTAP = 6,
+  FEEDBACK_TOUCH_TAP = 7,
+  FEEDBACK_TOUCH_DOUBLETAP = 8,
+  FEEDBACK_TOUCH_PRESSANDHOLD = 9,
+  FEEDBACK_TOUCH_RIGHTTAP = 10,
+  FEEDBACK_GESTURE_PRESSANDTAP = 11,
+  FEEDBACK_MAX = 0xffffffff
+} FEEDBACK_TYPE;
+typedef enum tagPOINTER_BUTTON_CHANGE_TYPE {
+  POINTER_CHANGE_NONE,
+  POINTER_CHANGE_FIRSTBUTTON_DOWN,
+  POINTER_CHANGE_FIRSTBUTTON_UP,
+  POINTER_CHANGE_SECONDBUTTON_DOWN,
+  POINTER_CHANGE_SECONDBUTTON_UP,
+  POINTER_CHANGE_THIRDBUTTON_DOWN,
+  POINTER_CHANGE_THIRDBUTTON_UP,
+  POINTER_CHANGE_FOURTHBUTTON_DOWN,
+  POINTER_CHANGE_FOURTHBUTTON_UP,
+  POINTER_CHANGE_FIFTHBUTTON_DOWN,
+  POINTER_CHANGE_FIFTHBUTTON_UP
+} POINTER_BUTTON_CHANGE_TYPE;
+typedef struct tagPOINTER_INFO {
+  POINTER_INPUT_TYPE pointerType;
+  UINT32 pointerId;
+  UINT32 frameId;
+  POINTER_FLAGS pointerFlags;
+  HANDLE sourceDevice;
+  HWND hwndTarget;
+  POINT ptPixelLocation;
+  POINT ptHimetricLocation;
+  POINT ptPixelLocationRaw;
+  POINT ptHimetricLocationRaw;
+  DWORD dwTime;
+  UINT32 historyCount;
+  INT32 InputData;
+  DWORD dwKeyStates;
+  UINT64 PerformanceCount;
+  POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
+} POINTER_INFO;
+typedef struct tagPOINTER_TOUCH_INFO {
+  POINTER_INFO pointerInfo;
+  TOUCH_FLAGS touchFlags;
+  TOUCH_MASK touchMask;
+  RECT rcContact;
+  RECT rcContactRaw;
+  UINT32 orientation;
+  UINT32 pressure;
+} POINTER_TOUCH_INFO;
+typedef struct tagPOINTER_PEN_INFO {
+  POINTER_INFO pointerInfo;
+  PEN_FLAGS penFlags;
+  PEN_MASK penMask;
+  UINT32 pressure;
+  UINT32 rotation;
+  INT32 tiltX;
+  INT32 tiltY;
+} POINTER_PEN_INFO;
+typedef enum {
+  POINTER_FEEDBACK_DEFAULT = 1,
+  POINTER_FEEDBACK_INDIRECT = 2,
+  POINTER_FEEDBACK_NONE = 3
+} POINTER_FEEDBACK_MODE;
+typedef struct tagUSAGE_PROPERTIES {
+  USHORT level;
+  USHORT page;
+  USHORT usage;
+  INT32 logicalMinimum;
+  INT32 logicalMaximum;
+  USHORT unit;
+  USHORT exponent;
+  BYTE count;
+  INT32 physicalMinimum;
+  INT32 physicalMaximum;
+} USAGE_PROPERTIES, *PUSAGE_PROPERTIES;
+typedef struct tagPOINTER_TYPE_INFO {
+  POINTER_INPUT_TYPE type;
+  __C89_NAMELESS union {
+    POINTER_TOUCH_INFO touchInfo;
+    POINTER_PEN_INFO penInfo;
   };
-
-  typedef enum tagFEEDBACK_TYPE {
-    FEEDBACK_TOUCH_CONTACTVISUALIZATION = 1,
-    FEEDBACK_PEN_BARRELVISUALIZATION = 2,
-    FEEDBACK_PEN_TAP = 3,
-    FEEDBACK_PEN_DOUBLETAP = 4,
-    FEEDBACK_PEN_PRESSANDHOLD = 5,
-    FEEDBACK_PEN_RIGHTTAP = 6,
-    FEEDBACK_TOUCH_TAP = 7,
-    FEEDBACK_TOUCH_DOUBLETAP = 8,
-    FEEDBACK_TOUCH_PRESSANDHOLD = 9,
-    FEEDBACK_TOUCH_RIGHTTAP = 10,
-    FEEDBACK_GESTURE_PRESSANDTAP = 11,
-    FEEDBACK_MAX = 0xffffffff
-  } FEEDBACK_TYPE;
-
-  typedef enum tagPOINTER_BUTTON_CHANGE_TYPE {
-    POINTER_CHANGE_NONE,
-    POINTER_CHANGE_FIRSTBUTTON_DOWN,
-    POINTER_CHANGE_FIRSTBUTTON_UP,
-    POINTER_CHANGE_SECONDBUTTON_DOWN,
-    POINTER_CHANGE_SECONDBUTTON_UP,
-    POINTER_CHANGE_THIRDBUTTON_DOWN,
-    POINTER_CHANGE_THIRDBUTTON_UP,
-    POINTER_CHANGE_FOURTHBUTTON_DOWN,
-    POINTER_CHANGE_FOURTHBUTTON_UP,
-    POINTER_CHANGE_FIFTHBUTTON_DOWN,
-    POINTER_CHANGE_FIFTHBUTTON_UP
-  } POINTER_BUTTON_CHANGE_TYPE;
-
-  typedef struct tagPOINTER_INFO {
-    POINTER_INPUT_TYPE pointerType;
-    UINT32 pointerId;
-    UINT32 frameId;
-    POINTER_FLAGS pointerFlags;
-    HANDLE sourceDevice;
-    HWND hwndTarget;
-    POINT ptPixelLocation;
-    POINT ptHimetricLocation;
-    POINT ptPixelLocationRaw;
-    POINT ptHimetricLocationRaw;
-    DWORD dwTime;
-    UINT32 historyCount;
-    INT32 InputData;
-    DWORD dwKeyStates;
-    UINT64 PerformanceCount;
-    POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
-  } POINTER_INFO;
-
-  typedef struct tagPOINTER_TOUCH_INFO {
-    POINTER_INFO pointerInfo;
-    TOUCH_FLAGS touchFlags;
-    TOUCH_MASK touchMask;
-    RECT rcContact;
-    RECT rcContactRaw;
-    UINT32 orientation;
-    UINT32 pressure;
-  } POINTER_TOUCH_INFO;
-
-  typedef struct tagPOINTER_PEN_INFO {
-    POINTER_INFO pointerInfo;
-    PEN_FLAGS penFlags;
-    PEN_MASK penMask;
-    UINT32 pressure;
-    UINT32 rotation;
-    INT32 tiltX;
-    INT32 tiltY;
-  } POINTER_PEN_INFO;
-
-  typedef enum {
-    POINTER_FEEDBACK_DEFAULT = 1,
-    POINTER_FEEDBACK_INDIRECT = 2,
-    POINTER_FEEDBACK_NONE = 3
-  } POINTER_FEEDBACK_MODE;
-
-  typedef struct tagUSAGE_PROPERTIES {
-    USHORT level;
-    USHORT page;
-    USHORT usage;
-    INT32 logicalMinimum;
-    INT32 logicalMaximum;
-    USHORT unit;
-    USHORT exponent;
-    BYTE count;
-    INT32 physicalMinimum;
-    INT32 physicalMaximum;
-  } USAGE_PROPERTIES, *PUSAGE_PROPERTIES;
-
-  typedef struct tagPOINTER_TYPE_INFO {
-    POINTER_INPUT_TYPE  type;
-    __C89_NAMELESS union {
-        POINTER_TOUCH_INFO touchInfo;
-        POINTER_PEN_INFO penInfo;
-    };
-  } POINTER_TYPE_INFO, *PPOINTER_TYPE_INFO;
-
-  typedef struct tagINPUT_INJECTION_VALUE {
-    USHORT page;
-    USHORT usage;
-    INT32 value;
-    USHORT index;
-  } INPUT_INJECTION_VALUE, *PINPUT_INJECTION_VALUE;
-
-  typedef struct tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION {
-    UINT16 score;
-    POINT adjustedPoint;
-  } TOUCH_HIT_TESTING_PROXIMITY_EVALUATION,*PTOUCH_HIT_TESTING_PROXIMITY_EVALUATION;
-
-  typedef struct tagTOUCH_HIT_TESTING_INPUT {
-    UINT32 pointerId;
-    POINT point;
-    RECT boundingBox;
-    RECT nonOccludedBoundingBox;
-    UINT32 orientation;
-  } TOUCH_HIT_TESTING_INPUT,*PTOUCH_HIT_TESTING_INPUT;
-
-  WINUSERAPI WINBOOL WINAPI InitializeTouchInjection (UINT32 maxCount, DWORD dwMode);
-  WINUSERAPI WINBOOL WINAPI InjectTouchInput (UINT32 count, CONST POINTER_TOUCH_INFO *contacts);
-  WINUSERAPI WINBOOL WINAPI GetPointerType (UINT32 pointerId, POINTER_INPUT_TYPE *pointerType);
-  WINUSERAPI WINBOOL WINAPI GetPointerCursorId (UINT32 pointerId, UINT32 *cursorId);
-  WINUSERAPI WINBOOL WINAPI GetPointerInfo (UINT32 pointerId, POINTER_INFO *pointerInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerInfoHistory (UINT32 pointerId, UINT32 *entriesCount, POINTER_INFO *pointerInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFrameInfo (UINT32 pointerId, UINT32 *pointerCount, POINTER_INFO *pointerInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFrameInfoHistory (UINT32 pointerId, UINT32 *entriesCount, UINT32 *pointerCount, POINTER_INFO *pointerInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerTouchInfo (UINT32 pointerId, POINTER_TOUCH_INFO *touchInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerTouchInfoHistory (UINT32 pointerId, UINT32 *entriesCount, POINTER_TOUCH_INFO *touchInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFrameTouchInfo (UINT32 pointerId, UINT32 *pointerCount, POINTER_TOUCH_INFO *touchInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFrameTouchInfoHistory (UINT32 pointerId, UINT32 *entriesCount, UINT32 *pointerCount, POINTER_TOUCH_INFO *touchInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerPenInfo (UINT32 pointerId, POINTER_PEN_INFO *penInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerPenInfoHistory (UINT32 pointerId, UINT32 *entriesCount, POINTER_PEN_INFO *penInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFramePenInfo (UINT32 pointerId, UINT32 *pointerCount, POINTER_PEN_INFO *penInfo);
-  WINUSERAPI WINBOOL WINAPI GetPointerFramePenInfoHistory (UINT32 pointerId, UINT32 *entriesCount, UINT32 *pointerCount, POINTER_PEN_INFO *penInfo);
-  WINUSERAPI WINBOOL WINAPI SkipPointerFrameMessages (UINT32 pointerId);
-  WINUSERAPI WINBOOL WINAPI RegisterPointerInputTarget (HWND hwnd, POINTER_INPUT_TYPE pointerType);
-  WINUSERAPI WINBOOL WINAPI RegisterPointerInputTargetEx(HWND hwnd, POINTER_INPUT_TYPE pointerType, WINBOOL fObserve);
-  WINUSERAPI WINBOOL WINAPI UnregisterPointerInputTarget (HWND hwnd, POINTER_INPUT_TYPE pointerType);
-  WINUSERAPI WINBOOL WINAPI UnregisterPointerInputTargetEx(HWND hwnd, POINTER_INPUT_TYPE pointerType);
-  WINUSERAPI WINBOOL WINAPI EnableMouseInPointer (WINBOOL fEnable);
-  WINUSERAPI WINBOOL WINAPI IsMouseInPointerEnabled (VOID);
-  WINUSERAPI WINBOOL WINAPI RegisterTouchHitTestingWindow (HWND hwnd, ULONG value);
-  WINUSERAPI WINBOOL WINAPI EvaluateProximityToRect (const RECT *controlBoundingBox, const TOUCH_HIT_TESTING_INPUT *pHitTestingInput, TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
-  WINUSERAPI WINBOOL WINAPI EvaluateProximityToPolygon (UINT32 numVertices, const POINT *controlPolygon, const TOUCH_HIT_TESTING_INPUT *pHitTestingInput, TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
-  WINUSERAPI LRESULT WINAPI PackTouchHitTestingProximityEvaluation (const TOUCH_HIT_TESTING_INPUT *pHitTestingInput, const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
-  WINUSERAPI WINBOOL WINAPI GetWindowFeedbackSetting (HWND hwnd, FEEDBACK_TYPE feedback, DWORD dwFlags, UINT32 *pSize, VOID *config);
-  WINUSERAPI WINBOOL WINAPI SetWindowFeedbackSetting (HWND hwnd, FEEDBACK_TYPE feedback, DWORD dwFlags, UINT32 size, CONST VOID *configuration);
-
+} POINTER_TYPE_INFO, *PPOINTER_TYPE_INFO;
+typedef struct tagINPUT_INJECTION_VALUE {
+  USHORT page;
+  USHORT usage;
+  INT32 value;
+  USHORT index;
+} INPUT_INJECTION_VALUE, *PINPUT_INJECTION_VALUE;
+typedef struct tagTOUCH_HIT_TESTING_PROXIMITY_EVALUATION {
+  UINT16 score;
+  POINT adjustedPoint;
+} TOUCH_HIT_TESTING_PROXIMITY_EVALUATION,
+    *PTOUCH_HIT_TESTING_PROXIMITY_EVALUATION;
+typedef struct tagTOUCH_HIT_TESTING_INPUT {
+  UINT32 pointerId;
+  POINT point;
+  RECT boundingBox;
+  RECT nonOccludedBoundingBox;
+  UINT32 orientation;
+} TOUCH_HIT_TESTING_INPUT, *PTOUCH_HIT_TESTING_INPUT;
+WINUSERAPI WINBOOL WINAPI InitializeTouchInjection(UINT32 maxCount,
+                                                   DWORD dwMode);
+WINUSERAPI WINBOOL WINAPI InjectTouchInput(UINT32 count,
+                                           CONST POINTER_TOUCH_INFO *contacts);
+WINUSERAPI WINBOOL WINAPI GetPointerType(UINT32 pointerId,
+                                         POINTER_INPUT_TYPE *pointerType);
+WINUSERAPI WINBOOL WINAPI GetPointerCursorId(UINT32 pointerId,
+                                             UINT32 *cursorId);
+WINUSERAPI WINBOOL WINAPI GetPointerInfo(UINT32 pointerId,
+                                         POINTER_INFO *pointerInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerInfoHistory(UINT32 pointerId,
+                                                UINT32 *entriesCount,
+                                                POINTER_INFO *pointerInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerFrameInfo(UINT32 pointerId,
+                                              UINT32 *pointerCount,
+                                              POINTER_INFO *pointerInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerFrameInfoHistory(UINT32 pointerId,
+                                                     UINT32 *entriesCount,
+                                                     UINT32 *pointerCount,
+                                                     POINTER_INFO *pointerInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerTouchInfo(UINT32 pointerId,
+                                              POINTER_TOUCH_INFO *touchInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerTouchInfoHistory(
+    UINT32 pointerId, UINT32 *entriesCount, POINTER_TOUCH_INFO *touchInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerFrameTouchInfo(
+    UINT32 pointerId, UINT32 *pointerCount, POINTER_TOUCH_INFO *touchInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerFrameTouchInfoHistory(
+    UINT32 pointerId, UINT32 *entriesCount, UINT32 *pointerCount,
+    POINTER_TOUCH_INFO *touchInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerPenInfo(UINT32 pointerId,
+                                            POINTER_PEN_INFO *penInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerPenInfoHistory(UINT32 pointerId,
+                                                   UINT32 *entriesCount,
+                                                   POINTER_PEN_INFO *penInfo);
+WINUSERAPI WINBOOL WINAPI GetPointerFramePenInfo(UINT32 pointerId,
+                                                 UINT32 *pointerCount,
+                                                 POINTER_PEN_INFO *penInfo);
+WINUSERAPI WINBOOL WINAPI
+GetPointerFramePenInfoHistory(UINT32 pointerId, UINT32 *entriesCount,
+                              UINT32 *pointerCount, POINTER_PEN_INFO *penInfo);
+WINUSERAPI WINBOOL WINAPI SkipPointerFrameMessages(UINT32 pointerId);
+WINUSERAPI WINBOOL WINAPI
+RegisterPointerInputTarget(HWND hwnd, POINTER_INPUT_TYPE pointerType);
+WINUSERAPI WINBOOL WINAPI RegisterPointerInputTargetEx(
+    HWND hwnd, POINTER_INPUT_TYPE pointerType, WINBOOL fObserve);
+WINUSERAPI WINBOOL WINAPI
+UnregisterPointerInputTarget(HWND hwnd, POINTER_INPUT_TYPE pointerType);
+WINUSERAPI WINBOOL WINAPI
+UnregisterPointerInputTargetEx(HWND hwnd, POINTER_INPUT_TYPE pointerType);
+WINUSERAPI WINBOOL WINAPI EnableMouseInPointer(WINBOOL fEnable);
+WINUSERAPI WINBOOL WINAPI IsMouseInPointerEnabled(VOID);
+WINUSERAPI WINBOOL WINAPI RegisterTouchHitTestingWindow(HWND hwnd, ULONG value);
+WINUSERAPI WINBOOL WINAPI
+EvaluateProximityToRect(const RECT *controlBoundingBox,
+                        const TOUCH_HIT_TESTING_INPUT *pHitTestingInput,
+                        TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
+WINUSERAPI WINBOOL WINAPI EvaluateProximityToPolygon(
+    UINT32 numVertices, const POINT *controlPolygon,
+    const TOUCH_HIT_TESTING_INPUT *pHitTestingInput,
+    TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
+WINUSERAPI LRESULT WINAPI PackTouchHitTestingProximityEvaluation(
+    const TOUCH_HIT_TESTING_INPUT *pHitTestingInput,
+    const TOUCH_HIT_TESTING_PROXIMITY_EVALUATION *pProximityEval);
+WINUSERAPI WINBOOL WINAPI GetWindowFeedbackSetting(HWND hwnd,
+                                                   FEEDBACK_TYPE feedback,
+                                                   DWORD dwFlags, UINT32 *pSize,
+                                                   VOID *config);
+WINUSERAPI WINBOOL WINAPI SetWindowFeedbackSetting(HWND hwnd,
+                                                   FEEDBACK_TYPE feedback,
+                                                   DWORD dwFlags, UINT32 size,
+                                                   CONST VOID *configuration);
 #if WDK_NTDDI_VERSION >= NTDDI_WIN10_RS3
 WINUSERAPI WINBOOL WINAPI EnableMouseInPointerForThread(VOID);
 #endif
-
 #if NTDDI_VERSION >= NTDDI_WIN10_RS5
 DECLARE_HANDLE(HSYNTHETICPOINTERDEVICE);
-WINUSERAPI HSYNTHETICPOINTERDEVICE WINAPI CreateSyntheticPointerDevice(POINTER_INPUT_TYPE pointerType, ULONG maxCount, POINTER_FEEDBACK_MODE mode);
-WINUSERAPI WINBOOL WINAPI InjectSyntheticPointerInput(HSYNTHETICPOINTERDEVICE device, CONST POINTER_TYPE_INFO* pointerInfo, UINT32 count);
-WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE device);
+WINUSERAPI HSYNTHETICPOINTERDEVICE WINAPI CreateSyntheticPointerDevice(
+    POINTER_INPUT_TYPE pointerType, ULONG maxCount, POINTER_FEEDBACK_MODE mode);
+WINUSERAPI WINBOOL WINAPI
+InjectSyntheticPointerInput(HSYNTHETICPOINTERDEVICE device,
+                            CONST POINTER_TYPE_INFO *pointerInfo, UINT32 count);
+WINUSERAPI VOID WINAPI
+DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE device);
 #endif /* NTDDI_VERSION >= NTDDI_WIN10_RS5 */
-
 #endif /* WINVER >= 0x0602 */
-
-  typedef struct tagLASTINPUTINFO {
-    UINT cbSize;
-    DWORD dwTime;
-  } LASTINPUTINFO,*PLASTINPUTINFO;
-
+typedef struct tagLASTINPUTINFO {
+  UINT cbSize;
+  DWORD dwTime;
+} LASTINPUTINFO, *PLASTINPUTINFO;
 #define MapVirtualKey __MINGW_NAME_AW(MapVirtualKey)
 #define MapVirtualKeyEx __MINGW_NAME_AW(MapVirtualKeyEx)
-
-  WINUSERAPI WINBOOL WINAPI GetLastInputInfo(PLASTINPUTINFO plii);
-  WINUSERAPI UINT WINAPI MapVirtualKeyA(UINT uCode,UINT uMapType);
-  WINUSERAPI UINT WINAPI MapVirtualKeyW(UINT uCode,UINT uMapType);
-  WINUSERAPI UINT WINAPI MapVirtualKeyExA(UINT uCode,UINT uMapType,HKL dwhkl);
-  WINUSERAPI UINT WINAPI MapVirtualKeyExW(UINT uCode,UINT uMapType,HKL dwhkl);
-  WINUSERAPI WINBOOL WINAPI GetInputState(VOID);
-  WINUSERAPI DWORD WINAPI GetQueueStatus(UINT flags);
-  WINUSERAPI HWND WINAPI GetCapture(VOID);
-  WINUSERAPI HWND WINAPI SetCapture(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI ReleaseCapture(VOID);
-  WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjects(DWORD nCount,CONST HANDLE *pHandles,WINBOOL fWaitAll,DWORD dwMilliseconds,DWORD dwWakeMask);
-  WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjectsEx(DWORD nCount,CONST HANDLE *pHandles,DWORD dwMilliseconds,DWORD dwWakeMask,DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI GetLastInputInfo(PLASTINPUTINFO plii);
+WINUSERAPI UINT WINAPI MapVirtualKeyA(UINT uCode, UINT uMapType);
+WINUSERAPI UINT WINAPI MapVirtualKeyW(UINT uCode, UINT uMapType);
+WINUSERAPI UINT WINAPI MapVirtualKeyExA(UINT uCode, UINT uMapType, HKL dwhkl);
+WINUSERAPI UINT WINAPI MapVirtualKeyExW(UINT uCode, UINT uMapType, HKL dwhkl);
+WINUSERAPI WINBOOL WINAPI GetInputState(VOID);
+WINUSERAPI DWORD WINAPI GetQueueStatus(UINT flags);
+WINUSERAPI HWND WINAPI GetCapture(VOID);
+WINUSERAPI HWND WINAPI SetCapture(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI ReleaseCapture(VOID);
+WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjects(DWORD nCount,
+                                                  CONST HANDLE *pHandles,
+                                                  WINBOOL fWaitAll,
+                                                  DWORD dwMilliseconds,
+                                                  DWORD dwWakeMask);
+WINUSERAPI DWORD WINAPI MsgWaitForMultipleObjectsEx(DWORD nCount,
+                                                    CONST HANDLE *pHandles,
+                                                    DWORD dwMilliseconds,
+                                                    DWORD dwWakeMask,
+                                                    DWORD dwFlags);
 #endif
-
 #define MAPVK_VK_TO_VSC (0)
 #define MAPVK_VSC_TO_VK (1)
 #define MAPVK_VK_TO_CHAR (2)
@@ -2997,11 +2940,9 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #if WINVER >= 0x0600
 #define MAPVK_VK_TO_VSC_EX (4)
 #endif
-
 #define MWMO_WAITALL 0x0001
 #define MWMO_ALERTABLE 0x0002
 #define MWMO_INPUTAVAILABLE 0x0004
-
 #define QS_KEY 0x0001
 #define QS_MOUSEMOVE 0x0002
 #define QS_MOUSEBUTTON 0x0004
@@ -3016,59 +2957,62 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #define QS_TOUCH 0x0800
 #define QS_POINTER 0x1000
 #endif
-
 #define QS_MOUSE (QS_MOUSEMOVE | QS_MOUSEBUTTON)
 #if _WIN32_WINNT >= 0x602
 #define QS_INPUT (QS_MOUSE | QS_KEY | QS_RAWINPUT | QS_TOUCH | QS_POINTER)
 #else
 #define QS_INPUT (QS_MOUSE | QS_KEY | QS_RAWINPUT)
 #endif
-#define QS_ALLEVENTS (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY)
-#define QS_ALLINPUT (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY | QS_SENDMESSAGE)
-
+#define QS_ALLEVENTS                                                           \
+  (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY)
+#define QS_ALLINPUT                                                            \
+  (QS_INPUT | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_HOTKEY | QS_SENDMESSAGE)
 #define USER_TIMER_MAXIMUM 0x7FFFFFFF
 #define USER_TIMER_MINIMUM 0x0000000A
-
 #if WINVER >= 0x0601
 #define TIMERV_DEFAULT_COALESCING (0)
 #define TIMERV_NO_COALESCING (0xffffffff)
-
 #define TIMERV_COALESCING_MIN (1)
 #define TIMERV_COALESCING_MAX (0x7ffffff5)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadAccelerators __MINGW_NAME_AW(LoadAccelerators)
 #define CreateAcceleratorTable __MINGW_NAME_AW(CreateAcceleratorTable)
 #define CopyAcceleratorTable __MINGW_NAME_AW(CopyAcceleratorTable)
-
-  WINUSERAPI UINT_PTR WINAPI SetTimer(HWND hWnd,UINT_PTR nIDEvent,UINT uElapse,TIMERPROC lpTimerFunc);
-  WINUSERAPI WINBOOL WINAPI KillTimer(HWND hWnd,UINT_PTR uIDEvent);
-  WINUSERAPI WINBOOL WINAPI IsWindowUnicode(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI EnableWindow(HWND hWnd,WINBOOL bEnable);
-  WINUSERAPI WINBOOL WINAPI IsWindowEnabled(HWND hWnd);
-  WINUSERAPI HACCEL WINAPI LoadAcceleratorsA(HINSTANCE hInstance,LPCSTR lpTableName);
-  WINUSERAPI HACCEL WINAPI LoadAcceleratorsW(HINSTANCE hInstance,LPCWSTR lpTableName);
-  WINUSERAPI HACCEL WINAPI CreateAcceleratorTableA(LPACCEL paccel,int cAccel);
-  WINUSERAPI HACCEL WINAPI CreateAcceleratorTableW(LPACCEL paccel,int cAccel);
-  WINUSERAPI WINBOOL WINAPI DestroyAcceleratorTable(HACCEL hAccel);
-  WINUSERAPI int WINAPI CopyAcceleratorTableA(HACCEL hAccelSrc,LPACCEL lpAccelDst,int cAccelEntries);
-  WINUSERAPI int WINAPI CopyAcceleratorTableW(HACCEL hAccelSrc,LPACCEL lpAccelDst,int cAccelEntries);
-
+WINUSERAPI UINT_PTR WINAPI SetTimer(HWND hWnd, UINT_PTR nIDEvent, UINT uElapse,
+                                    TIMERPROC lpTimerFunc);
+WINUSERAPI WINBOOL WINAPI KillTimer(HWND hWnd, UINT_PTR uIDEvent);
+WINUSERAPI WINBOOL WINAPI IsWindowUnicode(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI EnableWindow(HWND hWnd, WINBOOL bEnable);
+WINUSERAPI WINBOOL WINAPI IsWindowEnabled(HWND hWnd);
+WINUSERAPI HACCEL WINAPI LoadAcceleratorsA(HINSTANCE hInstance,
+                                           LPCSTR lpTableName);
+WINUSERAPI HACCEL WINAPI LoadAcceleratorsW(HINSTANCE hInstance,
+                                           LPCWSTR lpTableName);
+WINUSERAPI HACCEL WINAPI CreateAcceleratorTableA(LPACCEL paccel, int cAccel);
+WINUSERAPI HACCEL WINAPI CreateAcceleratorTableW(LPACCEL paccel, int cAccel);
+WINUSERAPI WINBOOL WINAPI DestroyAcceleratorTable(HACCEL hAccel);
+WINUSERAPI int WINAPI CopyAcceleratorTableA(HACCEL hAccelSrc,
+                                            LPACCEL lpAccelDst,
+                                            int cAccelEntries);
+WINUSERAPI int WINAPI CopyAcceleratorTableW(HACCEL hAccelSrc,
+                                            LPACCEL lpAccelDst,
+                                            int cAccelEntries);
 #ifndef NOMSG
 #define TranslateAccelerator __MINGW_NAME_AW(TranslateAccelerator)
-
-  WINUSERAPI int WINAPI TranslateAcceleratorA(HWND hWnd,HACCEL hAccTable,LPMSG lpMsg);
-  WINUSERAPI int WINAPI TranslateAcceleratorW(HWND hWnd,HACCEL hAccTable,LPMSG lpMsg);
+WINUSERAPI int WINAPI TranslateAcceleratorA(HWND hWnd, HACCEL hAccTable,
+                                            LPMSG lpMsg);
+WINUSERAPI int WINAPI TranslateAcceleratorW(HWND hWnd, HACCEL hAccTable,
+                                            LPMSG lpMsg);
 #endif
-
 #if WINVER >= 0x0601
-  WINUSERAPI UINT_PTR WINAPI SetCoalescableTimer (HWND hWnd, UINT_PTR nIDEvent, UINT uElapse, TIMERPROC lpTimerFunc, ULONG uToleranceDelay);
+WINUSERAPI UINT_PTR WINAPI SetCoalescableTimer(HWND hWnd, UINT_PTR nIDEvent,
+                                               UINT uElapse,
+                                               TIMERPROC lpTimerFunc,
+                                               ULONG uToleranceDelay);
 #endif
 #endif
-
 #ifndef NOSYSMETRICS
-
 #define SM_CXSCREEN 0
 #define SM_CYSCREEN 1
 #define SM_CXVSCROLL 2
@@ -3113,12 +3057,10 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #define SM_PENWINDOWS 41
 #define SM_DBCSENABLED 42
 #define SM_CMOUSEBUTTONS 43
-
 #define SM_CXFIXEDFRAME SM_CXDLGFRAME
 #define SM_CYFIXEDFRAME SM_CYDLGFRAME
 #define SM_CXSIZEFRAME SM_CXFRAME
 #define SM_CYSIZEFRAME SM_CYFRAME
-
 #define SM_SECURE 44
 #define SM_CXEDGE 45
 #define SM_CYEDGE 46
@@ -3169,7 +3111,6 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #define SM_DIGITIZER 94
 #define SM_MAXIMUMTOUCHES 95
 #endif
-
 #if WINVER <= 0x501
 #define SM_CMETRICS 91
 #elif WINVER == 0x600
@@ -3177,7 +3118,6 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #else
 #define SM_CMETRICS 97
 #endif
-
 #define SM_REMOTESESSION 0x1000
 #define SM_SHUTTINGDOWN 0x2000
 #define SM_REMOTECONTROL 0x2001
@@ -3186,48 +3126,37 @@ WINUSERAPI VOID WINAPI DestroySyntheticPointerDevice(HSYNTHETICPOINTERDEVICE dev
 #define SM_CONVERTIBLESLATEMODE 0x2003
 #define SM_SYSTEMDOCKED 0x2004
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI int WINAPI GetSystemMetrics(int nIndex);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI int WINAPI GetSystemMetrics(int nIndex);
 #endif
 #if WINVER >= 0x0605
 WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #endif
-
 #endif /* !NOSYSMETRICS */
-
 #ifndef NOMENUS
-
 #define PMB_ACTIVE 0x00000001
-
 #define MNC_IGNORE 0
 #define MNC_CLOSE 1
 #define MNC_EXECUTE 2
 #define MNC_SELECT 3
-
 #define MNS_NOCHECK 0x80000000
 #define MNS_MODELESS 0x40000000
 #define MNS_DRAGDROP 0x20000000
 #define MNS_AUTODISMISS 0x10000000
 #define MNS_NOTIFYBYPOS 0x08000000
 #define MNS_CHECKORBMP 0x04000000
-
 #define MIM_MAXHEIGHT 0x00000001
 #define MIM_BACKGROUND 0x00000002
 #define MIM_HELPID 0x00000004
 #define MIM_MENUDATA 0x00000008
 #define MIM_STYLE 0x00000010
 #define MIM_APPLYTOSUBMENUS 0x80000000
-
 #define MND_CONTINUE 0
 #define MND_ENDMENU 1
-
 #define MNGOF_TOPGAP 0x00000001
 #define MNGOF_BOTTOMGAP 0x00000002
-
 #define MNGO_NOINTERFACE 0x00000000
 #define MNGO_NOERROR 0x00000001
-
 #define MIIM_STATE 0x00000001
 #define MIIM_ID 0x00000002
 #define MIIM_SUBMENU 0x00000004
@@ -3237,20 +3166,18 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define MIIM_STRING 0x00000040
 #define MIIM_BITMAP 0x00000080
 #define MIIM_FTYPE 0x00000100
-
-#define HBMMENU_CALLBACK ((HBITMAP) -1)
-#define HBMMENU_SYSTEM ((HBITMAP) 1)
-#define HBMMENU_MBAR_RESTORE ((HBITMAP) 2)
-#define HBMMENU_MBAR_MINIMIZE ((HBITMAP) 3)
-#define HBMMENU_MBAR_CLOSE ((HBITMAP) 5)
-#define HBMMENU_MBAR_CLOSE_D ((HBITMAP) 6)
-#define HBMMENU_MBAR_MINIMIZE_D ((HBITMAP) 7)
-#define HBMMENU_POPUP_CLOSE ((HBITMAP) 8)
-#define HBMMENU_POPUP_RESTORE ((HBITMAP) 9)
-#define HBMMENU_POPUP_MAXIMIZE ((HBITMAP) 10)
-#define HBMMENU_POPUP_MINIMIZE ((HBITMAP) 11)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#define HBMMENU_CALLBACK ((HBITMAP) - 1)
+#define HBMMENU_SYSTEM ((HBITMAP)1)
+#define HBMMENU_MBAR_RESTORE ((HBITMAP)2)
+#define HBMMENU_MBAR_MINIMIZE ((HBITMAP)3)
+#define HBMMENU_MBAR_CLOSE ((HBITMAP)5)
+#define HBMMENU_MBAR_CLOSE_D ((HBITMAP)6)
+#define HBMMENU_MBAR_MINIMIZE_D ((HBITMAP)7)
+#define HBMMENU_POPUP_CLOSE ((HBITMAP)8)
+#define HBMMENU_POPUP_RESTORE ((HBITMAP)9)
+#define HBMMENU_POPUP_MAXIMIZE ((HBITMAP)10)
+#define HBMMENU_POPUP_MINIMIZE ((HBITMAP)11)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadMenu __MINGW_NAME_AW(LoadMenu)
 #define LoadMenuIndirect __MINGW_NAME_AW(LoadMenuIndirect)
 #define ChangeMenu __MINGW_NAME_AW(ChangeMenu)
@@ -3258,133 +3185,153 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define InsertMenu __MINGW_NAME_AW(InsertMenu)
 #define AppendMenu __MINGW_NAME_AW(AppendMenu)
 #define ModifyMenu __MINGW_NAME_AW(ModifyMenu)
-
-  WINUSERAPI HMENU WINAPI LoadMenuA(HINSTANCE hInstance,LPCSTR lpMenuName);
-  WINUSERAPI HMENU WINAPI LoadMenuW(HINSTANCE hInstance,LPCWSTR lpMenuName);
-  WINUSERAPI HMENU WINAPI LoadMenuIndirectA(CONST MENUTEMPLATEA *lpMenuTemplate);
-  WINUSERAPI HMENU WINAPI LoadMenuIndirectW(CONST MENUTEMPLATEW *lpMenuTemplate);
-  WINUSERAPI HMENU WINAPI GetMenu(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI SetMenu(HWND hWnd,HMENU hMenu);
-  WINUSERAPI WINBOOL WINAPI ChangeMenuA(HMENU hMenu,UINT cmd,LPCSTR lpszNewItem,UINT cmdInsert,UINT flags);
-  WINUSERAPI WINBOOL WINAPI ChangeMenuW(HMENU hMenu,UINT cmd,LPCWSTR lpszNewItem,UINT cmdInsert,UINT flags);
-  WINUSERAPI WINBOOL WINAPI HiliteMenuItem(HWND hWnd,HMENU hMenu,UINT uIDHiliteItem,UINT uHilite);
-  WINUSERAPI int WINAPI GetMenuStringA(HMENU hMenu,UINT uIDItem,LPSTR lpString,int cchMax,UINT flags);
-  WINUSERAPI int WINAPI GetMenuStringW(HMENU hMenu,UINT uIDItem,LPWSTR lpString,int cchMax,UINT flags);
-  WINUSERAPI UINT WINAPI GetMenuState(HMENU hMenu,UINT uId,UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI DrawMenuBar(HWND hWnd);
-
-  WINUSERAPI HMENU WINAPI GetSystemMenu(HWND hWnd,WINBOOL bRevert);
-  WINUSERAPI HMENU WINAPI CreateMenu(VOID);
-  WINUSERAPI HMENU WINAPI CreatePopupMenu(VOID);
-  WINUSERAPI WINBOOL WINAPI DestroyMenu(HMENU hMenu);
-  WINUSERAPI DWORD WINAPI CheckMenuItem(HMENU hMenu,UINT uIDCheckItem,UINT uCheck);
-  WINUSERAPI WINBOOL WINAPI EnableMenuItem(HMENU hMenu,UINT uIDEnableItem,UINT uEnable);
-  WINUSERAPI HMENU WINAPI GetSubMenu(HMENU hMenu,int nPos);
-  WINUSERAPI UINT WINAPI GetMenuItemID(HMENU hMenu,int nPos);
-  WINUSERAPI int WINAPI GetMenuItemCount(HMENU hMenu);
-  WINUSERAPI WINBOOL WINAPI InsertMenuA(HMENU hMenu,UINT uPosition,UINT uFlags,UINT_PTR uIDNewItem,LPCSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI InsertMenuW(HMENU hMenu,UINT uPosition,UINT uFlags,UINT_PTR uIDNewItem,LPCWSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI AppendMenuA(HMENU hMenu,UINT uFlags,UINT_PTR uIDNewItem,LPCSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI AppendMenuW(HMENU hMenu,UINT uFlags,UINT_PTR uIDNewItem,LPCWSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI ModifyMenuA(HMENU hMnu,UINT uPosition,UINT uFlags,UINT_PTR uIDNewItem,LPCSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI ModifyMenuW(HMENU hMnu,UINT uPosition,UINT uFlags,UINT_PTR uIDNewItem,LPCWSTR lpNewItem);
-  WINUSERAPI WINBOOL WINAPI RemoveMenu(HMENU hMenu,UINT uPosition,UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI DeleteMenu(HMENU hMenu,UINT uPosition,UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI SetMenuItemBitmaps(HMENU hMenu,UINT uPosition,UINT uFlags,HBITMAP hBitmapUnchecked,HBITMAP hBitmapChecked);
-  WINUSERAPI LONG WINAPI GetMenuCheckMarkDimensions(VOID);
-  WINUSERAPI WINBOOL WINAPI TrackPopupMenu(HMENU hMenu,UINT uFlags,int x,int y,int nReserved,HWND hWnd,CONST RECT *prcRect);
-
-  typedef struct tagTPMPARAMS {
-    UINT cbSize;
-    RECT rcExclude;
-  } TPMPARAMS;
-
-  typedef struct tagMENUINFO {
-    DWORD cbSize;
-    DWORD fMask;
-    DWORD dwStyle;
-    UINT cyMax;
-    HBRUSH hbrBack;
-    DWORD dwContextHelpID;
-    ULONG_PTR dwMenuData;
-  } MENUINFO,*LPMENUINFO;
-
-  typedef TPMPARAMS *LPTPMPARAMS;
-  typedef MENUINFO CONST *LPCMENUINFO;
-
-  WINUSERAPI WINBOOL WINAPI TrackPopupMenuEx(HMENU,UINT,int,int,HWND,LPTPMPARAMS);
-  WINUSERAPI WINBOOL WINAPI GetMenuInfo(HMENU,LPMENUINFO);
-  WINUSERAPI WINBOOL WINAPI SetMenuInfo(HMENU,LPCMENUINFO);
-  WINUSERAPI WINBOOL WINAPI EndMenu(VOID);
+WINUSERAPI HMENU WINAPI LoadMenuA(HINSTANCE hInstance, LPCSTR lpMenuName);
+WINUSERAPI HMENU WINAPI LoadMenuW(HINSTANCE hInstance, LPCWSTR lpMenuName);
+WINUSERAPI HMENU WINAPI LoadMenuIndirectA(CONST MENUTEMPLATEA *lpMenuTemplate);
+WINUSERAPI HMENU WINAPI LoadMenuIndirectW(CONST MENUTEMPLATEW *lpMenuTemplate);
+WINUSERAPI HMENU WINAPI GetMenu(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI SetMenu(HWND hWnd, HMENU hMenu);
+WINUSERAPI WINBOOL WINAPI ChangeMenuA(HMENU hMenu, UINT cmd, LPCSTR lpszNewItem,
+                                      UINT cmdInsert, UINT flags);
+WINUSERAPI WINBOOL WINAPI ChangeMenuW(HMENU hMenu, UINT cmd,
+                                      LPCWSTR lpszNewItem, UINT cmdInsert,
+                                      UINT flags);
+WINUSERAPI WINBOOL WINAPI HiliteMenuItem(HWND hWnd, HMENU hMenu,
+                                         UINT uIDHiliteItem, UINT uHilite);
+WINUSERAPI int WINAPI GetMenuStringA(HMENU hMenu, UINT uIDItem, LPSTR lpString,
+                                     int cchMax, UINT flags);
+WINUSERAPI int WINAPI GetMenuStringW(HMENU hMenu, UINT uIDItem, LPWSTR lpString,
+                                     int cchMax, UINT flags);
+WINUSERAPI UINT WINAPI GetMenuState(HMENU hMenu, UINT uId, UINT uFlags);
+WINUSERAPI WINBOOL WINAPI DrawMenuBar(HWND hWnd);
+WINUSERAPI HMENU WINAPI GetSystemMenu(HWND hWnd, WINBOOL bRevert);
+WINUSERAPI HMENU WINAPI CreateMenu(VOID);
+WINUSERAPI HMENU WINAPI CreatePopupMenu(VOID);
+WINUSERAPI WINBOOL WINAPI DestroyMenu(HMENU hMenu);
+WINUSERAPI DWORD WINAPI CheckMenuItem(HMENU hMenu, UINT uIDCheckItem,
+                                      UINT uCheck);
+WINUSERAPI WINBOOL WINAPI EnableMenuItem(HMENU hMenu, UINT uIDEnableItem,
+                                         UINT uEnable);
+WINUSERAPI HMENU WINAPI GetSubMenu(HMENU hMenu, int nPos);
+WINUSERAPI UINT WINAPI GetMenuItemID(HMENU hMenu, int nPos);
+WINUSERAPI int WINAPI GetMenuItemCount(HMENU hMenu);
+WINUSERAPI WINBOOL WINAPI InsertMenuA(HMENU hMenu, UINT uPosition, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI InsertMenuW(HMENU hMenu, UINT uPosition, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCWSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI AppendMenuA(HMENU hMenu, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI AppendMenuW(HMENU hMenu, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCWSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI ModifyMenuA(HMENU hMnu, UINT uPosition, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI ModifyMenuW(HMENU hMnu, UINT uPosition, UINT uFlags,
+                                      UINT_PTR uIDNewItem, LPCWSTR lpNewItem);
+WINUSERAPI WINBOOL WINAPI RemoveMenu(HMENU hMenu, UINT uPosition, UINT uFlags);
+WINUSERAPI WINBOOL WINAPI DeleteMenu(HMENU hMenu, UINT uPosition, UINT uFlags);
+WINUSERAPI WINBOOL WINAPI SetMenuItemBitmaps(HMENU hMenu, UINT uPosition,
+                                             UINT uFlags,
+                                             HBITMAP hBitmapUnchecked,
+                                             HBITMAP hBitmapChecked);
+WINUSERAPI LONG WINAPI GetMenuCheckMarkDimensions(VOID);
+WINUSERAPI WINBOOL WINAPI TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y,
+                                         int nReserved, HWND hWnd,
+                                         CONST RECT *prcRect);
+typedef struct tagTPMPARAMS {
+  UINT cbSize;
+  RECT rcExclude;
+} TPMPARAMS;
+typedef struct tagMENUINFO {
+  DWORD cbSize;
+  DWORD fMask;
+  DWORD dwStyle;
+  UINT cyMax;
+  HBRUSH hbrBack;
+  DWORD dwContextHelpID;
+  ULONG_PTR dwMenuData;
+} MENUINFO, *LPMENUINFO;
+typedef TPMPARAMS *LPTPMPARAMS;
+typedef MENUINFO CONST *LPCMENUINFO;
+WINUSERAPI WINBOOL WINAPI TrackPopupMenuEx(HMENU, UINT, int, int, HWND,
+                                           LPTPMPARAMS);
+WINUSERAPI WINBOOL WINAPI GetMenuInfo(HMENU, LPMENUINFO);
+WINUSERAPI WINBOOL WINAPI SetMenuInfo(HMENU, LPCMENUINFO);
+WINUSERAPI WINBOOL WINAPI EndMenu(VOID);
 #if _WIN32_WINNT >= 0x0601
-  WINUSERAPI WINBOOL WINAPI CalculatePopupWindowPosition (const POINT *anchorPoint, const SIZE *windowSize, UINT flags, RECT *excludeRect, RECT *popupWindowPosition);
+WINUSERAPI WINBOOL WINAPI CalculatePopupWindowPosition(
+    const POINT *anchorPoint, const SIZE *windowSize, UINT flags,
+    RECT *excludeRect, RECT *popupWindowPosition);
 #endif
-
-  typedef struct tagMENUGETOBJECTINFO {
-    DWORD dwFlags;
-    UINT uPos;
-    HMENU hmenu;
-    PVOID riid;
-    PVOID pvObj;
-  } MENUGETOBJECTINFO,*PMENUGETOBJECTINFO;
-
-  typedef struct tagMENUITEMINFOA {
-    UINT cbSize;
-    UINT fMask;
-    UINT fType;
-    UINT fState;
-    UINT wID;
-    HMENU hSubMenu;
-    HBITMAP hbmpChecked;
-    HBITMAP hbmpUnchecked;
-    ULONG_PTR dwItemData;
-    LPSTR dwTypeData;
-    UINT cch;
-    HBITMAP hbmpItem;
-  } MENUITEMINFOA,*LPMENUITEMINFOA;
-
-  typedef struct tagMENUITEMINFOW {
-    UINT cbSize;
-    UINT fMask;
-    UINT fType;
-    UINT fState;
-    UINT wID;
-    HMENU hSubMenu;
-    HBITMAP hbmpChecked;
-    HBITMAP hbmpUnchecked;
-    ULONG_PTR dwItemData;
-    LPWSTR dwTypeData;
-    UINT cch;
-    HBITMAP hbmpItem;
-  } MENUITEMINFOW,*LPMENUITEMINFOW;
-
-  __MINGW_TYPEDEF_AW(MENUITEMINFO)
-  __MINGW_TYPEDEF_AW(LPMENUITEMINFO)
-
-  typedef MENUITEMINFOA CONST *LPCMENUITEMINFOA;
-  typedef MENUITEMINFOW CONST *LPCMENUITEMINFOW;
-
-  __MINGW_TYPEDEF_AW(LPCMENUITEMINFO)
-
+typedef struct tagMENUGETOBJECTINFO {
+  DWORD dwFlags;
+  UINT uPos;
+  HMENU hmenu;
+  PVOID riid;
+  PVOID pvObj;
+} MENUGETOBJECTINFO, *PMENUGETOBJECTINFO;
+typedef struct tagMENUITEMINFOA {
+  UINT cbSize;
+  UINT fMask;
+  UINT fType;
+  UINT fState;
+  UINT wID;
+  HMENU hSubMenu;
+  HBITMAP hbmpChecked;
+  HBITMAP hbmpUnchecked;
+  ULONG_PTR dwItemData;
+  LPSTR dwTypeData;
+  UINT cch;
+  HBITMAP hbmpItem;
+} MENUITEMINFOA, *LPMENUITEMINFOA;
+typedef struct tagMENUITEMINFOW {
+  UINT cbSize;
+  UINT fMask;
+  UINT fType;
+  UINT fState;
+  UINT wID;
+  HMENU hSubMenu;
+  HBITMAP hbmpChecked;
+  HBITMAP hbmpUnchecked;
+  ULONG_PTR dwItemData;
+  LPWSTR dwTypeData;
+  UINT cch;
+  HBITMAP hbmpItem;
+} MENUITEMINFOW, *LPMENUITEMINFOW;
+__MINGW_TYPEDEF_AW(MENUITEMINFO)
+__MINGW_TYPEDEF_AW(LPMENUITEMINFO)
+typedef MENUITEMINFOA CONST *LPCMENUITEMINFOA;
+typedef MENUITEMINFOW CONST *LPCMENUITEMINFOW;
+__MINGW_TYPEDEF_AW(LPCMENUITEMINFO)
 #define InsertMenuItem __MINGW_NAME_AW(InsertMenuItem)
 #define GetMenuItemInfo __MINGW_NAME_AW(GetMenuItemInfo)
 #define SetMenuItemInfo __MINGW_NAME_AW(SetMenuItemInfo)
-
-  WINUSERAPI WINBOOL WINAPI InsertMenuItemA(HMENU hmenu,UINT item,WINBOOL fByPosition,LPCMENUITEMINFOA lpmi);
-  WINUSERAPI WINBOOL WINAPI InsertMenuItemW(HMENU hmenu,UINT item,WINBOOL fByPosition,LPCMENUITEMINFOW lpmi);
-  WINUSERAPI WINBOOL WINAPI GetMenuItemInfoA(HMENU hmenu,UINT item,WINBOOL fByPosition,LPMENUITEMINFOA lpmii);
-  WINUSERAPI WINBOOL WINAPI GetMenuItemInfoW(HMENU hmenu,UINT item,WINBOOL fByPosition,LPMENUITEMINFOW lpmii);
-  WINUSERAPI WINBOOL WINAPI SetMenuItemInfoA(HMENU hmenu,UINT item,WINBOOL fByPositon,LPCMENUITEMINFOA lpmii);
-  WINUSERAPI WINBOOL WINAPI SetMenuItemInfoW(HMENU hmenu,UINT item,WINBOOL fByPositon,LPCMENUITEMINFOW lpmii);
-
+WINUSERAPI WINBOOL WINAPI InsertMenuItemA(HMENU hmenu, UINT item,
+                                          WINBOOL fByPosition,
+                                          LPCMENUITEMINFOA lpmi);
+WINUSERAPI WINBOOL WINAPI InsertMenuItemW(HMENU hmenu, UINT item,
+                                          WINBOOL fByPosition,
+                                          LPCMENUITEMINFOW lpmi);
+WINUSERAPI WINBOOL WINAPI GetMenuItemInfoA(HMENU hmenu, UINT item,
+                                           WINBOOL fByPosition,
+                                           LPMENUITEMINFOA lpmii);
+WINUSERAPI WINBOOL WINAPI GetMenuItemInfoW(HMENU hmenu, UINT item,
+                                           WINBOOL fByPosition,
+                                           LPMENUITEMINFOW lpmii);
+WINUSERAPI WINBOOL WINAPI SetMenuItemInfoA(HMENU hmenu, UINT item,
+                                           WINBOOL fByPositon,
+                                           LPCMENUITEMINFOA lpmii);
+WINUSERAPI WINBOOL WINAPI SetMenuItemInfoW(HMENU hmenu, UINT item,
+                                           WINBOOL fByPositon,
+                                           LPCMENUITEMINFOW lpmii);
 #define GMDI_USEDISABLED __MSABI_LONG(0x0001)
 #define GMDI_GOINTOPOPUPS __MSABI_LONG(0x0002)
-
-  WINUSERAPI UINT WINAPI GetMenuDefaultItem(HMENU hMenu,UINT fByPos,UINT gmdiFlags);
-  WINUSERAPI WINBOOL WINAPI SetMenuDefaultItem(HMENU hMenu,UINT uItem,UINT fByPos);
-  WINUSERAPI WINBOOL WINAPI GetMenuItemRect(HWND hWnd,HMENU hMenu,UINT uItem,LPRECT lprcItem);
-  WINUSERAPI int WINAPI MenuItemFromPoint(HWND hWnd,HMENU hMenu,POINT ptScreen);
-
+WINUSERAPI UINT WINAPI GetMenuDefaultItem(HMENU hMenu, UINT fByPos,
+                                          UINT gmdiFlags);
+WINUSERAPI WINBOOL WINAPI SetMenuDefaultItem(HMENU hMenu, UINT uItem,
+                                             UINT fByPos);
+WINUSERAPI WINBOOL WINAPI GetMenuItemRect(HWND hWnd, HMENU hMenu, UINT uItem,
+                                          LPRECT lprcItem);
+WINUSERAPI int WINAPI MenuItemFromPoint(HWND hWnd, HMENU hMenu, POINT ptScreen);
 #define TPM_LEFTBUTTON __MSABI_LONG(0x0000)
 #define TPM_RIGHTBUTTON __MSABI_LONG(0x0002)
 #define TPM_LEFTALIGN __MSABI_LONG(0x0000)
@@ -3393,7 +3340,6 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define TPM_TOPALIGN __MSABI_LONG(0x0000)
 #define TPM_VCENTERALIGN __MSABI_LONG(0x0010)
 #define TPM_BOTTOMALIGN __MSABI_LONG(0x0020)
-
 #define TPM_HORIZONTAL __MSABI_LONG(0x0000)
 #define TPM_VERTICAL __MSABI_LONG(0x0040)
 #define TPM_NONOTIFY __MSABI_LONG(0x0080)
@@ -3410,36 +3356,31 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #endif
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagDROPSTRUCT {
-    HWND hwndSource;
-    HWND hwndSink;
-    DWORD wFmt;
-    ULONG_PTR dwData;
-    POINT ptDrop;
-    DWORD dwControlData;
-  } DROPSTRUCT,*PDROPSTRUCT,*LPDROPSTRUCT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagDROPSTRUCT {
+  HWND hwndSource;
+  HWND hwndSink;
+  DWORD wFmt;
+  ULONG_PTR dwData;
+  POINT ptDrop;
+  DWORD dwControlData;
+} DROPSTRUCT, *PDROPSTRUCT, *LPDROPSTRUCT;
 #endif
-
 #define DOF_EXECUTABLE 0x8001
 #define DOF_DOCUMENT 0x8002
 #define DOF_DIRECTORY 0x8003
 #define DOF_MULTIPLE 0x8004
 #define DOF_PROGMAN 0x0001
 #define DOF_SHELLDATA 0x0002
-
 #define DO_DROPFILE __MSABI_LONG(0x454C4946)
 #define DO_PRINTFILE __MSABI_LONG(0x544E5250)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI DWORD WINAPI DragObject(HWND hwndParent,HWND hwndFrom,UINT fmt,ULONG_PTR data,HCURSOR hcur);
-  WINUSERAPI WINBOOL WINAPI DragDetect(HWND hwnd,POINT pt);
-  WINUSERAPI WINBOOL WINAPI DrawIcon(HDC hDC,int X,int Y,HICON hIcon);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI DWORD WINAPI DragObject(HWND hwndParent, HWND hwndFrom, UINT fmt,
+                                   ULONG_PTR data, HCURSOR hcur);
+WINUSERAPI WINBOOL WINAPI DragDetect(HWND hwnd, POINT pt);
+WINUSERAPI WINBOOL WINAPI DrawIcon(HDC hDC, int X, int Y, HICON hIcon);
 #endif
-
 #ifndef NODRAWTEXT
-
 #define DT_TOP 0x00000000
 #define DT_LEFT 0x00000000
 #define DT_CENTER 0x00000001
@@ -3464,59 +3405,80 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define DT_NOFULLWIDTHCHARBREAK 0x00080000
 #define DT_HIDEPREFIX 0x00100000
 #define DT_PREFIXONLY 0x00200000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagDRAWTEXTPARAMS {
-    UINT cbSize;
-    int iTabLength;
-    int iLeftMargin;
-    int iRightMargin;
-    UINT uiLengthDrawn;
-  } DRAWTEXTPARAMS,*LPDRAWTEXTPARAMS;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagDRAWTEXTPARAMS {
+  UINT cbSize;
+  int iTabLength;
+  int iLeftMargin;
+  int iRightMargin;
+  UINT uiLengthDrawn;
+} DRAWTEXTPARAMS, *LPDRAWTEXTPARAMS;
 #define DrawText __MINGW_NAME_AW(DrawText)
 #define DrawTextEx __MINGW_NAME_AW(DrawTextEx)
-
-  WINUSERAPI int WINAPI DrawTextA(HDC hdc,LPCSTR lpchText,int cchText,LPRECT lprc,UINT format);
-  WINUSERAPI int WINAPI DrawTextW(HDC hdc,LPCWSTR lpchText,int cchText,LPRECT lprc,UINT format);
-  WINUSERAPI int WINAPI DrawTextExA(HDC hdc,LPSTR lpchText,int cchText,LPRECT lprc,UINT format,LPDRAWTEXTPARAMS lpdtp);
-  WINUSERAPI int WINAPI DrawTextExW(HDC hdc,LPWSTR lpchText,int cchText,LPRECT lprc,UINT format,LPDRAWTEXTPARAMS lpdtp);
+WINUSERAPI int WINAPI DrawTextA(HDC hdc, LPCSTR lpchText, int cchText,
+                                LPRECT lprc, UINT format);
+WINUSERAPI int WINAPI DrawTextW(HDC hdc, LPCWSTR lpchText, int cchText,
+                                LPRECT lprc, UINT format);
+WINUSERAPI int WINAPI DrawTextExA(HDC hdc, LPSTR lpchText, int cchText,
+                                  LPRECT lprc, UINT format,
+                                  LPDRAWTEXTPARAMS lpdtp);
+WINUSERAPI int WINAPI DrawTextExW(HDC hdc, LPWSTR lpchText, int cchText,
+                                  LPRECT lprc, UINT format,
+                                  LPDRAWTEXTPARAMS lpdtp);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define GrayString __MINGW_NAME_AW(GrayString)
 #define DrawState __MINGW_NAME_AW(DrawState)
 #define TabbedTextOut __MINGW_NAME_AW(TabbedTextOut)
 #define GetTabbedTextExtent __MINGW_NAME_AW(GetTabbedTextExtent)
-
-  WINUSERAPI WINBOOL WINAPI GrayStringA(HDC hDC,HBRUSH hBrush,GRAYSTRINGPROC lpOutputFunc,LPARAM lpData,int nCount,int X,int Y,int nWidth,int nHeight);
-  WINUSERAPI WINBOOL WINAPI GrayStringW(HDC hDC,HBRUSH hBrush,GRAYSTRINGPROC lpOutputFunc,LPARAM lpData,int nCount,int X,int Y,int nWidth,int nHeight);
-  WINUSERAPI WINBOOL WINAPI DrawStateA(HDC hdc,HBRUSH hbrFore,DRAWSTATEPROC qfnCallBack,LPARAM lData,WPARAM wData,int x,int y,int cx,int cy,UINT uFlags);
-  WINUSERAPI WINBOOL WINAPI DrawStateW(HDC hdc,HBRUSH hbrFore,DRAWSTATEPROC qfnCallBack,LPARAM lData,WPARAM wData,int x,int y,int cx,int cy,UINT uFlags);
-  WINUSERAPI LONG WINAPI TabbedTextOutA(HDC hdc,int x,int y,LPCSTR lpString,int chCount,int nTabPositions,CONST INT *lpnTabStopPositions,int nTabOrigin);
-  WINUSERAPI LONG WINAPI TabbedTextOutW(HDC hdc,int x,int y,LPCWSTR lpString,int chCount,int nTabPositions,CONST INT *lpnTabStopPositions,int nTabOrigin);
-  WINUSERAPI DWORD WINAPI GetTabbedTextExtentA(HDC hdc,LPCSTR lpString,int chCount,int nTabPositions,CONST INT *lpnTabStopPositions);
-  WINUSERAPI DWORD WINAPI GetTabbedTextExtentW(HDC hdc,LPCWSTR lpString,int chCount,int nTabPositions,CONST INT *lpnTabStopPositions);
-  WINUSERAPI WINBOOL WINAPI UpdateWindow(HWND hWnd);
-  WINUSERAPI HWND WINAPI SetActiveWindow(HWND hWnd);
-  WINUSERAPI HWND WINAPI GetForegroundWindow(VOID);
-  WINUSERAPI WINBOOL WINAPI PaintDesktop(HDC hdc);
-  WINUSERAPI VOID WINAPI SwitchToThisWindow(HWND hwnd,WINBOOL fUnknown);
-  WINUSERAPI WINBOOL WINAPI SetForegroundWindow(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI AllowSetForegroundWindow(DWORD dwProcessId);
-  WINUSERAPI WINBOOL WINAPI LockSetForegroundWindow(UINT uLockCode);
-  WINUSERAPI HWND WINAPI WindowFromDC(HDC hDC);
-  WINUSERAPI HDC WINAPI GetDC(HWND hWnd);
-  WINUSERAPI HDC WINAPI GetDCEx(HWND hWnd,HRGN hrgnClip,DWORD flags);
+WINUSERAPI WINBOOL WINAPI GrayStringA(HDC hDC, HBRUSH hBrush,
+                                      GRAYSTRINGPROC lpOutputFunc,
+                                      LPARAM lpData, int nCount, int X, int Y,
+                                      int nWidth, int nHeight);
+WINUSERAPI WINBOOL WINAPI GrayStringW(HDC hDC, HBRUSH hBrush,
+                                      GRAYSTRINGPROC lpOutputFunc,
+                                      LPARAM lpData, int nCount, int X, int Y,
+                                      int nWidth, int nHeight);
+WINUSERAPI WINBOOL WINAPI DrawStateA(HDC hdc, HBRUSH hbrFore,
+                                     DRAWSTATEPROC qfnCallBack, LPARAM lData,
+                                     WPARAM wData, int x, int y, int cx, int cy,
+                                     UINT uFlags);
+WINUSERAPI WINBOOL WINAPI DrawStateW(HDC hdc, HBRUSH hbrFore,
+                                     DRAWSTATEPROC qfnCallBack, LPARAM lData,
+                                     WPARAM wData, int x, int y, int cx, int cy,
+                                     UINT uFlags);
+WINUSERAPI LONG WINAPI TabbedTextOutA(HDC hdc, int x, int y, LPCSTR lpString,
+                                      int chCount, int nTabPositions,
+                                      CONST INT *lpnTabStopPositions,
+                                      int nTabOrigin);
+WINUSERAPI LONG WINAPI TabbedTextOutW(HDC hdc, int x, int y, LPCWSTR lpString,
+                                      int chCount, int nTabPositions,
+                                      CONST INT *lpnTabStopPositions,
+                                      int nTabOrigin);
+WINUSERAPI DWORD WINAPI GetTabbedTextExtentA(HDC hdc, LPCSTR lpString,
+                                             int chCount, int nTabPositions,
+                                             CONST INT *lpnTabStopPositions);
+WINUSERAPI DWORD WINAPI GetTabbedTextExtentW(HDC hdc, LPCWSTR lpString,
+                                             int chCount, int nTabPositions,
+                                             CONST INT *lpnTabStopPositions);
+WINUSERAPI WINBOOL WINAPI UpdateWindow(HWND hWnd);
+WINUSERAPI HWND WINAPI SetActiveWindow(HWND hWnd);
+WINUSERAPI HWND WINAPI GetForegroundWindow(VOID);
+WINUSERAPI WINBOOL WINAPI PaintDesktop(HDC hdc);
+WINUSERAPI VOID WINAPI SwitchToThisWindow(HWND hwnd, WINBOOL fUnknown);
+WINUSERAPI WINBOOL WINAPI SetForegroundWindow(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI AllowSetForegroundWindow(DWORD dwProcessId);
+WINUSERAPI WINBOOL WINAPI LockSetForegroundWindow(UINT uLockCode);
+WINUSERAPI HWND WINAPI WindowFromDC(HDC hDC);
+WINUSERAPI HDC WINAPI GetDC(HWND hWnd);
+WINUSERAPI HDC WINAPI GetDCEx(HWND hWnd, HRGN hrgnClip, DWORD flags);
 #endif
-
 #define DST_COMPLEX 0x0000
 #define DST_TEXT 0x0001
 #define DST_PREFIXTEXT 0x0002
 #define DST_ICON 0x0003
 #define DST_BITMAP 0x0004
-
 #define DSS_NORMAL 0x0000
 #define DSS_UNION 0x0010
 #define DSS_DISABLED 0x0020
@@ -3524,12 +3486,9 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define DSS_HIDEPREFIX 0x0200
 #define DSS_PREFIXONLY 0x0400
 #define DSS_RIGHT 0x8000
-
-#define ASFW_ANY ((DWORD)-1)
-
+#define ASFW_ANY ((DWORD) - 1)
 #define LSFW_LOCK 1
 #define LSFW_UNLOCK 2
-
 #define DCX_WINDOW __MSABI_LONG(0x00000001)
 #define DCX_CACHE __MSABI_LONG(0x00000002)
 #define DCX_NORESETATTRS __MSABI_LONG(0x00000004)
@@ -3541,79 +3500,79 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define DCX_EXCLUDEUPDATE __MSABI_LONG(0x00000100)
 #define DCX_INTERSECTUPDATE __MSABI_LONG(0x00000200)
 #define DCX_LOCKWINDOWUPDATE __MSABI_LONG(0x00000400)
-
 #define DCX_VALIDATE __MSABI_LONG(0x00200000)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI HDC WINAPI GetWindowDC(HWND hWnd);
-  WINUSERAPI int WINAPI ReleaseDC(HWND hWnd,HDC hDC);
-  WINUSERAPI HDC WINAPI BeginPaint(HWND hWnd,LPPAINTSTRUCT lpPaint);
-  WINUSERAPI WINBOOL WINAPI EndPaint(HWND hWnd,CONST PAINTSTRUCT *lpPaint);
-  WINUSERAPI WINBOOL WINAPI GetUpdateRect(HWND hWnd,LPRECT lpRect,WINBOOL bErase);
-  WINUSERAPI int WINAPI GetUpdateRgn(HWND hWnd,HRGN hRgn,WINBOOL bErase);
-  WINUSERAPI int WINAPI SetWindowRgn(HWND hWnd,HRGN hRgn,WINBOOL bRedraw);
-  WINUSERAPI int WINAPI GetWindowRgn(HWND hWnd,HRGN hRgn);
-  WINUSERAPI int WINAPI GetWindowRgnBox(HWND hWnd,LPRECT lprc);
-  WINUSERAPI int WINAPI ExcludeUpdateRgn(HDC hDC,HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI InvalidateRect(HWND hWnd,CONST RECT *lpRect,WINBOOL bErase);
-  WINUSERAPI WINBOOL WINAPI ValidateRect(HWND hWnd,CONST RECT *lpRect);
-  WINUSERAPI WINBOOL WINAPI InvalidateRgn(HWND hWnd,HRGN hRgn,WINBOOL bErase);
-  WINUSERAPI WINBOOL WINAPI ValidateRgn(HWND hWnd,HRGN hRgn);
-  WINUSERAPI WINBOOL WINAPI RedrawWindow(HWND hWnd,CONST RECT *lprcUpdate,HRGN hrgnUpdate,UINT flags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI HDC WINAPI GetWindowDC(HWND hWnd);
+WINUSERAPI int WINAPI ReleaseDC(HWND hWnd, HDC hDC);
+WINUSERAPI HDC WINAPI BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
+WINUSERAPI WINBOOL WINAPI EndPaint(HWND hWnd, CONST PAINTSTRUCT *lpPaint);
+WINUSERAPI WINBOOL WINAPI GetUpdateRect(HWND hWnd, LPRECT lpRect,
+                                        WINBOOL bErase);
+WINUSERAPI int WINAPI GetUpdateRgn(HWND hWnd, HRGN hRgn, WINBOOL bErase);
+WINUSERAPI int WINAPI SetWindowRgn(HWND hWnd, HRGN hRgn, WINBOOL bRedraw);
+WINUSERAPI int WINAPI GetWindowRgn(HWND hWnd, HRGN hRgn);
+WINUSERAPI int WINAPI GetWindowRgnBox(HWND hWnd, LPRECT lprc);
+WINUSERAPI int WINAPI ExcludeUpdateRgn(HDC hDC, HWND hWnd);
+WINUSERAPI WINBOOL WINAPI InvalidateRect(HWND hWnd, CONST RECT *lpRect,
+                                         WINBOOL bErase);
+WINUSERAPI WINBOOL WINAPI ValidateRect(HWND hWnd, CONST RECT *lpRect);
+WINUSERAPI WINBOOL WINAPI InvalidateRgn(HWND hWnd, HRGN hRgn, WINBOOL bErase);
+WINUSERAPI WINBOOL WINAPI ValidateRgn(HWND hWnd, HRGN hRgn);
+WINUSERAPI WINBOOL WINAPI RedrawWindow(HWND hWnd, CONST RECT *lprcUpdate,
+                                       HRGN hrgnUpdate, UINT flags);
 #endif
-
 #define RDW_INVALIDATE 0x0001
 #define RDW_INTERNALPAINT 0x0002
 #define RDW_ERASE 0x0004
-
 #define RDW_VALIDATE 0x0008
 #define RDW_NOINTERNALPAINT 0x0010
 #define RDW_NOERASE 0x0020
-
 #define RDW_NOCHILDREN 0x0040
 #define RDW_ALLCHILDREN 0x0080
-
 #define RDW_UPDATENOW 0x0100
 #define RDW_ERASENOW 0x0200
-
 #define RDW_FRAME 0x0400
 #define RDW_NOFRAME 0x0800
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI LockWindowUpdate(HWND hWndLock);
-  WINUSERAPI WINBOOL WINAPI ScrollWindow(HWND hWnd,int XAmount,int YAmount,CONST RECT *lpRect,CONST RECT *lpClipRect);
-  WINUSERAPI WINBOOL WINAPI ScrollDC(HDC hDC,int dx,int dy,CONST RECT *lprcScroll,CONST RECT *lprcClip,HRGN hrgnUpdate,LPRECT lprcUpdate);
-  WINUSERAPI int WINAPI ScrollWindowEx(HWND hWnd,int dx,int dy,CONST RECT *prcScroll,CONST RECT *prcClip,HRGN hrgnUpdate,LPRECT prcUpdate,UINT flags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI LockWindowUpdate(HWND hWndLock);
+WINUSERAPI WINBOOL WINAPI ScrollWindow(HWND hWnd, int XAmount, int YAmount,
+                                       CONST RECT *lpRect,
+                                       CONST RECT *lpClipRect);
+WINUSERAPI WINBOOL WINAPI ScrollDC(HDC hDC, int dx, int dy,
+                                   CONST RECT *lprcScroll, CONST RECT *lprcClip,
+                                   HRGN hrgnUpdate, LPRECT lprcUpdate);
+WINUSERAPI int WINAPI ScrollWindowEx(HWND hWnd, int dx, int dy,
+                                     CONST RECT *prcScroll, CONST RECT *prcClip,
+                                     HRGN hrgnUpdate, LPRECT prcUpdate,
+                                     UINT flags);
 #endif
-
 #define SW_SCROLLCHILDREN 0x0001
 #define SW_INVALIDATE 0x0002
 #define SW_ERASE 0x0004
 #define SW_SMOOTHSCROLL 0x0010
-
 #ifndef NOSCROLL
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI int WINAPI SetScrollPos(HWND hWnd,int nBar,int nPos,WINBOOL bRedraw);
-  WINUSERAPI int WINAPI GetScrollPos(HWND hWnd,int nBar);
-  WINUSERAPI WINBOOL WINAPI SetScrollRange(HWND hWnd,int nBar,int nMinPos,int nMaxPos,WINBOOL bRedraw);
-  WINUSERAPI WINBOOL WINAPI GetScrollRange(HWND hWnd,int nBar,LPINT lpMinPos,LPINT lpMaxPos);
-  WINUSERAPI WINBOOL WINAPI ShowScrollBar(HWND hWnd,int wBar,WINBOOL bShow);
-  WINUSERAPI WINBOOL WINAPI EnableScrollBar(HWND hWnd,UINT wSBflags,UINT wArrows);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI int WINAPI SetScrollPos(HWND hWnd, int nBar, int nPos,
+                                   WINBOOL bRedraw);
+WINUSERAPI int WINAPI GetScrollPos(HWND hWnd, int nBar);
+WINUSERAPI WINBOOL WINAPI SetScrollRange(HWND hWnd, int nBar, int nMinPos,
+                                         int nMaxPos, WINBOOL bRedraw);
+WINUSERAPI WINBOOL WINAPI GetScrollRange(HWND hWnd, int nBar, LPINT lpMinPos,
+                                         LPINT lpMaxPos);
+WINUSERAPI WINBOOL WINAPI ShowScrollBar(HWND hWnd, int wBar, WINBOOL bShow);
+WINUSERAPI WINBOOL WINAPI EnableScrollBar(HWND hWnd, UINT wSBflags,
+                                          UINT wArrows);
 #endif
-
 #define ESB_ENABLE_BOTH 0x0000
 #define ESB_DISABLE_BOTH 0x0003
 #define ESB_DISABLE_LEFT 0x0001
 #define ESB_DISABLE_RIGHT 0x0002
-
 #define ESB_DISABLE_UP 0x0001
 #define ESB_DISABLE_DOWN 0x0002
-
 #define ESB_DISABLE_LTUP ESB_DISABLE_LEFT
 #define ESB_DISABLE_RTDN ESB_DISABLE_RIGHT
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define SetProp __MINGW_NAME_AW(SetProp)
 #define GetProp __MINGW_NAME_AW(GetProp)
 #define RemoveProp __MINGW_NAME_AW(RemoveProp)
@@ -3622,54 +3581,53 @@ WINUSERAPI int WINAPI GetSystemMetricsForDpi(int nIndex, UINT dpi);
 #define SetWindowText __MINGW_NAME_AW(SetWindowText)
 #define GetWindowText __MINGW_NAME_AW(GetWindowText)
 #define GetWindowTextLength __MINGW_NAME_AW(GetWindowTextLength)
-
-  WINUSERAPI WINBOOL WINAPI SetPropA(HWND hWnd,LPCSTR lpString,HANDLE hData);
-  WINUSERAPI WINBOOL WINAPI SetPropW(HWND hWnd,LPCWSTR lpString,HANDLE hData);
-  WINUSERAPI HANDLE WINAPI GetPropA(HWND hWnd,LPCSTR lpString);
-  WINUSERAPI HANDLE WINAPI GetPropW(HWND hWnd,LPCWSTR lpString);
-  WINUSERAPI HANDLE WINAPI RemovePropA(HWND hWnd,LPCSTR lpString);
-  WINUSERAPI HANDLE WINAPI RemovePropW(HWND hWnd,LPCWSTR lpString);
-  WINUSERAPI int WINAPI EnumPropsExA(HWND hWnd,PROPENUMPROCEXA lpEnumFunc,LPARAM lParam);
-  WINUSERAPI int WINAPI EnumPropsExW(HWND hWnd,PROPENUMPROCEXW lpEnumFunc,LPARAM lParam);
-  WINUSERAPI int WINAPI EnumPropsA(HWND hWnd,PROPENUMPROCA lpEnumFunc);
-  WINUSERAPI int WINAPI EnumPropsW(HWND hWnd,PROPENUMPROCW lpEnumFunc);
-  WINUSERAPI WINBOOL WINAPI SetWindowTextA(HWND hWnd,LPCSTR lpString);
-  WINUSERAPI WINBOOL WINAPI SetWindowTextW(HWND hWnd,LPCWSTR lpString);
-  WINUSERAPI int WINAPI GetWindowTextA(HWND hWnd,LPSTR lpString,int nMaxCount);
-  WINUSERAPI int WINAPI GetWindowTextW(HWND hWnd,LPWSTR lpString,int nMaxCount);
-  WINUSERAPI int WINAPI GetWindowTextLengthA(HWND hWnd);
-  WINUSERAPI int WINAPI GetWindowTextLengthW(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI GetClientRect(HWND hWnd,LPRECT lpRect);
-  WINUSERAPI WINBOOL WINAPI GetWindowRect(HWND hWnd,LPRECT lpRect);
-  WINUSERAPI WINBOOL WINAPI AdjustWindowRect(LPRECT lpRect,DWORD dwStyle,WINBOOL bMenu);
-  WINUSERAPI WINBOOL WINAPI AdjustWindowRectEx(LPRECT lpRect,DWORD dwStyle,WINBOOL bMenu,DWORD dwExStyle);
+WINUSERAPI WINBOOL WINAPI SetPropA(HWND hWnd, LPCSTR lpString, HANDLE hData);
+WINUSERAPI WINBOOL WINAPI SetPropW(HWND hWnd, LPCWSTR lpString, HANDLE hData);
+WINUSERAPI HANDLE WINAPI GetPropA(HWND hWnd, LPCSTR lpString);
+WINUSERAPI HANDLE WINAPI GetPropW(HWND hWnd, LPCWSTR lpString);
+WINUSERAPI HANDLE WINAPI RemovePropA(HWND hWnd, LPCSTR lpString);
+WINUSERAPI HANDLE WINAPI RemovePropW(HWND hWnd, LPCWSTR lpString);
+WINUSERAPI int WINAPI EnumPropsExA(HWND hWnd, PROPENUMPROCEXA lpEnumFunc,
+                                   LPARAM lParam);
+WINUSERAPI int WINAPI EnumPropsExW(HWND hWnd, PROPENUMPROCEXW lpEnumFunc,
+                                   LPARAM lParam);
+WINUSERAPI int WINAPI EnumPropsA(HWND hWnd, PROPENUMPROCA lpEnumFunc);
+WINUSERAPI int WINAPI EnumPropsW(HWND hWnd, PROPENUMPROCW lpEnumFunc);
+WINUSERAPI WINBOOL WINAPI SetWindowTextA(HWND hWnd, LPCSTR lpString);
+WINUSERAPI WINBOOL WINAPI SetWindowTextW(HWND hWnd, LPCWSTR lpString);
+WINUSERAPI int WINAPI GetWindowTextA(HWND hWnd, LPSTR lpString, int nMaxCount);
+WINUSERAPI int WINAPI GetWindowTextW(HWND hWnd, LPWSTR lpString, int nMaxCount);
+WINUSERAPI int WINAPI GetWindowTextLengthA(HWND hWnd);
+WINUSERAPI int WINAPI GetWindowTextLengthW(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI GetClientRect(HWND hWnd, LPRECT lpRect);
+WINUSERAPI WINBOOL WINAPI GetWindowRect(HWND hWnd, LPRECT lpRect);
+WINUSERAPI WINBOOL WINAPI AdjustWindowRect(LPRECT lpRect, DWORD dwStyle,
+                                           WINBOOL bMenu);
+WINUSERAPI WINBOOL WINAPI AdjustWindowRectEx(LPRECT lpRect, DWORD dwStyle,
+                                             WINBOOL bMenu, DWORD dwExStyle);
 #if WINVER >= 0x0605
-WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle, WINBOOL bMenu, DWORD dwExStyle, UINT dpi);
+WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
+                                                   WINBOOL bMenu,
+                                                   DWORD dwExStyle, UINT dpi);
 #endif
-
 #endif
-
 #define HELPINFO_WINDOW 0x0001
 #define HELPINFO_MENUITEM 0x0002
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagHELPINFO {
-    UINT cbSize;
-    int iContextType;
-    int iCtrlId;
-    HANDLE hItemHandle;
-    DWORD_PTR dwContextId;
-    POINT MousePos;
-  } HELPINFO,*LPHELPINFO;
-
-  WINUSERAPI WINBOOL WINAPI SetWindowContextHelpId(HWND,DWORD);
-  WINUSERAPI DWORD WINAPI GetWindowContextHelpId(HWND);
-  WINUSERAPI WINBOOL WINAPI SetMenuContextHelpId(HMENU,DWORD);
-  WINUSERAPI DWORD WINAPI GetMenuContextHelpId(HMENU);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagHELPINFO {
+  UINT cbSize;
+  int iContextType;
+  int iCtrlId;
+  HANDLE hItemHandle;
+  DWORD_PTR dwContextId;
+  POINT MousePos;
+} HELPINFO, *LPHELPINFO;
+WINUSERAPI WINBOOL WINAPI SetWindowContextHelpId(HWND, DWORD);
+WINUSERAPI DWORD WINAPI GetWindowContextHelpId(HWND);
+WINUSERAPI WINBOOL WINAPI SetMenuContextHelpId(HMENU, DWORD);
+WINUSERAPI DWORD WINAPI GetMenuContextHelpId(HMENU);
 #endif
-
 #ifndef NOMB
-
 #define MB_OK __MSABI_LONG(0x00000000)
 #define MB_OKCANCEL __MSABI_LONG(0x00000001)
 #define MB_ABORTRETRYIGNORE __MSABI_LONG(0x00000002)
@@ -3707,98 +3665,95 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define MB_DEFMASK __MSABI_LONG(0x00000F00)
 #define MB_MODEMASK __MSABI_LONG(0x00003000)
 #define MB_MISCMASK __MSABI_LONG(0x0000C000)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define MessageBox __MINGW_NAME_AW(MessageBox)
 #define MessageBoxEx __MINGW_NAME_AW(MessageBoxEx)
-
-  WINUSERAPI int WINAPI MessageBoxA(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType);
-  WINUSERAPI int WINAPI MessageBoxW(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType);
-  WINUSERAPI int WINAPI MessageBoxExA(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType,WORD wLanguageId);
-  WINUSERAPI int WINAPI MessageBoxExW(HWND hWnd,LPCWSTR lpText,LPCWSTR lpCaption,UINT uType,WORD wLanguageId);
-
-  typedef VOID (CALLBACK *MSGBOXCALLBACK)(LPHELPINFO lpHelpInfo);
-
-  typedef struct tagMSGBOXPARAMSA {
-    UINT cbSize;
-    HWND hwndOwner;
-    HINSTANCE hInstance;
-    LPCSTR lpszText;
-    LPCSTR lpszCaption;
-    DWORD dwStyle;
-    LPCSTR lpszIcon;
-    DWORD_PTR dwContextHelpId;
-    MSGBOXCALLBACK lpfnMsgBoxCallback;
-    DWORD dwLanguageId;
-  } MSGBOXPARAMSA,*PMSGBOXPARAMSA,*LPMSGBOXPARAMSA;
-
-  typedef struct tagMSGBOXPARAMSW {
-    UINT cbSize;
-    HWND hwndOwner;
-    HINSTANCE hInstance;
-    LPCWSTR lpszText;
-    LPCWSTR lpszCaption;
-    DWORD dwStyle;
-    LPCWSTR lpszIcon;
-    DWORD_PTR dwContextHelpId;
-    MSGBOXCALLBACK lpfnMsgBoxCallback;
-    DWORD dwLanguageId;
-  } MSGBOXPARAMSW,*PMSGBOXPARAMSW,*LPMSGBOXPARAMSW;
-
-  __MINGW_TYPEDEF_AW(MSGBOXPARAMS)
-  __MINGW_TYPEDEF_AW(PMSGBOXPARAMS)
-  __MINGW_TYPEDEF_AW(LPMSGBOXPARAMS)
-
+WINUSERAPI int WINAPI MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption,
+                                  UINT uType);
+WINUSERAPI int WINAPI MessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption,
+                                  UINT uType);
+WINUSERAPI int WINAPI MessageBoxExA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption,
+                                    UINT uType, WORD wLanguageId);
+WINUSERAPI int WINAPI MessageBoxExW(HWND hWnd, LPCWSTR lpText,
+                                    LPCWSTR lpCaption, UINT uType,
+                                    WORD wLanguageId);
+typedef VOID(CALLBACK *MSGBOXCALLBACK)(LPHELPINFO lpHelpInfo);
+typedef struct tagMSGBOXPARAMSA {
+  UINT cbSize;
+  HWND hwndOwner;
+  HINSTANCE hInstance;
+  LPCSTR lpszText;
+  LPCSTR lpszCaption;
+  DWORD dwStyle;
+  LPCSTR lpszIcon;
+  DWORD_PTR dwContextHelpId;
+  MSGBOXCALLBACK lpfnMsgBoxCallback;
+  DWORD dwLanguageId;
+} MSGBOXPARAMSA, *PMSGBOXPARAMSA, *LPMSGBOXPARAMSA;
+typedef struct tagMSGBOXPARAMSW {
+  UINT cbSize;
+  HWND hwndOwner;
+  HINSTANCE hInstance;
+  LPCWSTR lpszText;
+  LPCWSTR lpszCaption;
+  DWORD dwStyle;
+  LPCWSTR lpszIcon;
+  DWORD_PTR dwContextHelpId;
+  MSGBOXCALLBACK lpfnMsgBoxCallback;
+  DWORD dwLanguageId;
+} MSGBOXPARAMSW, *PMSGBOXPARAMSW, *LPMSGBOXPARAMSW;
+__MINGW_TYPEDEF_AW(MSGBOXPARAMS)
+__MINGW_TYPEDEF_AW(PMSGBOXPARAMS)
+__MINGW_TYPEDEF_AW(LPMSGBOXPARAMS)
 #define MessageBoxIndirect __MINGW_NAME_AW(MessageBoxIndirect)
-
-  WINUSERAPI int WINAPI MessageBoxIndirectA(CONST MSGBOXPARAMSA *lpmbp);
-  WINUSERAPI int WINAPI MessageBoxIndirectW(CONST MSGBOXPARAMSW *lpmbp);
-  WINUSERAPI WINBOOL WINAPI MessageBeep(UINT uType);
+WINUSERAPI int WINAPI MessageBoxIndirectA(CONST MSGBOXPARAMSA *lpmbp);
+WINUSERAPI int WINAPI MessageBoxIndirectW(CONST MSGBOXPARAMSW *lpmbp);
+WINUSERAPI WINBOOL WINAPI MessageBeep(UINT uType);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI int WINAPI ShowCursor(WINBOOL bShow);
-  WINUSERAPI WINBOOL WINAPI SetCursorPos(int X,int Y);
-  WINUSERAPI HCURSOR WINAPI SetCursor(HCURSOR hCursor);
-  WINUSERAPI WINBOOL WINAPI GetCursorPos(LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI ClipCursor(CONST RECT *lpRect);
-  WINUSERAPI WINBOOL WINAPI GetClipCursor(LPRECT lpRect);
-  WINUSERAPI HCURSOR WINAPI GetCursor(VOID);
-  WINUSERAPI WINBOOL WINAPI CreateCaret(HWND hWnd,HBITMAP hBitmap,int nWidth,int nHeight);
-  WINUSERAPI UINT WINAPI GetCaretBlinkTime(VOID);
-  WINUSERAPI WINBOOL WINAPI SetCaretBlinkTime(UINT uMSeconds);
-  WINUSERAPI WINBOOL WINAPI DestroyCaret(VOID);
-  WINUSERAPI WINBOOL WINAPI HideCaret(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI ShowCaret(HWND hWnd);
-  WINUSERAPI WINBOOL WINAPI SetCaretPos(int X,int Y);
-  WINUSERAPI WINBOOL WINAPI GetCaretPos(LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI ClientToScreen(HWND hWnd,LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI ScreenToClient(HWND hWnd,LPPOINT lpPoint);
-  WINUSERAPI int WINAPI MapWindowPoints(HWND hWndFrom,HWND hWndTo,LPPOINT lpPoints,UINT cPoints);
-  WINUSERAPI HWND WINAPI WindowFromPoint(POINT Point);
-  WINUSERAPI HWND WINAPI ChildWindowFromPoint(HWND hWndParent,POINT Point);
-  WINUSERAPI HWND WINAPI ChildWindowFromPointEx(HWND hwnd,POINT pt,UINT flags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI int WINAPI ShowCursor(WINBOOL bShow);
+WINUSERAPI WINBOOL WINAPI SetCursorPos(int X, int Y);
+WINUSERAPI HCURSOR WINAPI SetCursor(HCURSOR hCursor);
+WINUSERAPI WINBOOL WINAPI GetCursorPos(LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI ClipCursor(CONST RECT *lpRect);
+WINUSERAPI WINBOOL WINAPI GetClipCursor(LPRECT lpRect);
+WINUSERAPI HCURSOR WINAPI GetCursor(VOID);
+WINUSERAPI WINBOOL WINAPI CreateCaret(HWND hWnd, HBITMAP hBitmap, int nWidth,
+                                      int nHeight);
+WINUSERAPI UINT WINAPI GetCaretBlinkTime(VOID);
+WINUSERAPI WINBOOL WINAPI SetCaretBlinkTime(UINT uMSeconds);
+WINUSERAPI WINBOOL WINAPI DestroyCaret(VOID);
+WINUSERAPI WINBOOL WINAPI HideCaret(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI ShowCaret(HWND hWnd);
+WINUSERAPI WINBOOL WINAPI SetCaretPos(int X, int Y);
+WINUSERAPI WINBOOL WINAPI GetCaretPos(LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI ClientToScreen(HWND hWnd, LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI ScreenToClient(HWND hWnd, LPPOINT lpPoint);
+WINUSERAPI int WINAPI MapWindowPoints(HWND hWndFrom, HWND hWndTo,
+                                      LPPOINT lpPoints, UINT cPoints);
+WINUSERAPI HWND WINAPI WindowFromPoint(POINT Point);
+WINUSERAPI HWND WINAPI ChildWindowFromPoint(HWND hWndParent, POINT Point);
+WINUSERAPI HWND WINAPI ChildWindowFromPointEx(HWND hwnd, POINT pt, UINT flags);
 #if WINVER >= 0x0600
-  WINUSERAPI WINBOOL WINAPI SetPhysicalCursorPos (int X, int Y);
-  WINUSERAPI WINBOOL WINAPI GetPhysicalCursorPos (LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI LogicalToPhysicalPoint (HWND hWnd, LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI PhysicalToLogicalPoint (HWND hWnd, LPPOINT lpPoint);
-  WINUSERAPI HWND WINAPI WindowFromPhysicalPoint (POINT Point);
+WINUSERAPI WINBOOL WINAPI SetPhysicalCursorPos(int X, int Y);
+WINUSERAPI WINBOOL WINAPI GetPhysicalCursorPos(LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI LogicalToPhysicalPoint(HWND hWnd, LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI PhysicalToLogicalPoint(HWND hWnd, LPPOINT lpPoint);
+WINUSERAPI HWND WINAPI WindowFromPhysicalPoint(POINT Point);
 #endif
 #if WINVER >= 0x0603
-  WINUSERAPI WINBOOL WINAPI LogicalToPhysicalPointForPerMonitorDPI (HWND hwnd, LPPOINT lpPoint);
-  WINUSERAPI WINBOOL WINAPI PhysicalToLogicalPointForPerMonitorDPI (HWND hwnd, LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI
+LogicalToPhysicalPointForPerMonitorDPI(HWND hwnd, LPPOINT lpPoint);
+WINUSERAPI WINBOOL WINAPI
+PhysicalToLogicalPointForPerMonitorDPI(HWND hwnd, LPPOINT lpPoint);
 #endif
 #endif
-
 #define CWP_ALL 0x0000
 #define CWP_SKIPINVISIBLE 0x0001
 #define CWP_SKIPDISABLED 0x0002
 #define CWP_SKIPTRANSPARENT 0x0004
-
 #ifndef NOCOLOR
-
 #define CTLCOLOR_MSGBOX 0
 #define CTLCOLOR_EDIT 1
 #define CTLCOLOR_LISTBOX 2
@@ -3807,7 +3762,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define CTLCOLOR_SCROLLBAR 5
 #define CTLCOLOR_STATIC 6
 #define CTLCOLOR_MAX 7
-
 #define COLOR_SCROLLBAR 0
 #define COLOR_BACKGROUND 1
 #define COLOR_ACTIVECAPTION 2
@@ -3829,7 +3783,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define COLOR_BTNTEXT 18
 #define COLOR_INACTIVECAPTIONTEXT 19
 #define COLOR_BTNHIGHLIGHT 20
-
 #define COLOR_3DDKSHADOW 21
 #define COLOR_3DLIGHT 22
 #define COLOR_INFOTEXT 23
@@ -3839,133 +3792,130 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define COLOR_GRADIENTINACTIVECAPTION 28
 #define COLOR_MENUHILIGHT 29
 #define COLOR_MENUBAR 30
-
 #define COLOR_DESKTOP COLOR_BACKGROUND
 #define COLOR_3DFACE COLOR_BTNFACE
 #define COLOR_3DSHADOW COLOR_BTNSHADOW
 #define COLOR_3DHIGHLIGHT COLOR_BTNHIGHLIGHT
 #define COLOR_3DHILIGHT COLOR_BTNHIGHLIGHT
 #define COLOR_BTNHILIGHT COLOR_BTNHIGHLIGHT
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI DWORD WINAPI GetSysColor(int nIndex);
-  WINUSERAPI HBRUSH WINAPI GetSysColorBrush(int nIndex);
-  WINUSERAPI WINBOOL WINAPI SetSysColors(int cElements,CONST INT *lpaElements,CONST COLORREF *lpaRgbValues);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI DWORD WINAPI GetSysColor(int nIndex);
+WINUSERAPI HBRUSH WINAPI GetSysColorBrush(int nIndex);
+WINUSERAPI WINBOOL WINAPI SetSysColors(int cElements, CONST INT *lpaElements,
+                                       CONST COLORREF *lpaRgbValues);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI DrawFocusRect(HDC hDC,CONST RECT *lprc);
-  WINUSERAPI int WINAPI FillRect(HDC hDC,CONST RECT *lprc,HBRUSH hbr);
-  WINUSERAPI int WINAPI FrameRect(HDC hDC,CONST RECT *lprc,HBRUSH hbr);
-  WINUSERAPI WINBOOL WINAPI InvertRect(HDC hDC,CONST RECT *lprc);
-  WINUSERAPI WINBOOL WINAPI SetRect(LPRECT lprc,int xLeft,int yTop,int xRight,int yBottom);
-  WINUSERAPI WINBOOL WINAPI SetRectEmpty(LPRECT lprc);
-  WINUSERAPI WINBOOL WINAPI CopyRect(LPRECT lprcDst,CONST RECT *lprcSrc);
-  WINUSERAPI WINBOOL WINAPI InflateRect(LPRECT lprc,int dx,int dy);
-  WINUSERAPI WINBOOL WINAPI IntersectRect(LPRECT lprcDst,CONST RECT *lprcSrc1,CONST RECT *lprcSrc2);
-  WINUSERAPI WINBOOL WINAPI UnionRect(LPRECT lprcDst,CONST RECT *lprcSrc1,CONST RECT *lprcSrc2);
-  WINUSERAPI WINBOOL WINAPI SubtractRect(LPRECT lprcDst,CONST RECT *lprcSrc1,CONST RECT *lprcSrc2);
-  WINUSERAPI WINBOOL WINAPI OffsetRect(LPRECT lprc,int dx,int dy);
-  WINUSERAPI WINBOOL WINAPI IsRectEmpty(CONST RECT *lprc);
-  WINUSERAPI WINBOOL WINAPI EqualRect(CONST RECT *lprc1,CONST RECT *lprc2);
-  WINUSERAPI WINBOOL WINAPI PtInRect(CONST RECT *lprc,POINT pt);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI DrawFocusRect(HDC hDC, CONST RECT *lprc);
+WINUSERAPI int WINAPI FillRect(HDC hDC, CONST RECT *lprc, HBRUSH hbr);
+WINUSERAPI int WINAPI FrameRect(HDC hDC, CONST RECT *lprc, HBRUSH hbr);
+WINUSERAPI WINBOOL WINAPI InvertRect(HDC hDC, CONST RECT *lprc);
+WINUSERAPI WINBOOL WINAPI SetRect(LPRECT lprc, int xLeft, int yTop, int xRight,
+                                  int yBottom);
+WINUSERAPI WINBOOL WINAPI SetRectEmpty(LPRECT lprc);
+WINUSERAPI WINBOOL WINAPI CopyRect(LPRECT lprcDst, CONST RECT *lprcSrc);
+WINUSERAPI WINBOOL WINAPI InflateRect(LPRECT lprc, int dx, int dy);
+WINUSERAPI WINBOOL WINAPI IntersectRect(LPRECT lprcDst, CONST RECT *lprcSrc1,
+                                        CONST RECT *lprcSrc2);
+WINUSERAPI WINBOOL WINAPI UnionRect(LPRECT lprcDst, CONST RECT *lprcSrc1,
+                                    CONST RECT *lprcSrc2);
+WINUSERAPI WINBOOL WINAPI SubtractRect(LPRECT lprcDst, CONST RECT *lprcSrc1,
+                                       CONST RECT *lprcSrc2);
+WINUSERAPI WINBOOL WINAPI OffsetRect(LPRECT lprc, int dx, int dy);
+WINUSERAPI WINBOOL WINAPI IsRectEmpty(CONST RECT *lprc);
+WINUSERAPI WINBOOL WINAPI EqualRect(CONST RECT *lprc1, CONST RECT *lprc2);
+WINUSERAPI WINBOOL WINAPI PtInRect(CONST RECT *lprc, POINT pt);
 #ifndef NOWINOFFSETS
-
 #define GetWindowLong __MINGW_NAME_AW(GetWindowLong)
 #define SetWindowLong __MINGW_NAME_AW(SetWindowLong)
 #define GetClassLong __MINGW_NAME_AW(GetClassLong)
 #define SetClassLong __MINGW_NAME_AW(SetClassLong)
-
-  WINUSERAPI WORD WINAPI GetWindowWord(HWND hWnd,int nIndex);
-  WINUSERAPI WORD WINAPI SetWindowWord(HWND hWnd,int nIndex,WORD wNewWord);
-  WINUSERAPI LONG WINAPI GetWindowLongA(HWND hWnd,int nIndex);
-  WINUSERAPI LONG WINAPI GetWindowLongW(HWND hWnd,int nIndex);
-  WINUSERAPI LONG WINAPI SetWindowLongA(HWND hWnd,int nIndex,LONG dwNewLong);
-  WINUSERAPI LONG WINAPI SetWindowLongW(HWND hWnd,int nIndex,LONG dwNewLong);
-
+WINUSERAPI WORD WINAPI GetWindowWord(HWND hWnd, int nIndex);
+WINUSERAPI WORD WINAPI SetWindowWord(HWND hWnd, int nIndex, WORD wNewWord);
+WINUSERAPI LONG WINAPI GetWindowLongA(HWND hWnd, int nIndex);
+WINUSERAPI LONG WINAPI GetWindowLongW(HWND hWnd, int nIndex);
+WINUSERAPI LONG WINAPI SetWindowLongA(HWND hWnd, int nIndex, LONG dwNewLong);
+WINUSERAPI LONG WINAPI SetWindowLongW(HWND hWnd, int nIndex, LONG dwNewLong);
 #ifdef _WIN64
 #define GetWindowLongPtr __MINGW_NAME_AW(GetWindowLongPtr)
 #define SetWindowLongPtr __MINGW_NAME_AW(SetWindowLongPtr)
-
-  WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrA(HWND hWnd,int nIndex);
-  WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrW(HWND hWnd,int nIndex);
-  WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrA(HWND hWnd,int nIndex,LONG_PTR dwNewLong);
-  WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrW(HWND hWnd,int nIndex,LONG_PTR dwNewLong);
+WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrA(HWND hWnd, int nIndex);
+WINUSERAPI LONG_PTR WINAPI GetWindowLongPtrW(HWND hWnd, int nIndex);
+WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrA(HWND hWnd, int nIndex,
+                                             LONG_PTR dwNewLong);
+WINUSERAPI LONG_PTR WINAPI SetWindowLongPtrW(HWND hWnd, int nIndex,
+                                             LONG_PTR dwNewLong);
 #else
 #define GetWindowLongPtr __MINGW_NAME_AW(GetWindowLongPtr)
 #define SetWindowLongPtr __MINGW_NAME_AW(SetWindowLongPtr)
-
 #define GetWindowLongPtrA GetWindowLongA
 #define GetWindowLongPtrW GetWindowLongW
 #define SetWindowLongPtrA SetWindowLongA
 #define SetWindowLongPtrW SetWindowLongW
 #endif
-
-  WINUSERAPI WORD WINAPI GetClassWord(HWND hWnd,int nIndex);
-  WINUSERAPI WORD WINAPI SetClassWord(HWND hWnd,int nIndex,WORD wNewWord);
-  WINUSERAPI DWORD WINAPI GetClassLongA(HWND hWnd,int nIndex);
-  WINUSERAPI DWORD WINAPI GetClassLongW(HWND hWnd,int nIndex);
-  WINUSERAPI DWORD WINAPI SetClassLongA(HWND hWnd,int nIndex,LONG dwNewLong);
-  WINUSERAPI DWORD WINAPI SetClassLongW(HWND hWnd,int nIndex,LONG dwNewLong);
-
+WINUSERAPI WORD WINAPI GetClassWord(HWND hWnd, int nIndex);
+WINUSERAPI WORD WINAPI SetClassWord(HWND hWnd, int nIndex, WORD wNewWord);
+WINUSERAPI DWORD WINAPI GetClassLongA(HWND hWnd, int nIndex);
+WINUSERAPI DWORD WINAPI GetClassLongW(HWND hWnd, int nIndex);
+WINUSERAPI DWORD WINAPI SetClassLongA(HWND hWnd, int nIndex, LONG dwNewLong);
+WINUSERAPI DWORD WINAPI SetClassLongW(HWND hWnd, int nIndex, LONG dwNewLong);
 #ifdef _WIN64
 #define GetClassLongPtr __MINGW_NAME_AW(GetClassLongPtr)
 #define SetClassLongPtr __MINGW_NAME_AW(SetClassLongPtr)
-
-  WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hWnd,int nIndex);
-  WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrW(HWND hWnd,int nIndex);
-  WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrA(HWND hWnd,int nIndex,LONG_PTR dwNewLong);
-  WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrW(HWND hWnd,int nIndex,LONG_PTR dwNewLong);
+WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrA(HWND hWnd, int nIndex);
+WINUSERAPI ULONG_PTR WINAPI GetClassLongPtrW(HWND hWnd, int nIndex);
+WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrA(HWND hWnd, int nIndex,
+                                             LONG_PTR dwNewLong);
+WINUSERAPI ULONG_PTR WINAPI SetClassLongPtrW(HWND hWnd, int nIndex,
+                                             LONG_PTR dwNewLong);
 #else
 #define GetClassLongPtr __MINGW_NAME_AW(GetClassLongPtr)
 #define SetClassLongPtr __MINGW_NAME_AW(SetClassLongPtr)
-
 #define GetClassLongPtrA GetClassLongA
 #define GetClassLongPtrW GetClassLongW
 #define SetClassLongPtrA SetClassLongA
 #define SetClassLongPtrW SetClassLongW
 #endif
 #endif
-
 #define FindWindow __MINGW_NAME_AW(FindWindow)
 #define FindWindowEx __MINGW_NAME_AW(FindWindowEx)
 #define GetClassName __MINGW_NAME_AW(GetClassName)
-
-  WINUSERAPI WINBOOL WINAPI GetProcessDefaultLayout(DWORD *pdwDefaultLayout);
-  WINUSERAPI WINBOOL WINAPI SetProcessDefaultLayout(DWORD dwDefaultLayout);
-  WINUSERAPI HWND WINAPI GetDesktopWindow(VOID);
-  WINUSERAPI HWND WINAPI GetParent(HWND hWnd);
-  WINUSERAPI HWND WINAPI SetParent(HWND hWndChild,HWND hWndNewParent);
-  WINUSERAPI WINBOOL WINAPI EnumChildWindows(HWND hWndParent,WNDENUMPROC lpEnumFunc,LPARAM lParam);
-  WINUSERAPI HWND WINAPI FindWindowA(LPCSTR lpClassName,LPCSTR lpWindowName);
-  WINUSERAPI HWND WINAPI FindWindowW(LPCWSTR lpClassName,LPCWSTR lpWindowName);
-  WINUSERAPI HWND WINAPI FindWindowExA(HWND hWndParent,HWND hWndChildAfter,LPCSTR lpszClass,LPCSTR lpszWindow);
-  WINUSERAPI HWND WINAPI FindWindowExW(HWND hWndParent,HWND hWndChildAfter,LPCWSTR lpszClass,LPCWSTR lpszWindow);
-  WINUSERAPI HWND WINAPI GetShellWindow(VOID);
-  WINUSERAPI WINBOOL WINAPI RegisterShellHookWindow(HWND hwnd);
-  WINUSERAPI WINBOOL WINAPI DeregisterShellHookWindow(HWND hwnd);
-  WINUSERAPI WINBOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc,LPARAM lParam);
-  WINUSERAPI WINBOOL WINAPI EnumThreadWindows(DWORD dwThreadId,WNDENUMPROC lpfn,LPARAM lParam);
-
-#define EnumTaskWindows(hTask,lpfn,lParam) EnumThreadWindows(HandleToUlong(hTask),lpfn,lParam)
-
-  WINUSERAPI int WINAPI GetClassNameA(HWND hWnd,LPSTR lpClassName,int nMaxCount);
-  WINUSERAPI int WINAPI GetClassNameW(HWND hWnd,LPWSTR lpClassName,int nMaxCount);
-  WINUSERAPI HWND WINAPI GetTopWindow(HWND hWnd);
-
-#define GetNextWindow(hWnd,wCmd) GetWindow(hWnd,wCmd)
+WINUSERAPI WINBOOL WINAPI GetProcessDefaultLayout(DWORD *pdwDefaultLayout);
+WINUSERAPI WINBOOL WINAPI SetProcessDefaultLayout(DWORD dwDefaultLayout);
+WINUSERAPI HWND WINAPI GetDesktopWindow(VOID);
+WINUSERAPI HWND WINAPI GetParent(HWND hWnd);
+WINUSERAPI HWND WINAPI SetParent(HWND hWndChild, HWND hWndNewParent);
+WINUSERAPI WINBOOL WINAPI EnumChildWindows(HWND hWndParent,
+                                           WNDENUMPROC lpEnumFunc,
+                                           LPARAM lParam);
+WINUSERAPI HWND WINAPI FindWindowA(LPCSTR lpClassName, LPCSTR lpWindowName);
+WINUSERAPI HWND WINAPI FindWindowW(LPCWSTR lpClassName, LPCWSTR lpWindowName);
+WINUSERAPI HWND WINAPI FindWindowExA(HWND hWndParent, HWND hWndChildAfter,
+                                     LPCSTR lpszClass, LPCSTR lpszWindow);
+WINUSERAPI HWND WINAPI FindWindowExW(HWND hWndParent, HWND hWndChildAfter,
+                                     LPCWSTR lpszClass, LPCWSTR lpszWindow);
+WINUSERAPI HWND WINAPI GetShellWindow(VOID);
+WINUSERAPI WINBOOL WINAPI RegisterShellHookWindow(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI DeregisterShellHookWindow(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI EnumThreadWindows(DWORD dwThreadId, WNDENUMPROC lpfn,
+                                            LPARAM lParam);
+#define EnumTaskWindows(hTask, lpfn, lParam)                                   \
+  EnumThreadWindows(HandleToUlong(hTask), lpfn, lParam)
+WINUSERAPI int WINAPI GetClassNameA(HWND hWnd, LPSTR lpClassName,
+                                    int nMaxCount);
+WINUSERAPI int WINAPI GetClassNameW(HWND hWnd, LPWSTR lpClassName,
+                                    int nMaxCount);
+WINUSERAPI HWND WINAPI GetTopWindow(HWND hWnd);
+#define GetNextWindow(hWnd, wCmd) GetWindow(hWnd, wCmd)
 #define GetSysModalWindow() (NULL)
 #define SetSysModalWindow(hWnd) (NULL)
-
-  WINUSERAPI DWORD WINAPI GetWindowThreadProcessId(HWND hWnd,LPDWORD lpdwProcessId);
-  WINUSERAPI WINBOOL WINAPI IsGUIThread(WINBOOL bConvert);
-
-#define GetWindowTask(hWnd) ((HANDLE)(DWORD_PTR)GetWindowThreadProcessId(hWnd,NULL))
-
-  WINUSERAPI HWND WINAPI GetLastActivePopup(HWND hWnd);
-
+WINUSERAPI DWORD WINAPI GetWindowThreadProcessId(HWND hWnd,
+                                                 LPDWORD lpdwProcessId);
+WINUSERAPI WINBOOL WINAPI IsGUIThread(WINBOOL bConvert);
+#define GetWindowTask(hWnd)                                                    \
+  ((HANDLE)(DWORD_PTR)GetWindowThreadProcessId(hWnd, NULL))
+WINUSERAPI HWND WINAPI GetLastActivePopup(HWND hWnd);
 #define GW_HWNDFIRST 0
 #define GW_HWNDLAST 1
 #define GW_HWNDNEXT 2
@@ -3978,34 +3928,36 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define GW_ENABLEDPOPUP 6
 #define GW_MAX 6
 #endif
-
-  WINUSERAPI HWND WINAPI GetWindow(HWND hWnd,UINT uCmd);
-
+WINUSERAPI HWND WINAPI GetWindow(HWND hWnd, UINT uCmd);
 #ifndef NOWH
 #define SetWindowsHook __MINGW_NAME_AW(SetWindowsHook)
 #define SetWindowsHookEx __MINGW_NAME_AW(SetWindowsHookEx)
-
 #ifdef STRICT
-  WINUSERAPI HHOOK WINAPI SetWindowsHookA (int nFilterType, HOOKPROC pfnFilterProc);
-  WINUSERAPI HHOOK WINAPI SetWindowsHookW (int nFilterType, HOOKPROC pfnFilterProc);
-
-#define DefHookProc(nCode, wParam, lParam, phhk) CallNextHookEx (*phhk, nCode, wParam, lParam)
+WINUSERAPI HHOOK WINAPI SetWindowsHookA(int nFilterType,
+                                        HOOKPROC pfnFilterProc);
+WINUSERAPI HHOOK WINAPI SetWindowsHookW(int nFilterType,
+                                        HOOKPROC pfnFilterProc);
+#define DefHookProc(nCode, wParam, lParam, phhk)                               \
+  CallNextHookEx(*phhk, nCode, wParam, lParam)
 #else
-  WINUSERAPI HOOKPROC WINAPI SetWindowsHookA (int nFilterType, HOOKPROC pfnFilterProc);
-  WINUSERAPI HOOKPROC WINAPI SetWindowsHookW (int nFilterType, HOOKPROC pfnFilterProc);
-
-#define DefHookProc(nCode, wParam, lParam, phhk) CallNextHookEx ((HHOOK) *phhk, nCode, wParam, lParam)
+WINUSERAPI HOOKPROC WINAPI SetWindowsHookA(int nFilterType,
+                                           HOOKPROC pfnFilterProc);
+WINUSERAPI HOOKPROC WINAPI SetWindowsHookW(int nFilterType,
+                                           HOOKPROC pfnFilterProc);
+#define DefHookProc(nCode, wParam, lParam, phhk)                               \
+  CallNextHookEx((HHOOK) * phhk, nCode, wParam, lParam)
 #endif
-  WINUSERAPI WINBOOL WINAPI UnhookWindowsHook (int nCode, HOOKPROC pfnFilterProc);
-  WINUSERAPI HHOOK WINAPI SetWindowsHookExA (int idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId);
-  WINUSERAPI HHOOK WINAPI SetWindowsHookExW (int idHook, HOOKPROC lpfn, HINSTANCE hmod, DWORD dwThreadId);
-  WINUSERAPI WINBOOL WINAPI UnhookWindowsHookEx (HHOOK hhk);
-  WINUSERAPI LRESULT WINAPI CallNextHookEx (HHOOK hhk, int nCode, WPARAM wParam, LPARAM lParam);
+WINUSERAPI WINBOOL WINAPI UnhookWindowsHook(int nCode, HOOKPROC pfnFilterProc);
+WINUSERAPI HHOOK WINAPI SetWindowsHookExA(int idHook, HOOKPROC lpfn,
+                                          HINSTANCE hmod, DWORD dwThreadId);
+WINUSERAPI HHOOK WINAPI SetWindowsHookExW(int idHook, HOOKPROC lpfn,
+                                          HINSTANCE hmod, DWORD dwThreadId);
+WINUSERAPI WINBOOL WINAPI UnhookWindowsHookEx(HHOOK hhk);
+WINUSERAPI LRESULT WINAPI CallNextHookEx(HHOOK hhk, int nCode, WPARAM wParam,
+                                         LPARAM lParam);
 #endif
 #endif
-
 #ifndef NOMENUS
-
 #define MF_INSERT __MSABI_LONG(0x00000000)
 #define MF_CHANGE __MSABI_LONG(0x00000080)
 #define MF_APPEND __MSABI_LONG(0x00000100)
@@ -4034,7 +3986,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define MF_RIGHTJUSTIFY __MSABI_LONG(0x00004000)
 #define MF_MOUSESELECT __MSABI_LONG(0x00008000)
 #define MF_END __MSABI_LONG(0x00000080)
-
 #define MFT_STRING MF_STRING
 #define MFT_BITMAP MF_BITMAP
 #define MFT_MENUBARBREAK MF_MENUBARBREAK
@@ -4044,7 +3995,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define MFT_SEPARATOR MF_SEPARATOR
 #define MFT_RIGHTORDER __MSABI_LONG(0x00002000)
 #define MFT_RIGHTJUSTIFY MF_RIGHTJUSTIFY
-
 #define MFS_GRAYED __MSABI_LONG(0x00000003)
 #define MFS_DISABLED MFS_GRAYED
 #define MFS_CHECKED MF_CHECKED
@@ -4053,26 +4003,22 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define MFS_UNCHECKED MF_UNCHECKED
 #define MFS_UNHILITE MF_UNHILITE
 #define MFS_DEFAULT MF_DEFAULT
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI CheckMenuRadioItem(HMENU hmenu,UINT first,UINT last,UINT check,UINT flags);
-
-  typedef struct {
-    WORD versionNumber;
-    WORD offset;
-  } MENUITEMTEMPLATEHEADER,*PMENUITEMTEMPLATEHEADER;
-
-  typedef struct {
-    WORD mtOption;
-    WORD mtID;
-    WCHAR mtString[1];
-  } MENUITEMTEMPLATE,*PMENUITEMTEMPLATE;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI CheckMenuRadioItem(HMENU hmenu, UINT first, UINT last,
+                                             UINT check, UINT flags);
+typedef struct {
+  WORD versionNumber;
+  WORD offset;
+} MENUITEMTEMPLATEHEADER, *PMENUITEMTEMPLATEHEADER;
+typedef struct {
+  WORD mtOption;
+  WORD mtID;
+  WCHAR mtString[1];
+} MENUITEMTEMPLATE, *PMENUITEMTEMPLATE;
 #define MF_END __MSABI_LONG(0x00000080)
 #endif
 #endif
-
 #ifndef NOSYSCOMMANDS
-
 #define SC_SIZE 0xF000
 #define SC_MOVE 0xF010
 #define SC_MINIMIZE 0xF020
@@ -4093,34 +4039,32 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SC_MONITORPOWER 0xF170
 #define SC_CONTEXTHELP 0xF180
 #define SC_SEPARATOR 0xF00F
-
 #if WINVER >= 0x0600
 #define SCF_ISSECURE 0x00000001
 #endif
-
-#define GET_SC_WPARAM(wParam) ((int)wParam &0xfff0)
-
+#define GET_SC_WPARAM(wParam) ((int)wParam & 0xfff0)
 #define SC_ICON SC_MINIMIZE
 #define SC_ZOOM SC_MAXIMIZE
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadBitmap __MINGW_NAME_AW(LoadBitmap)
 #define LoadCursor __MINGW_NAME_AW(LoadCursor)
 #define LoadCursorFromFile __MINGW_NAME_AW(LoadCursorFromFile)
-
-  WINUSERAPI HBITMAP WINAPI LoadBitmapA(HINSTANCE hInstance,LPCSTR lpBitmapName);
-  WINUSERAPI HBITMAP WINAPI LoadBitmapW(HINSTANCE hInstance,LPCWSTR lpBitmapName);
-  WINUSERAPI HCURSOR WINAPI LoadCursorA(HINSTANCE hInstance,LPCSTR lpCursorName);
-  WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance,LPCWSTR lpCursorName);
-  WINUSERAPI HCURSOR WINAPI LoadCursorFromFileA(LPCSTR lpFileName);
-  WINUSERAPI HCURSOR WINAPI LoadCursorFromFileW(LPCWSTR lpFileName);
-  WINUSERAPI HCURSOR WINAPI CreateCursor(HINSTANCE hInst,int xHotSpot,int yHotSpot,int nWidth,int nHeight,CONST VOID *pvANDPlane,CONST VOID *pvXORPlane);
-  WINUSERAPI WINBOOL WINAPI DestroyCursor(HCURSOR hCursor);
-
+WINUSERAPI HBITMAP WINAPI LoadBitmapA(HINSTANCE hInstance, LPCSTR lpBitmapName);
+WINUSERAPI HBITMAP WINAPI LoadBitmapW(HINSTANCE hInstance,
+                                      LPCWSTR lpBitmapName);
+WINUSERAPI HCURSOR WINAPI LoadCursorA(HINSTANCE hInstance, LPCSTR lpCursorName);
+WINUSERAPI HCURSOR WINAPI LoadCursorW(HINSTANCE hInstance,
+                                      LPCWSTR lpCursorName);
+WINUSERAPI HCURSOR WINAPI LoadCursorFromFileA(LPCSTR lpFileName);
+WINUSERAPI HCURSOR WINAPI LoadCursorFromFileW(LPCWSTR lpFileName);
+WINUSERAPI HCURSOR WINAPI CreateCursor(HINSTANCE hInst, int xHotSpot,
+                                       int yHotSpot, int nWidth, int nHeight,
+                                       CONST VOID *pvANDPlane,
+                                       CONST VOID *pvXORPlane);
+WINUSERAPI WINBOOL WINAPI DestroyCursor(HCURSOR hCursor);
 #define CopyCursor(pcur) ((HCURSOR)CopyIcon((HICON)(pcur)))
 #endif
-
 #define IDC_ARROW MAKEINTRESOURCE(32512)
 #define IDC_IBEAM MAKEINTRESOURCE(32513)
 #define IDC_WAIT MAKEINTRESOURCE(32514)
@@ -4141,48 +4085,57 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define IDC_PIN MAKEINTRESOURCE(32671)
 #define IDC_PERSON MAKEINTRESOURCE(32672)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct _ICONINFO {
-    WINBOOL fIcon;
-    DWORD xHotspot;
-    DWORD yHotspot;
-    HBITMAP hbmMask;
-    HBITMAP hbmColor;
-  } ICONINFO;
-  typedef ICONINFO *PICONINFO;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct _ICONINFO {
+  WINBOOL fIcon;
+  DWORD xHotspot;
+  DWORD yHotspot;
+  HBITMAP hbmMask;
+  HBITMAP hbmColor;
+} ICONINFO;
+typedef ICONINFO *PICONINFO;
 #define LoadIcon __MINGW_NAME_AW(LoadIcon)
 #define PrivateExtractIcons __MINGW_NAME_AW(PrivateExtractIcons)
-
-  WINUSERAPI WINBOOL WINAPI SetSystemCursor(HCURSOR hcur,DWORD id);
-  WINUSERAPI HICON WINAPI LoadIconA(HINSTANCE hInstance,LPCSTR lpIconName);
-  WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance,LPCWSTR lpIconName);
-  WINUSERAPI UINT WINAPI PrivateExtractIconsA(LPCSTR szFileName,int nIconIndex,int cxIcon,int cyIcon,HICON *phicon,UINT *piconid,UINT nIcons,UINT flags);
-  WINUSERAPI UINT WINAPI PrivateExtractIconsW(LPCWSTR szFileName,int nIconIndex,int cxIcon,int cyIcon,HICON *phicon,UINT *piconid,UINT nIcons,UINT flags);
-  WINUSERAPI HICON WINAPI CreateIcon(HINSTANCE hInstance,int nWidth,int nHeight,BYTE cPlanes,BYTE cBitsPixel,CONST BYTE *lpbANDbits,CONST BYTE *lpbXORbits);
-  WINUSERAPI WINBOOL WINAPI DestroyIcon(HICON hIcon);
-  WINUSERAPI int WINAPI LookupIconIdFromDirectory(PBYTE presbits,WINBOOL fIcon);
-  WINUSERAPI int WINAPI LookupIconIdFromDirectoryEx(PBYTE presbits,WINBOOL fIcon,int cxDesired,int cyDesired,UINT Flags);
-  WINUSERAPI HICON WINAPI CreateIconFromResource(PBYTE presbits,DWORD dwResSize,WINBOOL fIcon,DWORD dwVer);
-  WINUSERAPI HICON WINAPI CreateIconFromResourceEx(PBYTE presbits,DWORD dwResSize,WINBOOL fIcon,DWORD dwVer,int cxDesired,int cyDesired,UINT Flags);
-
-  typedef struct tagCURSORSHAPE {
-    int xHotSpot;
-    int yHotSpot;
-    int cx;
-    int cy;
-    int cbWidth;
-    BYTE Planes;
-    BYTE BitsPixel;
-  } CURSORSHAPE,*LPCURSORSHAPE;
+WINUSERAPI WINBOOL WINAPI SetSystemCursor(HCURSOR hcur, DWORD id);
+WINUSERAPI HICON WINAPI LoadIconA(HINSTANCE hInstance, LPCSTR lpIconName);
+WINUSERAPI HICON WINAPI LoadIconW(HINSTANCE hInstance, LPCWSTR lpIconName);
+WINUSERAPI UINT WINAPI PrivateExtractIconsA(LPCSTR szFileName, int nIconIndex,
+                                            int cxIcon, int cyIcon,
+                                            HICON *phicon, UINT *piconid,
+                                            UINT nIcons, UINT flags);
+WINUSERAPI UINT WINAPI PrivateExtractIconsW(LPCWSTR szFileName, int nIconIndex,
+                                            int cxIcon, int cyIcon,
+                                            HICON *phicon, UINT *piconid,
+                                            UINT nIcons, UINT flags);
+WINUSERAPI HICON WINAPI CreateIcon(HINSTANCE hInstance, int nWidth, int nHeight,
+                                   BYTE cPlanes, BYTE cBitsPixel,
+                                   CONST BYTE *lpbANDbits,
+                                   CONST BYTE *lpbXORbits);
+WINUSERAPI WINBOOL WINAPI DestroyIcon(HICON hIcon);
+WINUSERAPI int WINAPI LookupIconIdFromDirectory(PBYTE presbits, WINBOOL fIcon);
+WINUSERAPI int WINAPI LookupIconIdFromDirectoryEx(PBYTE presbits, WINBOOL fIcon,
+                                                  int cxDesired, int cyDesired,
+                                                  UINT Flags);
+WINUSERAPI HICON WINAPI CreateIconFromResource(PBYTE presbits, DWORD dwResSize,
+                                               WINBOOL fIcon, DWORD dwVer);
+WINUSERAPI HICON WINAPI CreateIconFromResourceEx(PBYTE presbits,
+                                                 DWORD dwResSize, WINBOOL fIcon,
+                                                 DWORD dwVer, int cxDesired,
+                                                 int cyDesired, UINT Flags);
+typedef struct tagCURSORSHAPE {
+  int xHotSpot;
+  int yHotSpot;
+  int cx;
+  int cy;
+  int cbWidth;
+  BYTE Planes;
+  BYTE BitsPixel;
+} CURSORSHAPE, *LPCURSORSHAPE;
 #endif
-
 #define IMAGE_BITMAP 0
 #define IMAGE_ICON 1
 #define IMAGE_CURSOR 2
 #define IMAGE_ENHMETAFILE 3
-
 #define LR_DEFAULTCOLOR 0x0000
 #define LR_MONOCHROME 0x0001
 #define LR_COLOR 0x0002
@@ -4196,65 +4149,60 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define LR_CREATEDIBSECTION 0x2000
 #define LR_COPYFROMRESOURCE 0x4000
 #define LR_SHARED 0x8000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadImage __MINGW_NAME_AW(LoadImage)
-
-  WINUSERAPI HANDLE WINAPI LoadImageA(HINSTANCE hInst,LPCSTR name,UINT type,int cx,int cy,UINT fuLoad);
-  WINUSERAPI HANDLE WINAPI LoadImageW(HINSTANCE hInst,LPCWSTR name,UINT type,int cx,int cy,UINT fuLoad);
-  WINUSERAPI HANDLE WINAPI CopyImage(HANDLE h,UINT type,int cx,int cy,UINT flags);
-  WINUSERAPI WINBOOL WINAPI DrawIconEx(HDC hdc,int xLeft,int yTop,HICON hIcon,int cxWidth,int cyWidth,UINT istepIfAniCur,HBRUSH hbrFlickerFreeDraw,UINT diFlags);
-  WINUSERAPI HICON WINAPI CreateIconIndirect(PICONINFO piconinfo);
-  WINUSERAPI HICON WINAPI CopyIcon(HICON hIcon);
-  WINUSERAPI WINBOOL WINAPI GetIconInfo(HICON hIcon,PICONINFO piconinfo);
-
+WINUSERAPI HANDLE WINAPI LoadImageA(HINSTANCE hInst, LPCSTR name, UINT type,
+                                    int cx, int cy, UINT fuLoad);
+WINUSERAPI HANDLE WINAPI LoadImageW(HINSTANCE hInst, LPCWSTR name, UINT type,
+                                    int cx, int cy, UINT fuLoad);
+WINUSERAPI HANDLE WINAPI CopyImage(HANDLE h, UINT type, int cx, int cy,
+                                   UINT flags);
+WINUSERAPI WINBOOL WINAPI DrawIconEx(HDC hdc, int xLeft, int yTop, HICON hIcon,
+                                     int cxWidth, int cyWidth,
+                                     UINT istepIfAniCur,
+                                     HBRUSH hbrFlickerFreeDraw, UINT diFlags);
+WINUSERAPI HICON WINAPI CreateIconIndirect(PICONINFO piconinfo);
+WINUSERAPI HICON WINAPI CopyIcon(HICON hIcon);
+WINUSERAPI WINBOOL WINAPI GetIconInfo(HICON hIcon, PICONINFO piconinfo);
 #if _WIN32_WINNT >= 0x0600
-  typedef struct _ICONINFOEXA {
-    DWORD cbSize;
-    WINBOOL fIcon;
-    DWORD xHotspot;
-    DWORD yHotspot;
-    HBITMAP hbmMask;
-    HBITMAP hbmColor;
-    WORD wResID;
-    CHAR szModName[MAX_PATH];
-    CHAR szResName[MAX_PATH];
-  } ICONINFOEXA,*PICONINFOEXA;
-
-  typedef struct _ICONINFOEXW {
-    DWORD cbSize;
-    WINBOOL fIcon;
-    DWORD xHotspot;
-    DWORD yHotspot;
-    HBITMAP hbmMask;
-    HBITMAP hbmColor;
-    WORD wResID;
-    WCHAR szModName[MAX_PATH];
-    WCHAR szResName[MAX_PATH];
-  } ICONINFOEXW,*PICONINFOEXW;
-
-  __MINGW_TYPEDEF_AW (ICONINFOEX);
-  __MINGW_TYPEDEF_AW (PICONINFOEX);
-
+typedef struct _ICONINFOEXA {
+  DWORD cbSize;
+  WINBOOL fIcon;
+  DWORD xHotspot;
+  DWORD yHotspot;
+  HBITMAP hbmMask;
+  HBITMAP hbmColor;
+  WORD wResID;
+  CHAR szModName[MAX_PATH];
+  CHAR szResName[MAX_PATH];
+} ICONINFOEXA, *PICONINFOEXA;
+typedef struct _ICONINFOEXW {
+  DWORD cbSize;
+  WINBOOL fIcon;
+  DWORD xHotspot;
+  DWORD yHotspot;
+  HBITMAP hbmMask;
+  HBITMAP hbmColor;
+  WORD wResID;
+  WCHAR szModName[MAX_PATH];
+  WCHAR szResName[MAX_PATH];
+} ICONINFOEXW, *PICONINFOEXW;
+__MINGW_TYPEDEF_AW(ICONINFOEX);
+__MINGW_TYPEDEF_AW(PICONINFOEX);
 #define GetIconInfoEx __MINGW_NAME_AW(GetIconInfoEx)
-
-  WINUSERAPI WINBOOL WINAPI GetIconInfoExA (HICON hicon, PICONINFOEXA piconinfo);
-  WINUSERAPI WINBOOL WINAPI GetIconInfoExW (HICON hicon, PICONINFOEXW piconinfo);
+WINUSERAPI WINBOOL WINAPI GetIconInfoExA(HICON hicon, PICONINFOEXA piconinfo);
+WINUSERAPI WINBOOL WINAPI GetIconInfoExW(HICON hicon, PICONINFOEXW piconinfo);
 #endif
 #endif
-
 #define DI_MASK 0x0001
 #define DI_IMAGE 0x0002
 #define DI_NORMAL 0x0003
 #define DI_COMPAT 0x0004
 #define DI_DEFAULTSIZE 0x0008
 #define DI_NOMIRROR 0x0010
-
 #define RES_ICON 1
 #define RES_CURSOR 2
-
 #ifdef OEMRESOURCE
-
 #define OBM_CLOSE 32754
 #define OBM_UPARROW 32753
 #define OBM_DNARROW 32752
@@ -4276,7 +4224,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define OBM_DNARROWI 32736
 #define OBM_RGARROWI 32735
 #define OBM_LFARROWI 32734
-
 #define OBM_OLD_CLOSE 32767
 #define OBM_SIZE 32766
 #define OBM_OLD_UPARROW 32765
@@ -4290,7 +4237,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define OBM_OLD_REDUCE 32757
 #define OBM_OLD_ZOOM 32756
 #define OBM_OLD_RESTORE 32755
-
 #define OCR_NORMAL 32512
 #define OCR_IBEAM 32513
 #define OCR_WAIT 32514
@@ -4307,7 +4253,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define OCR_NO 32648
 #define OCR_HAND 32649
 #define OCR_APPSTARTING 32650
-
 #define OIC_SAMPLE 32512
 #define OIC_HAND 32513
 #define OIC_QUES 32514
@@ -4321,11 +4266,8 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define OIC_SHIELD 32518
 #endif
 #endif
-
 #define ORD_LANGDRIVER 1
-
 #ifndef NOICONS
-
 #ifdef RC_INVOKED
 #define IDI_APPLICATION 32512
 #define IDI_HAND 32513
@@ -4344,24 +4286,22 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define IDI_ASTERISK MAKEINTRESOURCE(32516)
 #define IDI_WINLOGO MAKEINTRESOURCE(32517)
 #if WINVER >= 0x0600
-#define IDI_SHIELD MAKEINTRESOURCE (32518)
+#define IDI_SHIELD MAKEINTRESOURCE(32518)
 #endif
 #endif
-
 #define IDI_WARNING IDI_EXCLAMATION
 #define IDI_ERROR IDI_HAND
 #define IDI_INFORMATION IDI_ASTERISK
 #endif
-
 #ifdef NOAPISET
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define LoadString __MINGW_NAME_AW(LoadString)
-
-  WINUSERAPI int WINAPI LoadStringA (HINSTANCE hInstance, UINT uID, LPSTR lpBuffer, int cchBufferMax);
-  WINUSERAPI int WINAPI LoadStringW (HINSTANCE hInstance, UINT uID, LPWSTR lpBuffer, int cchBufferMax);
+WINUSERAPI int WINAPI LoadStringA(HINSTANCE hInstance, UINT uID, LPSTR lpBuffer,
+                                  int cchBufferMax);
+WINUSERAPI int WINAPI LoadStringW(HINSTANCE hInstance, UINT uID,
+                                  LPWSTR lpBuffer, int cchBufferMax);
 #endif
 #endif
-
 #define IDOK 1
 #define IDCANCEL 2
 #define IDABORT 3
@@ -4373,13 +4313,10 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define IDHELP 9
 #define IDTRYAGAIN 10
 #define IDCONTINUE 11
-
 #ifndef IDTIMEOUT
 #define IDTIMEOUT 32000
 #endif
-
 #ifndef NOCTLMGR
-
 #ifndef NOWINSTYLES
 #define ES_LEFT __MSABI_LONG(0x0000)
 #define ES_CENTER __MSABI_LONG(0x0001)
@@ -4396,7 +4333,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define ES_WANTRETURN __MSABI_LONG(0x1000)
 #define ES_NUMBER __MSABI_LONG(0x2000)
 #endif
-
 #define EN_SETFOCUS 0x0100
 #define EN_KILLFOCUS 0x0200
 #define EN_CHANGE 0x0300
@@ -4418,15 +4354,11 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define EC_RIGHTMARGIN 0x0002
 #define EC_USEFONTINFO 0xffff
 #endif
-
 #define EMSIS_COMPOSITIONSTRING 0x0001
-
 #define EIMES_GETCOMPSTRATONCE 0x0001
 #define EIMES_CANCELCOMPSTRINFOCUS 0x0002
 #define EIMES_COMPLETECOMPSTRKILLFOCUS 0x0004
-
 #ifndef NOWINMESSAGES
-
 #define EM_GETSEL 0x00B0
 #define EM_SETSEL 0x00B1
 #define EM_GETRECT 0x00B2
@@ -4470,11 +4402,9 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define EM_ENABLEFEATURE 0x00DA
 #endif
 #endif /* !NOWINMESSAGES */
-
 #define WB_LEFT 0
 #define WB_RIGHT 1
 #define WB_ISDELIMITER 2
-
 #define BS_PUSHBUTTON __MSABI_LONG(0x00000000)
 #define BS_DEFPUSHBUTTON __MSABI_LONG(0x00000001)
 #define BS_CHECKBOX __MSABI_LONG(0x00000002)
@@ -4503,7 +4433,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define BS_NOTIFY __MSABI_LONG(0x00004000)
 #define BS_FLAT __MSABI_LONG(0x00008000)
 #define BS_RIGHTBUTTON BS_LEFTTEXT
-
 #define BN_CLICKED 0
 #define BN_PAINT 1
 #define BN_HILITE 2
@@ -4515,7 +4444,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define BN_DBLCLK BN_DOUBLECLICKED
 #define BN_SETFOCUS 6
 #define BN_KILLFOCUS 7
-
 #define BM_GETCHECK 0x00F0
 #define BM_SETCHECK 0x00F1
 #define BM_GETSTATE 0x00F2
@@ -4527,13 +4455,11 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #if WINVER >= 0x0600
 #define BM_SETDONTCLICK 0x00f8
 #endif
-
 #define BST_UNCHECKED 0x0000
 #define BST_CHECKED 0x0001
 #define BST_INDETERMINATE 0x0002
 #define BST_PUSHED 0x0004
 #define BST_FOCUS 0x0008
-
 #define SS_LEFT __MSABI_LONG(0x00000000)
 #define SS_CENTER __MSABI_LONG(0x00000001)
 #define SS_RIGHT __MSABI_LONG(0x00000002)
@@ -4566,9 +4492,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SS_PATHELLIPSIS __MSABI_LONG(0x00008000)
 #define SS_WORDELLIPSIS __MSABI_LONG(0x0000C000)
 #define SS_ELLIPSISMASK __MSABI_LONG(0x0000C000)
-
 #ifndef NOWINMESSAGES
-
 #define STM_SETICON 0x0170
 #define STM_GETICON 0x0171
 #define STM_SETIMAGE 0x0172
@@ -4577,62 +4501,59 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define STN_DBLCLK 1
 #define STN_ENABLE 2
 #define STN_DISABLE 3
-
 #define STM_MSGMAX 0x0174
 #endif
-
 #define WC_DIALOG (MAKEINTATOM(0x8002))
-
 #define DWL_MSGRESULT 0
 #define DWL_DLGPROC 4
 #define DWL_USER 8
-
 #ifdef _WIN64
-
 #undef DWL_MSGRESULT
 #undef DWL_DLGPROC
 #undef DWL_USER
 #endif
-
 #define DWLP_MSGRESULT 0
 #define DWLP_DLGPROC DWLP_MSGRESULT + sizeof(LRESULT)
 #define DWLP_USER DWLP_DLGPROC + sizeof(DLGPROC)
-
 #define DDL_READWRITE 0x0000
 #define DDL_READONLY 0x0001
 #define DDL_HIDDEN 0x0002
 #define DDL_SYSTEM 0x0004
 #define DDL_DIRECTORY 0x0010
 #define DDL_ARCHIVE 0x0020
-
 #define DDL_POSTMSGS 0x2000
 #define DDL_DRIVES 0x4000
 #define DDL_EXCLUSIVE 0x8000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #ifndef NOMSG
 #define IsDialogMessage __MINGW_NAME_AW(IsDialogMessage)
-
-  WINUSERAPI WINBOOL WINAPI IsDialogMessageA(HWND hDlg,LPMSG lpMsg);
-  WINUSERAPI WINBOOL WINAPI IsDialogMessageW(HWND hDlg,LPMSG lpMsg);
+WINUSERAPI WINBOOL WINAPI IsDialogMessageA(HWND hDlg, LPMSG lpMsg);
+WINUSERAPI WINBOOL WINAPI IsDialogMessageW(HWND hDlg, LPMSG lpMsg);
 #endif
-
 #define DlgDirList __MINGW_NAME_AW(DlgDirList)
 #define DlgDirSelectEx __MINGW_NAME_AW(DlgDirSelectEx)
 #define DlgDirListComboBox __MINGW_NAME_AW(DlgDirListComboBox)
 #define DlgDirSelectComboBoxEx __MINGW_NAME_AW(DlgDirSelectComboBoxEx)
-
-  WINUSERAPI WINBOOL WINAPI MapDialogRect(HWND hDlg,LPRECT lpRect);
-  WINUSERAPI int WINAPI DlgDirListA(HWND hDlg,LPSTR lpPathSpec,int nIDListBox,int nIDStaticPath,UINT uFileType);
-  WINUSERAPI int WINAPI DlgDirListW(HWND hDlg,LPWSTR lpPathSpec,int nIDListBox,int nIDStaticPath,UINT uFileType);
-  WINUSERAPI WINBOOL WINAPI DlgDirSelectExA(HWND hwndDlg,LPSTR lpString,int chCount,int idListBox);
-  WINUSERAPI WINBOOL WINAPI DlgDirSelectExW(HWND hwndDlg,LPWSTR lpString,int chCount,int idListBox);
-  WINUSERAPI int WINAPI DlgDirListComboBoxA(HWND hDlg,LPSTR lpPathSpec,int nIDComboBox,int nIDStaticPath,UINT uFiletype);
-  WINUSERAPI int WINAPI DlgDirListComboBoxW(HWND hDlg,LPWSTR lpPathSpec,int nIDComboBox,int nIDStaticPath,UINT uFiletype);
-  WINUSERAPI WINBOOL WINAPI DlgDirSelectComboBoxExA(HWND hwndDlg,LPSTR lpString,int cchOut,int idComboBox);
-  WINUSERAPI WINBOOL WINAPI DlgDirSelectComboBoxExW(HWND hwndDlg,LPWSTR lpString,int cchOut,int idComboBox);
+WINUSERAPI WINBOOL WINAPI MapDialogRect(HWND hDlg, LPRECT lpRect);
+WINUSERAPI int WINAPI DlgDirListA(HWND hDlg, LPSTR lpPathSpec, int nIDListBox,
+                                  int nIDStaticPath, UINT uFileType);
+WINUSERAPI int WINAPI DlgDirListW(HWND hDlg, LPWSTR lpPathSpec, int nIDListBox,
+                                  int nIDStaticPath, UINT uFileType);
+WINUSERAPI WINBOOL WINAPI DlgDirSelectExA(HWND hwndDlg, LPSTR lpString,
+                                          int chCount, int idListBox);
+WINUSERAPI WINBOOL WINAPI DlgDirSelectExW(HWND hwndDlg, LPWSTR lpString,
+                                          int chCount, int idListBox);
+WINUSERAPI int WINAPI DlgDirListComboBoxA(HWND hDlg, LPSTR lpPathSpec,
+                                          int nIDComboBox, int nIDStaticPath,
+                                          UINT uFiletype);
+WINUSERAPI int WINAPI DlgDirListComboBoxW(HWND hDlg, LPWSTR lpPathSpec,
+                                          int nIDComboBox, int nIDStaticPath,
+                                          UINT uFiletype);
+WINUSERAPI WINBOOL WINAPI DlgDirSelectComboBoxExA(HWND hwndDlg, LPSTR lpString,
+                                                  int cchOut, int idComboBox);
+WINUSERAPI WINBOOL WINAPI DlgDirSelectComboBoxExW(HWND hwndDlg, LPWSTR lpString,
+                                                  int cchOut, int idComboBox);
 #endif
-
 #define DS_ABSALIGN __MSABI_LONG(0x01)
 #define DS_SYSMODAL __MSABI_LONG(0x02)
 #define DS_LOCALEDIT __MSABI_LONG(0x20)
@@ -4640,7 +4561,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define DS_MODALFRAME __MSABI_LONG(0x80)
 #define DS_NOIDLEMSG __MSABI_LONG(0x100)
 #define DS_SETFOREGROUND __MSABI_LONG(0x200)
-
 #define DS_3DLOOK __MSABI_LONG(0x0004)
 #define DS_FIXEDSYS __MSABI_LONG(0x0008)
 #define DS_NOFAILCREATE __MSABI_LONG(0x0010)
@@ -4648,19 +4568,14 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define DS_CENTER __MSABI_LONG(0x0800)
 #define DS_CENTERMOUSE __MSABI_LONG(0x1000)
 #define DS_CONTEXTHELP __MSABI_LONG(0x2000)
-
 #define DS_SHELLFONT (DS_SETFONT | DS_FIXEDSYS)
-
-#if defined (_WIN32_WCE) && (_WIN32_WCE >= 0x0500)
+#if defined(_WIN32_WCE) && (_WIN32_WCE >= 0x0500)
 #define DS_USEPIXELS __MSABI_LONG(0x8000)
 #endif
-
-#define DM_GETDEFID (WM_USER+0)
-#define DM_SETDEFID (WM_USER+1)
-#define DM_REPOSITION (WM_USER+2)
-
+#define DM_GETDEFID (WM_USER + 0)
+#define DM_SETDEFID (WM_USER + 1)
+#define DM_REPOSITION (WM_USER + 2)
 #define DC_HASDEFID 0x534B
-
 #define DLGC_WANTARROWS 0x0001
 #define DLGC_WANTTAB 0x0002
 #define DLGC_WANTALLKEYS 0x0004
@@ -4672,22 +4587,17 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define DLGC_WANTCHARS 0x0080
 #define DLGC_STATIC 0x0100
 #define DLGC_BUTTON 0x2000
-
 #define LB_CTLCODE __MSABI_LONG(0)
-
 #define LB_OKAY 0
 #define LB_ERR (-1)
 #define LB_ERRSPACE (-2)
-
 #define LBN_ERRSPACE (-2)
 #define LBN_SELCHANGE 1
 #define LBN_DBLCLK 2
 #define LBN_SELCANCEL 3
 #define LBN_SETFOCUS 4
 #define LBN_KILLFOCUS 5
-
 #ifndef NOWINMESSAGES
-
 #define LB_ADDSTRING 0x0180
 #define LB_INSERTSTRING 0x0181
 #define LB_DELETESTRING 0x0182
@@ -4728,7 +4638,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define LB_SETCOUNT 0x01A7
 #define LB_INITSTORAGE 0x01A8
 #define LB_ITEMFROMPOINT 0x01A9
-#if defined (_WIN32_WCE) && (_WIN32_WCE >= 0x0400)
+#if defined(_WIN32_WCE) && (_WIN32_WCE >= 0x0400)
 #define LB_MULTIPLEADDSTRING 0x01B1
 #endif
 #define LB_GETLISTBOXINFO 0x01B2
@@ -4741,11 +4651,8 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #else
 #define LB_MSGMAX 0x01A8
 #endif
-
 #endif /* !NOWINMESSAGES */
-
 #ifndef NOWINSTYLES
-
 #define LBS_NOTIFY __MSABI_LONG(0x0001)
 #define LBS_SORT __MSABI_LONG(0x0002)
 #define LBS_NOREDRAW __MSABI_LONG(0x0004)
@@ -4762,14 +4669,11 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define LBS_NODATA __MSABI_LONG(0x2000)
 #define LBS_NOSEL __MSABI_LONG(0x4000)
 #define LBS_COMBOBOX __MSABI_LONG(0x8000)
-
 #define LBS_STANDARD (LBS_NOTIFY | LBS_SORT | WS_VSCROLL | WS_BORDER)
 #endif
-
 #define CB_OKAY 0
 #define CB_ERR (-1)
 #define CB_ERRSPACE (-2)
-
 #define CBN_ERRSPACE (-1)
 #define CBN_SELCHANGE 1
 #define CBN_DBLCLK 2
@@ -4781,9 +4685,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define CBN_CLOSEUP 8
 #define CBN_SELENDOK 9
 #define CBN_SELENDCANCEL 10
-
 #ifndef NOWINSTYLES
-
 #define CBS_SIMPLE __MSABI_LONG(0x0001)
 #define CBS_DROPDOWN __MSABI_LONG(0x0002)
 #define CBS_DROPDOWNLIST __MSABI_LONG(0x0003)
@@ -4798,7 +4700,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define CBS_UPPERCASE __MSABI_LONG(0x2000)
 #define CBS_LOWERCASE __MSABI_LONG(0x4000)
 #endif
-
 #ifndef NOWINMESSAGES
 #define CB_GETEDITSEL 0x0140
 #define CB_LIMITTEXT 0x0141
@@ -4834,7 +4735,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define CB_GETDROPPEDWIDTH 0x015f
 #define CB_SETDROPPEDWIDTH 0x0160
 #define CB_INITSTORAGE 0x0161
-#if defined (_WIN32_WCE) && (_WIN32_WCE >= 0x0400)
+#if defined(_WIN32_WCE) && (_WIN32_WCE >= 0x0400)
 #define CB_MULTIPLEADDSTRING 0x0163
 #endif
 #define CB_GETCOMBOBOXINFO 0x0164
@@ -4847,11 +4748,8 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #else
 #define CB_MSGMAX 0x015B
 #endif
-
 #endif /* !NOWINMESSAGES */
-
 #ifndef NOWINSTYLES
-
 #define SBS_HORZ __MSABI_LONG(0x0000)
 #define SBS_VERT __MSABI_LONG(0x0001)
 #define SBS_TOPALIGN __MSABI_LONG(0x0002)
@@ -4863,7 +4761,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SBS_SIZEBOX __MSABI_LONG(0x0008)
 #define SBS_SIZEGRIP __MSABI_LONG(0x0010)
 #endif
-
 #ifndef NOWINMESSAGES
 #define SBM_SETPOS 0x00E0
 #define SBM_GETPOS 0x00E1
@@ -4874,145 +4771,141 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SBM_SETSCROLLINFO 0x00E9
 #define SBM_GETSCROLLINFO 0x00EA
 #define SBM_GETSCROLLBARINFO 0x00EB
-
 #define SIF_RANGE 0x0001
 #define SIF_PAGE 0x0002
 #define SIF_POS 0x0004
 #define SIF_DISABLENOSCROLL 0x0008
 #define SIF_TRACKPOS 0x0010
 #define SIF_ALL (SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagSCROLLINFO {
-    UINT cbSize;
-    UINT fMask;
-    int nMin;
-    int nMax;
-    UINT nPage;
-    int nPos;
-    int nTrackPos;
-  } SCROLLINFO,*LPSCROLLINFO;
-  typedef SCROLLINFO CONST *LPCSCROLLINFO;
-
-  WINUSERAPI int WINAPI SetScrollInfo(HWND hwnd,int nBar,LPCSCROLLINFO lpsi,WINBOOL redraw);
-  WINUSERAPI WINBOOL WINAPI GetScrollInfo(HWND hwnd,int nBar,LPSCROLLINFO lpsi);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagSCROLLINFO {
+  UINT cbSize;
+  UINT fMask;
+  int nMin;
+  int nMax;
+  UINT nPage;
+  int nPos;
+  int nTrackPos;
+} SCROLLINFO, *LPSCROLLINFO;
+typedef SCROLLINFO CONST *LPCSCROLLINFO;
+WINUSERAPI int WINAPI SetScrollInfo(HWND hwnd, int nBar, LPCSCROLLINFO lpsi,
+                                    WINBOOL redraw);
+WINUSERAPI WINBOOL WINAPI GetScrollInfo(HWND hwnd, int nBar, LPSCROLLINFO lpsi);
 #endif
 #endif
 #endif
-
 #ifndef NOMDI
-
 #define MDIS_ALLCHILDSTYLES 0x0001
-
 #define MDITILE_VERTICAL 0x0000
 #define MDITILE_HORIZONTAL 0x0001
 #define MDITILE_SKIPDISABLED 0x0002
 #define MDITILE_ZORDER 0x0004
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagMDICREATESTRUCTA {
-    LPCSTR szClass;
-    LPCSTR szTitle;
-    HANDLE hOwner;
-    int x;
-    int y;
-    int cx;
-    int cy;
-    DWORD style;
-    LPARAM lParam;
-  } MDICREATESTRUCTA,*LPMDICREATESTRUCTA;
-
-  typedef struct tagMDICREATESTRUCTW {
-    LPCWSTR szClass;
-    LPCWSTR szTitle;
-    HANDLE hOwner;
-    int x;
-    int y;
-    int cx;
-    int cy;
-    DWORD style;
-    LPARAM lParam;
-  } MDICREATESTRUCTW,*LPMDICREATESTRUCTW;
-
-  __MINGW_TYPEDEF_AW(MDICREATESTRUCT)
-  __MINGW_TYPEDEF_AW(LPMDICREATESTRUCT)
-
-  typedef struct tagCLIENTCREATESTRUCT {
-    HANDLE hWindowMenu;
-    UINT idFirstChild;
-  } CLIENTCREATESTRUCT,*LPCLIENTCREATESTRUCT;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagMDICREATESTRUCTA {
+  LPCSTR szClass;
+  LPCSTR szTitle;
+  HANDLE hOwner;
+  int x;
+  int y;
+  int cx;
+  int cy;
+  DWORD style;
+  LPARAM lParam;
+} MDICREATESTRUCTA, *LPMDICREATESTRUCTA;
+typedef struct tagMDICREATESTRUCTW {
+  LPCWSTR szClass;
+  LPCWSTR szTitle;
+  HANDLE hOwner;
+  int x;
+  int y;
+  int cx;
+  int cy;
+  DWORD style;
+  LPARAM lParam;
+} MDICREATESTRUCTW, *LPMDICREATESTRUCTW;
+__MINGW_TYPEDEF_AW(MDICREATESTRUCT)
+__MINGW_TYPEDEF_AW(LPMDICREATESTRUCT)
+typedef struct tagCLIENTCREATESTRUCT {
+  HANDLE hWindowMenu;
+  UINT idFirstChild;
+} CLIENTCREATESTRUCT, *LPCLIENTCREATESTRUCT;
 #define DefFrameProc __MINGW_NAME_AW(DefFrameProc)
 #define DefMDIChildProc __MINGW_NAME_AW(DefMDIChildProc)
 #define CreateMDIWindow __MINGW_NAME_AW(CreateMDIWindow)
-
-  WINUSERAPI LRESULT WINAPI DefFrameProcA(HWND hWnd,HWND hWndMDIClient,UINT uMsg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI DefFrameProcW(HWND hWnd,HWND hWndMDIClient,UINT uMsg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI DefMDIChildProcA(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-  WINUSERAPI LRESULT WINAPI DefMDIChildProcW(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-
+WINUSERAPI LRESULT WINAPI DefFrameProcA(HWND hWnd, HWND hWndMDIClient,
+                                        UINT uMsg, WPARAM wParam,
+                                        LPARAM lParam);
+WINUSERAPI LRESULT WINAPI DefFrameProcW(HWND hWnd, HWND hWndMDIClient,
+                                        UINT uMsg, WPARAM wParam,
+                                        LPARAM lParam);
+WINUSERAPI LRESULT WINAPI DefMDIChildProcA(HWND hWnd, UINT uMsg, WPARAM wParam,
+                                           LPARAM lParam);
+WINUSERAPI LRESULT WINAPI DefMDIChildProcW(HWND hWnd, UINT uMsg, WPARAM wParam,
+                                           LPARAM lParam);
 #ifndef NOMSG
-  WINUSERAPI WINBOOL WINAPI TranslateMDISysAccel(HWND hWndClient,LPMSG lpMsg);
+WINUSERAPI WINBOOL WINAPI TranslateMDISysAccel(HWND hWndClient, LPMSG lpMsg);
 #endif
-
-  WINUSERAPI UINT WINAPI ArrangeIconicWindows(HWND hWnd);
-  WINUSERAPI HWND WINAPI CreateMDIWindowA(LPCSTR lpClassName,LPCSTR lpWindowName,DWORD dwStyle,int X,int Y,int nWidth,int nHeight,HWND hWndParent,HINSTANCE hInstance,LPARAM lParam);
-  WINUSERAPI HWND WINAPI CreateMDIWindowW(LPCWSTR lpClassName,LPCWSTR lpWindowName,DWORD dwStyle,int X,int Y,int nWidth,int nHeight,HWND hWndParent,HINSTANCE hInstance,LPARAM lParam);
-  WINUSERAPI WORD WINAPI TileWindows(HWND hwndParent,UINT wHow,CONST RECT *lpRect,UINT cKids,const HWND *lpKids);
-  WINUSERAPI WORD WINAPI CascadeWindows(HWND hwndParent,UINT wHow,CONST RECT *lpRect,UINT cKids,const HWND *lpKids);
+WINUSERAPI UINT WINAPI ArrangeIconicWindows(HWND hWnd);
+WINUSERAPI HWND WINAPI CreateMDIWindowA(LPCSTR lpClassName, LPCSTR lpWindowName,
+                                        DWORD dwStyle, int X, int Y, int nWidth,
+                                        int nHeight, HWND hWndParent,
+                                        HINSTANCE hInstance, LPARAM lParam);
+WINUSERAPI HWND WINAPI CreateMDIWindowW(LPCWSTR lpClassName,
+                                        LPCWSTR lpWindowName, DWORD dwStyle,
+                                        int X, int Y, int nWidth, int nHeight,
+                                        HWND hWndParent, HINSTANCE hInstance,
+                                        LPARAM lParam);
+WINUSERAPI WORD WINAPI TileWindows(HWND hwndParent, UINT wHow,
+                                   CONST RECT *lpRect, UINT cKids,
+                                   const HWND *lpKids);
+WINUSERAPI WORD WINAPI CascadeWindows(HWND hwndParent, UINT wHow,
+                                      CONST RECT *lpRect, UINT cKids,
+                                      const HWND *lpKids);
 #endif
 #endif
 #endif
-
 #ifndef NOHELP
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef DWORD HELPPOLY;
-
-  typedef struct tagMULTIKEYHELPA {
-    DWORD mkSize;
-    CHAR mkKeylist;
-    CHAR szKeyphrase[1];
-  } MULTIKEYHELPA,*PMULTIKEYHELPA,*LPMULTIKEYHELPA;
-
-  typedef struct tagMULTIKEYHELPW {
-    DWORD mkSize;
-    WCHAR mkKeylist;
-    WCHAR szKeyphrase[1];
-  } MULTIKEYHELPW,*PMULTIKEYHELPW,*LPMULTIKEYHELPW;
-
-  __MINGW_TYPEDEF_AW(MULTIKEYHELP)
-  __MINGW_TYPEDEF_AW(PMULTIKEYHELP)
-  __MINGW_TYPEDEF_AW(LPMULTIKEYHELP)
-
-  typedef struct tagHELPWININFOA {
-    int wStructSize;
-    int x;
-    int y;
-    int dx;
-    int dy;
-    int wMax;
-    CHAR rgchMember[2];
-  } HELPWININFOA,*PHELPWININFOA,*LPHELPWININFOA;
-
-  typedef struct tagHELPWININFOW {
-    int wStructSize;
-    int x;
-    int y;
-    int dx;
-    int dy;
-    int wMax;
-    WCHAR rgchMember[2];
-  } HELPWININFOW,*PHELPWININFOW,*LPHELPWININFOW;
-
-  __MINGW_TYPEDEF_AW(HELPWININFO)
-  __MINGW_TYPEDEF_AW(PHELPWININFO)
-  __MINGW_TYPEDEF_AW(LPHELPWININFO)
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef DWORD HELPPOLY;
+typedef struct tagMULTIKEYHELPA {
+  DWORD mkSize;
+  CHAR mkKeylist;
+  CHAR szKeyphrase[1];
+} MULTIKEYHELPA, *PMULTIKEYHELPA, *LPMULTIKEYHELPA;
+typedef struct tagMULTIKEYHELPW {
+  DWORD mkSize;
+  WCHAR mkKeylist;
+  WCHAR szKeyphrase[1];
+} MULTIKEYHELPW, *PMULTIKEYHELPW, *LPMULTIKEYHELPW;
+__MINGW_TYPEDEF_AW(MULTIKEYHELP)
+__MINGW_TYPEDEF_AW(PMULTIKEYHELP)
+__MINGW_TYPEDEF_AW(LPMULTIKEYHELP)
+typedef struct tagHELPWININFOA {
+  int wStructSize;
+  int x;
+  int y;
+  int dx;
+  int dy;
+  int wMax;
+  CHAR rgchMember[2];
+} HELPWININFOA, *PHELPWININFOA, *LPHELPWININFOA;
+typedef struct tagHELPWININFOW {
+  int wStructSize;
+  int x;
+  int y;
+  int dx;
+  int dy;
+  int wMax;
+  WCHAR rgchMember[2];
+} HELPWININFOW, *PHELPWININFOW, *LPHELPWININFOW;
+__MINGW_TYPEDEF_AW(HELPWININFO)
+__MINGW_TYPEDEF_AW(PHELPWININFO)
+__MINGW_TYPEDEF_AW(LPHELPWININFO)
 #define WinHelp __MINGW_NAME_AW(WinHelp)
-
-  WINUSERAPI WINBOOL WINAPI WinHelpA(HWND hWndMain,LPCSTR lpszHelp,UINT uCommand,ULONG_PTR dwData);
-  WINUSERAPI WINBOOL WINAPI WinHelpW(HWND hWndMain,LPCWSTR lpszHelp,UINT uCommand,ULONG_PTR dwData);
-
+WINUSERAPI WINBOOL WINAPI WinHelpA(HWND hWndMain, LPCSTR lpszHelp,
+                                   UINT uCommand, ULONG_PTR dwData);
+WINUSERAPI WINBOOL WINAPI WinHelpW(HWND hWndMain, LPCWSTR lpszHelp,
+                                   UINT uCommand, ULONG_PTR dwData);
 #define HELP_CONTEXT 0x0001
 #define HELP_QUIT 0x0002
 #define HELP_INDEX 0x0003
@@ -5031,11 +4924,9 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define HELP_FINDER 0x000b
 #define HELP_WM_HELP 0x000c
 #define HELP_SETPOPUP_POS 0x000d
-
 #define HELP_TCARD 0x8000
 #define HELP_TCARD_DATA 0x0010
 #define HELP_TCARD_OTHER_CALLER 0x0011
-
 #define IDH_NO_HELP 28440
 #define IDH_MISSING_CONTEXT 28441
 #define IDH_GENERIC_HELP_BUTTON 28442
@@ -5044,22 +4935,17 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define IDH_HELP 28445
 #endif
 #endif
-
 #define GR_GDIOBJECTS 0
 #define GR_USEROBJECTS 1
 #if WINVER >= 0x0601
 #define GR_GDIOBJECTS_PEAK 2
 #define GR_USEROBJECTS_PEAK 4
-
-#define GR_GLOBAL ((HANDLE)-2)
+#define GR_GLOBAL ((HANDLE) - 2)
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI DWORD WINAPI GetGuiResources(HANDLE hProcess,DWORD uiFlags);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI DWORD WINAPI GetGuiResources(HANDLE hProcess, DWORD uiFlags);
 #endif
-
 #ifndef NOSYSPARAMSINFO
-
 #define SPI_GETBEEP 0x0001
 #define SPI_SETBEEP 0x0002
 #define SPI_GETMOUSE 0x0003
@@ -5104,7 +4990,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SPI_SETWORKAREA 0x002F
 #define SPI_GETWORKAREA 0x0030
 #define SPI_SETPENWINDOWS 0x0031
-
 #define SPI_GETHIGHCONTRAST 0x0042
 #define SPI_SETHIGHCONTRAST 0x0043
 #define SPI_GETKEYBOARDPREF 0x0044
@@ -5218,7 +5103,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SPI_GETMENURECT 0x00a2
 #define SPI_SETMENURECT 0x00a3
 #endif
-
 #define SPI_GETACTIVEWINDOWTRACKING 0x1000
 #define SPI_SETACTIVEWINDOWTRACKING 0x1001
 #define SPI_GETMENUANIMATION 0x1002
@@ -5291,11 +5175,9 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define SPI_SETMOUSECLICKLOCKTIME 0x2009
 #define SPI_GETFONTSMOOTHINGTYPE 0x200A
 #define SPI_SETFONTSMOOTHINGTYPE 0x200B
-
 #define FE_FONTSMOOTHINGSTANDARD 0x0001
 #define FE_FONTSMOOTHINGCLEARTYPE 0x0002
 #define FE_FONTSMOOTHINGDOCKING 0x8000
-
 #define SPI_GETFONTSMOOTHINGCONTRAST 0x200C
 #define SPI_SETFONTSMOOTHINGCONTRAST 0x200D
 #define SPI_GETFOCUSBORDERWIDTH 0x200E
@@ -5325,47 +5207,39 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #if WINVER >= 0x0603
 #define MOUSEWHEEL_ROUTING_MOUSE_POS 2
 #endif
-
 #if WINVER >= 0x0604
 #define SPI_GETPENVISUALIZATION 0x201E
 #define SPI_SETPENVISUALIZATION 0x201F
-
 #define PENVISUALIZATION_ON 0x0023
 #define PENVISUALIZATION_OFF 0x0000
 #define PENVISUALIZATION_TAP 0x0001
 #define PENVISUALIZATION_DOUBLETAP 0x0002
 #define PENVISUALIZATION_CURSOR 0x0020
-
 #define SPI_GETPENARBITRATIONTYPE 0x2020
 #define SPI_SETPENARBITRATIONTYPE 0x2021
-
 #define PENARBITRATIONTYPE_NONE 0x0000
 #define PENARBITRATIONTYPE_WIN8 0x0001
 #define PENARBITRATIONTYPE_FIS 0x0002
 #define PENARBITRATIONTYPE_SPT 0x0003
 #define PENARBITRATIONTYPE_MAX 0x0004
 #endif /* WINVER >= 0x0604 */
-
 #if NTDDI_VERSION >= NTDDI_WIN10_RS3
 #define SPI_GETCARETTIMEOUT 0x2022
 #define SPI_SETCARETTIMEOUT 0x2023
 #endif
-
 #if NTDDI_VERSION >= NTDDI_WIN10_RS4
 #define SPI_GETHANDEDNESS 0x2024
 #define SPI_SETHANDEDNESS 0x2025
-
-  typedef enum tagHANDEDNESS {
-    HANDEDNESS_LEFT = 0,
-    HANDEDNESS_RIGHT
-  } HANDEDNESS, *PHANDEDNESS;
+typedef enum tagHANDEDNESS {
+  HANDEDNESS_LEFT = 0,
+  HANDEDNESS_RIGHT
+} HANDEDNESS,
+    *PHANDEDNESS;
 #endif
-
 #if WINVER >= 0x0602
 #define CONTACTVISUALIZATION_OFF 0x0000
 #define CONTACTVISUALIZATION_ON 0x0001
 #define CONTACTVISUALIZATION_PRESENTATIONMODE 0x0002
-
 #define GESTUREVISUALIZATION_OFF 0x0000
 #define GESTUREVISUALIZATION_ON 0x001f
 #define GESTUREVISUALIZATION_TAP 0x0001
@@ -5373,18 +5247,15 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define GESTUREVISUALIZATION_PRESSANDTAP 0x0004
 #define GESTUREVISUALIZATION_PRESSANDHOLD 0x0008
 #define GESTUREVISUALIZATION_RIGHTTAP 0x0010
-
 #define MAX_TOUCH_PREDICTION_FILTER_TAPS 3
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagTouchPredictionParameters {
-    UINT cbSize;
-    UINT dwLatency;
-    UINT dwSampleTime;
-    UINT bUseHWTimeStamp;
-  } TOUCHPREDICTIONPARAMETERS,*PTOUCHPREDICTIONPARAMETERS;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagTouchPredictionParameters {
+  UINT cbSize;
+  UINT dwLatency;
+  UINT dwSampleTime;
+  UINT bUseHWTimeStamp;
+} TOUCHPREDICTIONPARAMETERS, *PTOUCHPREDICTIONPARAMETERS;
 #endif
-
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_LATENCY 8
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_SAMPLETIME 8
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_USE_HW_TIMESTAMP 1
@@ -5393,71 +5264,64 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_LAMBDA_MAX 0.999f
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_LAMBDA_LEARNING_RATE 0.001f
 #define TOUCHPREDICTIONPARAMETERS_DEFAULT_RLS_EXPO_SMOOTH_ALPHA 0.99f
-
 #define MAX_LOGICALDPIOVERRIDE 2
 #define MIN_LOGICALDPIOVERRIDE -2
 #endif
-
 #define FE_FONTSMOOTHINGORIENTATIONBGR 0x0000
 #define FE_FONTSMOOTHINGORIENTATIONRGB 0x0001
-
 #define SPIF_UPDATEINIFILE 0x0001
 #define SPIF_SENDWININICHANGE 0x0002
 #define SPIF_SENDCHANGE SPIF_SENDWININICHANGE
-
 #define METRICS_USEDEFAULT -1
 #ifdef _WINGDI_
 #ifndef NOGDI
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagNONCLIENTMETRICSA {
-    UINT cbSize;
-    int iBorderWidth;
-    int iScrollWidth;
-    int iScrollHeight;
-    int iCaptionWidth;
-    int iCaptionHeight;
-    LOGFONTA lfCaptionFont;
-    int iSmCaptionWidth;
-    int iSmCaptionHeight;
-    LOGFONTA lfSmCaptionFont;
-    int iMenuWidth;
-    int iMenuHeight;
-    LOGFONTA lfMenuFont;
-    LOGFONTA lfStatusFont;
-    LOGFONTA lfMessageFont;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagNONCLIENTMETRICSA {
+  UINT cbSize;
+  int iBorderWidth;
+  int iScrollWidth;
+  int iScrollHeight;
+  int iCaptionWidth;
+  int iCaptionHeight;
+  LOGFONTA lfCaptionFont;
+  int iSmCaptionWidth;
+  int iSmCaptionHeight;
+  LOGFONTA lfSmCaptionFont;
+  int iMenuWidth;
+  int iMenuHeight;
+  LOGFONTA lfMenuFont;
+  LOGFONTA lfStatusFont;
+  LOGFONTA lfMessageFont;
 #if WINVER >= 0x0600
-    int iPaddedBorderWidth;
+  int iPaddedBorderWidth;
 #endif
-  } NONCLIENTMETRICSA,*PNONCLIENTMETRICSA,*LPNONCLIENTMETRICSA;
-
-  typedef struct tagNONCLIENTMETRICSW {
-    UINT cbSize;
-    int iBorderWidth;
-    int iScrollWidth;
-    int iScrollHeight;
-    int iCaptionWidth;
-    int iCaptionHeight;
-    LOGFONTW lfCaptionFont;
-    int iSmCaptionWidth;
-    int iSmCaptionHeight;
-    LOGFONTW lfSmCaptionFont;
-    int iMenuWidth;
-    int iMenuHeight;
-    LOGFONTW lfMenuFont;
-    LOGFONTW lfStatusFont;
-    LOGFONTW lfMessageFont;
+} NONCLIENTMETRICSA, *PNONCLIENTMETRICSA, *LPNONCLIENTMETRICSA;
+typedef struct tagNONCLIENTMETRICSW {
+  UINT cbSize;
+  int iBorderWidth;
+  int iScrollWidth;
+  int iScrollHeight;
+  int iCaptionWidth;
+  int iCaptionHeight;
+  LOGFONTW lfCaptionFont;
+  int iSmCaptionWidth;
+  int iSmCaptionHeight;
+  LOGFONTW lfSmCaptionFont;
+  int iMenuWidth;
+  int iMenuHeight;
+  LOGFONTW lfMenuFont;
+  LOGFONTW lfStatusFont;
+  LOGFONTW lfMessageFont;
 #if WINVER >= 0x0600
-    int iPaddedBorderWidth;
+  int iPaddedBorderWidth;
 #endif
-  } NONCLIENTMETRICSW,*PNONCLIENTMETRICSW,*LPNONCLIENTMETRICSW;
-
-  __MINGW_TYPEDEF_AW(NONCLIENTMETRICS)
-  __MINGW_TYPEDEF_AW(PNONCLIENTMETRICS)
-  __MINGW_TYPEDEF_AW(LPNONCLIENTMETRICS)
-#endif
+} NONCLIENTMETRICSW, *PNONCLIENTMETRICSW, *LPNONCLIENTMETRICSW;
+__MINGW_TYPEDEF_AW(NONCLIENTMETRICS)
+__MINGW_TYPEDEF_AW(PNONCLIENTMETRICS)
+__MINGW_TYPEDEF_AW(LPNONCLIENTMETRICS)
 #endif
 #endif
-
+#endif
 #define ARW_BOTTOMLEFT __MSABI_LONG(0x0000)
 #define ARW_BOTTOMRIGHT __MSABI_LONG(0x0001)
 #define ARW_TOPLEFT __MSABI_LONG(0x0002)
@@ -5465,94 +5329,80 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define ARW_STARTMASK __MSABI_LONG(0x0003)
 #define ARW_STARTRIGHT __MSABI_LONG(0x0001)
 #define ARW_STARTTOP __MSABI_LONG(0x0002)
-
 #define ARW_LEFT __MSABI_LONG(0x0000)
 #define ARW_RIGHT __MSABI_LONG(0x0000)
 #define ARW_UP __MSABI_LONG(0x0004)
 #define ARW_DOWN __MSABI_LONG(0x0004)
 #define ARW_HIDE __MSABI_LONG(0x0008)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagMINIMIZEDMETRICS {
-    UINT cbSize;
-    int iWidth;
-    int iHorzGap;
-    int iVertGap;
-    int iArrange;
-  } MINIMIZEDMETRICS,*PMINIMIZEDMETRICS,*LPMINIMIZEDMETRICS;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagMINIMIZEDMETRICS {
+  UINT cbSize;
+  int iWidth;
+  int iHorzGap;
+  int iVertGap;
+  int iArrange;
+} MINIMIZEDMETRICS, *PMINIMIZEDMETRICS, *LPMINIMIZEDMETRICS;
 #ifdef _WINGDI_
 #ifndef NOGDI
-  typedef struct tagICONMETRICSA {
-    UINT cbSize;
-    int iHorzSpacing;
-    int iVertSpacing;
-    int iTitleWrap;
-    LOGFONTA lfFont;
-  } ICONMETRICSA,*PICONMETRICSA,*LPICONMETRICSA;
-
-  typedef struct tagICONMETRICSW {
-    UINT cbSize;
-    int iHorzSpacing;
-    int iVertSpacing;
-    int iTitleWrap;
-    LOGFONTW lfFont;
-  } ICONMETRICSW,*PICONMETRICSW,*LPICONMETRICSW;
-
-  __MINGW_TYPEDEF_AW(ICONMETRICS)
-  __MINGW_TYPEDEF_AW(PICONMETRICS)
-  __MINGW_TYPEDEF_AW(LPICONMETRICS)
+typedef struct tagICONMETRICSA {
+  UINT cbSize;
+  int iHorzSpacing;
+  int iVertSpacing;
+  int iTitleWrap;
+  LOGFONTA lfFont;
+} ICONMETRICSA, *PICONMETRICSA, *LPICONMETRICSA;
+typedef struct tagICONMETRICSW {
+  UINT cbSize;
+  int iHorzSpacing;
+  int iVertSpacing;
+  int iTitleWrap;
+  LOGFONTW lfFont;
+} ICONMETRICSW, *PICONMETRICSW, *LPICONMETRICSW;
+__MINGW_TYPEDEF_AW(ICONMETRICS)
+__MINGW_TYPEDEF_AW(PICONMETRICS)
+__MINGW_TYPEDEF_AW(LPICONMETRICS)
 #endif
 #endif
-
-  typedef struct tagANIMATIONINFO {
-    UINT cbSize;
-    int iMinAnimate;
-  } ANIMATIONINFO,*LPANIMATIONINFO;
-
-  typedef struct tagSERIALKEYSA {
-    UINT cbSize;
-    DWORD dwFlags;
-    LPSTR lpszActivePort;
-    LPSTR lpszPort;
-    UINT iBaudRate;
-    UINT iPortState;
-    UINT iActive;
-  } SERIALKEYSA,*LPSERIALKEYSA;
-
-  typedef struct tagSERIALKEYSW {
-    UINT cbSize;
-    DWORD dwFlags;
-    LPWSTR lpszActivePort;
-    LPWSTR lpszPort;
-    UINT iBaudRate;
-    UINT iPortState;
-    UINT iActive;
-  } SERIALKEYSW,*LPSERIALKEYSW;
-
-  __MINGW_TYPEDEF_AW(SERIALKEYS)
-  __MINGW_TYPEDEF_AW(LPSERIALKEYS)
-
-  typedef struct tagHIGHCONTRASTA {
-    UINT cbSize;
-    DWORD dwFlags;
-    LPSTR lpszDefaultScheme;
-  } HIGHCONTRASTA,*LPHIGHCONTRASTA;
-
-  typedef struct tagHIGHCONTRASTW {
-    UINT cbSize;
-    DWORD dwFlags;
-    LPWSTR lpszDefaultScheme;
-  } HIGHCONTRASTW,*LPHIGHCONTRASTW;
-
-  __MINGW_TYPEDEF_AW(HIGHCONTRAST)
-  __MINGW_TYPEDEF_AW(LPHIGHCONTRAST)
+typedef struct tagANIMATIONINFO {
+  UINT cbSize;
+  int iMinAnimate;
+} ANIMATIONINFO, *LPANIMATIONINFO;
+typedef struct tagSERIALKEYSA {
+  UINT cbSize;
+  DWORD dwFlags;
+  LPSTR lpszActivePort;
+  LPSTR lpszPort;
+  UINT iBaudRate;
+  UINT iPortState;
+  UINT iActive;
+} SERIALKEYSA, *LPSERIALKEYSA;
+typedef struct tagSERIALKEYSW {
+  UINT cbSize;
+  DWORD dwFlags;
+  LPWSTR lpszActivePort;
+  LPWSTR lpszPort;
+  UINT iBaudRate;
+  UINT iPortState;
+  UINT iActive;
+} SERIALKEYSW, *LPSERIALKEYSW;
+__MINGW_TYPEDEF_AW(SERIALKEYS)
+__MINGW_TYPEDEF_AW(LPSERIALKEYS)
+typedef struct tagHIGHCONTRASTA {
+  UINT cbSize;
+  DWORD dwFlags;
+  LPSTR lpszDefaultScheme;
+} HIGHCONTRASTA, *LPHIGHCONTRASTA;
+typedef struct tagHIGHCONTRASTW {
+  UINT cbSize;
+  DWORD dwFlags;
+  LPWSTR lpszDefaultScheme;
+} HIGHCONTRASTW, *LPHIGHCONTRASTW;
+__MINGW_TYPEDEF_AW(HIGHCONTRAST)
+__MINGW_TYPEDEF_AW(LPHIGHCONTRAST)
 #endif
-
 #define SERKF_SERIALKEYSON 0x00000001
 #define SERKF_AVAILABLE 0x00000002
 #define SERKF_INDICATOR 0x00000004
-
 #define HCF_HIGHCONTRASTON 0x00000001
 #define HCF_AVAILABLE 0x00000002
 #define HCF_HOTKEYACTIVE 0x00000004
@@ -5563,7 +5413,6 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define HCF_LOGONDESKTOP 0x00000100
 #define HCF_DEFAULTDESKTOP 0x00000200
 #define HCF_OPTION_NOTHEMECHANGE 0x00001000
-
 #define CDS_UPDATEREGISTRY 0x00000001
 #define CDS_TEST 0x00000002
 #define CDS_FULLSCREEN 0x00000004
@@ -5577,9 +5426,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define CDS_RESET 0x40000000
 #define CDS_RESET_EX 0x20000000
 #define CDS_NORESET 0x10000000
-
 #include <tvout.h>
-
 #define DISP_CHANGE_SUCCESSFUL 0
 #define DISP_CHANGE_RESTART 1
 #define DISP_CHANGE_FAILED -1
@@ -5588,8 +5435,7 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define DISP_CHANGE_BADFLAGS -4
 #define DISP_CHANGE_BADPARAM -5
 #define DISP_CHANGE_BADDUALVIEW -6
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #ifdef _WINGDI_
 #ifndef NOGDI
 #define ChangeDisplaySettings __MINGW_NAME_AW(ChangeDisplaySettings)
@@ -5597,61 +5443,86 @@ WINUSERAPI WINBOOL WINAPI AdjustWindowRectExForDpi(LPRECT lpRect, DWORD dwStyle,
 #define EnumDisplaySettings __MINGW_NAME_AW(EnumDisplaySettings)
 #define EnumDisplaySettingsEx __MINGW_NAME_AW(EnumDisplaySettingsEx)
 #define EnumDisplayDevices __MINGW_NAME_AW(EnumDisplayDevices)
-
-  WINUSERAPI LONG WINAPI ChangeDisplaySettingsA(LPDEVMODEA lpDevMode,DWORD dwFlags);
-  WINUSERAPI LONG WINAPI ChangeDisplaySettingsW(LPDEVMODEW lpDevMode,DWORD dwFlags);
-  WINUSERAPI LONG WINAPI ChangeDisplaySettingsExA(LPCSTR lpszDeviceName,LPDEVMODEA lpDevMode,HWND hwnd,DWORD dwflags,LPVOID lParam);
-  WINUSERAPI LONG WINAPI ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName,LPDEVMODEW lpDevMode,HWND hwnd,DWORD dwflags,LPVOID lParam);
-
-#define ENUM_CURRENT_SETTINGS ((DWORD)-1)
-#define ENUM_REGISTRY_SETTINGS ((DWORD)-2)
-
-  WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsA(LPCSTR lpszDeviceName,DWORD iModeNum,LPDEVMODEA lpDevMode);
-  WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsW(LPCWSTR lpszDeviceName,DWORD iModeNum,LPDEVMODEW lpDevMode);
-  WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsExA(LPCSTR lpszDeviceName,DWORD iModeNum,LPDEVMODEA lpDevMode,DWORD dwFlags);
-  WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsExW(LPCWSTR lpszDeviceName,DWORD iModeNum,LPDEVMODEW lpDevMode,DWORD dwFlags);
-
+WINUSERAPI LONG WINAPI ChangeDisplaySettingsA(LPDEVMODEA lpDevMode,
+                                              DWORD dwFlags);
+WINUSERAPI LONG WINAPI ChangeDisplaySettingsW(LPDEVMODEW lpDevMode,
+                                              DWORD dwFlags);
+WINUSERAPI LONG WINAPI ChangeDisplaySettingsExA(LPCSTR lpszDeviceName,
+                                                LPDEVMODEA lpDevMode, HWND hwnd,
+                                                DWORD dwflags, LPVOID lParam);
+WINUSERAPI LONG WINAPI ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName,
+                                                LPDEVMODEW lpDevMode, HWND hwnd,
+                                                DWORD dwflags, LPVOID lParam);
+#define ENUM_CURRENT_SETTINGS ((DWORD) - 1)
+#define ENUM_REGISTRY_SETTINGS ((DWORD) - 2)
+WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsA(LPCSTR lpszDeviceName,
+                                               DWORD iModeNum,
+                                               LPDEVMODEA lpDevMode);
+WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsW(LPCWSTR lpszDeviceName,
+                                               DWORD iModeNum,
+                                               LPDEVMODEW lpDevMode);
+WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsExA(LPCSTR lpszDeviceName,
+                                                 DWORD iModeNum,
+                                                 LPDEVMODEA lpDevMode,
+                                                 DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI EnumDisplaySettingsExW(LPCWSTR lpszDeviceName,
+                                                 DWORD iModeNum,
+                                                 LPDEVMODEW lpDevMode,
+                                                 DWORD dwFlags);
 #define EDS_RAWMODE 0x00000002
 #define EDS_ROTATEDMODE 0x00000004
-
-  WINUSERAPI WINBOOL WINAPI EnumDisplayDevicesA(LPCSTR lpDevice,DWORD iDevNum,PDISPLAY_DEVICEA lpDisplayDevice,DWORD dwFlags);
-  WINUSERAPI WINBOOL WINAPI EnumDisplayDevicesW(LPCWSTR lpDevice,DWORD iDevNum,PDISPLAY_DEVICEW lpDisplayDevice,DWORD dwFlags);
-
+WINUSERAPI WINBOOL WINAPI EnumDisplayDevicesA(LPCSTR lpDevice, DWORD iDevNum,
+                                              PDISPLAY_DEVICEA lpDisplayDevice,
+                                              DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI EnumDisplayDevicesW(LPCWSTR lpDevice, DWORD iDevNum,
+                                              PDISPLAY_DEVICEW lpDisplayDevice,
+                                              DWORD dwFlags);
 #define EDD_GET_DEVICE_INTERFACE_NAME 0x00000001
-
 #if WINVER >= 0x0601
-  WINUSERAPI LONG WINAPI GetDisplayConfigBufferSizes (UINT32 flags, UINT32 *numPathArrayElements, UINT32 *numModeInfoArrayElements);
-  WINUSERAPI LONG WINAPI SetDisplayConfig (UINT32 numPathArrayElements, DISPLAYCONFIG_PATH_INFO *pathArray, UINT32 numModeInfoArrayElements, DISPLAYCONFIG_MODE_INFO *modeInfoArray, UINT32 flags);
-  WINUSERAPI LONG WINAPI QueryDisplayConfig (UINT32 flags, UINT32 *numPathArrayElements, DISPLAYCONFIG_PATH_INFO *pathArray, UINT32 *numModeInfoArrayElements, DISPLAYCONFIG_MODE_INFO *modeInfoArray, DISPLAYCONFIG_TOPOLOGY_ID *currentTopologyId);
-  WINUSERAPI LONG WINAPI DisplayConfigGetDeviceInfo (DISPLAYCONFIG_DEVICE_INFO_HEADER *requestPacket);
-  WINUSERAPI LONG WINAPI DisplayConfigSetDeviceInfo (DISPLAYCONFIG_DEVICE_INFO_HEADER *setPacket);
+WINUSERAPI
+    LONG WINAPI GetDisplayConfigBufferSizes(UINT32 flags,
+                                            UINT32 *numPathArrayElements,
+                                            UINT32 *numModeInfoArrayElements);
+WINUSERAPI LONG WINAPI SetDisplayConfig(UINT32 numPathArrayElements,
+                                        DISPLAYCONFIG_PATH_INFO *pathArray,
+                                        UINT32 numModeInfoArrayElements,
+                                        DISPLAYCONFIG_MODE_INFO *modeInfoArray,
+                                        UINT32 flags);
+WINUSERAPI LONG WINAPI QueryDisplayConfig(
+    UINT32 flags, UINT32 *numPathArrayElements,
+    DISPLAYCONFIG_PATH_INFO *pathArray, UINT32 *numModeInfoArrayElements,
+    DISPLAYCONFIG_MODE_INFO *modeInfoArray,
+    DISPLAYCONFIG_TOPOLOGY_ID *currentTopologyId);
+WINUSERAPI LONG WINAPI
+DisplayConfigGetDeviceInfo(DISPLAYCONFIG_DEVICE_INFO_HEADER *requestPacket);
+WINUSERAPI LONG WINAPI
+DisplayConfigSetDeviceInfo(DISPLAYCONFIG_DEVICE_INFO_HEADER *setPacket);
 #endif
 #endif
 #endif
-
 #define SystemParametersInfo __MINGW_NAME_AW(SystemParametersInfo)
-
-  WINUSERAPI WINBOOL WINAPI SystemParametersInfoA(UINT uiAction,UINT uiParam,PVOID pvParam,UINT fWinIni);
-  WINUSERAPI WINBOOL WINAPI SystemParametersInfoW(UINT uiAction,UINT uiParam,PVOID pvParam,UINT fWinIni);
-
+WINUSERAPI WINBOOL WINAPI SystemParametersInfoA(UINT uiAction, UINT uiParam,
+                                                PVOID pvParam, UINT fWinIni);
+WINUSERAPI WINBOOL WINAPI SystemParametersInfoW(UINT uiAction, UINT uiParam,
+                                                PVOID pvParam, UINT fWinIni);
 #if WINVER >= 0x0605
-WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni, UINT dpi);
+WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction,
+                                                     UINT uiParam,
+                                                     PVOID pvParam,
+                                                     UINT fWinIni, UINT dpi);
 #endif
-
 #endif
 #endif /* !NOSYSPARAMSINFO */
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagFILTERKEYS {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD iWaitMSec;
-    DWORD iDelayMSec;
-    DWORD iRepeatMSec;
-    DWORD iBounceMSec;
-  } FILTERKEYS,*LPFILTERKEYS;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagFILTERKEYS {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD iWaitMSec;
+  DWORD iDelayMSec;
+  DWORD iRepeatMSec;
+  DWORD iBounceMSec;
+} FILTERKEYS, *LPFILTERKEYS;
 #endif
-
 #define FKF_FILTERKEYSON 0x00000001
 #define FKF_AVAILABLE 0x00000002
 #define FKF_HOTKEYACTIVE 0x00000004
@@ -5659,14 +5530,12 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define FKF_HOTKEYSOUND 0x00000010
 #define FKF_INDICATOR 0x00000020
 #define FKF_CLICKON 0x00000040
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagSTICKYKEYS {
-    UINT cbSize;
-    DWORD dwFlags;
-  } STICKYKEYS,*LPSTICKYKEYS;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagSTICKYKEYS {
+  UINT cbSize;
+  DWORD dwFlags;
+} STICKYKEYS, *LPSTICKYKEYS;
 #endif
-
 #define SKF_STICKYKEYSON 0x00000001
 #define SKF_AVAILABLE 0x00000002
 #define SKF_HOTKEYACTIVE 0x00000004
@@ -5692,19 +5561,17 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define SKF_RSHIFTLOCKED 0x00020000
 #define SKF_LWINLOCKED 0x00400000
 #define SKF_RWINLOCKED 0x00800000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagMOUSEKEYS {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD iMaxSpeed;
-    DWORD iTimeToMaxSpeed;
-    DWORD iCtrlSpeed;
-    DWORD dwReserved1;
-    DWORD dwReserved2;
-  } MOUSEKEYS,*LPMOUSEKEYS;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagMOUSEKEYS {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD iMaxSpeed;
+  DWORD iTimeToMaxSpeed;
+  DWORD iCtrlSpeed;
+  DWORD dwReserved1;
+  DWORD dwReserved2;
+} MOUSEKEYS, *LPMOUSEKEYS;
 #endif
-
 #define MKF_MOUSEKEYSON 0x00000001
 #define MKF_AVAILABLE 0x00000002
 #define MKF_HOTKEYACTIVE 0x00000004
@@ -5718,194 +5585,174 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define MKF_LEFTBUTTONDOWN 0x01000000
 #define MKF_RIGHTBUTTONDOWN 0x02000000
 #define MKF_MOUSEMODE 0x80000000
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagACCESSTIMEOUT {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD iTimeOutMSec;
-  } ACCESSTIMEOUT,*LPACCESSTIMEOUT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagACCESSTIMEOUT {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD iTimeOutMSec;
+} ACCESSTIMEOUT, *LPACCESSTIMEOUT;
 #endif
-
 #define ATF_TIMEOUTON 0x00000001
 #define ATF_ONOFFFEEDBACK 0x00000002
-
 #define SSGF_NONE 0
 #define SSGF_DISPLAY 3
-
 #define SSTF_NONE 0
 #define SSTF_CHARS 1
 #define SSTF_BORDER 2
 #define SSTF_DISPLAY 3
-
 #define SSWF_NONE 0
 #define SSWF_TITLE 1
 #define SSWF_WINDOW 2
 #define SSWF_DISPLAY 3
 #define SSWF_CUSTOM 4
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagSOUNDSENTRYA {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD iFSTextEffect;
-    DWORD iFSTextEffectMSec;
-    DWORD iFSTextEffectColorBits;
-    DWORD iFSGrafEffect;
-    DWORD iFSGrafEffectMSec;
-    DWORD iFSGrafEffectColor;
-    DWORD iWindowsEffect;
-    DWORD iWindowsEffectMSec;
-    LPSTR lpszWindowsEffectDLL;
-    DWORD iWindowsEffectOrdinal;
-  } SOUNDSENTRYA,*LPSOUNDSENTRYA;
-
-  typedef struct tagSOUNDSENTRYW {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD iFSTextEffect;
-    DWORD iFSTextEffectMSec;
-    DWORD iFSTextEffectColorBits;
-    DWORD iFSGrafEffect;
-    DWORD iFSGrafEffectMSec;
-    DWORD iFSGrafEffectColor;
-    DWORD iWindowsEffect;
-    DWORD iWindowsEffectMSec;
-    LPWSTR lpszWindowsEffectDLL;
-    DWORD iWindowsEffectOrdinal;
-  } SOUNDSENTRYW,*LPSOUNDSENTRYW;
-
-  __MINGW_TYPEDEF_AW(SOUNDSENTRY)
-  __MINGW_TYPEDEF_AW(LPSOUNDSENTRY)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagSOUNDSENTRYA {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD iFSTextEffect;
+  DWORD iFSTextEffectMSec;
+  DWORD iFSTextEffectColorBits;
+  DWORD iFSGrafEffect;
+  DWORD iFSGrafEffectMSec;
+  DWORD iFSGrafEffectColor;
+  DWORD iWindowsEffect;
+  DWORD iWindowsEffectMSec;
+  LPSTR lpszWindowsEffectDLL;
+  DWORD iWindowsEffectOrdinal;
+} SOUNDSENTRYA, *LPSOUNDSENTRYA;
+typedef struct tagSOUNDSENTRYW {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD iFSTextEffect;
+  DWORD iFSTextEffectMSec;
+  DWORD iFSTextEffectColorBits;
+  DWORD iFSGrafEffect;
+  DWORD iFSGrafEffectMSec;
+  DWORD iFSGrafEffectColor;
+  DWORD iWindowsEffect;
+  DWORD iWindowsEffectMSec;
+  LPWSTR lpszWindowsEffectDLL;
+  DWORD iWindowsEffectOrdinal;
+} SOUNDSENTRYW, *LPSOUNDSENTRYW;
+__MINGW_TYPEDEF_AW(SOUNDSENTRY)
+__MINGW_TYPEDEF_AW(LPSOUNDSENTRY)
 #endif
-
 #define SSF_SOUNDSENTRYON 0x00000001
 #define SSF_AVAILABLE 0x00000002
 #define SSF_INDICATOR 0x00000004
-
 #ifndef CCHDEVICENAME
 #define CCHDEVICENAME 32
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagTOGGLEKEYS {
-    UINT cbSize;
-    DWORD dwFlags;
-  } TOGGLEKEYS,*LPTOGGLEKEYS;
-
-  typedef struct tagMONITORINFO {
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagTOGGLEKEYS {
+  UINT cbSize;
+  DWORD dwFlags;
+} TOGGLEKEYS, *LPTOGGLEKEYS;
+typedef struct tagMONITORINFO {
+  DWORD cbSize;
+  RECT rcMonitor;
+  RECT rcWork;
+  DWORD dwFlags;
+} MONITORINFO, *LPMONITORINFO;
+#if _WIN32_WINNT >= 0x0600
+typedef struct tagAUDIODESCRIPTION {
+  UINT cbSize;
+  WINBOOL Enabled;
+  LCID Locale;
+} AUDIODESCRIPTION, *LPAUDIODESCRIPTION;
+#endif
+#ifdef __cplusplus
+typedef struct tagMONITORINFOEXA : public tagMONITORINFO {
+  CHAR szDevice[CCHDEVICENAME];
+} MONITORINFOEXA, *LPMONITORINFOEXA;
+typedef struct tagMONITORINFOEXW : public tagMONITORINFO {
+  WCHAR szDevice[CCHDEVICENAME];
+} MONITORINFOEXW, *LPMONITORINFOEXW;
+__MINGW_TYPEDEF_AW(MONITORINFOEX)
+__MINGW_TYPEDEF_AW(LPMONITORINFOEX)
+#else
+typedef struct tagMONITORINFOEXA {
+  __C89_NAMELESS struct {
     DWORD cbSize;
     RECT rcMonitor;
     RECT rcWork;
     DWORD dwFlags;
-  } MONITORINFO,*LPMONITORINFO;
-
-#if _WIN32_WINNT >= 0x0600
-  typedef struct tagAUDIODESCRIPTION {
-    UINT cbSize;
-    WINBOOL Enabled;
-    LCID Locale;
-  } AUDIODESCRIPTION,*LPAUDIODESCRIPTION;
+  };
+  CHAR szDevice[CCHDEVICENAME];
+} MONITORINFOEXA, *LPMONITORINFOEXA;
+typedef struct tagMONITORINFOEXW {
+  __C89_NAMELESS struct {
+    DWORD cbSize;
+    RECT rcMonitor;
+    RECT rcWork;
+    DWORD dwFlags;
+  };
+  WCHAR szDevice[CCHDEVICENAME];
+} MONITORINFOEXW, *LPMONITORINFOEXW;
+__MINGW_TYPEDEF_AW(MONITORINFOEX)
+__MINGW_TYPEDEF_AW(LPMONITORINFOEX)
 #endif
-
-#ifdef __cplusplus
-  typedef struct tagMONITORINFOEXA : public tagMONITORINFO {
-    CHAR szDevice[CCHDEVICENAME];
-  } MONITORINFOEXA,*LPMONITORINFOEXA;
-
-  typedef struct tagMONITORINFOEXW : public tagMONITORINFO {
-    WCHAR szDevice[CCHDEVICENAME];
-  } MONITORINFOEXW,*LPMONITORINFOEXW;
-
-  __MINGW_TYPEDEF_AW(MONITORINFOEX)
-  __MINGW_TYPEDEF_AW(LPMONITORINFOEX)
-#else
-  typedef struct tagMONITORINFOEXA {
-    __C89_NAMELESS struct {
-      DWORD cbSize;
-      RECT rcMonitor;
-      RECT rcWork;
-      DWORD dwFlags;
-    };
-    CHAR szDevice[CCHDEVICENAME];
-  } MONITORINFOEXA,*LPMONITORINFOEXA;
-
-  typedef struct tagMONITORINFOEXW {
-    __C89_NAMELESS struct {
-      DWORD cbSize;
-      RECT rcMonitor;
-      RECT rcWork;
-      DWORD dwFlags;
-    };
-    WCHAR szDevice[CCHDEVICENAME];
-  } MONITORINFOEXW,*LPMONITORINFOEXW;
-
-  __MINGW_TYPEDEF_AW(MONITORINFOEX)
-  __MINGW_TYPEDEF_AW(LPMONITORINFOEX)
-#endif
-
-  typedef WINBOOL (CALLBACK *MONITORENUMPROC)(HMONITOR,HDC,LPRECT,LPARAM);
-
-  WINUSERAPI VOID WINAPI SetDebugErrorLevel (DWORD dwLevel);
-  WINUSERAPI VOID WINAPI SetLastErrorEx (DWORD dwErrCode, DWORD dwType);
-  WINUSERAPI int WINAPI InternalGetWindowText (HWND hWnd, LPWSTR pString, int cchMaxCount);
-  WINUSERAPI WINBOOL WINAPI CancelShutdown (VOID);
-  WINUSERAPI HMONITOR WINAPI MonitorFromPoint(POINT pt,DWORD dwFlags);
-  WINUSERAPI HMONITOR WINAPI MonitorFromRect(LPCRECT lprc,DWORD dwFlags);
-  WINUSERAPI HMONITOR WINAPI MonitorFromWindow(HWND hwnd,DWORD dwFlags);
+typedef WINBOOL(CALLBACK *MONITORENUMPROC)(HMONITOR, HDC, LPRECT, LPARAM);
+WINUSERAPI VOID WINAPI SetDebugErrorLevel(DWORD dwLevel);
+WINUSERAPI VOID WINAPI SetLastErrorEx(DWORD dwErrCode, DWORD dwType);
+WINUSERAPI int WINAPI InternalGetWindowText(HWND hWnd, LPWSTR pString,
+                                            int cchMaxCount);
+WINUSERAPI WINBOOL WINAPI CancelShutdown(VOID);
+WINUSERAPI HMONITOR WINAPI MonitorFromPoint(POINT pt, DWORD dwFlags);
+WINUSERAPI HMONITOR WINAPI MonitorFromRect(LPCRECT lprc, DWORD dwFlags);
+WINUSERAPI HMONITOR WINAPI MonitorFromWindow(HWND hwnd, DWORD dwFlags);
 #ifdef WINNT
-  WINUSERAPI WINBOOL WINAPI EndTask (HWND hWnd, WINBOOL fShutDown, WINBOOL fForce);
+WINUSERAPI WINBOOL WINAPI EndTask(HWND hWnd, WINBOOL fShutDown, WINBOOL fForce);
 #endif
 #if _WIN32_WINNT >= 0x0600
-  WINUSERAPI WINBOOL WINAPI SoundSentry (VOID);
+WINUSERAPI WINBOOL WINAPI SoundSentry(VOID);
 #endif
-
 #define GetMonitorInfo __MINGW_NAME_AW(GetMonitorInfo)
-
-  WINUSERAPI WINBOOL WINAPI GetMonitorInfoA(HMONITOR hMonitor,LPMONITORINFO lpmi);
-  WINUSERAPI WINBOOL WINAPI GetMonitorInfoW(HMONITOR hMonitor,LPMONITORINFO lpmi);
-  WINUSERAPI WINBOOL WINAPI EnumDisplayMonitors(HDC hdc,LPCRECT lprcClip,MONITORENUMPROC lpfnEnum,LPARAM dwData);
+WINUSERAPI WINBOOL WINAPI GetMonitorInfoA(HMONITOR hMonitor,
+                                          LPMONITORINFO lpmi);
+WINUSERAPI WINBOOL WINAPI GetMonitorInfoW(HMONITOR hMonitor,
+                                          LPMONITORINFO lpmi);
+WINUSERAPI WINBOOL WINAPI EnumDisplayMonitors(HDC hdc, LPCRECT lprcClip,
+                                              MONITORENUMPROC lpfnEnum,
+                                              LPARAM dwData);
 #endif
-
 #define TKF_TOGGLEKEYSON 0x00000001
 #define TKF_AVAILABLE 0x00000002
 #define TKF_HOTKEYACTIVE 0x00000004
 #define TKF_CONFIRMHOTKEY 0x00000008
 #define TKF_HOTKEYSOUND 0x00000010
 #define TKF_INDICATOR 0x00000020
-
 #define SLE_ERROR 0x00000001
 #define SLE_MINORERROR 0x00000002
 #define SLE_WARNING 0x00000003
-
 #define MONITOR_DEFAULTTONULL 0x00000000
 #define MONITOR_DEFAULTTOPRIMARY 0x00000001
 #define MONITOR_DEFAULTTONEAREST 0x00000002
-
 #define MONITORINFOF_PRIMARY 0x00000001
-
 #ifndef NOWINABLE
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef VOID (CALLBACK *WINEVENTPROC)(HWINEVENTHOOK hWinEventHook,DWORD event,HWND hwnd,LONG idObject,LONG idChild,DWORD idEventThread,DWORD dwmsEventTime);
-
-  WINUSERAPI VOID WINAPI NotifyWinEvent(DWORD event,HWND hwnd,LONG idObject,LONG idChild);
-  WINUSERAPI HWINEVENTHOOK WINAPI SetWinEventHook(DWORD eventMin,DWORD eventMax,HMODULE hmodWinEventProc,WINEVENTPROC pfnWinEventProc,DWORD idProcess,DWORD idThread,DWORD dwFlags);
-  WINUSERAPI WINBOOL WINAPI IsWinEventHookInstalled(DWORD event);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef VOID(CALLBACK *WINEVENTPROC)(HWINEVENTHOOK hWinEventHook, DWORD event,
+                                     HWND hwnd, LONG idObject, LONG idChild,
+                                     DWORD idEventThread, DWORD dwmsEventTime);
+WINUSERAPI VOID WINAPI NotifyWinEvent(DWORD event, HWND hwnd, LONG idObject,
+                                      LONG idChild);
+WINUSERAPI HWINEVENTHOOK WINAPI SetWinEventHook(DWORD eventMin, DWORD eventMax,
+                                                HMODULE hmodWinEventProc,
+                                                WINEVENTPROC pfnWinEventProc,
+                                                DWORD idProcess, DWORD idThread,
+                                                DWORD dwFlags);
+WINUSERAPI WINBOOL WINAPI IsWinEventHookInstalled(DWORD event);
 #endif
-
 #define WINEVENT_OUTOFCONTEXT 0x0000
 #define WINEVENT_SKIPOWNTHREAD 0x0001
 #define WINEVENT_SKIPOWNPROCESS 0x0002
 #define WINEVENT_INCONTEXT 0x0004
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI UnhookWinEvent(HWINEVENTHOOK hWinEventHook);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI UnhookWinEvent(HWINEVENTHOOK hWinEventHook);
 #endif
-
 #define CHILDID_SELF 0
 #define INDEXID_OBJECT 0
 #define INDEXID_CONTAINER 0
-
 #define OBJID_WINDOW ((LONG)0x00000000)
 #define OBJID_SYSMENU ((LONG)0xFFFFFFFF)
 #define OBJID_TITLEBAR ((LONG)0xFFFFFFFE)
@@ -5920,10 +5767,8 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define OBJID_SOUND ((LONG)0xFFFFFFF5)
 #define OBJID_QUERYCLASSNAMEIDX ((LONG)0xFFFFFFF4)
 #define OBJID_NATIVEOM ((LONG)0xFFFFFFF0)
-
 #define EVENT_MIN 0x00000001
 #define EVENT_MAX 0x7FFFFFFF
-
 #define EVENT_SYSTEM_SOUND 0x0001
 #define EVENT_SYSTEM_ALERT 0x0002
 #define EVENT_SYSTEM_FOREGROUND 0x0003
@@ -5968,7 +5813,6 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define EVENT_UIA_PROPID_START 0x7500
 #define EVENT_UIA_PROPID_END 0x75ff
 #endif
-
 #define EVENT_CONSOLE_CARET 0x4001
 #define EVENT_CONSOLE_UPDATE_REGION 0x4002
 #define EVENT_CONSOLE_UPDATE_SIMPLE 0x4003
@@ -5976,7 +5820,6 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define EVENT_CONSOLE_LAYOUT 0x4005
 #define EVENT_CONSOLE_START_APPLICATION 0x4006
 #define EVENT_CONSOLE_END_APPLICATION 0x4007
-
 #ifdef _WIN64
 #define CONSOLE_APPLICATION_16BIT 0x0000
 #else
@@ -5987,7 +5830,6 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #if _WIN32_WINNT >= 0x0601
 #define EVENT_CONSOLE_END 0x40ff
 #endif
-
 #define EVENT_OBJECT_CREATE 0x8000
 #define EVENT_OBJECT_DESTROY 0x8001
 #define EVENT_OBJECT_SHOW 0x8002
@@ -6030,13 +5872,11 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define EVENT_OBJECT_IME_HIDE 0x8028
 #define EVENT_OBJECT_IME_CHANGE 0x8029
 #endif
-
 #if _WIN32_WINNT >= 0x0601
 #define EVENT_OBJECT_END 0x80ff
 #define EVENT_AIA_START 0xa000
 #define EVENT_AIA_END 0xafff
 #endif
-
 #define SOUND_SYSTEM_STARTUP 1
 #define SOUND_SYSTEM_SHUTDOWN 2
 #define SOUND_SYSTEM_BEEP 3
@@ -6054,28 +5894,25 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #define SOUND_SYSTEM_MENUCOMMAND 15
 #define SOUND_SYSTEM_MENUPOPUP 16
 #define CSOUND_SYSTEM 16
-
 #define ALERT_SYSTEM_INFORMATIONAL 1
 #define ALERT_SYSTEM_WARNING 2
 #define ALERT_SYSTEM_ERROR 3
 #define ALERT_SYSTEM_QUERY 4
 #define ALERT_SYSTEM_CRITICAL 5
 #define CALERT_SYSTEM 6
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagGUITHREADINFO {
-    DWORD cbSize;
-    DWORD flags;
-    HWND hwndActive;
-    HWND hwndFocus;
-    HWND hwndCapture;
-    HWND hwndMenuOwner;
-    HWND hwndMoveSize;
-    HWND hwndCaret;
-    RECT rcCaret;
-  } GUITHREADINFO,*PGUITHREADINFO,*LPGUITHREADINFO;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagGUITHREADINFO {
+  DWORD cbSize;
+  DWORD flags;
+  HWND hwndActive;
+  HWND hwndFocus;
+  HWND hwndCapture;
+  HWND hwndMenuOwner;
+  HWND hwndMoveSize;
+  HWND hwndCaret;
+  RECT rcCaret;
+} GUITHREADINFO, *PGUITHREADINFO, *LPGUITHREADINFO;
 #endif
-
 #define GUI_CARETBLINKING 0x00000001
 #define GUI_INMOVESIZE 0x00000002
 #define GUI_INMENUMODE 0x00000004
@@ -6086,49 +5923,51 @@ WINUSERAPI WINBOOL WINAPI SystemParametersInfoForDpi(UINT uiAction, UINT uiParam
 #else
 #define GUI_16BITTASK 0x00000020
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define GetWindowModuleFileName __MINGW_NAME_AW(GetWindowModuleFileName)
-
-  WINUSERAPI WINBOOL WINAPI GetGUIThreadInfo(DWORD idThread,PGUITHREADINFO pgui);
-  WINUSERAPI WINBOOL WINAPI BlockInput (WINBOOL fBlockIt);
-  WINUSERAPI UINT WINAPI GetWindowModuleFileNameA(HWND hwnd,LPSTR pszFileName,UINT cchFileNameMax);
-  WINUSERAPI UINT WINAPI GetWindowModuleFileNameW(HWND hwnd,LPWSTR pszFileName,UINT cchFileNameMax);
+WINUSERAPI WINBOOL WINAPI GetGUIThreadInfo(DWORD idThread, PGUITHREADINFO pgui);
+WINUSERAPI WINBOOL WINAPI BlockInput(WINBOOL fBlockIt);
+WINUSERAPI UINT WINAPI GetWindowModuleFileNameA(HWND hwnd, LPSTR pszFileName,
+                                                UINT cchFileNameMax);
+WINUSERAPI UINT WINAPI GetWindowModuleFileNameW(HWND hwnd, LPWSTR pszFileName,
+                                                UINT cchFileNameMax);
 #if _WIN32_WINNT >= 0x0600
 #define USER_DEFAULT_SCREEN_DPI 96
-
-  WINUSERAPI WINBOOL WINAPI SetProcessDPIAware (VOID);
-  WINUSERAPI WINBOOL WINAPI IsProcessDPIAware (VOID);
+WINUSERAPI WINBOOL WINAPI SetProcessDPIAware(VOID);
+WINUSERAPI WINBOOL WINAPI IsProcessDPIAware(VOID);
 #endif
-
 #if WINVER >= 0x0605
-WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
+WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI
+SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
 WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetThreadDpiAwarenessContext(VOID);
 WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetWindowDpiAwarenessContext(HWND hwnd);
-WINUSERAPI DPI_AWARENESS WINAPI GetAwarenessFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
-WINUSERAPI UINT WINAPI GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
-WINUSERAPI WINBOOL WINAPI AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB);
-WINUSERAPI WINBOOL WINAPI IsValidDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+WINUSERAPI DPI_AWARENESS WINAPI
+GetAwarenessFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+WINUSERAPI UINT WINAPI
+GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+WINUSERAPI WINBOOL WINAPI AreDpiAwarenessContextsEqual(
+    DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB);
+WINUSERAPI WINBOOL WINAPI
+IsValidDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
 WINUSERAPI UINT WINAPI GetDpiForWindow(HWND hwnd);
 WINUSERAPI UINT WINAPI GetDpiForSystem(VOID);
 WINUSERAPI UINT WINAPI GetSystemDpiForProcess(HANDLE hProcess);
 WINUSERAPI WINBOOL WINAPI EnableNonClientDpiScaling(HWND hwnd);
 WINUSERAPI WINBOOL WINAPI InheritWindowMonitor(HWND hwnd, HWND hwndInherit);
-WINUSERAPI WINBOOL WINAPI SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
+WINUSERAPI WINBOOL WINAPI
+SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT value);
 #endif /* WINVER >= 0x0605 */
-
 #if WINVER >= 0x0606
-WINUSERAPI DPI_HOSTING_BEHAVIOR WINAPI SetThreadDpiHostingBehavior(DPI_HOSTING_BEHAVIOR value);
+WINUSERAPI DPI_HOSTING_BEHAVIOR WINAPI
+SetThreadDpiHostingBehavior(DPI_HOSTING_BEHAVIOR value);
 WINUSERAPI DPI_HOSTING_BEHAVIOR WINAPI GetThreadDpiHostingBehavior(VOID);
 WINUSERAPI DPI_HOSTING_BEHAVIOR WINAPI GetWindowDpiHostingBehavior(HWND hwnd);
 #endif /* WINVER >= 0x0606 */
-
 #if NTDDI_VERSION >= NTDDI_WIN10_19H1
-WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE hProcess);
+WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI
+GetDpiAwarenessContextForProcess(HANDLE hProcess);
 #endif
-
 #endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */
-
 #ifndef NO_STATE_FLAGS
 #define STATE_SYSTEM_UNAVAILABLE 0x00000001
 #define STATE_SYSTEM_SELECTED 0x00000002
@@ -6163,170 +6002,148 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define STATE_SYSTEM_PROTECTED 0x20000000
 #define STATE_SYSTEM_VALID 0x3FFFFFFF
 #endif
-
 #define CCHILDREN_TITLEBAR 5
 #define CCHILDREN_SCROLLBAR 5
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagCURSORINFO {
-    DWORD cbSize;
-    DWORD flags;
-    HCURSOR hCursor;
-    POINT ptScreenPos;
-  } CURSORINFO,*PCURSORINFO,*LPCURSORINFO;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagCURSORINFO {
+  DWORD cbSize;
+  DWORD flags;
+  HCURSOR hCursor;
+  POINT ptScreenPos;
+} CURSORINFO, *PCURSORINFO, *LPCURSORINFO;
 #define CURSOR_SHOWING 0x00000001
 #if WINVER >= 0x0602
 #define CURSOR_SUPPRESSED 0x00000002
 #endif
-
-  WINUSERAPI WINBOOL WINAPI GetCursorInfo(PCURSORINFO pci);
-
-  typedef struct tagWINDOWINFO {
-    DWORD cbSize;
-    RECT rcWindow;
-    RECT rcClient;
-    DWORD dwStyle;
-    DWORD dwExStyle;
-    DWORD dwWindowStatus;
-    UINT cxWindowBorders;
-    UINT cyWindowBorders;
-    ATOM atomWindowType;
-    WORD wCreatorVersion;
-  } WINDOWINFO,*PWINDOWINFO,*LPWINDOWINFO;
-
+WINUSERAPI WINBOOL WINAPI GetCursorInfo(PCURSORINFO pci);
+typedef struct tagWINDOWINFO {
+  DWORD cbSize;
+  RECT rcWindow;
+  RECT rcClient;
+  DWORD dwStyle;
+  DWORD dwExStyle;
+  DWORD dwWindowStatus;
+  UINT cxWindowBorders;
+  UINT cyWindowBorders;
+  ATOM atomWindowType;
+  WORD wCreatorVersion;
+} WINDOWINFO, *PWINDOWINFO, *LPWINDOWINFO;
 #define WS_ACTIVECAPTION 0x0001
-
-  WINUSERAPI WINBOOL WINAPI GetWindowInfo(HWND hwnd,PWINDOWINFO pwi);
-
-  typedef struct tagTITLEBARINFO {
-    DWORD cbSize;
-    RECT rcTitleBar;
-    DWORD rgstate[CCHILDREN_TITLEBAR + 1];
-  } TITLEBARINFO,*PTITLEBARINFO,*LPTITLEBARINFO;
-
-  WINUSERAPI WINBOOL WINAPI GetTitleBarInfo(HWND hwnd,PTITLEBARINFO pti);
-
+WINUSERAPI WINBOOL WINAPI GetWindowInfo(HWND hwnd, PWINDOWINFO pwi);
+typedef struct tagTITLEBARINFO {
+  DWORD cbSize;
+  RECT rcTitleBar;
+  DWORD rgstate[CCHILDREN_TITLEBAR + 1];
+} TITLEBARINFO, *PTITLEBARINFO, *LPTITLEBARINFO;
+WINUSERAPI WINBOOL WINAPI GetTitleBarInfo(HWND hwnd, PTITLEBARINFO pti);
 #if WINVER >= 0x0600
-  typedef struct tagTITLEBARINFOEX {
-    DWORD cbSize;
-    RECT rcTitleBar;
-    DWORD rgstate[CCHILDREN_TITLEBAR + 1];
-    RECT rgrect[CCHILDREN_TITLEBAR + 1];
-  } TITLEBARINFOEX,*PTITLEBARINFOEX,*LPTITLEBARINFOEX;
+typedef struct tagTITLEBARINFOEX {
+  DWORD cbSize;
+  RECT rcTitleBar;
+  DWORD rgstate[CCHILDREN_TITLEBAR + 1];
+  RECT rgrect[CCHILDREN_TITLEBAR + 1];
+} TITLEBARINFOEX, *PTITLEBARINFOEX, *LPTITLEBARINFOEX;
 #endif
-
-  typedef struct tagMENUBARINFO {
-    DWORD cbSize;
-    RECT rcBar;
-    HMENU hMenu;
-    HWND hwndMenu;
-    WINBOOL fBarFocused:1;
-    WINBOOL fFocused:1;
-  } MENUBARINFO,*PMENUBARINFO,*LPMENUBARINFO;
-
-  WINUSERAPI WINBOOL WINAPI GetMenuBarInfo(HWND hwnd,LONG idObject,LONG idItem,PMENUBARINFO pmbi);
-
-  typedef struct tagSCROLLBARINFO {
-    DWORD cbSize;
-    RECT rcScrollBar;
-    int dxyLineButton;
-    int xyThumbTop;
-    int xyThumbBottom;
-    int reserved;
-    DWORD rgstate[CCHILDREN_SCROLLBAR + 1];
-  } SCROLLBARINFO,*PSCROLLBARINFO,*LPSCROLLBARINFO;
-
-  WINUSERAPI WINBOOL WINAPI GetScrollBarInfo(HWND hwnd,LONG idObject,PSCROLLBARINFO psbi);
-
-  typedef struct tagCOMBOBOXINFO {
-    DWORD cbSize;
-    RECT rcItem;
-    RECT rcButton;
-    DWORD stateButton;
-    HWND hwndCombo;
-    HWND hwndItem;
-    HWND hwndList;
-  } COMBOBOXINFO,*PCOMBOBOXINFO,*LPCOMBOBOXINFO;
-
-  WINUSERAPI WINBOOL WINAPI GetComboBoxInfo(HWND hwndCombo,PCOMBOBOXINFO pcbi);
+typedef struct tagMENUBARINFO {
+  DWORD cbSize;
+  RECT rcBar;
+  HMENU hMenu;
+  HWND hwndMenu;
+  WINBOOL fBarFocused : 1;
+  WINBOOL fFocused : 1;
+} MENUBARINFO, *PMENUBARINFO, *LPMENUBARINFO;
+WINUSERAPI WINBOOL WINAPI GetMenuBarInfo(HWND hwnd, LONG idObject, LONG idItem,
+                                         PMENUBARINFO pmbi);
+typedef struct tagSCROLLBARINFO {
+  DWORD cbSize;
+  RECT rcScrollBar;
+  int dxyLineButton;
+  int xyThumbTop;
+  int xyThumbBottom;
+  int reserved;
+  DWORD rgstate[CCHILDREN_SCROLLBAR + 1];
+} SCROLLBARINFO, *PSCROLLBARINFO, *LPSCROLLBARINFO;
+WINUSERAPI WINBOOL WINAPI GetScrollBarInfo(HWND hwnd, LONG idObject,
+                                           PSCROLLBARINFO psbi);
+typedef struct tagCOMBOBOXINFO {
+  DWORD cbSize;
+  RECT rcItem;
+  RECT rcButton;
+  DWORD stateButton;
+  HWND hwndCombo;
+  HWND hwndItem;
+  HWND hwndList;
+} COMBOBOXINFO, *PCOMBOBOXINFO, *LPCOMBOBOXINFO;
+WINUSERAPI WINBOOL WINAPI GetComboBoxInfo(HWND hwndCombo, PCOMBOBOXINFO pcbi);
 #endif
-
 #define GA_PARENT 1
 #define GA_ROOT 2
 #define GA_ROOTOWNER 3
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #define RealGetWindowClass __MINGW_NAME_AW(RealGetWindowClass)
-
-  WINUSERAPI HWND WINAPI GetAncestor(HWND hwnd,UINT gaFlags);
-  WINUSERAPI HWND WINAPI RealChildWindowFromPoint(HWND hwndParent,POINT ptParentClientCoords);
-  WINUSERAPI UINT WINAPI RealGetWindowClassA(HWND hwnd,LPSTR ptszClassName,UINT cchClassNameMax);
-  WINUSERAPI UINT WINAPI RealGetWindowClassW(HWND hwnd,LPWSTR ptszClassName,UINT cchClassNameMax);
-
-  typedef struct tagALTTABINFO {
-    DWORD cbSize;
-    int cItems;
-    int cColumns;
-    int cRows;
-    int iColFocus;
-    int iRowFocus;
-    int cxItem;
-    int cyItem;
-    POINT ptStart;
-  } ALTTABINFO,*PALTTABINFO,*LPALTTABINFO;
-
+WINUSERAPI HWND WINAPI GetAncestor(HWND hwnd, UINT gaFlags);
+WINUSERAPI HWND WINAPI RealChildWindowFromPoint(HWND hwndParent,
+                                                POINT ptParentClientCoords);
+WINUSERAPI UINT WINAPI RealGetWindowClassA(HWND hwnd, LPSTR ptszClassName,
+                                           UINT cchClassNameMax);
+WINUSERAPI UINT WINAPI RealGetWindowClassW(HWND hwnd, LPWSTR ptszClassName,
+                                           UINT cchClassNameMax);
+typedef struct tagALTTABINFO {
+  DWORD cbSize;
+  int cItems;
+  int cColumns;
+  int cRows;
+  int iColFocus;
+  int iRowFocus;
+  int cxItem;
+  int cyItem;
+  POINT ptStart;
+} ALTTABINFO, *PALTTABINFO, *LPALTTABINFO;
 #define GetAltTabInfo __MINGW_NAME_AW(GetAltTabInfo)
-
-  WINUSERAPI WINBOOL WINAPI GetAltTabInfoA(HWND hwnd,int iItem,PALTTABINFO pati,LPSTR pszItemText,UINT cchItemText);
-  WINUSERAPI WINBOOL WINAPI GetAltTabInfoW(HWND hwnd,int iItem,PALTTABINFO pati,LPWSTR pszItemText,UINT cchItemText);
-  WINUSERAPI DWORD WINAPI GetListBoxInfo(HWND hwnd);
+WINUSERAPI WINBOOL WINAPI GetAltTabInfoA(HWND hwnd, int iItem, PALTTABINFO pati,
+                                         LPSTR pszItemText, UINT cchItemText);
+WINUSERAPI WINBOOL WINAPI GetAltTabInfoW(HWND hwnd, int iItem, PALTTABINFO pati,
+                                         LPWSTR pszItemText, UINT cchItemText);
+WINUSERAPI DWORD WINAPI GetListBoxInfo(HWND hwnd);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI LockWorkStation(VOID);
-  WINUSERAPI WINBOOL WINAPI UserHandleGrantAccess(HANDLE hUserHandle,HANDLE hJob,WINBOOL bGrant);
-
-  DECLARE_HANDLE(HRAWINPUT);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI LockWorkStation(VOID);
+WINUSERAPI WINBOOL WINAPI UserHandleGrantAccess(HANDLE hUserHandle, HANDLE hJob,
+                                                WINBOOL bGrant);
+DECLARE_HANDLE(HRAWINPUT);
 #endif
-
 #define GET_RAWINPUT_CODE_WPARAM(wParam) ((wParam) & 0xff)
-
 #define RIM_INPUT 0
 #define RIM_INPUTSINK 1
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRAWINPUTHEADER {
-    DWORD dwType;
-    DWORD dwSize;
-    HANDLE hDevice;
-    WPARAM wParam;
-  } RAWINPUTHEADER,*PRAWINPUTHEADER,*LPRAWINPUTHEADER;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRAWINPUTHEADER {
+  DWORD dwType;
+  DWORD dwSize;
+  HANDLE hDevice;
+  WPARAM wParam;
+} RAWINPUTHEADER, *PRAWINPUTHEADER, *LPRAWINPUTHEADER;
 #endif
-
 #define RIM_TYPEMOUSE 0
 #define RIM_TYPEKEYBOARD 1
 #define RIM_TYPEHID 2
 #define RIM_TYPEMAX 2
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRAWMOUSE {
-    USHORT usFlags;
-    __C89_NAMELESS union {
-      ULONG ulButtons;
-      __C89_NAMELESS struct {
-	USHORT usButtonFlags;
-	USHORT usButtonData;
-      };
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRAWMOUSE {
+  USHORT usFlags;
+  __C89_NAMELESS union {
+    ULONG ulButtons;
+    __C89_NAMELESS struct {
+      USHORT usButtonFlags;
+      USHORT usButtonData;
     };
-    ULONG ulRawButtons;
-    LONG lLastX;
-    LONG lLastY;
-    ULONG ulExtraInformation;
-  } RAWMOUSE,*PRAWMOUSE,*LPRAWMOUSE;
+  };
+  ULONG ulRawButtons;
+  LONG lLastX;
+  LONG lLastY;
+  ULONG ulExtraInformation;
+} RAWMOUSE, *PRAWMOUSE, *LPRAWMOUSE;
 #endif
-
 #define RI_MOUSE_LEFT_BUTTON_DOWN 0x0001
 #define RI_MOUSE_LEFT_BUTTON_UP 0x0002
 #define RI_MOUSE_RIGHT_BUTTON_DOWN 0x0004
@@ -6341,14 +6158,12 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #if WINVER >= 0x0600
 #define RI_MOUSE_HWHEEL 0x0800
 #endif
-
 #define RI_MOUSE_BUTTON_1_DOWN RI_MOUSE_LEFT_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_1_UP RI_MOUSE_LEFT_BUTTON_UP
 #define RI_MOUSE_BUTTON_2_DOWN RI_MOUSE_RIGHT_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_2_UP RI_MOUSE_RIGHT_BUTTON_UP
 #define RI_MOUSE_BUTTON_3_DOWN RI_MOUSE_MIDDLE_BUTTON_DOWN
 #define RI_MOUSE_BUTTON_3_UP RI_MOUSE_MIDDLE_BUTTON_UP
-
 #define MOUSE_MOVE_RELATIVE 0
 #define MOUSE_MOVE_ABSOLUTE 1
 #define MOUSE_VIRTUAL_DESKTOP 0x02
@@ -6356,114 +6171,101 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #if WINVER >= 0x0600
 #define MOUSE_MOVE_NOCOALESCE 0x08
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRAWKEYBOARD {
-    USHORT MakeCode;
-    USHORT Flags;
-    USHORT Reserved;
-    USHORT VKey;
-    UINT Message;
-    ULONG ExtraInformation;
-  } RAWKEYBOARD,*PRAWKEYBOARD,*LPRAWKEYBOARD;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRAWKEYBOARD {
+  USHORT MakeCode;
+  USHORT Flags;
+  USHORT Reserved;
+  USHORT VKey;
+  UINT Message;
+  ULONG ExtraInformation;
+} RAWKEYBOARD, *PRAWKEYBOARD, *LPRAWKEYBOARD;
 #endif
-
 #define KEYBOARD_OVERRUN_MAKE_CODE 0xFF
-
 #define RI_KEY_MAKE 0
 #define RI_KEY_BREAK 1
 #define RI_KEY_E0 2
 #define RI_KEY_E1 4
 #define RI_KEY_TERMSRV_SET_LED 8
 #define RI_KEY_TERMSRV_SHADOW 0x10
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRAWHID {
-    DWORD dwSizeHid;
-    DWORD dwCount;
-    BYTE bRawData[1];
-  } RAWHID,*PRAWHID,*LPRAWHID;
-
-  typedef struct tagRAWINPUT {
-    RAWINPUTHEADER header;
-    union {
-      RAWMOUSE mouse;
-      RAWKEYBOARD keyboard;
-      RAWHID hid;
-    } data;
-  } RAWINPUT,*PRAWINPUT,*LPRAWINPUT;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRAWHID {
+  DWORD dwSizeHid;
+  DWORD dwCount;
+  BYTE bRawData[1];
+} RAWHID, *PRAWHID, *LPRAWHID;
+typedef struct tagRAWINPUT {
+  RAWINPUTHEADER header;
+  union {
+    RAWMOUSE mouse;
+    RAWKEYBOARD keyboard;
+    RAWHID hid;
+  } data;
+} RAWINPUT, *PRAWINPUT, *LPRAWINPUT;
 #endif
-
 #ifdef _WIN64
 #define RAWINPUT_ALIGN(x) (((x) + sizeof(QWORD) - 1) & ~(sizeof(QWORD) - 1))
 #else
 #define RAWINPUT_ALIGN(x) (((x) + sizeof(DWORD) - 1) & ~(sizeof(DWORD) - 1))
 #endif
-
-#define NEXTRAWINPUTBLOCK(ptr) ((PRAWINPUT)RAWINPUT_ALIGN((ULONG_PTR)((PBYTE)(ptr) + (ptr)->header.dwSize)))
-
+#define NEXTRAWINPUTBLOCK(ptr)                                                 \
+  ((PRAWINPUT)RAWINPUT_ALIGN((ULONG_PTR)((PBYTE)(ptr) + (ptr)->header.dwSize)))
 #define RID_INPUT 0x10000003
 #define RID_HEADER 0x10000005
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT hRawInput,UINT uiCommand,LPVOID pData,PUINT pcbSize,UINT cbSizeHeader);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI UINT WINAPI GetRawInputData(HRAWINPUT hRawInput, UINT uiCommand,
+                                       LPVOID pData, PUINT pcbSize,
+                                       UINT cbSizeHeader);
 #endif
-
 #define RIDI_PREPARSEDDATA 0x20000005
 #define RIDI_DEVICENAME 0x20000007
 #define RIDI_DEVICEINFO 0x2000000b
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRID_DEVICE_INFO_MOUSE {
-    DWORD dwId;
-    DWORD dwNumberOfButtons;
-    DWORD dwSampleRate;
-    WINBOOL fHasHorizontalWheel;
-  } RID_DEVICE_INFO_MOUSE,*PRID_DEVICE_INFO_MOUSE;
-
-  typedef struct tagRID_DEVICE_INFO_KEYBOARD {
-    DWORD dwType;
-    DWORD dwSubType;
-    DWORD dwKeyboardMode;
-    DWORD dwNumberOfFunctionKeys;
-    DWORD dwNumberOfIndicators;
-    DWORD dwNumberOfKeysTotal;
-  } RID_DEVICE_INFO_KEYBOARD,*PRID_DEVICE_INFO_KEYBOARD;
-
-  typedef struct tagRID_DEVICE_INFO_HID {
-    DWORD dwVendorId;
-    DWORD dwProductId;
-    DWORD dwVersionNumber;
-    USHORT usUsagePage;
-    USHORT usUsage;
-  } RID_DEVICE_INFO_HID,*PRID_DEVICE_INFO_HID;
-
-  typedef struct tagRID_DEVICE_INFO {
-    DWORD cbSize;
-    DWORD dwType;
-    __C89_NAMELESS union {
-      RID_DEVICE_INFO_MOUSE mouse;
-      RID_DEVICE_INFO_KEYBOARD keyboard;
-      RID_DEVICE_INFO_HID hid;
-    } DUMMYUNIONNAME;
-  } RID_DEVICE_INFO,*PRID_DEVICE_INFO,*LPRID_DEVICE_INFO;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRID_DEVICE_INFO_MOUSE {
+  DWORD dwId;
+  DWORD dwNumberOfButtons;
+  DWORD dwSampleRate;
+  WINBOOL fHasHorizontalWheel;
+} RID_DEVICE_INFO_MOUSE, *PRID_DEVICE_INFO_MOUSE;
+typedef struct tagRID_DEVICE_INFO_KEYBOARD {
+  DWORD dwType;
+  DWORD dwSubType;
+  DWORD dwKeyboardMode;
+  DWORD dwNumberOfFunctionKeys;
+  DWORD dwNumberOfIndicators;
+  DWORD dwNumberOfKeysTotal;
+} RID_DEVICE_INFO_KEYBOARD, *PRID_DEVICE_INFO_KEYBOARD;
+typedef struct tagRID_DEVICE_INFO_HID {
+  DWORD dwVendorId;
+  DWORD dwProductId;
+  DWORD dwVersionNumber;
+  USHORT usUsagePage;
+  USHORT usUsage;
+} RID_DEVICE_INFO_HID, *PRID_DEVICE_INFO_HID;
+typedef struct tagRID_DEVICE_INFO {
+  DWORD cbSize;
+  DWORD dwType;
+  __C89_NAMELESS union {
+    RID_DEVICE_INFO_MOUSE mouse;
+    RID_DEVICE_INFO_KEYBOARD keyboard;
+    RID_DEVICE_INFO_HID hid;
+  } DUMMYUNIONNAME;
+} RID_DEVICE_INFO, *PRID_DEVICE_INFO, *LPRID_DEVICE_INFO;
 #define GetRawInputDeviceInfo __MINGW_NAME_AW(GetRawInputDeviceInfo)
-
-  WINUSERAPI UINT WINAPI GetRawInputDeviceInfoA(HANDLE hDevice,UINT uiCommand,LPVOID pData,PUINT pcbSize);
-  WINUSERAPI UINT WINAPI GetRawInputDeviceInfoW(HANDLE hDevice,UINT uiCommand,LPVOID pData,PUINT pcbSize);
-  WINUSERAPI UINT WINAPI GetRawInputBuffer(PRAWINPUT pData,PUINT pcbSize,UINT cbSizeHeader);
-
-  typedef struct tagRAWINPUTDEVICE {
-    USHORT usUsagePage;
-    USHORT usUsage;
-    DWORD dwFlags;
-    HWND hwndTarget;
-  } RAWINPUTDEVICE,*PRAWINPUTDEVICE,*LPRAWINPUTDEVICE;
-
-  typedef CONST RAWINPUTDEVICE *PCRAWINPUTDEVICE;
+WINUSERAPI UINT WINAPI GetRawInputDeviceInfoA(HANDLE hDevice, UINT uiCommand,
+                                              LPVOID pData, PUINT pcbSize);
+WINUSERAPI UINT WINAPI GetRawInputDeviceInfoW(HANDLE hDevice, UINT uiCommand,
+                                              LPVOID pData, PUINT pcbSize);
+WINUSERAPI UINT WINAPI GetRawInputBuffer(PRAWINPUT pData, PUINT pcbSize,
+                                         UINT cbSizeHeader);
+typedef struct tagRAWINPUTDEVICE {
+  USHORT usUsagePage;
+  USHORT usUsage;
+  DWORD dwFlags;
+  HWND hwndTarget;
+} RAWINPUTDEVICE, *PRAWINPUTDEVICE, *LPRAWINPUTDEVICE;
+typedef CONST RAWINPUTDEVICE *PCRAWINPUTDEVICE;
 #endif
-
 #define RIDEV_REMOVE 0x00000001
 #define RIDEV_EXCLUDE 0x00000010
 #define RIDEV_PAGEONLY 0x00000020
@@ -6474,31 +6276,29 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define RIDEV_APPKEYS 0x00000400
 #define RIDEV_EXINPUTSINK 0x00001000
 #define RIDEV_DEVNOTIFY 0x00002000
-
 #define RIDEV_EXMODEMASK 0x000000F0
 #define RIDEV_EXMODE(mode) ((mode) & RIDEV_EXMODEMASK)
-
 #define GIDC_ARRIVAL 1
 #define GIDC_REMOVAL 2
-
 #if _WIN32_WINNT >= 0x0601
-#define GET_DEVICE_CHANGE_WPARAM(wParam) (LOWORD (wParam))
+#define GET_DEVICE_CHANGE_WPARAM(wParam) (LOWORD(wParam))
 #else
-#define GET_DEVICE_CHANGE_LPARAM(lParam) (LOWORD (lParam))
+#define GET_DEVICE_CHANGE_LPARAM(lParam) (LOWORD(lParam))
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagRAWINPUTDEVICELIST {
-    HANDLE hDevice;
-    DWORD dwType;
-  } RAWINPUTDEVICELIST,*PRAWINPUTDEVICELIST;
-
-  WINUSERAPI WINBOOL WINAPI RegisterRawInputDevices (PCRAWINPUTDEVICE pRawInputDevices, UINT uiNumDevices, UINT cbSize);
-  WINUSERAPI UINT WINAPI GetRegisteredRawInputDevices (PRAWINPUTDEVICE pRawInputDevices, PUINT puiNumDevices, UINT cbSize);
-  WINUSERAPI UINT WINAPI GetRawInputDeviceList (PRAWINPUTDEVICELIST pRawInputDeviceList, PUINT puiNumDevices, UINT cbSize);
-  WINUSERAPI LRESULT WINAPI DefRawInputProc (PRAWINPUT *paRawInput, INT nInput, UINT cbSizeHeader);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagRAWINPUTDEVICELIST {
+  HANDLE hDevice;
+  DWORD dwType;
+} RAWINPUTDEVICELIST, *PRAWINPUTDEVICELIST;
+WINUSERAPI WINBOOL WINAPI RegisterRawInputDevices(
+    PCRAWINPUTDEVICE pRawInputDevices, UINT uiNumDevices, UINT cbSize);
+WINUSERAPI UINT WINAPI GetRegisteredRawInputDevices(
+    PRAWINPUTDEVICE pRawInputDevices, PUINT puiNumDevices, UINT cbSize);
+WINUSERAPI UINT WINAPI GetRawInputDeviceList(
+    PRAWINPUTDEVICELIST pRawInputDeviceList, PUINT puiNumDevices, UINT cbSize);
+WINUSERAPI LRESULT WINAPI DefRawInputProc(PRAWINPUT *paRawInput, INT nInput,
+                                          UINT cbSizeHeader);
 #endif
-
 #if WINVER >= 0x0602
 #define POINTER_DEVICE_PRODUCT_STRING_MAX 520
 #define PDC_ARRIVAL 0x001
@@ -6513,67 +6313,72 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define PDC_RESOLUTION 0x200
 #define PDC_ORIGIN 0x400
 #define PDC_MODE_ASPECTRATIOPRESERVED 0x800
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef enum tagPOINTER_DEVICE_TYPE {
-    POINTER_DEVICE_TYPE_INTEGRATED_PEN = 0x00000001,
-    POINTER_DEVICE_TYPE_EXTERNAL_PEN = 0x00000002,
-    POINTER_DEVICE_TYPE_TOUCH = 0x00000003
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef enum tagPOINTER_DEVICE_TYPE {
+  POINTER_DEVICE_TYPE_INTEGRATED_PEN = 0x00000001,
+  POINTER_DEVICE_TYPE_EXTERNAL_PEN = 0x00000002,
+  POINTER_DEVICE_TYPE_TOUCH = 0x00000003
 #if WINVER >= 0x0603
-    ,POINTER_DEVICE_TYPE_TOUCH_PAD = 0x00000004
+  ,
+  POINTER_DEVICE_TYPE_TOUCH_PAD = 0x00000004
 #endif
-    ,POINTER_DEVICE_TYPE_MAX = 0xffffffff
-  } POINTER_DEVICE_TYPE;
-
-  typedef struct tagPOINTER_DEVICE_INFO {
-    DWORD displayOrientation;
-    HANDLE device;
-    POINTER_DEVICE_TYPE pointerDeviceType;
-    HMONITOR monitor;
-    ULONG startingCursorId;
-    USHORT maxActiveContacts;
-    WCHAR productString[POINTER_DEVICE_PRODUCT_STRING_MAX];
-  } POINTER_DEVICE_INFO;
-
-  typedef struct tagPOINTER_DEVICE_PROPERTY {
-    INT32 logicalMin;
-    INT32 logicalMax;
-    INT32 physicalMin;
-    INT32 physicalMax;
-    UINT32 unit;
-    UINT32 unitExponent;
-    USHORT usagePageId;
-    USHORT usageId;
-  } POINTER_DEVICE_PROPERTY;
-
-  typedef enum tagPOINTER_DEVICE_CURSOR_TYPE {
-    POINTER_DEVICE_CURSOR_TYPE_UNKNOWN = 0x00000000,
-    POINTER_DEVICE_CURSOR_TYPE_TIP = 0x00000001,
-    POINTER_DEVICE_CURSOR_TYPE_ERASER = 0x00000002,
-    POINTER_DEVICE_CURSOR_TYPE_MAX = 0xffffffff
-  } POINTER_DEVICE_CURSOR_TYPE;
-
-  typedef struct tagPOINTER_DEVICE_CURSOR_INFO {
-    UINT32 cursorId;
-    POINTER_DEVICE_CURSOR_TYPE cursor;
-  } POINTER_DEVICE_CURSOR_INFO;
-
-  WINUSERAPI WINBOOL WINAPI GetPointerDevices (UINT32 *deviceCount, POINTER_DEVICE_INFO *pointerDevices);
-  WINUSERAPI WINBOOL WINAPI GetPointerDevice (HANDLE device, POINTER_DEVICE_INFO *pointerDevice);
-  WINUSERAPI WINBOOL WINAPI GetPointerDeviceProperties (HANDLE device, UINT32 *propertyCount, POINTER_DEVICE_PROPERTY *pointerProperties);
-  WINUSERAPI WINBOOL WINAPI RegisterPointerDeviceNotifications (HWND window, WINBOOL notifyRange);
-  WINUSERAPI WINBOOL WINAPI GetPointerDeviceRects (HANDLE device, RECT *pointerDeviceRect, RECT *displayRect);
-  WINUSERAPI WINBOOL WINAPI GetPointerDeviceCursors (HANDLE device, UINT32 *cursorCount, POINTER_DEVICE_CURSOR_INFO *deviceCursors);
-  WINUSERAPI WINBOOL WINAPI GetRawPointerDeviceData (UINT32 pointerId, UINT32 historyCount, UINT32 propertiesCount, POINTER_DEVICE_PROPERTY *pProperties, LONG *pValues);
+  ,
+  POINTER_DEVICE_TYPE_MAX = 0xffffffff
+} POINTER_DEVICE_TYPE;
+typedef struct tagPOINTER_DEVICE_INFO {
+  DWORD displayOrientation;
+  HANDLE device;
+  POINTER_DEVICE_TYPE pointerDeviceType;
+  HMONITOR monitor;
+  ULONG startingCursorId;
+  USHORT maxActiveContacts;
+  WCHAR productString[POINTER_DEVICE_PRODUCT_STRING_MAX];
+} POINTER_DEVICE_INFO;
+typedef struct tagPOINTER_DEVICE_PROPERTY {
+  INT32 logicalMin;
+  INT32 logicalMax;
+  INT32 physicalMin;
+  INT32 physicalMax;
+  UINT32 unit;
+  UINT32 unitExponent;
+  USHORT usagePageId;
+  USHORT usageId;
+} POINTER_DEVICE_PROPERTY;
+typedef enum tagPOINTER_DEVICE_CURSOR_TYPE {
+  POINTER_DEVICE_CURSOR_TYPE_UNKNOWN = 0x00000000,
+  POINTER_DEVICE_CURSOR_TYPE_TIP = 0x00000001,
+  POINTER_DEVICE_CURSOR_TYPE_ERASER = 0x00000002,
+  POINTER_DEVICE_CURSOR_TYPE_MAX = 0xffffffff
+} POINTER_DEVICE_CURSOR_TYPE;
+typedef struct tagPOINTER_DEVICE_CURSOR_INFO {
+  UINT32 cursorId;
+  POINTER_DEVICE_CURSOR_TYPE cursor;
+} POINTER_DEVICE_CURSOR_INFO;
+WINUSERAPI WINBOOL WINAPI
+GetPointerDevices(UINT32 *deviceCount, POINTER_DEVICE_INFO *pointerDevices);
+WINUSERAPI WINBOOL WINAPI GetPointerDevice(HANDLE device,
+                                           POINTER_DEVICE_INFO *pointerDevice);
+WINUSERAPI WINBOOL WINAPI
+GetPointerDeviceProperties(HANDLE device, UINT32 *propertyCount,
+                           POINTER_DEVICE_PROPERTY *pointerProperties);
+WINUSERAPI WINBOOL WINAPI
+RegisterPointerDeviceNotifications(HWND window, WINBOOL notifyRange);
+WINUSERAPI WINBOOL WINAPI GetPointerDeviceRects(HANDLE device,
+                                                RECT *pointerDeviceRect,
+                                                RECT *displayRect);
+WINUSERAPI WINBOOL WINAPI
+GetPointerDeviceCursors(HANDLE device, UINT32 *cursorCount,
+                        POINTER_DEVICE_CURSOR_INFO *deviceCursors);
+WINUSERAPI WINBOOL WINAPI GetRawPointerDeviceData(
+    UINT32 pointerId, UINT32 historyCount, UINT32 propertiesCount,
+    POINTER_DEVICE_PROPERTY *pProperties, LONG *pValues);
 #endif
 #endif
-
 #if WINVER >= 0x0600
 #define MSGFLT_ADD 1
 #define MSGFLT_REMOVE 2
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI ChangeWindowMessageFilter (UINT message, DWORD dwFlag);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI ChangeWindowMessageFilter(UINT message, DWORD dwFlag);
 #endif
 #endif
 #if WINVER >= 0x0601
@@ -6581,26 +6386,23 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define MSGFLTINFO_ALREADYALLOWED_FORWND (1)
 #define MSGFLTINFO_ALREADYDISALLOWED_FORWND (2)
 #define MSGFLTINFO_ALLOWED_HIGHER (3)
-
 #define MSGFLT_RESET (0)
 #define MSGFLT_ALLOW (1)
 #define MSGFLT_DISALLOW (2)
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef struct tagCHANGEFILTERSTRUCT {
-    DWORD cbSize;
-    DWORD ExtStatus;
-  } CHANGEFILTERSTRUCT,*PCHANGEFILTERSTRUCT;
-
-  WINUSERAPI WINBOOL WINAPI ChangeWindowMessageFilterEx (HWND hwnd, UINT message, DWORD action, PCHANGEFILTERSTRUCT pChangeFilterStruct);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef struct tagCHANGEFILTERSTRUCT {
+  DWORD cbSize;
+  DWORD ExtStatus;
+} CHANGEFILTERSTRUCT, *PCHANGEFILTERSTRUCT;
+WINUSERAPI WINBOOL WINAPI
+ChangeWindowMessageFilterEx(HWND hwnd, UINT message, DWORD action,
+                            PCHANGEFILTERSTRUCT pChangeFilterStruct);
 #endif
 #endif
-
 #if WINVER >= 0x0601
 #define GF_BEGIN 0x00000001
 #define GF_INERTIA 0x00000002
 #define GF_END 0x00000004
-
 #define GID_BEGIN 1
 #define GID_END 2
 #define GID_ZOOM 3
@@ -6609,70 +6411,67 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define GID_TWOFINGERTAP 6
 #define GID_PRESSANDTAP 7
 #define GID_ROLLOVER GID_PRESSANDTAP
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  DECLARE_HANDLE (HGESTUREINFO);
-
-  typedef struct tagGESTUREINFO {
-    UINT cbSize;
-    DWORD dwFlags;
-    DWORD dwID;
-    HWND hwndTarget;
-    POINTS ptsLocation;
-    DWORD dwInstanceID;
-    DWORD dwSequenceID;
-    ULONGLONG ullArguments;
-    UINT cbExtraArgs;
-  } GESTUREINFO,*PGESTUREINFO;
-
-  typedef GESTUREINFO const *PCGESTUREINFO;
-
-  typedef struct tagGESTURENOTIFYSTRUCT {
-    UINT cbSize;
-    DWORD dwFlags;
-    HWND hwndTarget;
-    POINTS ptsLocation;
-    DWORD dwInstanceID;
-  } GESTURENOTIFYSTRUCT,*PGESTURENOTIFYSTRUCT;
-
-#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_) ((USHORT) ((((_arg_) + 2.0 *3.14159265) / (4.0 *3.14159265)) *65535.0))
-#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_) ((((double) (_arg_) / 65535.0) *4.0 *3.14159265) - 2.0 *3.14159265)
-
-  WINUSERAPI WINBOOL WINAPI GetGestureInfo (HGESTUREINFO hGestureInfo, PGESTUREINFO pGestureInfo);
-  WINUSERAPI WINBOOL WINAPI GetGestureExtraArgs (HGESTUREINFO hGestureInfo, UINT cbExtraArgs, PBYTE pExtraArgs);
-  WINUSERAPI WINBOOL WINAPI CloseGestureInfoHandle (HGESTUREINFO hGestureInfo);
-
-  typedef struct tagGESTURECONFIG {
-    DWORD dwID;
-    DWORD dwWant;
-    DWORD dwBlock;
-  } GESTURECONFIG,*PGESTURECONFIG;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+DECLARE_HANDLE(HGESTUREINFO);
+typedef struct tagGESTUREINFO {
+  UINT cbSize;
+  DWORD dwFlags;
+  DWORD dwID;
+  HWND hwndTarget;
+  POINTS ptsLocation;
+  DWORD dwInstanceID;
+  DWORD dwSequenceID;
+  ULONGLONG ullArguments;
+  UINT cbExtraArgs;
+} GESTUREINFO, *PGESTUREINFO;
+typedef GESTUREINFO const *PCGESTUREINFO;
+typedef struct tagGESTURENOTIFYSTRUCT {
+  UINT cbSize;
+  DWORD dwFlags;
+  HWND hwndTarget;
+  POINTS ptsLocation;
+  DWORD dwInstanceID;
+} GESTURENOTIFYSTRUCT, *PGESTURENOTIFYSTRUCT;
+#define GID_ROTATE_ANGLE_TO_ARGUMENT(_arg_)                                    \
+  ((USHORT)((((_arg_) + 2.0 * 3.14159265) / (4.0 * 3.14159265)) * 65535.0))
+#define GID_ROTATE_ANGLE_FROM_ARGUMENT(_arg_)                                  \
+  ((((double)(_arg_) / 65535.0) * 4.0 * 3.14159265) - 2.0 * 3.14159265)
+WINUSERAPI WINBOOL WINAPI GetGestureInfo(HGESTUREINFO hGestureInfo,
+                                         PGESTUREINFO pGestureInfo);
+WINUSERAPI WINBOOL WINAPI GetGestureExtraArgs(HGESTUREINFO hGestureInfo,
+                                              UINT cbExtraArgs,
+                                              PBYTE pExtraArgs);
+WINUSERAPI WINBOOL WINAPI CloseGestureInfoHandle(HGESTUREINFO hGestureInfo);
+typedef struct tagGESTURECONFIG {
+  DWORD dwID;
+  DWORD dwWant;
+  DWORD dwBlock;
+} GESTURECONFIG, *PGESTURECONFIG;
 #endif
-
 #define GC_ALLGESTURES 0x00000001
 #define GC_ZOOM 0x00000001
-
 #define GC_PAN 0x00000001
 #define GC_PAN_WITH_SINGLE_FINGER_VERTICALLY 0x00000002
 #define GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY 0x00000004
 #define GC_PAN_WITH_GUTTER 0x00000008
 #define GC_PAN_WITH_INERTIA 0x00000010
-
 #define GC_ROTATE 0x00000001
 #define GC_TWOFINGERTAP 0x00000001
 #define GC_PRESSANDTAP 0x00000001
 #define GC_ROLLOVER GC_PRESSANDTAP
-
 #define GESTURECONFIGMAXCOUNT 256
-
 #define GCF_INCLUDE_ANCESTORS 0x00000001
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI SetGestureConfig (HWND hwnd, DWORD dwReserved, UINT cIDs, PGESTURECONFIG pGestureConfig, UINT cbSize);
-  WINUSERAPI WINBOOL WINAPI GetGestureConfig (HWND hwnd, DWORD dwReserved, DWORD dwFlags, PUINT pcIDs, PGESTURECONFIG pGestureConfig, UINT cbSize);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI SetGestureConfig(HWND hwnd, DWORD dwReserved,
+                                           UINT cIDs,
+                                           PGESTURECONFIG pGestureConfig,
+                                           UINT cbSize);
+WINUSERAPI WINBOOL WINAPI GetGestureConfig(HWND hwnd, DWORD dwReserved,
+                                           DWORD dwFlags, PUINT pcIDs,
+                                           PGESTURECONFIG pGestureConfig,
+                                           UINT cbSize);
 #endif
 #endif
-
 #if WINVER >= 0x0601
 #define NID_INTEGRATED_TOUCH 0x00000001
 #define NID_EXTERNAL_TOUCH 0x00000002
@@ -6681,90 +6480,87 @@ WINUSERAPI DPI_AWARENESS_CONTEXT WINAPI GetDpiAwarenessContextForProcess(HANDLE 
 #define NID_MULTI_INPUT 0x00000040
 #define NID_READY 0x00000080
 #endif
-
 #define MAX_STR_BLOCKREASON 256
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonCreate (HWND hWnd, LPCWSTR pwszReason);
-  WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonQuery (HWND hWnd, LPWSTR pwszBuff, DWORD *pcchBuff);
-  WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonDestroy (HWND hWnd);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonCreate(HWND hWnd,
+                                                    LPCWSTR pwszReason);
+WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonQuery(HWND hWnd, LPWSTR pwszBuff,
+                                                   DWORD *pcchBuff);
+WINUSERAPI WINBOOL WINAPI ShutdownBlockReasonDestroy(HWND hWnd);
 #if WINVER >= 0x0601
-  typedef enum tagINPUT_MESSAGE_DEVICE_TYPE {
-    IMDT_UNAVAILABLE = 0x00000000,
-    IMDT_KEYBOARD = 0x00000001,
-    IMDT_MOUSE = 0x00000002,
-    IMDT_TOUCH = 0x00000004,
-    IMDT_PEN = 0x00000008
+typedef enum tagINPUT_MESSAGE_DEVICE_TYPE {
+  IMDT_UNAVAILABLE = 0x00000000,
+  IMDT_KEYBOARD = 0x00000001,
+  IMDT_MOUSE = 0x00000002,
+  IMDT_TOUCH = 0x00000004,
+  IMDT_PEN = 0x00000008
 #if WINVER >= 0x0603
-    ,IMDT_TOUCHPAD = 0x00000010
+  ,
+  IMDT_TOUCHPAD = 0x00000010
 #endif
-  } INPUT_MESSAGE_DEVICE_TYPE;
-
-  typedef enum tagINPUT_MESSAGE_ORIGIN_ID {
-    IMO_UNAVAILABLE = 0x00000000,
-    IMO_HARDWARE = 0x00000001,
-    IMO_INJECTED = 0x00000002,
-    IMO_SYSTEM = 0x00000004
-  } INPUT_MESSAGE_ORIGIN_ID;
-
-  typedef struct tagINPUT_MESSAGE_SOURCE {
-    INPUT_MESSAGE_DEVICE_TYPE deviceType;
-    INPUT_MESSAGE_ORIGIN_ID originId;
-  } INPUT_MESSAGE_SOURCE;
-
-  WINUSERAPI WINBOOL WINAPI GetCurrentInputMessageSource (INPUT_MESSAGE_SOURCE *inputMessageSource);
-  WINUSERAPI WINBOOL WINAPI GetCIMSSM (INPUT_MESSAGE_SOURCE *inputMessageSource);
+} INPUT_MESSAGE_DEVICE_TYPE;
+typedef enum tagINPUT_MESSAGE_ORIGIN_ID {
+  IMO_UNAVAILABLE = 0x00000000,
+  IMO_HARDWARE = 0x00000001,
+  IMO_INJECTED = 0x00000002,
+  IMO_SYSTEM = 0x00000004
+} INPUT_MESSAGE_ORIGIN_ID;
+typedef struct tagINPUT_MESSAGE_SOURCE {
+  INPUT_MESSAGE_DEVICE_TYPE deviceType;
+  INPUT_MESSAGE_ORIGIN_ID originId;
+} INPUT_MESSAGE_SOURCE;
+WINUSERAPI WINBOOL WINAPI
+GetCurrentInputMessageSource(INPUT_MESSAGE_SOURCE *inputMessageSource);
+WINUSERAPI WINBOOL WINAPI GetCIMSSM(INPUT_MESSAGE_SOURCE *inputMessageSource);
 #endif
 #endif
-
 #if WINVER >= 0x0601
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  typedef enum tagAR_STATE {
-    AR_ENABLED = 0x0,
-    AR_DISABLED = 0x1,
-    AR_SUPPRESSED = 0x2,
-    AR_REMOTESESSION = 0x4,
-    AR_MULTIMON = 0x8,
-    AR_NOSENSOR = 0x10,
-    AR_NOT_SUPPORTED = 0x20,
-    AR_DOCKED = 0x40,
-    AR_LAPTOP = 0x80
-  } AR_STATE,*PAR_STATE;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+typedef enum tagAR_STATE {
+  AR_ENABLED = 0x0,
+  AR_DISABLED = 0x1,
+  AR_SUPPRESSED = 0x2,
+  AR_REMOTESESSION = 0x4,
+  AR_MULTIMON = 0x8,
+  AR_NOSENSOR = 0x10,
+  AR_NOT_SUPPORTED = 0x20,
+  AR_DOCKED = 0x40,
+  AR_LAPTOP = 0x80
+} AR_STATE,
+    *PAR_STATE;
 #endif
-
 #ifndef __WIDL__
-  DEFINE_ENUM_FLAG_OPERATORS (AR_STATE);
+DEFINE_ENUM_FLAG_OPERATORS(AR_STATE);
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  typedef enum ORIENTATION_PREFERENCE {
-    ORIENTATION_PREFERENCE_NONE = 0x0,
-    ORIENTATION_PREFERENCE_LANDSCAPE = 0x1,
-    ORIENTATION_PREFERENCE_PORTRAIT = 0x2,
-    ORIENTATION_PREFERENCE_LANDSCAPE_FLIPPED = 0x4,
-    ORIENTATION_PREFERENCE_PORTRAIT_FLIPPED = 0x8
-  } ORIENTATION_PREFERENCE;
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+typedef enum ORIENTATION_PREFERENCE {
+  ORIENTATION_PREFERENCE_NONE = 0x0,
+  ORIENTATION_PREFERENCE_LANDSCAPE = 0x1,
+  ORIENTATION_PREFERENCE_PORTRAIT = 0x2,
+  ORIENTATION_PREFERENCE_LANDSCAPE_FLIPPED = 0x4,
+  ORIENTATION_PREFERENCE_PORTRAIT_FLIPPED = 0x8
+} ORIENTATION_PREFERENCE;
 #ifndef __WIDL__
-  DEFINE_ENUM_FLAG_OPERATORS (ORIENTATION_PREFERENCE);
+DEFINE_ENUM_FLAG_OPERATORS(ORIENTATION_PREFERENCE);
 #endif
-
-  WINUSERAPI WINBOOL WINAPI GetAutoRotationState (PAR_STATE pState);
-  WINUSERAPI WINBOOL WINAPI GetDisplayAutoRotationPreferences (ORIENTATION_PREFERENCE *pOrientation);
-  WINUSERAPI WINBOOL WINAPI GetDisplayAutoRotationPreferencesByProcessId (DWORD dwProcessId, ORIENTATION_PREFERENCE *pOrientation, WINBOOL *fRotateScreen);
-  WINUSERAPI WINBOOL WINAPI SetDisplayAutoRotationPreferences (ORIENTATION_PREFERENCE orientation);
+WINUSERAPI WINBOOL WINAPI GetAutoRotationState(PAR_STATE pState);
+WINUSERAPI WINBOOL WINAPI
+GetDisplayAutoRotationPreferences(ORIENTATION_PREFERENCE *pOrientation);
+WINUSERAPI WINBOOL WINAPI GetDisplayAutoRotationPreferencesByProcessId(
+    DWORD dwProcessId, ORIENTATION_PREFERENCE *pOrientation,
+    WINBOOL *fRotateScreen);
+WINUSERAPI WINBOOL WINAPI
+SetDisplayAutoRotationPreferences(ORIENTATION_PREFERENCE orientation);
 #endif
 #endif
-
 #if WINVER >= 0x0601
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINUSERAPI WINBOOL WINAPI IsImmersiveProcess (HANDLE hProcess);
-  WINUSERAPI WINBOOL WINAPI SetProcessRestrictionExemption (WINBOOL fEnableExemption);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINUSERAPI WINBOOL WINAPI IsImmersiveProcess(HANDLE hProcess);
+WINUSERAPI WINBOOL WINAPI
+SetProcessRestrictionExemption(WINBOOL fEnableExemption);
 #endif
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #if (_WIN32_WINNT >= 0x0602)
 /* Does this belongs here? */
 typedef struct tagINPUT_TRANSFORM {
@@ -6787,16 +6583,15 @@ typedef struct tagINPUT_TRANSFORM {
       float _43;
       float _44;
     };
-    float  m[4][4];
+    float m[4][4];
   };
 } INPUT_TRANSFORM;
-
 /* Do these functions belong here? */
-WINUSERAPI WINBOOL WINAPI GetPointerInputTransform(UINT32 pointerId, UINT32 historyCount, INPUT_TRANSFORM *inputTransform);
+WINUSERAPI WINBOOL WINAPI GetPointerInputTransform(
+    UINT32 pointerId, UINT32 historyCount, INPUT_TRANSFORM *inputTransform);
 WINUSERAPI WINBOOL WINAPI IsMousePointerEnabled(void);
 #endif /*(_WIN32_WINNT >= 0x0602)*/
 #endif
-
 #ifdef __cplusplus
 }
 #endif

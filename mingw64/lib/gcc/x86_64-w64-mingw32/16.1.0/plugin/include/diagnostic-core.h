@@ -28,11 +28,10 @@ along with GCC; see the file COPYING3.  If not see
 
 /* RAII-style class for grouping related diagnostics within global_dc.  */
 
-class auto_diagnostic_group
-{
- public:
-  auto_diagnostic_group ();
-  ~auto_diagnostic_group ();
+class auto_diagnostic_group {
+public:
+  auto_diagnostic_group();
+  ~auto_diagnostic_group();
 };
 
 /* RAII-style class for nesting hierarchical diagnostics within global_dc.
@@ -40,21 +39,20 @@ class auto_diagnostic_group
    will be treated as one level of nesting deeper than diagnostics
    emitted outside the lifetime of the object.  */
 
-class auto_diagnostic_nesting_level
-{
- public:
-  auto_diagnostic_nesting_level ();
-  ~auto_diagnostic_nesting_level ();
+class auto_diagnostic_nesting_level {
+public:
+  auto_diagnostic_nesting_level();
+  ~auto_diagnostic_nesting_level();
 };
 
 /* Forward decl.  */
 namespace diagnostics {
-   class metadata; /* See diagnostics/metadata.h.  */
+class metadata; /* See diagnostics/metadata.h.  */
 } // namespace diagnostics
 
 extern const char *progname;
 
-extern const char *trim_filename (const char *);
+extern const char *trim_filename(const char *);
 
 /* Various functions for emitting diagnostics follow.
    All of these implicitly use global_dc.  */
@@ -68,106 +66,81 @@ extern const char *trim_filename (const char *);
    each language front end can extend them with its own set of format
    specifiers.  We must use custom format checks.  */
 #if (CHECKING_P && GCC_VERSION >= 4001) || GCC_VERSION == BUILDING_GCC_VERSION
-#define ATTRIBUTE_GCC_DIAG(m, n) __attribute__ ((__format__ (GCC_DIAG_STYLE, m, n))) ATTRIBUTE_NONNULL(m)
+#define ATTRIBUTE_GCC_DIAG(m, n)                                               \
+  __attribute__((__format__(GCC_DIAG_STYLE, m, n))) ATTRIBUTE_NONNULL(m)
 #else
 #define ATTRIBUTE_GCC_DIAG(m, n) ATTRIBUTE_NONNULL(m)
 #endif
-extern void internal_error (const char *, ...) ATTRIBUTE_GCC_DIAG(1,2)
-     ATTRIBUTE_NORETURN;
-extern void internal_error_no_backtrace (const char *, ...)
-     ATTRIBUTE_GCC_DIAG(1,2) ATTRIBUTE_NORETURN;
+extern void internal_error(const char *, ...)
+    ATTRIBUTE_GCC_DIAG(1, 2) ATTRIBUTE_NORETURN;
+extern void internal_error_no_backtrace(const char *, ...)
+    ATTRIBUTE_GCC_DIAG(1, 2) ATTRIBUTE_NORETURN;
 /* Pass one of the OPT_W* from options.h as the first parameter.  */
-extern bool warning (diagnostics::option_id,
-		     const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern bool warning_n (location_t,
-		       diagnostics::option_id,
-		       unsigned HOST_WIDE_INT,
-		       const char *, const char *, ...)
-    ATTRIBUTE_GCC_DIAG(4,6) ATTRIBUTE_GCC_DIAG(5,6);
-extern bool warning_n (rich_location *,
-		       diagnostics::option_id,
-		       unsigned HOST_WIDE_INT,
-		       const char *, const char *, ...)
+extern bool warning(diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(2, 3);
+extern bool warning_n(location_t, diagnostics::option_id,
+                      unsigned HOST_WIDE_INT, const char *, const char *, ...)
     ATTRIBUTE_GCC_DIAG(4, 6) ATTRIBUTE_GCC_DIAG(5, 6);
-extern bool warning_at (location_t,
-			diagnostics::option_id,
-			const char *, ...)
-    ATTRIBUTE_GCC_DIAG(3,4);
-extern bool warning_at (rich_location *,
-			diagnostics::option_id,
-			const char *, ...)
-    ATTRIBUTE_GCC_DIAG(3,4);
-extern bool warning_meta (rich_location *,
-			  const diagnostics::metadata &,
-			  diagnostics::option_id,
-			  const char *, ...)
-    ATTRIBUTE_GCC_DIAG(4,5);
-extern void error (const char *, ...) ATTRIBUTE_GCC_DIAG(1,2);
-extern void error_n (location_t, unsigned HOST_WIDE_INT, const char *,
-		     const char *, ...)
-    ATTRIBUTE_GCC_DIAG(3,5) ATTRIBUTE_GCC_DIAG(4,5);
-extern void error_at (location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern void error_at (rich_location *, const char *, ...)
-  ATTRIBUTE_GCC_DIAG(2,3);
-extern void error_meta (rich_location *, const diagnostics::metadata &,
-			const char *, ...)
-  ATTRIBUTE_GCC_DIAG(3,4);
-extern void fatal_error (location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3)
-     ATTRIBUTE_NORETURN;
+extern bool warning_n(rich_location *, diagnostics::option_id,
+                      unsigned HOST_WIDE_INT, const char *, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(4, 6) ATTRIBUTE_GCC_DIAG(5, 6);
+extern bool warning_at(location_t, diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(3, 4);
+extern bool warning_at(rich_location *, diagnostics::option_id, const char *,
+                       ...) ATTRIBUTE_GCC_DIAG(3, 4);
+extern bool warning_meta(rich_location *, const diagnostics::metadata &,
+                         diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(4, 5);
+extern void error(const char *, ...) ATTRIBUTE_GCC_DIAG(1, 2);
+extern void error_n(location_t, unsigned HOST_WIDE_INT, const char *,
+                    const char *, ...) ATTRIBUTE_GCC_DIAG(3, 5)
+    ATTRIBUTE_GCC_DIAG(4, 5);
+extern void error_at(location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+extern void error_at(rich_location *, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(2, 3);
+extern void error_meta(rich_location *, const diagnostics::metadata &,
+                       const char *, ...) ATTRIBUTE_GCC_DIAG(3, 4);
+extern void fatal_error(location_t, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(2, 3) ATTRIBUTE_NORETURN;
 /* Pass one of the OPT_W* from options.h as the second parameter.  */
-extern bool pedwarn (location_t,
-		     diagnostics::option_id,
-		     const char *, ...)
-     ATTRIBUTE_GCC_DIAG(3,4);
-extern bool pedwarn (rich_location *,
-		     diagnostics::option_id,
-		     const char *, ...)
-     ATTRIBUTE_GCC_DIAG(3,4);
-extern bool permerror (location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern bool permerror (rich_location *, const char *,
-				   ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern bool permerror_opt (location_t,
-			   diagnostics::option_id,
-			   const char *, ...)
-  ATTRIBUTE_GCC_DIAG(3,4);
-extern bool permerror_opt (rich_location *,
-			   diagnostics::option_id,
-			   const char *, ...)
-  ATTRIBUTE_GCC_DIAG(3,4);
-extern void sorry (const char *, ...) ATTRIBUTE_GCC_DIAG(1,2);
-extern void sorry_at (location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern void inform (location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern void inform (rich_location *, const char *, ...) ATTRIBUTE_GCC_DIAG(2,3);
-extern void inform_n (location_t, unsigned HOST_WIDE_INT, const char *,
-		      const char *, ...)
-    ATTRIBUTE_GCC_DIAG(3,5) ATTRIBUTE_GCC_DIAG(4,5);
-extern void verbatim (const char *, ...) ATTRIBUTE_GCC_DIAG(1,2);
-extern bool emit_diagnostic (enum diagnostics::kind,
-			     location_t,
-			     diagnostics::option_id,
-			     const char *, ...) ATTRIBUTE_GCC_DIAG(4,5);
-extern bool emit_diagnostic (enum diagnostics::kind,
-			     rich_location *,
-			     diagnostics::option_id,
-			     const char *, ...) ATTRIBUTE_GCC_DIAG(4,5);
-extern bool emit_diagnostic_valist (enum diagnostics::kind,
-				    location_t,
-				    diagnostics::option_id,
-				    const char *, va_list *)
-  ATTRIBUTE_GCC_DIAG (4,0);
-extern bool emit_diagnostic_valist_meta (enum diagnostics::kind,
-					 rich_location *,
-					 const diagnostics::metadata *,
-					 diagnostics::option_id,
-					 const char *,
-					 va_list *) ATTRIBUTE_GCC_DIAG (5,0);
-extern bool seen_error (void);
+extern bool pedwarn(location_t, diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(3, 4);
+extern bool pedwarn(rich_location *, diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(3, 4);
+extern bool permerror(location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+extern bool permerror(rich_location *, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(2, 3);
+extern bool permerror_opt(location_t, diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(3, 4);
+extern bool permerror_opt(rich_location *, diagnostics::option_id, const char *,
+                          ...) ATTRIBUTE_GCC_DIAG(3, 4);
+extern void sorry(const char *, ...) ATTRIBUTE_GCC_DIAG(1, 2);
+extern void sorry_at(location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+extern void inform(location_t, const char *, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+extern void inform(rich_location *, const char *, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+extern void inform_n(location_t, unsigned HOST_WIDE_INT, const char *,
+                     const char *, ...) ATTRIBUTE_GCC_DIAG(3, 5)
+    ATTRIBUTE_GCC_DIAG(4, 5);
+extern void verbatim(const char *, ...) ATTRIBUTE_GCC_DIAG(1, 2);
+extern bool emit_diagnostic(enum diagnostics::kind, location_t,
+                            diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(4, 5);
+extern bool emit_diagnostic(enum diagnostics::kind, rich_location *,
+                            diagnostics::option_id, const char *, ...)
+    ATTRIBUTE_GCC_DIAG(4, 5);
+extern bool emit_diagnostic_valist(enum diagnostics::kind, location_t,
+                                   diagnostics::option_id, const char *,
+                                   va_list *) ATTRIBUTE_GCC_DIAG(4, 0);
+extern bool emit_diagnostic_valist_meta(enum diagnostics::kind, rich_location *,
+                                        const diagnostics::metadata *,
+                                        diagnostics::option_id, const char *,
+                                        va_list *) ATTRIBUTE_GCC_DIAG(5, 0);
+extern bool seen_error(void);
 
 #ifdef BUFSIZ
-  /* N.B. Unlike all the others, fnotice is just gettext+fprintf, and
-     therefore it can have ATTRIBUTE_PRINTF.  */
-extern void fnotice			(FILE *, const char *, ...)
-     ATTRIBUTE_PRINTF_2;
+/* N.B. Unlike all the others, fnotice is just gettext+fprintf, and
+   therefore it can have ATTRIBUTE_PRINTF.  */
+extern void fnotice(FILE *, const char *, ...) ATTRIBUTE_PRINTF_2;
 #endif
 
 #endif /* ! GCC_DIAGNOSTIC_CORE_H */

@@ -5,34 +5,96 @@
  */
 #ifndef _SVCGUID_
 #define _SVCGUID_
-
 #include <basetyps.h>
-
-#define SVCID_HOSTNAME { 0x0002a800,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define SVCID_INET_HOSTADDRBYINETSTRING { 0x0002a801,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define SVCID_INET_SERVICEBYNAME { 0x0002a802,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define SVCID_INET_HOSTADDRBYNAME { 0x0002a803,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
-
-#define SVCID_TCP_RR(_Port,_RR) { (0x0009 << 16) | (_Port),0,_RR,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define SVCID_TCP(_Port) SVCID_TCP_RR(_Port,0)
-#define SVCID_DNS(_RecordType) SVCID_TCP_RR(53,_RecordType)
-#define IS_SVCID_DNS(_g) ((((_g)->Data1)==0x00090035) && (((_g)->Data2)==0) && (((_g)->Data4[0])==0xC0) && (((_g)->Data4[1])==0) && (((_g)->Data4[2])==0) && (((_g)->Data4[3])==0) && (((_g)->Data4[4])==0) && (((_g)->Data4[5])==0) && (((_g)->Data4[6])==0) && (((_g)->Data4[7])==0x46))
-#define IS_SVCID_TCP(_g) (((((_g)->Data1) & 0xFFFF0000)==0x00090000) && (((_g)->Data2)==0) && (((_g)->Data4[0])==0xC0) && (((_g)->Data4[1])==0) && (((_g)->Data4[2])==0) && (((_g)->Data4[3])==0) && (((_g)->Data4[4])==0) && (((_g)->Data4[5])==0) && (((_g)->Data4[6])==0) && (((_g)->Data4[7])==0x46))
+#define SVCID_HOSTNAME {0x0002a800, 0, 0, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_INET_HOSTADDRBYINETSTRING                                        \
+  {0x0002a801, 0, 0, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_INET_SERVICEBYNAME                                               \
+  {0x0002a802, 0, 0, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_INET_HOSTADDRBYNAME                                              \
+  {0x0002a803, 0, 0, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_TCP_RR(_Port, _RR)                                               \
+  {(0x0009 << 16) | (_Port), 0, _RR, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_TCP(_Port) SVCID_TCP_RR(_Port, 0)
+#define SVCID_DNS(_RecordType) SVCID_TCP_RR(53, _RecordType)
+#define IS_SVCID_DNS(_g)                                                       \
+  ((((_g)->Data1) == 0x00090035) && (((_g)->Data2) == 0) &&                    \
+   (((_g)->Data4[0]) == 0xC0) && (((_g)->Data4[1]) == 0) &&                    \
+   (((_g)->Data4[2]) == 0) && (((_g)->Data4[3]) == 0) &&                       \
+   (((_g)->Data4[4]) == 0) && (((_g)->Data4[5]) == 0) &&                       \
+   (((_g)->Data4[6]) == 0) && (((_g)->Data4[7]) == 0x46))
+#define IS_SVCID_TCP(_g)                                                       \
+  (((((_g)->Data1) & 0xFFFF0000) == 0x00090000) && (((_g)->Data2) == 0) &&     \
+   (((_g)->Data4[0]) == 0xC0) && (((_g)->Data4[1]) == 0) &&                    \
+   (((_g)->Data4[2]) == 0) && (((_g)->Data4[3]) == 0) &&                       \
+   (((_g)->Data4[4]) == 0) && (((_g)->Data4[5]) == 0) &&                       \
+   (((_g)->Data4[6]) == 0) && (((_g)->Data4[7]) == 0x46))
 #define PORT_FROM_SVCID_TCP(_g) ((WORD)(_g->Data1 & 0xFFFF))
 #define RR_FROM_SVCID(_RR) (_RR->Data3)
-#define SET_TCP_SVCID_RR(_g,_Port,_RR) { (_g)->Data1 = (0x0009 << 16) | (_Port); (_g)->Data2 = 0; (_g)->Data3 = _RR; (_g)->Data4[0] = 0xC0; (_g)->Data4[1] = 0x0; (_g)->Data4[2] = 0x0; (_g)->Data4[3] = 0x0; (_g)->Data4[4] = 0x0; (_g)->Data4[5] = 0x0; (_g)->Data4[6] = 0x0; (_g)->Data4[7] = 0x46; }
-#define SET_TCP_SVCID(_g,_Port) SET_TCP_SVCID_RR(_g,_Port,0)
-#define SVCID_UDP_RR(_Port,_RR) { (0x000A << 16) | (_Port),0,_RR,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define SVCID_UDP(_Port) SVCID_UDP_RR(_Port,0)
-#define IS_SVCID_UDP(_g) (((((_g)->Data1) & 0xFFFF0000)==0x000A0000) && (((_g)->Data2)==0) && (((_g)->Data4[0])==0xC0) && (((_g)->Data4[1])==0) && (((_g)->Data4[2])==0) && (((_g)->Data4[3])==0) && (((_g)->Data4[4])==0) && (((_g)->Data4[5])==0) && (((_g)->Data4[6])==0) && (((_g)->Data4[7])==0x46))
+#define SET_TCP_SVCID_RR(_g, _Port, _RR)                                       \
+  {                                                                            \
+    (_g)->Data1 = (0x0009 << 16) | (_Port);                                    \
+    (_g)->Data2 = 0;                                                           \
+    (_g)->Data3 = _RR;                                                         \
+    (_g)->Data4[0] = 0xC0;                                                     \
+    (_g)->Data4[1] = 0x0;                                                      \
+    (_g)->Data4[2] = 0x0;                                                      \
+    (_g)->Data4[3] = 0x0;                                                      \
+    (_g)->Data4[4] = 0x0;                                                      \
+    (_g)->Data4[5] = 0x0;                                                      \
+    (_g)->Data4[6] = 0x0;                                                      \
+    (_g)->Data4[7] = 0x46;                                                     \
+  }
+#define SET_TCP_SVCID(_g, _Port) SET_TCP_SVCID_RR(_g, _Port, 0)
+#define SVCID_UDP_RR(_Port, _RR)                                               \
+  {(0x000A << 16) | (_Port), 0, _RR, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define SVCID_UDP(_Port) SVCID_UDP_RR(_Port, 0)
+#define IS_SVCID_UDP(_g)                                                       \
+  (((((_g)->Data1) & 0xFFFF0000) == 0x000A0000) && (((_g)->Data2) == 0) &&     \
+   (((_g)->Data4[0]) == 0xC0) && (((_g)->Data4[1]) == 0) &&                    \
+   (((_g)->Data4[2]) == 0) && (((_g)->Data4[3]) == 0) &&                       \
+   (((_g)->Data4[4]) == 0) && (((_g)->Data4[5]) == 0) &&                       \
+   (((_g)->Data4[6]) == 0) && (((_g)->Data4[7]) == 0x46))
 #define PORT_FROM_SVCID_UDP(_g) ((WORD)(_g->Data1 & 0xFFFF))
-#define SET_UDP_SVCID_RR(_g,_Port,_RR) { (_g)->Data1 = (0x000A << 16) | (_Port); (_g)->Data2 = 0; (_g)->Data3 = _RR; (_g)->Data4[0] = 0xC0; (_g)->Data4[1] = 0x0; (_g)->Data4[2] = 0x0; (_g)->Data4[3] = 0x0; (_g)->Data4[4] = 0x0; (_g)->Data4[5] = 0x0; (_g)->Data4[6] = 0x0; (_g)->Data4[7] = 0x46; }
-#define SET_UDP_SVCID(_g,_Port) SET_UDP_SVCID_RR(_g,_Port,0)
-#define SVCID_NETWARE(_SapId) { (0x000B << 16) | (_SapId),0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
-#define IS_SVCID_NETWARE(_g) (((((_g)->Data1) & 0xFFFF0000)==0x000B0000) && (((_g)->Data2)==0) && (((_g)->Data3)==0) && (((_g)->Data4[0])==0xC0) && (((_g)->Data4[1])==0) && (((_g)->Data4[2])==0) && (((_g)->Data4[3])==0) && (((_g)->Data4[4])==0) && (((_g)->Data4[5])==0) && (((_g)->Data4[6])==0) && (((_g)->Data4[7])==0x46))
+#define SET_UDP_SVCID_RR(_g, _Port, _RR)                                       \
+  {                                                                            \
+    (_g)->Data1 = (0x000A << 16) | (_Port);                                    \
+    (_g)->Data2 = 0;                                                           \
+    (_g)->Data3 = _RR;                                                         \
+    (_g)->Data4[0] = 0xC0;                                                     \
+    (_g)->Data4[1] = 0x0;                                                      \
+    (_g)->Data4[2] = 0x0;                                                      \
+    (_g)->Data4[3] = 0x0;                                                      \
+    (_g)->Data4[4] = 0x0;                                                      \
+    (_g)->Data4[5] = 0x0;                                                      \
+    (_g)->Data4[6] = 0x0;                                                      \
+    (_g)->Data4[7] = 0x46;                                                     \
+  }
+#define SET_UDP_SVCID(_g, _Port) SET_UDP_SVCID_RR(_g, _Port, 0)
+#define SVCID_NETWARE(_SapId)                                                  \
+  {(0x000B << 16) | (_SapId), 0, 0, {0xC0, 0, 0, 0, 0, 0, 0, 0x46}}
+#define IS_SVCID_NETWARE(_g)                                                   \
+  (((((_g)->Data1) & 0xFFFF0000) == 0x000B0000) && (((_g)->Data2) == 0) &&     \
+   (((_g)->Data3) == 0) && (((_g)->Data4[0]) == 0xC0) &&                       \
+   (((_g)->Data4[1]) == 0) && (((_g)->Data4[2]) == 0) &&                       \
+   (((_g)->Data4[3]) == 0) && (((_g)->Data4[4]) == 0) &&                       \
+   (((_g)->Data4[5]) == 0) && (((_g)->Data4[6]) == 0) &&                       \
+   (((_g)->Data4[7]) == 0x46))
 #define SAPID_FROM_SVCID_NETWARE(_g) ((WORD)(_g->Data1 & 0xFFFF))
-#define SET_NETWARE_SVCID(_g,_SapId) { (_g)->Data1 = (0x000B << 16) | (_SapId); (_g)->Data2 = 0; (_g)->Data3 = 0; (_g)->Data4[0] = 0xC0; (_g)->Data4[1] = 0x0; (_g)->Data4[2] = 0x0; (_g)->Data4[3] = 0x0; (_g)->Data4[4] = 0x0; (_g)->Data4[5] = 0x0; (_g)->Data4[6] = 0x0; (_g)->Data4[7] = 0x46; }
-
+#define SET_NETWARE_SVCID(_g, _SapId)                                          \
+  {                                                                            \
+    (_g)->Data1 = (0x000B << 16) | (_SapId);                                   \
+    (_g)->Data2 = 0;                                                           \
+    (_g)->Data3 = 0;                                                           \
+    (_g)->Data4[0] = 0xC0;                                                     \
+    (_g)->Data4[1] = 0x0;                                                      \
+    (_g)->Data4[2] = 0x0;                                                      \
+    (_g)->Data4[3] = 0x0;                                                      \
+    (_g)->Data4[4] = 0x0;                                                      \
+    (_g)->Data4[5] = 0x0;                                                      \
+    (_g)->Data4[6] = 0x0;                                                      \
+    (_g)->Data4[7] = 0x46;                                                     \
+  }
 #define SVCID_ECHO_TCP SVCID_TCP(7)
 #define SVCID_DISCARD_TCP SVCID_TCP(9)
 #define SVCID_SYSTAT_TCP SVCID_TCP(11)
@@ -112,7 +174,6 @@
 #define SVCID_GATEWAY_TCP SVCID_TCP(10003)
 #define SVCID_REMP_TCP SVCID_TCP(10004)
 #define SVCID_QMASTER_TCP SVCID_TCP(10012)
-
 #define SVCID_ECHO_UDP SVCID_UDP(7)
 #define SVCID_DISCARD_UDP SVCID_UDP(9)
 #define SVCID_DAYTIME_UDP SVCID_UDP(13)
@@ -176,7 +237,6 @@
 #define SVCID_RSCSA_UDP SVCID_UDP(10010)
 #define SVCID_RSCSB_UDP SVCID_UDP(10011)
 #define SVCID_QMASTER_UDP SVCID_UDP(10012)
-
 #define SVCID_PRINT_QUEUE SVCID_NETWARE(0x3)
 #define SVCID_FILE_SERVER SVCID_NETWARE(0x4)
 #define SVCID_JOB_SERVER SVCID_NETWARE(0x5)
@@ -197,7 +257,6 @@
 #define SVCID_HP_PRINT_SERVER SVCID_NETWARE(0x30C)
 #define SVCID_SNA_SERVER SVCID_NETWARE(0x444)
 #define SVCID_SAA_SERVER SVCID_NETWARE(0x130)
-
 #define SVCID_DNS_TYPE_A SVCID_DNS(0x0001)
 #define SVCID_DNS_TYPE_NS SVCID_DNS(0x0002)
 #define SVCID_DNS_TYPE_MD SVCID_DNS(0x0003)

@@ -5,6 +5,7 @@ import signal
 import sys
 import unittest
 from test import support
+
 try:
     import gc
 except ImportError:
@@ -28,9 +29,9 @@ def setup_tests(ns):
 
         # Display the Python traceback on SIGALRM or SIGUSR1 signal
         signals = []
-        if hasattr(signal, 'SIGALRM'):
+        if hasattr(signal, "SIGALRM"):
             signals.append(signal.SIGALRM)
-        if hasattr(signal, 'SIGUSR1'):
+        if hasattr(signal, "SIGUSR1"):
             signals.append(signal.SIGUSR1)
         for signum in signals:
             faulthandler.register(signum, chain=True, file=stderr_fd)
@@ -54,10 +55,10 @@ def setup_tests(ns):
     # Therefore it is necessary to absolutize manually the __file__ and __path__ of
     # the packages to prevent later imports to fail when the CWD is different.
     for module in sys.modules.values():
-        if hasattr(module, '__path__'):
+        if hasattr(module, "__path__"):
             for index, path in enumerate(module.__path__):
                 module.__path__[index] = os.path.abspath(path)
-        if getattr(module, '__file__', None):
+        if getattr(module, "__file__", None):
             module.__file__ = os.path.abspath(module.__file__)
 
     if ns.huntrleaks:
@@ -73,10 +74,11 @@ def setup_tests(ns):
 
     support.use_resources = ns.use_resources
 
-    if hasattr(sys, 'addaudithook'):
+    if hasattr(sys, "addaudithook"):
         # Add an auditing hook for all tests to ensure PySys_Audit is tested
         def _test_audit_hook(name, args):
             pass
+
         sys.addaudithook(_test_audit_hook)
 
     setup_unraisable_hook()
@@ -107,13 +109,17 @@ def replace_stdout():
         # and ValueError on a closed stream.
         return
 
-    sys.stdout = open(fd, 'w',
+    sys.stdout = open(
+        fd,
+        "w",
         encoding=stdout.encoding,
         errors="backslashreplace",
         closefd=False,
-        newline='\n')
+        newline="\n",
+    )
 
     def restore_stdout():
         sys.stdout.close()
         sys.stdout = stdout
+
     atexit.register(restore_stdout)

@@ -22,8 +22,7 @@ along with GCC; see the file COPYING3.  If not see
 
 /* We keep linked lists of DU_HEAD structures, each of which describes
    a chain of occurrences of a reg.  */
-class du_head
-{
+class du_head {
 public:
   /* The next chain.  */
   class du_head *next_chain;
@@ -50,9 +49,9 @@ public:
   /* Nonzero if the register is used in a way that prevents renaming,
      such as the SET_DEST of a CALL_INSN or an asm operand that used
      to be a hard register.  */
-  unsigned int cannot_rename:1;
+  unsigned int cannot_rename : 1;
   /* Nonzero if the chain has already been renamed.  */
-  unsigned int renamed:1;
+  unsigned int renamed : 1;
 
   /* Fields for use by target code.  */
   unsigned int target_data_1;
@@ -62,8 +61,7 @@ public:
 typedef class du_head *du_head_p;
 
 /* This struct describes a single occurrence of a register.  */
-struct du_chain
-{
+struct du_chain {
   /* Links to the next occurrence of the register.  */
   struct du_chain *next_use;
 
@@ -77,8 +75,7 @@ struct du_chain
 
 /* This struct describes data gathered during regrename_analyze about
    a single operand of an insn.  */
-struct operand_rr_info
-{
+struct operand_rr_info {
   /* The number of chains recorded for this operand.  */
   short n_chains;
   bool failed;
@@ -90,22 +87,19 @@ struct operand_rr_info
 
 /* A struct to hold a vector of operand_rr_info structures describing the
    operands of an insn.  */
-struct insn_rr_info
-{
+struct insn_rr_info {
   operand_rr_info *op_info;
 };
 
-
 extern vec<insn_rr_info> insn_rr;
 
-extern void regrename_init (bool);
-extern void regrename_finish (void);
-extern void regrename_analyze (bitmap, bool = true);
-extern du_head_p regrename_chain_from_id (unsigned int);
-extern int find_rename_reg (du_head_p, enum reg_class, HARD_REG_SET *, int,
-			    bool);
-extern bool regrename_do_replace (du_head_p, int);
-extern reg_class regrename_find_superclass (du_head_p, int *,
-					    HARD_REG_SET *);
+extern void regrename_init(bool);
+extern void regrename_finish(void);
+extern void regrename_analyze(bitmap, bool = true);
+extern du_head_p regrename_chain_from_id(unsigned int);
+extern int find_rename_reg(du_head_p, enum reg_class, HARD_REG_SET *, int,
+                           bool);
+extern bool regrename_do_replace(du_head_p, int);
+extern reg_class regrename_find_superclass(du_head_p, int *, HARD_REG_SET *);
 
 #endif

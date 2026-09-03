@@ -44,26 +44,28 @@ along with GCC; see the file COPYING3.  If not see
 // No memory is allocated until an edge for a switch is processed which also
 // falls under the edge limit criteria.
 
-class gimple_outgoing_range
-{
+class gimple_outgoing_range {
 public:
-  gimple_outgoing_range (int max_sw_edges = 0);
-  virtual ~gimple_outgoing_range ();
-  gimple *edge_range_p (irange &r, edge e);
-  void set_switch_limit (int max_sw_edges = INT_MAX);
+  gimple_outgoing_range(int max_sw_edges = 0);
+  virtual ~gimple_outgoing_range();
+  gimple *edge_range_p(irange &r, edge e);
+  void set_switch_limit(int max_sw_edges = INT_MAX);
 
-  virtual bool edge_range_p (vrange &, edge, tree, range_query &)
-    { return false; }
-  virtual bool has_edge_range_p (tree, basic_block = NULL) { return false; }
-  virtual bool has_edge_range_p (tree, edge ) { return false; }
-  virtual void dump (FILE *) { }
-  virtual bool compute_operand_range (vrange &, gimple *, const vrange &, tree,
-				      class fur_source &,
-				      class value_relation * = NULL)
-    { return false; }
+  virtual bool edge_range_p(vrange &, edge, tree, range_query &) {
+    return false;
+  }
+  virtual bool has_edge_range_p(tree, basic_block = NULL) { return false; }
+  virtual bool has_edge_range_p(tree, edge) { return false; }
+  virtual void dump(FILE *) {}
+  virtual bool compute_operand_range(vrange &, gimple *, const vrange &, tree,
+                                     class fur_source &,
+                                     class value_relation * = NULL) {
+    return false;
+  }
+
 private:
-  void calc_switch_ranges (gswitch *sw);
-  bool switch_edge_range (irange &r, gswitch *sw, edge e);
+  void calc_switch_ranges(gswitch *sw);
+  bool switch_edge_range(irange &r, gswitch *sw, edge e);
 
   int m_max_edges;
   hash_map<edge, vrange_storage *> *m_edge_table;
@@ -71,8 +73,8 @@ private:
 };
 
 // If there is a range control statement at the end of block BB, return it.
-gimple *gimple_outgoing_range_stmt_p (basic_block bb);
+gimple *gimple_outgoing_range_stmt_p(basic_block bb);
 // Return the range on edge E if it is from a GCOND.  Either TRUE or FALSE.
-void gcond_edge_range (irange &r, edge e);
+void gcond_edge_range(irange &r, edge e);
 
-#endif  // GIMPLE_RANGE_EDGE_H
+#endif // GIMPLE_RANGE_EDGE_H

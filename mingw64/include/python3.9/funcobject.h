@@ -19,26 +19,25 @@ extern "C" {
  */
 
 typedef struct {
-    PyObject_HEAD
-    PyObject *func_code;        /* A code object, the __code__ attribute */
-    PyObject *func_globals;     /* A dictionary (other mappings won't do) */
-    PyObject *func_defaults;    /* NULL or a tuple */
-    PyObject *func_kwdefaults;  /* NULL or a dict */
-    PyObject *func_closure;     /* NULL or a tuple of cell objects */
-    PyObject *func_doc;         /* The __doc__ attribute, can be anything */
-    PyObject *func_name;        /* The __name__ attribute, a string object */
-    PyObject *func_dict;        /* The __dict__ attribute, a dict or NULL */
-    PyObject *func_weakreflist; /* List of weak references */
-    PyObject *func_module;      /* The __module__ attribute, can be anything */
-    PyObject *func_annotations; /* Annotations, a dict or NULL */
-    PyObject *func_qualname;    /* The qualified name */
-    vectorcallfunc vectorcall;
+  PyObject_HEAD PyObject *func_code; /* A code object, the __code__ attribute */
+  PyObject *func_globals;     /* A dictionary (other mappings won't do) */
+  PyObject *func_defaults;    /* NULL or a tuple */
+  PyObject *func_kwdefaults;  /* NULL or a dict */
+  PyObject *func_closure;     /* NULL or a tuple of cell objects */
+  PyObject *func_doc;         /* The __doc__ attribute, can be anything */
+  PyObject *func_name;        /* The __name__ attribute, a string object */
+  PyObject *func_dict;        /* The __dict__ attribute, a dict or NULL */
+  PyObject *func_weakreflist; /* List of weak references */
+  PyObject *func_module;      /* The __module__ attribute, can be anything */
+  PyObject *func_annotations; /* Annotations, a dict or NULL */
+  PyObject *func_qualname;    /* The qualified name */
+  vectorcallfunc vectorcall;
 
-    /* Invariant:
-     *     func_closure contains the bindings for func_code->co_freevars, so
-     *     PyTuple_Size(func_closure) == PyCode_GetNumFree(func_code)
-     *     (func_closure may be NULL if PyCode_GetNumFree(func_code) == 0).
-     */
+  /* Invariant:
+   *     func_closure contains the bindings for func_code->co_freevars, so
+   *     PyTuple_Size(func_closure) == PyCode_GetNumFree(func_code)
+   *     (func_closure may be NULL if PyCode_GetNumFree(func_code) == 0).
+   */
 } PyFunctionObject;
 
 PyAPI_DATA(PyTypeObject) PyFunction_Type;
@@ -46,7 +45,8 @@ PyAPI_DATA(PyTypeObject) PyFunction_Type;
 #define PyFunction_Check(op) Py_IS_TYPE(op, &PyFunction_Type)
 
 PyAPI_FUNC(PyObject *) PyFunction_New(PyObject *, PyObject *);
-PyAPI_FUNC(PyObject *) PyFunction_NewWithQualName(PyObject *, PyObject *, PyObject *);
+PyAPI_FUNC(PyObject *)
+    PyFunction_NewWithQualName(PyObject *, PyObject *, PyObject *);
 PyAPI_FUNC(PyObject *) PyFunction_GetCode(PyObject *);
 PyAPI_FUNC(PyObject *) PyFunction_GetGlobals(PyObject *);
 PyAPI_FUNC(PyObject *) PyFunction_GetModule(PyObject *);
@@ -60,29 +60,23 @@ PyAPI_FUNC(PyObject *) PyFunction_GetAnnotations(PyObject *);
 PyAPI_FUNC(int) PyFunction_SetAnnotations(PyObject *, PyObject *);
 
 #ifndef Py_LIMITED_API
-PyAPI_FUNC(PyObject *) _PyFunction_Vectorcall(
-    PyObject *func,
-    PyObject *const *stack,
-    size_t nargsf,
-    PyObject *kwnames);
+PyAPI_FUNC(PyObject *)
+    _PyFunction_Vectorcall(PyObject *func, PyObject *const *stack,
+                           size_t nargsf, PyObject *kwnames);
 #endif
 
 /* Macros for direct access to these values. Type checks are *not*
    done, so use with care. */
-#define PyFunction_GET_CODE(func) \
-        (((PyFunctionObject *)func) -> func_code)
-#define PyFunction_GET_GLOBALS(func) \
-        (((PyFunctionObject *)func) -> func_globals)
-#define PyFunction_GET_MODULE(func) \
-        (((PyFunctionObject *)func) -> func_module)
-#define PyFunction_GET_DEFAULTS(func) \
-        (((PyFunctionObject *)func) -> func_defaults)
-#define PyFunction_GET_KW_DEFAULTS(func) \
-        (((PyFunctionObject *)func) -> func_kwdefaults)
-#define PyFunction_GET_CLOSURE(func) \
-        (((PyFunctionObject *)func) -> func_closure)
-#define PyFunction_GET_ANNOTATIONS(func) \
-        (((PyFunctionObject *)func) -> func_annotations)
+#define PyFunction_GET_CODE(func) (((PyFunctionObject *)func)->func_code)
+#define PyFunction_GET_GLOBALS(func) (((PyFunctionObject *)func)->func_globals)
+#define PyFunction_GET_MODULE(func) (((PyFunctionObject *)func)->func_module)
+#define PyFunction_GET_DEFAULTS(func)                                          \
+  (((PyFunctionObject *)func)->func_defaults)
+#define PyFunction_GET_KW_DEFAULTS(func)                                       \
+  (((PyFunctionObject *)func)->func_kwdefaults)
+#define PyFunction_GET_CLOSURE(func) (((PyFunctionObject *)func)->func_closure)
+#define PyFunction_GET_ANNOTATIONS(func)                                       \
+  (((PyFunctionObject *)func)->func_annotations)
 
 /* The classmethod and staticmethod types lives here, too */
 PyAPI_DATA(PyTypeObject) PyClassMethod_Type;

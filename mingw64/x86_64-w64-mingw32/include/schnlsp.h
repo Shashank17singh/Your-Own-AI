@@ -5,7 +5,5 @@
  */
 #ifndef __SCHNLSP_H__
 #define __SCHNLSP_H__
-
 #include <schannel.h>
-
 #endif
