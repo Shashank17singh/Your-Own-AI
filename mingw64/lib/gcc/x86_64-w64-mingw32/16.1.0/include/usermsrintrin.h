@@ -37,17 +37,15 @@
 #endif /* __USER_MSR__ */
 
 extern __inline unsigned long long
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_urdmsr (unsigned long long __A)
-{
-  return (unsigned long long) __builtin_ia32_urdmsr (__A);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _urdmsr(unsigned long long __A) {
+  return (unsigned long long)__builtin_ia32_urdmsr(__A);
 }
 
 extern __inline void
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_uwrmsr (unsigned long long __A, unsigned long long __B)
-{
-  __builtin_ia32_uwrmsr (__A, __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _uwrmsr(unsigned long long __A, unsigned long long __B) {
+  __builtin_ia32_uwrmsr(__A, __B);
 }
 
 #ifdef __DISABLE_USER_MSR__

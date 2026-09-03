@@ -1,6 +1,2 @@
 int foo(void);
-
-int main(void)
-{
-  return foo();
-}
+int main(void) { return foo(); }

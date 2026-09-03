@@ -28,44 +28,32 @@ namespace ana {
 /* Information of the layout of a RECORD_TYPE, capturing it as a vector
    of items, where each item is either a field or padding.  */
 
-class record_layout
-{
+class record_layout {
 public:
   /* An item within a record; either a field, or padding after a field.  */
-  struct item
-  {
+  struct item {
   public:
-    item (const bit_range &br,
-	  const_tree field,
-	  bool is_padding)
-    : m_bit_range (br),
-      m_field (field),
-      m_is_padding (is_padding)
-    {
+    item(const bit_range &br, const_tree field, bool is_padding)
+        : m_bit_range(br), m_field(field), m_is_padding(is_padding) {}
+
+    bit_offset_t get_start_bit_offset() const {
+      return m_bit_range.get_start_bit_offset();
+    }
+    bit_offset_t get_next_bit_offset() const {
+      return m_bit_range.get_next_bit_offset();
     }
 
-    bit_offset_t get_start_bit_offset () const
-    {
-      return m_bit_range.get_start_bit_offset ();
-    }
-    bit_offset_t get_next_bit_offset () const
-    {
-      return m_bit_range.get_next_bit_offset ();
+    bool contains_p(bit_offset_t offset) const {
+      return m_bit_range.contains_p(offset);
     }
 
-    bool contains_p (bit_offset_t offset) const
-    {
-      return m_bit_range.contains_p (offset);
-    }
-
-    void dump_to_pp (pretty_printer *pp) const
-    {
+    void dump_to_pp(pretty_printer *pp) const {
       if (m_is_padding)
-	pp_printf (pp, "padding after %qD", m_field);
+        pp_printf(pp, "padding after %qD", m_field);
       else
-	pp_printf (pp, "%qD", m_field);
-      pp_string (pp, ", ");
-      m_bit_range.dump_to_pp (pp);
+        pp_printf(pp, "%qD", m_field);
+      pp_string(pp, ", ");
+      m_bit_range.dump_to_pp(pp);
     }
 
     bit_range m_bit_range;
@@ -73,18 +61,18 @@ public:
     bool m_is_padding;
   };
 
-  record_layout (const_tree record_type);
+  record_layout(const_tree record_type);
 
-  void dump_to_pp (pretty_printer *pp) const;
-  DEBUG_FUNCTION void dump () const;
+  void dump_to_pp(pretty_printer *pp) const;
+  DEBUG_FUNCTION void dump() const;
 
-  const record_layout::item *get_item_at (bit_offset_t offset) const;
+  const record_layout::item *get_item_at(bit_offset_t offset) const;
 
-  auto begin () const { return m_items.begin (); }
-  auto end () const { return m_items.end (); }
+  auto begin() const { return m_items.begin(); }
+  auto end() const { return m_items.end(); }
 
 private:
-  void maybe_pad_to (bit_offset_t next_offset);
+  void maybe_pad_to(bit_offset_t next_offset);
 
   auto_vec<item> m_items;
 };

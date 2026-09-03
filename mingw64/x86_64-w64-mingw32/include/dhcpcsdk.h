@@ -5,14 +5,11 @@
  */
 #ifndef _DHCPCSDK_
 #define _DHCPCSDK_
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #ifndef DHCP_OPTIONS_DEFINED
 #define DHCP_OPTIONS_DEFINED
-
 #define OPTION_PAD 0
 #define OPTION_SUBNET_MASK 1
 #define OPTION_TIME_OFFSET 2
@@ -32,7 +29,6 @@ extern "C" {
 #define OPTION_SWAP_SERVER 16
 #define OPTION_ROOT_DISK 17
 #define OPTION_EXTENSIONS_PATH 18
-
 #define OPTION_BE_A_ROUTER 19
 #define OPTION_NON_LOCAL_SOURCE_ROUTING 20
 #define OPTION_POLICY_FILTER_FOR_NLSR 21
@@ -40,7 +36,6 @@ extern "C" {
 #define OPTION_DEFAULT_TTL 23
 #define OPTION_PMTU_AGING_TIMEOUT 24
 #define OPTION_PMTU_PLATEAU_TABLE 25
-
 #define OPTION_MTU 26
 #define OPTION_ALL_SUBNETS_MTU 27
 #define OPTION_BROADCAST_ADDRESS 28
@@ -52,25 +47,19 @@ extern "C" {
 #define OPTION_TRAILERS 34
 #define OPTION_ARP_CACHE_TIMEOUT 35
 #define OPTION_ETHERNET_ENCAPSULATION 36
-
 #define OPTION_TTL 37
 #define OPTION_KEEP_ALIVE_INTERVAL 38
 #define OPTION_KEEP_ALIVE_DATA_SIZE 39
-
 #define OPTION_NETWORK_INFO_SERVICE_DOM 40
 #define OPTION_NETWORK_INFO_SERVERS 41
 #define OPTION_NETWORK_TIME_SERVERS 42
-
 #define OPTION_VENDOR_SPEC_INFO 43
-
 #define OPTION_NETBIOS_NAME_SERVER 44
 #define OPTION_NETBIOS_DATAGRAM_SERVER 45
 #define OPTION_NETBIOS_NODE_TYPE 46
 #define OPTION_NETBIOS_SCOPE_OPTION 47
-
 #define OPTION_XWINDOW_FONT_SERVER 48
 #define OPTION_XWINDOW_DISPLAY_MANAGER 49
-
 #define OPTION_REQUESTED_ADDRESS 50
 #define OPTION_LEASE_TIME 51
 #define OPTION_OK_TO_OVERLAY 52
@@ -83,55 +72,55 @@ extern "C" {
 #define OPTION_REBIND_TIME 59
 #define OPTION_CLIENT_CLASS_INFO 60
 #define OPTION_CLIENT_ID 61
-
 #define OPTION_TFTP_SERVER_NAME 66
 #define OPTION_BOOTFILE_NAME 67
-
 #define OPTION_END 255
 #endif
-
 #ifndef DHCPAPI_PARAMS_DEFINED
 #define DHCPAPI_PARAMS_DEFINED
-  typedef struct _DHCPAPI_PARAMS {
-    ULONG Flags;
-    ULONG OptionId;
-    WINBOOL IsVendor;
-    LPBYTE Data;
-    DWORD nBytesData;
-  } DHCPAPI_PARAMS,*PDHCPAPI_PARAMS,*LPDHCPAPI_PARAMS;
+typedef struct _DHCPAPI_PARAMS {
+  ULONG Flags;
+  ULONG OptionId;
+  WINBOOL IsVendor;
+  LPBYTE Data;
+  DWORD nBytesData;
+} DHCPAPI_PARAMS, *PDHCPAPI_PARAMS, *LPDHCPAPI_PARAMS;
 #endif
-
-  typedef struct _DHCPAPI_PARAMS DHCPCAPI_PARAMS,*PDHCPCAPI_PARAMS,*LPDHCPCAPI_PARAMS;
-
-  typedef struct _DHCPCAPI_PARAMS_ARARAY {
-    ULONG nParams;
-    LPDHCPCAPI_PARAMS Params;
-  } DHCPCAPI_PARAMS_ARRAY,*PDHCPCAPI_PARAMS_ARRAY,*LPDHCPCAPI_PARAMS_ARRAY;
-
-  typedef struct _DHCPCAPI_CLASSID {
-    ULONG Flags;
-    LPBYTE Data;
-    ULONG nBytesData;
-  } DHCPCAPI_CLASSID,*PDHCPCAPI_CLASSID,*LPDHCPCAPI_CLASSID;
-
+typedef struct _DHCPAPI_PARAMS DHCPCAPI_PARAMS, *PDHCPCAPI_PARAMS,
+    *LPDHCPCAPI_PARAMS;
+typedef struct _DHCPCAPI_PARAMS_ARARAY {
+  ULONG nParams;
+  LPDHCPCAPI_PARAMS Params;
+} DHCPCAPI_PARAMS_ARRAY, *PDHCPCAPI_PARAMS_ARRAY, *LPDHCPCAPI_PARAMS_ARRAY;
+typedef struct _DHCPCAPI_CLASSID {
+  ULONG Flags;
+  LPBYTE Data;
+  ULONG nBytesData;
+} DHCPCAPI_CLASSID, *PDHCPCAPI_CLASSID, *LPDHCPCAPI_CLASSID;
 #define DHCPCAPI_REQUEST_PERSISTENT 0x01
 #define DHCPCAPI_REQUEST_SYNCHRONOUS 0x02
 #define DHCPCAPI_REQUEST_ASYNCHRONOUS 0x04
 #define DHCPCAPI_REQUEST_CANCEL 0x08
 #define DHCPCAPI_REQUEST_MASK 0x0F
-
-  DWORD WINAPI DhcpCApiInitialize(LPDWORD Version);
-  VOID WINAPI DhcpCApiCleanup(VOID);
-  DWORD WINAPI DhcpRequestParams(DWORD Flags,LPVOID Reserved,LPWSTR AdapterName,LPDHCPCAPI_CLASSID ClassId,DHCPCAPI_PARAMS_ARRAY SendParams,DHCPCAPI_PARAMS_ARRAY RecdParams,LPBYTE Buffer,LPDWORD pSize,LPWSTR RequestIdStr);
-  DWORD WINAPI DhcpUndoRequestParams(DWORD Flags,LPVOID Reserved,LPWSTR AdapterName,LPWSTR RequestIdStr);
-
+DWORD WINAPI DhcpCApiInitialize(LPDWORD Version);
+VOID WINAPI DhcpCApiCleanup(VOID);
+DWORD WINAPI DhcpRequestParams(DWORD Flags, LPVOID Reserved, LPWSTR AdapterName,
+                               LPDHCPCAPI_CLASSID ClassId,
+                               DHCPCAPI_PARAMS_ARRAY SendParams,
+                               DHCPCAPI_PARAMS_ARRAY RecdParams, LPBYTE Buffer,
+                               LPDWORD pSize, LPWSTR RequestIdStr);
+DWORD WINAPI DhcpUndoRequestParams(DWORD Flags, LPVOID Reserved,
+                                   LPWSTR AdapterName, LPWSTR RequestIdStr);
 #define DHCPCAPI_REGISTER_HANDLE_EVENT 0x01
-  DWORD WINAPI DhcpRegisterParamChange(DWORD Flags,LPVOID Reserved,LPWSTR AdapterName,LPDHCPCAPI_CLASSID ClassId,DHCPCAPI_PARAMS_ARRAY Params,LPVOID Handle);
-
+DWORD WINAPI DhcpRegisterParamChange(DWORD Flags, LPVOID Reserved,
+                                     LPWSTR AdapterName,
+                                     LPDHCPCAPI_CLASSID ClassId,
+                                     DHCPCAPI_PARAMS_ARRAY Params,
+                                     LPVOID Handle);
 #define DHCPCAPI_DEREGISTER_HANDLE_EVENT 0x01
-  DWORD WINAPI DhcpDeRegisterParamChange(DWORD Flags,LPVOID Reserved,LPVOID Event);
-  DWORD WINAPI DhcpRemoveDNSRegistrations(VOID);
-
+DWORD WINAPI DhcpDeRegisterParamChange(DWORD Flags, LPVOID Reserved,
+                                       LPVOID Event);
+DWORD WINAPI DhcpRemoveDNSRegistrations(VOID);
 #ifdef __cplusplus
 }
 #endif

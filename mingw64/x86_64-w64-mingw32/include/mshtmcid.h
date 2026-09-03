@@ -2,10 +2,8 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #ifndef __mshtmcid_h__
 #define __mshtmcid_h__
-
 #define IDM_UNKNOWN 0
 #define IDM_ALIGNBOTTOM 1
 #define IDM_ALIGNHORIZONTALCENTERS 2
@@ -93,9 +91,7 @@
 #define IDM_TRISTATEBOLD 95
 #define IDM_TRISTATEITALIC 96
 #define IDM_TRISTATEUNDERLINE 97
-
 #define IDM_OBJECTVERBLISTLAST IDM_OBJECTVERBLIST9
-
 #define IDM_FOLLOW_ANCHOR 2008
 #define IDM_INSINPUTIMAGE 2114
 #define IDM_INSINPUTBUTTON 2115
@@ -154,7 +150,6 @@
 #define IDM_PLUGIN 2176
 #define IDM_PAGEBREAK 2177
 #define IDM_HTMLAREA 2178
-
 #define IDM_PARAGRAPH 2180
 #define IDM_FORM 2181
 #define IDM_MARQUEE 2182
@@ -181,7 +176,6 @@
 #define IDM_CELLPROPERTIES 2211
 #define IDM_ROWINSERT 2212
 #define IDM_COLUMNINSERT 2213
-
 #define IDM_HELP_CONTENT 2220
 #define IDM_HELP_ABOUT 2221
 #define IDM_HELP_README 2222

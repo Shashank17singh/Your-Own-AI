@@ -35,25 +35,22 @@
 #endif /* __SHA512__ */
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_sha512msg1_epi64 (__m256i __A, __m128i __B)
-{
-  return (__m256i) __builtin_ia32_vsha512msg1 ((__v4di) __A, (__v2di) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_sha512msg1_epi64(__m256i __A, __m128i __B) {
+  return (__m256i)__builtin_ia32_vsha512msg1((__v4di)__A, (__v2di)__B);
 }
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_sha512msg2_epi64 (__m256i __A, __m256i __B)
-{
-  return (__m256i) __builtin_ia32_vsha512msg2 ((__v4di) __A, (__v4di) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_sha512msg2_epi64(__m256i __A, __m256i __B) {
+  return (__m256i)__builtin_ia32_vsha512msg2((__v4di)__A, (__v4di)__B);
 }
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_sha512rnds2_epi64 (__m256i __A, __m256i __B, __m128i __C)
-{
-  return (__m256i) __builtin_ia32_vsha512rnds2 ((__v4di) __A, (__v4di) __B,
-						(__v2di) __C);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_sha512rnds2_epi64(__m256i __A, __m256i __B, __m128i __C) {
+  return (__m256i)__builtin_ia32_vsha512rnds2((__v4di)__A, (__v4di)__B,
+                                              (__v2di)__C);
 }
 
 #ifdef __DISABLE_SHA512__

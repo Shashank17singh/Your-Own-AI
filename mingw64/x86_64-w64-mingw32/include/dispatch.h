@@ -6,5 +6,4 @@
 #ifndef RC_INVOKED
 #warning Your code should include oleauto.h instead of dispatch.h
 #endif
-
 #include <oleauto.h>

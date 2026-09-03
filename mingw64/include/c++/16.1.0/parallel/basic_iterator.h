@@ -34,8 +34,8 @@
 #define _GLIBCXX_PARALLEL_BASIC_ITERATOR_H 1
 
 #include <bits/c++config.h>
-#include <bits/stl_iterator_base_types.h>
-#include <bits/stl_iterator_base_funcs.h>
 #include <bits/stl_iterator.h>
+#include <bits/stl_iterator_base_funcs.h>
+#include <bits/stl_iterator_base_types.h>
 
 #endif /* _GLIBCXX_PARALLEL_BASIC_ITERATOR_H */

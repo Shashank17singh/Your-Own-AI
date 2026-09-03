@@ -10,7 +10,6 @@ import os
 import sys
 from test.libregrtest import main
 
-
 # Alias for backward compatibility (just in case)
 main_in_temp_cwd = main
 
@@ -43,5 +42,5 @@ def _main():
     main()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     _main()

@@ -10,7 +10,8 @@ BASEVER, DATESTAMP, DEVPHASE, and REVISION are defined by the
 Makefile.  */
 
 #define version_string "16.1.0"
-#define pkgversion_string "(MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r3) "
+#define pkgversion_string                                                      \
+  "(MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders, r3) "
 
 /* This is the location of the online document giving instructions for
 reporting bugs.  If you distribute a modified version of GCC,
@@ -21,6 +22,6 @@ they are not bugs in your modifications.)  */
 
 #define bug_report_url "<https://gcc.gnu.org/bugs/>"
 
-#define GCOV_VERSION ((gcov_unsigned_t)0x4236312a)  /* B61* */
+#define GCOV_VERSION ((gcov_unsigned_t)0x4236312a) /* B61* */
 
 #endif /* VERSION_H */

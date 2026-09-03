@@ -2,13 +2,10 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #include <winapifamily.h>
-
 #ifndef _AUTHIF_H_
 #define _AUTHIF_H_
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 typedef enum _RADIUS_ATTRIBUTE_TYPE {
   ratMinimum = 0,
   ratUserName = 1,
@@ -89,7 +86,6 @@ typedef enum _RADIUS_ATTRIBUTE_TYPE {
   ratClearTextPassword = 277,
   ratSrcIPv6Address = 278
 } RADIUS_ATTRIBUTE_TYPE;
-
 typedef enum _RADIUS_CODE {
   rcUnknown = 0,
   rcAccessRequest = 1,
@@ -100,7 +96,6 @@ typedef enum _RADIUS_CODE {
   rcAccessChallenge = 11,
   rcDiscard = 256
 } RADIUS_CODE;
-
 typedef enum _RADIUS_AUTHENTICATION_PROVIDER {
   rapUnknown,
   rapUsersFile,
@@ -117,7 +112,6 @@ typedef enum _RADIUS_REJECT_REASON_CODE {
   rrrcAccountExpired = 3,
   rrrcAuthenticationFailure = 4
 } RADIUS_REJECT_REASON_CODE;
-
 typedef enum _RADIUS_DATA_TYPE {
   rdtUnknown,
   rdtString,
@@ -126,7 +120,6 @@ typedef enum _RADIUS_DATA_TYPE {
   rdtTime,
   rdtIpv6Address
 } RADIUS_DATA_TYPE;
-
 typedef struct _RADIUS_ATTRIBUTE {
   DWORD dwAttrType;
   RADIUS_DATA_TYPE fDataType;
@@ -135,68 +128,70 @@ typedef struct _RADIUS_ATTRIBUTE {
     DWORD dwValue;
     CONST BYTE *lpValue;
   };
-} RADIUS_ATTRIBUTE,*PRADIUS_ATTRIBUTE;
-
+} RADIUS_ATTRIBUTE, *PRADIUS_ATTRIBUTE;
 typedef struct _RADIUS_VSA_FORMAT {
   BYTE VendorId[4];
   BYTE VendorType;
   BYTE VendorLength;
   BYTE AttributeSpecific[1];
 } RADIUS_VSA_FORMAT;
-
 typedef enum _RADIUS_ACTION {
   raContinue,
   raReject,
   raAccept
-} RADIUS_ACTION,*PRADIUS_ACTION;
-
+} RADIUS_ACTION,
+    *PRADIUS_ACTION;
 #define RADIUS_EXTENSION_INIT "RadiusExtensionInit"
 #define RADIUS_EXTENSION_TERM "RadiusExtensionTerm"
 #define RADIUS_EXTENSION_PROCESS "RadiusExtensionProcess"
 #define RADIUS_EXTENSION_PROCESS_EX "RadiusExtensionProcessEx"
 #define RADIUS_EXTENSION_FREE_ATTRIBUTES "RadiusExtensionFreeAttributes"
 #define RADIUS_EXTENSION_PROCESS2 "RadiusExtensionProcess2"
-
-typedef DWORD (WINAPI *PRADIUS_EXTENSION_INIT) (VOID);
-typedef VOID (WINAPI *PRADIUS_EXTENSION_TERM) (VOID);
-typedef DWORD (WINAPI *PRADIUS_EXTENSION_PROCESS) (const RADIUS_ATTRIBUTE *pAttrs, PRADIUS_ACTION pfAction);
-typedef DWORD (WINAPI *PRADIUS_EXTENSION_PROCESS_EX) (const RADIUS_ATTRIBUTE *pInAttrs, PRADIUS_ATTRIBUTE *pOutAttrs, PRADIUS_ACTION pfAction);
-typedef VOID (WINAPI *PRADIUS_EXTENSION_FREE_ATTRIBUTES) (PRADIUS_ATTRIBUTE pAttrs);
-
-#define AUTHSRV_PARAMETERS_KEY_W L"System\\CurrentControlSet\\Services\\AuthSrv\\Parameters"
+typedef DWORD(WINAPI *PRADIUS_EXTENSION_INIT)(VOID);
+typedef VOID(WINAPI *PRADIUS_EXTENSION_TERM)(VOID);
+typedef DWORD(WINAPI *PRADIUS_EXTENSION_PROCESS)(const RADIUS_ATTRIBUTE *pAttrs,
+                                                 PRADIUS_ACTION pfAction);
+typedef DWORD(WINAPI *PRADIUS_EXTENSION_PROCESS_EX)(
+    const RADIUS_ATTRIBUTE *pInAttrs, PRADIUS_ATTRIBUTE *pOutAttrs,
+    PRADIUS_ACTION pfAction);
+typedef VOID(WINAPI *PRADIUS_EXTENSION_FREE_ATTRIBUTES)(
+    PRADIUS_ATTRIBUTE pAttrs);
+#define AUTHSRV_PARAMETERS_KEY_W                                               \
+  L"System\\CurrentControlSet\\Services\\AuthSrv\\Parameters"
 #define AUTHSRV_EXTENSIONS_VALUE_W L"ExtensionDLLs"
 #define AUTHSRV_AUTHORIZATION_VALUE_W L"AuthorizationDLLs"
-
 #define RADIUS_EXTENSION_VERSION (1)
-
 typedef enum _RADIUS_EXTENSION_POINT {
   repAuthentication,
   repAuthorization
 } RADIUS_EXTENSION_POINT;
-
 typedef struct _RADIUS_ATTRIBUTE_ARRAY {
   DWORD cbSize;
-  DWORD (WINAPI *Add) (struct _RADIUS_ATTRIBUTE_ARRAY *_This, const RADIUS_ATTRIBUTE *pAttr);
-  const RADIUS_ATTRIBUTE *(WINAPI *AttributeAt) (const struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex);
-  DWORD (WINAPI *GetSize) (const struct _RADIUS_ATTRIBUTE_ARRAY *_This);
-  DWORD (WINAPI *InsertAt) (struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex, const RADIUS_ATTRIBUTE *pAttr);
-  DWORD (WINAPI *RemoveAt) (struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex);
-  DWORD (WINAPI *SetAt) (struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex, const RADIUS_ATTRIBUTE *pAttr);
-} RADIUS_ATTRIBUTE_ARRAY,*PRADIUS_ATTRIBUTE_ARRAY;
-
+  DWORD(WINAPI *Add)(struct _RADIUS_ATTRIBUTE_ARRAY *_This,
+                     const RADIUS_ATTRIBUTE *pAttr);
+  const RADIUS_ATTRIBUTE *(WINAPI *AttributeAt)(
+      const struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex);
+  DWORD(WINAPI *GetSize)(const struct _RADIUS_ATTRIBUTE_ARRAY *_This);
+  DWORD(WINAPI *InsertAt)(struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex,
+                          const RADIUS_ATTRIBUTE *pAttr);
+  DWORD(WINAPI *RemoveAt)(struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex);
+  DWORD(WINAPI *SetAt)(struct _RADIUS_ATTRIBUTE_ARRAY *_This, DWORD dwIndex,
+                       const RADIUS_ATTRIBUTE *pAttr);
+} RADIUS_ATTRIBUTE_ARRAY, *PRADIUS_ATTRIBUTE_ARRAY;
 typedef struct _RADIUS_EXTENSION_CONTROL_BLOCK {
   DWORD cbSize;
   DWORD dwVersion;
   RADIUS_EXTENSION_POINT repPoint;
   RADIUS_CODE rcRequestType;
   RADIUS_CODE rcResponseType;
-  PRADIUS_ATTRIBUTE_ARRAY (WINAPI *GetRequest) (struct _RADIUS_EXTENSION_CONTROL_BLOCK *This);
-  PRADIUS_ATTRIBUTE_ARRAY (WINAPI *GetResponse) (struct _RADIUS_EXTENSION_CONTROL_BLOCK *This, RADIUS_CODE rcResponseType);
-  DWORD (WINAPI *SetResponseType) (struct _RADIUS_EXTENSION_CONTROL_BLOCK *This, RADIUS_CODE rcResponseType);
-} RADIUS_EXTENSION_CONTROL_BLOCK,*PRADIUS_EXTENSION_CONTROL_BLOCK;
-
-typedef DWORD (WINAPI *PRADIUS_EXTENSION_PROCESS_2) (PRADIUS_EXTENSION_CONTROL_BLOCK pECB);
-
+  PRADIUS_ATTRIBUTE_ARRAY(WINAPI *GetRequest)(
+      struct _RADIUS_EXTENSION_CONTROL_BLOCK *This);
+  PRADIUS_ATTRIBUTE_ARRAY(WINAPI *GetResponse)(
+      struct _RADIUS_EXTENSION_CONTROL_BLOCK *This, RADIUS_CODE rcResponseType);
+  DWORD(WINAPI *SetResponseType)(struct _RADIUS_EXTENSION_CONTROL_BLOCK *This,
+                                 RADIUS_CODE rcResponseType);
+} RADIUS_EXTENSION_CONTROL_BLOCK, *PRADIUS_EXTENSION_CONTROL_BLOCK;
+typedef DWORD(WINAPI *PRADIUS_EXTENSION_PROCESS_2)(
+    PRADIUS_EXTENSION_CONTROL_BLOCK pECB);
 #endif
-
 #endif

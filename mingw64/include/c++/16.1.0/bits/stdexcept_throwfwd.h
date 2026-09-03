@@ -37,89 +37,85 @@
 #include <bits/c++config.h>
 #include <bits/exception_defines.h>
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 #if _GLIBCXX_HOSTED
-#if (__cpp_exceptions && __cplusplus > 202302L \
-     && __cpp_constexpr_exceptions >= 202411L)
-  // Helper for exception objects in <stdexcept>
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_logic_error(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_domain_error(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_invalid_argument(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_length_error(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_out_of_range(const char*);
-  template <typename... _Args>
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_out_of_range_fmt(const char* __s, _Args... __args);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_runtime_error(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_overflow_error(const char*);
-  [[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
-  __throw_underflow_error(const char*);
+#if (__cpp_exceptions && __cplusplus > 202302L &&                              \
+     __cpp_constexpr_exceptions >= 202411L)
+// Helper for exception objects in <stdexcept>
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_logic_error(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_domain_error(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_invalid_argument(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_length_error(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_out_of_range(const char *);
+template <typename... _Args>
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_out_of_range_fmt(const char *__s, _Args... __args);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_runtime_error(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_overflow_error(const char *);
+[[noreturn, __gnu__::__always_inline__, __gnu__::__cold__]] constexpr void
+__throw_underflow_error(const char *);
 #else
-  // Helpers for exception objects in <stdexcept>
-  void
-  __throw_logic_error(const char*) __attribute__((__noreturn__,__cold__));
+// Helpers for exception objects in <stdexcept>
+void __throw_logic_error(const char *) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_domain_error(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_domain_error(const char *) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_invalid_argument(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_invalid_argument(const char *)
+    __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_length_error(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_length_error(const char *) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_out_of_range(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_out_of_range(const char *) __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_out_of_range_fmt(const char*, ...)
-    __attribute__((__noreturn__,__cold__,__format__(__gnu_printf__, 1, 2)));
+void __throw_out_of_range_fmt(const char *, ...)
+    __attribute__((__noreturn__, __cold__, __format__(__gnu_printf__, 1, 2)));
 
-  void
-  __throw_runtime_error(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_runtime_error(const char *)
+    __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_overflow_error(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_overflow_error(const char *)
+    __attribute__((__noreturn__, __cold__));
 
-  void
-  __throw_underflow_error(const char*) __attribute__((__noreturn__,__cold__));
+void __throw_underflow_error(const char *)
+    __attribute__((__noreturn__, __cold__));
 #endif
 
 #else // ! HOSTED
 
-  __attribute__((__noreturn__)) inline void
-  __throw_invalid_argument(const char*)
-  { std::__terminate(); }
+__attribute__((__noreturn__)) inline void
+__throw_invalid_argument(const char *) {
+  std::__terminate();
+}
 
-  __attribute__((__noreturn__)) inline void
-  __throw_out_of_range(const char*)
-  { std::__terminate(); }
+__attribute__((__noreturn__)) inline void __throw_out_of_range(const char *) {
+  std::__terminate();
+}
 
-  __attribute__((__noreturn__)) inline void
-  __throw_out_of_range_fmt(const char*, ...)
-  { std::__terminate(); }
+__attribute__((__noreturn__)) inline void __throw_out_of_range_fmt(const char *,
+                                                                   ...) {
+  std::__terminate();
+}
 
-  __attribute__((__noreturn__)) inline void
-  __throw_runtime_error(const char*)
-  { std::__terminate(); }
+__attribute__((__noreturn__)) inline void __throw_runtime_error(const char *) {
+  std::__terminate();
+}
 
-  __attribute__((__noreturn__)) inline void
-  __throw_overflow_error(const char*)
-  { std::__terminate(); }
+__attribute__((__noreturn__)) inline void __throw_overflow_error(const char *) {
+  std::__terminate();
+}
 
 #endif // HOSTED
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif

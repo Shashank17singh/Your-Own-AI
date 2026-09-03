@@ -1,5 +1,5 @@
 #ifndef Py_CPYTHON_PYLIFECYCLE_H
-#  error "this header file must not be included directly"
+#error "this header file must not be included directly"
 #endif
 
 #ifdef __cplusplus
@@ -9,33 +9,26 @@ extern "C" {
 /* Only used by applications that embed the interpreter and need to
  * override the standard encoding determination mechanism
  */
-PyAPI_FUNC(int) Py_SetStandardStreamEncoding(const char *encoding,
-                                             const char *errors);
+PyAPI_FUNC(int)
+    Py_SetStandardStreamEncoding(const char *encoding, const char *errors);
 
 /* PEP 432 Multi-phase initialization API (Private while provisional!) */
 
-PyAPI_FUNC(PyStatus) Py_PreInitialize(
-    const PyPreConfig *src_config);
-PyAPI_FUNC(PyStatus) Py_PreInitializeFromBytesArgs(
-    const PyPreConfig *src_config,
-    Py_ssize_t argc,
-    char **argv);
-PyAPI_FUNC(PyStatus) Py_PreInitializeFromArgs(
-    const PyPreConfig *src_config,
-    Py_ssize_t argc,
-    wchar_t **argv);
+PyAPI_FUNC(PyStatus) Py_PreInitialize(const PyPreConfig *src_config);
+PyAPI_FUNC(PyStatus)
+    Py_PreInitializeFromBytesArgs(const PyPreConfig *src_config,
+                                  Py_ssize_t argc, char **argv);
+PyAPI_FUNC(PyStatus) Py_PreInitializeFromArgs(const PyPreConfig *src_config,
+                                              Py_ssize_t argc, wchar_t **argv);
 
 PyAPI_FUNC(int) _Py_IsCoreInitialized(void);
 
-
 /* Initialization and finalization */
 
-PyAPI_FUNC(PyStatus) Py_InitializeFromConfig(
-    const PyConfig *config);
+PyAPI_FUNC(PyStatus) Py_InitializeFromConfig(const PyConfig *config);
 PyAPI_FUNC(PyStatus) _Py_InitializeMain(void);
 
 PyAPI_FUNC(int) Py_RunMain(void);
-
 
 PyAPI_FUNC(void) _Py_NO_RETURN Py_ExitStatusException(PyStatus err);
 

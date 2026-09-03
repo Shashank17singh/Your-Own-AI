@@ -15,9 +15,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+*/
 
-#if !defined (FLOATFORMAT_H)
+#if !defined(FLOATFORMAT_H)
 #define FLOATFORMAT_H 1
 
 #include "ansidecl.h"
@@ -56,10 +57,9 @@ enum floatformat_byteorders {
 
 enum floatformat_intbit { floatformat_intbit_yes, floatformat_intbit_no };
 
-struct floatformat
-{
+struct floatformat {
   enum floatformat_byteorders byteorder;
-  unsigned int totalsize;	/* Total size of number in bits */
+  unsigned int totalsize; /* Total size of number in bits */
 
   /* Sign bit is always one bit long.  1 means negative, 0 means positive.  */
   unsigned int sign_start;
@@ -87,7 +87,7 @@ struct floatformat
   const char *name;
 
   /* Validator method.  */
-  int (*is_valid) (const struct floatformat *fmt, const void *from);
+  int (*is_valid)(const struct floatformat *fmt, const void *from);
 
   /* Is the format actually the sum of two smaller floating point
      formats (IBM long double, as described in
@@ -97,7 +97,8 @@ struct floatformat
   const struct floatformat *split_half;
 };
 
-/* floatformats for IEEE half, single, double and quad, big and little endian.  */
+/* floatformats for IEEE half, single, double and quad, big and little endian.
+ */
 
 extern const struct floatformat floatformat_ieee_half_big;
 extern const struct floatformat floatformat_ieee_half_little;
@@ -141,22 +142,22 @@ extern const struct floatformat floatformat_bfloat16_little;
    FROM is the address of the extended float.
    Store the double in *TO.  */
 
-extern void
-floatformat_to_double (const struct floatformat *, const void *, double *);
+extern void floatformat_to_double(const struct floatformat *, const void *,
+                                  double *);
 
 /* The converse: convert the double *FROM to FMT
    and store where TO points.  */
 
-extern void
-floatformat_from_double (const struct floatformat *, const double *, void *);
+extern void floatformat_from_double(const struct floatformat *, const double *,
+                                    void *);
 
 /* Return non-zero iff the data at FROM is a valid number in format FMT.  */
 
-extern int
-floatformat_is_valid (const struct floatformat *fmt, const void *from);
+extern int floatformat_is_valid(const struct floatformat *fmt,
+                                const void *from);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* defined (FLOATFORMAT_H) */
+#endif /* defined (FLOATFORMAT_H) */

@@ -3,6 +3,7 @@ Basic subprocess implementation for POSIX which only uses os functions. Only
 implement features required by setup.py to build C extension modules when
 subprocess is unavailable. setup.py is not used on Windows.
 """
+
 import os
 
 
@@ -40,7 +41,7 @@ def _check_cmd(cmd):
         for ch in range(ord(first), ord(last) + 1):
             safe_chars.append(chr(ch))
     safe_chars.append("./-")
-    safe_chars = ''.join(safe_chars)
+    safe_chars = "".join(safe_chars)
 
     if isinstance(cmd, (tuple, list)):
         check_strs = cmd
@@ -80,14 +81,15 @@ def check_output(cmd, **kwargs):
         status = os.system(cmd)
         exitcode = os.waitstatus_to_exitcode(status)
         if exitcode:
-            raise ValueError(f"Command {cmd!r} returned non-zero "
-                             f"exit status {exitcode!r}")
+            raise ValueError(
+                f"Command {cmd!r} returned non-zero " f"exit status {exitcode!r}"
+            )
 
         try:
             with open(tmp_filename, "rb") as fp:
                 stdout = fp.read()
         except FileNotFoundError:
-            stdout = b''
+            stdout = b""
     finally:
         try:
             os.unlink(tmp_filename)

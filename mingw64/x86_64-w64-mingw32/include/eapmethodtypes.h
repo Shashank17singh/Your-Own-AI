@@ -10,14 +10,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef struct tagEapPacket {
   BYTE Code;
   BYTE Id;
   BYTE Length[2];
   BYTE Data[1];
 } EapPacket;
-
 #ifdef __cplusplus
 }
 #endif

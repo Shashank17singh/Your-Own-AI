@@ -25,8 +25,7 @@ along with GCC; see the file COPYING3.  If not see
 /* An extra flag to control optab_for_tree_code's behavior.  This is needed to
    distinguish between machines with a vector shift that takes a scalar for the
    shift amount vs. machines that take a vector for the shift amount.  */
-enum optab_subtype
-{
+enum optab_subtype {
   optab_default,
   optab_scalar,
   optab_vector,
@@ -36,24 +35,22 @@ enum optab_subtype
 /* Return the optab used for computing the given operation on the type given by
    the second argument.  The third argument distinguishes between the types of
    vector shifts and rotates.  */
-optab optab_for_tree_code (enum tree_code, const_tree, enum optab_subtype);
-bool
-supportable_half_widening_operation (enum tree_code, tree, tree,
-				    enum tree_code *);
-bool supportable_convert_operation (enum tree_code, tree, tree,
-				    enum tree_code *);
-bool expand_vec_cmp_expr_p (tree, tree, enum tree_code);
-bool expand_vec_cond_expr_p (tree, tree);
-void init_tree_optimization_optabs (tree);
-bool target_supports_op_p (tree, enum tree_code,
-			   enum optab_subtype = optab_default);
-bool target_supports_mask_load_store_p (machine_mode, machine_mode,
-				   bool, internal_fn *, vec<int> *);
-bool can_vec_mask_load_store_p (machine_mode, machine_mode, bool,
-				internal_fn * = nullptr,
-				vec<int> * = nullptr);
-opt_machine_mode get_len_load_store_mode (machine_mode, bool,
-					  internal_fn * = nullptr,
-					  vec<int> * = nullptr);
+optab optab_for_tree_code(enum tree_code, const_tree, enum optab_subtype);
+bool supportable_half_widening_operation(enum tree_code, tree, tree,
+                                         enum tree_code *);
+bool supportable_convert_operation(enum tree_code, tree, tree,
+                                   enum tree_code *);
+bool expand_vec_cmp_expr_p(tree, tree, enum tree_code);
+bool expand_vec_cond_expr_p(tree, tree);
+void init_tree_optimization_optabs(tree);
+bool target_supports_op_p(tree, enum tree_code,
+                          enum optab_subtype = optab_default);
+bool target_supports_mask_load_store_p(machine_mode, machine_mode, bool,
+                                       internal_fn *, vec<int> *);
+bool can_vec_mask_load_store_p(machine_mode, machine_mode, bool,
+                               internal_fn * = nullptr, vec<int> * = nullptr);
+opt_machine_mode get_len_load_store_mode(machine_mode, bool,
+                                         internal_fn * = nullptr,
+                                         vec<int> * = nullptr);
 
 #endif

@@ -6,10 +6,8 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef _INC_SDKDDKVER
 #define _INC_SDKDDKVER
-
 /* _WIN32_WINNT */
 #define _WIN32_WINNT_NT4 0x0400
 #define _WIN32_WINNT_WIN2K 0x0500
@@ -24,7 +22,6 @@
 #define _WIN32_WINNT_WINBLUE 0x0603
 #define _WIN32_WINNT_WINTHRESHOLD 0x0A00
 #define _WIN32_WINNT_WIN10 0x0A00
-
 /* _WIN32_IE */
 #define _WIN32_IE_IE20 0x0200
 #define _WIN32_IE_IE30 0x0300
@@ -42,7 +39,6 @@
 #define _WIN32_IE_IE90 0x0900
 #define _WIN32_IE_IE100 0x0a00
 #define _WIN32_IE_IE110 0x0A00
-
 /* Mappings Between IE Version and Windows Version */
 #define _WIN32_IE_NT4 _WIN32_IE_IE20
 #define _WIN32_IE_NT4SP1 _WIN32_IE_IE20
@@ -71,7 +67,6 @@
 #define _WIN32_IE_WINBLUE _WIN32_IE_IE100
 #define _WIN32_IE_WINTHRESHOLD _WIN32_IE_IE110
 #define _WIN32_IE_WIN10 _WIN32_IE_IE110
-
 /* NTDDI_VERSION */
 #ifndef NTDDI_WIN2K
 #define NTDDI_WIN2K 0x05000000
@@ -88,7 +83,6 @@
 #ifndef NTDDI_WIN2KSP4
 #define NTDDI_WIN2KSP4 0x05000400
 #endif
-
 #ifndef NTDDI_WINXP
 #define NTDDI_WINXP 0x05010000
 #endif
@@ -104,31 +98,26 @@
 #ifndef NTDDI_WINXPSP4
 #define NTDDI_WINXPSP4 0x05010400
 #endif
-
 #define NTDDI_WS03 0x05020000
 #define NTDDI_WS03SP1 0x05020100
 #define NTDDI_WS03SP2 0x05020200
 #define NTDDI_WS03SP3 0x05020300
 #define NTDDI_WS03SP4 0x05020400
-
 #define NTDDI_WIN6 0x06000000
 #define NTDDI_WIN6SP1 0x06000100
 #define NTDDI_WIN6SP2 0x06000200
 #define NTDDI_WIN6SP3 0x06000300
 #define NTDDI_WIN6SP4 0x06000400
-
 #define NTDDI_VISTA NTDDI_WIN6
 #define NTDDI_VISTASP1 NTDDI_WIN6SP1
 #define NTDDI_VISTASP2 NTDDI_WIN6SP2
 #define NTDDI_VISTASP3 NTDDI_WIN6SP3
 #define NTDDI_VISTASP4 NTDDI_WIN6SP4
 #define NTDDI_LONGHORN NTDDI_VISTA
-
 #define NTDDI_WS08 NTDDI_WIN6SP1
 #define NTDDI_WS08SP2 NTDDI_WIN6SP2
 #define NTDDI_WS08SP3 NTDDI_WIN6SP3
 #define NTDDI_WS08SP4 NTDDI_WIN6SP4
-
 #define NTDDI_WIN7 0x06010000
 #define NTDDI_WIN8 0x06020000
 #define NTDDI_WINBLUE 0x06030000
@@ -150,44 +139,38 @@
 #define NTDDI_WIN11_ZN 0x0A00000E
 #define NTDDI_WIN11_GA 0x0A00000F
 #define NTDDI_WIN11_GE 0x0A000010
-
 #define WDK_NTDDI_VERSION NTDDI_WIN11_GE
-
 /* Version Fields in NTDDI_VERSION */
 #define OSVERSION_MASK 0xFFFF0000U
 #define SPVERSION_MASK 0x0000FF00
 #define SUBVERSION_MASK 0x000000FF
-
 /* Macros to Extract Version Fields From NTDDI_VERSION */
 #define OSVER(Version) ((Version) & OSVERSION_MASK)
 #define SPVER(Version) (((Version) & SPVERSION_MASK) >> 8)
 #define SUBVER(Version) (((Version) & SUBVERSION_MASK))
-
 /* Macros to get the NTDDI for a given WIN32 */
 #define NTDDI_VERSION_FROM_WIN32_WINNT2(Version) Version##0000
-#define NTDDI_VERSION_FROM_WIN32_WINNT(Version) NTDDI_VERSION_FROM_WIN32_WINNT2(Version)
-
+#define NTDDI_VERSION_FROM_WIN32_WINNT(Version)                                \
+  NTDDI_VERSION_FROM_WIN32_WINNT2(Version)
 /* Select Default WIN32_WINNT Value */
 #if !defined(_WIN32_WINNT) && !defined(_CHICAGO_)
 #define _WIN32_WINNT _WIN32_WINNT_WS03
 #endif
-
 /* Choose NTDDI Version */
 #ifndef NTDDI_VERSION
-# ifdef _WIN32_WINNT
-#  if _WIN32_WINNT < _WIN32_WINNT_WIN10
+#ifdef _WIN32_WINNT
+#if _WIN32_WINNT < _WIN32_WINNT_WIN10
 /* For versions before Windows 10, set the corresponding NTDDI_VERSION. */
-#   define NTDDI_VERSION NTDDI_VERSION_FROM_WIN32_WINNT(_WIN32_WINNT)
-#  else
+#define NTDDI_VERSION NTDDI_VERSION_FROM_WIN32_WINNT(_WIN32_WINNT)
+#else
 /* As _WIN32_WINNT doesn't distinguish between versions of Windows 10/11,
  * set NTDDI_VERSION to the highest version. */
-#   define NTDDI_VERSION WDK_NTDDI_VERSION
-#  endif
-# else
-#  define NTDDI_VERSION NTDDI_WS03
-# endif
+#define NTDDI_VERSION WDK_NTDDI_VERSION
 #endif
-
+#else
+#define NTDDI_VERSION NTDDI_WS03
+#endif
+#endif
 /* Choose WINVER Value */
 #ifndef WINVER
 #ifdef _WIN32_WINNT
@@ -196,7 +179,6 @@
 #define WINVER 0x0502
 #endif
 #endif
-
 /* Choose IE Version */
 #ifndef _WIN32_IE
 #ifdef _WIN32_WINNT
@@ -221,13 +203,15 @@
 #define _WIN32_IE 0x0700
 #endif
 #endif
-
 /* Make Sure NTDDI_VERSION and _WIN32_WINNT Match */
-#if ((OSVER(NTDDI_VERSION) == NTDDI_WIN2K) && (_WIN32_WINNT != _WIN32_WINNT_WIN2K)) || \
-    ((OSVER(NTDDI_VERSION) == NTDDI_WINXP) && (_WIN32_WINNT != _WIN32_WINNT_WINXP)) || \
-    ((OSVER(NTDDI_VERSION) == NTDDI_WS03) && (_WIN32_WINNT != _WIN32_WINNT_WS03))   || \
-    ((OSVER(NTDDI_VERSION) == NTDDI_WINXP) && (_WIN32_WINNT != _WIN32_WINNT_WINXP))
+#if ((OSVER(NTDDI_VERSION) == NTDDI_WIN2K) &&                                  \
+     (_WIN32_WINNT != _WIN32_WINNT_WIN2K)) ||                                  \
+    ((OSVER(NTDDI_VERSION) == NTDDI_WINXP) &&                                  \
+     (_WIN32_WINNT != _WIN32_WINNT_WINXP)) ||                                  \
+    ((OSVER(NTDDI_VERSION) == NTDDI_WS03) &&                                   \
+     (_WIN32_WINNT != _WIN32_WINNT_WS03)) ||                                   \
+    ((OSVER(NTDDI_VERSION) == NTDDI_WINXP) &&                                  \
+     (_WIN32_WINNT != _WIN32_WINNT_WINXP))
 #error NTDDI_VERSION and _WIN32_WINNT mismatch!
 #endif
-
 #endif /* _INC_SDKDDKVER */

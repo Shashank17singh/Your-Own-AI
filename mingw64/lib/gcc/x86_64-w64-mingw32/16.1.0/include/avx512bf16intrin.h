@@ -28,7 +28,7 @@
 #ifndef _AVX512BF16INTRIN_H_INCLUDED
 #define _AVX512BF16INTRIN_H_INCLUDED
 
-#if !defined (__AVX512BF16__)
+#if !defined(__AVX512BF16__)
 #pragma GCC push_options
 #pragma GCC target("avx512bf16")
 #define __DISABLE_AVX512BF16__
@@ -36,112 +36,98 @@
 
 /* Convert One BF16 Data to One Single Float Data.  */
 extern __inline float
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm_cvtsbh_ss (__bf16 __A)
-{
-  return __builtin_ia32_cvtbf2sf (__A);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_cvtsbh_ss(__bf16 __A) {
+  return __builtin_ia32_cvtbf2sf(__A);
 }
 
 /* Internal data types for implementing the intrinsics.  */
-typedef __bf16 __v32bf __attribute__ ((__vector_size__ (64)));
+typedef __bf16 __v32bf __attribute__((__vector_size__(64)));
 
 /* The Intel API is flexible enough that we must allow aliasing with other
    vector types, and their scalar components.  */
-typedef __bf16 __m512bh __attribute__ ((__vector_size__ (64), __may_alias__));
+typedef __bf16 __m512bh __attribute__((__vector_size__(64), __may_alias__));
 
 /* vcvtne2ps2bf16 */
 
 extern __inline __m512bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_cvtne2ps_pbh (__m512 __A, __m512 __B)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_cvtne2ps_pbh(__m512 __A, __m512 __B) {
   return (__m512bh)__builtin_ia32_cvtne2ps2bf16_v32bf(__A, __B);
 }
 
-extern __inline __m512bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_mask_cvtne2ps_pbh (__m512bh __A, __mmask32 __B, __m512 __C, __m512 __D)
-{
+extern __inline __m512bh __attribute__((__gnu_inline__, __always_inline__,
+                                        __artificial__))
+_mm512_mask_cvtne2ps_pbh(__m512bh __A, __mmask32 __B, __m512 __C, __m512 __D) {
   return (__m512bh)__builtin_ia32_cvtne2ps2bf16_v32bf_mask(__C, __D, __A, __B);
 }
 
 extern __inline __m512bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_maskz_cvtne2ps_pbh (__mmask32 __A, __m512 __B, __m512 __C)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_maskz_cvtne2ps_pbh(__mmask32 __A, __m512 __B, __m512 __C) {
   return (__m512bh)__builtin_ia32_cvtne2ps2bf16_v32bf_maskz(__B, __C, __A);
 }
 
 /* vcvtneps2bf16 */
 
 extern __inline __m256bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_cvtneps_pbh (__m512 __A)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_cvtneps_pbh(__m512 __A) {
   return (__m256bh)__builtin_ia32_cvtneps2bf16_v16sf(__A);
 }
 
 extern __inline __m256bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_mask_cvtneps_pbh (__m256bh __A, __mmask16 __B, __m512 __C)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_mask_cvtneps_pbh(__m256bh __A, __mmask16 __B, __m512 __C) {
   return (__m256bh)__builtin_ia32_cvtneps2bf16_v16sf_mask(__C, __A, __B);
 }
 
 extern __inline __m256bh
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_maskz_cvtneps_pbh (__mmask16 __A, __m512 __B)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_maskz_cvtneps_pbh(__mmask16 __A, __m512 __B) {
   return (__m256bh)__builtin_ia32_cvtneps2bf16_v16sf_maskz(__B, __A);
 }
 
 /* vdpbf16ps */
 
 extern __inline __m512
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_dpbf16_ps (__m512 __A, __m512bh __B, __m512bh __C)
-{
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_dpbf16_ps(__m512 __A, __m512bh __B, __m512bh __C) {
   return (__m512)__builtin_ia32_dpbf16ps_v16sf(__A, __B, __C);
 }
 
-extern __inline __m512
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_mask_dpbf16_ps (__m512 __A, __mmask16 __B, __m512bh __C, __m512bh __D)
-{
+extern __inline __m512 __attribute__((__gnu_inline__, __always_inline__,
+                                      __artificial__))
+_mm512_mask_dpbf16_ps(__m512 __A, __mmask16 __B, __m512bh __C, __m512bh __D) {
   return (__m512)__builtin_ia32_dpbf16ps_v16sf_mask(__A, __C, __D, __B);
 }
 
-extern __inline __m512
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_maskz_dpbf16_ps (__mmask16 __A, __m512 __B, __m512bh __C, __m512bh __D)
-{
+extern __inline __m512 __attribute__((__gnu_inline__, __always_inline__,
+                                      __artificial__))
+_mm512_maskz_dpbf16_ps(__mmask16 __A, __m512 __B, __m512bh __C, __m512bh __D) {
   return (__m512)__builtin_ia32_dpbf16ps_v16sf_maskz(__B, __C, __D, __A);
 }
 
 extern __inline __m512
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_cvtpbh_ps (__m256bh __A)
-{
-  return (__m512)_mm512_castsi512_ps ((__m512i)_mm512_slli_epi32 (
-	 (__m512i)_mm512_cvtepi16_epi32 ((__m256i)__A), 16));
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_cvtpbh_ps(__m256bh __A) {
+  return (__m512)_mm512_castsi512_ps((__m512i)_mm512_slli_epi32(
+      (__m512i)_mm512_cvtepi16_epi32((__m256i)__A), 16));
 }
 
 extern __inline __m512
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_maskz_cvtpbh_ps (__mmask16 __U, __m256bh __A)
-{
-  return (__m512)_mm512_castsi512_ps ((__m512i) _mm512_slli_epi32 (
-	 (__m512i)_mm512_maskz_cvtepi16_epi32 (
-	 (__mmask16)__U, (__m256i)__A), 16));
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_maskz_cvtpbh_ps(__mmask16 __U, __m256bh __A) {
+  return (__m512)_mm512_castsi512_ps((__m512i)_mm512_slli_epi32(
+      (__m512i)_mm512_maskz_cvtepi16_epi32((__mmask16)__U, (__m256i)__A), 16));
 }
 
 extern __inline __m512
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_mask_cvtpbh_ps (__m512 __S, __mmask16 __U, __m256bh __A)
-{
-  return (__m512)_mm512_castsi512_ps ((__m512i)(_mm512_mask_slli_epi32 (
-	 (__m512i)__S, (__mmask16)__U,
-	 (__m512i)_mm512_cvtepi16_epi32 ((__m256i)__A), 16)));
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_mask_cvtpbh_ps(__m512 __S, __mmask16 __U, __m256bh __A) {
+  return (__m512)_mm512_castsi512_ps((__m512i)(_mm512_mask_slli_epi32(
+      (__m512i)__S, (__mmask16)__U,
+      (__m512i)_mm512_cvtepi16_epi32((__m256i)__A), 16)));
 }
 
 #ifdef __DISABLE_AVX512BF16__

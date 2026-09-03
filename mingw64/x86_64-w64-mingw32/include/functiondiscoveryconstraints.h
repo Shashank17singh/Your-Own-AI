@@ -6,11 +6,9 @@
 #ifndef _INC_FUNCTIONDISCOVERYCONSTRAINTS
 #define _INC_FUNCTIONDISCOVERYCONSTRAINTS
 #if (_WIN32_WINNT >= 0x0600)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define FD_CONSTRAINTVALUE_RECURSESUBCATEGORY_TRUE L"TRUE"
 #define FD_CONSTRAINTVALUE_VISIBILITY_ALL L"1"
 #define FD_CONSTRAINTVALUE_VISIBILITY_DEFAULT L"0"
@@ -44,39 +42,51 @@ extern "C" {
 #define SSDP_CONSTRAINTVALUE_TYPE_ROOT L"upnp:rootdevice"
 #define SSDP_CONSTRAINTVALUE_TYPE_DEVICE_PREFIX L"urn:schemas-upnp-org:device:"
 #define SSDP_CONSTRAINTVALUE_TYPE_SVC_PREFIX L"urn:schemas-upnp-org:service:"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_IGD L"urn:schemas-upnp-org:device:InternetGatewayDevice:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LANDEVICE L"urn:schemas-upnp-org:device:LANDevice:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LIGHTING L"urn:schemas-upnp-org:device:Lighting:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LUXMETER L"urn:schemas-upnp-org:device:Luxmeter:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_MDARNDR L"urn:schemas-upnp-org:device:MediaRenderer:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_MDASRVR L"urn:schemas-upnp-org:device:MediaServer:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_POWERDEVICE L"urn:schemas-upnp-org:device:PowerDevice:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_REMINDER L"urn:schemas-upnp-org:device:Reminder:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_WANDEVICE L"urn:schemas-upnp-org:device:WANDevice:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_DEV_WANCONNDEVICE L"urn:schemas-upnp-org:device:WANConnectionDevice:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_SVC_DIMMING L"urn:schemas-upnp-org:service:DimmingService:1"
-#define SSDP_CONSTRAINTVALUE_TYPE_SVC_SCANNER L"urn:schemas-upnp-org:service:Scanner:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_IGD                                      \
+  L"urn:schemas-upnp-org:device:InternetGatewayDevice:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LANDEVICE                                \
+  L"urn:schemas-upnp-org:device:LANDevice:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LIGHTING                                 \
+  L"urn:schemas-upnp-org:device:Lighting:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_LUXMETER                                 \
+  L"urn:schemas-upnp-org:device:Luxmeter:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_MDARNDR                                  \
+  L"urn:schemas-upnp-org:device:MediaRenderer:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_MDASRVR                                  \
+  L"urn:schemas-upnp-org:device:MediaServer:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_POWERDEVICE                              \
+  L"urn:schemas-upnp-org:device:PowerDevice:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_REMINDER                                 \
+  L"urn:schemas-upnp-org:device:Reminder:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_WANDEVICE                                \
+  L"urn:schemas-upnp-org:device:WANDevice:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_DEV_WANCONNDEVICE                            \
+  L"urn:schemas-upnp-org:device:WANConnectionDevice:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_SVC_DIMMING                                  \
+  L"urn:schemas-upnp-org:service:DimmingService:1"
+#define SSDP_CONSTRAINTVALUE_TYPE_SVC_SCANNER                                  \
+  L"urn:schemas-upnp-org:service:Scanner:1"
 #define PROVIDERWSD_QUERYCONSTRAINT_DIRECTEDADDRESS L"RemoteAddress"
 #define PROVIDERWSD_QUERYCONSTRAINT_SCOPE L"Scope"
 #define PROVIDERWSD_QUERYCONSTRAINT_TYPE L"Type"
-#define PROVIDERWSD_QUERYCONSTRAINT_SSL_CERT_FOR_CLIENT_AUTH L"SSLClientAuthCert"
-#define PROVIDERWSD_QUERYCONSTRAINT_SECURITY_REQUIREMENTS L"SecurityRequirements"
+#define PROVIDERWSD_QUERYCONSTRAINT_SSL_CERT_FOR_CLIENT_AUTH                   \
+  L"SSLClientAuthCert"
+#define PROVIDERWSD_QUERYCONSTRAINT_SECURITY_REQUIREMENTS                      \
+  L"SecurityRequirements"
 #define WSD_CONSTRAINTVALUE_REQUIRE_SECURECHANNEL (L"1")
 #define WSD_CONSTRAINTVALUE_REQUIRE_SECURECHANNEL_AND_COMPACTSIGNATURE (L"2")
-
 typedef enum tagPropertyConstraint {
-  QC_EQUALS               = 0,
-  QC_NOTEQUAL             = 1,
-  QC_LESSTHAN             = 2,
-  QC_LESSTHANOREQUAL      = 3,
-  QC_GREATERTHAN          = 4,
-  QC_GREATERTHANOREQUAL   = 5,
-  QC_STARTSWITH           = 6,
-  QC_EXISTS               = 7,
-  QC_DOESNOTEXIST         = 8,
-  QC_CONTAINS             = 8 
+  QC_EQUALS = 0,
+  QC_NOTEQUAL = 1,
+  QC_LESSTHAN = 2,
+  QC_LESSTHANOREQUAL = 3,
+  QC_GREATERTHAN = 4,
+  QC_GREATERTHANOREQUAL = 5,
+  QC_STARTSWITH = 6,
+  QC_EXISTS = 7,
+  QC_DOESNOTEXIST = 8,
+  QC_CONTAINS = 8
 } PropertyConstraint;
-
 #ifdef __cplusplus
 }
 #endif

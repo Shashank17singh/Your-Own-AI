@@ -27,25 +27,24 @@ namespace ana {
    This is still abstract; the update_model and print_desc vfuncs must be
    implemented.  */
 
-class call_info : public custom_edge_info
-{
+class call_info : public custom_edge_info {
 public:
-  void print (pretty_printer *pp) const override;
-  void add_events_to_path (checker_path *emission_path,
-			   const exploded_edge &eedge,
-			   pending_diagnostic &pd) const override;
+  void print(pretty_printer *pp) const override;
+  void add_events_to_path(checker_path *emission_path,
+                          const exploded_edge &eedge,
+                          pending_diagnostic &pd) const override;
 
-  const gcall &get_call_stmt () const { return m_call_stmt; }
-  tree get_fndecl () const { return m_fndecl; }
+  const gcall &get_call_stmt() const { return m_call_stmt; }
+  tree get_fndecl() const { return m_fndecl; }
 
-  virtual void print_desc (pretty_printer &pp) const = 0;
+  virtual void print_desc(pretty_printer &pp) const = 0;
 
-  call_details get_call_details (region_model *model,
-				 region_model_context *ctxt) const;
+  call_details get_call_details(region_model *model,
+                                region_model_context *ctxt) const;
 
 protected:
-  call_info (const call_details &cd);
-  call_info (const call_details &cd, const function &called_fn);
+  call_info(const call_details &cd);
+  call_info(const call_details &cd, const function &called_fn);
 
 private:
   const gcall &m_call_stmt;
@@ -60,14 +59,13 @@ private:
    This is still abstract: the custom_edge_info::update_model vfunc
    must be implemented.  */
 
-class succeed_or_fail_call_info : public call_info
-{
+class succeed_or_fail_call_info : public call_info {
 public:
-  void print_desc (pretty_printer &pp) const final override;
+  void print_desc(pretty_printer &pp) const final override;
 
 protected:
-  succeed_or_fail_call_info (const call_details &cd, bool success)
-   : call_info (cd), m_success (success) {}
+  succeed_or_fail_call_info(const call_details &cd, bool success)
+      : call_info(cd), m_success(success) {}
 
   bool m_success;
 };
@@ -77,12 +75,10 @@ protected:
    This is still abstract: the custom_edge_info::update_model vfunc
    must be implemented.  */
 
-class success_call_info : public succeed_or_fail_call_info
-{
+class success_call_info : public succeed_or_fail_call_info {
 protected:
-  success_call_info (const call_details &cd)
-  : succeed_or_fail_call_info (cd, true)
-  {}
+  success_call_info(const call_details &cd)
+      : succeed_or_fail_call_info(cd, true) {}
 };
 
 /* Subclass of call_info for a "failure" outcome of a call,
@@ -90,12 +86,10 @@ protected:
    This is still abstract: the custom_edge_info::update_model vfunc
    must be implemented.  */
 
-class failed_call_info : public succeed_or_fail_call_info
-{
+class failed_call_info : public succeed_or_fail_call_info {
 protected:
-  failed_call_info (const call_details &cd)
-  : succeed_or_fail_call_info (cd, false)
-  {}
+  failed_call_info(const call_details &cd)
+      : succeed_or_fail_call_info(cd, false) {}
 };
 
 } // namespace ana

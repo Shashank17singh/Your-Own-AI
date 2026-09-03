@@ -28,28 +28,19 @@ namespace diagnostics {
    directly, but is more convenient and flexible for occasional
    on-demand location_t values.  */
 
-class physical_location_maker
-{
+class physical_location_maker {
 public:
-  physical_location_maker (line_maps *line_table_)
-  : m_line_table (line_table_)
-  {
-  }
+  physical_location_maker(line_maps *line_table_) : m_line_table(line_table_) {}
 
-  location_t
-  new_location_from_file_and_line (const char *filename,
-				   int line_num);
+  location_t new_location_from_file_and_line(const char *filename,
+                                             int line_num);
 
   /* column_num is 1-based.  */
-  location_t
-  new_location_from_file_line_column (const char *filename,
-				      int line_num,
-				      int column_num);
+  location_t new_location_from_file_line_column(const char *filename,
+                                                int line_num, int column_num);
 
 private:
-  void
-  ensure_linemap_for_file_and_line (const char *filename,
-				    int linenum);
+  void ensure_linemap_for_file_and_line(const char *filename, int linenum);
 
 private:
   line_maps *m_line_table;

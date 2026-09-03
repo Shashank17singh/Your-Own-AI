@@ -26,24 +26,19 @@ along with GCC; see the file COPYING3.  If not see
    actually needed (e.g. for directed graphs associated with a diagnostic,
    which are ignored by the default "text" sink).  */
 
-template <typename T>
-class lazily_created
-{
- public:
-  virtual ~lazily_created () {}
+template <typename T> class lazily_created {
+public:
+  virtual ~lazily_created() {}
 
-  const T &
-  get_or_create () const
-  {
+  const T &get_or_create() const {
     if (!m_object)
-      m_object = create_object ();
-    gcc_assert (m_object);
+      m_object = create_object();
+    gcc_assert(m_object);
     return *m_object;
   }
 
 private:
-  virtual std::unique_ptr<T>
-  create_object () const = 0;
+  virtual std::unique_ptr<T> create_object() const = 0;
 
   mutable std::unique_ptr<T> m_object;
 };

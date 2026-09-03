@@ -15,6 +15,7 @@ class TestEnsurePipVersion(unittest.TestCase):
     def test_returns_version(self):
         self.assertEqual(ensurepip._PIP_VERSION, ensurepip.version())
 
+
 class EnsurepipMixin:
 
     def setUp(self):
@@ -40,8 +41,13 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -54,9 +60,15 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "--root", "/foo/bar/",
-                "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "--root",
+                "/foo/bar/",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -66,8 +78,14 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "--user", "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "--user",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -77,8 +95,14 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "--upgrade", "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "--upgrade",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -88,8 +112,14 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "-v", "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "-v",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -99,8 +129,14 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "-vv", "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "-vv",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -110,8 +146,14 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "-vvv", "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "-vvv",
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -146,13 +188,16 @@ class TestBootstrap(EnsurepipMixin, unittest.TestCase):
         ensurepip.bootstrap()
         self.assertEqual(self.os_environ["PIP_CONFIG_FILE"], os.devnull)
 
+
 @contextlib.contextmanager
 def fake_pip(version=ensurepip._PIP_VERSION):
     if version is None:
         pip = None
     else:
-        class FakePip():
+
+        class FakePip:
             __version__ = version
+
         pip = FakePip()
     sentinel = object()
     orig_pip = sys.modules.get("pip", sentinel)
@@ -164,6 +209,7 @@ def fake_pip(version=ensurepip._PIP_VERSION):
             del sys.modules["pip"]
         else:
             sys.modules["pip"] = orig_pip
+
 
 class TestUninstall(EnsurepipMixin, unittest.TestCase):
 
@@ -180,14 +226,16 @@ class TestUninstall(EnsurepipMixin, unittest.TestCase):
         self.assertIn("only uninstall a matching version", warning)
         self.assertFalse(self.run_pip.called)
 
-
     def test_uninstall(self):
         with fake_pip():
             ensurepip._uninstall_helper()
 
         self.run_pip.assert_called_once_with(
             [
-                "uninstall", "-y", "--disable-pip-version-check", "pip",
+                "uninstall",
+                "-y",
+                "--disable-pip-version-check",
+                "pip",
                 "setuptools",
             ]
         )
@@ -198,7 +246,11 @@ class TestUninstall(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "uninstall", "-y", "--disable-pip-version-check", "-v", "pip",
+                "uninstall",
+                "-y",
+                "--disable-pip-version-check",
+                "-v",
+                "pip",
                 "setuptools",
             ]
         )
@@ -209,7 +261,11 @@ class TestUninstall(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "uninstall", "-y", "--disable-pip-version-check", "-vv", "pip",
+                "uninstall",
+                "-y",
+                "--disable-pip-version-check",
+                "-vv",
+                "pip",
                 "setuptools",
             ]
         )
@@ -220,8 +276,12 @@ class TestUninstall(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "uninstall", "-y", "--disable-pip-version-check", "-vvv",
-                "pip", "setuptools",
+                "uninstall",
+                "-y",
+                "--disable-pip-version-check",
+                "-vvv",
+                "pip",
+                "setuptools",
             ]
         )
 
@@ -245,6 +305,7 @@ class TestUninstall(EnsurepipMixin, unittest.TestCase):
 
 EXPECTED_VERSION_OUTPUT = "pip " + ensurepip._PIP_VERSION
 
+
 class TestBootstrappingMainFunction(EnsurepipMixin, unittest.TestCase):
 
     def test_bootstrap_version(self):
@@ -260,8 +321,13 @@ class TestBootstrappingMainFunction(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "install", "--no-cache-dir", "--no-index", "--find-links",
-                unittest.mock.ANY, "setuptools", "pip",
+                "install",
+                "--no-cache-dir",
+                "--no-index",
+                "--find-links",
+                unittest.mock.ANY,
+                "setuptools",
+                "pip",
             ],
             unittest.mock.ANY,
         )
@@ -292,7 +358,10 @@ class TestUninstallationMainFunction(EnsurepipMixin, unittest.TestCase):
 
         self.run_pip.assert_called_once_with(
             [
-                "uninstall", "-y", "--disable-pip-version-check", "pip",
+                "uninstall",
+                "-y",
+                "--disable-pip-version-check",
+                "pip",
                 "setuptools",
             ]
         )

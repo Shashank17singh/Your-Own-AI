@@ -61,9 +61,9 @@ PyAPI_FUNC(void) PyMem_Free(void *ptr);
    pymalloc. To solve these problems, allocate an extra byte. */
 /* Returns NULL to indicate error if a negative size or size larger than
    Py_ssize_t can represent is supplied.  Helps prevents security holes. */
-#define PyMem_MALLOC(n)         PyMem_Malloc(n)
-#define PyMem_REALLOC(p, n)     PyMem_Realloc(p, n)
-#define PyMem_FREE(p)           PyMem_Free(p)
+#define PyMem_MALLOC(n) PyMem_Malloc(n)
+#define PyMem_REALLOC(p, n) PyMem_Realloc(p, n)
+#define PyMem_FREE(p) PyMem_Free(p)
 
 /*
  * Type-oriented memory interface
@@ -75,12 +75,14 @@ PyAPI_FUNC(void) PyMem_Free(void *ptr);
  * overflow checking is always done.
  */
 
-#define PyMem_New(type, n) \
-  ( ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :      \
-        ( (type *) PyMem_Malloc((n) * sizeof(type)) ) )
-#define PyMem_NEW(type, n) \
-  ( ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :      \
-        ( (type *) PyMem_MALLOC((n) * sizeof(type)) ) )
+#define PyMem_New(type, n)                                                     \
+  (((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type))                               \
+       ? NULL                                                                  \
+       : ((type *)PyMem_Malloc((n) * sizeof(type))))
+#define PyMem_NEW(type, n)                                                     \
+  (((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type))                               \
+       ? NULL                                                                  \
+       : ((type *)PyMem_MALLOC((n) * sizeof(type))))
 
 /*
  * The value of (p) is always clobbered by this macro regardless of success.
@@ -88,24 +90,25 @@ PyAPI_FUNC(void) PyMem_Free(void *ptr);
  * error if so.  This means the original value of (p) MUST be saved for the
  * caller's memory error handler to not lose track of it.
  */
-#define PyMem_Resize(p, type, n) \
-  ( (p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :        \
-        (type *) PyMem_Realloc((p), (n) * sizeof(type)) )
-#define PyMem_RESIZE(p, type, n) \
-  ( (p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type)) ? NULL :        \
-        (type *) PyMem_REALLOC((p), (n) * sizeof(type)) )
+#define PyMem_Resize(p, type, n)                                               \
+  ((p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type))                         \
+             ? NULL                                                            \
+             : (type *)PyMem_Realloc((p), (n) * sizeof(type)))
+#define PyMem_RESIZE(p, type, n)                                               \
+  ((p) = ((size_t)(n) > PY_SSIZE_T_MAX / sizeof(type))                         \
+             ? NULL                                                            \
+             : (type *)PyMem_REALLOC((p), (n) * sizeof(type)))
 
 /* PyMem{Del,DEL} are left over from ancient days, and shouldn't be used
  * anymore.  They're just confusing aliases for PyMem_{Free,FREE} now.
  */
-#define PyMem_Del               PyMem_Free
-#define PyMem_DEL               PyMem_FREE
-
+#define PyMem_Del PyMem_Free
+#define PyMem_DEL PyMem_FREE
 
 #ifndef Py_LIMITED_API
-#  define Py_CPYTHON_PYMEM_H
-#  include  "cpython/pymem.h"
-#  undef Py_CPYTHON_PYMEM_H
+#define Py_CPYTHON_PYMEM_H
+#include "cpython/pymem.h"
+#undef Py_CPYTHON_PYMEM_H
 #endif
 
 #ifdef __cplusplus

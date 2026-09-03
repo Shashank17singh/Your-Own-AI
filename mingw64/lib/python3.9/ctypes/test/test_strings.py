@@ -2,6 +2,7 @@ import unittest
 from ctypes import *
 from ctypes.test import need_symbol
 
+
 class StringArrayTestCase(unittest.TestCase):
     def test(self):
         BUF = c_char * 4
@@ -46,13 +47,15 @@ class StringArrayTestCase(unittest.TestCase):
     def test_param_1(self):
         BUF = c_char * 4
         buf = BUF()
-##        print c_char_p.from_param(buf)
+
+    ##        print c_char_p.from_param(buf)
 
     def test_param_2(self):
         BUF = c_char * 4
         buf = BUF()
-##        print BUF.from_param(c_char_p("python"))
-##        print BUF.from_param(BUF(*"pyth"))
+
+    ##        print BUF.from_param(c_char_p("python"))
+    ##        print BUF.from_param(BUF(*"pyth"))
 
     def test_del_segfault(self):
         BUF = c_char * 4
@@ -61,7 +64,7 @@ class StringArrayTestCase(unittest.TestCase):
             del buf.raw
 
 
-@need_symbol('c_wchar')
+@need_symbol("c_wchar")
 class WStringArrayTestCase(unittest.TestCase):
     def test(self):
         BUF = c_wchar * 4
@@ -78,15 +81,15 @@ class WStringArrayTestCase(unittest.TestCase):
         buf[1] = "Z"
         self.assertEqual(buf.value, "xZCD")
 
-    @unittest.skipIf(sizeof(c_wchar) < 4,
-                     "sizeof(wchar_t) is smaller than 4 bytes")
+    @unittest.skipIf(sizeof(c_wchar) < 4, "sizeof(wchar_t) is smaller than 4 bytes")
     def test_nonbmp(self):
-        u = chr(0x10ffff)
+        u = chr(0x10FFFF)
         w = c_wchar(u)
         self.assertEqual(w.value, u)
 
+
 class StringTestCase(unittest.TestCase):
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_basic_strings(self):
         cs = c_string("abcdef")
 
@@ -113,7 +116,7 @@ class StringTestCase(unittest.TestCase):
 
         self.assertRaises(TypeError, c_string, "123")
 
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_sized_strings(self):
 
         # New in releases later than 0.4.0:
@@ -126,12 +129,12 @@ class StringTestCase(unittest.TestCase):
         self.assertRaises(ValueError, c_string, 0)
 
         # These tests fail, because it is no longer initialized
-##        self.assertEqual(c_string(2).value, "")
-##        self.assertEqual(c_string(2).raw, "\000\000")
+        ##        self.assertEqual(c_string(2).value, "")
+        ##        self.assertEqual(c_string(2).raw, "\000\000")
         self.assertEqual(c_string(2).raw[-1], "\000")
         self.assertEqual(len(c_string(2).raw), 2)
 
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_initialized_strings(self):
 
         self.assertEqual(c_string("ab", 4).raw[:2], "ab")
@@ -141,7 +144,7 @@ class StringTestCase(unittest.TestCase):
         self.assertEqual(c_string("ab", 4).raw[-1], "\000")
         self.assertEqual(c_string("ab", 2).raw, "a\000")
 
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_toolong(self):
         cs = c_string("abcdef")
         # Much too long string:
@@ -150,19 +153,19 @@ class StringTestCase(unittest.TestCase):
         # One char too long values:
         self.assertRaises(ValueError, setattr, cs, "value", "1234567")
 
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_perf(self):
         check_perf()
 
-@need_symbol('c_wchar')
+
+@need_symbol("c_wchar")
 class WStringTestCase(unittest.TestCase):
     def test_wchar(self):
         c_wchar("x")
         repr(byref(c_wchar("x")))
         c_wchar("x")
 
-
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_basic_wstrings(self):
         cs = c_wstring("abcdef")
 
@@ -189,7 +192,7 @@ class WStringTestCase(unittest.TestCase):
         self.assertRaises(TypeError, c_wstring, "123")
         self.assertRaises(ValueError, c_wstring, 0)
 
-    @unittest.skip('test disabled')
+    @unittest.skip("test disabled")
     def test_toolong(self):
         cs = c_wstring("abcdef")
         # Much too long string:
@@ -202,11 +205,17 @@ class WStringTestCase(unittest.TestCase):
 def run_test(rep, msg, func, arg):
     items = range(rep)
     from time import perf_counter as clock
+
     start = clock()
     for i in items:
-        func(arg); func(arg); func(arg); func(arg); func(arg)
+        func(arg)
+        func(arg)
+        func(arg)
+        func(arg)
+        func(arg)
     stop = clock()
-    print("%20s: %.2f us" % (msg, ((stop-start)*1e6/5/rep)))
+    print("%20s: %.2f us" % (msg, ((stop - start) * 1e6 / 5 / rep)))
+
 
 def check_perf():
     # Construct 5 objects
@@ -214,7 +223,8 @@ def check_perf():
     REP = 200000
 
     run_test(REP, "c_string(None)", c_string, None)
-    run_test(REP, "c_string('abc')", c_string, 'abc')
+    run_test(REP, "c_string('abc')", c_string, "abc")
+
 
 # Python 2.3 -OO, win2k, P4 700 MHz:
 #
@@ -227,6 +237,6 @@ def check_perf():
 #     c_string('abc'): 3.67 us
 
 
-if __name__ == '__main__':
-##    check_perf()
+if __name__ == "__main__":
+    ##    check_perf()
     unittest.main()

@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-
 /* Operating system dependencies */
 
 #ifdef MS_WINDOWS
@@ -24,8 +23,8 @@ extern "C" {
 
 /* Max pathname length */
 #ifdef __hpux
-#include <sys/param.h>
 #include <limits.h>
+#include <sys/param.h>
 #ifndef PATH_MAX
 #define PATH_MAX MAXPATHLEN
 #endif

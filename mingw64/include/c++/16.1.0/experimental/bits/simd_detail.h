@@ -33,11 +33,10 @@
 /// @cond undocumented
 
 #define _GLIBCXX_SIMD_BEGIN_NAMESPACE                                          \
-  namespace std _GLIBCXX_VISIBILITY(default)                                   \
-  {                                                                            \
-    _GLIBCXX_BEGIN_NAMESPACE_VERSION                                           \
-      namespace experimental {                                                 \
-      inline namespace parallelism_v2 {
+  namespace std _GLIBCXX_VISIBILITY(default) {                                 \
+  _GLIBCXX_BEGIN_NAMESPACE_VERSION                                             \
+  namespace experimental {                                                     \
+  inline namespace parallelism_v2 {
 #define _GLIBCXX_SIMD_END_NAMESPACE                                            \
   }                                                                            \
   }                                                                            \
@@ -61,7 +60,7 @@
 #else
 #define _GLIBCXX_SIMD_HAVE_NEON_A64 0
 #endif
-#if (__ARM_FEATURE_SVE_BITS > 0 && __ARM_FEATURE_SVE_VECTOR_OPERATORS==1)
+#if (__ARM_FEATURE_SVE_BITS > 0 && __ARM_FEATURE_SVE_VECTOR_OPERATORS == 1)
 #define _GLIBCXX_SIMD_HAVE_SVE 1
 #else
 #define _GLIBCXX_SIMD_HAVE_SVE 0

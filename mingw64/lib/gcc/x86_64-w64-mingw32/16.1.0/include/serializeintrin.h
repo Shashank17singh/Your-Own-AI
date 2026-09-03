@@ -22,7 +22,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <serializeintrin.h> directly; include <x86gprintrin.h> instead."
+#error                                                                         \
+    "Never use <serializeintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _SERIALIZE_H_INCLUDED
@@ -35,10 +36,9 @@
 #endif /* __SERIALIZE__ */
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_serialize (void)
-{
-  __builtin_ia32_serialize ();
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _serialize(void) {
+  __builtin_ia32_serialize();
 }
 
 #ifdef __DISABLE_SERIALIZE__

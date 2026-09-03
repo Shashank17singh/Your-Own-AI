@@ -25,7 +25,7 @@ namespace ana {
 
 class supergraph;
 class supernode;
-  class call_and_return_op;
+class call_and_return_op;
 
 /* A string of "elements" representing a call stack at a program point.
 
@@ -37,8 +37,7 @@ class supernode;
    call_string instance tracks its children, lazily creating them on demand,
    so that the call_string instances form a tree-like hierarchy in memory.  */
 
-class call_string
-{
+class call_string {
 public:
   /* A struct representing an element in the call_string.
 
@@ -48,118 +47,101 @@ public:
      exploded edge from the exit supernode in the callee to the destination
      of the call superedge within the caller.  */
 
-  struct element_t
-  {
-    element_t (const superedge *call_sedge,
-	       const call_and_return_op *call_op,
-	       function *called_fun)
-    :  m_call_sedge (call_sedge), m_call_op (call_op),
-       m_called_fun (called_fun)
-    {
-    }
+  struct element_t {
+    element_t(const superedge *call_sedge, const call_and_return_op *call_op,
+              function *called_fun)
+        : m_call_sedge(call_sedge), m_call_op(call_op),
+          m_called_fun(called_fun) {}
 
-    bool operator== (const element_t &other) const;
-    bool operator!= (const element_t &other) const;
+    bool operator==(const element_t &other) const;
+    bool operator!=(const element_t &other) const;
 
-    static int cmp (const element_t &a, const element_t &b);
+    static int cmp(const element_t &a, const element_t &b);
 
     /* Accessors */
-    function *get_caller_function () const;
-    function *get_callee_function () const { return m_called_fun; }
-    const supernode *get_call_snode_in_caller () const;
-    const supernode *get_return_snode_in_caller () const;
-    const gcall &get_call_stmt () const;
+    function *get_caller_function() const;
+    function *get_callee_function() const { return m_called_fun; }
+    const supernode *get_call_snode_in_caller() const;
+    const supernode *get_return_snode_in_caller() const;
+    const gcall &get_call_stmt() const;
 
     const superedge *m_call_sedge;
     const call_and_return_op *m_call_op;
     function *m_called_fun;
   };
 
-  void print (pretty_printer *pp) const;
+  void print(pretty_printer *pp) const;
 
-  std::unique_ptr<json::value> to_json () const;
+  std::unique_ptr<json::value> to_json() const;
 
-  bool empty_p () const { return m_elements.is_empty (); }
+  bool empty_p() const { return m_elements.is_empty(); }
 
-  const call_string *push_call (const superedge &call_sedge,
-				const call_and_return_op &call_op,
-				function &called_fun) const;
-  const call_string *get_parent () const { return m_parent; }
+  const call_string *push_call(const superedge &call_sedge,
+                               const call_and_return_op &call_op,
+                               function &called_fun) const;
+  const call_string *get_parent() const { return m_parent; }
 
-  int calc_recursion_depth () const;
+  int calc_recursion_depth() const;
 
-  static int cmp (const call_string &a,
-		  const call_string &b);
+  static int cmp(const call_string &a, const call_string &b);
 
-  static int cmp_ptr_ptr (const void *, const void *);
+  static int cmp_ptr_ptr(const void *, const void *);
 
   /* Accessors */
-  const supernode *get_return_node_in_caller () const;
-  unsigned length () const { return m_elements.length (); }
-  element_t operator[] (unsigned idx) const
-  {
-    return m_elements[idx];
-  }
-  const element_t &get_top_of_stack () const
-  {
-    gcc_assert (m_elements.length () > 0);
-    return m_elements[m_elements.length () - 1];
+  const supernode *get_return_node_in_caller() const;
+  unsigned length() const { return m_elements.length(); }
+  element_t operator[](unsigned idx) const { return m_elements[idx]; }
+  const element_t &get_top_of_stack() const {
+    gcc_assert(m_elements.length() > 0);
+    return m_elements[m_elements.length() - 1];
   }
 
-  int count_occurrences_of_function (function *) const;
+  int count_occurrences_of_function(function *) const;
 
-  void validate () const;
+  void validate() const;
 
 private:
-  struct hashmap_traits_t
-  {
+  struct hashmap_traits_t {
     typedef element_t key_type;
     typedef const call_string *value_type;
 
     static const bool maybe_mx = false;
-    static inline hashval_t hash (const key_type &k)
-    {
+    static inline hashval_t hash(const key_type &k) {
       inchash::hash hstate;
-      hstate.add_ptr (k.m_call_sedge);
-      return hstate.end ();
+      hstate.add_ptr(k.m_call_sedge);
+      return hstate.end();
     }
-    static inline bool equal_keys (const key_type &k1, const key_type &k2)
-    {
+    static inline bool equal_keys(const key_type &k1, const key_type &k2) {
       return k1 == k2;
     }
-    template <typename T> static inline void remove (T &entry)
-    {
-      entry.m_key = element_t (nullptr, nullptr, nullptr);
+    template <typename T> static inline void remove(T &entry) {
+      entry.m_key = element_t(nullptr, nullptr, nullptr);
     }
     static const bool empty_zero_p = true;
-    template <typename T> static inline bool is_empty (const T &entry)
-    {
+    template <typename T> static inline bool is_empty(const T &entry) {
       return entry.m_key.m_call_sedge == nullptr;
     }
-    template <typename T> static inline bool is_deleted (const T &entry)
-    {
-      return entry.m_key.m_call_sedge == reinterpret_cast<const superedge *> (1);
+    template <typename T> static inline bool is_deleted(const T &entry) {
+      return entry.m_key.m_call_sedge == reinterpret_cast<const superedge *>(1);
     }
-    template <typename T> static inline void mark_empty (T &entry)
-    {
-      entry.m_key = element_t (nullptr, nullptr, nullptr);
+    template <typename T> static inline void mark_empty(T &entry) {
+      entry.m_key = element_t(nullptr, nullptr, nullptr);
       entry.m_value = nullptr;
     }
-    template <typename T> static inline void mark_deleted (T &entry)
-    {
-       entry.m_key.m_call_sedge = reinterpret_cast<const superedge *> (1);
+    template <typename T> static inline void mark_deleted(T &entry) {
+      entry.m_key.m_call_sedge = reinterpret_cast<const superedge *>(1);
     }
   };
 
   friend class region_model_manager;
 
-  DISABLE_COPY_AND_ASSIGN (call_string);
+  DISABLE_COPY_AND_ASSIGN(call_string);
 
-  call_string ();
-  call_string (const call_string &parent, const element_t &to_push);
-  ~call_string ();
+  call_string();
+  call_string(const call_string &parent, const element_t &to_push);
+  ~call_string();
 
-  void recursive_log (logger *logger) const;
+  void recursive_log(logger *logger) const;
 
   const call_string *m_parent;
   auto_vec<element_t> m_elements;

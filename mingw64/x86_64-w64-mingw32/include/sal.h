@@ -3,22 +3,17 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef SAL_HXX
 #define SAL_HXX
-
 #include <concurrencysal.h>
-
 #ifdef __GNUC__
-#  define __inner_checkReturn __attribute__((warn_unused_result))
+#define __inner_checkReturn __attribute__((warn_unused_result))
 #elif defined(_MSC_VER)
-#  define __inner_checkReturn __declspec("SAL_checkReturn")
+#define __inner_checkReturn __declspec("SAL_checkReturn")
 #else
-#  define __inner_checkReturn
+#define __inner_checkReturn
 #endif
-
 #define __checkReturn __inner_checkReturn
-
 /* Input parameters */
 #define _In_
 #define _In_opt_
@@ -36,7 +31,6 @@
 #define _In_reads_to_ptr_opt_(p)
 #define _In_reads_to_ptr_z_(p)
 #define _In_reads_to_ptr_opt_z_(p)
-
 #define _In_count_(s)
 #define _In_opt_count_(s)
 #define _In_bytecount_(s)
@@ -59,7 +53,6 @@
 #define _In_opt_count_x_(s)
 #define _In_bytecount_x_(s)
 #define _In_opt_bytecount_x_(s)
-
 /* Output parameters */
 #define _Out_
 #define _Out_opt_
@@ -81,7 +74,6 @@
 #define _Out_writes_to_ptr_opt_(p)
 #define _Out_writes_to_ptr_z_(p)
 #define _Out_writes_to_ptr_opt_z_(p)
-
 #define _Out_cap_(s)
 #define _Out_opt_cap_(s)
 #define _Out_bytecap_(s)
@@ -132,7 +124,6 @@
 #define _Out_opt_z_capcount_(c)
 #define _Out_z_bytecapcount_(c)
 #define _Out_opt_z_bytecapcount_(c)
-
 /* Inout parameters */
 #define _Inout_
 #define _Inout_opt_
@@ -152,7 +143,6 @@
 #define _Inout_updates_bytes_to_opt_(s, c)
 #define _Inout_updates_bytes_all_(s)
 #define _Inout_updates_bytes_all_opt_(s)
-
 #define _Inout_count_(s)
 #define _Inout_opt_count_(s)
 #define _Inout_bytecount_(s)
@@ -199,7 +189,6 @@
 #define _Inout_opt_z_cap_x_(s)
 #define _Inout_z_bytecap_x_(s)
 #define _Inout_opt_z_bytecap_x_(s)
-
 /* Pointer to pointer parameters */
 #define _Outptr_
 #define _Outptr_result_maybenull_
@@ -239,7 +228,6 @@
 #define _Outptr_opt_result_bytebuffer_to_maybenull_(s, c)
 #define _Outptr_result_bytebuffer_all_maybenull_(s)
 #define _Outptr_opt_result_bytebuffer_all_maybenull_(s)
-
 /* Output reference parameters */
 #define _Outref_
 #define _Outref_result_maybenull_
@@ -258,7 +246,6 @@
 #define _Outref_result_nullonfailure_
 #define _Result_nullonfailure_
 #define _Result_zeroonfailure_
-
 /* Return values */
 #define _Ret_z_
 #define _Ret_maybenull_z_
@@ -279,9 +266,8 @@
 #define _Points_to_data_
 #define _Literal_
 #define _Notliteral_
-#define _Deref_ret_range_(l,u)
+#define _Deref_ret_range_(l, u)
 #define _Unchanged_(e)
-
 #define _Ret_bytecap_(s)
 #define _Ret_bytecap_c_(s)
 #define _Ret_bytecap_x_(s)
@@ -316,12 +302,10 @@
 #define _Ret_z_bytecount_(s)
 #define _Ret_z_cap_(s)
 #define _Ret_z_count_(s)
-
 /* Optional pointer parameters */
 #define __in_opt
 #define __out_opt
 #define __inout_opt
-
 /* Other common annotations */
 #define _In_range_(low, hi)
 #define _Out_range_(low, hi)
@@ -334,7 +318,6 @@
 #define _Deref_out_opt_
 #define _Deref_opt_out_
 #define _Deref_opt_out_opt_
-
 /* Function annotations */
 #define _Called_from_function_class_(name)
 #define _Check_return_ __checkReturn
@@ -343,16 +326,13 @@
 #define _Maybe_raises_SEH_exception_
 #define _Must_inspect_result_
 #define _Use_decl_annotations_
-
 /* Success/failure annotations */
 #define _Always_(anno_list)
 #define _On_failure_(anno_list)
 #define _Return_type_success_(expr)
 #define _Success_(expr)
-
 #define _Reserved_
 #define _Const_
-
 /* Buffer properties */
 #define _Readable_bytes_(s)
 #define _Readable_elements_(s)
@@ -360,7 +340,6 @@
 #define _Writable_elements_(s)
 #define _Null_terminated_
 #define _NullNull_terminated_
-
 /* Field properties */
 #define _Field_size_(s)
 #define _Field_size_full_(s)
@@ -376,27 +355,23 @@
 #define _Field_size_bytes_part_opt_(s, c)
 #define _Field_z_
 #define _Field_range_(min, max)
-
 /* Structural annotations */
 #define _At_(e, a)
 #define _At_buffer_(e, i, c, a)
 #define _Group_(a)
 #define _When_(e, a)
-
 /* printf/scanf annotations */
 #define _Printf_format_string_
 #define _Scanf_format_string_
 #define _Scanf_s_format_string_
-#define _Format_string_impl_(kind,where)
+#define _Format_string_impl_(kind, where)
 #define _Printf_format_string_params_(x)
 #define _Scanf_format_string_params_(x)
 #define _Scanf_s_format_string_params_(x)
-
 /* Analysis */
 #define _Analysis_mode_(x)
 #define _Analysis_assume_(expr)
 #define _Analysis_assume_nullterminated_(expr)
-
 #define _Post_
 #define _Post_bytecap_(s)
 #define _Post_bytecount_(s)
@@ -423,7 +398,6 @@
 #define _Post_valid_impl_
 #define _Post_writable_byte_size_(s)
 #define _Post_writable_size_(s)
-
 #define _Post_z_
 #define _Post_z_bytecount_(s)
 #define _Post_z_bytecount_c_(s)
@@ -432,11 +406,9 @@
 #define _Post_z_count_c_(s)
 #define _Post_z_count_x_(s)
 #define _Prepost_z_
-
 #define _Null_
 #define _Notnull_
 #define _Maybenull_
-
 #define _Pre_
 #define _Pre_bytecap_(s)
 #define _Pre_bytecap_c_(s)
@@ -448,7 +420,7 @@
 #define _Pre_cap_c_(s)
 #define _Pre_cap_c_one_
 #define _Pre_cap_for_(p)
-#define _Pre_cap_m_(m,s)
+#define _Pre_cap_m_(m, s)
 #define _Pre_cap_x_(s)
 #define _Pre_count_(s)
 #define _Pre_count_c_(s)
@@ -470,7 +442,7 @@
 #define _Pre_opt_cap_c_(s)
 #define _Pre_opt_cap_c_one_
 #define _Pre_opt_cap_for_(p)
-#define _Pre_opt_cap_m_(m,s)
+#define _Pre_opt_cap_m_(m, s)
 #define _Pre_opt_cap_x_(s)
 #define _Pre_opt_count_(s)
 #define _Pre_opt_count_c_(s)
@@ -517,27 +489,22 @@
 #define _Pre_z_cap_(s)
 #define _Pre_z_cap_c_(s)
 #define _Pre_z_cap_x_(s)
-
 #define _Strict_type_match_
-
-/* FIXME: __in macro conflicts with argument names in libstdc++. For this reason,
- * we disable it for C++. This should be fixed in libstdc++ so we can uncomment
- * it in fixed version here. */
+/* FIXME: __in macro conflicts with argument names in libstdc++. For this
+ * reason, we disable it for C++. This should be fixed in libstdc++ so we can
+ * uncomment it in fixed version here. */
 #if !defined(__cplusplus) || !defined(__GNUC__)
 #define __in
 #define __out
 #endif
-
 #define __bcount(size)
 #define __ecount(size)
-
 #define __in_bcount(size)
 #define __in_bcount_nz(size)
 #define __in_bcount_z(size)
 #define __in_ecount(size)
 #define __in_ecount_nz(size)
 #define __in_ecount_z(size)
-
 #define __out_bcount(size)
 #define __out_bcount_nz(size)
 #define __out_bcount_z(size)
@@ -552,7 +519,6 @@
 #define __out_ecount_full_z(size)
 #define __out_ecount_part(size, length)
 #define __out_ecount_part_z(size, length)
-
 #define __inout
 #define __inout_bcount(size)
 #define __inout_bcount_nz(size)
@@ -564,15 +530,11 @@
 #define __inout_ecount_z(size)
 #define __inout_ecount_full(size)
 #define __inout_ecount_part(size, length)
-
 #define __deref
 #define __deref_opt_out
 #define __deref_opt_out_bcount(x)
 #define __deref_out
 #define __deref_out_ecount(size)
 #define __deref_out_opt
-
-#define __range(x,y)
-
+#define __range(x, y)
 #endif
-

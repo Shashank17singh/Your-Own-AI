@@ -52,179 +52,179 @@ typedef struct yasm_datavalhead yasm_datavalhead;
  * \param neg_thres     negative threshold for long/short decision
  * \param pos_thres     positive threshold for long/short decision
  */
-typedef void (*yasm_bc_add_span_func)
-    (void *add_span_data, yasm_bytecode *bc, int id, const yasm_value *value,
-     long neg_thres, long pos_thres);
+typedef void (*yasm_bc_add_span_func)(void *add_span_data, yasm_bytecode *bc,
+                                      int id, const yasm_value *value,
+                                      long neg_thres, long pos_thres);
 
 /** Bytecode callback structure.  Any implementation of a specific bytecode
  * must implement these functions and this callback structure.  The bytecode
  * implementation-specific data is stored in #yasm_bytecode.contents.
  */
 typedef struct yasm_bytecode_callback {
-    /** Destroys the implementation-specific data.
-     * Called from yasm_bc_destroy().
-     * \param contents  #yasm_bytecode.contents
-     */
-    void (*destroy) (/*@only@*/ void *contents);
+  /** Destroys the implementation-specific data.
+   * Called from yasm_bc_destroy().
+   * \param contents  #yasm_bytecode.contents
+   */
+  void (*destroy)(/*@only@*/ void *contents);
 
-    /** Prints the implementation-specific data (for debugging purposes).
-     * Called from yasm_bc_print().
-     * \param contents      #yasm_bytecode.contents
-     * \param f             file
-     * \param indent_level  indentation level
-     */
-    void (*print) (const void *contents, FILE *f, int indent_level);
+  /** Prints the implementation-specific data (for debugging purposes).
+   * Called from yasm_bc_print().
+   * \param contents      #yasm_bytecode.contents
+   * \param f             file
+   * \param indent_level  indentation level
+   */
+  void (*print)(const void *contents, FILE *f, int indent_level);
 
-    /** Finalizes the bytecode after parsing.  Called from yasm_bc_finalize().
-     * A generic fill-in for this is yasm_bc_finalize_common().
-     * \param bc            bytecode
-     * \param prev_bc       bytecode directly preceding bc
-     */
-    void (*finalize) (yasm_bytecode *bc, yasm_bytecode *prev_bc);
+  /** Finalizes the bytecode after parsing.  Called from yasm_bc_finalize().
+   * A generic fill-in for this is yasm_bc_finalize_common().
+   * \param bc            bytecode
+   * \param prev_bc       bytecode directly preceding bc
+   */
+  void (*finalize)(yasm_bytecode *bc, yasm_bytecode *prev_bc);
 
-    /** Return elements size of a data bytecode.
-     * This function should return the size of each elements of a data
-     * bytecode, for proper dereference of symbols attached to it.
-     * \param bc            bytecode
-     * \return 0 if element size is unknown.
-     */
-    int (*elem_size) (yasm_bytecode *bc);
+  /** Return elements size of a data bytecode.
+   * This function should return the size of each elements of a data
+   * bytecode, for proper dereference of symbols attached to it.
+   * \param bc            bytecode
+   * \return 0 if element size is unknown.
+   */
+  int (*elem_size)(yasm_bytecode *bc);
 
-    /** Calculates the minimum size of a bytecode.
-     * Called from yasm_bc_calc_len().
-     * A generic fill-in for this is yasm_bc_calc_len_common(), but as this
-     * function internal errors when called, be very careful when using it!
-     * This function should simply add to bc->len and not set it directly
-     * (it's initialized by yasm_bc_calc_len() prior to passing control to
-     * this function).
-     *
-     * \param bc            bytecode
-     * \param add_span      function to call to add a span
-     * \param add_span_data extra data to be passed to add_span function
-     * \return 0 if no error occurred, nonzero if there was an error
-     *         recognized (and output) during execution.
-     * \note May store to bytecode updated expressions.
-     */
-    int (*calc_len) (yasm_bytecode *bc, yasm_bc_add_span_func add_span,
-                     void *add_span_data);
+  /** Calculates the minimum size of a bytecode.
+   * Called from yasm_bc_calc_len().
+   * A generic fill-in for this is yasm_bc_calc_len_common(), but as this
+   * function internal errors when called, be very careful when using it!
+   * This function should simply add to bc->len and not set it directly
+   * (it's initialized by yasm_bc_calc_len() prior to passing control to
+   * this function).
+   *
+   * \param bc            bytecode
+   * \param add_span      function to call to add a span
+   * \param add_span_data extra data to be passed to add_span function
+   * \return 0 if no error occurred, nonzero if there was an error
+   *         recognized (and output) during execution.
+   * \note May store to bytecode updated expressions.
+   */
+  int (*calc_len)(yasm_bytecode *bc, yasm_bc_add_span_func add_span,
+                  void *add_span_data);
 
-    /** Recalculates the bytecode's length based on an expanded span length.
-     * Called from yasm_bc_expand().
-     * A generic fill-in for this is yasm_bc_expand_common(), but as this
-     * function internal errors when called, if used, ensure that calc_len()
-     * never adds a span.
-     * This function should simply add to bc->len to increase the length by
-     * a delta amount.
-     * \param bc            bytecode
-     * \param span          span ID (as given to add_span in calc_len)
-     * \param old_val       previous span value
-     * \param new_val       new span value
-     * \param neg_thres     negative threshold for long/short decision
-     *                      (returned)
-     * \param pos_thres     positive threshold for long/short decision
-     *                      (returned)
-     * \return 0 if bc no longer dependent on this span's length, negative if
-     *         there was an error recognized (and output) during execution,
-     *         and positive if bc size may increase for this span further
-     *         based on the new negative and positive thresholds returned.
-     * \note May store to bytecode updated expressions.
-     */
-    int (*expand) (yasm_bytecode *bc, int span, long old_val, long new_val,
-                   /*@out@*/ long *neg_thres, /*@out@*/ long *pos_thres);
+  /** Recalculates the bytecode's length based on an expanded span length.
+   * Called from yasm_bc_expand().
+   * A generic fill-in for this is yasm_bc_expand_common(), but as this
+   * function internal errors when called, if used, ensure that calc_len()
+   * never adds a span.
+   * This function should simply add to bc->len to increase the length by
+   * a delta amount.
+   * \param bc            bytecode
+   * \param span          span ID (as given to add_span in calc_len)
+   * \param old_val       previous span value
+   * \param new_val       new span value
+   * \param neg_thres     negative threshold for long/short decision
+   *                      (returned)
+   * \param pos_thres     positive threshold for long/short decision
+   *                      (returned)
+   * \return 0 if bc no longer dependent on this span's length, negative if
+   *         there was an error recognized (and output) during execution,
+   *         and positive if bc size may increase for this span further
+   *         based on the new negative and positive thresholds returned.
+   * \note May store to bytecode updated expressions.
+   */
+  int (*expand)(yasm_bytecode *bc, int span, long old_val, long new_val,
+                /*@out@*/ long *neg_thres, /*@out@*/ long *pos_thres);
 
-    /** Convert a bytecode into its byte representation.
-     * Called from yasm_bc_tobytes().
-     * A generic fill-in for this is yasm_bc_tobytes_common(), but as this
-     * function internal errors when called, be very careful when using it!
-     * \param bc            bytecode
-     * \param bufp          byte representation destination buffer;
-     *                      should be incremented as it's written to,
-     *                      so that on return its delta from the
-     *                      passed-in buf matches the bytecode length
-     *                      (it's okay not to do this if an error
-     *                      indication is returned)
-     * \param bufstart      For calculating the correct offset parameter for
-     *                      the \a output_value calls: *bufp - bufstart.
-     * \param d             data to pass to each call to
-     *                      output_value/output_reloc
-     * \param output_value  function to call to convert values into their byte
-     *                      representation
-     * \param output_reloc  function to call to output relocation entries
-     *                      for a single sym
-     * \return Nonzero on error, 0 on success.
-     * \note May result in non-reversible changes to the bytecode, but it's
-     *       preferable if calling this function twice would result in the
-     *       same output.
-     */
-    int (*tobytes) (yasm_bytecode *bc, unsigned char **bufp,
-                    unsigned char *bufstart, void *d,
-                    yasm_output_value_func output_value,
-                    /*@null@*/ yasm_output_reloc_func output_reloc);
+  /** Convert a bytecode into its byte representation.
+   * Called from yasm_bc_tobytes().
+   * A generic fill-in for this is yasm_bc_tobytes_common(), but as this
+   * function internal errors when called, be very careful when using it!
+   * \param bc            bytecode
+   * \param bufp          byte representation destination buffer;
+   *                      should be incremented as it's written to,
+   *                      so that on return its delta from the
+   *                      passed-in buf matches the bytecode length
+   *                      (it's okay not to do this if an error
+   *                      indication is returned)
+   * \param bufstart      For calculating the correct offset parameter for
+   *                      the \a output_value calls: *bufp - bufstart.
+   * \param d             data to pass to each call to
+   *                      output_value/output_reloc
+   * \param output_value  function to call to convert values into their byte
+   *                      representation
+   * \param output_reloc  function to call to output relocation entries
+   *                      for a single sym
+   * \return Nonzero on error, 0 on success.
+   * \note May result in non-reversible changes to the bytecode, but it's
+   *       preferable if calling this function twice would result in the
+   *       same output.
+   */
+  int (*tobytes)(yasm_bytecode *bc, unsigned char **bufp,
+                 unsigned char *bufstart, void *d,
+                 yasm_output_value_func output_value,
+                 /*@null@*/ yasm_output_reloc_func output_reloc);
 
-    /** Special bytecode classifications.  Most bytecode types should use
-     * #YASM_BC_SPECIAL_NONE.  Others cause special handling to kick in
-     * in various parts of yasm.
-     */
-    enum yasm_bytecode_special_type {
-        YASM_BC_SPECIAL_NONE = 0,
+  /** Special bytecode classifications.  Most bytecode types should use
+   * #YASM_BC_SPECIAL_NONE.  Others cause special handling to kick in
+   * in various parts of yasm.
+   */
+  enum yasm_bytecode_special_type {
+    YASM_BC_SPECIAL_NONE = 0,
 
-        /** Bytecode reserves space instead of outputting data. */
-        YASM_BC_SPECIAL_RESERVE,
+    /** Bytecode reserves space instead of outputting data. */
+    YASM_BC_SPECIAL_RESERVE,
 
-        /** Adjusts offset instead of calculating len. */
-        YASM_BC_SPECIAL_OFFSET,
+    /** Adjusts offset instead of calculating len. */
+    YASM_BC_SPECIAL_OFFSET,
 
-        /** Instruction bytecode. */
-        YASM_BC_SPECIAL_INSN
-    } special;
+    /** Instruction bytecode. */
+    YASM_BC_SPECIAL_INSN
+  } special;
 } yasm_bytecode_callback;
 
 /** A bytecode. */
 struct yasm_bytecode {
-    /** Bytecodes are stored as a singly linked list, with tail insertion.
-     * \see section.h (#yasm_section).
-     */
-    /*@reldef@*/ STAILQ_ENTRY(yasm_bytecode) link;
+  /** Bytecodes are stored as a singly linked list, with tail insertion.
+   * \see section.h (#yasm_section).
+   */
+  /*@reldef@*/ STAILQ_ENTRY(yasm_bytecode) link;
 
-    /** The bytecode callback structure for this bytecode.  May be NULL
-     * during partial initialization.
-     */
-    /*@null@*/ const yasm_bytecode_callback *callback;
+  /** The bytecode callback structure for this bytecode.  May be NULL
+   * during partial initialization.
+   */
+  /*@null@*/ const yasm_bytecode_callback *callback;
 
-    /** Pointer to section containing bytecode; NULL if not part of a
-     * section.
-     */
-    /*@dependent@*/ /*@null@*/ yasm_section *section;
+  /** Pointer to section containing bytecode; NULL if not part of a
+   * section.
+   */
+  /*@dependent@*/ /*@null@*/ yasm_section *section;
 
-    /** Number of times bytecode is repeated.
-     * NULL=1 (to save space in the common case).
-     */
-    /*@only@*/ /*@null@*/ yasm_expr *multiple;
+  /** Number of times bytecode is repeated.
+   * NULL=1 (to save space in the common case).
+   */
+  /*@only@*/ /*@null@*/ yasm_expr *multiple;
 
-    /** Total length of entire bytecode (not including multiple copies). */
-    unsigned long len;
+  /** Total length of entire bytecode (not including multiple copies). */
+  unsigned long len;
 
-    /** Number of copies, integer version. */
-    long mult_int;
+  /** Number of copies, integer version. */
+  long mult_int;
 
-    /** Line number where bytecode was defined. */
-    unsigned long line;
+  /** Line number where bytecode was defined. */
+  unsigned long line;
 
-    /** Offset of bytecode from beginning of its section.
-     * 0-based, ~0UL (e.g. all 1 bits) if unknown.
-     */
-    unsigned long offset;
+  /** Offset of bytecode from beginning of its section.
+   * 0-based, ~0UL (e.g. all 1 bits) if unknown.
+   */
+  unsigned long offset;
 
-    /** Unique integer index of bytecode.  Used during optimization. */
-    unsigned long bc_index;
+  /** Unique integer index of bytecode.  Used during optimization. */
+  unsigned long bc_index;
 
-    /** NULL-terminated array of labels that point to this bytecode (as the
-     * bytecode previous to the label).  NULL if no labels point here.
-     */
-    /*@null@*/ yasm_symrec **symrecs;
+  /** NULL-terminated array of labels that point to this bytecode (as the
+   * bytecode previous to the label).  NULL if no labels point here.
+   */
+  /*@null@*/ yasm_symrec **symrecs;
 
-    /** Implementation-specific data (type identified by callback). */
-    void *contents;
+  /** Implementation-specific data (type identified by callback). */
+  void *contents;
 };
 
 /** Create a bytecode of any specified type.
@@ -235,9 +235,9 @@ struct yasm_bytecode {
  * \return Newly allocated bytecode of the specified type.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_common
-    (/*@null@*/ const yasm_bytecode_callback *callback,
-     /*@only@*/ /*@null@*/ void *contents, unsigned long line);
+/*@only@*/ yasm_bytecode *
+yasm_bc_create_common(/*@null@*/ const yasm_bytecode_callback *callback,
+                      /*@only@*/ /*@null@*/ void *contents, unsigned long line);
 
 /** Transform a bytecode of any type into a different type.
  * \param bc            bytecode to transform
@@ -246,8 +246,7 @@ YASM_LIB_DECL
  */
 YASM_LIB_DECL
 void yasm_bc_transform(yasm_bytecode *bc,
-                       const yasm_bytecode_callback *callback,
-                       void *contents);
+                       const yasm_bytecode_callback *callback, void *contents);
 
 /** Common bytecode callback finalize function, for where no finalization
  * is ever required for this type of bytecode.
@@ -267,24 +266,24 @@ int yasm_bc_calc_len_common(yasm_bytecode *bc, yasm_bc_add_span_func add_span,
  * error if called.
  */
 YASM_LIB_DECL
-int yasm_bc_expand_common
-    (yasm_bytecode *bc, int span, long old_val, long new_val,
-     /*@out@*/ long *neg_thres, /*@out@*/ long *pos_thres);
+int yasm_bc_expand_common(yasm_bytecode *bc, int span, long old_val,
+                          long new_val,
+                          /*@out@*/ long *neg_thres, /*@out@*/ long *pos_thres);
 
 /** Common bytecode callback tobytes function, for where the bytecode
  * cannot be converted to bytes.  Causes an internal error if called.
  */
 YASM_LIB_DECL
-int yasm_bc_tobytes_common
-    (yasm_bytecode *bc, unsigned char **bufp, unsigned char *bufstart, void *d,
-     yasm_output_value_func output_value,
-     /*@null@*/ yasm_output_reloc_func output_reloc);
+int yasm_bc_tobytes_common(yasm_bytecode *bc, unsigned char **bufp,
+                           unsigned char *bufstart, void *d,
+                           yasm_output_value_func output_value,
+                           /*@null@*/ yasm_output_reloc_func output_reloc);
 
 /** Get the next bytecode in a linked list of bytecodes.
  * \param bc    bytecode
  * \return Next bytecode.
  */
-#define yasm_bc__next(bc)               STAILQ_NEXT(bc, link)
+#define yasm_bc__next(bc) STAILQ_NEXT(bc, link)
 
 /** Set multiple field of a bytecode.
  * A bytecode can be repeated a number of times when output.  This function
@@ -306,9 +305,11 @@ void yasm_bc_set_multiple(yasm_bytecode *bc, /*@keep@*/ yasm_expr *e);
  * \return Newly allocated bytecode.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_data
-    (yasm_datavalhead *datahead, unsigned int size, int append_zero,
-     /*@null@*/ yasm_arch *arch, unsigned long line);
+/*@only@*/ yasm_bytecode *yasm_bc_create_data(yasm_datavalhead *datahead,
+                                              unsigned int size,
+                                              int append_zero,
+                                              /*@null@*/ yasm_arch *arch,
+                                              unsigned long line);
 
 /** Create a bytecode containing LEB128-encoded data value(s).
  * \param datahead      list of data values (kept, do not free)
@@ -317,8 +318,8 @@ YASM_LIB_DECL
  * \return Newly allocated bytecode.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_leb128
-    (yasm_datavalhead *datahead, int sign, unsigned long line);
+/*@only@*/ yasm_bytecode *yasm_bc_create_leb128(yasm_datavalhead *datahead,
+                                                int sign, unsigned long line);
 
 /** Create a bytecode reserving space.
  * \param numitems      number of reserve "items" (kept, do not free)
@@ -327,9 +328,9 @@ YASM_LIB_DECL
  * \return Newly allocated bytecode.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_reserve
-    (/*@only@*/ yasm_expr *numitems, unsigned int itemsize,
-     unsigned long line);
+/*@only@*/ yasm_bytecode *yasm_bc_create_reserve(/*@only@*/ yasm_expr *numitems,
+                                                 unsigned int itemsize,
+                                                 unsigned long line);
 
 /** Get the number of items and itemsize for a reserve bytecode.  If bc
  * is not a reserve bytecode, returns NULL.
@@ -339,8 +340,8 @@ YASM_LIB_DECL
  *         for the number of items to reserve.
  */
 YASM_LIB_DECL
-/*@null@*/ const yasm_expr *yasm_bc_reserve_numitems
-    (yasm_bytecode *bc, /*@out@*/ unsigned int *itemsize);
+/*@null@*/ const yasm_expr *
+yasm_bc_reserve_numitems(yasm_bytecode *bc, /*@out@*/ unsigned int *itemsize);
 
 /** Create a bytecode that includes a binary file verbatim.
  * \param filename      path to binary file (kept, do not free)
@@ -353,10 +354,11 @@ YASM_LIB_DECL
  * \return Newly allocated bytecode.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_incbin
-    (/*@only@*/ char *filename, /*@only@*/ /*@null@*/ yasm_expr *start,
-     /*@only@*/ /*@null@*/ yasm_expr *maxlen, yasm_linemap *linemap,
-     unsigned long line);
+/*@only@*/ yasm_bytecode *
+yasm_bc_create_incbin(/*@only@*/ char *filename,
+                      /*@only@*/ /*@null@*/ yasm_expr *start,
+                      /*@only@*/ /*@null@*/ yasm_expr *maxlen,
+                      yasm_linemap *linemap, unsigned long line);
 
 /** Create a bytecode that aligns the following bytecode to a boundary.
  * \param boundary      byte alignment (must be a power of two)
@@ -371,10 +373,10 @@ YASM_LIB_DECL
  *       - 0
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_align
-    (/*@keep@*/ yasm_expr *boundary, /*@keep@*/ /*@null@*/ yasm_expr *fill,
-     /*@keep@*/ /*@null@*/ yasm_expr *maxskip,
-     /*@null@*/ const unsigned char **code_fill, unsigned long line);
+/*@only@*/ yasm_bytecode *yasm_bc_create_align(
+    /*@keep@*/ yasm_expr *boundary, /*@keep@*/ /*@null@*/ yasm_expr *fill,
+    /*@keep@*/ /*@null@*/ yasm_expr *maxskip,
+    /*@null@*/ const unsigned char **code_fill, unsigned long line);
 
 /** Create a bytecode that puts the following bytecode at a fixed section
  * offset.
@@ -384,8 +386,8 @@ YASM_LIB_DECL
  * \return Newly allocated bytecode.
  */
 YASM_LIB_DECL
-/*@only@*/ yasm_bytecode *yasm_bc_create_org
-    (unsigned long start, unsigned long fill, unsigned long line);
+/*@only@*/ yasm_bytecode *
+yasm_bc_create_org(unsigned long start, unsigned long fill, unsigned long line);
 
 /** Get the section that contains a particular bytecode.
  * \param bc    bytecode
@@ -393,8 +395,7 @@ YASM_LIB_DECL
  *         section).
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ yasm_section *yasm_bc_get_section
-    (yasm_bytecode *bc);
+/*@dependent@*/ /*@null@*/ yasm_section *yasm_bc_get_section(yasm_bytecode *bc);
 
 /** Add to the list of symrecs that reference a bytecode.  For symrec use
  * only.
@@ -433,8 +434,8 @@ void yasm_bc_finalize(yasm_bytecode *bc, yasm_bytecode *prev_bc);
  * \warning Only valid /after/ optimization.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@only@*/ yasm_intnum *yasm_calc_bc_dist
-    (yasm_bytecode *precbc1, yasm_bytecode *precbc2);
+/*@null@*/ /*@only@*/ yasm_intnum *yasm_calc_bc_dist(yasm_bytecode *precbc1,
+                                                     yasm_bytecode *precbc2);
 
 /** Get the offset of the next bytecode (the next bytecode doesn't have to
  * actually exist).
@@ -509,10 +510,11 @@ int yasm_bc_expand(yasm_bytecode *bc, int span, long old_val, long new_val,
  *       non-reversible changes to the bytecode.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@only@*/ unsigned char *yasm_bc_tobytes
-    (yasm_bytecode *bc, unsigned char *buf, unsigned long *bufsize,
-     /*@out@*/ int *gap, void *d, yasm_output_value_func output_value,
-     /*@null@*/ yasm_output_reloc_func output_reloc)
+/*@null@*/ /*@only@*/ unsigned char *
+yasm_bc_tobytes(yasm_bytecode *bc, unsigned char *buf, unsigned long *bufsize,
+                /*@out@*/ int *gap, void *d,
+                yasm_output_value_func output_value,
+                /*@null@*/ yasm_output_reloc_func output_reloc)
     /*@sets *buf@*/;
 
 /** Get the bytecode multiple value as an integer.
@@ -572,8 +574,8 @@ YASM_LIB_DECL
 yasm_dataval *yasm_dv_create_reserve(void);
 
 #ifndef YASM_DOXYGEN
-#define yasm_dv_create_string(s, l) yasm_dv_create_raw((unsigned char *)(s), \
-                                                       (unsigned long)(l))
+#define yasm_dv_create_string(s, l)                                            \
+  yasm_dv_create_raw((unsigned char *)(s), (unsigned long)(l))
 #endif
 
 /** Get the underlying value of a data value.
@@ -605,7 +607,7 @@ int yasm_dv_get_multiple(yasm_dataval *dv, /*@out@*/ unsigned long *multiple);
  */
 void yasm_dvs_initialize(yasm_datavalhead *headp);
 #ifndef YASM_DOXYGEN
-#define yasm_dvs_initialize(headp)      STAILQ_INIT(headp)
+#define yasm_dvs_initialize(headp) STAILQ_INIT(headp)
 #endif
 
 /** Delete (free allocated memory for) a list of data values.
@@ -624,8 +626,9 @@ void yasm_dvs_delete(yasm_datavalhead *headp);
  *         value; otherwise NULL.
  */
 YASM_LIB_DECL
-/*@null@*/ yasm_dataval *yasm_dvs_append
-    (yasm_datavalhead *headp, /*@returned@*/ /*@null@*/ yasm_dataval *dv);
+/*@null@*/ yasm_dataval *
+yasm_dvs_append(yasm_datavalhead *headp,
+                /*@returned@*/ /*@null@*/ yasm_dataval *dv);
 
 /** Print a data value list.  For debugging purposes.
  * \param f             file

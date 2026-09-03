@@ -41,10 +41,7 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline bool
-PB_DS_CLASS_C_DEC::
-do_resize_if_needed()
-{
+inline bool PB_DS_CLASS_C_DEC::do_resize_if_needed() {
   if (!resize_base::is_resize_needed())
     return false;
   resize_imp(resize_base::get_new_size(m_num_e, m_num_used_e));
@@ -52,37 +49,28 @@ do_resize_if_needed()
 }
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-do_resize(size_type n)
-{ resize_imp(resize_base::get_nearest_larger_size(n)); }
+void PB_DS_CLASS_C_DEC::do_resize(size_type n) {
+  resize_imp(resize_base::get_nearest_larger_size(n));
+}
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-do_resize_if_needed_no_throw()
-{
+inline void PB_DS_CLASS_C_DEC::do_resize_if_needed_no_throw() {
   if (!resize_base::is_resize_needed())
     return;
 
-  __try
-    {
-      resize_imp(resize_base::get_new_size(m_num_e, m_num_used_e));
-    }
-  __catch(...)
-    { }
+  __try {
+    resize_imp(resize_base::get_new_size(m_num_e, m_num_used_e));
+  }
+  __catch(...) {}
 
   PB_DS_ASSERT_VALID((*this))
 }
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-resize_imp(size_type new_size)
-{
+void PB_DS_CLASS_C_DEC::resize_imp(size_type new_size) {
 #ifdef PB_DS_REGRESSION
   typename _Alloc::group_adjustor adjust(m_num_e);
-#endif 
+#endif
 
   if (new_size == m_num_e)
     return;
@@ -100,23 +88,22 @@ resize_imp(size_type new_size)
   for (size_type i = 0; i < m_num_e; ++i)
     a_entries_resized[i].m_stat = empty_entry_status;
 
-  __try
-    {
-      resize_imp(a_entries_resized, old_size);
-    }
-  __catch(...)
-    {
-      erase_all_valid_entries(a_entries_resized, new_size);
-      m_num_e = old_size;
-      s_entry_allocator.deallocate(a_entries_resized, new_size);
-      ranged_probe_fn_base::notify_resized(old_size);
-      __throw_exception_again;
-    }
+  __try {
+    resize_imp(a_entries_resized, old_size);
+  }
+  __catch(...) {
+    erase_all_valid_entries(a_entries_resized, new_size);
+    m_num_e = old_size;
+    s_entry_allocator.deallocate(a_entries_resized, new_size);
+    ranged_probe_fn_base::notify_resized(old_size);
+    __throw_exception_again;
+  }
 
   // At this point no exceptions can be thrown.
-  _GLIBCXX_DEBUG_ONLY(assert_entry_array_valid(a_entries_resized,
-					       traits_base::m_store_extra_indicator,
-					       __FILE__, __LINE__);)
+  _GLIBCXX_DEBUG_ONLY(
+      assert_entry_array_valid(a_entries_resized,
+                               traits_base::m_store_extra_indicator, __FILE__,
+                               __LINE__);)
 
   Resize_Policy::notify_resized(new_size);
   erase_all_valid_entries(m_entries, old_size);
@@ -126,14 +113,12 @@ resize_imp(size_type new_size)
 }
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-resize_imp(entry_array a_entries_resized, size_type old_size)
-{
+void PB_DS_CLASS_C_DEC::resize_imp(entry_array a_entries_resized,
+                                   size_type old_size) {
   for (size_type pos = 0; pos < old_size; ++pos)
     if (m_entries[pos].m_stat == valid_entry_status)
-      resize_imp_reassign(m_entries + pos, a_entries_resized, 
-			  traits_base::m_store_extra_indicator);
+      resize_imp_reassign(m_entries + pos, a_entries_resized,
+                          traits_base::m_store_extra_indicator);
 }
 
 #include <ext/pb_ds/detail/gp_hash_table_map_/resize_no_store_hash_fn_imps.hpp>

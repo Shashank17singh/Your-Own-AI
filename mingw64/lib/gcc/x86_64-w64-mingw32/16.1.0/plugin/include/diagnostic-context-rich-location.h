@@ -23,24 +23,21 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTIC_CONTEXT_RICH_LOCATION_H
 #define GCC_DIAGNOSTIC_CONTEXT_RICH_LOCATION_H
 
-#include "gcc-rich-location.h"
 #include "diagnostics/lazy-paths.h"
+#include "gcc-rich-location.h"
 #include "tree-logical-location.h"
 
-class lazy_diagnostic_context_path : public diagnostics::paths::lazy_path
-{
+class lazy_diagnostic_context_path : public diagnostics::paths::lazy_path {
 public:
-  lazy_diagnostic_context_path (const tree_logical_location_manager
-				&logical_loc_mgr,
-				location_t location, gimple *stmt)
-  : diagnostics::paths::lazy_path (logical_loc_mgr),
-    m_logical_loc_mgr (logical_loc_mgr),
-    m_location (location), m_stmt (stmt)
-  {
+  lazy_diagnostic_context_path(
+      const tree_logical_location_manager &logical_loc_mgr, location_t location,
+      gimple *stmt)
+      : diagnostics::paths::lazy_path(logical_loc_mgr),
+        m_logical_loc_mgr(logical_loc_mgr), m_location(location), m_stmt(stmt) {
   }
 
   std::unique_ptr<diagnostics::paths::path>
-  make_inner_path () const final override;
+  make_inner_path() const final override;
   /* This method will be called on demand if a diagnostic is actually
      emitted for this rich_location.  */
 
@@ -49,21 +46,17 @@ public:
   gimple *m_stmt;
 };
 
-class rich_location_with_details : public gcc_rich_location
-{
+class rich_location_with_details : public gcc_rich_location {
 public:
-  rich_location_with_details (location_t location, gimple *stmt)
-  : gcc_rich_location (location),
-    m_lazy_diagnostic_context_path (m_logical_loc_mgr, location, stmt)
-  {
-    set_path (&m_lazy_diagnostic_context_path);
+  rich_location_with_details(location_t location, gimple *stmt)
+      : gcc_rich_location(location),
+        m_lazy_diagnostic_context_path(m_logical_loc_mgr, location, stmt) {
+    set_path(&m_lazy_diagnostic_context_path);
   }
 
-  rich_location_with_details (location_t location, tree exp ATTRIBUTE_UNUSED)
-  : gcc_rich_location (location),
-    m_lazy_diagnostic_context_path (m_logical_loc_mgr, location, nullptr)
-  {
-  }
+  rich_location_with_details(location_t location, tree exp ATTRIBUTE_UNUSED)
+      : gcc_rich_location(location),
+        m_lazy_diagnostic_context_path(m_logical_loc_mgr, location, nullptr) {}
 
 private:
   const tree_logical_location_manager m_logical_loc_mgr;

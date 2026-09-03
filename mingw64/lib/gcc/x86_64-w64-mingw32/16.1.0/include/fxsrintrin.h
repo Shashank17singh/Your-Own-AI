@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <fxsrintrin.h> directly; include <x86gprintrin.h> instead."
+#error "Never use <fxsrintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _FXSRINTRIN_H_INCLUDED
@@ -35,32 +35,27 @@
 #endif /* __FXSR__ */
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_fxsave (void *__P)
-{
-  __builtin_ia32_fxsave (__P);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _fxsave(void *__P) {
+  __builtin_ia32_fxsave(__P);
 }
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_fxrstor (void *__P)
-{
-  __builtin_ia32_fxrstor (__P);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _fxrstor(void *__P) {
+  __builtin_ia32_fxrstor(__P);
 }
 
 #ifdef __x86_64__
-extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_fxsave64 (void *__P)
-{
-  __builtin_ia32_fxsave64 (__P);
+extern __inline void __attribute__((__gnu_inline__, __always_inline__,
+                                    __artificial__)) _fxsave64(void *__P) {
+  __builtin_ia32_fxsave64(__P);
 }
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_fxrstor64 (void *__P)
-{
-  __builtin_ia32_fxrstor64 (__P);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _fxrstor64(void *__P) {
+  __builtin_ia32_fxrstor64(__P);
 }
 #endif
 
@@ -68,6 +63,5 @@ _fxrstor64 (void *__P)
 #undef __DISABLE_FXSR__
 #pragma GCC pop_options
 #endif /* __DISABLE_FXSR__ */
-
 
 #endif /* _FXSRINTRIN_H_INCLUDED */

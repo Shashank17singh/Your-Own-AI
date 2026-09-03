@@ -30,38 +30,34 @@ namespace ana {
 /* A logger encapsulates a logging stream: a way to send
    lines of pertinent information to a FILE *.  */
 
-class logger
-{
- public:
-  logger (FILE *f_out, int flags, int verbosity, const pretty_printer &reference_pp);
-  ~logger ();
+class logger {
+public:
+  logger(FILE *f_out, int flags, int verbosity,
+         const pretty_printer &reference_pp);
+  ~logger();
 
-  void incref (const char *reason);
-  void decref (const char *reason);
+  void incref(const char *reason);
+  void decref(const char *reason);
 
-  void log (const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(2, 3);
-  void log_va (const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(2, 0);
-  void start_log_line ();
-  void log_partial (const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(2, 3);
-  void log_va_partial (const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(2, 0);
-  void end_log_line ();
+  void log(const char *fmt, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+  void log_va(const char *fmt, va_list *ap) ATTRIBUTE_GCC_DIAG(2, 0);
+  void start_log_line();
+  void log_partial(const char *fmt, ...) ATTRIBUTE_GCC_DIAG(2, 3);
+  void log_va_partial(const char *fmt, va_list *ap) ATTRIBUTE_GCC_DIAG(2, 0);
+  void end_log_line();
 
-  void enter_scope (const char *scope_name);
-  void enter_scope (const char *scope_name, const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(3, 0);
-  void exit_scope (const char *scope_name);
-  void inc_indent () { m_indent_level++; }
-  void dec_indent () { m_indent_level--; }
+  void enter_scope(const char *scope_name);
+  void enter_scope(const char *scope_name, const char *fmt, va_list *ap)
+      ATTRIBUTE_GCC_DIAG(3, 0);
+  void exit_scope(const char *scope_name);
+  void inc_indent() { m_indent_level++; }
+  void dec_indent() { m_indent_level--; }
 
-  pretty_printer *get_printer () const { return m_pp.get (); }
-  FILE *get_file () const { return m_f_out; }
+  pretty_printer *get_printer() const { return m_pp.get(); }
+  FILE *get_file() const { return m_f_out; }
 
 private:
-  DISABLE_COPY_AND_ASSIGN (logger);
+  DISABLE_COPY_AND_ASSIGN(logger);
 
   int m_refcount;
   FILE *m_f_out;
@@ -74,16 +70,15 @@ private:
    it easy to notify a logger about entering and exiting the body of a
    given function.  */
 
-class log_scope
-{
+class log_scope {
 public:
-  log_scope (logger *logger, const char *name);
-  log_scope (logger *logger, const char *name, const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(4, 5);
-  ~log_scope ();
+  log_scope(logger *logger, const char *name);
+  log_scope(logger *logger, const char *name, const char *fmt, ...)
+      ATTRIBUTE_GCC_DIAG(4, 5);
+  ~log_scope();
 
- private:
-  DISABLE_COPY_AND_ASSIGN (log_scope);
+private:
+  DISABLE_COPY_AND_ASSIGN(log_scope);
 
   logger *m_logger;
   const char *m_name;
@@ -98,86 +93,69 @@ public:
    We also need to hold a reference on it, to avoid a use-after-free
    when logging the cleanup of the owner of the logger.  */
 
-inline
-log_scope::log_scope (logger *logger, const char *name) :
- m_logger (logger),
- m_name (name)
-{
-  if (m_logger)
-    {
-      m_logger->incref ("log_scope ctor");
-      m_logger->enter_scope (m_name);
-    }
+inline log_scope::log_scope(logger *logger, const char *name)
+    : m_logger(logger), m_name(name) {
+  if (m_logger) {
+    m_logger->incref("log_scope ctor");
+    m_logger->enter_scope(m_name);
+  }
 }
 
-inline
-log_scope::log_scope (logger *logger, const char *name, const char *fmt, ...):
- m_logger (logger),
- m_name (name)
-{
-  if (m_logger)
-    {
-      m_logger->incref ("log_scope ctor");
-      va_list ap;
-      va_start (ap, fmt);
-      m_logger->enter_scope (m_name, fmt, &ap);
-      va_end (ap);
-    }
+inline log_scope::log_scope(logger *logger, const char *name, const char *fmt,
+                            ...)
+    : m_logger(logger), m_name(name) {
+  if (m_logger) {
+    m_logger->incref("log_scope ctor");
+    va_list ap;
+    va_start(ap, fmt);
+    m_logger->enter_scope(m_name, fmt, &ap);
+    va_end(ap);
+  }
 }
-
 
 /* The destructor for log_scope; essentially the opposite of
    the constructor.  */
 
-inline
-log_scope::~log_scope ()
-{
-  if (m_logger)
-    {
-      m_logger->exit_scope (m_name);
-      m_logger->decref ("log_scope dtor");
-    }
+inline log_scope::~log_scope() {
+  if (m_logger) {
+    m_logger->exit_scope(m_name);
+    m_logger->decref("log_scope dtor");
+  }
 }
 
-class log_nesting_level
-{
+class log_nesting_level {
 public:
-  log_nesting_level (logger *logger, const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(3, 4);
-  ~log_nesting_level ();
+  log_nesting_level(logger *logger, const char *fmt, ...)
+      ATTRIBUTE_GCC_DIAG(3, 4);
+  ~log_nesting_level();
 
 private:
   logger *m_logger;
 };
 
-inline
-log_nesting_level::log_nesting_level (logger *logger, const char *fmt, ...)
-: m_logger (logger)
-{
-  if (logger)
-    {
-      va_list ap;
-      va_start (ap, fmt);
+inline log_nesting_level::log_nesting_level(logger *logger, const char *fmt,
+                                            ...)
+    : m_logger(logger) {
+  if (logger) {
+    va_list ap;
+    va_start(ap, fmt);
 
-      logger->start_log_line ();
-      logger->log_va_partial (fmt, &ap);
-      logger->end_log_line ();
+    logger->start_log_line();
+    logger->log_va_partial(fmt, &ap);
+    logger->end_log_line();
 
-      logger->inc_indent ();
+    logger->inc_indent();
 
-      va_end (ap);
-    }
+    va_end(ap);
+  }
 }
-
 
 /* The destructor for log_nesting_level; essentially the opposite of
    the constructor.  */
 
-inline
-log_nesting_level::~log_nesting_level ()
-{
+inline log_nesting_level::~log_nesting_level() {
   if (m_logger)
-    m_logger->dec_indent ();
+    m_logger->dec_indent();
 }
 
 /* A log_user is something that potentially uses a logger (which could be
@@ -185,39 +163,35 @@ log_nesting_level::~log_nesting_level ()
 
    The log_user class keeps the reference-count of a logger up-to-date.  */
 
-class log_user
-{
- public:
-  log_user (logger *logger);
-  ~log_user ();
+class log_user {
+public:
+  log_user(logger *logger);
+  ~log_user();
 
-  logger * get_logger () const { return m_logger; }
-  void set_logger (logger * logger);
+  logger *get_logger() const { return m_logger; }
+  void set_logger(logger *logger);
 
-  void log (const char *fmt, ...) const
-    ATTRIBUTE_GCC_DIAG(2, 3);
+  void log(const char *fmt, ...) const ATTRIBUTE_GCC_DIAG(2, 3);
 
-  void start_log_line () const;
-  void end_log_line () const;
+  void start_log_line() const;
+  void end_log_line() const;
 
-  void enter_scope (const char *scope_name);
-  void exit_scope (const char *scope_name);
+  void enter_scope(const char *scope_name);
+  void exit_scope(const char *scope_name);
 
-  pretty_printer *get_logger_pp () const
-  {
-    gcc_assert (m_logger);
-    return m_logger->get_printer ();
+  pretty_printer *get_logger_pp() const {
+    gcc_assert(m_logger);
+    return m_logger->get_printer();
   }
 
-  FILE *get_logger_file () const
-  {
+  FILE *get_logger_file() const {
     if (m_logger == nullptr)
       return nullptr;
-    return m_logger->get_file ();
+    return m_logger->get_file();
   }
 
- private:
-  DISABLE_COPY_AND_ASSIGN (log_user);
+private:
+  DISABLE_COPY_AND_ASSIGN(log_user);
 
   logger *m_logger;
 };
@@ -225,85 +199,71 @@ class log_user
 /* A shortcut for calling log from a log_user, handling the common
    case where the underlying logger is nullptr via a no-op.  */
 
-inline void
-log_user::log (const char *fmt, ...) const
-{
-  if (m_logger)
-    {
-      va_list ap;
-      va_start (ap, fmt);
-      m_logger->log_va (fmt, &ap);
-      va_end (ap);
-    }
+inline void log_user::log(const char *fmt, ...) const {
+  if (m_logger) {
+    va_list ap;
+    va_start(ap, fmt);
+    m_logger->log_va(fmt, &ap);
+    va_end(ap);
+  }
 }
 
 /* A shortcut for starting a log line from a log_user,
    handling the common case where the underlying logger is nullptr via
    a no-op.  */
 
-inline void
-log_user::start_log_line () const
-{
+inline void log_user::start_log_line() const {
   if (m_logger)
-    m_logger->start_log_line ();
+    m_logger->start_log_line();
 }
 
 /* A shortcut for ending a log line from a log_user,
    handling the common case where the underlying logger is nullptr via
    a no-op.  */
 
-inline void
-log_user::end_log_line () const
-{
+inline void log_user::end_log_line() const {
   if (m_logger)
-    m_logger->end_log_line ();
+    m_logger->end_log_line();
 }
 
 /* A shortcut for recording entry into a scope from a log_user,
    handling the common case where the underlying logger is nullptr via
    a no-op.  */
 
-inline void
-log_user::enter_scope (const char *scope_name)
-{
+inline void log_user::enter_scope(const char *scope_name) {
   if (m_logger)
-    m_logger->enter_scope (scope_name);
+    m_logger->enter_scope(scope_name);
 }
 
 /* A shortcut for recording exit from a scope from a log_user,
    handling the common case where the underlying logger is nullptr via
    a no-op.  */
 
-inline void
-log_user::exit_scope (const char *scope_name)
-{
+inline void log_user::exit_scope(const char *scope_name) {
   if (m_logger)
-    m_logger->exit_scope (scope_name);
+    m_logger->exit_scope(scope_name);
 }
 
 /* If the given logger is non-NULL, log entry/exit of this scope to
    it, identifying it using __PRETTY_FUNCTION__.  */
 
-#define LOG_SCOPE(LOGGER)		\
-  log_scope s (LOGGER, __PRETTY_FUNCTION__)
+#define LOG_SCOPE(LOGGER) log_scope s(LOGGER, __PRETTY_FUNCTION__)
 
 /* If the given logger is non-NULL, log entry/exit of this scope to
    it, identifying it using __func__.  */
 
-#define LOG_FUNC(LOGGER) \
-  log_scope s (LOGGER, __func__)
+#define LOG_FUNC(LOGGER) log_scope s(LOGGER, __func__)
 
-#define LOG_FUNC_1(LOGGER, FMT, A0)	\
-  log_scope s (LOGGER, __func__, FMT, A0)
+#define LOG_FUNC_1(LOGGER, FMT, A0) log_scope s(LOGGER, __func__, FMT, A0)
 
-#define LOG_FUNC_2(LOGGER, FMT, A0, A1)		\
-  log_scope s (LOGGER, __func__, FMT, A0, A1)
+#define LOG_FUNC_2(LOGGER, FMT, A0, A1)                                        \
+  log_scope s(LOGGER, __func__, FMT, A0, A1)
 
-#define LOG_FUNC_3(LOGGER, FMT, A0, A1, A2)	\
-  log_scope s (LOGGER, __func__, FMT, A0, A1, A2)
+#define LOG_FUNC_3(LOGGER, FMT, A0, A1, A2)                                    \
+  log_scope s(LOGGER, __func__, FMT, A0, A1, A2)
 
-#define LOG_FUNC_4(LOGGER, FMT, A0, A1, A2, A3) \
-  log_scope s (LOGGER, __func__, FMT, A0, A1, A2, A3)
+#define LOG_FUNC_4(LOGGER, FMT, A0, A1, A2, A3)                                \
+  log_scope s(LOGGER, __func__, FMT, A0, A1, A2, A3)
 
 } // namespace ana
 

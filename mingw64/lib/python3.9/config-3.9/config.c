@@ -22,41 +22,40 @@ redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 extern "C" {
 #endif
 
-
-extern PyObject* PyInit_nt(void);
-extern PyObject* PyInit_winreg(void);
-extern PyObject* PyInit_msvcrt(void);
-extern PyObject* PyInit__winapi(void);
-extern PyObject* PyInit_errno(void);
-extern PyObject* PyInit__sre(void);
-extern PyObject* PyInit__codecs(void);
-extern PyObject* PyInit__weakref(void);
-extern PyObject* PyInit__functools(void);
-extern PyObject* PyInit__operator(void);
-extern PyObject* PyInit__collections(void);
-extern PyObject* PyInit__abc(void);
-extern PyObject* PyInit_itertools(void);
-extern PyObject* PyInit_atexit(void);
-extern PyObject* PyInit__signal(void);
-extern PyObject* PyInit__stat(void);
-extern PyObject* PyInit_time(void);
-extern PyObject* PyInit__thread(void);
-extern PyObject* PyInit__locale(void);
-extern PyObject* PyInit__io(void);
-extern PyObject* PyInit_faulthandler(void);
-extern PyObject* PyInit__tracemalloc(void);
-extern PyObject* PyInit__peg_parser(void);
-extern PyObject* PyInit__symtable(void);
-extern PyObject* PyInit_xxsubtype(void);
+extern PyObject *PyInit_nt(void);
+extern PyObject *PyInit_winreg(void);
+extern PyObject *PyInit_msvcrt(void);
+extern PyObject *PyInit__winapi(void);
+extern PyObject *PyInit_errno(void);
+extern PyObject *PyInit__sre(void);
+extern PyObject *PyInit__codecs(void);
+extern PyObject *PyInit__weakref(void);
+extern PyObject *PyInit__functools(void);
+extern PyObject *PyInit__operator(void);
+extern PyObject *PyInit__collections(void);
+extern PyObject *PyInit__abc(void);
+extern PyObject *PyInit_itertools(void);
+extern PyObject *PyInit_atexit(void);
+extern PyObject *PyInit__signal(void);
+extern PyObject *PyInit__stat(void);
+extern PyObject *PyInit_time(void);
+extern PyObject *PyInit__thread(void);
+extern PyObject *PyInit__locale(void);
+extern PyObject *PyInit__io(void);
+extern PyObject *PyInit_faulthandler(void);
+extern PyObject *PyInit__tracemalloc(void);
+extern PyObject *PyInit__peg_parser(void);
+extern PyObject *PyInit__symtable(void);
+extern PyObject *PyInit_xxsubtype(void);
 
 /* -- ADDMODULE MARKER 1 -- */
 
-extern PyObject* PyMarshal_Init(void);
-extern PyObject* PyInit__imp(void);
-extern PyObject* PyInit_gc(void);
-extern PyObject* PyInit__ast(void);
-extern PyObject* _PyWarnings_Init(void);
-extern PyObject* PyInit__string(void);
+extern PyObject *PyMarshal_Init(void);
+extern PyObject *PyInit__imp(void);
+extern PyObject *PyInit_gc(void);
+extern PyObject *PyInit__ast(void);
+extern PyObject *_PyWarnings_Init(void);
+extern PyObject *PyInit__string(void);
 
 struct _inittab _PyImport_Inittab[] = {
 
@@ -86,7 +85,7 @@ struct _inittab _PyImport_Inittab[] = {
     {"_symtable", PyInit__symtable},
     {"xxsubtype", PyInit_xxsubtype},
 
-/* -- ADDMODULE MARKER 2 -- */
+    /* -- ADDMODULE MARKER 2 -- */
 
     /* This module lives in marshal.c */
     {"marshal", PyMarshal_Init},
@@ -111,9 +110,7 @@ struct _inittab _PyImport_Inittab[] = {
     {"_string", PyInit__string},
 
     /* Sentinel */
-    {0, 0}
-};
-
+    {0, 0}};
 
 #ifdef __cplusplus
 }

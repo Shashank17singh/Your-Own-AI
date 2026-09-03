@@ -21,16 +21,12 @@
 // two child nodes in a member variable of the form:
 //
 //    Node m_children[2];
-template<typename Node>
-class default_splay_tree_accessors
-{
+template <typename Node> class default_splay_tree_accessors {
 public:
   using node_type = Node;
 
-  static auto
-  child (node_type node, unsigned int index)
-    -> decltype (node->m_children[index]) &
-  {
+  static auto child(node_type node, unsigned int index)
+      -> decltype(node->m_children[index]) & {
     return node->m_children[index];
   }
 };
@@ -43,16 +39,13 @@ public:
 // and also stores its parent node in a member variable of the form:
 //
 //    Node m_parent;
-template<typename Node>
+template <typename Node>
 class default_splay_tree_accessors_with_parent
-  : public default_splay_tree_accessors<Node>
-{
+    : public default_splay_tree_accessors<Node> {
 public:
   using node_type = Node;
 
-  static auto
-  parent (node_type node) -> decltype (node->m_parent) &
-  {
+  static auto parent(node_type node) -> decltype(node->m_parent) & {
     return node->m_parent;
   }
 };
@@ -61,29 +54,24 @@ public:
 // Base therefore provides a Base::child method but does not provide a
 // Base::parent method.  Extend Base with dummy routines for setting the
 // parent, which is a no-op when the parent is not stored.
-template<typename Base>
-class splay_tree_accessors_without_parent : public Base
-{
+template <typename Base>
+class splay_tree_accessors_without_parent : public Base {
 public:
   using typename Base::node_type;
 
-  static void set_parent (node_type, node_type) {}
+  static void set_parent(node_type, node_type) {}
 };
 
 // Base is splay tree accessor class for nodes that have a parent field.
 // Base therefore provides both Base::child and Base::parent methods.
 // Extend Base with routines for setting the parent.
-template<typename Base>
-class splay_tree_accessors_with_parent : public Base
-{
+template <typename Base> class splay_tree_accessors_with_parent : public Base {
 public:
   using typename Base::node_type;
 
   // Record that NODE's parent is now NEW_PARENT.
-  static void
-  set_parent (node_type node, node_type new_parent)
-  {
-    Base::parent (node) = new_parent;
+  static void set_parent(node_type node, node_type new_parent) {
+    Base::parent(node) = new_parent;
   }
 };
 
@@ -101,9 +89,7 @@ public:
 //
 // - Accessors::set_parent (NODE, PARENT)
 //     Record that NODE's parent node is now PARENT.
-template<typename Accessors>
-class base_splay_tree : protected Accessors
-{
+template <typename Accessors> class base_splay_tree : protected Accessors {
 public:
   using typename Accessors::node_type;
 
@@ -111,30 +97,28 @@ public:
   // before NODE, otherwise insert CHILD immediately after NODE.
   //
   // Complexity: O(1).
-  static void insert_child (node_type node, unsigned int index,
-			    node_type child);
+  static void insert_child(node_type node, unsigned int index, node_type child);
 
   // Print NODE and its child nodes to PP for debugging purposes,
   // using PRINTER (PP, N) to print the data for node N.
-  template<typename Printer>
-  static void print (pretty_printer *pp, node_type node, Printer printer);
+  template <typename Printer>
+  static void print(pretty_printer *pp, node_type node, Printer printer);
 
 protected:
   using Accessors::set_parent;
 
-  static node_type get_child (node_type, unsigned int);
-  static void set_child (node_type, unsigned int, node_type);
-  static node_type promote_child (node_type, unsigned int);
-  static void promote_child (node_type, unsigned int, node_type);
+  static node_type get_child(node_type, unsigned int);
+  static void set_child(node_type, unsigned int, node_type);
+  static node_type promote_child(node_type, unsigned int);
+  static void promote_child(node_type, unsigned int, node_type);
 
-  template<unsigned int N>
-  static node_type splay_limit (node_type);
+  template <unsigned int N> static node_type splay_limit(node_type);
 
-  static node_type remove_node_internal (node_type);
+  static node_type remove_node_internal(node_type);
 
-  template<typename Printer>
-  static void print (pretty_printer *pp, node_type node, Printer printer,
-		     char, vec<char> &);
+  template <typename Printer>
+  static void print(pretty_printer *pp, node_type node, Printer printer, char,
+                    vec<char> &);
 };
 
 // This class provides splay tree routines for cases in which the root
@@ -142,9 +126,8 @@ protected:
 // their parent node and nodes that don't.
 //
 // The class is lightweight: it only contains a single root node.
-template<typename Accessors>
-class rooted_splay_tree : public base_splay_tree<Accessors>
-{
+template <typename Accessors>
+class rooted_splay_tree : public base_splay_tree<Accessors> {
   using parent = base_splay_tree<Accessors>;
 
 public:
@@ -155,19 +138,19 @@ protected:
   node_type m_root;
 
 public:
-  rooted_splay_tree () : m_root () {}
+  rooted_splay_tree() : m_root() {}
 
   // Construct a tree with the specified root node.
-  rooted_splay_tree (node_type root) : m_root (root) {}
+  rooted_splay_tree(node_type root) : m_root(root) {}
 
   // Return the root of the tree.
-  node_type root () const { return m_root; }
+  node_type root() const { return m_root; }
 
   // Return true if the tree contains any nodes.
-  explicit operator bool () const { return m_root; }
+  explicit operator bool() const { return m_root; }
 
   // Dereference the root node.
-  node_type operator-> () { return m_root; }
+  node_type operator->() { return m_root; }
 
   // Insert NEW_NODE into the splay tree, if no equivalent node already
   // exists.  For a given node N, COMPARE (N) should return:
@@ -182,8 +165,8 @@ public:
   //
   // Complexity: amortized O(C log N), worst-cast O(C N), where C is
   // the complexity of the comparison.
-  template<typename Comparator>
-  bool insert (node_type new_node, Comparator compare);
+  template <typename Comparator>
+  bool insert(node_type new_node, Comparator compare);
 
   // Insert NEW_NODE into the splay tree.  If the tree is currently non-empty,
   // COMPARISON is < 0 if NEW_NODE comes immediate before the current root,
@@ -198,14 +181,14 @@ public:
   //      tree.insert_relative (comparison, create_new_node ());
   //
   // Complexity: O(1)
-  void insert_relative (int comparison, node_type new_node);
+  void insert_relative(int comparison, node_type new_node);
 
   // Insert NEW_NODE into the splay tree, given that NEW_NODE is the
   // maximum node of the new tree.  On return, NEW_NODE is also the
   // root of the tree.
   //
   // Complexity: O(1).
-  void insert_max_node (node_type new_node);
+  void insert_max_node(node_type new_node);
 
   // Splice NEXT_TREE onto this one, given that all nodes in NEXT_TREE
   // are greater than the maximum node in this tree.  NEXT_TREE should
@@ -213,19 +196,19 @@ public:
   //
   // Complexity: O(1) if the root of the splay tree is already the maximum
   // node.  Otherwise amortized O(log N), worst-cast O(N).
-  void splice_next_tree (rooted_splay_tree next_tree);
+  void splice_next_tree(rooted_splay_tree next_tree);
 
   // The root of the tree is currently the maximum node.  Replace it
   // with NEW_NODE.
   //
   // Complexity: O(1).
-  void replace_max_node_at_root (node_type new_node);
+  void replace_max_node_at_root(node_type new_node);
 
   // Remove the root node of the splay tree.
   //
   // Complexity: O(1) if removing the maximum or minimum node.
   // Otherwise amortized O(log N), worst-cast O(N).
-  void remove_root ();
+  void remove_root();
 
   // Remove the root node of the splay tree.  If the root node was not
   // the maximum node, bring the next node to the root and return true.
@@ -233,51 +216,51 @@ public:
   //
   // Complexity: O(1) if removing the maximum node.  Otherwise amortized
   // O(log N), worst-cast O(N).
-  bool remove_root_and_splay_next ();
+  bool remove_root_and_splay_next();
 
   // Split the left child of the current root out into a separate tree
   // and return the new tree.
-  rooted_splay_tree split_before_root ();
+  rooted_splay_tree split_before_root();
 
   // Split the right child of the current root out into a separate tree
   // and return the new tree.
-  rooted_splay_tree split_after_root ();
+  rooted_splay_tree split_after_root();
 
   // If the root is not the minimum node of the splay tree, bring the previous
   // node to the root and return true, otherwise return false.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  bool splay_prev_node ();
+  bool splay_prev_node();
 
   // If the root is not the maximum node of the splay tree, bring the next
   // node to the root and return true, otherwise return false.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  bool splay_next_node ();
+  bool splay_next_node();
 
   // Bring the minimum node of the splay tree to the root.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  void splay_min_node ();
+  void splay_min_node();
 
   // Bring the maximum node of the splay tree to the root.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  void splay_max_node ();
+  void splay_max_node();
 
   // Return the minimum node of the splay tree, or node_type () if the
   // tree is empty.  On return, the minimum node (if any) is also the
   // root of the tree.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  node_type min_node ();
+  node_type min_node();
 
   // Return the maximum node of the splay tree, or node_type () if the
   // tree is empty.  On return, the maximum node (if any) is also the
   // root of the tree.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  node_type max_node ();
+  node_type max_node();
 
   // Search the splay tree.  For a given node N, COMPARE (N) should return:
   //
@@ -313,8 +296,8 @@ public:
   //
   // Complexity: amortized O(C log N), worst-cast O(C N), where C is
   // the complexity of the comparison.
-  template<typename Comparator>
-  auto lookup (Comparator compare) -> decltype (compare (m_root));
+  template <typename Comparator>
+  auto lookup(Comparator compare) -> decltype(compare(m_root));
 
   // Search the splay tree.  For a given node N, WANT_SOMETHING_SMALLER (N)
   // is true if N is too big and WANT_SOMETHING_BIGGER (N) is true if N
@@ -345,41 +328,40 @@ public:
   //
   // Complexity: amortized O(C log N), worst-cast O(C N), where C is
   // the complexity of the comparisons.
-  template<typename LeftPredicate, typename RightPredicate>
-  int lookup (LeftPredicate want_something_smaller,
-	      RightPredicate want_something_bigger);
+  template <typename LeftPredicate, typename RightPredicate>
+  int lookup(LeftPredicate want_something_smaller,
+             RightPredicate want_something_bigger);
 
   // Like lookup, but always pick a node that is no bigger than the one
   // being searched for, if such a node exists.
-  template<typename LeftPredicate, typename RightPredicate>
-  int lookup_le (LeftPredicate want_something_smaller,
-		 RightPredicate want_something_bigger);
+  template <typename LeftPredicate, typename RightPredicate>
+  int lookup_le(LeftPredicate want_something_smaller,
+                RightPredicate want_something_bigger);
 
   // Keep the ability to print subtrees.
   using parent::print;
 
   // Print the tree to PP for debugging purposes, using PRINTER (PP, N)
   // to print the data for node N.
-  template<typename Printer>
-  void print (pretty_printer *pp, Printer printer) const;
+  template <typename Printer>
+  void print(pretty_printer *pp, Printer printer) const;
 
 protected:
   using parent::get_child;
-  using parent::set_child;
   using parent::promote_child;
+  using parent::set_child;
 
   using parent::set_parent;
 
-  template<unsigned int N>
-  bool splay_neighbor ();
+  template <unsigned int N> bool splay_neighbor();
 };
 
 // Provide splay tree routines for nodes of type Accessors::node_type,
 // which doesn't have a parent field.  Use Accessors::child to access
 // the children of a node.
-template<typename Accessors>
-using splay_tree_without_parent
-  = rooted_splay_tree<splay_tree_accessors_without_parent<Accessors>>;
+template <typename Accessors>
+using splay_tree_without_parent =
+    rooted_splay_tree<splay_tree_accessors_without_parent<Accessors>>;
 
 // A splay tree for nodes of type Node, which is usually a pointer type.
 // The child nodes are stored in a member variable:
@@ -387,22 +369,20 @@ using splay_tree_without_parent
 //    Node m_children[2];
 //
 // Node does not have a parent field.
-template<typename Node>
-using default_splay_tree
-  = splay_tree_without_parent<default_splay_tree_accessors<Node>>;
+template <typename Node>
+using default_splay_tree =
+    splay_tree_without_parent<default_splay_tree_accessors<Node>>;
 
 // A simple splay tree node that stores a value of type T.
-template<typename T>
-class splay_tree_node
-{
+template <typename T> class splay_tree_node {
   friend class default_splay_tree_accessors<splay_tree_node *>;
 
 public:
-  splay_tree_node () = default;
-  splay_tree_node (T value) : m_value (value), m_children () {}
+  splay_tree_node() = default;
+  splay_tree_node(T value) : m_value(value), m_children() {}
 
-  T &value () { return m_value; }
-  const T &value () const { return m_value; }
+  T &value() { return m_value; }
+  const T &value() const { return m_value; }
 
 private:
   T m_value;
@@ -410,7 +390,7 @@ private:
 };
 
 // A splay tree whose nodes hold values of type T.
-template<typename T>
+template <typename T>
 using splay_tree = default_splay_tree<splay_tree_node<T> *>;
 
 // Provide splay tree routines for cases in which the root of the tree
@@ -428,10 +408,9 @@ using splay_tree = default_splay_tree<splay_tree_node<T> *>;
 //
 // - Accessors::parent (NODE)
 //     Return a reference to where NODE's parent is stored.
-template<typename Accessors>
+template <typename Accessors>
 class rootless_splay_tree
-  : public base_splay_tree<splay_tree_accessors_with_parent<Accessors>>
-{
+    : public base_splay_tree<splay_tree_accessors_with_parent<Accessors>> {
   using full_accessors = splay_tree_accessors_with_parent<Accessors>;
   using parent = base_splay_tree<full_accessors>;
 
@@ -445,24 +424,24 @@ public:
   //
   // Complexity: O(1) if removing the maximum or minimum node.
   // Otherwise amortized O(log N), worst-cast O(N).
-  static node_type remove_node (node_type node);
+  static node_type remove_node(node_type node);
 
   // Splay NODE so that it becomes the root of the splay tree.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  static void splay (node_type node);
+  static void splay(node_type node);
 
   // Like splay, but take advantage of the fact that NODE is known to be
   // the minimum node in the tree.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  static void splay_known_min_node (node_type node);
+  static void splay_known_min_node(node_type node);
 
   // Like splay, but take advantage of the fact that NODE is known to be
   // the maximum node in the tree.
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  static void splay_known_max_node (node_type node);
+  static void splay_known_max_node(node_type node);
 
   // Splay NODE while looking for an ancestor node N for which PREDICATE (N)
   // is true.  If such an ancestor node exists, stop the splay operation
@@ -475,10 +454,10 @@ public:
   //
   // Complexity: amortized O(P log N), worst-cast O(P N), where P is the
   // complexity of the predicate.
-  template<typename DefaultResult, typename Predicate>
-  static auto splay_and_search (node_type node, DefaultResult default_result,
-				Predicate predicate)
-    -> decltype (predicate (node, 0));
+  template <typename DefaultResult, typename Predicate>
+  static auto splay_and_search(node_type node, DefaultResult default_result,
+                               Predicate predicate)
+      -> decltype(predicate(node, 0));
 
   // NODE1 and NODE2 are known to belong to the same splay tree.  Return:
   //
@@ -487,22 +466,21 @@ public:
   // 1 if NODE1 > NODE2
   //
   // Complexity: amortized O(log N), worst-cast O(N).
-  static int compare_nodes (node_type node1, node_type node2);
+  static int compare_nodes(node_type node1, node_type node2);
 
 protected:
   using parent::get_child;
-  using parent::set_child;
   using parent::promote_child;
+  using parent::set_child;
 
-  static node_type get_parent (node_type);
+  static node_type get_parent(node_type);
   using parent::set_parent;
 
-  static unsigned int child_index (node_type, node_type);
+  static unsigned int child_index(node_type, node_type);
 
-  static int compare_nodes_one_way (node_type, node_type);
+  static int compare_nodes_one_way(node_type, node_type);
 
-  template<unsigned int N>
-  static void splay_known_limit (node_type);
+  template <unsigned int N> static void splay_known_limit(node_type);
 };
 
 // Provide rootless splay tree routines for nodes of type Node.
@@ -513,8 +491,8 @@ protected:
 // and the parent node is stored in a member variable:
 //
 //    Node m_parent;
-template<typename Node>
-using default_rootless_splay_tree
-  = rootless_splay_tree<default_splay_tree_accessors_with_parent<Node>>;
+template <typename Node>
+using default_rootless_splay_tree =
+    rootless_splay_tree<default_splay_tree_accessors_with_parent<Node>>;
 
 #include "splay-tree-utils.tcc"

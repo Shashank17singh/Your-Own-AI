@@ -1,4 +1,3 @@
-
 """Doctest for method/function calls.
 
 We're going the use these types for extra testing
@@ -523,8 +522,10 @@ Same with keyword only args:
 import sys
 from test import support
 
+
 def test_main():
     support.run_doctest(sys.modules[__name__], True)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_main()

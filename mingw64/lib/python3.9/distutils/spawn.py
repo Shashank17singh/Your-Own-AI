@@ -14,8 +14,7 @@ from distutils.errors import DistutilsPlatformError, DistutilsExecError
 from distutils.debug import DEBUG
 from distutils import log
 
-
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     _cfg_target = None
     _cfg_target_split = None
 
@@ -40,7 +39,7 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
     # in, protect our %-formatting code against horrible death
     cmd = list(cmd)
 
-    log.info(' '.join(cmd))
+    log.info(" ".join(cmd))
     if dry_run:
         return
 
@@ -50,30 +49,30 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
             cmd[0] = executable
 
     env = None
-    if sys.platform == 'darwin':
+    if sys.platform == "darwin":
         global _cfg_target, _cfg_target_split
         if _cfg_target is None:
             from distutils import sysconfig
-            _cfg_target = sysconfig.get_config_var(
-                                  'MACOSX_DEPLOYMENT_TARGET') or ''
+
+            _cfg_target = sysconfig.get_config_var("MACOSX_DEPLOYMENT_TARGET") or ""
             if _cfg_target:
-                _cfg_target_split = [int(x) for x in _cfg_target.split('.')]
+                _cfg_target_split = [int(x) for x in _cfg_target.split(".")]
         if _cfg_target:
             # Ensure that the deployment target of the build process is not
             # less than 10.3 if the interpreter was built for 10.3 or later.
             # This ensures extension modules are built with correct
             # compatibility values, specifically LDSHARED which can use
             # '-undefined dynamic_lookup' which only works on >= 10.3.
-            cur_target = os.environ.get('MACOSX_DEPLOYMENT_TARGET', _cfg_target)
-            cur_target_split = [int(x) for x in cur_target.split('.')]
+            cur_target = os.environ.get("MACOSX_DEPLOYMENT_TARGET", _cfg_target)
+            cur_target_split = [int(x) for x in cur_target.split(".")]
             if _cfg_target_split[:2] >= [10, 3] and cur_target_split[:2] < [10, 3]:
-                my_msg = ('$MACOSX_DEPLOYMENT_TARGET mismatch: '
-                          'now "%s" but "%s" during configure;'
-                          'must use 10.3 or later'
-                                % (cur_target, _cfg_target))
+                my_msg = (
+                    "$MACOSX_DEPLOYMENT_TARGET mismatch: "
+                    'now "%s" but "%s" during configure;'
+                    "must use 10.3 or later" % (cur_target, _cfg_target)
+                )
                 raise DistutilsPlatformError(my_msg)
-            env = dict(os.environ,
-                       MACOSX_DEPLOYMENT_TARGET=cur_target)
+            env = dict(os.environ, MACOSX_DEPLOYMENT_TARGET=cur_target)
 
     try:
         proc = subprocess.Popen(cmd, env=env)
@@ -82,14 +81,14 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
     except OSError as exc:
         if not DEBUG:
             cmd = cmd[0]
-        raise DistutilsExecError(
-            "command %r failed: %s" % (cmd, exc.args[-1])) from exc
+        raise DistutilsExecError("command %r failed: %s" % (cmd, exc.args[-1])) from exc
 
     if exitcode:
         if not DEBUG:
             cmd = cmd[0]
         raise DistutilsExecError(
-              "command %r failed with exit code %s" % (cmd, exitcode))
+            "command %r failed with exit code %s" % (cmd, exitcode)
+        )
 
 
 def find_executable(executable, path=None):
@@ -99,14 +98,14 @@ def find_executable(executable, path=None):
     os.environ['PATH'].  Returns the complete filename or None if not found.
     """
     _, ext = os.path.splitext(executable)
-    if (sys.platform == 'win32') and (ext != '.exe'):
-        executable = executable + '.exe'
+    if (sys.platform == "win32") and (ext != ".exe"):
+        executable = executable + ".exe"
 
     if os.path.isfile(executable):
         return executable
 
     if path is None:
-        path = os.environ.get('PATH', None)
+        path = os.environ.get("PATH", None)
         if path is None:
             try:
                 path = os.confstr("CS_PATH")

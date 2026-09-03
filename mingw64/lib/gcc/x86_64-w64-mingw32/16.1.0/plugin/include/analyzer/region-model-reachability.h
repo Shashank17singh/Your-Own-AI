@@ -32,75 +32,59 @@ namespace ana {
    Used by program_state::detect_leaks
    (via region_model::get_reachable_svalues) for detecting leaks.  */
 
-class reachable_regions
-{
+class reachable_regions {
 public:
-  reachable_regions (region_model *model);
+  reachable_regions(region_model *model);
 
   /* Callback called for each cluster when initializing this object.  */
-  static void init_cluster_cb (const region *base_reg,
-			       reachable_regions *this_ptr);
+  static void init_cluster_cb(const region *base_reg,
+                              reachable_regions *this_ptr);
 
   /* Called for each cluster when initializing this object.  */
-  void init_cluster (const region *base_reg);
+  void init_cluster(const region *base_reg);
 
   /* Lazily mark the cluster containing REG as being reachable, recursively
      adding clusters reachable from REG's cluster.  */
-  void add (const region *reg, bool is_mutable);
+  void add(const region *reg, bool is_mutable);
 
-  static void handle_sval_cb (const svalue *sval,
-			      reachable_regions *this_ptr);
+  static void handle_sval_cb(const svalue *sval, reachable_regions *this_ptr);
 
   /* Add SVAL.  If it is a pointer, add the pointed-to region.  */
-  void handle_sval (const svalue *sval);
+  void handle_sval(const svalue *sval);
 
   /* Add SVAL.  If it is a pointer, add the pointed-to region.
      Use PARAM_TYPE for determining mutability.  */
-  void handle_parm (const svalue *sval, tree param_type);
+  void handle_parm(const svalue *sval, tree param_type);
 
   /* Update the store to mark the clusters that were found to be mutable
      as having escaped.
      Notify CTXT about escaping function_decls.  */
-  void mark_escaped_clusters (region_model_context *ctxt);
+  void mark_escaped_clusters(region_model_context *ctxt);
 
   /* Iteration over reachable base regions.  */
-  hash_set<const region *>::iterator begin ()
-  {
-    return m_reachable_base_regs.begin ();
+  hash_set<const region *>::iterator begin() {
+    return m_reachable_base_regs.begin();
   }
-  hash_set<const region *>::iterator end ()
-  {
-    return m_reachable_base_regs.end ();
+  hash_set<const region *>::iterator end() {
+    return m_reachable_base_regs.end();
   }
 
-  svalue_set::iterator begin_reachable_svals ()
-  {
-    return m_reachable_svals.begin ();
+  svalue_set::iterator begin_reachable_svals() {
+    return m_reachable_svals.begin();
   }
-  svalue_set::iterator end_reachable_svals ()
-  {
-    return m_reachable_svals.end ();
+  svalue_set::iterator end_reachable_svals() { return m_reachable_svals.end(); }
+  svalue_set::iterator begin_mutable_svals() { return m_mutable_svals.begin(); }
+  svalue_set::iterator end_mutable_svals() { return m_mutable_svals.end(); }
+  hash_set<const region *>::iterator begin_mutable_base_regs() {
+    return m_mutable_base_regs.begin();
   }
-  svalue_set::iterator begin_mutable_svals ()
-  {
-    return m_mutable_svals.begin ();
-  }
-  svalue_set::iterator end_mutable_svals ()
-  {
-    return m_mutable_svals.end ();
-  }
-  hash_set<const region *>::iterator begin_mutable_base_regs ()
-  {
-    return m_mutable_base_regs.begin ();
-  }
-  hash_set<const region *>::iterator end_mutable_base_regs ()
-  {
-    return m_mutable_base_regs.end ();
+  hash_set<const region *>::iterator end_mutable_base_regs() {
+    return m_mutable_base_regs.end();
   }
 
-  void dump_to_pp (pretty_printer *pp) const;
+  void dump_to_pp(pretty_printer *pp) const;
 
-  DEBUG_FUNCTION void dump () const;
+  DEBUG_FUNCTION void dump() const;
 
 private:
   region_model *m_model;

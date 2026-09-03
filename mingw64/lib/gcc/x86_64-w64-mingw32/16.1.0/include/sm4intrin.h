@@ -35,31 +35,27 @@
 #endif /* __SM4__ */
 
 extern __inline __m128i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sm4key4_epi32 (__m128i __A, __m128i __B)
-{
-  return (__m128i) __builtin_ia32_vsm4key4128 ((__v4si) __A, (__v4si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_sm4key4_epi32(__m128i __A, __m128i __B) {
+  return (__m128i)__builtin_ia32_vsm4key4128((__v4si)__A, (__v4si)__B);
 }
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_sm4key4_epi32 (__m256i __A, __m256i __B)
-{
-  return (__m256i) __builtin_ia32_vsm4key4256 ((__v8si) __A, (__v8si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_sm4key4_epi32(__m256i __A, __m256i __B) {
+  return (__m256i)__builtin_ia32_vsm4key4256((__v8si)__A, (__v8si)__B);
 }
 
 extern __inline __m128i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_sm4rnds4_epi32 (__m128i __A, __m128i __B)
-{
-  return (__m128i) __builtin_ia32_vsm4rnds4128 ((__v4si) __A, (__v4si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_sm4rnds4_epi32(__m128i __A, __m128i __B) {
+  return (__m128i)__builtin_ia32_vsm4rnds4128((__v4si)__A, (__v4si)__B);
 }
 
 extern __inline __m256i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_sm4rnds4_epi32 (__m256i __A, __m256i __B)
-{
-  return (__m256i) __builtin_ia32_vsm4rnds4256 ((__v8si) __A, (__v8si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm256_sm4rnds4_epi32(__m256i __A, __m256i __B) {
+  return (__m256i)__builtin_ia32_vsm4rnds4256((__v8si)__A, (__v8si)__B);
 }
 
 #ifdef __DISABLE_SM4__
@@ -67,24 +63,22 @@ _mm256_sm4rnds4_epi32 (__m256i __A, __m256i __B)
 #pragma GCC pop_options
 #endif /* __DISABLE_SM4__ */
 
-#if !defined (__SM4__) || !defined (__AVX10_2__)
+#if !defined(__SM4__) || !defined(__AVX10_2__)
 #pragma GCC push_options
 #pragma GCC target("sm4,avx10.2")
 #define __DISABLE_SM4_512__
 #endif /* __SM4_512__ */
 
 extern __inline __m512i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_sm4key4_epi32 (__m512i __A, __m512i __B)
-{
-  return (__m512i) __builtin_ia32_vsm4key4512 ((__v16si) __A, (__v16si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_sm4key4_epi32(__m512i __A, __m512i __B) {
+  return (__m512i)__builtin_ia32_vsm4key4512((__v16si)__A, (__v16si)__B);
 }
 
 extern __inline __m512i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_sm4rnds4_epi32 (__m512i __A, __m512i __B)
-{
-  return (__m512i) __builtin_ia32_vsm4rnds4512 ((__v16si) __A, (__v16si) __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_sm4rnds4_epi32(__m512i __A, __m512i __B) {
+  return (__m512i)__builtin_ia32_vsm4rnds4512((__v16si)__A, (__v16si)__B);
 }
 
 #ifdef __DISABLE_SM4_512__

@@ -1,5 +1,5 @@
 #ifndef Py_CPYTHON_INTERPRETERIDOBJECT_H
-#  error "this header file must not be included directly"
+#error "this header file must not be included directly"
 #endif
 
 #ifdef __cplusplus

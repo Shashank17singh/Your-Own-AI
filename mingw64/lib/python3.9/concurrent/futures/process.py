@@ -43,7 +43,7 @@ Process #1..n:
   _ResultItems in "Result Q"
 """
 
-__author__ = 'Brian Quinlan (brian@sweetapp.com)'
+__author__ = "Brian Quinlan (brian@sweetapp.com)"
 
 import os
 from concurrent.futures import _base
@@ -57,7 +57,6 @@ from functools import partial
 import itertools
 import sys
 import traceback
-
 
 _threads_wakeups = weakref.WeakKeyDictionary()
 _global_shutdown = False
@@ -94,6 +93,7 @@ def _python_exit():
     for t, _ in items:
         t.join()
 
+
 # Register for `_python_exit()` to be called just before joining all
 # non-daemon threads. This is used instead of `atexit.register()` for
 # compatibility with subinterpreters, which no longer support daemon threads.
@@ -115,24 +115,30 @@ _MAX_WINDOWS_WORKERS = 63 - 2
 
 # Hack to embed stringification of remote traceback in local traceback
 
+
 class _RemoteTraceback(Exception):
     def __init__(self, tb):
         self.tb = tb
+
     def __str__(self):
         return self.tb
+
 
 class _ExceptionWithTraceback:
     def __init__(self, exc, tb):
         tb = traceback.format_exception(type(exc), exc, tb)
-        tb = ''.join(tb)
+        tb = "".join(tb)
         self.exc = exc
         self.tb = '\n"""\n%s"""' % tb
+
     def __reduce__(self):
         return _rebuild_exc, (self.exc, self.tb)
+
 
 def _rebuild_exc(exc, tb):
     exc.__cause__ = _RemoteTraceback(tb)
     return exc
+
 
 class _WorkItem(object):
     def __init__(self, future, fn, args, kwargs):
@@ -141,11 +147,13 @@ class _WorkItem(object):
         self.args = args
         self.kwargs = kwargs
 
+
 class _ResultItem(object):
     def __init__(self, work_id, exception=None, result=None):
         self.work_id = work_id
         self.exception = exception
         self.result = result
+
 
 class _CallItem(object):
     def __init__(self, work_id, fn, args, kwargs):
@@ -157,8 +165,10 @@ class _CallItem(object):
 
 class _SafeQueue(Queue):
     """Safe Queue set exception to the future object linked to a job"""
-    def __init__(self, max_size=0, *, ctx, pending_work_items, shutdown_lock,
-                 thread_wakeup):
+
+    def __init__(
+        self, max_size=0, *, ctx, pending_work_items, shutdown_lock, thread_wakeup
+    ):
         self.pending_work_items = pending_work_items
         self.shutdown_lock = shutdown_lock
         self.thread_wakeup = thread_wakeup
@@ -167,7 +177,7 @@ class _SafeQueue(Queue):
     def _on_queue_feeder_error(self, e, obj):
         if isinstance(obj, _CallItem):
             tb = traceback.format_exception(type(e), e, e.__traceback__)
-            e.__cause__ = _RemoteTraceback('\n"""\n{}"""'.format(''.join(tb)))
+            e.__cause__ = _RemoteTraceback('\n"""\n{}"""'.format("".join(tb)))
             work_item = self.pending_work_items.pop(obj.work_id, None)
             with self.shutdown_lock:
                 self.thread_wakeup.wakeup()
@@ -181,7 +191,7 @@ class _SafeQueue(Queue):
 
 
 def _get_chunks(*iterables, chunksize):
-    """ Iterates over zip()ed iterables in chunks. """
+    """Iterates over zip()ed iterables in chunks."""
     it = zip(*iterables)
     while True:
         chunk = tuple(itertools.islice(it, chunksize))
@@ -191,7 +201,7 @@ def _get_chunks(*iterables, chunksize):
 
 
 def _process_chunk(fn, chunk):
-    """ Processes a chunk of an iterable passed to map.
+    """Processes a chunk of an iterable passed to map.
 
     Runs the function passed to map() on a chunk of the
     iterable passed to map.
@@ -205,8 +215,7 @@ def _process_chunk(fn, chunk):
 def _sendback_result(result_queue, work_id, result=None, exception=None):
     """Safely send back the given result or exception"""
     try:
-        result_queue.put(_ResultItem(work_id, result=result,
-                                     exception=exception))
+        result_queue.put(_ResultItem(work_id, result=result, exception=exception))
     except BaseException as e:
         exc = _ExceptionWithTraceback(e, e.__traceback__)
         result_queue.put(_ResultItem(work_id, exception=exc))
@@ -229,7 +238,7 @@ def _process_worker(call_queue, result_queue, initializer, initargs):
         try:
             initializer(*initargs)
         except BaseException:
-            _base.LOGGER.critical('Exception in initializer:', exc_info=True)
+            _base.LOGGER.critical("Exception in initializer:", exc_info=True)
             # The parent will notice that the process stopped and
             # mark the pool broken
             return
@@ -279,11 +288,12 @@ class _ExecutorManagerThread(threading.Thread):
         # When the executor gets garbage collected, the weakref callback
         # will wake up the queue management thread so that it can terminate
         # if there is no pending work item.
-        def weakref_cb(_,
-                       thread_wakeup=self.thread_wakeup,
-                       shutdown_lock=self.shutdown_lock):
-            mp.util.debug('Executor collected: triggering callback for'
-                          ' QueueManager wakeup')
+        def weakref_cb(
+            _, thread_wakeup=self.thread_wakeup, shutdown_lock=self.shutdown_lock
+        ):
+            mp.util.debug(
+                "Executor collected: triggering callback for" " QueueManager wakeup"
+            )
             with shutdown_lock:
                 thread_wakeup.wakeup()
 
@@ -354,11 +364,12 @@ class _ExecutorManagerThread(threading.Thread):
                 work_item = self.pending_work_items[work_id]
 
                 if work_item.future.set_running_or_notify_cancel():
-                    self.call_queue.put(_CallItem(work_id,
-                                                  work_item.fn,
-                                                  work_item.args,
-                                                  work_item.kwargs),
-                                        block=True)
+                    self.call_queue.put(
+                        _CallItem(
+                            work_id, work_item.fn, work_item.args, work_item.kwargs
+                        ),
+                        block=True,
+                    )
                 else:
                     del self.pending_work_items[work_id]
                     continue
@@ -424,8 +435,7 @@ class _ExecutorManagerThread(threading.Thread):
         #   - The interpreter is shutting down OR
         #   - The executor that owns this worker has been collected OR
         #   - The executor that owns this worker has been shutdown.
-        return (_global_shutdown or executor is None
-                or executor._shutdown_thread)
+        return _global_shutdown or executor is None or executor._shutdown_thread
 
     def terminate_broken(self, cause):
         # Terminate the executor because it is in a broken state. The cause
@@ -435,20 +445,23 @@ class _ExecutorManagerThread(threading.Thread):
         # Mark the process pool broken so that submits fail right now.
         executor = self.executor_reference()
         if executor is not None:
-            executor._broken = ('A child process terminated '
-                                'abruptly, the process pool is not '
-                                'usable anymore')
+            executor._broken = (
+                "A child process terminated "
+                "abruptly, the process pool is not "
+                "usable anymore"
+            )
             executor._shutdown_thread = True
             executor = None
 
         # All pending tasks are to be marked failed with the following
         # BrokenProcessPool error
-        bpe = BrokenProcessPool("A process in the process pool was "
-                                "terminated abruptly while the future was "
-                                "running or pending.")
+        bpe = BrokenProcessPool(
+            "A process in the process pool was "
+            "terminated abruptly while the future was "
+            "running or pending."
+        )
         if cause is not None:
-            bpe.__cause__ = _RemoteTraceback(
-                f"\n'''\n{''.join(cause)}'''")
+            bpe.__cause__ = _RemoteTraceback(f"\n'''\n{''.join(cause)}'''")
 
         # Mark pending tasks as failed.
         for work_id, work_item in self.pending_work_items.items():
@@ -496,8 +509,7 @@ class _ExecutorManagerThread(threading.Thread):
         n_sentinels_sent = 0
         # Send the right number of sentinels, to make sure all children are
         # properly terminated.
-        while (n_sentinels_sent < n_children_to_stop
-                and self.get_n_children_alive() > 0):
+        while n_sentinels_sent < n_children_to_stop and self.get_n_children_alive() > 0:
             for i in range(n_children_to_stop - n_sentinels_sent):
                 try:
                     self.call_queue.put_nowait(None)
@@ -545,8 +557,10 @@ def _check_system_limits():
         # minimum number of semaphores available
         # according to POSIX
         return
-    _system_limited = ("system provides too few semaphores (%d"
-                       " available, 256 necessary)" % nsems_max)
+    _system_limited = (
+        "system provides too few semaphores (%d"
+        " available, 256 necessary)" % nsems_max
+    )
     raise NotImplementedError(_system_limited)
 
 
@@ -570,8 +584,9 @@ class BrokenProcessPool(_base.BrokenExecutor):
 
 
 class ProcessPoolExecutor(_base.Executor):
-    def __init__(self, max_workers=None, mp_context=None,
-                 initializer=None, initargs=()):
+    def __init__(
+        self, max_workers=None, mp_context=None, initializer=None, initargs=()
+    ):
         """Initializes a new ProcessPoolExecutor instance.
 
         Args:
@@ -587,16 +602,13 @@ class ProcessPoolExecutor(_base.Executor):
 
         if max_workers is None:
             self._max_workers = os.cpu_count() or 1
-            if sys.platform == 'win32':
-                self._max_workers = min(_MAX_WINDOWS_WORKERS,
-                                        self._max_workers)
+            if sys.platform == "win32":
+                self._max_workers = min(_MAX_WINDOWS_WORKERS, self._max_workers)
         else:
             if max_workers <= 0:
                 raise ValueError("max_workers must be greater than 0")
-            elif (sys.platform == 'win32' and
-                max_workers > _MAX_WINDOWS_WORKERS):
-                raise ValueError(
-                    f"max_workers must be <= {_MAX_WINDOWS_WORKERS}")
+            elif sys.platform == "win32" and max_workers > _MAX_WINDOWS_WORKERS:
+                raise ValueError(f"max_workers must be <= {_MAX_WINDOWS_WORKERS}")
 
             self._max_workers = max_workers
 
@@ -640,10 +652,12 @@ class ProcessPoolExecutor(_base.Executor):
         # because futures in the call queue cannot be cancelled.
         queue_size = self._max_workers + EXTRA_QUEUED_CALLS
         self._call_queue = _SafeQueue(
-            max_size=queue_size, ctx=self._mp_context,
+            max_size=queue_size,
+            ctx=self._mp_context,
             pending_work_items=self._pending_work_items,
             shutdown_lock=self._shutdown_lock,
-            thread_wakeup=self._executor_manager_thread_wakeup)
+            thread_wakeup=self._executor_manager_thread_wakeup,
+        )
         # Killed worker processes can produce spurious "broken pipe"
         # tracebacks in the queue's own worker thread. But we detect killed
         # processes anyway, so silence the tracebacks.
@@ -656,8 +670,9 @@ class ProcessPoolExecutor(_base.Executor):
             # Start the processes so that their sentinels are known.
             self._executor_manager_thread = _ExecutorManagerThread(self)
             self._executor_manager_thread.start()
-            _threads_wakeups[self._executor_manager_thread] = \
+            _threads_wakeups[self._executor_manager_thread] = (
                 self._executor_manager_thread_wakeup
+            )
 
     def _adjust_process_count(self):
         # if there's an idle process, we don't need to spawn a new one.
@@ -668,10 +683,13 @@ class ProcessPoolExecutor(_base.Executor):
         if process_count < self._max_workers:
             p = self._mp_context.Process(
                 target=_process_worker,
-                args=(self._call_queue,
-                      self._result_queue,
-                      self._initializer,
-                      self._initargs))
+                args=(
+                    self._call_queue,
+                    self._result_queue,
+                    self._initializer,
+                    self._initargs,
+                ),
+            )
             p.start()
             self._processes[p.pid] = p
 
@@ -680,10 +698,11 @@ class ProcessPoolExecutor(_base.Executor):
             if self._broken:
                 raise BrokenProcessPool(self._broken)
             if self._shutdown_thread:
-                raise RuntimeError('cannot schedule new futures after shutdown')
+                raise RuntimeError("cannot schedule new futures after shutdown")
             if _global_shutdown:
-                raise RuntimeError('cannot schedule new futures after '
-                                   'interpreter shutdown')
+                raise RuntimeError(
+                    "cannot schedule new futures after " "interpreter shutdown"
+                )
 
             f = _base.Future()
             w = _WorkItem(f, fn, args, kwargs)
@@ -697,6 +716,7 @@ class ProcessPoolExecutor(_base.Executor):
             self._adjust_process_count()
             self._start_executor_manager_thread()
             return f
+
     submit.__doc__ = _base.Executor.submit.__doc__
 
     def map(self, fn, *iterables, timeout=None, chunksize=1):
@@ -723,9 +743,11 @@ class ProcessPoolExecutor(_base.Executor):
         if chunksize < 1:
             raise ValueError("chunksize must be >= 1.")
 
-        results = super().map(partial(_process_chunk, fn),
-                              _get_chunks(*iterables, chunksize=chunksize),
-                              timeout=timeout)
+        results = super().map(
+            partial(_process_chunk, fn),
+            _get_chunks(*iterables, chunksize=chunksize),
+            timeout=timeout,
+        )
         return _chain_from_iterable_of_lists(results)
 
     def shutdown(self, wait=True, *, cancel_futures=False):

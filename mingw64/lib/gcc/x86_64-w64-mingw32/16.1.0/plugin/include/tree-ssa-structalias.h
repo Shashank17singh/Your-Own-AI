@@ -26,13 +26,20 @@
 
 namespace pointer_analysis {
 
-enum constraint_expr_type {SCALAR, DEREF, ADDRESSOF};
+enum constraint_expr_type { SCALAR, DEREF, ADDRESSOF };
 
 /* Static IDs for the special variables.  Variable ID zero is unused
    and used as terminator for the sub-variable chain.  */
-enum { nothing_id = 1, anything_id = 2, string_id = 3,
-       escaped_id = 4, nonlocal_id = 5, escaped_return_id = 6,
-       storedanything_id = 7, integer_id = 8 };
+enum {
+  nothing_id = 1,
+  anything_id = 2,
+  string_id = 3,
+  escaped_id = 4,
+  nonlocal_id = 5,
+  escaped_return_id = 6,
+  storedanything_id = 7,
+  integer_id = 8
+};
 
 /* In IPA mode there are varinfos for different aspects of reach
    function designator.  One for the points-to set of the return
@@ -40,16 +47,20 @@ enum { nothing_id = 1, anything_id = 2, string_id = 3,
    one for its uses and one for each parameter (including a single
    glob for remaining variadic arguments).  */
 
-enum { fi_clobbers = 1, fi_uses = 2,
-       fi_static_chain = 3, fi_result = 4, fi_parm_base = 5 };
+enum {
+  fi_clobbers = 1,
+  fi_uses = 2,
+  fi_static_chain = 3,
+  fi_result = 4,
+  fi_parm_base = 5
+};
 
 /* Use 0x8000... as special unknown offset.  */
 #define UNKNOWN_OFFSET HOST_WIDE_INT_MIN
 
 /* An expression that appears in a constraint.  */
 
-struct constraint_expr
-{
+struct constraint_expr {
   /* Constraint type.  */
   constraint_expr_type type;
 
@@ -71,15 +82,13 @@ typedef struct constraint_expr ce_s;
    As described in the introduction in tree-ssa-structalias.cc, our set
    constraints each represent an operation between set valued variables.
 */
-struct constraint
-{
+struct constraint {
   struct constraint_expr lhs;
   struct constraint_expr rhs;
 };
 typedef struct constraint *constraint_t;
 
-struct variable_info
-{
+struct variable_info {
   /* ID of this variable.  */
   unsigned int id;
 
@@ -163,8 +172,7 @@ struct variable_info
 };
 typedef struct variable_info *varinfo_t;
 
-struct constraint_stats
-{
+struct constraint_stats {
   unsigned int total_vars;
   unsigned int nonpointer_vars;
   unsigned int unified_vars_static;
@@ -188,44 +196,34 @@ extern vec<varinfo_t> varmap;
 extern vec<constraint_t> constraints;
 extern unsigned int *var_rep;
 
-
 /* Return the varmap element N.  */
 
-inline varinfo_t
-get_varinfo (unsigned int n)
-{
-  return varmap[n];
-}
+inline varinfo_t get_varinfo(unsigned int n) { return varmap[n]; }
 
 /* Return the next variable in the list of sub-variables of VI
    or NULL if VI is the last sub-variable.  */
 
-inline varinfo_t
-vi_next (varinfo_t vi)
-{
-  return get_varinfo (vi->next);
-}
+inline varinfo_t vi_next(varinfo_t vi) { return get_varinfo(vi->next); }
 
-varinfo_t first_vi_for_offset (varinfo_t start,
-			       unsigned HOST_WIDE_INT offset);
-varinfo_t first_or_preceding_vi_for_offset (varinfo_t start,
-					    unsigned HOST_WIDE_INT offset);
-void determine_global_memory_access (gcall *, bool *, bool *, bool *);
-bool fndecl_maybe_in_other_partition (tree);
-varinfo_t new_var_info (tree t, const char *name, bool add_id);
-void dump_constraint (FILE *file, constraint_t c);
-void dump_constraints (FILE *file, int from);
-void dump_solution_for_var (FILE *file, unsigned int var);
-void dump_sa_stats (FILE *outfile);
-void dump_sa_points_to_info (FILE *outfile);
-void dump_varinfo (FILE *file, varinfo_t vi);
-void dump_varmap (FILE *file);
-void debug_constraint (constraint_t);
-void debug_constraints (void);
-void debug_solution_for_var (unsigned int);
-void debug_sa_points_to_info (void);
-void debug_varinfo (varinfo_t);
-void debug_varmap (void);
+varinfo_t first_vi_for_offset(varinfo_t start, unsigned HOST_WIDE_INT offset);
+varinfo_t first_or_preceding_vi_for_offset(varinfo_t start,
+                                           unsigned HOST_WIDE_INT offset);
+void determine_global_memory_access(gcall *, bool *, bool *, bool *);
+bool fndecl_maybe_in_other_partition(tree);
+varinfo_t new_var_info(tree t, const char *name, bool add_id);
+void dump_constraint(FILE *file, constraint_t c);
+void dump_constraints(FILE *file, int from);
+void dump_solution_for_var(FILE *file, unsigned int var);
+void dump_sa_stats(FILE *outfile);
+void dump_sa_points_to_info(FILE *outfile);
+void dump_varinfo(FILE *file, varinfo_t vi);
+void dump_varmap(FILE *file);
+void debug_constraint(constraint_t);
+void debug_constraints(void);
+void debug_solution_for_var(unsigned int);
+void debug_sa_points_to_info(void);
+void debug_varinfo(varinfo_t);
+void debug_varmap(void);
 
 } // namespace pointer_analysis
 

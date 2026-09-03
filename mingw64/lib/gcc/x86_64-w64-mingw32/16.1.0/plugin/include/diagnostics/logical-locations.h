@@ -32,8 +32,7 @@ namespace logical_locations {
    Roughly corresponds to logicalLocation's "kind" property in SARIF v2.1.0
    (section 3.33.7).  */
 
-enum class kind
-{
+enum class kind {
   unknown,
 
   /* Kinds within executable code.  */
@@ -97,44 +96,24 @@ enum class kind
    Note that there is no integration with GCC's garbage collector and thus
    keys can't be long-lived.  */
 
-class key
-{
+class key {
 public:
-  key () : m_ptr (nullptr) {}
+  key() : m_ptr(nullptr) {}
 
-  static key from_ptr (const void *ptr)
-  {
-    return key (ptr);
-  }
+  static key from_ptr(const void *ptr) { return key(ptr); }
 
-  operator bool () const
-  {
-    return m_ptr != nullptr;
-  }
+  operator bool() const { return m_ptr != nullptr; }
 
-  template <typename T>
-  T cast_to () const { return static_cast<T> (m_ptr); }
+  template <typename T> T cast_to() const { return static_cast<T>(m_ptr); }
 
-  bool
-  operator== (const key &other) const
-  {
-    return m_ptr == other.m_ptr;
-  }
+  bool operator==(const key &other) const { return m_ptr == other.m_ptr; }
 
-  bool
-  operator!= (const key &other) const
-  {
-    return m_ptr != other.m_ptr;
-  }
+  bool operator!=(const key &other) const { return m_ptr != other.m_ptr; }
 
-  bool
-  operator< (const key &other) const
-  {
-    return m_ptr < other.m_ptr;
-  }
+  bool operator<(const key &other) const { return m_ptr < other.m_ptr; }
 
 private:
-  explicit key (const void *ptr) : m_ptr (ptr) {}
+  explicit key(const void *ptr) : m_ptr(ptr) {}
 
   const void *m_ptr;
 };
@@ -143,41 +122,40 @@ private:
    Typically there will just be one client-provided instance, of a
    client-specific subclass.  */
 
-class manager
-{
+class manager {
 public:
-  virtual ~manager () {}
+  virtual ~manager() {}
 
-  virtual void dump (FILE *out, int indent) const = 0;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  virtual void dump(FILE *out, int indent) const = 0;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
   /* vfuncs for interpreting keys.  */
 
   /* Get a string (or NULL) for K suitable for use by the SARIF logicalLocation
      "name" property (SARIF v2.1.0 section 3.33.4).  */
-  virtual label_text get_short_name (key k) const = 0;
+  virtual label_text get_short_name(key k) const = 0;
 
   /* Get a string (or NULL) for K suitable for use by the SARIF logicalLocation
      "fullyQualifiedName" property (SARIF v2.1.0 section 3.33.5).  */
-  virtual label_text get_name_with_scope (key k) const = 0;
+  virtual label_text get_name_with_scope(key k) const = 0;
 
   /* Get a string (or NULL) for K suitable for use by the SARIF logicalLocation
      "decoratedName" property (SARIF v2.1.0 section 3.33.6).  */
-  virtual label_text get_internal_name (key k) const = 0;
+  virtual label_text get_internal_name(key k) const = 0;
 
   /* Get what kind of SARIF logicalLocation K is (if any).  */
-  virtual enum kind get_kind (key k) const = 0;
+  virtual enum kind get_kind(key k) const = 0;
 
   /* Get a string for location K in a form suitable for path output.  */
-  virtual label_text get_name_for_path_output (key k) const = 0;
+  virtual label_text get_name_for_path_output(key k) const = 0;
 
   /* Get the parent logical_logical of K, if any, or nullptr.  */
-  virtual key get_parent (key k) const = 0;
+  virtual key get_parent(key k) const = 0;
 
-  bool function_p (key k) const;
+  bool function_p(key k) const;
 };
 
-} // namespace diagnostics::logical_locations
+} // namespace logical_locations
 } // namespace diagnostics
 
 #endif /* GCC_DIAGNOSTICS_LOGICAL_LOCATIONS_H.  */

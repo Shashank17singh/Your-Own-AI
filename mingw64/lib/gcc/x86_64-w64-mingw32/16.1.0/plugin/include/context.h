@@ -29,35 +29,37 @@ struct compiler_channels;
 /* GCC's internal state can be divided into zero or more
    "parallel universe" of state; an instance of this class is one such
    context of state.  */
-class context
-{
+class context {
 public:
-  context ();
-  ~context ();
+  context();
+  ~context();
 
   /* The flag shows if there are symbols to be streamed for offloading.  */
   bool have_offload;
 
   /* Pass-management.  */
 
-  void set_passes (pass_manager *m)
-  {
-    gcc_assert (!m_passes);
+  void set_passes(pass_manager *m) {
+    gcc_assert(!m_passes);
     m_passes = m;
   }
 
-  pass_manager *get_passes () { gcc_assert (m_passes); return m_passes; }
+  pass_manager *get_passes() {
+    gcc_assert(m_passes);
+    return m_passes;
+  }
 
   /* Handling dump files.  */
 
-  dump_manager *get_dumps () {gcc_assert (m_dumps); return m_dumps; }
+  dump_manager *get_dumps() {
+    gcc_assert(m_dumps);
+    return m_dumps;
+  }
 
   /* Publish/subscribe channels for events
      on various compiler-specific topics.  */
-  compiler_channels &
-  get_channels () const
-  {
-    gcc_assert (m_channels);
+  compiler_channels &get_channels() const {
+    gcc_assert(m_channels);
     return *m_channels;
   }
 

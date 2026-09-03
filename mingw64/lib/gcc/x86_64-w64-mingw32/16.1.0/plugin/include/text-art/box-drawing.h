@@ -25,7 +25,7 @@ along with GCC; see the file COPYING3.  If not see
 
 namespace text_art {
 
-extern cppchar_t get_box_drawing_char (directions line_dirs);
+extern cppchar_t get_box_drawing_char(directions line_dirs);
 
 } // namespace text_art
 

@@ -31,26 +31,39 @@ from time import monotonic as _time
 
 __all__ = ["scheduler"]
 
-class Event(namedtuple('Event', 'time, priority, action, argument, kwargs')):
-    __slots__ = []
-    def __eq__(s, o): return (s.time, s.priority) == (o.time, o.priority)
-    def __lt__(s, o): return (s.time, s.priority) <  (o.time, o.priority)
-    def __le__(s, o): return (s.time, s.priority) <= (o.time, o.priority)
-    def __gt__(s, o): return (s.time, s.priority) >  (o.time, o.priority)
-    def __ge__(s, o): return (s.time, s.priority) >= (o.time, o.priority)
 
-Event.time.__doc__ = ('''Numeric type compatible with the return value of the
-timefunc function passed to the constructor.''')
-Event.priority.__doc__ = ('''Events scheduled for the same time will be executed
-in the order of their priority.''')
-Event.action.__doc__ = ('''Executing the event means executing
-action(*argument, **kwargs)''')
-Event.argument.__doc__ = ('''argument is a sequence holding the positional
-arguments for the action.''')
-Event.kwargs.__doc__ = ('''kwargs is a dictionary holding the keyword
-arguments for the action.''')
+class Event(namedtuple("Event", "time, priority, action, argument, kwargs")):
+    __slots__ = []
+
+    def __eq__(s, o):
+        return (s.time, s.priority) == (o.time, o.priority)
+
+    def __lt__(s, o):
+        return (s.time, s.priority) < (o.time, o.priority)
+
+    def __le__(s, o):
+        return (s.time, s.priority) <= (o.time, o.priority)
+
+    def __gt__(s, o):
+        return (s.time, s.priority) > (o.time, o.priority)
+
+    def __ge__(s, o):
+        return (s.time, s.priority) >= (o.time, o.priority)
+
+
+Event.time.__doc__ = """Numeric type compatible with the return value of the
+timefunc function passed to the constructor."""
+Event.priority.__doc__ = """Events scheduled for the same time will be executed
+in the order of their priority."""
+Event.action.__doc__ = """Executing the event means executing
+action(*argument, **kwargs)"""
+Event.argument.__doc__ = """argument is a sequence holding the positional
+arguments for the action."""
+Event.kwargs.__doc__ = """kwargs is a dictionary holding the keyword
+arguments for the action."""
 
 _sentinel = object()
+
 
 class scheduler:
 
@@ -74,7 +87,7 @@ class scheduler:
         event = Event(time, priority, action, argument, kwargs)
         with self._lock:
             heapq.heappush(self._queue, event)
-        return event # The ID
+        return event  # The ID
 
     def enter(self, delay, priority, action, argument=(), kwargs=_sentinel):
         """A variant that specifies the time as a relative time.
@@ -149,7 +162,7 @@ class scheduler:
                 delayfunc(time - now)
             else:
                 action(*argument, **kwargs)
-                delayfunc(0)   # Let other threads run
+                delayfunc(0)  # Let other threads run
 
     @property
     def queue(self):
@@ -164,4 +177,4 @@ class scheduler:
         # the actual order they would be retrieved.
         with self._lock:
             events = self._queue[:]
-        return list(map(heapq.heappop, [events]*len(events)))
+        return list(map(heapq.heappop, [events] * len(events)))

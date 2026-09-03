@@ -28,14 +28,17 @@ namespace gcc {
 /* Forward decls of subscribers for the various topics we have
    publish/subscribe channels for.  */
 namespace topics {
-  namespace analyzer_events { struct subscriber; }
-  namespace pass_events { struct subscriber; }
-} // namespace gcc::topics
+namespace analyzer_events {
+struct subscriber;
+}
+namespace pass_events {
+struct subscriber;
+}
+} // namespace topics
 
 /* Publish/subscribe channels on various compiler-specific topics.  */
 
-struct compiler_channels
-{
+struct compiler_channels {
   pub_sub::channel<topics::analyzer_events::subscriber> analyzer_events_channel;
   pub_sub::channel<topics::pass_events::subscriber> pass_events_channel;
 };

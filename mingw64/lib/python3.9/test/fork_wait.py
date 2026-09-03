@@ -13,10 +13,10 @@ import os, sys, time, unittest
 import threading
 from test import support
 
-
 LONGSLEEP = 2
 SHORTSLEEP = 0.5
 NUM_THREADS = 4
+
 
 class ForkWait(unittest.TestCase):
 
@@ -64,7 +64,7 @@ class ForkWait(unittest.TestCase):
 
         prefork_lives = self.alive.copy()
 
-        if sys.platform in ['unixware7']:
+        if sys.platform in ["unixware7"]:
             cpid = os.fork1()
         else:
             cpid = os.fork()

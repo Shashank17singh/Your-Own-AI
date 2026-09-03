@@ -3,10 +3,10 @@ from test import support
 import sys
 
 # Skip this test if the _tkinter module wasn't built.
-_tkinter = support.import_module('_tkinter')
+_tkinter = support.import_module("_tkinter")
 
 # Skip test if tk cannot be initialized.
-support.requires('gui')
+support.requires("gui")
 
 from tkinter import tix, TclError
 
@@ -17,9 +17,9 @@ class TestTix(unittest.TestCase):
         try:
             self.root = tix.Tk()
         except TclError:
-            if sys.platform.startswith('win'):
-                self.fail('Tix should always be available on Windows')
-            self.skipTest('Tix not available')
+            if sys.platform.startswith("win"):
+                self.fail("Tix should always be available on Windows")
+            self.skipTest("Tix not available")
         else:
             self.addCleanup(self.root.destroy)
 
@@ -28,5 +28,5 @@ class TestTix(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

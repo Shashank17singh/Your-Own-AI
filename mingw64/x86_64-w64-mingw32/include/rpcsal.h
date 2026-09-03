@@ -3,31 +3,21 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef RPCSAL_H
 #define RPCSAL_H
-
-
 /**
  * The macros listed in this file were intended for annotating the APIs for
  * remote procedure calls. They have fallen into disuse, and so are simply
  * defined below as the empty string. Arguably, this file should simply
  * be left empty, along with specstrings.h, rpcndr.h, sal.h, etc.
  */
-
-
 #include <specstrings.h>
-
-
-
 #if !defined(__RPCSAL_H_VERSION__)
 #define __RPCSAL_H_VERSION__ 100
 #endif
-
 #if !defined(_SAL1_2_Source_)
 #define _SAL1_2_Source_(Name, args, annotes)
 #endif
-
 #define __RPC__deref_in
 #define __RPC__deref_in_ecount(size)
 #define __RPC__deref_in_ecount_full(size)
@@ -121,7 +111,7 @@
 #define __RPC__in_ecount_part_opt(size, length)
 #define __RPC__in_opt
 #define __RPC__in_opt_string
-#define __RPC__in_range(min,max)
+#define __RPC__in_range(min, max)
 #define __RPC__in_string
 #define __RPC__in_xcount(size)
 #define __RPC__in_xcount_full(size)
@@ -163,11 +153,9 @@
 #define __RPC__out_xcount_full_string(size)
 #define __RPC__out_xcount_part(size, length)
 #define __RPC__out_xcount_string(size)
-#define __RPC__range(min,max)
+#define __RPC__range(min, max)
 #define __RPC_full_pointer
 #define __RPC_ref_pointer
 #define __RPC_string
 #define __RPC_unique_pointer
-
-
 #endif /* RPCSAL_H */

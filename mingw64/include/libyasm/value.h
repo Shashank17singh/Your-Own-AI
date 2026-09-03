@@ -134,8 +134,9 @@ int yasm_value_finalize_expr(/*@out@*/ yasm_value *value,
  * \return Intnum if can be resolved to integer value, otherwise NULL.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@only@*/ yasm_intnum *yasm_value_get_intnum
-    (yasm_value *value, /*@null@*/ yasm_bytecode *bc, int calc_bc_dist);
+/*@null@*/ /*@only@*/ yasm_intnum *
+yasm_value_get_intnum(yasm_value *value, /*@null@*/ yasm_bytecode *bc,
+                      int calc_bc_dist);
 
 /** Output value if constant or PC-relative section-local.  This should be
  * used from objfmt yasm_output_value_func() functions.
@@ -157,9 +158,9 @@ YASM_LIB_DECL
  *         1 if value output; -1 if error.
  */
 YASM_LIB_DECL
-int yasm_value_output_basic
-    (yasm_value *value, /*@out@*/ unsigned char *buf, size_t destsize,
-     yasm_bytecode *bc, int warn, yasm_arch *arch);
+int yasm_value_output_basic(yasm_value *value, /*@out@*/ unsigned char *buf,
+                            size_t destsize, yasm_bytecode *bc, int warn,
+                            yasm_arch *arch);
 
 /** Print a value.  For debugging purposes.
  * \param value         value

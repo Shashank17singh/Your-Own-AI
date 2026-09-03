@@ -27,16 +27,14 @@ along with GCC; see the file COPYING3.  If not see
  * at least one of before_dom_children and after_dom_children to implement the
  * custom behavior.
  */
-class dom_walker
-{
+class dom_walker {
 public:
   static const edge STOP;
 
   /* An enum for determining whether the dom walk should be constrained to
      blocks reachable by executable edges.  */
 
-  enum reachability
-  {
+  enum reachability {
     /* Walk all blocks within the CFG.  */
     ALL_BLOCKS,
 
@@ -65,13 +63,13 @@ public:
      specify NULL as BB_INDEX_TO_RPO this mapping will be computed
      lazily at walk time.  If you specify -1 dominator children will
      not be walked in RPO order.  */
-  dom_walker (cdi_direction direction, enum reachability = ALL_BLOCKS,
-	      int *bb_index_to_rpo = NULL);
+  dom_walker(cdi_direction direction, enum reachability = ALL_BLOCKS,
+             int *bb_index_to_rpo = NULL);
 
-  ~dom_walker ();
+  ~dom_walker();
 
   /* Walk the dominator tree.  */
-  void walk (basic_block);
+  void walk(basic_block);
 
   /* Function to call before the recursive walk of the dominator children.
 
@@ -83,33 +81,32 @@ public:
      of STOP means to stop the domwalk from processing dominated blocks from
      here.  This can be used to process a SEME region only (note domwalk
      will still do work linear in function size).  */
-  virtual edge before_dom_children (basic_block) { return NULL; }
+  virtual edge before_dom_children(basic_block) { return NULL; }
 
   /* Function to call after the recursive walk of the dominator children.  */
-  virtual void after_dom_children (basic_block) {}
+  virtual void after_dom_children(basic_block) {}
 
 private:
   /* This is the direction of the dominator tree we want to walk.  i.e.,
      if it is set to CDI_DOMINATORS, then we walk the dominator tree,
      if it is set to CDI_POST_DOMINATORS, then we walk the post
      dominator tree.  */
-  const ENUM_BITFIELD (cdi_direction) m_dom_direction : 2;
-  const ENUM_BITFIELD (reachability) m_reachability : 2;
+  const ENUM_BITFIELD(cdi_direction) m_dom_direction : 2;
+  const ENUM_BITFIELD(reachability) m_reachability : 2;
   bool m_user_bb_to_rpo;
   basic_block m_unreachable_dom;
   int *m_bb_to_rpo;
 
   /* Query whether or not the given block is reachable or not.  */
-  bool bb_reachable (struct function *, basic_block);
+  bool bb_reachable(struct function *, basic_block);
 
   /* Given an unreachable block, propagate that property to outgoing
      and possibly incoming edges for the block.  Typically called after
      determining a block is unreachable in the before_dom_children
      callback.  */
-  void propagate_unreachable_to_edges (basic_block, FILE *, dump_flags_t);
-
+  void propagate_unreachable_to_edges(basic_block, FILE *, dump_flags_t);
 };
 
-extern void set_all_edges_as_executable (function *fn);
+extern void set_all_edges_as_executable(function *fn);
 
 #endif

@@ -20,8 +20,8 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_DIAGNOSTICS_OPTION_CLASSIFIER_H
 #define GCC_DIAGNOSTICS_OPTION_CLASSIFIER_H
 
-#include "diagnostics/option-id.h"
 #include "diagnostics/kinds.h"
+#include "diagnostics/option-id.h"
 
 namespace diagnostics {
 
@@ -33,48 +33,41 @@ struct diagnostic_info;
    a mapping from option index to diagnostic severity that can be changed
    via pragmas.  The stack can be pushed and popped.  */
 
-class option_classifier
-{
+class option_classifier {
 public:
-  void init (int n_opts);
-  void fini ();
+  void init(int n_opts);
+  void fini();
 
   /* Save all diagnostic classifications in a stack.  */
-  void push ();
+  void push();
 
   /* Restore the topmost classification set off the stack.  If the stack
      is empty, revert to the state based on command line parameters.  */
-  void pop (location_t where);
+  void pop(location_t where);
 
-  bool option_unspecified_p (option_id opt_id) const
-  {
-    return get_current_override (opt_id) == kind::unspecified;
+  bool option_unspecified_p(option_id opt_id) const {
+    return get_current_override(opt_id) == kind::unspecified;
   }
 
-  enum kind get_current_override (option_id opt_id) const
-  {
-    gcc_assert (opt_id.m_idx < m_n_opts);
+  enum kind get_current_override(option_id opt_id) const {
+    gcc_assert(opt_id.m_idx < m_n_opts);
     return m_classify_diagnostic[opt_id.m_idx];
   }
 
-  enum kind
-  classify_diagnostic (const context *context,
-		       option_id opt_id,
-		       enum kind new_kind,
-		       location_t where);
+  enum kind classify_diagnostic(const context *context, option_id opt_id,
+                                enum kind new_kind, location_t where);
 
   enum kind
-  update_effective_level_from_pragmas (diagnostic_info *diagnostic) const;
+  update_effective_level_from_pragmas(diagnostic_info *diagnostic) const;
 
-  int pch_save (FILE *);
-  int pch_restore (FILE *);
+  int pch_save(FILE *);
+  int pch_restore(FILE *);
 
 private:
   /* Each time a diagnostic's classification is changed with a pragma,
      we record the change and the location of the change in an array of
      these structs.  */
-  struct classification_change_t
-  {
+  struct classification_change_t {
     location_t location;
 
     /* For kind::pop, this is the index of the corresponding push (as stored

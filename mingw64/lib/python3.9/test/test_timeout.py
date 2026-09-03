@@ -6,7 +6,7 @@ from test import support
 from test.support import socket_helper
 
 # This requires the 'network' resource as given on the regrtest command line.
-skip_expected = not support.is_resource_enabled('network')
+skip_expected = not support.is_resource_enabled("network")
 
 import time
 import errno
@@ -21,8 +21,7 @@ def resolve_address(host, port):
     performed by connect().
     """
     with socket_helper.transient_internet(host):
-        return socket.getaddrinfo(host, port, socket.AF_INET,
-                                  socket.SOCK_STREAM)[0][4]
+        return socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4]
 
 
 class CreationTestCase(unittest.TestCase):
@@ -36,8 +35,9 @@ class CreationTestCase(unittest.TestCase):
 
     def testObjectCreation(self):
         # Test Socket creation
-        self.assertEqual(self.sock.gettimeout(), None,
-                         "timeout not disabled by default")
+        self.assertEqual(
+            self.sock.gettimeout(), None, "timeout not disabled by default"
+        )
 
     def testFloatReturnValue(self):
         # Test return value of gettimeout()
@@ -135,7 +135,7 @@ class TimeoutTestCase(unittest.TestCase):
                 delta = time.monotonic() - t1
                 break
         else:
-            self.fail('socket.timeout was not raised')
+            self.fail("socket.timeout was not raised")
         # These checks should account for timing unprecision
         self.assertLess(delta, timeout + self.fuzz)
         self.assertGreater(delta, timeout - 1.0)
@@ -146,18 +146,18 @@ class TCPTimeoutTestCase(TimeoutTestCase):
 
     def setUp(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.addr_remote = resolve_address('www.python.org.', 80)
+        self.addr_remote = resolve_address("www.python.org.", 80)
 
     def tearDown(self):
         self.sock.close()
 
-    @unittest.skipIf(True, 'need to replace these hosts; see bpo-35518')
+    @unittest.skipIf(True, "need to replace these hosts; see bpo-35518")
     def testConnectTimeout(self):
         # Testing connect timeout is tricky: we need to have IP connectivity
         # to a host that silently drops our packets.  We can't simulate this
         # from Python because it's a function of the underlying TCP/IP stack.
         # So, the following Snakebite host has been defined:
-        blackhole = resolve_address('blackhole.snakebite.net', 56666)
+        blackhole = resolve_address("blackhole.snakebite.net", 56666)
 
         # Blackhole has been configured to silently drop any incoming packets.
         # No RSTs (for TCP) or ICMP UNREACH (for UDP/ICMP) will be sent back
@@ -169,7 +169,7 @@ class TCPTimeoutTestCase(TimeoutTestCase):
         # to firewalling or general network configuration.  In order to improve
         # our confidence in testing the blackhole, a corresponding 'whitehole'
         # has also been set up using one port higher:
-        whitehole = resolve_address('whitehole.snakebite.net', 56667)
+        whitehole = resolve_address("whitehole.snakebite.net", 56667)
 
         # This address has been configured to immediately drop any incoming
         # packets as well, but it does it respectfully with regards to the
@@ -218,32 +218,31 @@ class TCPTimeoutTestCase(TimeoutTestCase):
                 "We didn't receive a connection reset (RST) packet from "
                 "{}:{} within {} seconds, so we're unable to test connect "
                 "timeout against the corresponding {}:{} (which is "
-                "configured to silently drop packets)."
-                    .format(
-                        whitehole[0],
-                        whitehole[1],
-                        timeout,
-                        blackhole[0],
-                        blackhole[1],
-                    )
+                "configured to silently drop packets).".format(
+                    whitehole[0],
+                    whitehole[1],
+                    timeout,
+                    blackhole[0],
+                    blackhole[1],
+                )
             )
 
         # All that hard work just to test if connect times out in 0.001s ;-)
         self.addr_remote = blackhole
         with socket_helper.transient_internet(self.addr_remote[0]):
-            self._sock_operation(1, 0.001, 'connect', self.addr_remote)
+            self._sock_operation(1, 0.001, "connect", self.addr_remote)
 
     def testRecvTimeout(self):
         # Test recv() timeout
         with socket_helper.transient_internet(self.addr_remote[0]):
             self.sock.connect(self.addr_remote)
-            self._sock_operation(1, 1.5, 'recv', 1024)
+            self._sock_operation(1, 1.5, "recv", 1024)
 
     def testAcceptTimeout(self):
         # Test accept() timeout
         socket_helper.bind_port(self.sock, self.localhost)
         self.sock.listen()
-        self._sock_operation(1, 1.5, 'accept')
+        self._sock_operation(1, 1.5, "accept")
 
     def testSend(self):
         # Test send() timeout
@@ -252,7 +251,7 @@ class TCPTimeoutTestCase(TimeoutTestCase):
             serv.listen()
             self.sock.connect(serv.getsockname())
             # Send a lot of data in order to bypass buffering in the TCP stack.
-            self._sock_operation(100, 1.5, 'send', b"X" * 200000)
+            self._sock_operation(100, 1.5, "send", b"X" * 200000)
 
     def testSendto(self):
         # Test sendto() timeout
@@ -261,8 +260,7 @@ class TCPTimeoutTestCase(TimeoutTestCase):
             serv.listen()
             self.sock.connect(serv.getsockname())
             # The address argument is ignored since we already connected.
-            self._sock_operation(100, 1.5, 'sendto', b"X" * 200000,
-                                 serv.getsockname())
+            self._sock_operation(100, 1.5, "sendto", b"X" * 200000, serv.getsockname())
 
     def testSendall(self):
         # Test sendall() timeout
@@ -271,7 +269,7 @@ class TCPTimeoutTestCase(TimeoutTestCase):
             serv.listen()
             self.sock.connect(serv.getsockname())
             # Send a lot of data in order to bypass buffering in the TCP stack.
-            self._sock_operation(100, 1.5, 'sendall', b"X" * 200000)
+            self._sock_operation(100, 1.5, "sendall", b"X" * 200000)
 
 
 class UDPTimeoutTestCase(TimeoutTestCase):
@@ -287,16 +285,17 @@ class UDPTimeoutTestCase(TimeoutTestCase):
         # Test recvfrom() timeout
         # Prevent "Address already in use" socket exceptions
         socket_helper.bind_port(self.sock, self.localhost)
-        self._sock_operation(1, 1.5, 'recvfrom', 1024)
+        self._sock_operation(1, 1.5, "recvfrom", 1024)
 
 
 def test_main():
-    support.requires('network')
+    support.requires("network")
     support.run_unittest(
         CreationTestCase,
         TCPTimeoutTestCase,
         UDPTimeoutTestCase,
     )
+
 
 if __name__ == "__main__":
     test_main()

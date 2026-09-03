@@ -58,30 +58,30 @@ typedef struct yasm_dbgfmt_module yasm_dbgfmt_module;
  * interfaces.
  */
 typedef struct yasm_stdmac {
-    const char *parser;         /**< Parser keyword */
-    const char *preproc;        /**< Preprocessor keyword */
+  const char *parser;  /**< Parser keyword */
+  const char *preproc; /**< Preprocessor keyword */
 
-    /** NULL-terminated array of standard macros.  May be NULL if no standard
-     * macros should be added for this preprocessor.
-     */
-    const char **macros;
+  /** NULL-terminated array of standard macros.  May be NULL if no standard
+   * macros should be added for this preprocessor.
+   */
+  const char **macros;
 } yasm_stdmac;
 
 /** YASM associated data callback structure.  Many data structures can have
  * arbitrary data associated with them.
  */
 typedef struct yasm_assoc_data_callback {
-    /** Free memory allocated for associated data.
-     * \param data      associated data
-     */
-    void (*destroy) (/*@only@*/ void *data);
+  /** Free memory allocated for associated data.
+   * \param data      associated data
+   */
+  void (*destroy)(/*@only@*/ void *data);
 
-    /** Print a description of allocated data.  For debugging purposes.
-     * \param data              associated data
-     * \param f                 output file
-     * \param indent_level      indentation level
-     */
-    void (*print) (void *data, FILE *f, int indent_level);
+  /** Print a description of allocated data.  For debugging purposes.
+   * \param data              associated data
+   * \param f                 output file
+   * \param indent_level      indentation level
+   */
+  void (*print)(void *data, FILE *f, int indent_level);
 } yasm_assoc_data_callback;
 
 /** Set of collected error/warnings (opaque type).
@@ -119,72 +119,72 @@ typedef struct yasm_floatnum yasm_floatnum;
  * \see value.h for related functions.
  */
 typedef struct yasm_value {
-    /** The absolute portion of the value.  May contain *differences* between
-     * symrecs but not standalone symrecs.  May be NULL if there is no
-     * absolute portion (e.g. the absolute portion is 0).
-     */
-    /*@null@*/ /*@only@*/ yasm_expr *abs;
+  /** The absolute portion of the value.  May contain *differences* between
+   * symrecs but not standalone symrecs.  May be NULL if there is no
+   * absolute portion (e.g. the absolute portion is 0).
+   */
+  /*@null@*/ /*@only@*/ yasm_expr *abs;
 
-    /** The relative portion of the value.  This is the portion that may
-     * need to generate a relocation.  May be NULL if no relative portion.
-     */
-    /*@null@*/ /*@dependent@*/ yasm_symrec *rel;
+  /** The relative portion of the value.  This is the portion that may
+   * need to generate a relocation.  May be NULL if no relative portion.
+   */
+  /*@null@*/ /*@dependent@*/ yasm_symrec *rel;
 
-    /** What the relative portion is in reference to.  NULL if the default. */
-    /*@null@*/ /*@dependent@*/ yasm_symrec *wrt;
+  /** What the relative portion is in reference to.  NULL if the default. */
+  /*@null@*/ /*@dependent@*/ yasm_symrec *wrt;
 
-    /** If the segment of the relative portion should be used, not the
-     * relative portion itself.  Boolean.
-     */
-    unsigned int seg_of : 1;
+  /** If the segment of the relative portion should be used, not the
+   * relative portion itself.  Boolean.
+   */
+  unsigned int seg_of : 1;
 
-    /** If the relative portion of the value should be shifted right
-     * (supported only by a few object formats).  If just the absolute portion
-     * should be shifted, that must be in the abs expr, not here!
-     */
-    unsigned int rshift : 7;
+  /** If the relative portion of the value should be shifted right
+   * (supported only by a few object formats).  If just the absolute portion
+   * should be shifted, that must be in the abs expr, not here!
+   */
+  unsigned int rshift : 7;
 
-    /** Indicates the relative portion of the value should be relocated
-     * relative to the current assembly position rather than relative to the
-     * section start.  "Current assembly position" here refers to the starting
-     * address of the bytecode containing this value.  Boolean.
-     */
-    unsigned int curpos_rel : 1;
+  /** Indicates the relative portion of the value should be relocated
+   * relative to the current assembly position rather than relative to the
+   * section start.  "Current assembly position" here refers to the starting
+   * address of the bytecode containing this value.  Boolean.
+   */
+  unsigned int curpos_rel : 1;
 
-    /** Indicates that curpos_rel was set due to IP-relative relocation;
-     * in some objfmt/arch combinations (e.g. win64/x86-amd64) this info
-     * is needed to generate special relocations.
-     */
-    unsigned int ip_rel : 1;
+  /** Indicates that curpos_rel was set due to IP-relative relocation;
+   * in some objfmt/arch combinations (e.g. win64/x86-amd64) this info
+   * is needed to generate special relocations.
+   */
+  unsigned int ip_rel : 1;
 
-    /** Indicates the value is a jump target address (rather than a simple
-     * data address).  In some objfmt/arch combinations (e.g. macho/amd64)
-     * this info is needed to generate special relocations.
-     */
-    unsigned int jump_target : 1;
+  /** Indicates the value is a jump target address (rather than a simple
+   * data address).  In some objfmt/arch combinations (e.g. macho/amd64)
+   * this info is needed to generate special relocations.
+   */
+  unsigned int jump_target : 1;
 
-    /** Indicates the relative portion of the value should be relocated
-     * relative to its own section start rather than relative to the
-     * section start of the bytecode containing this value.  E.g. the value
-     * resulting from the relative portion should be the offset from its
-     * section start.  Boolean.
-     */
-    unsigned int section_rel : 1;
+  /** Indicates the relative portion of the value should be relocated
+   * relative to its own section start rather than relative to the
+   * section start of the bytecode containing this value.  E.g. the value
+   * resulting from the relative portion should be the offset from its
+   * section start.  Boolean.
+   */
+  unsigned int section_rel : 1;
 
-    /** Indicates overflow warnings have been disabled for this value. */
-    unsigned int no_warn : 1;
+  /** Indicates overflow warnings have been disabled for this value. */
+  unsigned int no_warn : 1;
 
-    /** Sign of the value.  Nonzero if the final value should be treated as
-     * signed, 0 if it should be treated as signed.
-     */
-    unsigned int sign : 1;
+  /** Sign of the value.  Nonzero if the final value should be treated as
+   * signed, 0 if it should be treated as signed.
+   */
+  unsigned int sign : 1;
 
-    /** Size of the value, in bits. */
-    unsigned int size : 8;
+  /** Size of the value, in bits. */
+  unsigned int size : 8;
 } yasm_value;
 
 /** Maximum value of #yasm_value.rshift */
-#define YASM_VALUE_RSHIFT_MAX   127
+#define YASM_VALUE_RSHIFT_MAX 127
 
 /** Line number mapping repository (opaque type).  \see linemap.h for related
  * functions.
@@ -216,40 +216,40 @@ typedef struct yasm_insn yasm_insn;
 
 /** Expression operators usable in #yasm_expr expressions. */
 typedef enum yasm_expr_op {
-    YASM_EXPR_IDENT,    /**< No operation, just a value. */
-    YASM_EXPR_ADD,      /**< Arithmetic addition (+). */
-    YASM_EXPR_SUB,      /**< Arithmetic subtraction (-). */
-    YASM_EXPR_MUL,      /**< Arithmetic multiplication (*). */
-    YASM_EXPR_DIV,      /**< Arithmetic unsigned division. */
-    YASM_EXPR_SIGNDIV,  /**< Arithmetic signed division. */
-    YASM_EXPR_MOD,      /**< Arithmetic unsigned modulus. */
-    YASM_EXPR_SIGNMOD,  /**< Arithmetic signed modulus. */
-    YASM_EXPR_NEG,      /**< Arithmetic negation (-). */
-    YASM_EXPR_NOT,      /**< Bitwise negation. */
-    YASM_EXPR_OR,       /**< Bitwise OR. */
-    YASM_EXPR_AND,      /**< Bitwise AND. */
-    YASM_EXPR_XOR,      /**< Bitwise XOR. */
-    YASM_EXPR_XNOR,     /**< Bitwise XNOR. */
-    YASM_EXPR_NOR,      /**< Bitwise NOR. */
-    YASM_EXPR_SHL,      /**< Shift left (logical). */
-    YASM_EXPR_SHR,      /**< Shift right (logical). */
-    YASM_EXPR_LOR,      /**< Logical OR. */
-    YASM_EXPR_LAND,     /**< Logical AND. */
-    YASM_EXPR_LNOT,     /**< Logical negation. */
-    YASM_EXPR_LXOR,     /**< Logical XOR. */
-    YASM_EXPR_LXNOR,    /**< Logical XNOR. */
-    YASM_EXPR_LNOR,     /**< Logical NOR. */
-    YASM_EXPR_LT,       /**< Less than comparison. */
-    YASM_EXPR_GT,       /**< Greater than comparison. */
-    YASM_EXPR_EQ,       /**< Equality comparison. */
-    YASM_EXPR_LE,       /**< Less than or equal to comparison. */
-    YASM_EXPR_GE,       /**< Greater than or equal to comparison. */
-    YASM_EXPR_NE,       /**< Not equal comparison. */
-    YASM_EXPR_NONNUM,   /**< Start of non-numeric operations (not an op). */
-    YASM_EXPR_SEG,      /**< SEG operator (gets segment portion of address). */
-    YASM_EXPR_WRT,      /**< WRT operator (gets offset of address relative to
-                         *   some other segment). */
-    YASM_EXPR_SEGOFF    /**< The ':' in segment:offset. */
+  YASM_EXPR_IDENT,   /**< No operation, just a value. */
+  YASM_EXPR_ADD,     /**< Arithmetic addition (+). */
+  YASM_EXPR_SUB,     /**< Arithmetic subtraction (-). */
+  YASM_EXPR_MUL,     /**< Arithmetic multiplication (*). */
+  YASM_EXPR_DIV,     /**< Arithmetic unsigned division. */
+  YASM_EXPR_SIGNDIV, /**< Arithmetic signed division. */
+  YASM_EXPR_MOD,     /**< Arithmetic unsigned modulus. */
+  YASM_EXPR_SIGNMOD, /**< Arithmetic signed modulus. */
+  YASM_EXPR_NEG,     /**< Arithmetic negation (-). */
+  YASM_EXPR_NOT,     /**< Bitwise negation. */
+  YASM_EXPR_OR,      /**< Bitwise OR. */
+  YASM_EXPR_AND,     /**< Bitwise AND. */
+  YASM_EXPR_XOR,     /**< Bitwise XOR. */
+  YASM_EXPR_XNOR,    /**< Bitwise XNOR. */
+  YASM_EXPR_NOR,     /**< Bitwise NOR. */
+  YASM_EXPR_SHL,     /**< Shift left (logical). */
+  YASM_EXPR_SHR,     /**< Shift right (logical). */
+  YASM_EXPR_LOR,     /**< Logical OR. */
+  YASM_EXPR_LAND,    /**< Logical AND. */
+  YASM_EXPR_LNOT,    /**< Logical negation. */
+  YASM_EXPR_LXOR,    /**< Logical XOR. */
+  YASM_EXPR_LXNOR,   /**< Logical XNOR. */
+  YASM_EXPR_LNOR,    /**< Logical NOR. */
+  YASM_EXPR_LT,      /**< Less than comparison. */
+  YASM_EXPR_GT,      /**< Greater than comparison. */
+  YASM_EXPR_EQ,      /**< Equality comparison. */
+  YASM_EXPR_LE,      /**< Less than or equal to comparison. */
+  YASM_EXPR_GE,      /**< Greater than or equal to comparison. */
+  YASM_EXPR_NE,      /**< Not equal comparison. */
+  YASM_EXPR_NONNUM,  /**< Start of non-numeric operations (not an op). */
+  YASM_EXPR_SEG,     /**< SEG operator (gets segment portion of address). */
+  YASM_EXPR_WRT,     /**< WRT operator (gets offset of address relative to
+                      *   some other segment). */
+  YASM_EXPR_SEGOFF   /**< The ':' in segment:offset. */
 } yasm_expr_op;
 
 /** Convert yasm_value to its byte representation.  Usually implemented by
@@ -270,9 +270,11 @@ typedef enum yasm_expr_op {
  *                      function)
  * \return Nonzero if an error occurred, 0 otherwise.
  */
-typedef int (*yasm_output_value_func)
-    (yasm_value *value, /*@out@*/ unsigned char *buf, unsigned int destsize,
-     unsigned long offset, yasm_bytecode *bc, int warn, /*@null@*/ void *d);
+typedef int (*yasm_output_value_func)(yasm_value *value,
+                                      /*@out@*/ unsigned char *buf,
+                                      unsigned int destsize,
+                                      unsigned long offset, yasm_bytecode *bc,
+                                      int warn, /*@null@*/ void *d);
 
 /** Convert a symbol reference to its byte representation.  Usually implemented
  * by object formats and debug formats to keep track of relocations generated
@@ -291,9 +293,9 @@ typedef int (*yasm_output_value_func)
  *                      function)
  * \return Nonzero if an error occurred, 0 otherwise.
  */
-typedef int (*yasm_output_reloc_func)
-    (yasm_symrec *sym, yasm_bytecode *bc, unsigned char *buf,
-     unsigned int destsize, unsigned int valsize, int warn, void *d);
+typedef int (*yasm_output_reloc_func)(yasm_symrec *sym, yasm_bytecode *bc,
+                                      unsigned char *buf, unsigned int destsize,
+                                      unsigned int valsize, int warn, void *d);
 
 /** Sort an array using merge sort algorithm.
  * \internal
@@ -358,7 +360,7 @@ YASM_LIB_DECL
  * \return Allocated memory block.
  */
 YASM_LIB_DECL
-extern /*@only@*/ /*@out@*/ void * (*yasm_xmalloc) (size_t size);
+extern /*@only@*/ /*@out@*/ void *(*yasm_xmalloc)(size_t size);
 
 /** Error-checking memory allocation (with clear-to-0).  A default
  * implementation is provided that calls yasm_fatal() on allocation errors.
@@ -368,7 +370,7 @@ extern /*@only@*/ /*@out@*/ void * (*yasm_xmalloc) (size_t size);
  * \return Allocated and cleared memory block.
  */
 YASM_LIB_DECL
-extern /*@only@*/ void * (*yasm_xcalloc) (size_t nelem, size_t elsize);
+extern /*@only@*/ void *(*yasm_xcalloc)(size_t nelem, size_t elsize);
 
 /** Error-checking memory reallocation.  A default implementation is provided
  * that calls yasm_fatal() on allocation errors.  A replacement should
@@ -378,8 +380,8 @@ extern /*@only@*/ void * (*yasm_xcalloc) (size_t nelem, size_t elsize);
  * \return Re-allocated memory block.
  */
 YASM_LIB_DECL
-extern /*@only@*/ void * (*yasm_xrealloc)
-    (/*@only@*/ /*@out@*/ /*@returned@*/ /*@null@*/ void *oldmem, size_t size)
+extern /*@only@*/ void *(*yasm_xrealloc)(
+    /*@only@*/ /*@out@*/ /*@returned@*/ /*@null@*/ void *oldmem, size_t size)
     /*@modifies oldmem@*/;
 
 /** Error-checking memory deallocation.  A default implementation is provided
@@ -387,7 +389,7 @@ extern /*@only@*/ void * (*yasm_xrealloc)
  * \param p     memory block to free
  */
 YASM_LIB_DECL
-extern void (*yasm_xfree) (/*@only@*/ /*@out@*/ /*@null@*/ void *p)
+extern void (*yasm_xfree)(/*@only@*/ /*@out@*/ /*@null@*/ void *p)
     /*@modifies p@*/;
 
 #endif

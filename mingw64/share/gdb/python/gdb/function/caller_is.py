@@ -1,38 +1,16 @@
-# Caller-is functions.
-# Copyright (C) 2008-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import re
-
 import gdb
 
 
 class CallerIs(gdb.Function):
     """Check the calling function's name.
-
     Usage: $_caller_is (NAME [, NUMBER-OF-FRAMES])
-
     Arguments:
-
       NAME: The name of the function to search for.
-
       NUMBER-OF-FRAMES: How many stack frames to traverse back from the currently
         selected frame to compare with.  If the value is greater than the depth of
         the stack from that point then the result is False.
         The default is 1.
-
     Returns:
       True if the function's name at the specified frame is equal to NAME."""
 
@@ -53,18 +31,13 @@ class CallerIs(gdb.Function):
 
 class CallerMatches(gdb.Function):
     """Compare the calling function's name with a regexp.
-
     Usage: $_caller_matches (REGEX [, NUMBER-OF-FRAMES])
-
     Arguments:
-
       REGEX: The regular expression to compare the function's name with.
-
       NUMBER-OF-FRAMES: How many stack frames to traverse back from the currently
         selected frame to compare with.  If the value is greater than the depth of
         the stack from that point then the result is False.
         The default is 1.
-
     Returns:
       True if the function's name at the specified frame matches REGEX."""
 
@@ -85,18 +58,13 @@ class CallerMatches(gdb.Function):
 
 class AnyCallerIs(gdb.Function):
     """Check all calling function's names.
-
     Usage: $_any_caller_is (NAME [, NUMBER-OF-FRAMES])
-
     Arguments:
-
       NAME: The name of the function to search for.
-
       NUMBER-OF-FRAMES: How many stack frames to traverse back from the currently
         selected frame to compare with.  If the value is greater than the depth of
         the stack from that point then the result is False.
         The default is 1.
-
     Returns:
       True if any function's name is equal to NAME."""
 
@@ -119,18 +87,13 @@ class AnyCallerIs(gdb.Function):
 
 class AnyCallerMatches(gdb.Function):
     """Compare all calling function's names with a regexp.
-
     Usage: $_any_caller_matches (REGEX [, NUMBER-OF-FRAMES])
-
     Arguments:
-
       REGEX: The regular expression to compare the function's name with.
-
       NUMBER-OF-FRAMES: How many stack frames to traverse back from the currently
         selected frame to compare with.  If the value is greater than the depth of
         the stack from that point then the result is False.
         The default is 1.
-
     Returns:
       True if any function's name matches REGEX."""
 

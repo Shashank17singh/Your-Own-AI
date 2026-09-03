@@ -5,14 +5,11 @@
  */
 #ifndef __AQADMTYP_H__
 #define __AQADMTYP_H__
-
 #define MIDL(x)
 #define QUEUE_ADMIN_MAX_BUFFER_REQUIRED 200
-
 typedef enum tagQUEUE_ADMIN_VERSIONS {
   CURRENT_QUEUE_ADMIN_VERSION = 4
 } QUEUE_ADMIN_VERSIONS;
-
 typedef struct tagMESSAGE_FILTER {
   DWORD dwVersion;
   DWORD fFlags;
@@ -21,8 +18,7 @@ typedef struct tagMESSAGE_FILTER {
   LPCWSTR szMessageRecipient;
   DWORD dwLargerThanSize;
   SYSTEMTIME stOlderThan;
-} MESSAGE_FILTER,*PMESSAGE_FILTER;
-
+} MESSAGE_FILTER, *PMESSAGE_FILTER;
 typedef enum tagMESSAGE_FILTER_FLAGS {
   MF_MESSAGEID = 0x1,
   MF_SENDER = 0x2,
@@ -34,7 +30,6 @@ typedef enum tagMESSAGE_FILTER_FLAGS {
   MF_ALL = 0x40000000,
   MF_INVERTSENSE = 0x80000000
 } MESSAGE_FILTER_FLAGS;
-
 typedef enum tagMESSAGE_ACTION {
   MA_THAW_GLOBAL = 0x1,
   MA_COUNT = 0x2,
@@ -42,7 +37,6 @@ typedef enum tagMESSAGE_ACTION {
   MA_DELETE = 0x8,
   MA_DELETE_SILENT = 0x10
 } MESSAGE_ACTION;
-
 typedef enum tagMESSAGE_ENUM_FILTER_TYPE {
   MEF_FIRST_N_MESSAGES = 0x1,
   MEF_SENDER = 0x2,
@@ -56,7 +50,6 @@ typedef enum tagMESSAGE_ENUM_FILTER_TYPE {
   MEF_ALL = 0x40000000,
   MEF_INVERTSENSE = 0x80000000
 } MESSAGE_ENUM_FILTER_TYPE;
-
 typedef struct tagMESSAGE_ENUM_FILTER {
   DWORD dwVersion;
   DWORD mefType;
@@ -66,8 +59,7 @@ typedef struct tagMESSAGE_ENUM_FILTER {
   SYSTEMTIME stDate;
   LPCWSTR szMessageSender;
   LPCWSTR szMessageRecipient;
-} MESSAGE_ENUM_FILTER,*PMESSAGE_ENUM_FILTER;
-
+} MESSAGE_ENUM_FILTER, *PMESSAGE_ENUM_FILTER;
 typedef enum tagLINK_INFO_FLAGS {
   LI_ACTIVE = 0x1,
   LI_READY = 0x2,
@@ -84,14 +76,12 @@ typedef enum tagLINK_INFO_FLAGS {
   LI_TYPE_INTERNAL = 0x4000,
   LI_TYPE_PENDING_SUBMIT = 0x8000
 } LINK_INFO_FLAGS;
-
 typedef enum tagLINK_ACTION {
   LA_INTERNAL = 0x0,
   LA_KICK = 0x1,
   LA_FREEZE = 0x20,
   LA_THAW = 0x40
 } LINK_ACTION;
-
 typedef struct tagLINK_INFO {
   DWORD dwVersion;
   LPWSTR szLinkName;
@@ -103,8 +93,7 @@ typedef struct tagLINK_INFO {
   LPWSTR szLinkDN;
   LPWSTR szExtendedStateInfo;
   DWORD dwSupportedLinkActions;
-} LINK_INFO,*PLINK_INFO;
-
+} LINK_INFO, *PLINK_INFO;
 typedef struct tagQUEUE_INFO {
   DWORD dwVersion;
   LPWSTR szQueueName;
@@ -112,8 +101,7 @@ typedef struct tagQUEUE_INFO {
   DWORD cMessages;
   ULARGE_INTEGER cbQueueVolume;
   DWORD dwMsgEnumFlagsSupported;
-} QUEUE_INFO,*PQUEUE_INFO;
-
+} QUEUE_INFO, *PQUEUE_INFO;
 typedef enum tagAQ_MESSAGE_FLAGS {
   MP_HIGH = 0x1,
   MP_NORMAL = 0x2,
@@ -122,7 +110,6 @@ typedef enum tagAQ_MESSAGE_FLAGS {
   MP_MSG_RETRY = 0x10,
   MP_MSG_CONTENT_AVAILABLE = 0x20
 } AQ_MESSAGE_FLAGS;
-
 typedef struct tagMESSAGE_INFO {
   DWORD dwVersion;
   LPWSTR szMessageId;
@@ -143,12 +130,8 @@ typedef struct tagMESSAGE_INFO {
   DWORD cEnvRecipients;
   DWORD cbEnvRecipients;
   WCHAR *mszEnvRecipients;
-} MESSAGE_INFO,*PMESSAGE_INFO;
-
-typedef enum tagQUEUELINK_TYPE {
-  QLT_QUEUE,QLT_LINK,QLT_NONE
-} QUEUELINK_TYPE;
-
+} MESSAGE_INFO, *PMESSAGE_INFO;
+typedef enum tagQUEUELINK_TYPE { QLT_QUEUE, QLT_LINK, QLT_NONE } QUEUELINK_TYPE;
 typedef struct tagQUEUELINK_ID {
   GUID uuid;
   LPWSTR szName;

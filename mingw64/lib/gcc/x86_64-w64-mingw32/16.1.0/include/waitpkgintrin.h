@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <waitpkgintrin.h> directly; include <x86gprintrin.h> instead."
+#error "Never use <waitpkgintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _WAITPKG_H_INCLUDED
@@ -35,24 +35,21 @@
 #endif /* __WAITPKG__ */
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_umonitor (void *__A)
-{
-  __builtin_ia32_umonitor (__A);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _umonitor(void *__A) {
+  __builtin_ia32_umonitor(__A);
 }
 
 extern __inline unsigned char
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_umwait (unsigned int __A, unsigned long long __B)
-{
-  return __builtin_ia32_umwait (__A, __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _umwait(unsigned int __A, unsigned long long __B) {
+  return __builtin_ia32_umwait(__A, __B);
 }
 
 extern __inline unsigned char
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_tpause (unsigned int __A, unsigned long long __B)
-{
-  return __builtin_ia32_tpause (__A, __B);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _tpause(unsigned int __A, unsigned long long __B) {
+  return __builtin_ia32_tpause(__A, __B);
 }
 
 #ifdef __DISABLE_WAITPKG__

@@ -27,8 +27,7 @@ namespace diagnostics {
 /* A bundle of options relating to printing the user's source code
    (potentially with a margin, underlining, labels, etc).  */
 
-struct source_printing_options
-{
+struct source_printing_options {
   /* True if we should print the source line with a caret indicating
      the location.
      Corresponds to -fdiagnostics-show-caret.  */

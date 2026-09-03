@@ -2,33 +2,40 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #ifndef __PATCHWIZ_H__
 #define __PATCHWIZ_H__
-
-#include <winapifamily.h>
 #include <_mingw_unicode.h>
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-#include <windows.h>
+#include <winapifamily.h>
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #include <ole2.h>
-#include <strsafe.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <strsafe.h>
+#include <windows.h>
 #ifdef _cplusplus
 extern "C" {
 #endif
-
-  UINT WINAPI UiCreatePatchPackageA (LPCSTR szPcpPath, LPCSTR szPatchPath, LPCSTR szLogPath, HWND hwndStatus, LPCSTR szTempFolder, WINBOOL fRemoveTempFolderIfPresent);
-  UINT WINAPI UiCreatePatchPackageW (LPCWSTR szPcpPath, LPCWSTR szPatchPath, LPCWSTR szLogPath, HWND hwndStatus, LPCWSTR szTempFolder, WINBOOL fRemoveTempFolderIfPresent);
-  UINT WINAPI UiCreatePatchPackageExA (LPCSTR szPcpPath, LPCSTR szPatchPath, LPCSTR szLogPath, HWND hwndStatus, LPCSTR szTempFolder, WINBOOL fRemoveTempFolderIfPresent, DWORD dwFlags, DWORD dwReserved);
-  UINT WINAPI UiCreatePatchPackageExW (LPCWSTR szPcpPath, LPCWSTR szPatchPath, LPCWSTR szLogPath, HWND hwndStatus, LPCWSTR szTempFolder, WINBOOL fRemoveTempFolderIfPresent, DWORD dwFlags, DWORD dwReserved);
-
+UINT WINAPI UiCreatePatchPackageA(LPCSTR szPcpPath, LPCSTR szPatchPath,
+                                  LPCSTR szLogPath, HWND hwndStatus,
+                                  LPCSTR szTempFolder,
+                                  WINBOOL fRemoveTempFolderIfPresent);
+UINT WINAPI UiCreatePatchPackageW(LPCWSTR szPcpPath, LPCWSTR szPatchPath,
+                                  LPCWSTR szLogPath, HWND hwndStatus,
+                                  LPCWSTR szTempFolder,
+                                  WINBOOL fRemoveTempFolderIfPresent);
+UINT WINAPI UiCreatePatchPackageExA(LPCSTR szPcpPath, LPCSTR szPatchPath,
+                                    LPCSTR szLogPath, HWND hwndStatus,
+                                    LPCSTR szTempFolder,
+                                    WINBOOL fRemoveTempFolderIfPresent,
+                                    DWORD dwFlags, DWORD dwReserved);
+UINT WINAPI UiCreatePatchPackageExW(LPCWSTR szPcpPath, LPCWSTR szPatchPath,
+                                    LPCWSTR szLogPath, HWND hwndStatus,
+                                    LPCWSTR szTempFolder,
+                                    WINBOOL fRemoveTempFolderIfPresent,
+                                    DWORD dwFlags, DWORD dwReserved);
 #ifdef _cplusplus
 }
 #endif
-
 const int cchMaxInteger = 12;
 const UINT LOGNONE = 0x00000000;
 const UINT LOGINFO = 0x00000001;
@@ -42,9 +49,7 @@ const UINT UIALL = 1 << UILOGBITS;
 const UINT DEFAULT_MINIMUM_REQUIRED_MSI_VERSION = 100;
 const UINT DEFAULT_FILE_SEQUENCE_START = 2;
 const UINT DEFAULT_DISK_ID = 2;
-
 #define ERROR_PCW_BASE 0xc00e5101
-
 #define ERROR_PCW_PCP_DOESNT_EXIST (ERROR_PCW_BASE + 0x00)
 #define ERROR_PCW_PCP_BAD_FORMAT (ERROR_PCW_BASE + 0x01)
 #define ERROR_PCW_CANT_CREATE_TEMP_FOLDER (ERROR_PCW_BASE + 0x02)
@@ -205,14 +210,14 @@ const UINT DEFAULT_DISK_ID = 2;
 #define ERROR_PCW_INVALID_PCP_IMAGEFAMILIES (ERROR_PCW_BASE + 0x10e)
 #define ERROR_PCW_INVALID_PCP_PATCHSEQUENCE (ERROR_PCW_BASE + 0x10f)
 #define ERROR_PCW_INVALID_PCP_TARGETFILES_OPTIONALDATA (ERROR_PCW_BASE + 0x110)
-#define ERROR_PCW_INVALID_PCP_UPGRADEDFILES_OPTIONALDATA (ERROR_PCW_BASE + 0x111)
+#define ERROR_PCW_INVALID_PCP_UPGRADEDFILES_OPTIONALDATA                       \
+  (ERROR_PCW_BASE + 0x111)
 #define ERROR_PCW_MISSING_PATCHMETADATA (ERROR_PCW_BASE + 0x112)
 #define ERROR_PCW_IMAGE_PATH_NOT_EXIST (ERROR_PCW_BASE + 0x113)
 #define ERROR_PCW_INVALID_RANGE_ELEMENT (ERROR_PCW_BASE + 0x114)
 #define ERROR_PCW_INVALID_MAJOR_VERSION (ERROR_PCW_BASE + 0x115)
 #define ERROR_PCW_INVALID_PCP_PROPERTIES (ERROR_PCW_BASE + 0x116)
 #define ERROR_PCW_INVALID_PCP_FAMILYFILERANGES (ERROR_PCW_BASE + 0x117)
-
 #define INFO_BASE 0xc00f5101
 #define INFO_PASSED_MAIN_CONTROL (INFO_BASE + 0x00)
 #define INFO_ENTERING_PHASE_I_VALIDATION (INFO_BASE + 0x01)
@@ -232,7 +237,6 @@ const UINT DEFAULT_DISK_ID = 2;
 #define INFO_PATCHCACHE_PCI_WRITEFAILURE (INFO_BASE + 0x14)
 #define INFO_USING_USER_MSI_FOR_PATCH_TABLES (INFO_BASE + 0x15)
 #define INFO_SUCCESSFUL_PATCH_CREATION (INFO_BASE + 0x16)
-
 #define WARN_BASE 0xc0105101
 #define WARN_MAJOR_UPGRADE_PATCH (WARN_BASE + 0x00)
 #define WARN_SEQUENCE_DATA_GENERATION_DISABLED (WARN_BASE + 0x01)
@@ -248,9 +252,7 @@ const UINT DEFAULT_DISK_ID = 2;
 #define WARN_OBSOLETION_WITH_SEQUENCE_DATA (WARN_BASE + 0x11)
 #define WARN_OBSOLETION_WITH_MSI30 (WARN_BASE + 0x10)
 #define WARN_OBSOLETION_WITH_PATCHSEQUENCE (WARN_BASE + 0x12)
-
 #define UiCreatePatchPackage __MINGW_NAME_AW(UiCreatePatchPackage)
 #define UiCreatePatchPackageEx __MINGW_NAME_AW(UiCreatePatchPackageEx)
-
 #endif
 #endif

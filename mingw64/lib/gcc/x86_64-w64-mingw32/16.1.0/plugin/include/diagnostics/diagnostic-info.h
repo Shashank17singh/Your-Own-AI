@@ -28,17 +28,10 @@ class metadata;
    its context and its KIND (ice, error, warning, note, ...)  See complete
    list in diagnostics/kinds.def.  */
 
-struct diagnostic_info
-{
-  diagnostic_info ()
-  : m_message (),
-    m_richloc (),
-    m_metadata (),
-    m_x_data (),
-    m_kind (),
-    m_option_id (),
-    m_iinfo ()
-  { }
+struct diagnostic_info {
+  diagnostic_info()
+      : m_message(), m_richloc(), m_metadata(), m_x_data(), m_kind(),
+        m_option_id(), m_iinfo() {}
 
   /* Text to be formatted.  */
   text_info m_message;
@@ -59,8 +52,7 @@ struct diagnostic_info
 
   /* Inlining context containing locations for each call site along
      the inlining stack.  */
-  struct inlining_info
-  {
+  struct inlining_info {
     /* Locations along the inlining stack.  */
     auto_vec<location_t, 8> m_ilocs;
     /* The abstract origin of the location.  */

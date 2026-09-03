@@ -1,21 +1,16 @@
 """An XML Reader is the SAX 2 name for an XML parser. XML Parsers
-should be based on this code. """
+should be based on this code."""
 
 from . import handler
-
 from ._exceptions import SAXNotSupportedException, SAXNotRecognizedException
 
 
-# ===== XMLREADER =====
-
 class XMLReader:
     """Interface for reading an XML document using callbacks.
-
     XMLReader is the interface that an XML parser's SAX2 driver must
     implement. This interface allows an application to set and query
     features and properties in the parser, to register event handlers
     for document processing, and to initiate a document parse.
-
     All SAX interfaces are assumed to be synchronous: the parse
     methods must not return until parsing is complete, and readers
     must wait for an event-handler callback to return before reporting
@@ -65,7 +60,6 @@ class XMLReader:
 
     def setLocale(self, locale):
         """Allow an application to set the locale for errors and warnings.
-
         SAX parsers are not required to provide localization for errors
         and warnings; if they cannot support the requested locale,
         however, they must raise a SAX exception. Applications may
@@ -88,21 +82,19 @@ class XMLReader:
         "Sets the value of a SAX2 property."
         raise SAXNotRecognizedException("Property '%s' not recognized" % name)
 
+
 class IncrementalParser(XMLReader):
     """This interface adds three extra methods to the XMLReader
     interface that allow XML parsers to support incremental
     parsing. Support for this interface is optional, since not all
     underlying XML parsers support this functionality.
-
     When the parser is instantiated it is ready to begin accepting
     data from the feed method immediately. After parsing has been
     finished with a call to close the reset method must be called to
     make the parser ready to accept new data, either from feed or
     using the parse method.
-
     Note that these methods must _not_ be called during parsing, that
     is, after parse has been called and before it returns.
-
     By default, the class also implements the parse method of the XMLReader
     interface using the feed, close and reset methods of the
     IncrementalParser interface as a convenience to SAX 2.0 driver
@@ -114,8 +106,8 @@ class IncrementalParser(XMLReader):
 
     def parse(self, source):
         from . import saxutils
-        source = saxutils.prepare_input_source(source)
 
+        source = saxutils.prepare_input_source(source)
         self.prepareParser(source)
         file = source.getCharacterStream()
         if file is None:
@@ -131,7 +123,6 @@ class IncrementalParser(XMLReader):
         the parser and makes it parse the data, emitting the
         corresponding events. It is allowed for XML constructs to be
         split across several calls to feed.
-
         feed may raise SAXException."""
         raise NotImplementedError("This method must be implemented!")
 
@@ -146,10 +137,8 @@ class IncrementalParser(XMLReader):
         parser that there are no more data. This allows the parser to
         do the final checks on the document and empty the internal
         data buffer.
-
         The parser will not be ready to parse another document until
         the reset method has been called.
-
         close may raise SAXException."""
         raise NotImplementedError("This method must be implemented!")
 
@@ -160,7 +149,6 @@ class IncrementalParser(XMLReader):
         reset are undefined."""
         raise NotImplementedError("This method must be implemented!")
 
-# ===== LOCATOR =====
 
 class Locator:
     """Interface for associating a SAX event with a document
@@ -184,30 +172,26 @@ class Locator:
         "Return the system identifier for the current event."
         return None
 
-# ===== INPUTSOURCE =====
 
 class InputSource:
     """Encapsulation of the information needed by the XMLReader to
     read entities.
-
     This class may include information about the public identifier,
     system identifier, byte stream (possibly with character encoding
     information) and/or the character stream of an entity.
-
     Applications will create objects of this class for use in the
     XMLReader.parse method and for returning from
     EntityResolver.resolveEntity.
-
     An InputSource belongs to the application, the XMLReader is not
     allowed to modify InputSource objects passed to it from the
     application, although it may make copies and modify those."""
 
-    def __init__(self, system_id = None):
+    def __init__(self, system_id=None):
         self.__system_id = system_id
         self.__public_id = None
-        self.__encoding  = None
-        self.__bytefile  = None
-        self.__charfile  = None
+        self.__encoding = None
+        self.__bytefile = None
+        self.__charfile = None
 
     def setPublicId(self, public_id):
         "Sets the public identifier of this InputSource."
@@ -227,10 +211,8 @@ class InputSource:
 
     def setEncoding(self, encoding):
         """Sets the character encoding of this InputSource.
-
         The encoding must be a string acceptable for an XML encoding
         declaration (see section 4.3.3 of the XML recommendation).
-
         The encoding attribute of the InputSource is ignored if the
         InputSource also contains a character stream."""
         self.__encoding = encoding
@@ -243,18 +225,15 @@ class InputSource:
         """Set the byte stream (a Python file-like object which does
         not perform byte-to-character conversion) for this input
         source.
-
         The SAX parser will ignore this if there is also a character
         stream specified, but it will use a byte stream in preference
         to opening a URI connection itself.
-
         If the application knows the character encoding of the byte
         stream, it should set it with the setEncoding method."""
         self.__bytefile = bytefile
 
     def getByteStream(self):
         """Get the byte stream for this input source.
-
         The getEncoding method will return the character encoding for
         this byte stream, or None if unknown."""
         return self.__bytefile
@@ -263,7 +242,6 @@ class InputSource:
         """Set the character stream for this input source. (The stream
         must be a Python 2.0 Unicode-wrapped file-like that performs
         conversion to Unicode strings.)
-
         If there is a character stream specified, the SAX parser will
         ignore any byte stream and will not attempt to open a URI
         connection to the system identifier."""
@@ -273,13 +251,10 @@ class InputSource:
         "Get the character stream for this input source."
         return self.__charfile
 
-# ===== ATTRIBUTESIMPL =====
 
 class AttributesImpl:
-
     def __init__(self, attrs):
         """Non-NS-aware implementation.
-
         attrs should be of the form {name : value}."""
         self._attrs = attrs
 
@@ -335,30 +310,25 @@ class AttributesImpl:
     def values(self):
         return list(self._attrs.values())
 
-# ===== ATTRIBUTESNSIMPL =====
 
 class AttributesNSImpl(AttributesImpl):
-
     def __init__(self, attrs, qnames):
         """NS-aware implementation.
-
         attrs should be of the form {(ns_uri, lname): value, ...}.
         qnames of the form {(ns_uri, lname): qname, ...}."""
         self._attrs = attrs
         self._qnames = qnames
 
     def getValueByQName(self, name):
-        for (nsname, qname) in self._qnames.items():
+        for nsname, qname in self._qnames.items():
             if qname == name:
                 return self._attrs[nsname]
-
         raise KeyError(name)
 
     def getNameByQName(self, name):
-        for (nsname, qname) in self._qnames.items():
+        for nsname, qname in self._qnames.items():
             if qname == name:
                 return nsname
-
         raise KeyError(name)
 
     def getQNameByName(self, name):
@@ -375,6 +345,7 @@ def _test():
     XMLReader()
     IncrementalParser()
     Locator()
+
 
 if __name__ == "__main__":
     _test()

@@ -42,24 +42,19 @@
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::node_pointer
-PB_DS_CLASS_C_DEC::
-get_new_node_for_insert(const_reference r_val)
-{
+PB_DS_CLASS_C_DEC::get_new_node_for_insert(const_reference r_val) {
   return get_new_node_for_insert(r_val, s_no_throw_copies_ind);
 }
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::node_pointer
-PB_DS_CLASS_C_DEC::
-get_new_node_for_insert(const_reference r_val, false_type)
-{
+PB_DS_CLASS_C_DEC::get_new_node_for_insert(const_reference r_val, false_type) {
   node_pointer p_new_nd = s_node_allocator.allocate(1);
 
   cond_dealtor_t cond(p_new_nd);
 
-  new (const_cast<void* >(
-			  static_cast<const void* >(&p_new_nd->m_value)))
-    typename node::value_type(r_val);
+  new (const_cast<void *>(static_cast<const void *>(&p_new_nd->m_value)))
+      typename node::value_type(r_val);
 
   cond.set_no_action();
 
@@ -70,14 +65,11 @@ get_new_node_for_insert(const_reference r_val, false_type)
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::node_pointer
-PB_DS_CLASS_C_DEC::
-get_new_node_for_insert(const_reference r_val, true_type)
-{
+PB_DS_CLASS_C_DEC::get_new_node_for_insert(const_reference r_val, true_type) {
   node_pointer p_new_nd = s_node_allocator.allocate(1);
 
-  new (const_cast<void* >(
-			  static_cast<const void* >(&p_new_nd->m_value)))
-    typename node::value_type(r_val);
+  new (const_cast<void *>(static_cast<const void *>(&p_new_nd->m_value)))
+      typename node::value_type(r_val);
 
   ++m_size;
 
@@ -85,10 +77,8 @@ get_new_node_for_insert(const_reference r_val, true_type)
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-make_child_of(node_pointer p_nd, node_pointer p_new_parent)
-{
+inline void PB_DS_CLASS_C_DEC::make_child_of(node_pointer p_nd,
+                                             node_pointer p_new_parent) {
   _GLIBCXX_DEBUG_ASSERT(p_nd != 0);
   _GLIBCXX_DEBUG_ASSERT(p_new_parent != 0);
 
@@ -104,25 +94,20 @@ make_child_of(node_pointer p_nd, node_pointer p_new_parent)
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::node_pointer
-PB_DS_CLASS_C_DEC::
-parent(node_pointer p_nd)
-{
-  while (true)
-    {
-      node_pointer p_pot = p_nd->m_p_prev_or_parent;
+PB_DS_CLASS_C_DEC::parent(node_pointer p_nd) {
+  while (true) {
+    node_pointer p_pot = p_nd->m_p_prev_or_parent;
 
-      if (p_pot == 0 || p_pot->m_p_l_child == p_nd)
-	return p_pot;
+    if (p_pot == 0 || p_pot->m_p_l_child == p_nd)
+      return p_pot;
 
-      p_nd = p_pot;
-    }
+    p_nd = p_pot;
+  }
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-swap_with_parent(node_pointer p_nd, node_pointer p_parent)
-{
+inline void PB_DS_CLASS_C_DEC::swap_with_parent(node_pointer p_nd,
+                                                node_pointer p_parent) {
   if (p_parent == m_p_root)
     m_p_root = p_nd;
 
@@ -133,7 +118,7 @@ swap_with_parent(node_pointer p_nd, node_pointer p_parent)
   const bool nd_direct_child = p_parent->m_p_l_child == p_nd;
   const bool parent_root = p_parent->m_p_prev_or_parent == 0;
   const bool parent_direct_child =
-    !parent_root&&  p_parent->m_p_prev_or_parent->m_p_l_child == p_parent;
+      !parent_root && p_parent->m_p_prev_or_parent->m_p_l_child == p_parent;
 
   std::swap(p_parent->m_p_prev_or_parent, p_nd->m_p_prev_or_parent);
   std::swap(p_parent->m_p_next_sibling, p_nd->m_p_next_sibling);
@@ -157,20 +142,17 @@ swap_with_parent(node_pointer p_nd, node_pointer p_parent)
   else if (!parent_root)
     p_nd->m_p_prev_or_parent->m_p_next_sibling = p_nd;
 
-  if (!nd_direct_child)
-    {
-      p_nd->m_p_l_child->m_p_prev_or_parent = p_nd;
+  if (!nd_direct_child) {
+    p_nd->m_p_l_child->m_p_prev_or_parent = p_nd;
 
-      p_parent->m_p_prev_or_parent->m_p_next_sibling = p_parent;
-    }
-  else
-    {
-      _GLIBCXX_DEBUG_ASSERT(p_nd->m_p_l_child == p_nd);
-      _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_prev_or_parent == p_parent);
+    p_parent->m_p_prev_or_parent->m_p_next_sibling = p_parent;
+  } else {
+    _GLIBCXX_DEBUG_ASSERT(p_nd->m_p_l_child == p_nd);
+    _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_prev_or_parent == p_parent);
 
-      p_nd->m_p_l_child = p_parent;
-      p_parent->m_p_prev_or_parent = p_nd;
-    }
+    p_nd->m_p_l_child = p_parent;
+    p_parent->m_p_prev_or_parent = p_nd;
+  }
 
   _GLIBCXX_DEBUG_ASSERT(parent(p_parent) == p_nd);
 }

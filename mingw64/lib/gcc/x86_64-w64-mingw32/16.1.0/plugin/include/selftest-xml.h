@@ -34,14 +34,10 @@ namespace selftest {
    equals EXPECTED_VALUE.
    Use LOC for any failures.  */
 
-void
-assert_xml_print_eq (const location &loc,
-		     const xml::node &node,
-		     const char *expected_value);
-#define ASSERT_XML_PRINT_EQ(XML_NODE, EXPECTED_VALUE)		\
-  assert_xml_print_eq ((SELFTEST_LOCATION),			\
-		       (XML_NODE),				\
-		       (EXPECTED_VALUE))
+void assert_xml_print_eq(const location &loc, const xml::node &node,
+                         const char *expected_value);
+#define ASSERT_XML_PRINT_EQ(XML_NODE, EXPECTED_VALUE)                          \
+  assert_xml_print_eq((SELFTEST_LOCATION), (XML_NODE), (EXPECTED_VALUE))
 
 } // namespace selftest
 

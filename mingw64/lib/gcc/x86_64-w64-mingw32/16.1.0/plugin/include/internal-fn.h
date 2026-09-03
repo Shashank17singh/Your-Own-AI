@@ -23,7 +23,6 @@ along with GCC; see the file COPYING3.  If not see
 #include "insn-codes.h"
 #include "insn-opinit.h"
 
-
 /* INTEGER_CST values for IFN_UNIQUE function arg-0.
 
    UNSPEC: Undifferentiated UNIQUE.
@@ -40,11 +39,9 @@ along with GCC; see the file COPYING3.  If not see
 
    PRIVATE captures variables to be made private at the surrounding parallelism
    level.  */
-#define IFN_UNIQUE_CODES				  \
-  DEF(UNSPEC),	\
-    DEF(OACC_FORK), DEF(OACC_JOIN),		\
-    DEF(OACC_HEAD_MARK), DEF(OACC_TAIL_MARK),	\
-    DEF(OACC_PRIVATE)
+#define IFN_UNIQUE_CODES                                                       \
+  DEF(UNSPEC), DEF(OACC_FORK), DEF(OACC_JOIN), DEF(OACC_HEAD_MARK),            \
+      DEF(OACC_TAIL_MARK), DEF(OACC_PRIVATE)
 
 enum ifn_unique_kind {
 #define DEF(X) IFN_UNIQUE_##X
@@ -69,8 +66,7 @@ enum ifn_unique_kind {
      CHUNK_NO - chunk number
      MASK - partitioning mask.  */
 
-#define IFN_GOACC_LOOP_CODES \
-  DEF(CHUNKS), DEF(STEP), DEF(OFFSET), DEF(BOUND)
+#define IFN_GOACC_LOOP_CODES DEF(CHUNKS), DEF(STEP), DEF(OFFSET), DEF(BOUND)
 enum ifn_goacc_loop_kind {
 #define DEF(X) IFN_GOACC_LOOP_##X
   IFN_GOACC_LOOP_CODES
@@ -92,7 +88,7 @@ enum ifn_goacc_loop_kind {
    In general the return value is LOCAL_VAR, which creates a data
    dependency between calls operating on the same reduction.  */
 
-#define IFN_GOACC_REDUCTION_CODES \
+#define IFN_GOACC_REDUCTION_CODES                                              \
   DEF(SETUP), DEF(INIT), DEF(FINI), DEF(TEARDOWN)
 enum ifn_goacc_reduction_kind {
 #define DEF(X) IFN_GOACC_REDUCTION_##X
@@ -102,48 +98,41 @@ enum ifn_goacc_reduction_kind {
 
 /* Initialize internal function tables.  */
 
-extern void init_internal_fns ();
+extern void init_internal_fns();
 
 /* Return the name of internal function FN.  The name is only meaningful
    for dumps; it has no linkage.  */
 
 extern const char *const internal_fn_name_array[];
 
-inline const char *
-internal_fn_name (enum internal_fn fn)
-{
-  return internal_fn_name_array[(int) fn];
+inline const char *internal_fn_name(enum internal_fn fn) {
+  return internal_fn_name_array[(int)fn];
 }
 
-extern internal_fn lookup_internal_fn (const char *);
-extern void lookup_hilo_internal_fn (internal_fn, internal_fn *, internal_fn *);
-extern void lookup_evenodd_internal_fn (internal_fn, internal_fn *,
-					internal_fn *);
-extern optab direct_internal_fn_optab (internal_fn, tree_pair);
+extern internal_fn lookup_internal_fn(const char *);
+extern void lookup_hilo_internal_fn(internal_fn, internal_fn *, internal_fn *);
+extern void lookup_evenodd_internal_fn(internal_fn, internal_fn *,
+                                       internal_fn *);
+extern optab direct_internal_fn_optab(internal_fn, tree_pair);
 
 /* Return the ECF_* flags for function FN.  */
 
 extern const int internal_fn_flags_array[];
 
-inline int
-internal_fn_flags (enum internal_fn fn)
-{
-  return internal_fn_flags_array[(int) fn];
+inline int internal_fn_flags(enum internal_fn fn) {
+  return internal_fn_flags_array[(int)fn];
 }
 
 /* Return fnspec for function FN.  */
 
 extern GTY(()) const_tree internal_fn_fnspec_array[IFN_LAST + 1];
 
-inline const_tree
-internal_fn_fnspec (enum internal_fn fn)
-{
-  return internal_fn_fnspec_array[(int) fn];
+inline const_tree internal_fn_fnspec(enum internal_fn fn) {
+  return internal_fn_fnspec_array[(int)fn];
 }
 
 /* Describes an internal function that maps directly to an optab.  */
-struct direct_internal_fn_info
-{
+struct direct_internal_fn_info {
   /* optabs can be parameterized by one or two modes.  These fields describe
      how to select those modes from the types of the return value and
      arguments.  A value of -1 says that the mode is determined by the
@@ -166,9 +155,7 @@ extern const direct_internal_fn_info direct_internal_fn_array[IFN_LAST + 1];
 
 /* Return true if FN is mapped directly to an optab.  */
 
-inline bool
-direct_internal_fn_p (internal_fn fn)
-{
+inline bool direct_internal_fn_p(internal_fn fn) {
   return direct_internal_fn_array[fn].type0 >= -1;
 }
 
@@ -177,79 +164,73 @@ direct_internal_fn_p (internal_fn fn)
    number of elements.  E.g. we can vectorize an IFN_SQRT on floats as an
    IFN_SQRT on vectors of N floats.  */
 
-inline bool
-vectorizable_internal_fn_p (internal_fn fn)
-{
+inline bool vectorizable_internal_fn_p(internal_fn fn) {
   return direct_internal_fn_array[fn].vectorizable;
 }
 
 /* Return optab information about internal function FN.  Only meaningful
    if direct_internal_fn_p (FN).  */
 
-inline const direct_internal_fn_info &
-direct_internal_fn (internal_fn fn)
-{
-  gcc_checking_assert (direct_internal_fn_p (fn));
+inline const direct_internal_fn_info &direct_internal_fn(internal_fn fn) {
+  gcc_checking_assert(direct_internal_fn_p(fn));
   return direct_internal_fn_array[fn];
 }
 
-extern tree_pair direct_internal_fn_types (internal_fn, tree, tree *);
-extern tree_pair direct_internal_fn_types (internal_fn, gcall *);
-extern bool direct_internal_fn_supported_p (internal_fn, tree_pair,
-					    optimization_type);
-extern bool direct_internal_fn_supported_p (internal_fn, tree,
-					    optimization_type);
-extern bool direct_internal_fn_supported_p (gcall *, optimization_type);
+extern tree_pair direct_internal_fn_types(internal_fn, tree, tree *);
+extern tree_pair direct_internal_fn_types(internal_fn, gcall *);
+extern bool direct_internal_fn_supported_p(internal_fn, tree_pair,
+                                           optimization_type);
+extern bool direct_internal_fn_supported_p(internal_fn, tree,
+                                           optimization_type);
+extern bool direct_internal_fn_supported_p(gcall *, optimization_type);
 
 /* Return true if FN is supported for types TYPE0 and TYPE1 when the
    optimization type is OPT_TYPE.  The types are those associated with
    the "type0" and "type1" fields of FN's direct_internal_fn_info
    structure.  */
 
-inline bool
-direct_internal_fn_supported_p (internal_fn fn, tree type0, tree type1,
-				optimization_type opt_type)
-{
-  return direct_internal_fn_supported_p (fn, tree_pair (type0, type1),
-					 opt_type);
+inline bool direct_internal_fn_supported_p(internal_fn fn, tree type0,
+                                           tree type1,
+                                           optimization_type opt_type) {
+  return direct_internal_fn_supported_p(fn, tree_pair(type0, type1), opt_type);
 }
 
-extern bool commutative_binary_fn_p (internal_fn);
-extern bool commutative_ternary_fn_p (internal_fn);
-extern int first_commutative_argument (internal_fn);
-extern bool associative_binary_fn_p (internal_fn);
-extern bool widening_fn_p (code_helper);
-extern bool widening_evenodd_fn_p (code_helper);
+extern bool commutative_binary_fn_p(internal_fn);
+extern bool commutative_ternary_fn_p(internal_fn);
+extern int first_commutative_argument(internal_fn);
+extern bool associative_binary_fn_p(internal_fn);
+extern bool widening_fn_p(code_helper);
+extern bool widening_evenodd_fn_p(code_helper);
 
-extern bool set_edom_supported_p (void);
+extern bool set_edom_supported_p(void);
 
-extern internal_fn get_conditional_internal_fn (tree_code);
-extern internal_fn get_conditional_internal_fn (internal_fn);
-extern internal_fn get_len_internal_fn (internal_fn);
-extern internal_fn get_conditional_len_internal_fn (tree_code);
-extern tree_code conditional_internal_fn_code (internal_fn);
-extern internal_fn get_unconditional_internal_fn (internal_fn);
-extern bool can_interpret_as_conditional_op_p (gimple *, tree *,
-					       tree_code *, tree (&)[3],
-					       tree *, tree *, tree *);
+extern internal_fn get_conditional_internal_fn(tree_code);
+extern internal_fn get_conditional_internal_fn(internal_fn);
+extern internal_fn get_len_internal_fn(internal_fn);
+extern internal_fn get_conditional_len_internal_fn(tree_code);
+extern tree_code conditional_internal_fn_code(internal_fn);
+extern internal_fn get_unconditional_internal_fn(internal_fn);
+extern bool can_interpret_as_conditional_op_p(gimple *, tree *, tree_code *,
+                                              tree (&)[3], tree *, tree *,
+                                              tree *);
 
-extern bool internal_load_fn_p (internal_fn);
-extern bool internal_store_fn_p (internal_fn);
-extern bool internal_gather_scatter_fn_p (internal_fn);
-extern int internal_fn_mask_index (internal_fn);
-extern int internal_fn_len_index (internal_fn);
-extern int internal_fn_else_index (internal_fn);
-extern int internal_fn_stored_value_index (internal_fn);
-extern int internal_fn_offset_index (internal_fn fn);
-extern int internal_fn_scale_index (internal_fn fn);
-extern int internal_fn_alias_ptr_index (internal_fn fn);
-extern bool internal_gather_scatter_fn_supported_p (internal_fn, tree,
-						    tree, tree, int,
-						    vec<int> * = nullptr);
-extern bool internal_strided_fn_supported_p (internal_fn, tree,
-					      vec<int> * = nullptr);
-extern bool internal_check_ptrs_fn_supported_p (internal_fn, tree,
-						poly_uint64, unsigned int);
+extern bool internal_load_fn_p(internal_fn);
+extern bool internal_store_fn_p(internal_fn);
+extern bool internal_gather_scatter_fn_p(internal_fn);
+extern int internal_fn_mask_index(internal_fn);
+extern int internal_fn_len_index(internal_fn);
+extern int internal_fn_else_index(internal_fn);
+extern int internal_fn_stored_value_index(internal_fn);
+extern int internal_fn_offset_index(internal_fn fn);
+extern int internal_fn_scale_index(internal_fn fn);
+extern int internal_fn_alias_ptr_index(internal_fn fn);
+extern bool internal_gather_scatter_fn_supported_p(internal_fn, tree, tree,
+                                                   tree, int,
+                                                   vec<int> * = nullptr);
+extern bool internal_strided_fn_supported_p(internal_fn, tree,
+                                            vec<int> * = nullptr);
+extern bool internal_check_ptrs_fn_supported_p(internal_fn, tree, poly_uint64,
+                                               unsigned int);
 
 /* Integer constants representing which else value is supported for masked load
    functions.  */
@@ -257,36 +238,35 @@ extern bool internal_check_ptrs_fn_supported_p (internal_fn, tree,
 #define MASK_LOAD_ELSE_M1 -2
 #define MASK_LOAD_ELSE_UNDEFINED -3
 
-extern void get_supported_else_vals (enum insn_code, unsigned, vec<int> &);
-extern bool supported_else_val_p (enum insn_code, unsigned, int);
+extern void get_supported_else_vals(enum insn_code, unsigned, vec<int> &);
+extern bool supported_else_val_p(enum insn_code, unsigned, int);
 
 #define VECT_PARTIAL_BIAS_UNSUPPORTED 127
 
-extern signed char internal_len_load_store_bias (internal_fn ifn,
-						 machine_mode);
+extern signed char internal_len_load_store_bias(internal_fn ifn, machine_mode);
 
-extern void expand_addsub_overflow (location_t, tree_code, tree, tree, tree,
-				    bool, bool, bool, bool, tree *);
-extern void expand_internal_call (gcall *);
-extern void expand_internal_call (internal_fn, gcall *);
-extern void expand_PHI (internal_fn, gcall *);
-extern void expand_SHUFFLEVECTOR (internal_fn, gcall *);
-extern void expand_SPACESHIP (internal_fn, gcall *);
-extern void expand_TRAP (internal_fn, gcall *);
-extern void expand_ASSUME (internal_fn, gcall *);
-extern void expand_MASK_CALL (internal_fn, gcall *);
-extern void expand_MULBITINT (internal_fn, gcall *);
-extern void expand_DIVMODBITINT (internal_fn, gcall *);
-extern void expand_FLOATTOBITINT (internal_fn, gcall *);
-extern void expand_BITINTTOFLOAT (internal_fn, gcall *);
-extern void expand_CLRSB (internal_fn, gcall *);
-extern void expand_CLZ (internal_fn, gcall *);
-extern void expand_CTZ (internal_fn, gcall *);
-extern void expand_FFS (internal_fn, gcall *);
-extern void expand_PARITY (internal_fn, gcall *);
-extern void expand_POPCOUNT (internal_fn, gcall *);
+extern void expand_addsub_overflow(location_t, tree_code, tree, tree, tree,
+                                   bool, bool, bool, bool, tree *);
+extern void expand_internal_call(gcall *);
+extern void expand_internal_call(internal_fn, gcall *);
+extern void expand_PHI(internal_fn, gcall *);
+extern void expand_SHUFFLEVECTOR(internal_fn, gcall *);
+extern void expand_SPACESHIP(internal_fn, gcall *);
+extern void expand_TRAP(internal_fn, gcall *);
+extern void expand_ASSUME(internal_fn, gcall *);
+extern void expand_MASK_CALL(internal_fn, gcall *);
+extern void expand_MULBITINT(internal_fn, gcall *);
+extern void expand_DIVMODBITINT(internal_fn, gcall *);
+extern void expand_FLOATTOBITINT(internal_fn, gcall *);
+extern void expand_BITINTTOFLOAT(internal_fn, gcall *);
+extern void expand_CLRSB(internal_fn, gcall *);
+extern void expand_CLZ(internal_fn, gcall *);
+extern void expand_CTZ(internal_fn, gcall *);
+extern void expand_FFS(internal_fn, gcall *);
+extern void expand_PARITY(internal_fn, gcall *);
+extern void expand_POPCOUNT(internal_fn, gcall *);
 
-extern bool vectorized_internal_fn_supported_p (internal_fn, tree);
+extern bool vectorized_internal_fn_supported_p(internal_fn, tree);
 
 enum {
   ATOMIC_OP_FETCH_CMP_0_EQ = 0,

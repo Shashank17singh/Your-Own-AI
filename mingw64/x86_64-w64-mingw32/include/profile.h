@@ -1,5 +1,4 @@
 /*	$NetBSD: profile.h,v 1.6 1995/03/28 18:17:08 jtc Exp $	*/
-
 /*
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -30,33 +29,25 @@
  *
  *	@(#)profile.h	8.1 (Berkeley) 6/11/93
  */
-
 /*
  * This file is taken from Cygwin distribution. Please keep it in sync.
  * The differences should be within __MINGW32__ guard.
  */
-
 #include <_mingw_mac.h>
-
 /* If compiler doesn't inline, at least avoid passing args on the stack. */
 #ifndef _WIN64
-#define _MCOUNT_CALL __attribute__ ((regparm (2)))
+#define _MCOUNT_CALL __attribute__((regparm(2)))
 #else
 #define _MCOUNT_CALL
 #endif
-
-#define _MCOUNT_DECL __attribute__((gnu_inline)) __inline__ \
-   void _MCOUNT_CALL _mcount_private
-
+#define _MCOUNT_DECL                                                           \
+  __attribute__((gnu_inline)) __inline__ void _MCOUNT_CALL _mcount_private
 /* gcc always assumes the mcount public symbol has a single leading underscore
    for our target.  See gcc/config/i386.h; it isn't overridden in
    config/i386/cygming.h or any other places for mingw */
 extern void __MINGW_LSYMBOL(mcount)(void);
-
 /* FIXME: This works, but it would be cleaner to convert mcount into an
    assembler stub that calls an extern  _mcount.
    Older versions of GCC (pre-4.1) will still fail with regparm since the
    compiler used %edx to store an unneeded counter variable.  */
-
-#define	MCOUNT
-
+#define MCOUNT

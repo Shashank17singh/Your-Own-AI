@@ -26,8 +26,7 @@ along with GCC; see the file COPYING3.  If not see
 extern "C" {
 #endif /* __cplusplus */
 
-struct replay_options
-{
+struct replay_options {
   bool m_echo_file;
   bool m_json_comments;
   bool m_verbose;
@@ -43,18 +42,17 @@ struct replay_options
    in the file.
    If ECHO_FILE, then dump the filename and contents to stderr.  */
 
-extern int
-sarif_replay_path (const char *sarif_file,
-		   diagnostic_manager *output_manager,
-		   diagnostic_manager *control_manager,
-		   const replay_options *options)
-  LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL (1)
-  LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL (2)
-  LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL (3)
-  LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL (4);
+extern int sarif_replay_path(const char *sarif_file,
+                             diagnostic_manager *output_manager,
+                             diagnostic_manager *control_manager,
+                             const replay_options *options)
+    LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL(1)
+        LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL(2)
+            LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL(3)
+                LIBGDIAGNOSTICS_PARAM_MUST_BE_NON_NULL(4);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif  /* LIBSARIFREPLAY_H  */
+#endif /* LIBSARIFREPLAY_H  */

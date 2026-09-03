@@ -24,7 +24,7 @@
 namespace pointer_analysis {
 
 /* Solve the constraint set.  */
-void solve_constraints (void);
+void solve_constraints(void);
 
 } // namespace pointer_analysis
 

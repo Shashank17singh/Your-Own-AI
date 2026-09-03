@@ -29,14 +29,12 @@ namespace topics {
 
 namespace pass_events {
 
-struct before_pass
-{
+struct before_pass {
   opt_pass *pass;
   function *fun;
 };
 
-struct after_pass
-{
+struct after_pass {
   opt_pass *pass;
   function *fun;
 };
@@ -44,16 +42,15 @@ struct after_pass
 /* Abstract base class for a subscriber to messages about
    GCC optimization passes.  */
 
-struct subscriber
-{
-  virtual ~subscriber () = default;
+struct subscriber {
+  virtual ~subscriber() = default;
 
-  virtual void on_message (const before_pass &) = 0;
-  virtual void on_message (const after_pass &) = 0;
+  virtual void on_message(const before_pass &) = 0;
+  virtual void on_message(const after_pass &) = 0;
 };
 
-} // namespace gcc::topics::pass_events
-} // namespace gcc::topics
+} // namespace pass_events
+} // namespace topics
 } // namespace gcc
 
 #endif /* ! GCC_TOPICS_PASS_EVENTS_H */

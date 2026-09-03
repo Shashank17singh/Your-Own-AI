@@ -37,28 +37,27 @@ namespace ana {
    The known_function subclasses themselves have responsibility for
    determining the outcome(s) of the call.  */
 
-class known_function_manager : public log_user
-{
+class known_function_manager : public log_user {
 public:
-  known_function_manager (logger *logger);
-  ~known_function_manager ();
+  known_function_manager(logger *logger);
+  ~known_function_manager();
 
-  void add (const char *name, std::unique_ptr<known_function> kf);
-  void add_std_ns (const char *name, std::unique_ptr<known_function> kf);
-  void add (enum built_in_function name, std::unique_ptr<known_function> kf);
-  void add (enum internal_fn ifn, std::unique_ptr<known_function> kf);
+  void add(const char *name, std::unique_ptr<known_function> kf);
+  void add_std_ns(const char *name, std::unique_ptr<known_function> kf);
+  void add(enum built_in_function name, std::unique_ptr<known_function> kf);
+  void add(enum internal_fn ifn, std::unique_ptr<known_function> kf);
 
-  const known_function *get_match (tree fndecl, const call_details &cd) const;
-  const known_function *get_internal_fn (enum internal_fn) const;
+  const known_function *get_match(tree fndecl, const call_details &cd) const;
+  const known_function *get_internal_fn(enum internal_fn) const;
 
 private:
-  DISABLE_COPY_AND_ASSIGN (known_function_manager);
+  DISABLE_COPY_AND_ASSIGN(known_function_manager);
 
-  const known_function *get_normal_builtin (enum built_in_function name) const;
+  const known_function *get_normal_builtin(enum built_in_function name) const;
   const known_function *
-  get_normal_builtin (const builtin_known_function *builtin_kf) const;
-  const known_function *get_by_identifier (tree identifier) const;
-  const known_function *get_by_identifier_in_std_ns (tree identifier) const;
+  get_normal_builtin(const builtin_known_function *builtin_kf) const;
+  const known_function *get_by_identifier(tree identifier) const;
+  const known_function *get_by_identifier_in_std_ns(tree identifier) const;
 
   /* Map from identifier to known_function instance.
      Has ownership of the latter.  */
@@ -71,7 +70,7 @@ private:
   known_function *m_combined_fns_arr[CFN_LAST];
 };
 
-extern std::unique_ptr<known_function> make_kf_strlen ();
+extern std::unique_ptr<known_function> make_kf_strlen();
 
 } // namespace ana
 

@@ -8,15 +8,15 @@ from tkinter import Tk
 
 class Test(unittest.TestCase):
 
-##    @classmethod
-##    def setUpClass(cls):
-##        requires('gui')
-##        cls.root = Tk()
-##
-##    @classmethod
-##    def tearDownClass(cls):
-##        cls.root.destroy()
-##        del cls.root
+    ##    @classmethod
+    ##    def setUpClass(cls):
+    ##        requires('gui')
+    ##        cls.root = Tk()
+    ##
+    ##    @classmethod
+    ##    def tearDownClass(cls):
+    ##        cls.root.destroy()
+    ##        del cls.root
 
     def test_init(self):
         self.assertTrue(True)  # Get coverage of import
@@ -24,6 +24,7 @@ class Test(unittest.TestCase):
 
 # Classes GUIProxy, IdbAdapter, FrameProxy, CodeProxy, DictProxy,
 # GUIAdapter, IdbProxy plus 7 module functions.
+
 
 class IdbAdapterTest(unittest.TestCase):
 
@@ -33,11 +34,11 @@ class IdbAdapterTest(unittest.TestCase):
             def __repr__(self):
                 return self.length
 
-        debugger_r.dicttable[0] = {'BinData': BinData()}
+        debugger_r.dicttable[0] = {"BinData": BinData()}
         idb = debugger_r.IdbAdapter(None)
-        self.assertTrue(idb.dict_item(0, 'BinData'))
+        self.assertTrue(idb.dict_item(0, "BinData"))
         debugger_r.dicttable.clear()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

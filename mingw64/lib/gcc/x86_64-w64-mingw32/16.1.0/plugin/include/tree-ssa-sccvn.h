@@ -22,15 +22,13 @@
 #define TREE_SSA_SCCVN_H
 
 /* In tree-ssa-sccvn.cc  */
-bool expressions_equal_p (tree, tree, bool = true);
-
+bool expressions_equal_p(tree, tree, bool = true);
 
 /* TOP of the VN lattice.  */
 extern tree VN_TOP;
 
 /* A predicated value.  */
-struct vn_pval
-{
+struct vn_pval {
   vn_pval *next;
   /* The value of the expression this is attached to is RESULT in
      case the expression is computed dominated by one of the blocks
@@ -45,8 +43,7 @@ struct vn_pval
    and hashcode is stored to avoid having to calculate it
    repeatedly.  */
 
-typedef struct vn_nary_op_s
-{
+typedef struct vn_nary_op_s {
   vn_nary_op_s *next;
   vn_nary_op_s *unwind_to;
   /* Unique identify that all expressions with the same value have. */
@@ -56,10 +53,10 @@ typedef struct vn_nary_op_s
   hashval_t hashcode;
   unsigned predicated_values : 1;
   union {
-      /* If ! predicated_values this is the value of the expression.  */
-      tree result;
-      /* If predicated_values this is a list of values of the expression.  */
-      vn_pval *values;
+    /* If ! predicated_values this is the value of the expression.  */
+    tree result;
+    /* If predicated_values this is a list of values of the expression.  */
+    vn_pval *values;
   } u;
   tree type;
   tree op[1];
@@ -68,10 +65,8 @@ typedef const struct vn_nary_op_s *const_vn_nary_op_t;
 
 /* Return the size of a vn_nary_op_t with LENGTH operands.  */
 
-inline size_t
-sizeof_vn_nary_op (unsigned int length)
-{
-  return sizeof (struct vn_nary_op_s) + sizeof (tree) * length - sizeof (tree);
+inline size_t sizeof_vn_nary_op(unsigned int length) {
+  return sizeof(struct vn_nary_op_s) + sizeof(tree) * length - sizeof(tree);
 }
 
 /* Phi nodes in the hashtable consist of their non-VN_TOP phi
@@ -80,8 +75,7 @@ sizeof_vn_nary_op (unsigned int length)
    calculate it repeatedly.  Phi nodes not in the same block are never
    considered equivalent.  */
 
-typedef struct vn_phi_s
-{
+typedef struct vn_phi_s {
   vn_phi_s *next;
   /* Unique identifier that all expressions with the same value have. */
   unsigned int value_id;
@@ -103,8 +97,7 @@ typedef const struct vn_phi_s *const_vn_phi_t;
    The operands are there to store the information that makes up the
    portion of the addressing calculation that opcode performs.  */
 
-typedef struct vn_reference_op_struct
-{
+typedef struct vn_reference_op_struct {
   ENUM_BITFIELD(tree_code) opcode : 16;
   /* Dependence info, used for [TARGET_]MEM_REF only.  For internal
      function calls clique is also used for the internal function code.  */
@@ -123,9 +116,7 @@ typedef struct vn_reference_op_struct
 typedef vn_reference_op_s *vn_reference_op_t;
 typedef const vn_reference_op_s *const_vn_reference_op_t;
 
-inline unsigned
-vn_ref_op_align_unit (vn_reference_op_t op)
-{
+inline unsigned vn_ref_op_align_unit(vn_reference_op_t op) {
   return op->align ? ((unsigned)1 << (op->align - 1)) / BITS_PER_UNIT : 0;
 }
 
@@ -136,8 +127,7 @@ vn_ref_op_align_unit (vn_reference_op_t op)
    of operands, they access the same memory location. We also store
    the resulting value number, and the hashcode.  */
 
-typedef struct vn_reference_s
-{
+typedef struct vn_reference_s {
   vn_reference_s *next;
   /* Unique identifier that all expressions with the same value have. */
   unsigned int value_id;
@@ -155,47 +145,40 @@ typedef struct vn_reference_s
 } *vn_reference_t;
 typedef const struct vn_reference_s *const_vn_reference_t;
 
-typedef struct vn_constant_s
-{
+typedef struct vn_constant_s {
   unsigned int value_id;
   hashval_t hashcode;
   tree constant;
 } *vn_constant_t;
 
 enum vn_kind { VN_NONE, VN_CONSTANT, VN_NARY, VN_REFERENCE, VN_PHI };
-enum vn_kind vn_get_stmt_kind (gimple *);
+enum vn_kind vn_get_stmt_kind(gimple *);
 
 /* Hash the type TYPE using bits that distinguishes it in the
    types_compatible_p sense.  */
 
-inline hashval_t
-vn_hash_type (tree type)
-{
-  return (INTEGRAL_TYPE_P (type)
-	  + (INTEGRAL_TYPE_P (type)
-	     ? TYPE_PRECISION (type) + TYPE_UNSIGNED (type) : 0));
+inline hashval_t vn_hash_type(tree type) {
+  return (
+      INTEGRAL_TYPE_P(type) +
+      (INTEGRAL_TYPE_P(type) ? TYPE_PRECISION(type) + TYPE_UNSIGNED(type) : 0));
 }
 
 /* Hash the constant CONSTANT with distinguishing type incompatible
    constants in the types_compatible_p sense.  */
 
-inline hashval_t
-vn_hash_constant_with_type (tree constant)
-{
+inline hashval_t vn_hash_constant_with_type(tree constant) {
   inchash::hash hstate;
-  inchash::add_expr (constant, hstate);
-  hstate.merge_hash (vn_hash_type (TREE_TYPE (constant)));
-  return hstate.end ();
+  inchash::add_expr(constant, hstate);
+  hstate.merge_hash(vn_hash_type(TREE_TYPE(constant)));
+  return hstate.end();
 }
 
 /* Compare the constants C1 and C2 with distinguishing type incompatible
    constants in the types_compatible_p sense.  */
 
-inline bool
-vn_constant_eq_with_type (tree c1, tree c2)
-{
-  return (expressions_equal_p (c1, c2)
-	  && types_compatible_p (TREE_TYPE (c1), TREE_TYPE (c2)));
+inline bool vn_constant_eq_with_type(tree c1, tree c2) {
+  return (expressions_equal_p(c1, c2) &&
+          types_compatible_p(TREE_TYPE(c1), TREE_TYPE(c2)));
 }
 
 /* Instead of having a local availability lattice for each basic-block
@@ -208,8 +191,7 @@ vn_constant_eq_with_type (tree c1, tree c2)
    We prepend to this chain in RPO order thus for iteration we can simply
    remove the last entries.
    LOCATION is the basic-block index and LEADER is its SSA name version.  */
-struct vn_avail
-{
+struct vn_avail {
   vn_avail *next;
   /* The basic-block LEADER is made available.  */
   int location;
@@ -219,8 +201,7 @@ struct vn_avail
   struct vn_ssa_aux *next_undo;
 };
 
-typedef struct vn_ssa_aux
-{
+typedef struct vn_ssa_aux {
   /* SSA name this vn_ssa_aux is associated with in the lattice.  */
   tree name;
   /* Value number. This may be an SSA name or a constant.  */
@@ -247,79 +228,74 @@ typedef struct vn_ssa_aux
 enum vn_lookup_kind { VN_NOWALK, VN_WALK, VN_WALKREWRITE };
 
 /* Return the value numbering info for an SSA_NAME.  */
-bool has_VN_INFO (tree);
-extern vn_ssa_aux_t VN_INFO (tree);
-tree vn_get_expr_for (tree);
-void scc_vn_restore_ssa_info (void);
-vn_nary_op_t alloc_vn_nary_op_noinit (unsigned int, struct obstack *);
-unsigned int vn_nary_length_from_stmt (gimple *);
-void init_vn_nary_op_from_stmt (vn_nary_op_t, gassign *);
-hashval_t vn_nary_op_compute_hash (const vn_nary_op_t);
-bool vn_pp_nary_for_addr (const vec<vn_reference_op_s>&, tree[2]);
-tree vn_nary_op_lookup_stmt (gimple *, vn_nary_op_t *);
-tree vn_nary_op_lookup_pieces (unsigned int, enum tree_code,
-			       tree, tree *, vn_nary_op_t *);
-vn_nary_op_t vn_nary_op_insert_pieces (unsigned int, enum tree_code,
-				       tree, tree *, tree, unsigned int);
-bool ao_ref_init_from_vn_reference (ao_ref *, alias_set_type, alias_set_type,
-				    tree, const vec<vn_reference_op_s> &);
-vec<vn_reference_op_s> vn_reference_operands_for_lookup (tree);
-tree vn_reference_lookup_pieces (tree, alias_set_type, alias_set_type, tree,
-				 vec<vn_reference_op_s> ,
-				 vn_reference_t *, vn_lookup_kind);
-tree vn_reference_lookup (tree, tree, vn_lookup_kind, vn_reference_t *, bool,
-			  tree * = NULL, tree = NULL_TREE, bool = false);
-void vn_reference_lookup_call (gcall *, vn_reference_t *, vn_reference_t);
-vn_reference_t vn_reference_insert_pieces (tree, alias_set_type, alias_set_type,
-					   poly_int64, poly_int64,
-					   tree, vec<vn_reference_op_s>,
-					   tree, unsigned int);
-void copy_reference_ops_from_ref (tree, vec<vn_reference_op_s> *);
-hashval_t vn_reference_compute_hash (const vn_reference_t vr1);
+bool has_VN_INFO(tree);
+extern vn_ssa_aux_t VN_INFO(tree);
+tree vn_get_expr_for(tree);
+void scc_vn_restore_ssa_info(void);
+vn_nary_op_t alloc_vn_nary_op_noinit(unsigned int, struct obstack *);
+unsigned int vn_nary_length_from_stmt(gimple *);
+void init_vn_nary_op_from_stmt(vn_nary_op_t, gassign *);
+hashval_t vn_nary_op_compute_hash(const vn_nary_op_t);
+bool vn_pp_nary_for_addr(const vec<vn_reference_op_s> &, tree[2]);
+tree vn_nary_op_lookup_stmt(gimple *, vn_nary_op_t *);
+tree vn_nary_op_lookup_pieces(unsigned int, enum tree_code, tree, tree *,
+                              vn_nary_op_t *);
+vn_nary_op_t vn_nary_op_insert_pieces(unsigned int, enum tree_code, tree,
+                                      tree *, tree, unsigned int);
+bool ao_ref_init_from_vn_reference(ao_ref *, alias_set_type, alias_set_type,
+                                   tree, const vec<vn_reference_op_s> &);
+vec<vn_reference_op_s> vn_reference_operands_for_lookup(tree);
+tree vn_reference_lookup_pieces(tree, alias_set_type, alias_set_type, tree,
+                                vec<vn_reference_op_s>, vn_reference_t *,
+                                vn_lookup_kind);
+tree vn_reference_lookup(tree, tree, vn_lookup_kind, vn_reference_t *, bool,
+                         tree * = NULL, tree = NULL_TREE, bool = false);
+void vn_reference_lookup_call(gcall *, vn_reference_t *, vn_reference_t);
+vn_reference_t vn_reference_insert_pieces(tree, alias_set_type, alias_set_type,
+                                          poly_int64, poly_int64, tree,
+                                          vec<vn_reference_op_s>, tree,
+                                          unsigned int);
+void copy_reference_ops_from_ref(tree, vec<vn_reference_op_s> *);
+hashval_t vn_reference_compute_hash(const vn_reference_t vr1);
 
-void print_vn_reference_ops (FILE *, const vec<vn_reference_op_s>);
+void print_vn_reference_ops(FILE *, const vec<vn_reference_op_s>);
 
-bool vn_nary_op_eq (const_vn_nary_op_t const vno1,
-		    const_vn_nary_op_t const vno2);
-bool vn_nary_may_trap (vn_nary_op_t);
-bool vn_reference_may_trap (vn_reference_t);
-bool vn_reference_eq (const_vn_reference_t const, const_vn_reference_t const,
-		      bool = false);
+bool vn_nary_op_eq(const_vn_nary_op_t const vno1,
+                   const_vn_nary_op_t const vno2);
+bool vn_nary_may_trap(vn_nary_op_t);
+bool vn_reference_may_trap(vn_reference_t);
+bool vn_reference_eq(const_vn_reference_t const, const_vn_reference_t const,
+                     bool = false);
 
-unsigned int get_max_value_id (void);
-unsigned int get_max_constant_value_id (void);
-unsigned int get_next_value_id (void);
-unsigned int get_next_constant_value_id (void);
-unsigned int get_constant_value_id (tree);
-unsigned int get_or_alloc_constant_value_id (tree);
+unsigned int get_max_value_id(void);
+unsigned int get_max_constant_value_id(void);
+unsigned int get_next_value_id(void);
+unsigned int get_next_constant_value_id(void);
+unsigned int get_constant_value_id(tree);
+unsigned int get_or_alloc_constant_value_id(tree);
 
 /* Return true if V is a value id for a constant.  */
-inline bool
-value_id_constant_p (unsigned int v)
-{
-  return (int)v < 0;
-}
+inline bool value_id_constant_p(unsigned int v) { return (int)v < 0; }
 
-tree fully_constant_vn_reference_p (vn_reference_t);
-tree vn_nary_simplify (vn_nary_op_t);
+tree fully_constant_vn_reference_p(vn_reference_t);
+tree vn_nary_simplify(vn_nary_op_t);
 
-unsigned do_rpo_vn (function *, edge, bitmap,
-		    /* iterate */ bool = false,
-		    /* eliminate */ bool = true,
-		    /* skip_entry_phis */ bool = false,
-		    vn_lookup_kind = VN_WALKREWRITE);
+unsigned do_rpo_vn(function *, edge, bitmap,
+                   /* iterate */ bool = false,
+                   /* eliminate */ bool = true,
+                   /* skip_entry_phis */ bool = false,
+                   vn_lookup_kind = VN_WALKREWRITE);
 
 /* Private interface for PRE.  */
-void run_rpo_vn (vn_lookup_kind);
-unsigned eliminate_with_rpo_vn (bitmap);
-void free_rpo_vn (void);
+void run_rpo_vn(vn_lookup_kind);
+unsigned eliminate_with_rpo_vn(bitmap);
+void free_rpo_vn(void);
 
 /* Valueize NAME if it is an SSA name, otherwise just return it.  This hook
    is initialized by run_scc_vn.  */
-extern tree (*vn_valueize) (tree);
+extern tree (*vn_valueize)(tree);
 
 /* Context that valueization should operate on.  */
 extern basic_block vn_context_bb;
-
 
 #endif /* TREE_SSA_SCCVN_H  */

@@ -39,40 +39,40 @@
  * #yasm_arch implementation of an effective address.
  */
 struct yasm_effaddr {
-    yasm_value disp;            /**< address displacement */
+  yasm_value disp; /**< address displacement */
 
-    /** Segment register override (0 if none). */
-    uintptr_t segreg;
+  /** Segment register override (0 if none). */
+  uintptr_t segreg;
 
-    /** 1 if length of disp must be >0. */
-    unsigned int need_nonzero_len:1;
+  /** 1 if length of disp must be >0. */
+  unsigned int need_nonzero_len : 1;
 
-    /** 1 if a displacement should be present in the output. */
-    unsigned int need_disp:1;
+  /** 1 if a displacement should be present in the output. */
+  unsigned int need_disp : 1;
 
-    /** 1 if reg*2 should not be split into reg+reg. (0 if not).
-     * This flag indicates (for architectures that support complex effective
-     * addresses such as x86) if various types of complex effective addresses
-     * can be split into different forms in order to minimize instruction
-     * length.
-     */
-    unsigned int nosplit:1;
+  /** 1 if reg*2 should not be split into reg+reg. (0 if not).
+   * This flag indicates (for architectures that support complex effective
+   * addresses such as x86) if various types of complex effective addresses
+   * can be split into different forms in order to minimize instruction
+   * length.
+   */
+  unsigned int nosplit : 1;
 
-    /** 1 if effective address is /definitely/ an effective address.
-     * This is used in e.g. the GAS parser to differentiate
-     * between "expr" (which might or might not be an effective address) and
-     * "expr(,1)" (which is definitely an effective address).
-     */
-    unsigned int strong:1;
+  /** 1 if effective address is /definitely/ an effective address.
+   * This is used in e.g. the GAS parser to differentiate
+   * between "expr" (which might or might not be an effective address) and
+   * "expr(,1)" (which is definitely an effective address).
+   */
+  unsigned int strong : 1;
 
-    /** 1 if effective address is forced PC-relative. */
-    unsigned int pc_rel:1;
+  /** 1 if effective address is forced PC-relative. */
+  unsigned int pc_rel : 1;
 
-    /** 1 if effective address is forced non-PC-relative. */
-    unsigned int not_pc_rel:1;
+  /** 1 if effective address is forced non-PC-relative. */
+  unsigned int not_pc_rel : 1;
 
-    /** length of pointed data (in bytes), 0 if unknown. */
-    unsigned int data_len;
+  /** length of pointed data (in bytes), 0 if unknown. */
+  unsigned int data_len;
 };
 
 /** An instruction operand (opaque type). */
@@ -80,55 +80,55 @@ typedef struct yasm_insn_operand yasm_insn_operand;
 
 /** The type of an instruction operand. */
 typedef enum yasm_insn_operand_type {
-    YASM_INSN__OPERAND_REG = 1,     /**< A register. */
-    YASM_INSN__OPERAND_SEGREG,      /**< A segment register. */
-    YASM_INSN__OPERAND_MEMORY,      /**< An effective address
-                                     *   (memory reference). */
-    YASM_INSN__OPERAND_IMM          /**< An immediate or jump target. */
+  YASM_INSN__OPERAND_REG = 1, /**< A register. */
+  YASM_INSN__OPERAND_SEGREG,  /**< A segment register. */
+  YASM_INSN__OPERAND_MEMORY,  /**< An effective address
+                               *   (memory reference). */
+  YASM_INSN__OPERAND_IMM      /**< An immediate or jump target. */
 } yasm_insn_operand_type;
 
 /** An instruction operand. */
 struct yasm_insn_operand {
-    /** Link for building linked list of operands.  \internal */
-    /*@reldef@*/ STAILQ_ENTRY(yasm_insn_operand) link;
+  /** Link for building linked list of operands.  \internal */
+  /*@reldef@*/ STAILQ_ENTRY(yasm_insn_operand) link;
 
-    /** Operand data. */
-    union {
-        uintptr_t reg;      /**< Arch data for reg/segreg. */
-        yasm_effaddr *ea;   /**< Effective address for memory references. */
-        yasm_expr *val;     /**< Value of immediate or jump target. */
-    } data;
+  /** Operand data. */
+  union {
+    uintptr_t reg;    /**< Arch data for reg/segreg. */
+    yasm_effaddr *ea; /**< Effective address for memory references. */
+    yasm_expr *val;   /**< Value of immediate or jump target. */
+  } data;
 
-    yasm_expr *seg;         /**< Segment expression */
+  yasm_expr *seg; /**< Segment expression */
 
-    uintptr_t targetmod;        /**< Arch target modifier, 0 if none. */
+  uintptr_t targetmod; /**< Arch target modifier, 0 if none. */
 
-    /** Specified size of the operand, in bits.  0 if not user-specified. */
-    unsigned int size:16;
+  /** Specified size of the operand, in bits.  0 if not user-specified. */
+  unsigned int size : 16;
 
-    /** Nonzero if dereference.  Used for "*foo" in GAS.
-     * The reason for this is that by default in GAS, an unprefixed value
-     * is a memory address, except for jumps/calls, in which case it needs a
-     * "*" prefix to become a memory address (otherwise it's an immediate).
-     * This isn't knowable in the parser stage, so the parser sets this flag
-     * to indicate the "*" prefix has been used, and the arch needs to adjust
-     * the operand type appropriately depending on the instruction type.
-     */
-    unsigned int deref:1;
+  /** Nonzero if dereference.  Used for "*foo" in GAS.
+   * The reason for this is that by default in GAS, an unprefixed value
+   * is a memory address, except for jumps/calls, in which case it needs a
+   * "*" prefix to become a memory address (otherwise it's an immediate).
+   * This isn't knowable in the parser stage, so the parser sets this flag
+   * to indicate the "*" prefix has been used, and the arch needs to adjust
+   * the operand type appropriately depending on the instruction type.
+   */
+  unsigned int deref : 1;
 
-    /** Nonzero if strict.  Used for "strict foo" in NASM.
-     * This is used to inhibit optimization on otherwise "sized" values.
-     * For example, the user may just want to be explicit with the size on
-     * "push dword 4", but not actually want to force the immediate size to
-     * 4 bytes (rather wanting the optimizer to optimize it down to 1 byte as
-     * though "dword" was not specified).  To indicate the immediate should
-     * actually be forced to 4 bytes, the user needs to write
-     * "push strict dword 4", which sets this flag.
-     */
-    unsigned int strict:1;
+  /** Nonzero if strict.  Used for "strict foo" in NASM.
+   * This is used to inhibit optimization on otherwise "sized" values.
+   * For example, the user may just want to be explicit with the size on
+   * "push dword 4", but not actually want to force the immediate size to
+   * 4 bytes (rather wanting the optimizer to optimize it down to 1 byte as
+   * though "dword" was not specified).  To indicate the immediate should
+   * actually be forced to 4 bytes, the user needs to write
+   * "push strict dword 4", which sets this flag.
+   */
+  unsigned int strict : 1;
 
-    /** Operand type. */
-    unsigned int type:4;
+  /** Operand type. */
+  unsigned int type : 4;
 };
 
 /** Base structure for "instruction" bytecodes.  These are the mnenomic
@@ -137,18 +137,18 @@ struct yasm_insn_operand {
  * #yasm_arch implementation of mnenomic instruction bytecodes.
  */
 struct yasm_insn {
-    /** Linked list of operands. */
-    /*@reldef@*/ STAILQ_HEAD(yasm_insn_operands, yasm_insn_operand) operands;
+  /** Linked list of operands. */
+  /*@reldef@*/ STAILQ_HEAD(yasm_insn_operands, yasm_insn_operand) operands;
 
-    /** Array of prefixes. */
-    /*@null@*/ uintptr_t *prefixes;
+  /** Array of prefixes. */
+  /*@null@*/ uintptr_t *prefixes;
 
-    /** Array of segment prefixes. */
-    /*@null@*/ uintptr_t *segregs;
+  /** Array of segment prefixes. */
+  /*@null@*/ uintptr_t *segregs;
 
-    unsigned int num_operands;       /**< Number of operands. */
-    unsigned int num_prefixes;       /**< Number of prefixes. */
-    unsigned int num_segregs;        /**< Number of segment prefixes. */
+  unsigned int num_operands; /**< Number of operands. */
+  unsigned int num_prefixes; /**< Number of prefixes. */
+  unsigned int num_segregs;  /**< Number of segment prefixes. */
 };
 
 /** Set segment override for an effective address.
@@ -195,14 +195,14 @@ yasm_insn_operand *yasm_operand_create_imm(/*@only@*/ yasm_expr *val);
  * \return First operand (NULL if no operands).
  */
 yasm_insn_operand *yasm_insn_ops_first(yasm_insn *insn);
-#define yasm_insn_ops_first(insn)   STAILQ_FIRST(&((insn)->operands))
+#define yasm_insn_ops_first(insn) STAILQ_FIRST(&((insn)->operands))
 
 /** Get the next operand in an instruction.
  * \param op            previous operand
  * \return Next operand (NULL if op was the last operand).
  */
 yasm_insn_operand *yasm_insn_op_next(yasm_insn_operand *op);
-#define yasm_insn_op_next(cur)      STAILQ_NEXT(cur, link)
+#define yasm_insn_op_next(cur) STAILQ_NEXT(cur, link)
 
 /** Add operand to the end of an instruction.
  * \note Does not make a copy of the operand; so don't pass this function
@@ -214,9 +214,9 @@ yasm_insn_operand *yasm_insn_op_next(yasm_insn_operand *op);
  *         otherwise NULL.
  */
 YASM_LIB_DECL
-/*@null@*/ yasm_insn_operand *yasm_insn_ops_append
-    (yasm_insn *insn,
-     /*@returned@*/ /*@null@*/ yasm_insn_operand *op);
+/*@null@*/ yasm_insn_operand *
+yasm_insn_ops_append(yasm_insn *insn,
+                     /*@returned@*/ /*@null@*/ yasm_insn_operand *op);
 
 /** Associate a prefix with an instruction.
  * \param insn          instruction
@@ -247,7 +247,7 @@ void yasm_insn_initialize(/*@out@*/ yasm_insn *insn);
  */
 YASM_LIB_DECL
 void yasm_insn_delete(yasm_insn *insn,
-                      void (*ea_destroy) (/*@only@*/ yasm_effaddr *));
+                      void (*ea_destroy)(/*@only@*/ yasm_effaddr *));
 
 /** Print a list of instruction operands.  For debugging purposes.
  * \internal For use by yasm_arch implementations only.

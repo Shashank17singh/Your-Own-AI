@@ -36,30 +36,30 @@
 
 /** Value/parameter pair.  \internal */
 struct yasm_valparam {
-    /*@reldef@*/ STAILQ_ENTRY(yasm_valparam) link;  /**< Next pair in list */
-    /*@owned@*/ /*@null@*/ char *val;           /**< Value */
+  /*@reldef@*/ STAILQ_ENTRY(yasm_valparam) link; /**< Next pair in list */
+  /*@owned@*/ /*@null@*/ char *val;              /**< Value */
 
-    /** Parameter type. */
-    enum yasm_param_type {
-        YASM_PARAM_ID,                          /**< Identifier */
-        YASM_PARAM_STRING,                      /**< String */
-        YASM_PARAM_EXPR                         /**< Expression */
-    } type;                                     /**< Parameter type */
+  /** Parameter type. */
+  enum yasm_param_type {
+    YASM_PARAM_ID,     /**< Identifier */
+    YASM_PARAM_STRING, /**< String */
+    YASM_PARAM_EXPR    /**< Expression */
+  } type;              /**< Parameter type */
 
-    /** Parameter value. */
-    union yasm_param {
-        /*@owned@*/ char *id;                   /**< Identifier */
-        /*@owned@*/ char *str;                  /**< String */
-        /*@owned@*/ yasm_expr *e;               /**< Expression */
-    } param;                                    /**< Parameter */
+  /** Parameter value. */
+  union yasm_param {
+    /*@owned@*/ char *id;     /**< Identifier */
+    /*@owned@*/ char *str;    /**< String */
+    /*@owned@*/ yasm_expr *e; /**< Expression */
+  } param;                    /**< Parameter */
 
-    /** Prefix character that indicates a raw identifier.  When
-     * yasm_vp_string() is called on a #YASM_PARAM_ID, all characters are
-     * returned.  When yasm_vp_id() is called on a #YASM_PARAM_ID, if the
-     * identifier begins with this character, this character is stripped
-     * from the returned value.
-     */
-    char id_prefix;
+  /** Prefix character that indicates a raw identifier.  When
+   * yasm_vp_string() is called on a #YASM_PARAM_ID, all characters are
+   * returned.  When yasm_vp_id() is called on a #YASM_PARAM_ID, if the
+   * identifier begins with this character, this character is stripped
+   * from the returned value.
+   */
+  char id_prefix;
 };
 
 /** Linked list of value/parameter pairs.  \internal */
@@ -67,36 +67,36 @@ struct yasm_valparam {
 
 /** Directive list entry structure. */
 struct yasm_directive {
-    /** Directive name.  GAS directives should include the ".", NASM
-     * directives should just be the raw name (not including the []).
-     * NULL entry required to terminate list of directives.
-     */
-    /*@null@*/ const char *name;
+  /** Directive name.  GAS directives should include the ".", NASM
+   * directives should just be the raw name (not including the []).
+   * NULL entry required to terminate list of directives.
+   */
+  /*@null@*/ const char *name;
 
-    const char *parser;                     /**< Parser keyword */
+  const char *parser; /**< Parser keyword */
 
-    /** Handler callback function for the directive.
-     * \param object            object 
-     * \param valparams         value/parameters
-     * \param objext_valparams  object format-specific value/parameters
-     * \param line              virtual line (from yasm_linemap)
-     */
-    void (*handler) (yasm_object *object, yasm_valparamhead *valparams,
-                     yasm_valparamhead *objext_valparams, unsigned long line);
+  /** Handler callback function for the directive.
+   * \param object            object
+   * \param valparams         value/parameters
+   * \param objext_valparams  object format-specific value/parameters
+   * \param line              virtual line (from yasm_linemap)
+   */
+  void (*handler)(yasm_object *object, yasm_valparamhead *valparams,
+                  yasm_valparamhead *objext_valparams, unsigned long line);
 
-    /** Flags for pre-handler parameter checking. */
-    enum yasm_directive_flags {
-        YASM_DIR_ANY = 0,           /**< Any valparams accepted */
-        YASM_DIR_ARG_REQUIRED = 1,  /**< Require at least 1 valparam */
-        YASM_DIR_ID_REQUIRED = 2    /**< First valparam must be ID */
-    } flags;
+  /** Flags for pre-handler parameter checking. */
+  enum yasm_directive_flags {
+    YASM_DIR_ANY = 0,          /**< Any valparams accepted */
+    YASM_DIR_ARG_REQUIRED = 1, /**< Require at least 1 valparam */
+    YASM_DIR_ID_REQUIRED = 2   /**< First valparam must be ID */
+  } flags;
 };
 
 /** Call a directive.  Performs any valparam checks asked for by the
  * directive prior to call.  Note that for a variety of reasons, a directive
  * can generate an error.
  * \param directive             directive
- * \param object                object 
+ * \param object                object
  * \param valparams             value/parameters
  * \param objext_valparams      object format-specific value/parameters
  * \param line                  virtual line (from yasm_linemap)
@@ -143,8 +143,8 @@ yasm_valparam *yasm_vp_create_expr(/*@keep@*/ char *v,
  *         converted to an expression.
  */
 YASM_LIB_DECL
-/*@null@*/ /*@only@*/ yasm_expr *yasm_vp_expr
-    (const yasm_valparam *vp, yasm_symtab *symtab, unsigned long line);
+/*@null@*/ /*@only@*/ yasm_expr *
+yasm_vp_expr(const yasm_valparam *vp, yasm_symtab *symtab, unsigned long line);
 
 /** Get a valparam parameter as a string.  If the parameter is an identifier,
  * it's treated as a string.
@@ -180,7 +180,7 @@ void yasm_vps_destroy(yasm_valparamhead *headp);
  */
 void yasm_vps_initialize(/*@out@*/ yasm_valparamhead *headp);
 #ifndef YASM_DOXYGEN
-#define yasm_vps_initialize(headp)      STAILQ_INIT(headp)
+#define yasm_vps_initialize(headp) STAILQ_INIT(headp)
 #endif
 
 /** Destroy (free allocated memory for) linked list of valparams (created with
@@ -197,20 +197,21 @@ void yasm_vps_delete(yasm_valparamhead *headp);
  */
 void yasm_vps_append(yasm_valparamhead *headp, /*@keep@*/ yasm_valparam *vp);
 #ifndef YASM_DOXYGEN
-#define yasm_vps_append(headp, vp)      do {        \
-        if (vp)                                     \
-            STAILQ_INSERT_TAIL(headp, vp, link);    \
-    } while(0)
+#define yasm_vps_append(headp, vp)                                             \
+  do {                                                                         \
+    if (vp)                                                                    \
+      STAILQ_INSERT_TAIL(headp, vp, link);                                     \
+  } while (0)
 #endif
 
 /** Get first valparam in linked list.
  * \param headp linked list
  * \return First valparam in linked list.
  */
-/*@null@*/ /*@dependent@*/ yasm_valparam *yasm_vps_first
-    (yasm_valparamhead *headp);
+/*@null@*/ /*@dependent@*/ yasm_valparam *
+yasm_vps_first(yasm_valparamhead *headp);
 #ifndef YASM_DOXYGEN
-#define yasm_vps_first(headp)       STAILQ_FIRST(headp)
+#define yasm_vps_first(headp) STAILQ_FIRST(headp)
 #endif
 
 /** Get next valparam in linked list.
@@ -219,7 +220,7 @@ void yasm_vps_append(yasm_valparamhead *headp, /*@keep@*/ yasm_valparam *vp);
  */
 /*@null@*/ /*@dependent@*/ yasm_valparam *yasm_vps_next(yasm_valparam *cur);
 #ifndef YASM_DOXYGEN
-#define yasm_vps_next(cur)          STAILQ_NEXT(cur, link)
+#define yasm_vps_next(cur) STAILQ_NEXT(cur, link)
 #endif
 
 /** Iterate through linked list of valparams.
@@ -228,7 +229,7 @@ void yasm_vps_append(yasm_valparamhead *headp, /*@keep@*/ yasm_valparam *vp);
  * \param headp     linked list
  */
 #ifndef YASM_DOXYGEN
-#define yasm_vps_foreach(iter, headp)   STAILQ_FOREACH(iter, headp, link)
+#define yasm_vps_foreach(iter, headp) STAILQ_FOREACH(iter, headp, link)
 #endif
 
 /** Print linked list of valparams.  For debugging purposes.
@@ -240,37 +241,37 @@ void yasm_vps_print(/*@null@*/ const yasm_valparamhead *headp, FILE *f);
 
 /** Directive valparam parse helper structure. */
 typedef struct yasm_dir_help {
-    /** Value portion of val=param (if needsparam=1), or standalone identifier
-     * (if needsparam=0).
-     */
-    const char *name;
+  /** Value portion of val=param (if needsparam=1), or standalone identifier
+   * (if needsparam=0).
+   */
+  const char *name;
 
-    /** 1 if value requires parameter, 0 if it must not have a parameter. */
-    int needsparam;
+  /** 1 if value requires parameter, 0 if it must not have a parameter. */
+  int needsparam;
 
-    /** Helper callback function if name and parameter existence match.
-     * \param obj       obj passed into yasm_dir_helper()
-     * \param vp        value/parameter
-     * \param line      line passed into yasm_dir_helper()
-     * \param data      data passed into yasm_dir_helper() plus
-                        #yasm_dir_help.off offset
-     * \param arg       #yasm_dir_help.arg argument
-     * \return -1 on error, 0 otherwise.
-     */
-    int (*helper) (void *obj, yasm_valparam *vp, unsigned long line,
-                   void *data, uintptr_t arg);
+  /** Helper callback function if name and parameter existence match.
+   * \param obj       obj passed into yasm_dir_helper()
+   * \param vp        value/parameter
+   * \param line      line passed into yasm_dir_helper()
+   * \param data      data passed into yasm_dir_helper() plus
+                      #yasm_dir_help.off offset
+   * \param arg       #yasm_dir_help.arg argument
+   * \return -1 on error, 0 otherwise.
+   */
+  int (*helper)(void *obj, yasm_valparam *vp, unsigned long line, void *data,
+                uintptr_t arg);
 
-    /** Offset added to data pointer passed into yasm_dir_helper() before
-     * data pointer is given to #yasm_dir_help.helper().  This is so that
-     * a structure can be passed into yasm_dir_helper() and this can be an
-     * offsetof() to point the helper function to a specific structure
-     * member.
-     */
-    size_t off;
+  /** Offset added to data pointer passed into yasm_dir_helper() before
+   * data pointer is given to #yasm_dir_help.helper().  This is so that
+   * a structure can be passed into yasm_dir_helper() and this can be an
+   * offsetof() to point the helper function to a specific structure
+   * member.
+   */
+  size_t off;
 
-    /** Argument to pass in as the arg parameter to #yasm_dir_help.helper().
-     */
-    uintptr_t arg;
+  /** Argument to pass in as the arg parameter to #yasm_dir_help.helper().
+   */
+  uintptr_t arg;
 } yasm_dir_help;
 
 /** Help parse a list of directive value/parameters.  Takes an array of
@@ -294,10 +295,8 @@ typedef struct yasm_dir_help {
 YASM_LIB_DECL
 int yasm_dir_helper(void *obj, yasm_valparam *vp_first, unsigned long line,
                     const yasm_dir_help *help, size_t nhelp, void *data,
-                    int (*helper_valparam) (void *object,
-                                            yasm_valparam *vp,
-                                            unsigned long line,
-                                            void *data));
+                    int (*helper_valparam)(void *object, yasm_valparam *vp,
+                                           unsigned long line, void *data));
 
 /** Standard helper for yasm_dir_helper() that simply sets a flag when called.
  * It does not look at the vp; rather, it uses the value of the arg parameter,

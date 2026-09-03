@@ -41,18 +41,13 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-apply_update(node_pointer, null_node_update_pointer)
-{ }
+inline void PB_DS_CLASS_C_DEC::apply_update(node_pointer,
+                                            null_node_update_pointer) {}
 
 PB_DS_CLASS_T_DEC
-template<typename Node_Update_>
-inline void
-PB_DS_CLASS_C_DEC::
-apply_update(node_pointer p_nd, Node_Update_*)
-{
+template <typename Node_Update_>
+inline void PB_DS_CLASS_C_DEC::apply_update(node_pointer p_nd, Node_Update_ *) {
   Node_Update_::operator()(node_iterator(p_nd, this),
-			   node_const_iterator(0, this));
+                           node_const_iterator(0, this));
 }
 #endif

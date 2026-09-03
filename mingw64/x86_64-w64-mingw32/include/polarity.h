@@ -5,7 +5,6 @@
  */
 #ifndef POLARITY_HEADERFILE_IS_INCLUDED
 #define POLARITY_HEADERFILE_IS_INCLUDED
-
 #ifdef USE_POLARITY
 #ifdef BUILDING_DLL
 #define POLARITY __declspec(dllexport)
@@ -15,5 +14,4 @@
 #else
 #define POLARITY
 #endif
-
 #endif

@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING3.  If not see
 <http://www.gnu.org/licenses/>.  */
 
-
 #ifndef _TREE_SSA_LIVE_H
 #define _TREE_SSA_LIVE_H 1
 
@@ -42,8 +41,7 @@ along with GCC; see the file COPYING3.  If not see
 
    Note that members of a partition MUST all have the same base variable.  */
 
-typedef struct _var_map
-{
+typedef struct _var_map {
   /* The partition manager of all variables.  */
   partition var_partition;
 
@@ -80,127 +78,97 @@ typedef struct _var_map
   bool outofssa_p;
 } *var_map;
 
-
 /* Value used to represent no partition number.  */
-#define NO_PARTITION		-1
+#define NO_PARTITION -1
 
-extern var_map init_var_map (int, class loop * = NULL, bitmap = NULL);
-extern void delete_var_map (var_map);
-extern int var_union (var_map, tree, tree);
-extern void partition_view_normal (var_map);
-extern void partition_view_bitmap (var_map, bitmap);
-extern void dump_scope_blocks (FILE *, dump_flags_t);
-extern void debug_scope_block (tree, dump_flags_t);
-extern void debug_scope_blocks (dump_flags_t);
-extern void remove_unused_locals (void);
-extern void dump_var_map (FILE *, var_map);
-extern void debug (_var_map &ref);
-extern void debug (_var_map *ptr);
-
+extern var_map init_var_map(int, class loop * = NULL, bitmap = NULL);
+extern void delete_var_map(var_map);
+extern int var_union(var_map, tree, tree);
+extern void partition_view_normal(var_map);
+extern void partition_view_bitmap(var_map, bitmap);
+extern void dump_scope_blocks(FILE *, dump_flags_t);
+extern void debug_scope_block(tree, dump_flags_t);
+extern void debug_scope_blocks(dump_flags_t);
+extern void remove_unused_locals(void);
+extern void dump_var_map(FILE *, var_map);
+extern void debug(_var_map &ref);
+extern void debug(_var_map *ptr);
 
 /* Return TRUE if region of the MAP contains basic block BB.  */
 
-inline bool
-region_contains_p (var_map map, basic_block bb)
-{
+inline bool region_contains_p(var_map map, basic_block bb) {
   /* It's possible that the function is called with ENTRY_BLOCK/EXIT_BLOCK.  */
   if (map->outofssa_p || map->bitint)
     return (bb->index != ENTRY_BLOCK && bb->index != EXIT_BLOCK);
 
-  return bitmap_bit_p (map->bmp_bbs, bb->index);
+  return bitmap_bit_p(map->bmp_bbs, bb->index);
 }
-
 
 /* Return number of partitions in MAP.  */
 
-inline unsigned
-num_var_partitions (var_map map)
-{
-  return map->num_partitions;
-}
-
+inline unsigned num_var_partitions(var_map map) { return map->num_partitions; }
 
 /* Given partition index I from MAP, return the variable which represents that
    partition.  */
 
-inline tree
-partition_to_var (var_map map, int i)
-{
+inline tree partition_to_var(var_map map, int i) {
   tree name;
   if (map->view_to_partition)
     i = map->view_to_partition[i];
-  i = partition_find (map->var_partition, i);
-  name = ssa_name (i);
+  i = partition_find(map->var_partition, i);
+  name = ssa_name(i);
   return name;
 }
-
 
 /* Given ssa_name VERSION, if it has a partition in MAP,  return the var it
    is associated with.  Otherwise return NULL.  */
 
-inline tree
-version_to_var (var_map map, int version)
-{
+inline tree version_to_var(var_map map, int version) {
   int part;
-  part = partition_find (map->var_partition, version);
+  part = partition_find(map->var_partition, version);
   if (map->partition_to_view)
     part = map->partition_to_view[part];
   if (part == NO_PARTITION)
     return NULL_TREE;
 
-  return partition_to_var (map, part);
+  return partition_to_var(map, part);
 }
-
 
 /* Given VAR, return the partition number in MAP which contains it.
    NO_PARTITION is returned if it's not in any partition.  */
 
-inline int
-var_to_partition (var_map map, tree var)
-{
+inline int var_to_partition(var_map map, tree var) {
   int part;
 
-  part = partition_find (map->var_partition, SSA_NAME_VERSION (var));
+  part = partition_find(map->var_partition, SSA_NAME_VERSION(var));
   if (map->partition_to_view)
     part = map->partition_to_view[part];
   return part;
 }
 
-
 /* Given VAR, return the variable which represents the entire partition
    it is a member of in MAP.  NULL is returned if it is not in a partition.  */
 
-inline tree
-var_to_partition_to_var (var_map map, tree var)
-{
+inline tree var_to_partition_to_var(var_map map, tree var) {
   int part;
 
-  part = var_to_partition (map, var);
+  part = var_to_partition(map, var);
   if (part == NO_PARTITION)
     return NULL_TREE;
-  return partition_to_var (map, part);
+  return partition_to_var(map, part);
 }
-
 
 /* Return the index into the basevar table for PARTITION's base in MAP.  */
 
-inline int
-basevar_index (var_map map, int partition)
-{
-  gcc_checking_assert (partition >= 0
-	      	       && partition <= (int) num_var_partitions (map));
+inline int basevar_index(var_map map, int partition) {
+  gcc_checking_assert(partition >= 0 &&
+                      partition <= (int)num_var_partitions(map));
   return map->partition_to_base_index[partition];
 }
 
-
 /* Return the number of different base variables in MAP.  */
 
-inline int
-num_basevars (var_map map)
-{
-  return map->num_basevars;
-}
-
+inline int num_basevars(var_map map) { return map->num_basevars; }
 
 /*  ---------------- live on entry/exit info ------------------------------
 
@@ -231,9 +199,7 @@ num_basevars (var_map map)
 
     -----------------------------------------------------------------------  */
 
-
-typedef struct tree_live_info_d
-{
+typedef struct tree_live_info_d {
   /* Var map this relates to.  */
   var_map map;
 
@@ -257,68 +223,49 @@ typedef struct tree_live_info_d
   bitmap_obstack liveout_obstack;
 } *tree_live_info_p;
 
+#define LIVEDUMP_ENTRY 0x01
+#define LIVEDUMP_EXIT 0x02
+#define LIVEDUMP_ALL (LIVEDUMP_ENTRY | LIVEDUMP_EXIT)
+extern void delete_tree_live_info(tree_live_info_p);
+extern tree_live_info_p calculate_live_ranges(var_map, bool);
+extern void debug(tree_live_info_d &ref);
+extern void debug(tree_live_info_d *ptr);
+extern void dump_live_info(FILE *, tree_live_info_p, int);
 
-#define LIVEDUMP_ENTRY	0x01
-#define LIVEDUMP_EXIT	0x02
-#define LIVEDUMP_ALL	(LIVEDUMP_ENTRY | LIVEDUMP_EXIT)
-extern void delete_tree_live_info (tree_live_info_p);
-extern tree_live_info_p calculate_live_ranges (var_map, bool);
-extern void debug (tree_live_info_d &ref);
-extern void debug (tree_live_info_d *ptr);
-extern void dump_live_info (FILE *, tree_live_info_p, int);
-
-typedef hash_map<int_hash <unsigned int, -1U>, unsigned int> live_vars_map;
-extern vec<bitmap_head> compute_live_vars (struct function *, live_vars_map *);
-extern bitmap live_vars_at_stmt (vec<bitmap_head> &, live_vars_map *,
-				 gimple *);
-extern void destroy_live_vars (vec<bitmap_head> &);
-
+typedef hash_map<int_hash<unsigned int, -1U>, unsigned int> live_vars_map;
+extern vec<bitmap_head> compute_live_vars(struct function *, live_vars_map *);
+extern bitmap live_vars_at_stmt(vec<bitmap_head> &, live_vars_map *, gimple *);
+extern void destroy_live_vars(vec<bitmap_head> &);
 
 /* Return the bitmap from LIVE representing the live on entry blocks for
    partition P.  */
 
-inline bitmap
-live_on_entry (tree_live_info_p live, basic_block bb)
-{
-  gcc_checking_assert (live->livein
-		       && bb != ENTRY_BLOCK_PTR_FOR_FN (cfun)
-		       && bb != EXIT_BLOCK_PTR_FOR_FN (cfun));
+inline bitmap live_on_entry(tree_live_info_p live, basic_block bb) {
+  gcc_checking_assert(live->livein && bb != ENTRY_BLOCK_PTR_FOR_FN(cfun) &&
+                      bb != EXIT_BLOCK_PTR_FOR_FN(cfun));
 
   return &live->livein[bb->index];
 }
 
-
 /* Return the bitmap from LIVE representing the live on exit partitions from
    block BB.  */
 
-inline bitmap
-live_on_exit (tree_live_info_p live, basic_block bb)
-{
-  gcc_checking_assert (live->liveout
-		       && bb != ENTRY_BLOCK_PTR_FOR_FN (cfun)
-		       && bb != EXIT_BLOCK_PTR_FOR_FN (cfun));
+inline bitmap live_on_exit(tree_live_info_p live, basic_block bb) {
+  gcc_checking_assert(live->liveout && bb != ENTRY_BLOCK_PTR_FOR_FN(cfun) &&
+                      bb != EXIT_BLOCK_PTR_FOR_FN(cfun));
 
   return &live->liveout[bb->index];
 }
 
-
 /* Return the partition map which the information in LIVE utilizes.  */
 
-inline var_map
-live_var_map (tree_live_info_p live)
-{
-  return live->map;
-}
-
+inline var_map live_var_map(tree_live_info_p live) { return live->map; }
 
 /* Mark partition P as live on entry to basic block BB in LIVE.  */
 
-inline void
-make_live_on_entry (tree_live_info_p live, basic_block bb , int p)
-{
-  bitmap_set_bit (&live->livein[bb->index], p);
+inline void make_live_on_entry(tree_live_info_p live, basic_block bb, int p) {
+  bitmap_set_bit(&live->livein[bb->index], p);
 }
-
 
 /* On-demand virtual operand global live analysis.  There is at most
    a single virtual operand live at a time, the following computes and
@@ -326,25 +273,22 @@ make_live_on_entry (tree_live_info_p live, basic_block bb , int p)
    supporting related live-in and live-on-edge queries.  It requires
    up-to-date marked backedges.  */
 
-class virtual_operand_live
-{
+class virtual_operand_live {
 public:
-  virtual_operand_live() : liveout (nullptr) {}
-  ~virtual_operand_live()
-  {
+  virtual_operand_live() : liveout(nullptr) {}
+  ~virtual_operand_live() {
     if (liveout)
-      free (liveout);
+      free(liveout);
   }
 
-  tree get_live_in (basic_block bb);
-  tree get_live_out (basic_block bb);
-  tree get_live_on_edge (edge e) { return get_live_out (e->src); }
+  tree get_live_in(basic_block bb);
+  tree get_live_out(basic_block bb);
+  tree get_live_on_edge(edge e) { return get_live_out(e->src); }
 
 private:
-  void init ();
+  void init();
 
   tree *liveout;
 };
-
 
 #endif /* _TREE_SSA_LIVE_H  */

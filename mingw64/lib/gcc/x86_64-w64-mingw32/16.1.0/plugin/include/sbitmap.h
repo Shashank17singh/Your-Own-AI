@@ -43,7 +43,7 @@ along with GCC; see the file COPYING3.  If not see
 
      * clear			: bitmap_clear
      * choose_one		: bitmap_first_set_bit /
-				  bitmap_last_set_bit
+                                  bitmap_last_set_bit
      * forall			: EXECUTE_IF_SET_IN_BITMAP
      * set_copy			: bitmap_copy
      * set_intersection		: bitmap_and
@@ -83,11 +83,10 @@ along with GCC; see the file COPYING3.  If not see
 #define SBITMAP_ELT_BITS (HOST_BITS_PER_WIDEST_FAST_INT * 1u)
 #define SBITMAP_ELT_TYPE unsigned HOST_WIDEST_FAST_INT
 
-struct simple_bitmap_def
-{
-  unsigned int n_bits;		/* Number of bits.  */
-  unsigned int size;		/* Size in elements.  */
-  SBITMAP_ELT_TYPE elms[1];	/* The elements.  */
+struct simple_bitmap_def {
+  unsigned int n_bits;      /* Number of bits.  */
+  unsigned int size;        /* Size in elements.  */
+  SBITMAP_ELT_TYPE elms[1]; /* The elements.  */
 };
 
 /* Return the set size needed for N elements.  */
@@ -98,61 +97,51 @@ struct simple_bitmap_def
 
 /* Verify that access at INDEX in bitmap MAP is valid.  */
 
-inline void
-bitmap_check_index (const_sbitmap map, int index)
-{
-  gcc_checking_assert (index >= 0);
-  gcc_checking_assert ((unsigned int)index < map->n_bits);
+inline void bitmap_check_index(const_sbitmap map, int index) {
+  gcc_checking_assert(index >= 0);
+  gcc_checking_assert((unsigned int)index < map->n_bits);
 }
 
 /* Verify that bitmaps A and B have same size.  */
 
-inline void
-bitmap_check_sizes (const_sbitmap a, const_sbitmap b)
-{
-  gcc_checking_assert (a->n_bits == b->n_bits);
+inline void bitmap_check_sizes(const_sbitmap a, const_sbitmap b) {
+  gcc_checking_assert(a->n_bits == b->n_bits);
 }
 
 /* Test if bit number bitno in the bitmap is set.  */
-inline bool
-bitmap_bit_p (const_sbitmap map, int bitno)
-{
-  bitmap_check_index (map, bitno);
+inline bool bitmap_bit_p(const_sbitmap map, int bitno) {
+  bitmap_check_index(map, bitno);
 
   size_t i = bitno / SBITMAP_ELT_BITS;
   unsigned int s = bitno % SBITMAP_ELT_BITS;
-  return (map->elms[i] >> s) & (SBITMAP_ELT_TYPE) 1;
+  return (map->elms[i] >> s) & (SBITMAP_ELT_TYPE)1;
 }
 
 /* Set bit number BITNO in the sbitmap MAP.
    Return true if the bit changed.  */
 
-inline bool
-bitmap_set_bit (sbitmap map, int bitno)
-{
-  bitmap_check_index (map, bitno);
+inline bool bitmap_set_bit(sbitmap map, int bitno) {
+  bitmap_check_index(map, bitno);
 
   size_t i = bitno / SBITMAP_ELT_BITS;
   unsigned int s = bitno % SBITMAP_ELT_BITS;
-  if (map->elms[i] & ((SBITMAP_ELT_TYPE) 1 << s))
+  if (map->elms[i] & ((SBITMAP_ELT_TYPE)1 << s))
     return false;
-  map->elms[i] |= (SBITMAP_ELT_TYPE) 1 << s;
+  map->elms[i] |= (SBITMAP_ELT_TYPE)1 << s;
   return true;
 }
 
 /* Reset bit number BITNO in the sbitmap MAP.
    Return true if the bit changed.  */
 
-inline bool
-bitmap_clear_bit (sbitmap map, int bitno)
-{
-  bitmap_check_index (map, bitno);
+inline bool bitmap_clear_bit(sbitmap map, int bitno) {
+  bitmap_check_index(map, bitno);
 
   size_t i = bitno / SBITMAP_ELT_BITS;
   unsigned int s = bitno % SBITMAP_ELT_BITS;
-  if (!(map->elms[i] & ((SBITMAP_ELT_TYPE) 1 << s)))
+  if (!(map->elms[i] & ((SBITMAP_ELT_TYPE)1 << s)))
     return false;
-  map->elms[i] &= ~((SBITMAP_ELT_TYPE) 1 << s);
+  map->elms[i] &= ~((SBITMAP_ELT_TYPE)1 << s);
   return true;
 }
 
@@ -177,11 +166,10 @@ struct sbitmap_iterator {
 /* Initialize the iterator I with sbitmap BMP and the initial index
    MIN.  */
 
-inline void
-bmp_iter_set_init (sbitmap_iterator *i, const_sbitmap bmp,
-		   unsigned int min, unsigned *bit_no ATTRIBUTE_UNUSED)
-{
-  i->word_num = min / (unsigned int) SBITMAP_ELT_BITS;
+inline void bmp_iter_set_init(sbitmap_iterator *i, const_sbitmap bmp,
+                              unsigned int min,
+                              unsigned *bit_no ATTRIBUTE_UNUSED) {
+  i->word_num = min / (unsigned int)SBITMAP_ELT_BITS;
   i->bit_num = min;
   i->size = bmp->size;
   i->ptr = bmp->elms;
@@ -189,28 +177,25 @@ bmp_iter_set_init (sbitmap_iterator *i, const_sbitmap bmp,
   if (i->word_num >= i->size)
     i->word = 0;
   else
-    i->word = (i->ptr[i->word_num]
-	       >> (i->bit_num % (unsigned int) SBITMAP_ELT_BITS));
+    i->word =
+        (i->ptr[i->word_num] >> (i->bit_num % (unsigned int)SBITMAP_ELT_BITS));
 }
 
 /* Return true if we have more bits to visit, in which case *N is set
    to the index of the bit to be visited.  Otherwise, return
    false.  */
 
-inline bool
-bmp_iter_set (sbitmap_iterator *i, unsigned int *n)
-{
+inline bool bmp_iter_set(sbitmap_iterator *i, unsigned int *n) {
   /* Skip words that are zeros.  */
-  for (; i->word == 0; i->word = i->ptr[i->word_num])
-    {
-      i->word_num++;
+  for (; i->word == 0; i->word = i->ptr[i->word_num]) {
+    i->word_num++;
 
-      /* If we have reached the end, break.  */
-      if (i->word_num >= i->size)
-	return false;
+    /* If we have reached the end, break.  */
+    if (i->word_num >= i->size)
+      return false;
 
-      i->bit_num = i->word_num * SBITMAP_ELT_BITS;
-    }
+    i->bit_num = i->word_num * SBITMAP_ELT_BITS;
+  }
 
   /* Skip bits that are zero.  */
   for (; (i->word & 1) == 0; i->word >>= 1)
@@ -223,9 +208,8 @@ bmp_iter_set (sbitmap_iterator *i, unsigned int *n)
 
 /* Advance to the next bit.  */
 
-inline void
-bmp_iter_next (sbitmap_iterator *i, unsigned *bit_no ATTRIBUTE_UNUSED)
-{
+inline void bmp_iter_next(sbitmap_iterator *i,
+                          unsigned *bit_no ATTRIBUTE_UNUSED) {
   i->word >>= 1;
   i->bit_num++;
 }
@@ -236,86 +220,75 @@ bmp_iter_next (sbitmap_iterator *i, unsigned *bit_no ATTRIBUTE_UNUSED)
 
 #ifndef EXECUTE_IF_SET_IN_BITMAP
 /* See bitmap.h for the other definition of EXECUTE_IF_SET_IN_BITMAP.  */
-#define EXECUTE_IF_SET_IN_BITMAP(BITMAP, MIN, BITNUM, ITER)	\
-  for (bmp_iter_set_init (&(ITER), (BITMAP), (MIN), &(BITNUM));	\
-       bmp_iter_set (&(ITER), &(BITNUM));			\
-       bmp_iter_next (&(ITER), &(BITNUM)))
+#define EXECUTE_IF_SET_IN_BITMAP(BITMAP, MIN, BITNUM, ITER)                    \
+  for (bmp_iter_set_init(&(ITER), (BITMAP), (MIN), &(BITNUM));                 \
+       bmp_iter_set(&(ITER), &(BITNUM)); bmp_iter_next(&(ITER), &(BITNUM)))
 #endif
 
-inline void sbitmap_free (sbitmap map)
-{
-  free (map);
-}
+inline void sbitmap_free(sbitmap map) { free(map); }
 
-inline void sbitmap_vector_free (sbitmap * vec)
-{
-  free (vec);
-}
+inline void sbitmap_vector_free(sbitmap *vec) { free(vec); }
 
-extern void dump_bitmap (FILE *, const_sbitmap);
-extern void debug_raw (const simple_bitmap_def &ref);
-extern void debug_raw (const simple_bitmap_def *ptr);
-extern void dump_bitmap_file (FILE *, const_sbitmap);
-extern void debug (const simple_bitmap_def &ref);
-extern void debug (const simple_bitmap_def *ptr);
-extern void dump_bitmap_vector (FILE *, const char *, const char *, sbitmap *,
-				 int);
-extern sbitmap sbitmap_alloc (unsigned int);
-extern sbitmap *sbitmap_vector_alloc (unsigned int, unsigned int);
-extern sbitmap sbitmap_resize (sbitmap, unsigned int, int);
-extern void bitmap_copy (sbitmap, const_sbitmap);
-extern bool bitmap_equal_p (const_sbitmap, const_sbitmap);
-extern unsigned int bitmap_count_bits (const_sbitmap);
-extern bool bitmap_empty_p (const_sbitmap);
-extern void bitmap_clear (sbitmap);
-extern void bitmap_clear_range (sbitmap, unsigned, unsigned);
-extern void bitmap_set_range (sbitmap, unsigned, unsigned);
-extern void bitmap_ones (sbitmap);
-extern void bitmap_vector_clear (sbitmap *, unsigned int);
-extern void bitmap_vector_ones (sbitmap *, unsigned int);
+extern void dump_bitmap(FILE *, const_sbitmap);
+extern void debug_raw(const simple_bitmap_def &ref);
+extern void debug_raw(const simple_bitmap_def *ptr);
+extern void dump_bitmap_file(FILE *, const_sbitmap);
+extern void debug(const simple_bitmap_def &ref);
+extern void debug(const simple_bitmap_def *ptr);
+extern void dump_bitmap_vector(FILE *, const char *, const char *, sbitmap *,
+                               int);
+extern sbitmap sbitmap_alloc(unsigned int);
+extern sbitmap *sbitmap_vector_alloc(unsigned int, unsigned int);
+extern sbitmap sbitmap_resize(sbitmap, unsigned int, int);
+extern void bitmap_copy(sbitmap, const_sbitmap);
+extern bool bitmap_equal_p(const_sbitmap, const_sbitmap);
+extern unsigned int bitmap_count_bits(const_sbitmap);
+extern bool bitmap_empty_p(const_sbitmap);
+extern void bitmap_clear(sbitmap);
+extern void bitmap_clear_range(sbitmap, unsigned, unsigned);
+extern void bitmap_set_range(sbitmap, unsigned, unsigned);
+extern void bitmap_ones(sbitmap);
+extern void bitmap_vector_clear(sbitmap *, unsigned int);
+extern void bitmap_vector_ones(sbitmap *, unsigned int);
 
-extern bool bitmap_ior_and_compl (sbitmap, const_sbitmap,
-				      const_sbitmap, const_sbitmap);
-extern void bitmap_and_compl (sbitmap, const_sbitmap, const_sbitmap);
-extern void bitmap_not (sbitmap, const_sbitmap);
-extern bool bitmap_or_and (sbitmap, const_sbitmap,
-				     const_sbitmap, const_sbitmap);
-extern bool bitmap_and_or (sbitmap, const_sbitmap,
-				     const_sbitmap, const_sbitmap);
-extern bool bitmap_intersect_p (const_sbitmap, const_sbitmap);
-extern bool bitmap_and (sbitmap, const_sbitmap, const_sbitmap);
-extern bool bitmap_ior (sbitmap, const_sbitmap, const_sbitmap);
-extern bool bitmap_xor (sbitmap, const_sbitmap, const_sbitmap);
-extern bool bitmap_subset_p (const_sbitmap, const_sbitmap);
-extern bool bitmap_any_bit_in_range_p (const_sbitmap, unsigned int,
-				       unsigned int);
-extern bool bitmap_all_bits_in_range_p (const_sbitmap, unsigned int,
-					unsigned int);
+extern bool bitmap_ior_and_compl(sbitmap, const_sbitmap, const_sbitmap,
+                                 const_sbitmap);
+extern void bitmap_and_compl(sbitmap, const_sbitmap, const_sbitmap);
+extern void bitmap_not(sbitmap, const_sbitmap);
+extern bool bitmap_or_and(sbitmap, const_sbitmap, const_sbitmap, const_sbitmap);
+extern bool bitmap_and_or(sbitmap, const_sbitmap, const_sbitmap, const_sbitmap);
+extern bool bitmap_intersect_p(const_sbitmap, const_sbitmap);
+extern bool bitmap_and(sbitmap, const_sbitmap, const_sbitmap);
+extern bool bitmap_ior(sbitmap, const_sbitmap, const_sbitmap);
+extern bool bitmap_xor(sbitmap, const_sbitmap, const_sbitmap);
+extern bool bitmap_subset_p(const_sbitmap, const_sbitmap);
+extern bool bitmap_any_bit_in_range_p(const_sbitmap, unsigned int,
+                                      unsigned int);
+extern bool bitmap_all_bits_in_range_p(const_sbitmap, unsigned int,
+                                       unsigned int);
 
-extern int bitmap_first_set_bit (const_sbitmap);
-extern int bitmap_last_set_bit (const_sbitmap);
+extern int bitmap_first_set_bit(const_sbitmap);
+extern int bitmap_last_set_bit(const_sbitmap);
 
-extern void debug_bitmap (const_sbitmap);
-extern sbitmap sbitmap_realloc (sbitmap, unsigned int);
+extern void debug_bitmap(const_sbitmap);
+extern sbitmap sbitmap_realloc(sbitmap, unsigned int);
 
 /* a class that ties the lifetime of a sbitmap to its scope.  */
-class auto_sbitmap
-{
+class auto_sbitmap {
 public:
-  explicit auto_sbitmap (unsigned int size) :
-    m_bitmap (sbitmap_alloc (size)) {}
-  ~auto_sbitmap () { sbitmap_free (m_bitmap); }
+  explicit auto_sbitmap(unsigned int size) : m_bitmap(sbitmap_alloc(size)) {}
+  ~auto_sbitmap() { sbitmap_free(m_bitmap); }
 
   /* Allow calling sbitmap functions on our bitmap.  */
-  operator sbitmap () { return m_bitmap; }
-  operator const_sbitmap () const { return m_bitmap; }
+  operator sbitmap() { return m_bitmap; }
+  operator const_sbitmap() const { return m_bitmap; }
 
 private:
   /* Prevent making a copy that refers to our sbitmap.  */
-  auto_sbitmap (const auto_sbitmap &);
-  auto_sbitmap &operator = (const auto_sbitmap &);
-  auto_sbitmap (auto_sbitmap &&);
-  auto_sbitmap &operator = (auto_sbitmap &&);
+  auto_sbitmap(const auto_sbitmap &);
+  auto_sbitmap &operator=(const auto_sbitmap &);
+  auto_sbitmap(auto_sbitmap &&);
+  auto_sbitmap &operator=(auto_sbitmap &&);
 
   /* The bitmap we are managing.  */
   sbitmap m_bitmap;

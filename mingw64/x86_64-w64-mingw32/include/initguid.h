@@ -4,5 +4,4 @@
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #define INITGUID
-
 #include <guiddef.h>

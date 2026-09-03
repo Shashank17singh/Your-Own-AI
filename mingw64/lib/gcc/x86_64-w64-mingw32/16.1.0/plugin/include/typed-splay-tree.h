@@ -21,36 +21,32 @@ along with GCC; see the file COPYING3.  If not see
 #define GCC_TYPED_SPLAY_TREE_H
 
 /* Typesafe wrapper around libiberty's splay-tree.h.  */
-template <typename KEY_TYPE, typename VALUE_TYPE>
-class typed_splay_tree
-{
- public:
+template <typename KEY_TYPE, typename VALUE_TYPE> class typed_splay_tree {
+public:
   typedef KEY_TYPE key_type;
   typedef VALUE_TYPE value_type;
 
-  typedef int (*compare_fn) (key_type, key_type);
-  typedef void (*delete_key_fn) (key_type);
-  typedef void (*delete_value_fn) (value_type);
-  typedef int (*foreach_fn) (key_type, value_type, void *);
+  typedef int (*compare_fn)(key_type, key_type);
+  typedef void (*delete_key_fn)(key_type);
+  typedef void (*delete_value_fn)(value_type);
+  typedef int (*foreach_fn)(key_type, value_type, void *);
 
-  typed_splay_tree (compare_fn,
-		    delete_key_fn,
-		    delete_value_fn);
-  ~typed_splay_tree ();
+  typed_splay_tree(compare_fn, delete_key_fn, delete_value_fn);
+  ~typed_splay_tree();
 
-  value_type lookup (key_type k);
-  value_type predecessor (key_type k);
-  value_type successor (key_type k);
-  void insert (key_type k, value_type v);
-  void remove (key_type k);
-  value_type max ();
-  value_type min ();
+  value_type lookup(key_type k);
+  value_type predecessor(key_type k);
+  value_type successor(key_type k);
+  void insert(key_type k, value_type v);
+  void remove(key_type k);
+  value_type max();
+  value_type min();
   int foreach (foreach_fn, void *);
 
- private:
+private:
   /* Copy and assignment ops are not supported.  */
-  typed_splay_tree (const typed_splay_tree &);
-  typed_splay_tree & operator = (const typed_splay_tree &);
+  typed_splay_tree(const typed_splay_tree &);
+  typed_splay_tree &operator=(const typed_splay_tree &);
 
   typedef key_type splay_tree_key;
   typedef value_type splay_tree_value;
@@ -71,25 +67,24 @@ class typed_splay_tree
   };
   typedef splay_tree_node_s *splay_tree_node;
 
-  inline void KDEL (splay_tree_key);
-  inline void VDEL (splay_tree_value);
-  void splay_tree_delete_helper (splay_tree_node);
-  static inline void rotate_left (splay_tree_node *,
-				  splay_tree_node, splay_tree_node);
-  static inline void rotate_right (splay_tree_node *,
-				   splay_tree_node, splay_tree_node);
-  void splay_tree_splay (splay_tree_key);
-  static int splay_tree_foreach_helper (splay_tree_node,
-					foreach_fn, void*);
-  splay_tree_node splay_tree_insert (splay_tree_key, splay_tree_value);
-  void splay_tree_remove (splay_tree_key key);
-  splay_tree_node splay_tree_lookup (splay_tree_key key);
-  splay_tree_node splay_tree_predecessor (splay_tree_key);
-  splay_tree_node splay_tree_successor (splay_tree_key);
-  splay_tree_node splay_tree_max ();
-  splay_tree_node splay_tree_min ();
+  inline void KDEL(splay_tree_key);
+  inline void VDEL(splay_tree_value);
+  void splay_tree_delete_helper(splay_tree_node);
+  static inline void rotate_left(splay_tree_node *, splay_tree_node,
+                                 splay_tree_node);
+  static inline void rotate_right(splay_tree_node *, splay_tree_node,
+                                  splay_tree_node);
+  void splay_tree_splay(splay_tree_key);
+  static int splay_tree_foreach_helper(splay_tree_node, foreach_fn, void *);
+  splay_tree_node splay_tree_insert(splay_tree_key, splay_tree_value);
+  void splay_tree_remove(splay_tree_key key);
+  splay_tree_node splay_tree_lookup(splay_tree_key key);
+  splay_tree_node splay_tree_predecessor(splay_tree_key);
+  splay_tree_node splay_tree_successor(splay_tree_key);
+  splay_tree_node splay_tree_max();
+  splay_tree_node splay_tree_min();
 
-  static value_type node_to_value (splay_tree_node node);
+  static value_type node_to_value(splay_tree_node node);
 
   /* The root of the tree.  */
   splay_tree_node root;
@@ -107,11 +102,9 @@ class typed_splay_tree
 /* Constructor for typed_splay_tree <K, V>.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline typed_splay_tree<KEY_TYPE, VALUE_TYPE>::
-  typed_splay_tree (compare_fn compare_fn,
-		    delete_key_fn delete_key_fn,
-		    delete_value_fn delete_value_fn)
-{
+inline typed_splay_tree<KEY_TYPE, VALUE_TYPE>::typed_splay_tree(
+    compare_fn compare_fn, delete_key_fn delete_key_fn,
+    delete_value_fn delete_value_fn) {
   root = NULL;
   comp = compare_fn;
   delete_key = delete_key_fn;
@@ -121,21 +114,17 @@ inline typed_splay_tree<KEY_TYPE, VALUE_TYPE>::
 /* Destructor for typed_splay_tree <K, V>.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline typed_splay_tree<KEY_TYPE, VALUE_TYPE>::
-  ~typed_splay_tree ()
-{
-  splay_tree_delete_helper (root);
+inline typed_splay_tree<KEY_TYPE, VALUE_TYPE>::~typed_splay_tree() {
+  splay_tree_delete_helper(root);
 }
 
 /* Lookup KEY, returning a value if present, and NULL
    otherwise.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::lookup (key_type key)
-{
-  splay_tree_node node = splay_tree_lookup (key);
-  return node_to_value (node);
+inline VALUE_TYPE typed_splay_tree<KEY_TYPE, VALUE_TYPE>::lookup(key_type key) {
+  splay_tree_node node = splay_tree_lookup(key);
+  return node_to_value(node);
 }
 
 /* Return the immediate predecessor of KEY, or NULL if there is no
@@ -143,10 +132,9 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::lookup (key_type key)
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::predecessor (key_type key)
-{
-  splay_tree_node node = splay_tree_predecessor (key);
-  return node_to_value (node);
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::predecessor(key_type key) {
+  splay_tree_node node = splay_tree_predecessor(key);
+  return node_to_value(node);
 }
 
 /* Return the immediate successor of KEY, or NULL if there is no
@@ -154,10 +142,9 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::predecessor (key_type key)
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::successor (key_type key)
-{
-  splay_tree_node node = splay_tree_successor (key);
-  return node_to_value (node);
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::successor(key_type key) {
+  splay_tree_node node = splay_tree_successor(key);
+  return node_to_value(node);
 }
 
 /* Insert a new node (associating KEY with VALUE).  If a
@@ -165,38 +152,30 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::successor (key_type key)
    with the new value.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::insert (key_type key,
-						value_type value)
-{
-  splay_tree_insert (key, value);
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::insert(key_type key,
+                                                           value_type value) {
+  splay_tree_insert(key, value);
 }
 
 /* Remove a node (associating KEY with VALUE).  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::remove (key_type key)
-{
-  splay_tree_remove (key);
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::remove(key_type key) {
+  splay_tree_remove(key);
 }
 
 /* Get the value with maximal key.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::max ()
-{
-  return node_to_value (splay_tree_max ());
+inline VALUE_TYPE typed_splay_tree<KEY_TYPE, VALUE_TYPE>::max() {
+  return node_to_value(splay_tree_max());
 }
 
 /* Get the value with minimal key.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::min ()
-{
-  return node_to_value (splay_tree_min ());
+inline VALUE_TYPE typed_splay_tree<KEY_TYPE, VALUE_TYPE>::min() {
+  return node_to_value(splay_tree_min());
 }
 
 /* Call OUTER_CB, passing it the OUTER_USER_DATA, for every node,
@@ -206,18 +185,16 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::min ()
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 inline int
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::foreach (foreach_fn foreach_fn,
-						 void *user_data)
-{
-  return splay_tree_foreach_helper (root, foreach_fn, user_data);
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::foreach(foreach_fn foreach_fn,
+                                                void *user_data) {
+  return splay_tree_foreach_helper(root, foreach_fn, user_data);
 }
 
 /* Internal function for converting from splay_tree_node to
    VALUE_TYPE.  */
 template <typename KEY_TYPE, typename VALUE_TYPE>
 inline VALUE_TYPE
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::node_to_value (splay_tree_node node)
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::node_to_value(splay_tree_node node) {
   if (node)
     return node->value;
   else
@@ -225,17 +202,13 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::node_to_value (splay_tree_node node)
 }
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::KDEL(splay_tree_key x)
-{
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::KDEL(splay_tree_key x) {
   if (delete_key)
     (*delete_key)(x);
 }
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::VDEL(splay_tree_value x)
-{
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::VDEL(splay_tree_value x) {
   if (delete_value)
     (*delete_value)(x);
 }
@@ -243,18 +216,16 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::VDEL(splay_tree_value x)
 /* Deallocate NODE (a member of SP), and all its sub-trees.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-void
-typed_splay_tree<KEY_TYPE,
-		 VALUE_TYPE>::splay_tree_delete_helper (splay_tree_node node)
-{
+void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_delete_helper(
+    splay_tree_node node) {
   splay_tree_node pending = NULL;
   splay_tree_node active = NULL;
 
   if (!node)
     return;
 
-  KDEL (node->key);
-  VDEL (node->value);
+  KDEL(node->key);
+  VDEL(node->value);
 
   /* We use the "back" field to hold the "next" pointer.  */
   node->back = pending;
@@ -264,48 +235,41 @@ typed_splay_tree<KEY_TYPE,
      more.  This is a little more complicated than just recursing, but
      it doesn't toast the stack for large trees.  */
 
-  while (pending)
-    {
-      active = pending;
-      pending = NULL;
-      while (active)
-	{
-	  splay_tree_node temp;
+  while (pending) {
+    active = pending;
+    pending = NULL;
+    while (active) {
+      splay_tree_node temp;
 
-	  /* active points to a node which has its key and value
-	     deallocated, we just need to process left and right.  */
+      /* active points to a node which has its key and value
+         deallocated, we just need to process left and right.  */
 
-	  if (active->left)
-	    {
-	      KDEL (active->left->key);
-	      VDEL (active->left->value);
-	      active->left->back = pending;
-	      pending = active->left;
-	    }
-	  if (active->right)
-	    {
-	      KDEL (active->right->key);
-	      VDEL (active->right->value);
-	      active->right->back = pending;
-	      pending = active->right;
-	    }
+      if (active->left) {
+        KDEL(active->left->key);
+        VDEL(active->left->value);
+        active->left->back = pending;
+        pending = active->left;
+      }
+      if (active->right) {
+        KDEL(active->right->key);
+        VDEL(active->right->value);
+        active->right->back = pending;
+        pending = active->right;
+      }
 
-	  temp = active;
-	  active = temp->back;
-	  delete temp;
-	}
+      temp = active;
+      active = temp->back;
+      delete temp;
     }
+  }
 }
 
 /* Rotate the edge joining the left child N with its parent P.  PP is the
    grandparents' pointer to P.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_left (splay_tree_node *pp,
-						     splay_tree_node p,
-						     splay_tree_node n)
-{
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_left(
+    splay_tree_node *pp, splay_tree_node p, splay_tree_node n) {
   splay_tree_node tmp;
   tmp = n->right;
   n->right = p;
@@ -317,11 +281,8 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_left (splay_tree_node *pp,
    grandparents' pointer to P.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-inline void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_right (splay_tree_node *pp,
-						      splay_tree_node p,
-						      splay_tree_node n)
-{
+inline void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_right(
+    splay_tree_node *pp, splay_tree_node p, splay_tree_node n) {
   splay_tree_node tmp;
   tmp = n->left;
   n->left = p;
@@ -332,9 +293,8 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::rotate_right (splay_tree_node *pp,
 /* Bottom up splay of key.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_splay (splay_tree_key key)
-{
+void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_splay(
+    splay_tree_key key) {
   if (root == NULL)
     return;
 
@@ -343,7 +303,7 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_splay (splay_tree_key key)
     splay_tree_node n, c;
 
     n = root;
-    cmp1 = (*comp) (key, n->key);
+    cmp1 = (*comp)(key, n->key);
 
     /* Found.  */
     if (cmp1 == 0)
@@ -359,39 +319,29 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_splay (splay_tree_key key)
 
     /* Next one left or right?  If found or no child, we're done
        after one rotation.  */
-    cmp2 = (*comp) (key, c->key);
-    if (cmp2 == 0
-	|| (cmp2 < 0 && !c->left)
-	|| (cmp2 > 0 && !c->right))
-      {
-	if (cmp1 < 0)
-	  rotate_left (&root, n, c);
-	else
-	  rotate_right (&root, n, c);
-	return;
-      }
+    cmp2 = (*comp)(key, c->key);
+    if (cmp2 == 0 || (cmp2 < 0 && !c->left) || (cmp2 > 0 && !c->right)) {
+      if (cmp1 < 0)
+        rotate_left(&root, n, c);
+      else
+        rotate_right(&root, n, c);
+      return;
+    }
 
     /* Now we have the four cases of double-rotation.  */
-    if (cmp1 < 0 && cmp2 < 0)
-      {
-	rotate_left (&n->left, c, c->left);
-	rotate_left (&root, n, n->left);
-      }
-    else if (cmp1 > 0 && cmp2 > 0)
-      {
-	rotate_right (&n->right, c, c->right);
-	rotate_right (&root, n, n->right);
-      }
-    else if (cmp1 < 0 && cmp2 > 0)
-      {
-	rotate_right (&n->left, c, c->right);
-	rotate_left (&root, n, n->left);
-      }
-    else if (cmp1 > 0 && cmp2 < 0)
-      {
-	rotate_left (&n->right, c, c->left);
-	rotate_right (&root, n, n->right);
-      }
+    if (cmp1 < 0 && cmp2 < 0) {
+      rotate_left(&n->left, c, c->left);
+      rotate_left(&root, n, n->left);
+    } else if (cmp1 > 0 && cmp2 > 0) {
+      rotate_right(&n->right, c, c->right);
+      rotate_right(&root, n, n->right);
+    } else if (cmp1 < 0 && cmp2 > 0) {
+      rotate_right(&n->left, c, c->right);
+      rotate_left(&root, n, n->left);
+    } else if (cmp1 > 0 && cmp2 < 0) {
+      rotate_left(&n->right, c, c->left);
+      rotate_right(&root, n, n->right);
+    }
   } while (1);
 }
 
@@ -401,11 +351,8 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_splay (splay_tree_key key)
    value is returned.  Otherwise, this function returns 0.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-int
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_foreach_helper (
-						splay_tree_node node,
-						foreach_fn fn, void *data)
-{
+int typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_foreach_helper(
+    splay_tree_node node, foreach_fn fn, void *data) {
   int val;
   splay_tree_node stack;
 
@@ -416,27 +363,25 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_foreach_helper (
   stack = NULL;
   val = 0;
 
-  for (;;)
-    {
-      while (node != NULL)
-	{
-	  node->back = stack;
-	  stack = node;
-	  node = node->left;
-	}
-
-      if (stack == NULL)
-	break;
-
-      node = stack;
-      stack = stack->back;
-
-      val = (*fn) (node->key, node->value, data);
-      if (val)
-	break;
-
-      node = node->right;
+  for (;;) {
+    while (node != NULL) {
+      node->back = stack;
+      stack = node;
+      node = node->left;
     }
+
+    if (stack == NULL)
+      break;
+
+    node = stack;
+    stack = stack->back;
+
+    val = (*fn)(node->key, node->value, data);
+    if (val)
+      break;
+
+    node = node->right;
+  }
 
   return val;
 }
@@ -447,50 +392,42 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_foreach_helper (
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_insert (
-						splay_tree_key key,
-						splay_tree_value value)
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_insert(
+    splay_tree_key key, splay_tree_value value) {
   int comparison = 0;
 
-  splay_tree_splay (key);
+  splay_tree_splay(key);
 
   if (root)
     comparison = (*comp)(root->key, key);
 
-  if (root && comparison == 0)
-    {
-      /* If the root of the tree already has the indicated KEY, just
-	 replace the value with VALUE.  */
-      VDEL(root->value);
-      root->value = value;
+  if (root && comparison == 0) {
+    /* If the root of the tree already has the indicated KEY, just
+       replace the value with VALUE.  */
+    VDEL(root->value);
+    root->value = value;
+  } else {
+    /* Create a new node, and insert it at the root.  */
+    splay_tree_node node;
+
+    node = new splay_tree_node_s;
+    node->key = key;
+    node->value = value;
+
+    if (!root)
+      node->left = node->right = 0;
+    else if (comparison < 0) {
+      node->left = root;
+      node->right = node->left->right;
+      node->left->right = 0;
+    } else {
+      node->right = root;
+      node->left = node->right->left;
+      node->right->left = 0;
     }
-  else
-    {
-      /* Create a new node, and insert it at the root.  */
-      splay_tree_node node;
 
-      node = new splay_tree_node_s;
-      node->key = key;
-      node->value = value;
-
-      if (!root)
-	node->left = node->right = 0;
-      else if (comparison < 0)
-	{
-	  node->left = root;
-	  node->right = node->left->right;
-	  node->left->right = 0;
-	}
-      else
-	{
-	  node->right = root;
-	  node->left = node->right->left;
-	  node->right->left = 0;
-	}
-
-      root = node;
-    }
+    root = node;
+  }
 
   return root;
 }
@@ -498,40 +435,35 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_insert (
 /* Remove KEY from SP.  It is not an error if it did not exist.  */
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
-void
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_remove (splay_tree_key key)
-{
-  splay_tree_splay (key);
+void typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_remove(
+    splay_tree_key key) {
+  splay_tree_splay(key);
 
-  if (root && (*comp) (root->key, key) == 0)
-    {
-      splay_tree_node left, right;
+  if (root && (*comp)(root->key, key) == 0) {
+    splay_tree_node left, right;
 
-      left = root->left;
-      right = root->right;
+    left = root->left;
+    right = root->right;
 
-      /* Delete the root node itself.  */
-      VDEL (root->value);
-      delete root;
+    /* Delete the root node itself.  */
+    VDEL(root->value);
+    delete root;
 
-      /* One of the children is now the root.  Doesn't matter much
-	 which, so long as we preserve the properties of the tree.  */
-      if (left)
-	{
-	  root = left;
+    /* One of the children is now the root.  Doesn't matter much
+       which, so long as we preserve the properties of the tree.  */
+    if (left) {
+      root = left;
 
-	  /* If there was a right child as well, hang it off the
-	     right-most leaf of the left child.  */
-	  if (right)
-	    {
-	      while (left->right)
-		left = left->right;
-	      left->right = right;
-	    }
-	}
-      else
-	root = right;
-    }
+      /* If there was a right child as well, hang it off the
+         right-most leaf of the left child.  */
+      if (right) {
+        while (left->right)
+          left = left->right;
+        left->right = right;
+      }
+    } else
+      root = right;
+  }
 }
 
 /* Lookup KEY in SP, returning VALUE if present, and NULL
@@ -539,9 +471,8 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_remove (splay_tree_key key)
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_lookup (splay_tree_key key)
-{
-  splay_tree_splay (key);
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_lookup(splay_tree_key key) {
+  splay_tree_splay(key);
 
   if (root && (*comp)(root->key, key) == 0)
     return root;
@@ -553,8 +484,7 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_lookup (splay_tree_key key)
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_max ()
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_max() {
   splay_tree_node n = root;
 
   if (!n)
@@ -570,8 +500,7 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_max ()
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_min ()
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_min() {
   splay_tree_node n = root;
 
   if (!n)
@@ -588,9 +517,8 @@ typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_min ()
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE,
-		 VALUE_TYPE>::splay_tree_predecessor (splay_tree_key key)
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_predecessor(
+    splay_tree_key key) {
   int comparison;
   splay_tree_node node;
 
@@ -600,7 +528,7 @@ typed_splay_tree<KEY_TYPE,
 
   /* Splay the tree around KEY.  That will leave either the KEY
      itself, its predecessor, or its successor at the root.  */
-  splay_tree_splay (key);
+  splay_tree_splay(key);
   comparison = (*comp)(root->key, key);
 
   /* If the predecessor is at the root, just return it.  */
@@ -621,9 +549,8 @@ typed_splay_tree<KEY_TYPE,
 
 template <typename KEY_TYPE, typename VALUE_TYPE>
 typename typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_node
-typed_splay_tree<KEY_TYPE,
-		 VALUE_TYPE>::splay_tree_successor (splay_tree_key key)
-{
+typed_splay_tree<KEY_TYPE, VALUE_TYPE>::splay_tree_successor(
+    splay_tree_key key) {
   int comparison;
   splay_tree_node node;
 
@@ -633,7 +560,7 @@ typed_splay_tree<KEY_TYPE,
 
   /* Splay the tree around KEY.  That will leave either the KEY
      itself, its predecessor, or its successor at the root.  */
-  splay_tree_splay (key);
+  splay_tree_splay(key);
   comparison = (*comp)(root->key, key);
 
   /* If the successor is at the root, just return it.  */
@@ -649,4 +576,4 @@ typed_splay_tree<KEY_TYPE,
   return node;
 }
 
-#endif  /* GCC_TYPED_SPLAY_TREE_H  */
+#endif /* GCC_TYPED_SPLAY_TREE_H  */

@@ -5,7 +5,6 @@
  */
 #ifndef _WSVNS_
 #define _WSVNS_
-
 typedef struct sockaddr_vns {
   u_short sin_family;
   u_char net_address[4];
@@ -13,8 +12,7 @@ typedef struct sockaddr_vns {
   u_char port[2];
   u_char hops;
   u_char filler[5];
-} SOCKADDR_VNS,*PSOCKADDR_VNS,*LPSOCKADDR_VNS;
-
+} SOCKADDR_VNS, *PSOCKADDR_VNS, *LPSOCKADDR_VNS;
 #define VNSPROTO_IPC 1
 #define VNSPROTO_RELIABLE_IPC 2
 #define VNSPROTO_SPP 3

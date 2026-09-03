@@ -28,11 +28,11 @@ along with GCC; see the file COPYING3.  If not see
 
 /* Debug Format Interface.  Used in dwarf2out.cc.  */
 
-extern void ctf_debug_init (void);
-extern void ctf_debug_init_postprocess (bool);
-extern bool ctf_do_die (dw_die_ref);
-extern void ctf_debug_early_finish (const char *);
-extern void ctf_debug_finish (void);
+extern void ctf_debug_init(void);
+extern void ctf_debug_init_postprocess(bool);
+extern bool ctf_do_die(dw_die_ref);
+extern void ctf_debug_early_finish(const char *);
+extern void ctf_debug_finish(void);
 
 /* Wrappers for CTF/BTF to fetch information from GCC DWARF DIE.  Used in
    ctfc.cc.
@@ -48,8 +48,8 @@ extern void ctf_debug_finish (void);
 
 /* Source location information.  */
 
-extern const char * ctf_get_die_loc_file (dw_die_ref);
-extern unsigned int ctf_get_die_loc_line (dw_die_ref);
-extern unsigned int ctf_get_die_loc_col (dw_die_ref);
+extern const char *ctf_get_die_loc_file(dw_die_ref);
+extern unsigned int ctf_get_die_loc_line(dw_die_ref);
+extern unsigned int ctf_get_die_loc_col(dw_die_ref);
 
 #endif /* GCC_DWARF2CTF_H */

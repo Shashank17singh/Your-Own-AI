@@ -1,3 +1,1 @@
-void MY_MODULE(void)
-{
-}
+void MY_MODULE(void) {}

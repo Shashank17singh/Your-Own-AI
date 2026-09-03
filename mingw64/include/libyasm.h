@@ -36,9 +36,9 @@ typedef struct __va_list va_list;
 typedef unsigned long size_t;
 typedef unsigned long uintptr_t;
 #else
-#include <stdio.h>
-#include <stdarg.h>
 #include <libyasm-stdint.h>
+#include <stdarg.h>
+#include <stdio.h>
 #endif
 
 #include <libyasm/compat-queue.h>
@@ -49,20 +49,20 @@ typedef unsigned long uintptr_t;
 #include <libyasm/linemap.h>
 
 #include <libyasm/errwarn.h>
-#include <libyasm/intnum.h>
-#include <libyasm/floatnum.h>
 #include <libyasm/expr.h>
-#include <libyasm/value.h>
+#include <libyasm/floatnum.h>
+#include <libyasm/intnum.h>
 #include <libyasm/symrec.h>
+#include <libyasm/value.h>
 
 #include <libyasm/bytecode.h>
-#include <libyasm/section.h>
 #include <libyasm/insn.h>
+#include <libyasm/section.h>
 
 #include <libyasm/arch.h>
 #include <libyasm/dbgfmt.h>
-#include <libyasm/objfmt.h>
 #include <libyasm/listfmt.h>
+#include <libyasm/objfmt.h>
 #include <libyasm/parser.h>
 #include <libyasm/preproc.h>
 

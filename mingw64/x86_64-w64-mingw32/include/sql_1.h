@@ -5,12 +5,19 @@
  */
 #ifndef _SQL_1_H_
 #define _SQL_1_H_
-
 struct SQL_LEVEL_1_TOKEN {
-  enum { OP_EXPRESSION = 1,TOKEN_AND,TOKEN_OR,TOKEN_NOT };
-  enum { IFUNC_NONE = 0,IFUNC_UPPER = 1,IFUNC_LOWER = 2 };
+  enum { OP_EXPRESSION = 1, TOKEN_AND, TOKEN_OR, TOKEN_NOT };
+  enum { IFUNC_NONE = 0, IFUNC_UPPER = 1, IFUNC_LOWER = 2 };
   int nTokenType;
-  enum { OP_EQUAL = 1,OP_NOT_EQUAL,OP_EQUALorGREATERTHAN,OP_EQUALorLESSTHAN,OP_LESSTHAN,OP_GREATERTHAN,OP_LIKE };
+  enum {
+    OP_EQUAL = 1,
+    OP_NOT_EQUAL,
+    OP_EQUALorGREATERTHAN,
+    OP_EQUALorLESSTHAN,
+    OP_LESSTHAN,
+    OP_GREATERTHAN,
+    OP_LIKE
+  };
   BSTR pPropertyName;
   int nOperator;
   WINBOOL bConstIsStrNumeric;
@@ -19,12 +26,11 @@ struct SQL_LEVEL_1_TOKEN {
   DWORD dwPropertyFunction;
   DWORD dwConstFunction;
   SQL_LEVEL_1_TOKEN();
-  SQL_LEVEL_1_TOKEN(SQL_LEVEL_1_TOKEN&);
+  SQL_LEVEL_1_TOKEN(SQL_LEVEL_1_TOKEN &);
   ~SQL_LEVEL_1_TOKEN();
-  SQL_LEVEL_1_TOKEN& operator=(SQL_LEVEL_1_TOKEN &Src);
+  SQL_LEVEL_1_TOKEN &operator=(SQL_LEVEL_1_TOKEN &Src);
   void Dump(FILE *);
 };
-
 struct SQL_LEVEL_1_RPN_EXPRESSION {
   int nNumTokens;
   int nCurSize;
@@ -40,7 +46,6 @@ struct SQL_LEVEL_1_RPN_EXPRESSION {
   void AddProperty(LPWSTR pProp);
   void Dump(const char *pszTextFile);
 };
-
 class SQL1_Parser {
   CGenLexer *m_pLexer;
   int m_nLine;
@@ -80,13 +85,12 @@ class SQL1_Parser {
   int trailing_const_expr();
   int unknown_func_expr();
   int typed_constant();
+
 public:
-  enum {
-    SUCCESS,SYNTAX_ERROR,LEXICAL_ERROR,FAILED,BUFFER_TOO_SMALL
-  };
+  enum { SUCCESS, SYNTAX_ERROR, LEXICAL_ERROR, FAILED, BUFFER_TOO_SMALL };
   SQL1_Parser(CGenLexSource *pSrc);
   ~SQL1_Parser();
-  int GetQueryClass(LPWSTR pBuf,int nBufSize);
+  int GetQueryClass(LPWSTR pBuf, int nBufSize);
   int Parse(SQL_LEVEL_1_RPN_EXPRESSION **pOutput);
   int CurrentLine() { return m_nLine; }
   LPWSTR CurrentToken() { return m_pTokenText; }

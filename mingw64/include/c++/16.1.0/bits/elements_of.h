@@ -35,40 +35,35 @@
 
 // C++ >= 23 && __glibcxx_coroutine
 #if defined(__glibcxx_ranges) && defined(__glibcxx_generator)
-#include <bits/ranges_base.h>
 #include <bits/memoryfwd.h>
+#include <bits/ranges_base.h>
 
 #if _GLIBCXX_HOSTED
-# include <bits/allocator.h> // likely desirable if hosted.
-#endif  // HOSTED
+#include <bits/allocator.h> // likely desirable if hosted.
+#endif                      // HOSTED
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
-namespace ranges
-{
+namespace ranges {
 
-  /**
-   * @ingroup ranges
-   * @since C++23
-   * @{
-   */
+/**
+ * @ingroup ranges
+ * @since C++23
+ * @{
+ */
 
-  template<range _Range, typename _Alloc = allocator<byte>>
-    struct elements_of
-    {
-      [[no_unique_address]] _Range range;
-      [[no_unique_address]] _Alloc allocator = _Alloc();
-    };
+template <range _Range, typename _Alloc = allocator<byte>> struct elements_of {
+  [[no_unique_address]] _Range range;
+  [[no_unique_address]] _Alloc allocator = _Alloc();
+};
 
-  template<typename _Range, typename _Alloc = allocator<byte>>
-    elements_of(_Range&&, _Alloc = _Alloc())
-      -> elements_of<_Range&&, _Alloc>;
+template <typename _Range, typename _Alloc = allocator<byte>>
+elements_of(_Range &&, _Alloc = _Alloc()) -> elements_of<_Range &&, _Alloc>;
 
-  /// @}
-}
+/// @}
+} // namespace ranges
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
-#endif  // __glibcxx_generator && __glibcxx_ranges
-#endif  // _GLIBCXX_BITS_ELEMENTS_OF
+#endif // __glibcxx_generator && __glibcxx_ranges
+#endif // _GLIBCXX_BITS_ELEMENTS_OF

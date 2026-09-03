@@ -1,6 +1,5 @@
 import sys
 from . import main
-
 rc = 1
 try:
     main()

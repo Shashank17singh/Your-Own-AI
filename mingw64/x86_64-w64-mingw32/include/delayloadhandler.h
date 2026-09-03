@@ -5,15 +5,11 @@
  */
 #ifndef __delayloadhandler_h__
 #define __delayloadhandler_h__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #if NTDDI_VERSION >= NTDDI_WIN8
-
 #define DELAYLOAD_GPA_FAILURE 4
-
 typedef struct _DELAYLOAD_PROC_DESCRIPTOR {
   ULONG ImportDescribedByName;
   union {
@@ -21,7 +17,6 @@ typedef struct _DELAYLOAD_PROC_DESCRIPTOR {
     ULONG Ordinal;
   } Description;
 } DELAYLOAD_PROC_DESCRIPTOR, *PDELAYLOAD_PROC_DESCRIPTOR;
-
 typedef struct _DELAYLOAD_INFO {
   ULONG Size;
   PCIMAGE_DELAYLOAD_DESCRIPTOR DelayloadDescriptor;
@@ -32,14 +27,10 @@ typedef struct _DELAYLOAD_INFO {
   PVOID Unused;
   ULONG LastError;
 } DELAYLOAD_INFO, *PDELAYLOAD_INFO;
-
-
-typedef PVOID (WINAPI *PDELAYLOAD_FAILURE_DLL_CALLBACK)(ULONG NotificationReason,PDELAYLOAD_INFO DelayloadInfo);
-
+typedef PVOID(WINAPI *PDELAYLOAD_FAILURE_DLL_CALLBACK)(
+    ULONG NotificationReason, PDELAYLOAD_INFO DelayloadInfo);
 extern PDELAYLOAD_FAILURE_DLL_CALLBACK __pfnDliFailureHook2;
-
 #endif
-
 #ifdef __cplusplus
 }
 #endif

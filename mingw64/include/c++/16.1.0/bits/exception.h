@@ -39,58 +39,56 @@
 
 extern "C++" {
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
-  /**
-   * @defgroup exceptions Exceptions
-   * @ingroup diagnostics
-   * @since C++98
-   *
-   * Classes and functions for reporting errors via exceptions.
-   * @{
-   */
+namespace std _GLIBCXX_VISIBILITY(default) {
+/**
+ * @defgroup exceptions Exceptions
+ * @ingroup diagnostics
+ * @since C++98
+ *
+ * Classes and functions for reporting errors via exceptions.
+ * @{
+ */
 
-  /**
-   *  @brief Base class for all library exceptions.
-   *
-   *  This is the base class for all exceptions thrown by the standard
-   *  library, and by certain language expressions.  You are free to derive
-   *  your own %exception classes, or use a different hierarchy, or to
-   *  throw non-class data (e.g., fundamental types).
-   */
-  class exception
-  {
-  public:
-    _GLIBCXX26_CONSTEXPR exception() _GLIBCXX_NOTHROW { }
+/**
+ *  @brief Base class for all library exceptions.
+ *
+ *  This is the base class for all exceptions thrown by the standard
+ *  library, and by certain language expressions.  You are free to derive
+ *  your own %exception classes, or use a different hierarchy, or to
+ *  throw non-class data (e.g., fundamental types).
+ */
+class exception {
+public:
+  _GLIBCXX26_CONSTEXPR exception() _GLIBCXX_NOTHROW {}
 #if __cplusplus >= 202400L
-    [[__gnu__::__gnu_inline__]]
-    constexpr inline virtual ~exception() _GLIBCXX_TXN_SAFE_DYN noexcept {}
+  [[__gnu__::__gnu_inline__]]
+  constexpr inline virtual ~exception() _GLIBCXX_TXN_SAFE_DYN noexcept {}
 #else
-    virtual ~exception() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
+  virtual ~exception() _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
 #endif
 #if __cplusplus >= 201103L
-    _GLIBCXX26_CONSTEXPR exception(const exception&) = default;
-    _GLIBCXX26_CONSTEXPR exception& operator=(const exception&) = default;
-    _GLIBCXX26_CONSTEXPR exception(exception&&) = default;
-    _GLIBCXX26_CONSTEXPR exception& operator=(exception&&) = default;
+  _GLIBCXX26_CONSTEXPR exception(const exception &) = default;
+  _GLIBCXX26_CONSTEXPR exception &operator=(const exception &) = default;
+  _GLIBCXX26_CONSTEXPR exception(exception &&) = default;
+  _GLIBCXX26_CONSTEXPR exception &operator=(exception &&) = default;
 #endif
 
-    /** Returns a C-style character string describing the general cause
-     *  of the current error.  */
+  /** Returns a C-style character string describing the general cause
+   *  of the current error.  */
 #if __cplusplus >= 202400L
-    [[__gnu__::__gnu_inline__]]
-    constexpr inline virtual const char*
-    what() const _GLIBCXX_TXN_SAFE_DYN noexcept { return "std::exception"; }
+  [[__gnu__::__gnu_inline__]]
+  constexpr inline virtual const char *
+  what() const _GLIBCXX_TXN_SAFE_DYN noexcept {
+    return "std::exception";
+  }
 #else
-    virtual const char*
-    what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
+  virtual const char *what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW;
 #endif
-  };
+};
 
-  /// @}
+/// @}
 
-} // namespace std
-
+} // namespace std _GLIBCXX_VISIBILITY(default)
 }
 
 #endif

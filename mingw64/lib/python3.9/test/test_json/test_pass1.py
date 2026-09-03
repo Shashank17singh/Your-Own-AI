@@ -1,8 +1,7 @@
 from test.test_json import PyTest, CTest
 
-
 # from http://json.org/JSON_checker/test/pass1.json
-JSON = r'''
+JSON = r"""
 [
     "JSON Test Pattern pass1",
     {"object with 1 member":["array with 1 element"]},
@@ -61,7 +60,8 @@ JSON = r'''
 1e-1,
 1e00,2e+00,2e-00
 ,"rosebud"]
-'''
+"""
+
 
 class TestPass1:
     def test_parse(self):
@@ -71,5 +71,9 @@ class TestPass1:
         self.assertEqual(res, self.loads(out))
 
 
-class TestPyPass1(TestPass1, PyTest): pass
-class TestCPass1(TestPass1, CTest): pass
+class TestPyPass1(TestPass1, PyTest):
+    pass
+
+
+class TestCPass1(TestPass1, CTest):
+    pass

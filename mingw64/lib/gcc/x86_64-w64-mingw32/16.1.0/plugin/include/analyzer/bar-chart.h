@@ -27,30 +27,28 @@ namespace ana {
 
    TODO(stage1): move to gcc subdir? */
 
-class bar_chart
-{
+class bar_chart {
 public:
   typedef unsigned long value_t;
 
   /* Add an item, taking a copy of NAME.  */
-  void add_item (const char *name, value_t value);
+  void add_item(const char *name, value_t value);
 
   /* Print the data to PP.  */
-  void print (pretty_printer *pp) const;
+  void print(pretty_printer *pp) const;
 
 private:
-  struct item
-  {
-    item (const char *name, value_t value)
-    : m_name (xstrdup (name)), m_strlen (strlen (name)) , m_value (value) {}
-    ~item () { free (m_name); }
+  struct item {
+    item(const char *name, value_t value)
+        : m_name(xstrdup(name)), m_strlen(strlen(name)), m_value(value) {}
+    ~item() { free(m_name); }
 
     char *m_name;
     size_t m_strlen;
     value_t m_value;
   };
 
-  static void print_padding (pretty_printer *pp, size_t count);
+  static void print_padding(pretty_printer *pp, size_t count);
 
   auto_delete_vec<item> m_items;
 };

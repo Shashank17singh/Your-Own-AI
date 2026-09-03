@@ -6,24 +6,31 @@ import os
 from test import support
 from test.support import script_helper
 
+
 ### helpers
 def h1():
     print("h1")
 
+
 def h2():
     print("h2")
+
 
 def h3():
     print("h3")
 
+
 def h4(*args, **kwargs):
     print("h4", args, kwargs)
+
 
 def raise1():
     raise TypeError
 
+
 def raise2():
     raise SystemError
+
 
 def exit():
     raise SystemExit
@@ -50,11 +57,12 @@ class GeneralTest(unittest.TestCase):
         atexit.register(h4, 4, kw="abc")
         atexit._run_exitfuncs()
 
-        self.assertEqual(self.stream.getvalue(),
-                            "h4 (4,) {'kw': 'abc'}\nh4 () {}\nh1\n")
+        self.assertEqual(
+            self.stream.getvalue(), "h4 (4,) {'kw': 'abc'}\nh4 () {}\nh1\n"
+        )
 
     def test_badargs(self):
-        atexit.register(lambda: 1, 0, 0, (x for x in (1,2)), 0, 0)
+        atexit.register(lambda: 1, 0, 0, (x for x in (1, 2)), 0, 0)
         self.assertRaises(TypeError, atexit._run_exitfuncs)
 
     def test_order(self):
@@ -86,16 +94,19 @@ class GeneralTest(unittest.TestCase):
         atexit.register(exit)
 
         self.assertRaises(SystemExit, atexit._run_exitfuncs)
-        self.assertEqual(self.stream.getvalue(), '')
+        self.assertEqual(self.stream.getvalue(), "")
 
     def test_print_tracebacks(self):
         # Issue #18776: the tracebacks should be printed when errors occur.
         def f():
-            1/0  # one
+            1 / 0  # one
+
         def g():
-            1/0  # two
+            1 / 0  # two
+
         def h():
-            1/0  # three
+            1 / 0  # three
+
         atexit.register(f)
         atexit.register(g)
         atexit.register(h)
@@ -109,6 +120,7 @@ class GeneralTest(unittest.TestCase):
 
     def test_stress(self):
         a = [0]
+
         def inc():
             a[0] += 1
 
@@ -120,6 +132,7 @@ class GeneralTest(unittest.TestCase):
 
     def test_clear(self):
         a = [0]
+
         def inc():
             a[0] += 1
 
@@ -131,8 +144,10 @@ class GeneralTest(unittest.TestCase):
 
     def test_unregister(self):
         a = [0]
+
         def inc():
             a[0] += 1
+
         def dec():
             a[0] -= 1
 

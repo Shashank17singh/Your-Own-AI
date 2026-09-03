@@ -20,9 +20,9 @@
 #ifndef GCC_GENGTYPE_H
 #define GCC_GENGTYPE_H
 
-#define obstack_chunk_alloc    xmalloc
-#define obstack_chunk_free     free
-#define OBSTACK_CHUNK_SIZE     0
+#define obstack_chunk_alloc xmalloc
+#define obstack_chunk_free free
+#define OBSTACK_CHUNK_SIZE 0
 
 /* Sets of accepted source languages like C, C++, Ada... are
    represented by a bitmap.  */
@@ -31,9 +31,8 @@ typedef unsigned lang_bitmap;
 /* Variable length structure representing an input file.  A hash table
    ensure uniqueness for a given input file name.  The only function
    allocating input_file-s is input_file_by_name.  */
-struct input_file_st
-{
-  struct outf* inpoutf;  /* Cached corresponding output file, computed
+struct input_file_st {
+  struct outf *inpoutf;  /* Cached corresponding output file, computed
                             in get_output_file_with_visibility.  */
   lang_bitmap inpbitmap; /* The set of languages using this file.  */
   bool inpisplugin;      /* Flag set for plugin input files.  */
@@ -44,15 +43,13 @@ typedef struct input_file_st input_file;
 
 /* A file position, mostly for error messages.
    The FILE element may be compared using pointer equality.  */
-struct fileloc
-{
+struct fileloc {
   const input_file *file;
   int line;
 };
 
-
 /* Table of all input files and its size.  */
-extern const input_file** gt_files;
+extern const input_file **gt_files;
 extern size_t num_gt_files;
 
 /* Table of headers to be included in gtype-desc.cc that are generated
@@ -64,24 +61,22 @@ extern size_t num_build_headers;
    location for things that we can't rely on the source to define.  We
    also need to refer to the "system.h" file specifically.  These two
    pointers are initialized early in main.  */
-extern input_file* this_file;
-extern input_file* system_h_file;
+extern input_file *this_file;
+extern input_file *system_h_file;
 
 /* Retrieve or create the input_file for a given name, which is a file
    path.  This is the only function allocating input_file-s and it is
    hash-consing them.  */
-input_file* input_file_by_name (const char* name);
+input_file *input_file_by_name(const char *name);
 
 /* For F an input_file, return the relative path to F from $(srcdir)
    if the latter is a prefix in F, NULL otherwise.  */
-const char *get_file_srcdir_relative_path (const input_file *inpf);
+const char *get_file_srcdir_relative_path(const input_file *inpf);
 
 /* Get the name of an input file.  */
-inline const char*
-get_input_file_name (const input_file *inpf)
-{
+inline const char *get_input_file_name(const input_file *inpf) {
   if (inpf)
-      return inpf->inpname;
+    return inpf->inpname;
   return NULL;
 }
 
@@ -94,9 +89,7 @@ get_input_file_name (const input_file *inpf)
    some GC roots may be missed, which is a much harder-to-debug problem.
   */
 
-inline lang_bitmap
-get_lang_bitmap (const input_file* inpf)
-{
+inline lang_bitmap get_lang_bitmap(const input_file *inpf) {
   if (inpf == NULL)
     return 0;
   return inpf->inpbitmap;
@@ -104,10 +97,8 @@ get_lang_bitmap (const input_file* inpf)
 
 /* Set the bitmap returned by get_lang_bitmap.  The only legitimate
    callers of this function are read_input_list & read_state_*.  */
-inline void
-set_lang_bitmap (input_file* inpf, lang_bitmap n)
-{
-  gcc_assert (inpf);
+inline void set_lang_bitmap(input_file *inpf, lang_bitmap n) {
+  gcc_assert(inpf);
   inpf->inpbitmap = n;
 }
 
@@ -133,8 +124,7 @@ extern pair_p variables;
 
 /* An enum for distinguishing GGC vs PCH.  */
 
-enum write_types_kinds
-{
+enum write_types_kinds {
   WTK_GGC,
   WTK_PCH,
 
@@ -144,49 +134,47 @@ enum write_types_kinds
 /* Discrimating kind of types we can understand.  */
 
 enum typekind {
-  TYPE_NONE=0,          /* Never used, so zeroed memory is invalid.  */
-  TYPE_UNDEFINED,	/* We have not yet seen a definition for this type.
-			   If a type is still undefined when generating code,
-			   an error will be generated.  */
-  TYPE_SCALAR,          /* Scalar types like char.  */
-  TYPE_STRING,          /* The string type.  */
-  TYPE_STRUCT,          /* Type for GTY-ed structs.  */
-  TYPE_UNION,           /* Type for GTY-ed discriminated unions.  */
-  TYPE_POINTER,         /* Pointer type to GTY-ed type.  */
-  TYPE_ARRAY,           /* Array of GTY-ed types.  */
-  TYPE_CALLBACK,	/* A function pointer that needs relocation if
-			   the executable has been loaded at a different
-			   address.  */
-  TYPE_LANG_STRUCT,     /* GCC front-end language specific structs.
-                           Various languages may have homonymous but
-                           different structs.  */
-  TYPE_USER_STRUCT	/* User defined type.  Walkers and markers for
-			   this type are assumed to be provided by the
-			   user.  */
+  TYPE_NONE = 0,    /* Never used, so zeroed memory is invalid.  */
+  TYPE_UNDEFINED,   /* We have not yet seen a definition for this type.
+                       If a type is still undefined when generating code,
+                       an error will be generated.  */
+  TYPE_SCALAR,      /* Scalar types like char.  */
+  TYPE_STRING,      /* The string type.  */
+  TYPE_STRUCT,      /* Type for GTY-ed structs.  */
+  TYPE_UNION,       /* Type for GTY-ed discriminated unions.  */
+  TYPE_POINTER,     /* Pointer type to GTY-ed type.  */
+  TYPE_ARRAY,       /* Array of GTY-ed types.  */
+  TYPE_CALLBACK,    /* A function pointer that needs relocation if
+                       the executable has been loaded at a different
+                       address.  */
+  TYPE_LANG_STRUCT, /* GCC front-end language specific structs.
+                       Various languages may have homonymous but
+                       different structs.  */
+  TYPE_USER_STRUCT  /* User defined type.  Walkers and markers for
+                       this type are assumed to be provided by the
+                       user.  */
 };
 
 /* Discriminating kind for options.  */
 enum option_kind {
-  OPTION_NONE=0,        /* Never used, so zeroed memory is invalid.  */
-  OPTION_STRING,        /* A string-valued option.  Most options are
-                           strings.  */
-  OPTION_TYPE,          /* A type-valued option.  */
-  OPTION_NESTED         /* Option data for 'nested_ptr'.  */
+  OPTION_NONE = 0, /* Never used, so zeroed memory is invalid.  */
+  OPTION_STRING,   /* A string-valued option.  Most options are
+                      strings.  */
+  OPTION_TYPE,     /* A type-valued option.  */
+  OPTION_NESTED    /* Option data for 'nested_ptr'.  */
 };
-
 
 /* A way to pass data through to the output end.  */
 struct options {
-  struct options *next;         /* next option of the same pair.  */
-  const char *name;             /* GTY option name.  */
-  enum option_kind kind;        /* discriminating option kind.  */
+  struct options *next;  /* next option of the same pair.  */
+  const char *name;      /* GTY option name.  */
+  enum option_kind kind; /* discriminating option kind.  */
   union {
-    const char* string;                    /* When OPTION_STRING.  */
-    type_p type;                           /* When OPTION_TYPE.  */
-    struct nested_ptr_data* nested;        /* when OPTION_NESTED.  */
+    const char *string;             /* When OPTION_STRING.  */
+    type_p type;                    /* When OPTION_TYPE.  */
+    struct nested_ptr_data *nested; /* when OPTION_NESTED.  */
   } info;
 };
-
 
 /* Option data for the 'nested_ptr' option.  */
 struct nested_ptr_data {
@@ -199,28 +187,27 @@ struct nested_ptr_data {
    and info INFO.  NEXT is the next option in the chain.  */
 
 /* Create a string option.  */
-options_p create_string_option (options_p next, const char* name,
-                                const char* info);
+options_p create_string_option(options_p next, const char *name,
+                               const char *info);
 
 /* Create a type option.  */
-options_p create_type_option (options_p next, const char* name,
-                              type_p info);
+options_p create_type_option(options_p next, const char *name, type_p info);
 
 /* Create a nested option.  */
-options_p create_nested_option (options_p next, const char* name,
-				struct nested_ptr_data* info);
+options_p create_nested_option(options_p next, const char *name,
+                               struct nested_ptr_data *info);
 
 /* Create a nested pointer option.  */
-options_p create_nested_ptr_option (options_p next, type_p t,
-				    const char *to, const char *from);
+options_p create_nested_ptr_option(options_p next, type_p t, const char *to,
+                                   const char *from);
 
 /* A name and a type.  */
 struct pair {
-  pair_p next;                  /* The next pair in the linked list.  */
-  const char *name;             /* The defined name.  */
-  type_p type;                  /* Its GTY-ed type.  */
-  struct fileloc line;          /* The file location.  */
-  options_p opt;                /* GTY options, as a linked list.  */
+  pair_p next;         /* The next pair in the linked list.  */
+  const char *name;    /* The defined name.  */
+  type_p type;         /* Its GTY-ed type.  */
+  struct fileloc line; /* The file location.  */
+  options_p opt;       /* GTY options, as a linked list.  */
 };
 
 /* Usage information for GTY-ed types.  Gengtype has to care only of
@@ -230,7 +217,7 @@ struct pair {
 enum gc_used_enum {
 
   /* We need that zeroed types are initially unused.  */
-  GC_UNUSED=0,
+  GC_UNUSED = 0,
 
   /* The GTY-ed type is used, e.g by a GTY-ed variable or a field
      inside a GTY-ed used type.  */
@@ -285,12 +272,12 @@ struct type {
     /* when TYPE_STRUCT or TYPE_UNION or TYPE_LANG_STRUCT, we have an
        aggregate type containing fields: */
     struct {
-      const char *tag;          /* the aggregate tag, if any.  */
-      struct fileloc line;      /* the source location.  */
-      pair_p fields;            /* the linked list of fields.  */
-      options_p opt;            /* the GTY options if any.  */
-      lang_bitmap bitmap;       /* the set of front-end languages
-                                   using that GTY-ed aggregate.  */
+      const char *tag;     /* the aggregate tag, if any.  */
+      struct fileloc line; /* the source location.  */
+      pair_p fields;       /* the linked list of fields.  */
+      options_p opt;       /* the GTY options if any.  */
+      lang_bitmap bitmap;  /* the set of front-end languages
+                              using that GTY-ed aggregate.  */
       /* For TYPE_LANG_STRUCT, the lang_struct field gives the first
          element of a linked list of homonymous struct or union types.
          Within this list, each homonymous type has as its lang_struct
@@ -301,16 +288,16 @@ struct type {
       type_p base_class; /* the parent class, if any.  */
 
       /* The following two fields are not serialized in state files, and
-	 are instead reconstructed on load.  */
+         are instead reconstructed on load.  */
 
       /* The head of a singly-linked list of immediate descendents in
-	 the inheritance hierarchy.  */
+         the inheritance hierarchy.  */
       type_p first_subclass;
       /* The next in that list.  */
       type_p next_sibling_class;
 
       /* Have we already written ggc/pch user func for ptr to this?
-	 (in write_user_func_for_structure_ptr).  */
+         (in write_user_func_for_structure_ptr).  */
       bool wrote_user_func_for_ptr[NUM_WTK];
     } s;
 
@@ -319,8 +306,8 @@ struct type {
 
     /* when TYPE_ARRAY: */
     struct {
-      type_p p;                 /* The array component type.  */
-      const char *len;          /* The string if any giving its length.  */
+      type_p p;        /* The array component type.  */
+      const char *len; /* The string if any giving its length.  */
     } a;
 
   } u;
@@ -339,42 +326,32 @@ extern struct type callback_type;
 
 /* Test if a type is a union, either a plain one or a language
    specific one.  */
-#define UNION_P(x)					\
-    ((x)->kind == TYPE_UNION				\
-     || ((x)->kind == TYPE_LANG_STRUCT			\
-         && (x)->u.s.lang_struct->kind == TYPE_UNION))
+#define UNION_P(x)                                                             \
+  ((x)->kind == TYPE_UNION || ((x)->kind == TYPE_LANG_STRUCT &&                \
+                               (x)->u.s.lang_struct->kind == TYPE_UNION))
 
 /* Test if a type is a union or a structure, perhaps a language
    specific one.  */
-inline bool
-union_or_struct_p (enum typekind kind)
-{
-  return (kind == TYPE_UNION
-	  || kind == TYPE_STRUCT
-          || kind == TYPE_LANG_STRUCT
-	  || kind == TYPE_USER_STRUCT);
+inline bool union_or_struct_p(enum typekind kind) {
+  return (kind == TYPE_UNION || kind == TYPE_STRUCT ||
+          kind == TYPE_LANG_STRUCT || kind == TYPE_USER_STRUCT);
 }
 
-inline bool
-union_or_struct_p (const_type_p x)
-{
-  return union_or_struct_p (x->kind);
+inline bool union_or_struct_p(const_type_p x) {
+  return union_or_struct_p(x->kind);
 }
 
 /* Give the file location of a type, if any. */
-inline struct fileloc*
-type_fileloc (type_p t)
-{
+inline struct fileloc *type_fileloc(type_p t) {
   if (!t)
     return NULL;
-  if (union_or_struct_p (t))
+  if (union_or_struct_p(t))
     return &t->u.s.line;
   return NULL;
 }
 
 /* Structure representing an output file.  */
-struct outf
-{
+struct outf {
   struct outf *next;
   const char *name;
   size_t buflength;
@@ -391,77 +368,71 @@ extern outf_p output_files;
 extern outf_p header_file;
 
 /* Print, like fprintf, to O.  No-op if O is NULL.  */
-void
-oprintf (outf_p o, const char *S, ...)
-  ATTRIBUTE_PRINTF_2;
+void oprintf(outf_p o, const char *S, ...) ATTRIBUTE_PRINTF_2;
 
 /* An output file, suitable for definitions, that can see declarations
    made in INPF and is linked into every language that uses INPF.  May
    return NULL in plugin mode.  The INPF argument is almost const, but
    since the result is cached in its inpoutf field it cannot be
    declared const.  */
-outf_p get_output_file_with_visibility (input_file* inpf);
+outf_p get_output_file_with_visibility(input_file *inpf);
 
 /* The name of an output file, suitable for definitions, that can see
    declarations made in INPF and is linked into every language that
    uses INPF.  May return NULL.  */
-const char *get_output_file_name (input_file *inpf);
-
+const char *get_output_file_name(input_file *inpf);
 
 /* Source directory.  */
-extern const char *srcdir;	/* (-S) program argument. */
+extern const char *srcdir; /* (-S) program argument. */
 
 /* Length of srcdir name.  */
 extern size_t srcdir_len;
 
 /* Variable used for reading and writing the state.  */
-extern const char *read_state_filename; /* (-r) program argument. */
+extern const char *read_state_filename;  /* (-r) program argument. */
 extern const char *write_state_filename; /* (-w) program argument. */
 
 /* Functions reading and writing the entire gengtype state, called from
    main, and implemented in file gengtype-state.cc.  */
-void read_state (const char* path);
+void read_state(const char *path);
 /* Write the state, and update the state_number field in types.  */
-void write_state (const char* path);
-
+void write_state(const char *path);
 
 /* Print an error message.  */
-extern void error_at_line
-(const struct fileloc *pos, const char *msg, ...) ATTRIBUTE_PRINTF_2;
+extern void error_at_line(const struct fileloc *pos, const char *msg,
+                          ...) ATTRIBUTE_PRINTF_2;
 
 /* Constructor routines for types.  */
-extern void do_typedef (const char *s, type_p t, struct fileloc *pos);
-extern void do_scalar_typedef (const char *s, struct fileloc *pos);
-extern type_p resolve_typedef (const char *s, struct fileloc *pos);
-extern void add_subclass (type_p base, type_p subclass);
-extern type_p new_structure (const char *name, enum typekind kind,
-			     struct fileloc *pos, pair_p fields,
-			     options_p o, type_p base);
-type_p create_user_defined_type (const char *, struct fileloc *);
-extern type_p find_structure (const char *s, enum typekind kind);
-extern type_p create_scalar_type (const char *name);
-extern type_p create_pointer (type_p t);
-extern type_p create_array (type_p t, const char *len);
-extern pair_p create_field_at (pair_p next, type_p type,
-			       const char *name, options_p opt,
-			       struct fileloc *pos);
-extern pair_p nreverse_pairs (pair_p list);
-extern type_p adjust_field_type (type_p, options_p);
-extern void note_variable (const char *s, type_p t, options_p o,
-			   struct fileloc *pos);
+extern void do_typedef(const char *s, type_p t, struct fileloc *pos);
+extern void do_scalar_typedef(const char *s, struct fileloc *pos);
+extern type_p resolve_typedef(const char *s, struct fileloc *pos);
+extern void add_subclass(type_p base, type_p subclass);
+extern type_p new_structure(const char *name, enum typekind kind,
+                            struct fileloc *pos, pair_p fields, options_p o,
+                            type_p base);
+type_p create_user_defined_type(const char *, struct fileloc *);
+extern type_p find_structure(const char *s, enum typekind kind);
+extern type_p create_scalar_type(const char *name);
+extern type_p create_pointer(type_p t);
+extern type_p create_array(type_p t, const char *len);
+extern pair_p create_field_at(pair_p next, type_p type, const char *name,
+                              options_p opt, struct fileloc *pos);
+extern pair_p nreverse_pairs(pair_p list);
+extern type_p adjust_field_type(type_p, options_p);
+extern void note_variable(const char *s, type_p t, options_p o,
+                          struct fileloc *pos);
 
 /* Lexer and parser routines.  */
-extern int yylex (const char **yylval);
-extern void yybegin (const char *fname);
-extern void yyend (void);
-extern void parse_file (const char *name);
+extern int yylex(const char **yylval);
+extern void yybegin(const char *fname);
+extern void yyend(void);
+extern void parse_file(const char *name);
 extern bool hit_error;
 
 /* Token codes.  */
 /* Keep 'gengtype-parse.cc:token_names', 'gengtype-parse.cc:token_value_format'
    in sync.  */
-enum gty_token
-{
+enum gty_token {
   EOF_TOKEN = 0,
 
   /* Per standard convention, codes in the range (0, UCHAR_MAX]
@@ -491,33 +462,36 @@ enum gty_token
   FIRST_TOKEN_WITH_VALUE = NUM
 };
 
-
 /* Level for verbose messages, e.g. output file generation...  */
-extern int verbosity_level;	/* (-v) program argument.  */
+extern int verbosity_level; /* (-v) program argument.  */
 
 /* For debugging purposes we provide two flags.  */
 
 /* Dump everything to understand gengtype's state. Might be useful to
    gengtype users.  */
-extern int do_dump;		/* (-d) program argument. */
+extern int do_dump; /* (-d) program argument. */
 
 /* Trace the execution by many DBGPRINTF (with the position inside
    gengtype source code).  Only useful to debug gengtype itself.  */
-extern int do_debug;		/* (-D) program argument. */
+extern int do_debug; /* (-D) program argument. */
 
-#define DBGPRINTF(Fmt,...) do {if (do_debug)				\
-      fprintf (stderr, "%s:%d: " Fmt "\n",				\
-	       lbasename (__FILE__),__LINE__, ##__VA_ARGS__);} while (0)
-void dbgprint_count_type_at (const char *, int, const char *, type_p);
-#define DBGPRINT_COUNT_TYPE(Msg,Ty) do {if (do_debug)			\
-      dbgprint_count_type_at (__FILE__, __LINE__, Msg, Ty);}while (0)
+#define DBGPRINTF(Fmt, ...)                                                    \
+  do {                                                                         \
+    if (do_debug)                                                              \
+      fprintf(stderr, "%s:%d: " Fmt "\n", lbasename(__FILE__),                 \
+              __LINE__, ##__VA_ARGS__);                                        \
+  } while (0)
+void dbgprint_count_type_at(const char *, int, const char *, type_p);
+#define DBGPRINT_COUNT_TYPE(Msg, Ty)                                           \
+  do {                                                                         \
+    if (do_debug)                                                              \
+      dbgprint_count_type_at(__FILE__, __LINE__, Msg, Ty);                     \
+  } while (0)
 
-#define FOR_ALL_INHERITED_FIELDS(TYPE, FIELD_VAR) \
-  for (type_p sub = (TYPE); sub; sub = sub->u.s.base_class) \
+#define FOR_ALL_INHERITED_FIELDS(TYPE, FIELD_VAR)                              \
+  for (type_p sub = (TYPE); sub; sub = sub->u.s.base_class)                    \
     for (FIELD_VAR = sub->u.s.fields; FIELD_VAR; FIELD_VAR = FIELD_VAR->next)
 
-extern bool
-opts_have (options_p opts, const char *str);
-
+extern bool opts_have(options_p opts, const char *str);
 
 #endif

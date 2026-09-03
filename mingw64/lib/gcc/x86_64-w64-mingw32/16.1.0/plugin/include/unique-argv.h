@@ -24,38 +24,27 @@ along with GCC; see the file COPYING3.  If not see
 /* C++11 wrapper around libiberty's argv.c, with
    ownership of the underlying array and strings.  */
 
-struct unique_argv
-{
+struct unique_argv {
   /* Take ownership of argv.  */
-  unique_argv (char **argv)
-  : m_argv (argv)
-  {
-  }
+  unique_argv(char **argv) : m_argv(argv) {}
 
-  ~unique_argv ()
-  {
-    freeargv (m_argv);
-  }
+  ~unique_argv() { freeargv(m_argv); }
 
-  unique_argv (const unique_argv &other) = delete;
-  unique_argv &operator= (const unique_argv &other) = delete;
+  unique_argv(const unique_argv &other) = delete;
+  unique_argv &operator=(const unique_argv &other) = delete;
 
-  unique_argv (unique_argv &&other)
-  : m_argv (other.m_argv)
-  {
+  unique_argv(unique_argv &&other) : m_argv(other.m_argv) {
     other.m_argv = nullptr;
   }
 
-  unique_argv &operator= (unique_argv &&other)
-  {
-    freeargv (m_argv);
+  unique_argv &operator=(unique_argv &&other) {
+    freeargv(m_argv);
     m_argv = other.m_argv;
     other.m_argv = nullptr;
     return *this;
   }
 
-  char **release ()
-  {
+  char **release() {
     char **result = m_argv;
     m_argv = nullptr;
     return result;

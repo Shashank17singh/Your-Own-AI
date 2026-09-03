@@ -1,4 +1,4 @@
-#-*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 # pysqlite2/test/transactions.py: tests transactions
 #
 # Copyright (C) 2005-2007 Gerhard Häring <gh@ghaering.de>
@@ -24,8 +24,10 @@
 import os, unittest
 import sqlite3 as sqlite
 
+
 def get_db_path():
     return "sqlite_testdb"
+
 
 class TransactionTests(unittest.TestCase):
     def setUp(self):
@@ -105,22 +107,26 @@ class TransactionTests(unittest.TestCase):
         self.assertEqual(len(res), 1)
 
         self.con1.isolation_level = "DEFERRED"
-        self.assertEqual(self.con1.isolation_level , "DEFERRED")
+        self.assertEqual(self.con1.isolation_level, "DEFERRED")
         self.cur1.execute("insert into test(i) values (5)")
         self.cur2.execute("select i from test")
         res = self.cur2.fetchall()
         self.assertEqual(len(res), 1)
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 2, 2),
-                     'test hangs on sqlite versions older than 3.2.2')
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 2, 2),
+        "test hangs on sqlite versions older than 3.2.2",
+    )
     def CheckRaiseTimeout(self):
         self.cur1.execute("create table test(i)")
         self.cur1.execute("insert into test(i) values (5)")
         with self.assertRaises(sqlite.OperationalError):
             self.cur2.execute("insert into test(i) values (5)")
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 2, 2),
-                     'test hangs on sqlite versions older than 3.2.2')
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 2, 2),
+        "test hangs on sqlite versions older than 3.2.2",
+    )
     def CheckLocking(self):
         """
         This tests the improved concurrency with pysqlite 2.3.4. You needed
@@ -148,6 +154,7 @@ class TransactionTests(unittest.TestCase):
         with self.assertRaises(sqlite.InterfaceError):
             cur.fetchall()
 
+
 class SpecialCommandTests(unittest.TestCase):
     def setUp(self):
         self.con = sqlite.connect(":memory:")
@@ -166,6 +173,7 @@ class SpecialCommandTests(unittest.TestCase):
     def tearDown(self):
         self.cur.close()
         self.con.close()
+
 
 class TransactionalDDL(unittest.TestCase):
     def setUp(self):
@@ -200,15 +208,18 @@ class TransactionalDDL(unittest.TestCase):
     def tearDown(self):
         self.con.close()
 
+
 def suite():
     default_suite = unittest.makeSuite(TransactionTests, "Check")
     special_command_suite = unittest.makeSuite(SpecialCommandTests, "Check")
     ddl_suite = unittest.makeSuite(TransactionalDDL, "Check")
     return unittest.TestSuite((default_suite, special_command_suite, ddl_suite))
 
+
 def test():
     runner = unittest.TextTestRunner()
     runner.run(suite())
+
 
 if __name__ == "__main__":
     test()

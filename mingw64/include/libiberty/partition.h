@@ -43,11 +43,10 @@ extern "C" {
 #include "ansidecl.h"
 #include <stdio.h>
 
-struct partition_elem
-{
+struct partition_elem {
   /* The next element in this class.  Elements in each class form a
      circular list.  */
-  struct partition_elem* next;
+  struct partition_elem *next;
   /* The canonical element that represents the class containing this
      element.  */
   int class_element;
@@ -56,24 +55,23 @@ struct partition_elem
   unsigned class_count;
 };
 
-typedef struct partition_def
-{
+typedef struct partition_def {
   /* The number of elements in this partition.  */
   int num_elements;
   /* The elements in the partition.  */
   struct partition_elem elements[1];
 } *partition;
 
-extern partition partition_new (int);
-extern void partition_delete (partition);
-extern int partition_union (partition, int, int);
-extern void partition_print (partition,	FILE*);
+extern partition partition_new(int);
+extern void partition_delete(partition);
+extern int partition_union(partition, int, int);
+extern void partition_print(partition, FILE *);
 
 /* Returns the canonical element corresponding to the class containing
    ELEMENT__ in PARTITION__.  */
 
-#define partition_find(partition__, element__) \
-    ((partition__)->elements[(element__)].class_element)
+#define partition_find(partition__, element__)                                 \
+  ((partition__)->elements[(element__)].class_element)
 
 #ifdef __cplusplus
 }

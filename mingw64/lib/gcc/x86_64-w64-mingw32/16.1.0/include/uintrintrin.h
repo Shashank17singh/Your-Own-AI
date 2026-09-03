@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <uintrintrin.h> directly; include <x86gprintrin.h> instead."
+#error "Never use <uintrintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _UINTRNTRIN_H_INCLUDED
@@ -32,12 +32,11 @@
 
 #ifndef __UINTR__
 #pragma GCC push_options
-#pragma GCC target ("uintr")
+#pragma GCC target("uintr")
 #define __DISABLE_UINTR__
 #endif /* __UINTR__ */
 
-struct __uintr_frame
-{
+struct __uintr_frame {
   /* RIP of the interrupted user process.  */
   unsigned long long rip;
   /* RFLAGS of the interrupted user process.  */
@@ -47,31 +46,27 @@ struct __uintr_frame
 };
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_clui (void)
-{
-  __builtin_ia32_clui ();
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _clui(void) {
+  __builtin_ia32_clui();
 }
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_stui (void)
-{
-  __builtin_ia32_stui ();
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _stui(void) {
+  __builtin_ia32_stui();
 }
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_senduipi (unsigned long long __R)
-{
-  __builtin_ia32_senduipi (__R);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _senduipi(unsigned long long __R) {
+  __builtin_ia32_senduipi(__R);
 }
 
 extern __inline unsigned char
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_testui (void)
-{
-  return __builtin_ia32_testui ();
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _testui(void) {
+  return __builtin_ia32_testui();
 }
 
 #ifdef __DISABLE_UINTR__

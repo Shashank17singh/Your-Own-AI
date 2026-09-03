@@ -3,15 +3,12 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef _HYPERV_COMPUTEDEFS_H_
 #define _HYPERV_COMPUTEDEFS_H_
-
 DECLARE_HANDLE(HCS_SYSTEM);
 DECLARE_HANDLE(HCS_PROCESS);
 DECLARE_HANDLE(HCS_OPERATION);
 DECLARE_HANDLE(HCS_CALLBACK);
-
 typedef enum HCS_OPERATION_TYPE {
   HcsOperationTypeNone = -1,
   HcsOperationTypeEnumerate = 0,
@@ -35,11 +32,9 @@ typedef enum HCS_OPERATION_TYPE {
   HcsOperationTypeReserved2 = 17,
   HcsOperationTypeReserved3 = 18
 } HCS_OPERATION_TYPE;
-
 #define HCS_INVALID_OPERATION_ID (UINT64)(-1)
-
-typedef void (CALLBACK *HCS_OPERATION_COMPLETION)(HCS_OPERATION operation, void *context);
-
+typedef void(CALLBACK *HCS_OPERATION_COMPLETION)(HCS_OPERATION operation,
+                                                 void *context);
 typedef enum HCS_EVENT_TYPE {
   HcsEventInvalid = 0x00000000,
   HcsEventSystemExited = 0x00000001,
@@ -55,32 +50,25 @@ typedef enum HCS_EVENT_TYPE {
   HcsEventGroupLiveMigration = 0x80000003,
   HcsEventGroupOperationInfo = 0xC0000001
 } HCS_EVENT_TYPE;
-
 typedef struct HCS_EVENT {
   HCS_EVENT_TYPE Type;
   PCWSTR EventData;
   HCS_OPERATION Operation;
 } HCS_EVENT;
-
 typedef enum HCS_EVENT_OPTIONS {
   HcsEventOptionNone = 0x00000000,
   HcsEventOptionEnableOperationCallbacks = 0x00000001,
   HcsEventOptionEnableVmLifecycle = 0x00000002,
   HcsEventOptionEnableLiveMigrationEvents = 0x00000004
 } HCS_EVENT_OPTIONS;
-
 DEFINE_ENUM_FLAG_OPERATORS(HCS_EVENT_OPTIONS);
-
 typedef enum HCS_OPERATION_OPTIONS {
   HcsOperationOptionNone = 0x00000000,
   HcsOperationOptionProgressUpdate = 0x00000001,
   HcsOperationOptionReserved1 = 0x00000002
 } HCS_OPERATION_OPTIONS;
-
 DEFINE_ENUM_FLAG_OPERATORS(HCS_OPERATION_OPTIONS);
-
-typedef void (CALLBACK *HCS_EVENT_CALLBACK)(HCS_EVENT *event, void *context);
-
+typedef void(CALLBACK *HCS_EVENT_CALLBACK)(HCS_EVENT *event, void *context);
 typedef enum HCS_RESOURCE_TYPE {
   HcsResourceTypeNone = 0,
   HcsResourceTypeFile = 1,
@@ -88,12 +76,10 @@ typedef enum HCS_RESOURCE_TYPE {
   HcsResourceTypeComObject = 3,
   HcsResourceTypeSocket = 4
 } HCS_RESOURCE_TYPE;
-
 typedef enum HCS_NOTIFICATION_FLAGS {
   HcsNotificationFlagSuccess = 0x00000000,
   HcsNotificationFlagFailure = 0x80000000
 } HCS_NOTIFICATION_FLAGS;
-
 typedef enum HCS_NOTIFICATIONS {
   HcsNotificationInvalid = 0x00000000,
   HcsNotificationSystemExited = 0x00000001,
@@ -109,7 +95,7 @@ typedef enum HCS_NOTIFICATIONS {
   HcsNotificationSystemShutdownCompleted = 0x0000000A,
   HcsNotificationSystemGetPropertiesCompleted = 0x0000000B,
   HcsNotificationSystemModifyCompleted = 0x0000000C,
-  HcsNotificationSystemCrashInitiated =  0x0000000D,
+  HcsNotificationSystemCrashInitiated = 0x0000000D,
   HcsNotificationSystemGuestConnectionClosed = 0x0000000E,
   HcsNotificationSystemOperationCompletion = 0x0000000F,
   HcsNotificationSystemPassThru = 0x00000010,
@@ -118,9 +104,10 @@ typedef enum HCS_NOTIFICATIONS {
   HcsNotificationServiceDisconnect = 0x01000000,
   HcsNotificationFlagsReserved = 0xF0000000
 } HCS_NOTIFICATIONS;
-
-typedef void (CALLBACK *HCS_NOTIFICATION_CALLBACK)(DWORD notificationType, void *context, HRESULT notificationStatus, PCWSTR notificationData);
-
+typedef void(CALLBACK *HCS_NOTIFICATION_CALLBACK)(DWORD notificationType,
+                                                  void *context,
+                                                  HRESULT notificationStatus,
+                                                  PCWSTR notificationData);
 typedef struct {
   DWORD ProcessId;
   DWORD Reserved;
@@ -128,18 +115,15 @@ typedef struct {
   HANDLE StdOutput;
   HANDLE StdError;
 } HCS_PROCESS_INFORMATION;
-
 typedef enum HCS_CREATE_OPTIONS {
   HcsCreateOptions_1 = 0x00010000
-}HCS_CREATE_OPTIONS;
-
+} HCS_CREATE_OPTIONS;
 typedef struct {
   HCS_CREATE_OPTIONS Version;
   HANDLE UserToken;
-  SECURITY_DESCRIPTOR* SecurityDescriptor;
+  SECURITY_DESCRIPTOR *SecurityDescriptor;
   HCS_EVENT_OPTIONS CallbackOptions;
-  void* CallbackContext;
+  void *CallbackContext;
   HCS_EVENT_CALLBACK Callback;
 } HCS_CREATE_OPTIONS_1;
-
 #endif /* _HYPERV_COMPUTEDEFS_H_ */

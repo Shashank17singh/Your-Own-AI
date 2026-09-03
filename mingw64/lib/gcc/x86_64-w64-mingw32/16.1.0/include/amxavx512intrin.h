@@ -35,158 +35,158 @@
 #endif /* __AMX_AVX512__ */
 
 #if defined(__x86_64__)
-#define _tile_cvtrowd2ps_internal(src,A)				\
-({									\
-  __m512 dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowd2ps\t%1, %%tmm%c[_src], %0					\
-    |tcvtrowd2ps\t%0, tmm%c[_src], %1}"					\
-   : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_cvtrowd2ps_internal(src, A)                                      \
+  ({                                                                           \
+    __m512 dst;                                                                \
+    __asm__ volatile(                                                          \
+        "{tcvtrowd2ps\t%1, %%tmm%c[_src], %0					\
+    |tcvtrowd2ps\t%0, tmm%c[_src], %1}"                            \
+        : "=v"(dst)                                                            \
+        : "r"((unsigned)(A)), [_src] "i"(src));                                \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowd2psi_internal(src,imm)				\
-({									\
-  __m512 dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowd2ps\t%[_imm], %%tmm%c[_src], %0				\
-    |tcvtrowd2ps\t%0, tmm%c[_src], %[_imm]}"				\
-   : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));			\
-  dst;									\
-})
+#define _tile_cvtrowd2psi_internal(src, imm)                                   \
+  ({                                                                           \
+    __m512 dst;                                                                \
+    __asm__ volatile(                                                          \
+        "{tcvtrowd2ps\t%[_imm], %%tmm%c[_src], %0				\
+    |tcvtrowd2ps\t%0, tmm%c[_src], %[_imm]}"                        \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2bf16h_internal(src,A)				\
-({									\
-  __m512bh dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2bf16h\t%1, %%tmm%c[_src], %0				\
-    |tcvtrowps2bf16h\t%0, tmm%c[_src], %1}"				\
-    : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_cvtrowps2bf16h_internal(src, A)                                  \
+  ({                                                                           \
+    __m512bh dst;                                                              \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2bf16h\t%1, %%tmm%c[_src], %0				\
+    |tcvtrowps2bf16h\t%0, tmm%c[_src], %1}"                         \
+        : "=v"(dst)                                                            \
+        : "r"((unsigned)(A)), [_src] "i"(src));                                \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2bf16hi_internal(src,imm)			\
-({									\
-  __m512bh dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2bf16h\t%[_imm], %%tmm%c[_src], %0			\
-    |tcvtrowps2bf16h\t%0, tmm%c[_src], %[_imm]}"			\
-    : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));			\
-  dst;									\
-})
+#define _tile_cvtrowps2bf16hi_internal(src, imm)                               \
+  ({                                                                           \
+    __m512bh dst;                                                              \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2bf16h\t%[_imm], %%tmm%c[_src], %0			\
+    |tcvtrowps2bf16h\t%0, tmm%c[_src], %[_imm]}"                     \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2bf16l_internal(src,A)				\
-({									\
-  __m512bh dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2bf16l\t%1, %%tmm%c[_src], %0				\
-    |tcvtrowps2bf16l\t%0, tmm%c[_src], %1}"				\
-    : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_cvtrowps2bf16l_internal(src, A)                                  \
+  ({                                                                           \
+    __m512bh dst;                                                              \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2bf16l\t%1, %%tmm%c[_src], %0				\
+    |tcvtrowps2bf16l\t%0, tmm%c[_src], %1}"                         \
+        : "=v"(dst)                                                            \
+        : "r"((unsigned)(A)), [_src] "i"(src));                                \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2bf16li_internal(src,imm)			\
-({									\
-  __m512bh dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2bf16l\t%[_imm], %%tmm%c[_src], %0			\
-    |tcvtrowps2bf16l\t%0, tmm%c[_src], "#imm"}"				\
-    : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));			\
-  dst;									\
-})
+#define _tile_cvtrowps2bf16li_internal(src, imm)                               \
+  ({                                                                           \
+    __m512bh dst;                                                              \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2bf16l\t%[_imm], %%tmm%c[_src], %0			\
+    |tcvtrowps2bf16l\t%0, tmm%c[_src], " #imm "}"                              \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2phh_internal(src,A)				\
-({									\
-  __m512h dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2phh\t%1, %%tmm%c[_src], %0|tcvtrowps2phh\t%0, tmm%c[_src], %1}"	\
-    : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_cvtrowps2phh_internal(src, A)                                    \
+  ({                                                                           \
+    __m512h dst;                                                               \
+    __asm__ volatile("{tcvtrowps2phh\t%1, %%tmm%c[_src], "                     \
+                     "%0|tcvtrowps2phh\t%0, tmm%c[_src], %1}"                  \
+                     : "=v"(dst)                                               \
+                     : "r"((unsigned)(A)), [_src] "i"(src));                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2phhi_internal(src,imm)				\
-({									\
-  __m512h dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2phh\t%[_imm], %%tmm%c[_src], %0				\
-    |tcvtrowps2phh\t%0, tmm%c[_src], "#imm"}"				\
-    : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));		      	\
-  dst;									\
-})
+#define _tile_cvtrowps2phhi_internal(src, imm)                                 \
+  ({                                                                           \
+    __m512h dst;                                                               \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2phh\t%[_imm], %%tmm%c[_src], %0				\
+    |tcvtrowps2phh\t%0, tmm%c[_src], " #imm "}"                                \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2phl_internal(src,A)				\
-({									\
-  __m512h dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2phl\t%1, %%tmm%c[_src], %0|tcvtrowps2phl\t%0, tmm%c[_src], %1}"	\
-    : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_cvtrowps2phl_internal(src, A)                                    \
+  ({                                                                           \
+    __m512h dst;                                                               \
+    __asm__ volatile("{tcvtrowps2phl\t%1, %%tmm%c[_src], "                     \
+                     "%0|tcvtrowps2phl\t%0, tmm%c[_src], %1}"                  \
+                     : "=v"(dst)                                               \
+                     : "r"((unsigned)(A)), [_src] "i"(src));                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowps2phli_internal(src,imm)				\
-({									\
-  __m512h dst;								\
-  __asm__ volatile							\
-  ("{tcvtrowps2phl\t%[_imm], %%tmm%c[_src], %0				\
-    |tcvtrowps2phl\t%0, tmm%c[_src], "#imm"}"				\
-    : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));			\
-  dst;									\
-})
+#define _tile_cvtrowps2phli_internal(src, imm)                                 \
+  ({                                                                           \
+    __m512h dst;                                                               \
+    __asm__ volatile(                                                          \
+        "{tcvtrowps2phl\t%[_imm], %%tmm%c[_src], %0				\
+    |tcvtrowps2phl\t%0, tmm%c[_src], " #imm "}"                                \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_movrow_internal(src,A)					\
-({									\
-  __m512 dst;								\
-  __asm__ volatile							\
-  ("{tilemovrow\t%1, %%tmm%c[_src], %0|tilemovrow\t%0, tmm%c[_src], %1}"  \
-    : "=v" (dst) : "r" ((unsigned) (A)), [_src]"i"(src));		\
-  dst;									\
-})
+#define _tile_movrow_internal(src, A)                                          \
+  ({                                                                           \
+    __m512 dst;                                                                \
+    __asm__ volatile(                                                          \
+        "{tilemovrow\t%1, %%tmm%c[_src], %0|tilemovrow\t%0, tmm%c[_src], %1}"  \
+        : "=v"(dst)                                                            \
+        : "r"((unsigned)(A)), [_src] "i"(src));                                \
+    dst;                                                                       \
+  })
 
-#define _tile_movrowi_internal(src,imm)					\
-({									\
-  __m512 dst;								\
-  __asm__ volatile							\
-  ("{tilemovrow\t%[_imm], %%tmm%c[_src], %0				\
-    |tilemovrow\t%0, tmm%c[_src], "#imm"}"				\
-    : "=v" (dst) : [_src]"i"(src), [_imm]"i"(imm));			\
-  dst;									\
-})
+#define _tile_movrowi_internal(src, imm)                                       \
+  ({                                                                           \
+    __m512 dst;                                                                \
+    __asm__ volatile(                                                          \
+        "{tilemovrow\t%[_imm], %%tmm%c[_src], %0				\
+    |tilemovrow\t%0, tmm%c[_src], " #imm "}"                                   \
+        : "=v"(dst)                                                            \
+        : [_src] "i"(src), [_imm] "i"(imm));                                   \
+    dst;                                                                       \
+  })
 
-#define _tile_cvtrowd2ps(src,A)					\
-  _tile_cvtrowd2ps_internal (src,A)
+#define _tile_cvtrowd2ps(src, A) _tile_cvtrowd2ps_internal(src, A)
 
-#define _tile_cvtrowd2psi(src,imm)				\
-  _tile_cvtrowd2psi_internal (src,imm)
+#define _tile_cvtrowd2psi(src, imm) _tile_cvtrowd2psi_internal(src, imm)
 
-#define _tile_cvtrowps2bf16h(src,A)				\
-  _tile_cvtrowps2bf16h_internal (src,A)
+#define _tile_cvtrowps2bf16h(src, A) _tile_cvtrowps2bf16h_internal(src, A)
 
-#define _tile_cvtrowps2bf16hi(src,imm)				\
-  _tile_cvtrowps2bf16hi_internal (src,imm)
+#define _tile_cvtrowps2bf16hi(src, imm) _tile_cvtrowps2bf16hi_internal(src, imm)
 
-#define _tile_cvtrowps2bf16l(src,A)				\
-  _tile_cvtrowps2bf16l_internal (src,A)
+#define _tile_cvtrowps2bf16l(src, A) _tile_cvtrowps2bf16l_internal(src, A)
 
-#define _tile_cvtrowps2bf16li(src,imm)				\
-  _tile_cvtrowps2bf16li_internal (src,imm)
+#define _tile_cvtrowps2bf16li(src, imm) _tile_cvtrowps2bf16li_internal(src, imm)
 
-#define _tile_cvtrowps2phh(src,A)				\
-  _tile_cvtrowps2phh_internal (src,A)
+#define _tile_cvtrowps2phh(src, A) _tile_cvtrowps2phh_internal(src, A)
 
-#define _tile_cvtrowps2phhi(src,imm)				\
-  _tile_cvtrowps2phhi_internal (src,imm)
+#define _tile_cvtrowps2phhi(src, imm) _tile_cvtrowps2phhi_internal(src, imm)
 
-#define _tile_cvtrowps2phl(src,A)				\
-  _tile_cvtrowps2phl_internal (src,A)
+#define _tile_cvtrowps2phl(src, A) _tile_cvtrowps2phl_internal(src, A)
 
-#define _tile_cvtrowps2phli(src,imm)				\
-  _tile_cvtrowps2phli_internal (src,imm)
+#define _tile_cvtrowps2phli(src, imm) _tile_cvtrowps2phli_internal(src, imm)
 
-#define _tile_movrow(src,A)					\
-  _tile_movrow_internal (src,A)
+#define _tile_movrow(src, A) _tile_movrow_internal(src, A)
 
-#define _tile_movrowi(src,imm)					\
-  _tile_movrowi_internal (src,imm)
+#define _tile_movrowi(src, imm) _tile_movrowi_internal(src, imm)
 
 #endif
 

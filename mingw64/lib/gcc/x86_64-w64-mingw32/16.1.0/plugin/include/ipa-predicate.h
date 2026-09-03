@@ -27,12 +27,10 @@ along with GCC; see the file COPYING3.  If not see
    once, and other operands are IPA invariant.  The conditions are then
    referred by predicates.  */
 
-
 /* A simplified representation of tree node, for unary, binary and ternary
    operation.  Computations on parameter are decomposed to a series of this
    kind of structure.  */
-struct GTY(()) expr_eval_op
-{
+struct GTY(()) expr_eval_op {
   /* Result type of expression.  */
   tree type;
   /* Constant operands in expression, there are at most two.  */
@@ -45,8 +43,7 @@ struct GTY(()) expr_eval_op
 
 typedef vec<expr_eval_op, va_gc> *expr_eval_ops;
 
-struct GTY(()) condition
-{
+struct GTY(()) condition {
   /* If agg_contents is set, this is the offset from which the used data was
      loaded.  */
   HOST_WIDE_INT offset;
@@ -67,8 +64,7 @@ struct GTY(()) condition
 };
 
 /* Information kept about parameter of call site.  */
-struct inline_param_summary
-{
+struct inline_param_summary {
   /* REG_BR_PROB_BASE based probability that parameter will change in between
      two invocation of the calls.
      I.e. loop invariant parameters
@@ -79,19 +75,17 @@ struct inline_param_summary
   short change_prob;
   unsigned points_to_local_or_readonly_memory : 1;
   unsigned points_to_possible_sra_candidate : 1;
-  bool equal_to (const inline_param_summary &other) const
-  {
-    return change_prob == other.change_prob
-	   && points_to_local_or_readonly_memory
-	      == other.points_to_local_or_readonly_memory
-	   && points_to_possible_sra_candidate
-	      == other.points_to_possible_sra_candidate;
+  bool equal_to(const inline_param_summary &other) const {
+    return change_prob == other.change_prob &&
+           points_to_local_or_readonly_memory ==
+               other.points_to_local_or_readonly_memory &&
+           points_to_possible_sra_candidate ==
+               other.points_to_possible_sra_candidate;
   }
-  bool useless_p (void) const
-  {
-    return change_prob == REG_BR_PROB_BASE
-	   && !points_to_local_or_readonly_memory
-	   && !points_to_possible_sra_candidate;
+  bool useless_p(void) const {
+    return change_prob == REG_BR_PROB_BASE &&
+           !points_to_local_or_readonly_memory &&
+           !points_to_possible_sra_candidate;
   }
 };
 
@@ -115,15 +109,13 @@ typedef vec<condition, va_gc> *conditions;
    is not.  */
 
 typedef uint32_t clause_t;
-class ipa_predicate
-{
+class ipa_predicate {
 public:
-  enum predicate_conditions
-    {
-      false_condition = 0,
-      not_inlined_condition = 1,
-      first_dynamic_condition = 2
-    };
+  enum predicate_conditions {
+    false_condition = 0,
+    not_inlined_condition = 1,
+    first_dynamic_condition = 2
+  };
 
   /* Maximal number of conditions predicate can refer to.  This is limited
      by using clause_t to be 32bit.  */
@@ -143,138 +135,117 @@ public:
      candidate.  */
   static const tree_code not_sra_candidate = TREE_LIST;
 
-
   /* Initialize predicate either to true of false depending on P.  */
-  inline ipa_predicate (bool p = true)
-    {
-      if (p)
-        /* True predicate.  */
-        m_clause[0] = 0;
-      else
-        /* False predicate. */
-        set_to_cond (false_condition);
-    }
+  inline ipa_predicate(bool p = true) {
+    if (p)
+      /* True predicate.  */
+      m_clause[0] = 0;
+    else
+      /* False predicate. */
+      set_to_cond(false_condition);
+  }
 
   /* Sanity check that we do not mix pointers to predicates with predicates.  */
-  inline ipa_predicate (ipa_predicate *)
-    {
-      gcc_unreachable ();
-    }
+  inline ipa_predicate(ipa_predicate *) { gcc_unreachable(); }
 
   /* Return predicate testing condition I.  */
-  static inline ipa_predicate predicate_testing_cond (int i)
-    {
-      ipa_predicate p;
-      p.set_to_cond (i + first_dynamic_condition);
-      return p;
-    }
+  static inline ipa_predicate predicate_testing_cond(int i) {
+    ipa_predicate p;
+    p.set_to_cond(i + first_dynamic_condition);
+    return p;
+  }
 
   /* Return predicate testing that function was not inlined.  */
-  static ipa_predicate not_inlined (void)
-    {
-      ipa_predicate p;
-      p.set_to_cond (not_inlined_condition);
-      return p;
-    }
+  static ipa_predicate not_inlined(void) {
+    ipa_predicate p;
+    p.set_to_cond(not_inlined_condition);
+    return p;
+  }
 
   /* Compute logical and of ipa_predicates.  */
-  ipa_predicate & operator &= (const ipa_predicate &);
-  inline ipa_predicate operator &(const ipa_predicate &p) const
-    {
-      ipa_predicate ret = *this;
-      ret &= p;
-      return ret;
-    }
+  ipa_predicate &operator&=(const ipa_predicate &);
+  inline ipa_predicate operator&(const ipa_predicate &p) const {
+    ipa_predicate ret = *this;
+    ret &= p;
+    return ret;
+  }
 
   /* Compute logical or of ipa_predicates.  This is not operator because
      extra parameter CONDITIONS is needed  */
-  ipa_predicate or_with (conditions, const ipa_predicate &) const;
+  ipa_predicate or_with(conditions, const ipa_predicate &) const;
 
   /* Return true if ipa_predicates are known to be equal.  */
-  inline bool operator==(const ipa_predicate &p2) const
-    {
-      int i;
-      for (i = 0; m_clause[i]; i++)
-	{
-	  gcc_checking_assert (i < max_clauses);
-	  gcc_checking_assert (m_clause[i] > m_clause[i + 1]);
-	  gcc_checking_assert (!p2.m_clause[i]
-			       || p2.m_clause[i] > p2.m_clause[i + 1]);
-	  if (m_clause[i] != p2.m_clause[i])
-	    return false;
-	}
-      return !p2.m_clause[i];
+  inline bool operator==(const ipa_predicate &p2) const {
+    int i;
+    for (i = 0; m_clause[i]; i++) {
+      gcc_checking_assert(i < max_clauses);
+      gcc_checking_assert(m_clause[i] > m_clause[i + 1]);
+      gcc_checking_assert(!p2.m_clause[i] ||
+                          p2.m_clause[i] > p2.m_clause[i + 1]);
+      if (m_clause[i] != p2.m_clause[i])
+        return false;
     }
+    return !p2.m_clause[i];
+  }
 
   /* Return true if predicates are known to be true or false depending
      on COND.  */
-  inline bool operator==(const bool cond) const
-    {
-      if (cond)
-        return !m_clause[0];
-      if (m_clause[0] == (1 << false_condition))
-	{
-	  gcc_checking_assert (!m_clause[1]
-			       && m_clause[0] == 1
-				  << false_condition);
-	  return true;
-	}
-      return false;
+  inline bool operator==(const bool cond) const {
+    if (cond)
+      return !m_clause[0];
+    if (m_clause[0] == (1 << false_condition)) {
+      gcc_checking_assert(!m_clause[1] && m_clause[0] == 1 << false_condition);
+      return true;
     }
+    return false;
+  }
 
-  inline bool operator!=(const ipa_predicate &p2) const
-    {
-      return !(*this == p2);
-    }
+  inline bool operator!=(const ipa_predicate &p2) const {
+    return !(*this == p2);
+  }
 
-  inline bool operator!=(const bool cond) const
-    {
-      return !(*this == cond);
-    }
+  inline bool operator!=(const bool cond) const { return !(*this == cond); }
 
   /* Evaluate if predicate is known to be false given the clause of possible
      truths.  */
-  bool evaluate (clause_t) const;
+  bool evaluate(clause_t) const;
 
   /* Estimate probability that predicate will be true in a given context.  */
-  int probability (conditions, clause_t, vec<inline_param_summary>) const;
+  int probability(conditions, clause_t, vec<inline_param_summary>) const;
 
   /* Dump predicate to F. Output newline if nl.  */
-  void dump (FILE *f, conditions, bool nl=true) const;
-  void DEBUG_FUNCTION debug (conditions) const;
+  void dump(FILE *f, conditions, bool nl = true) const;
+  void DEBUG_FUNCTION debug(conditions) const;
 
   /* Return ipa_predicate equal to THIS after duplication.  */
-  ipa_predicate remap_after_duplication (clause_t);
+  ipa_predicate remap_after_duplication(clause_t);
 
   /* Return ipa_predicate equal to THIS after inlining.  */
-  ipa_predicate remap_after_inlining (class ipa_fn_summary *,
-				      ipa_node_params *params_summary,
-				      ipa_fn_summary *,
-				      const vec<int> &,
-				      const vec<HOST_WIDE_INT> &,
-				      clause_t, const ipa_predicate &);
+  ipa_predicate remap_after_inlining(class ipa_fn_summary *,
+                                     ipa_node_params *params_summary,
+                                     ipa_fn_summary *, const vec<int> &,
+                                     const vec<HOST_WIDE_INT> &, clause_t,
+                                     const ipa_predicate &);
 
-  void stream_in (lto_input_block *);
-  void stream_out (output_block *);
+  void stream_in(lto_input_block *);
+  void stream_out(output_block *);
 
 private:
   static const int max_clauses = 8;
   clause_t m_clause[max_clauses + 1];
 
   /* Initialize predicate to one testing single condition number COND.  */
-  inline void set_to_cond (int cond)
-    {
-      m_clause[0] = 1 << cond;
-      m_clause[1] = 0;
-    }
+  inline void set_to_cond(int cond) {
+    m_clause[0] = 1 << cond;
+    m_clause[1] = 0;
+  }
 
-  void add_clause (conditions conditions, clause_t);
+  void add_clause(conditions conditions, clause_t);
 };
 
-void dump_condition (FILE *f, conditions conditions, int cond);
-ipa_predicate add_condition (ipa_fn_summary *summary,
-			     ipa_node_params *params_summary,
-			     int operand_num,
-			     tree type, struct agg_position_info *aggpos,
-			     enum tree_code code, tree val,
-			     expr_eval_ops param_ops = NULL);
+void dump_condition(FILE *f, conditions conditions, int cond);
+ipa_predicate add_condition(ipa_fn_summary *summary,
+                            ipa_node_params *params_summary, int operand_num,
+                            tree type, struct agg_position_info *aggpos,
+                            enum tree_code code, tree val,
+                            expr_eval_ops param_ops = NULL);

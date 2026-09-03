@@ -5,92 +5,79 @@
  */
 #ifndef _LMSVC_
 #define _LMSVC_
-
 #if __GNUC__ >= 3
 #pragma GCC system_header
 #endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include <lmsname.h>
-
-  typedef struct _SERVICE_INFO_0 {
-    LPWSTR svci0_name;
-  } SERVICE_INFO_0,*PSERVICE_INFO_0,*LPSERVICE_INFO_0;
-
-  typedef struct _SERVICE_INFO_1 {
-    LPWSTR svci1_name;
-    DWORD svci1_status;
-    DWORD svci1_code;
-    DWORD svci1_pid;
-  } SERVICE_INFO_1,*PSERVICE_INFO_1,*LPSERVICE_INFO_1;
-
-  typedef struct _SERVICE_INFO_2 {
-    LPWSTR svci2_name;
-    DWORD svci2_status;
-    DWORD svci2_code;
-    DWORD svci2_pid;
-    LPWSTR svci2_text;
-    DWORD svci2_specific_error;
-    LPWSTR svci2_display_name;
-  } SERVICE_INFO_2,*PSERVICE_INFO_2,*LPSERVICE_INFO_2;
-
-  NET_API_STATUS WINAPI NetServiceControl(LPCWSTR servername,LPCWSTR service,DWORD opcode,DWORD arg,LPBYTE *bufptr);
-  NET_API_STATUS WINAPI NetServiceEnum(LPCWSTR servername,DWORD level,LPBYTE *bufptr,DWORD prefmaxlen,LPDWORD entriesread,LPDWORD totalentries,LPDWORD resume_handle);
-  NET_API_STATUS WINAPI NetServiceGetInfo(LPCWSTR servername,LPCWSTR service,DWORD level,LPBYTE *bufptr);
-  NET_API_STATUS WINAPI NetServiceInstall(LPCWSTR servername,LPCWSTR service,DWORD argc,LPCWSTR argv[],LPBYTE *bufptr);
-
+typedef struct _SERVICE_INFO_0 {
+  LPWSTR svci0_name;
+} SERVICE_INFO_0, *PSERVICE_INFO_0, *LPSERVICE_INFO_0;
+typedef struct _SERVICE_INFO_1 {
+  LPWSTR svci1_name;
+  DWORD svci1_status;
+  DWORD svci1_code;
+  DWORD svci1_pid;
+} SERVICE_INFO_1, *PSERVICE_INFO_1, *LPSERVICE_INFO_1;
+typedef struct _SERVICE_INFO_2 {
+  LPWSTR svci2_name;
+  DWORD svci2_status;
+  DWORD svci2_code;
+  DWORD svci2_pid;
+  LPWSTR svci2_text;
+  DWORD svci2_specific_error;
+  LPWSTR svci2_display_name;
+} SERVICE_INFO_2, *PSERVICE_INFO_2, *LPSERVICE_INFO_2;
+NET_API_STATUS WINAPI NetServiceControl(LPCWSTR servername, LPCWSTR service,
+                                        DWORD opcode, DWORD arg,
+                                        LPBYTE *bufptr);
+NET_API_STATUS WINAPI NetServiceEnum(LPCWSTR servername, DWORD level,
+                                     LPBYTE *bufptr, DWORD prefmaxlen,
+                                     LPDWORD entriesread, LPDWORD totalentries,
+                                     LPDWORD resume_handle);
+NET_API_STATUS WINAPI NetServiceGetInfo(LPCWSTR servername, LPCWSTR service,
+                                        DWORD level, LPBYTE *bufptr);
+NET_API_STATUS WINAPI NetServiceInstall(LPCWSTR servername, LPCWSTR service,
+                                        DWORD argc, LPCWSTR argv[],
+                                        LPBYTE *bufptr);
 #define SERVICE_INSTALL_STATE 0x03
 #define SERVICE_UNINSTALLED 0x00
 #define SERVICE_INSTALL_PENDING 0x01
 #define SERVICE_UNINSTALL_PENDING 0x02
 #define SERVICE_INSTALLED 0x03
-
 #define SERVICE_PAUSE_STATE 0x0C
 #define LM20_SERVICE_ACTIVE 0x00
 #define LM20_SERVICE_CONTINUE_PENDING 0x04
 #define LM20_SERVICE_PAUSE_PENDING 0x08
 #define LM20_SERVICE_PAUSED 0x0C
-
 #define SERVICE_NOT_UNINSTALLABLE 0x00
 #define SERVICE_UNINSTALLABLE 0x10
-
 #define SERVICE_NOT_PAUSABLE 0x00
 #define SERVICE_PAUSABLE 0x20
-
 #define SERVICE_REDIR_PAUSED 0x700
 #define SERVICE_REDIR_DISK_PAUSED 0x100
 #define SERVICE_REDIR_PRINT_PAUSED 0x200
 #define SERVICE_REDIR_COMM_PAUSED 0x400
-
 #define SERVICE_DOS_ENCRYPTION L"ENCRYPT"
-
 #define SERVICE_CTRL_INTERROGATE 0
 #define SERVICE_CTRL_PAUSE 1
 #define SERVICE_CTRL_CONTINUE 2
 #define SERVICE_CTRL_UNINSTALL 3
-
 #define SERVICE_CTRL_REDIR_DISK 0x1
 #define SERVICE_CTRL_REDIR_PRINT 0x2
 #define SERVICE_CTRL_REDIR_COMM 0x4
-
 #define SERVICE_IP_NO_HINT 0x0
 #define SERVICE_CCP_NO_HINT 0x0
-
 #define SERVICE_IP_QUERY_HINT 0x10000
 #define SERVICE_CCP_QUERY_HINT 0x10000
-
 #define SERVICE_IP_CHKPT_NUM 0x0FF
 #define SERVICE_CCP_CHKPT_NUM 0x0FF
-
 #define SERVICE_IP_WAIT_TIME 0x0FF00
 #define SERVICE_CCP_WAIT_TIME 0x0FF00
-
 #define SERVICE_IP_WAITTIME_SHIFT 8
 #define SERVICE_NTIP_WAITTIME_SHIFT 12
-
 #define UPPER_HINT_MASK 0x0000FF00
 #define LOWER_HINT_MASK 0x000000FF
 #define UPPER_GET_HINT_MASK 0x0FF00000
@@ -98,10 +85,8 @@ extern "C" {
 #define SERVICE_NT_MAXTIME 0x0000FFFF
 #define SERVICE_RESRV_MASK 0x0001FFFF
 #define SERVICE_MAXTIME 0x000000FF
-
 #define SERVICE_BASE 3050
 #define SERVICE_UIC_NORMAL 0
-
 #define SERVICE_UIC_BADPARMVAL (SERVICE_BASE + 1)
 #define SERVICE_UIC_MISSPARM (SERVICE_BASE + 2)
 #define SERVICE_UIC_UNKPARM (SERVICE_BASE + 3)
@@ -116,9 +101,7 @@ extern "C" {
 #define SERVICE_UIC_SUBSERV (SERVICE_BASE + 12)
 #define SERVICE_UIC_CONFLPARM (SERVICE_BASE + 13)
 #define SERVICE_UIC_FILE (SERVICE_BASE + 14)
-
 #define SERVICE_UIC_M_NULL 0
-
 #define SERVICE_UIC_M_MEMORY (SERVICE_BASE + 20)
 #define SERVICE_UIC_M_DISK (SERVICE_BASE + 21)
 #define SERVICE_UIC_M_THREADS (SERVICE_BASE + 22)
@@ -148,19 +131,25 @@ extern "C" {
 #define SERVICE_UIC_M_NETLOGON_DC_CFLCT (SERVICE_BASE + 47)
 #define SERVICE_UIC_M_NETLOGON_AUTH (SERVICE_BASE + 48)
 #define SERVICE_UIC_M_UAS_PROLOG (SERVICE_BASE + 49)
-
 #define SERVICE2_BASE 5600
-
 #define SERVICE_UIC_M_NETLOGON_MPATH (SERVICE2_BASE + 0)
 #define SERVICE_UIC_M_LSA_MACHINE_ACCT (SERVICE2_BASE + 1)
 #define SERVICE_UIC_M_DATABASE_ERROR (SERVICE2_BASE + 2)
-
-#define SERVICE_IP_CODE(tt,nn) ((__LONG32)SERVICE_IP_QUERY_HINT|(__LONG32)(nn|(tt<<SERVICE_IP_WAITTIME_SHIFT)))
-#define SERVICE_CCP_CODE(tt,nn) ((__LONG32)SERVICE_CCP_QUERY_HINT|(__LONG32)(nn|(tt<<SERVICE_IP_WAITTIME_SHIFT)))
-#define SERVICE_UIC_CODE(cc,mm) ((__LONG32)(((__LONG32)cc<<16)|(__LONG32)(unsigned short)mm))
-#define SERVICE_NT_CCP_CODE(tt,nn) (((__LONG32)SERVICE_CCP_QUERY_HINT) | ((__LONG32)(nn)) | (((tt)&LOWER_HINT_MASK) << SERVICE_IP_WAITTIME_SHIFT) | (((tt)&UPPER_HINT_MASK) << SERVICE_NTIP_WAITTIME_SHIFT))
-#define SERVICE_NT_WAIT_GET(code) ((((code) & UPPER_GET_HINT_MASK) >> SERVICE_NTIP_WAITTIME_SHIFT) | (((code) & LOWER_GET_HINT_MASK) >> SERVICE_IP_WAITTIME_SHIFT))
-
+#define SERVICE_IP_CODE(tt, nn)                                                \
+  ((__LONG32)SERVICE_IP_QUERY_HINT |                                           \
+   (__LONG32)(nn | (tt << SERVICE_IP_WAITTIME_SHIFT)))
+#define SERVICE_CCP_CODE(tt, nn)                                               \
+  ((__LONG32)SERVICE_CCP_QUERY_HINT |                                          \
+   (__LONG32)(nn | (tt << SERVICE_IP_WAITTIME_SHIFT)))
+#define SERVICE_UIC_CODE(cc, mm)                                               \
+  ((__LONG32)(((__LONG32)cc << 16) | (__LONG32)(unsigned short)mm))
+#define SERVICE_NT_CCP_CODE(tt, nn)                                            \
+  (((__LONG32)SERVICE_CCP_QUERY_HINT) | ((__LONG32)(nn)) |                     \
+   (((tt) & LOWER_HINT_MASK) << SERVICE_IP_WAITTIME_SHIFT) |                   \
+   (((tt) & UPPER_HINT_MASK) << SERVICE_NTIP_WAITTIME_SHIFT))
+#define SERVICE_NT_WAIT_GET(code)                                              \
+  ((((code) & UPPER_GET_HINT_MASK) >> SERVICE_NTIP_WAITTIME_SHIFT) |           \
+   (((code) & LOWER_GET_HINT_MASK) >> SERVICE_IP_WAITTIME_SHIFT))
 #ifdef __cplusplus
 }
 #endif

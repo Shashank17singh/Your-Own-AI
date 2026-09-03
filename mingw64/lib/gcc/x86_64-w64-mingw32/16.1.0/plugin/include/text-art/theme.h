@@ -21,16 +21,14 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_TEXT_ART_THEME_H
 #define GCC_TEXT_ART_THEME_H
 
-#include "text-art/canvas.h"
 #include "text-art/box-drawing.h"
+#include "text-art/canvas.h"
 
 namespace text_art {
 
-class theme
-{
- public:
-  enum class cell_kind
-  {
+class theme {
+public:
+  enum class cell_kind {
     /* A left-hand edge of a range e.g. "├".  */
     X_RULER_LEFT_EDGE,
 
@@ -69,7 +67,7 @@ class theme
     INTERPROCEDURAL_PUSH_FRAME_LEFT,   /* e.g. "+".  */
     INTERPROCEDURAL_PUSH_FRAME_MIDDLE, /* e.g. "-".  */
     INTERPROCEDURAL_PUSH_FRAME_RIGHT,  /* e.g. ">".  */
-    INTERPROCEDURAL_DEPTH_MARKER,       /* e.g. "|".  */
+    INTERPROCEDURAL_DEPTH_MARKER,      /* e.g. "|".  */
     INTERPROCEDURAL_POP_FRAMES_LEFT,   /* e.g. "<".  */
     INTERPROCEDURAL_POP_FRAMES_MIDDLE, /* e.g. "-".  */
     INTERPROCEDURAL_POP_FRAMES_RIGHT,  /* e.g. "+".  */
@@ -90,57 +88,47 @@ class theme
     TREE_Y_CONNECTOR      /* e.g. "|" or "|".  */
   };
 
-  virtual ~theme () = default;
+  virtual ~theme() = default;
 
-  virtual bool unicode_p () const = 0;
-  virtual bool emojis_p () const = 0;
+  virtual bool unicode_p() const = 0;
+  virtual bool emojis_p() const = 0;
 
-  virtual canvas::cell_t
-  get_line_art (directions line_dirs) const = 0;
+  virtual canvas::cell_t get_line_art(directions line_dirs) const = 0;
 
-  canvas::cell_t get_cell (enum cell_kind kind, unsigned style_idx) const
-  {
-    return canvas::cell_t (get_cppchar (kind), false, style_idx);
+  canvas::cell_t get_cell(enum cell_kind kind, unsigned style_idx) const {
+    return canvas::cell_t(get_cppchar(kind), false, style_idx);
   }
 
-  virtual cppchar_t get_cppchar (enum cell_kind kind) const = 0;
+  virtual cppchar_t get_cppchar(enum cell_kind kind) const = 0;
 
   enum class y_arrow_dir { UP, DOWN };
-  void paint_y_arrow (canvas &canvas,
-		      int x,
-		      canvas::range_t y_range,
-		      y_arrow_dir dir,
-		      style::id_t style_id) const;
+  void paint_y_arrow(canvas &canvas, int x, canvas::range_t y_range,
+                     y_arrow_dir dir, style::id_t style_id) const;
 };
 
-class ascii_theme : public theme
-{
- public:
-  bool unicode_p () const final override { return false; }
-  bool emojis_p () const final override { return false; }
-
-  canvas::cell_t
-  get_line_art (directions line_dirs) const final override;
-
-  cppchar_t get_cppchar (enum cell_kind kind) const final override;
-};
-
-class unicode_theme : public theme
-{
- public:
-  bool unicode_p () const final override { return true; }
-  bool emojis_p () const override { return false; }
-
-  canvas::cell_t
-  get_line_art (directions line_dirs) const final override;
-
-  cppchar_t get_cppchar (enum cell_kind kind) const final override;
-};
-
-class emoji_theme : public unicode_theme
-{
+class ascii_theme : public theme {
 public:
-  bool emojis_p () const final override { return true; }
+  bool unicode_p() const final override { return false; }
+  bool emojis_p() const final override { return false; }
+
+  canvas::cell_t get_line_art(directions line_dirs) const final override;
+
+  cppchar_t get_cppchar(enum cell_kind kind) const final override;
+};
+
+class unicode_theme : public theme {
+public:
+  bool unicode_p() const final override { return true; }
+  bool emojis_p() const override { return false; }
+
+  canvas::cell_t get_line_art(directions line_dirs) const final override;
+
+  cppchar_t get_cppchar(enum cell_kind kind) const final override;
+};
+
+class emoji_theme : public unicode_theme {
+public:
+  bool emojis_p() const final override { return true; }
 };
 
 } // namespace text_art

@@ -1,22 +1,26 @@
 """Do a minimal test of all the modules that aren't otherwise tested."""
+
 import importlib
 import platform
 import sys
 from test import support
 import unittest
 
+
 class TestUntestedModules(unittest.TestCase):
     def test_untested_modules_can_be_imported(self):
-        untested = ('encodings', 'formatter')
+        untested = ("encodings", "formatter")
         with support.check_warnings(quiet=True):
             for name in untested:
                 try:
-                    support.import_module('test.test_{}'.format(name))
+                    support.import_module("test.test_{}".format(name))
                 except unittest.SkipTest:
                     importlib.import_module(name)
                 else:
-                    self.fail('{} has tests even though test_sundry claims '
-                              'otherwise'.format(name))
+                    self.fail(
+                        "{} has tests even though test_sundry claims "
+                        "otherwise".format(name)
+                    )
 
             import distutils.bcppcompiler
             import distutils.ccompiler
@@ -26,7 +30,8 @@ class TestUntestedModules(unittest.TestCase):
             import distutils.unixccompiler
 
             import distutils.command.bdist_dumb
-            if sys.platform.startswith('win') and not platform.win32_is_iot():
+
+            if sys.platform.startswith("win") and not platform.win32_is_iot():
                 import distutils.command.bdist_msi
             import distutils.command.bdist
             import distutils.command.bdist_rpm

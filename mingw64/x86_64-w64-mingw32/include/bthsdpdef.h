@@ -5,43 +5,38 @@
  */
 #ifndef _INC_BTHSDPDEF
 #define _INC_BTHSDPDEF
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef
 #ifdef __WIDL__
-  [switch_type(unsigned short)]
+    [switch_type(unsigned short)]
 #endif
-union SdpQueryUuidUnion {
+    union SdpQueryUuidUnion {
 #ifdef __WIDL__
-  [case(SDP_ST_UUID128)]
+  [case (SDP_ST_UUID128)]
 #endif
-  GUID   uuid128;
+      GUID uuid128;
 #ifdef __WIDL__
-  [case(SDP_ST_UUID32)]
+  [case (SDP_ST_UUID32)]
 #endif
-  ULONG  uuid32;
+      ULONG uuid32;
 #ifdef __WIDL__
-  [case(SDP_ST_UUID16)]
+  [case (SDP_ST_UUID16)]
 #endif
-  USHORT uuid16;
+      USHORT uuid16;
 } SdpQueryUuidUnion;
-
 typedef struct _SdpAttributeRange {
   USHORT minAttribute;
   USHORT maxAttribute;
 } SdpAttributeRange;
-
 typedef struct _SdpQueryUuid {
 #ifdef __WIDL__
   [switch_is(uuidType)]
 #endif
-  SdpQueryUuidUnion u;
-  USHORT            uuidType;
+      SdpQueryUuidUnion u;
+  USHORT uuidType;
 } SdpQueryUuid;
-
 typedef enum _SDP_TYPE {
   SDP_TYPE_NIL = 0x00,
   SDP_TYPE_UINT = 0x01,
@@ -54,7 +49,6 @@ typedef enum _SDP_TYPE {
   SDP_TYPE_URL = 0x08,
   SDP_TYPE_CONTAINER = 0x20
 } SDP_TYPE;
-
 typedef enum _SDP_SPECIFICTYPE {
   SDP_ST_NONE = 0x0000,
   SDP_ST_UINT8 = 0x0010,
@@ -71,67 +65,60 @@ typedef enum _SDP_SPECIFICTYPE {
   SDP_ST_UUID32 = 0x0220,
   SDP_ST_UUID128 = 0x0430
 } SDP_SPECIFICTYPE;
-
 typedef struct _SDP_LARGE_INTEGER_16 {
   ULONGLONG LowPart;
   LONGLONG HighPart;
 } SDP_LARGE_INTEGER_16, *PSDP_LARGE_INTEGER_16, *LPSDP_LARGE_INTEGER_16;
-
 typedef struct _SDP_ULARGE_INTEGER_16 {
   ULONGLONG LowPart;
   ULONGLONG HighPart;
 } SDP_ULARGE_INTEGER_16, *PSDP_ULARGE_INTEGER_16, *LPSDP_ULARGE_INTEGER_16;
-
 typedef enum NodeContainerType {
   NodeContainerTypeSequence,
   NodeContainerTypeAlternative
 } NodeContainerType;
-
 typedef USHORT SDP_ERROR, *PSDP_ERROR;
-
 typedef struct _SDP_ELEMENT_DATA {
-  SDP_TYPE         type;
+  SDP_TYPE type;
   SDP_SPECIFICTYPE specificType;
   __C89_NAMELESS union {
-    SDP_LARGE_INTEGER_16  int128;
-    LONGLONG              int64;
-    LONG                  int32;
-    SHORT                 int16;
-    CHAR                  int8;
+    SDP_LARGE_INTEGER_16 int128;
+    LONGLONG int64;
+    LONG int32;
+    SHORT int16;
+    CHAR int8;
     SDP_ULARGE_INTEGER_16 uint128;
-    ULONGLONG             uint64;
-    ULONG                 uint32;
-    USHORT                uint16;
-    UCHAR                 uint8;
-    UCHAR                 booleanVal;
-    GUID                  uuid128;
-    ULONG                 uuid32;
-    USHORT                uuid16;
+    ULONGLONG uint64;
+    ULONG uint32;
+    USHORT uint16;
+    UCHAR uint8;
+    UCHAR booleanVal;
+    GUID uuid128;
+    ULONG uuid32;
+    USHORT uuid16;
     struct {
       LPBYTE value;
-      ULONG  length;
+      ULONG length;
     } string;
     struct {
       LPBYTE value;
-      ULONG  length;
+      ULONG length;
     } url;
     struct {
       LPBYTE value;
-      ULONG  length;
+      ULONG length;
     } sequence;
     struct {
       LPBYTE value;
-      ULONG  length;
+      ULONG length;
     } alternative;
   } data;
 } SDP_ELEMENT_DATA, *PSDP_ELEMENT_DATA;
-
 typedef struct _SDP_STRING_TYPE_DATA {
   USHORT encoding;
   USHORT mibeNum;
   USHORT attributeID;
 } SDP_STRING_TYPE_DATA, *PSDP_STRING_TYPE_DATA;
-
 #ifdef __cplusplus
 }
 #endif

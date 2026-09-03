@@ -21,14 +21,9 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_SYMTAB_CLONES_H
 #define GCC_SYMTAB_CLONES_H
 
-struct GTY(()) clone_info
-{
+struct GTY(()) clone_info {
   /* Constructor.  */
-  clone_info ()
-    : tree_map (NULL),
-      param_adjustments (NULL)
-  {
-  }
+  clone_info() : tree_map(NULL), param_adjustments(NULL) {}
   /* Constants discovered by IPA-CP, i.e. which parameter should be replaced
      with what.  */
   vec<ipa_replace_map *, va_gc> *tree_map;
@@ -36,42 +31,35 @@ struct GTY(()) clone_info
   ipa_param_adjustments *param_adjustments;
 
   /* Return clone_info, if available.  */
-  static clone_info *get (cgraph_node *node);
+  static clone_info *get(cgraph_node *node);
 
   /* Return clone_info possibly creating new one.  */
-  static clone_info *get_create (cgraph_node *node);
+  static clone_info *get_create(cgraph_node *node);
 
   /* Remove clone_info.  */
-  static void remove (cgraph_node *node);
+  static void remove(cgraph_node *node);
 
   /* Release all clone_infos.  */
-  static void release (void);
+  static void release(void);
 };
 
 /* Return clone_info, if available.  */
-inline clone_info *
-clone_info::get (cgraph_node *node)
-{
+inline clone_info *clone_info::get(cgraph_node *node) {
   if (!symtab->m_clones)
     return NULL;
-  return symtab->m_clones->get (node);
+  return symtab->m_clones->get(node);
 }
 
-
 /* Remove clone_info association for NODE.  */
-inline void
-clone_info::remove (cgraph_node *node)
-{
-  symtab->m_clones->remove (node);
+inline void clone_info::remove(cgraph_node *node) {
+  symtab->m_clones->remove(node);
 }
 
 /* Free clone info summaries.  */
-inline void
-clone_info::release ()
-{
+inline void clone_info::release() {
   if (symtab->m_clones)
-    ggc_delete (symtab->m_clones);
+    ggc_delete(symtab->m_clones);
   symtab->m_clones = NULL;
 }
 
-#endif  /* GCC_SYMTAB_CLONES_H  */
+#endif /* GCC_SYMTAB_CLONES_H  */

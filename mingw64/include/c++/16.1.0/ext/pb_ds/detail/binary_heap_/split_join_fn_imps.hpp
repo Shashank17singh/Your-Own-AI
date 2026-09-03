@@ -41,16 +41,12 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-template<typename Pred>
-void
-PB_DS_CLASS_C_DEC::
-split(Pred pred, PB_DS_CLASS_C_DEC& other)
-{
+template <typename Pred>
+void PB_DS_CLASS_C_DEC::split(Pred pred, PB_DS_CLASS_C_DEC &other) {
   PB_DS_ASSERT_VALID((*this))
 
   typedef
-    typename entry_pred<value_type, Pred, _Alloc, simple_value>::type
-    pred_t;
+      typename entry_pred<value_type, Pred, _Alloc, simple_value>::type pred_t;
 
   const size_type left = partition(pred_t(pred));
   _GLIBCXX_DEBUG_ASSERT(m_size >= left);
@@ -64,21 +60,19 @@ split(Pred pred, PB_DS_CLASS_C_DEC& other)
   entry_pointer a_entries = 0;
   entry_pointer a_other_entries = 0;
 
-  __try
-    {
-      a_entries = s_entry_allocator.allocate(new_size);
-      a_other_entries = s_entry_allocator.allocate(other_actual_size);
-    }
-  __catch(...)
-    {
-      if (a_entries != 0)
-	s_entry_allocator.deallocate(a_entries, new_size);
+  __try {
+    a_entries = s_entry_allocator.allocate(new_size);
+    a_other_entries = s_entry_allocator.allocate(other_actual_size);
+  }
+  __catch(...) {
+    if (a_entries != 0)
+      s_entry_allocator.deallocate(a_entries, new_size);
 
-      if (a_other_entries != 0)
-	s_entry_allocator.deallocate(a_other_entries, other_actual_size);
+    if (a_other_entries != 0)
+      s_entry_allocator.deallocate(a_other_entries, other_actual_size);
 
-      __throw_exception_again;
-    };
+    __throw_exception_again;
+  };
 
   for (size_type i = 0; i < other.m_size; ++i)
     erase_at(other.m_a_entries, i, s_no_throw_copies_ind);
@@ -110,10 +104,7 @@ split(Pred pred, PB_DS_CLASS_C_DEC& other)
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-join(PB_DS_CLASS_C_DEC& other)
-{
+inline void PB_DS_CLASS_C_DEC::join(PB_DS_CLASS_C_DEC &other) {
   PB_DS_ASSERT_VALID((*this))
   PB_DS_ASSERT_VALID(other)
 
@@ -123,25 +114,23 @@ join(PB_DS_CLASS_C_DEC& other)
   entry_pointer a_entries = 0;
   entry_pointer a_other_entries = 0;
 
-  __try
-    {
-      a_entries = s_entry_allocator.allocate(new_size);
-      a_other_entries = s_entry_allocator.allocate(resize_policy::min_size);
-    }
-  __catch(...)
-    {
-      if (a_entries != 0)
-	s_entry_allocator.deallocate(a_entries, new_size);
+  __try {
+    a_entries = s_entry_allocator.allocate(new_size);
+    a_other_entries = s_entry_allocator.allocate(resize_policy::min_size);
+  }
+  __catch(...) {
+    if (a_entries != 0)
+      s_entry_allocator.deallocate(a_entries, new_size);
 
-      if (a_other_entries != 0)
-	s_entry_allocator.deallocate(a_other_entries, resize_policy::min_size);
+    if (a_other_entries != 0)
+      s_entry_allocator.deallocate(a_other_entries, resize_policy::min_size);
 
-      __throw_exception_again;
-    }
+    __throw_exception_again;
+  }
 
   std::copy(m_a_entries, m_a_entries + m_size, a_entries);
   std::copy(other.m_a_entries, other.m_a_entries + other.m_size,
-	    a_entries + m_size);
+            a_entries + m_size);
 
   s_entry_allocator.deallocate(m_a_entries, m_actual_size);
   m_a_entries = a_entries;
@@ -156,7 +145,7 @@ join(PB_DS_CLASS_C_DEC& other)
   other.m_actual_size = resize_policy::min_size;
   other.notify_arbitrary(resize_policy::min_size);
   other.make_heap();
-  
+
   PB_DS_ASSERT_VALID((*this))
   PB_DS_ASSERT_VALID(other)
 }

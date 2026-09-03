@@ -28,29 +28,24 @@ along with GCC; see the file COPYING3.  If not see
    Note that there is no integration with the garbage collector,
    and so key instances can only be short-lived.  */
 class tree_logical_location_manager
-  : public diagnostics::logical_locations::manager
-{
+    : public diagnostics::logical_locations::manager {
 public:
   using key = diagnostics::logical_locations::key;
   using kind = diagnostics::logical_locations::kind;
 
-  void dump (FILE *out, int indent) const final override;
+  void dump(FILE *out, int indent) const final override;
 
-  label_text get_short_name (key) const final override;
-  label_text get_name_with_scope (key) const final override;
-  label_text get_internal_name (key) const final override;
-  kind get_kind (key) const final override;
-  label_text get_name_for_path_output (key) const final override;
-  key get_parent (key) const final override;
+  label_text get_short_name(key) const final override;
+  label_text get_name_with_scope(key) const final override;
+  label_text get_internal_name(key) const final override;
+  kind get_kind(key) const final override;
+  label_text get_name_for_path_output(key) const final override;
+  key get_parent(key) const final override;
 
-  static tree tree_from_key (key k)
-  {
-    return const_cast<tree> (k.cast_to<const_tree> ());
+  static tree tree_from_key(key k) {
+    return const_cast<tree>(k.cast_to<const_tree>());
   }
-  static key key_from_tree (tree node)
-  {
-    return key::from_ptr (node);
-  }
+  static key key_from_tree(tree node) { return key::from_ptr(node); }
 };
 
 #endif /* GCC_TREE_LOGICAL_LOCATION_H.  */

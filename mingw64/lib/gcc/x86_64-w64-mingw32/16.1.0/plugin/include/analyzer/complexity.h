@@ -27,16 +27,14 @@ namespace ana {
    we can impose bounds on the growth of these tree-like structures
    and thus avoid infinite chains of analysis.  */
 
-struct complexity
-{
-  complexity (unsigned num_nodes, unsigned max_depth)
-  : m_num_nodes (num_nodes), m_max_depth (max_depth)
-  {}
+struct complexity {
+  complexity(unsigned num_nodes, unsigned max_depth)
+      : m_num_nodes(num_nodes), m_max_depth(max_depth) {}
 
-  complexity (const region *reg);
-  complexity (const svalue *sval);
-  static complexity from_pair (const complexity &c1, const complexity &c);
-  static complexity from_vec_svalue (const vec<const svalue *> &vec);
+  complexity(const region *reg);
+  complexity(const svalue *sval);
+  static complexity from_pair(const complexity &c1, const complexity &c);
+  static complexity from_vec_svalue(const vec<const svalue *> &vec);
 
   /* The total number of svalues and regions in the tree of this
      entity, including the entity itself.  */

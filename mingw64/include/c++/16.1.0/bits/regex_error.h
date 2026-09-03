@@ -30,8 +30,7 @@
  *  Do not attempt to use it directly. @headername{regex}
  */
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 /**
@@ -39,154 +38,147 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
  * @{
  */
 
-namespace regex_constants
-{
-  /**
-   * @name 5.3 Error Types
-   */
-  ///@{
+namespace regex_constants {
+/**
+ * @name 5.3 Error Types
+ */
+///@{
 
-  enum error_type
-    {
-      _S_error_collate, // XXX should have been a non-zero value
-      _S_error_ctype,
-      _S_error_escape,
-      _S_error_backref,
-      _S_error_brack,
-      _S_error_paren,
-      _S_error_brace,
-      _S_error_badbrace,
-      _S_error_range,
-      _S_error_space,
-      _S_error_badrepeat,
-      _S_error_complexity,
-      _S_error_stack,
-      _S_null,
-      _S_grammar
-    };
+enum error_type {
+  _S_error_collate, // XXX should have been a non-zero value
+  _S_error_ctype,
+  _S_error_escape,
+  _S_error_backref,
+  _S_error_brack,
+  _S_error_paren,
+  _S_error_brace,
+  _S_error_badbrace,
+  _S_error_range,
+  _S_error_space,
+  _S_error_badrepeat,
+  _S_error_complexity,
+  _S_error_stack,
+  _S_null,
+  _S_grammar
+};
 
-  /** The expression contained an invalid collating element name. */
-  _GLIBCXX17_INLINE constexpr error_type error_collate(_S_error_collate);
+/** The expression contained an invalid collating element name. */
+_GLIBCXX17_INLINE constexpr error_type error_collate(_S_error_collate);
 
-  /** The expression contained an invalid character class name. */
-  _GLIBCXX17_INLINE constexpr error_type error_ctype(_S_error_ctype);
+/** The expression contained an invalid character class name. */
+_GLIBCXX17_INLINE constexpr error_type error_ctype(_S_error_ctype);
 
-  /**
-   * The expression contained an invalid escaped character, or a trailing
-   * escape.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_escape(_S_error_escape);
+/**
+ * The expression contained an invalid escaped character, or a trailing
+ * escape.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_escape(_S_error_escape);
 
-  /** The expression contained an invalid back reference. */
-  _GLIBCXX17_INLINE constexpr error_type error_backref(_S_error_backref);
+/** The expression contained an invalid back reference. */
+_GLIBCXX17_INLINE constexpr error_type error_backref(_S_error_backref);
 
-  /** The expression contained mismatched [ and ]. */
-  _GLIBCXX17_INLINE constexpr error_type error_brack(_S_error_brack);
+/** The expression contained mismatched [ and ]. */
+_GLIBCXX17_INLINE constexpr error_type error_brack(_S_error_brack);
 
-  /** The expression contained mismatched ( and ). */
-  _GLIBCXX17_INLINE constexpr error_type error_paren(_S_error_paren);
+/** The expression contained mismatched ( and ). */
+_GLIBCXX17_INLINE constexpr error_type error_paren(_S_error_paren);
 
-  /** The expression contained mismatched { and } */
-  _GLIBCXX17_INLINE constexpr error_type error_brace(_S_error_brace);
+/** The expression contained mismatched { and } */
+_GLIBCXX17_INLINE constexpr error_type error_brace(_S_error_brace);
 
-  /** The expression contained an invalid range in a {} expression. */
-  _GLIBCXX17_INLINE constexpr error_type error_badbrace(_S_error_badbrace);
+/** The expression contained an invalid range in a {} expression. */
+_GLIBCXX17_INLINE constexpr error_type error_badbrace(_S_error_badbrace);
 
-  /**
-   * The expression contained an invalid character range,
-   * such as [b-a] in most encodings.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_range(_S_error_range);
+/**
+ * The expression contained an invalid character range,
+ * such as [b-a] in most encodings.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_range(_S_error_range);
 
-  /**
-   * There was insufficient memory to convert the expression into a
-   * finite state machine.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_space(_S_error_space);
+/**
+ * There was insufficient memory to convert the expression into a
+ * finite state machine.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_space(_S_error_space);
 
-  /**
-   * One of <em>*?+{</em> was not preceded by a valid regular expression.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_badrepeat(_S_error_badrepeat);
+/**
+ * One of <em>*?+{</em> was not preceded by a valid regular expression.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_badrepeat(_S_error_badrepeat);
 
-  /**
-   * The complexity of an attempted match against a regular expression
-   * exceeded a pre-set level.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_complexity(_S_error_complexity);
+/**
+ * The complexity of an attempted match against a regular expression
+ * exceeded a pre-set level.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_complexity(_S_error_complexity);
 
-  /**
-   * There was insufficient memory to determine whether the
-   * regular expression could match the specified character sequence.
-   */
-  _GLIBCXX17_INLINE constexpr error_type error_stack(_S_error_stack);
+/**
+ * There was insufficient memory to determine whether the
+ * regular expression could match the specified character sequence.
+ */
+_GLIBCXX17_INLINE constexpr error_type error_stack(_S_error_stack);
 
-  ///@}
+///@}
 } // namespace regex_constants
 
-  // [7.8] Class regex_error
+// [7.8] Class regex_error
+/**
+ * @brief A regular expression exception class.
+ * @ingroup exceptions
+ *
+ * The regular expression library throws objects of this class on error.
+ *
+ * @headerfile regex
+ * @since C++11
+ */
+class regex_error : public std::runtime_error {
+  using error_type = regex_constants::error_type;
+
+  error_type _M_code;
+
+public:
   /**
-   * @brief A regular expression exception class.
-   * @ingroup exceptions
+   * @brief Constructs a regex_error object.
    *
-   * The regular expression library throws objects of this class on error.
-   *
-   * @headerfile regex
-   * @since C++11
+   * @param __ecode the regex error code.
    */
-  class regex_error : public std::runtime_error
-  {
-    using error_type = regex_constants::error_type;
+  explicit regex_error(error_type __ecode);
 
-    error_type _M_code;
+  virtual ~regex_error() throw();
 
-  public:
-    /**
-     * @brief Constructs a regex_error object.
-     *
-     * @param __ecode the regex error code.
-     */
-    explicit
-    regex_error(error_type __ecode);
+  /**
+   * @brief Gets the regex error code.
+   *
+   * @returns the regex error code.
+   */
+  regex_constants::error_type code() const noexcept { return _M_code; }
 
-    virtual ~regex_error() throw();
-
-    /**
-     * @brief Gets the regex error code.
-     *
-     * @returns the regex error code.
-     */
-    regex_constants::error_type
-    code() const noexcept
-    { return _M_code; }
-
-  private:
-    /// @cond undocumented
-    regex_error(error_type __ecode, const char* __what)
-    : std::runtime_error(__what), _M_code(__ecode)
-    { }
-
-    [[__noreturn__]]
-    friend void
-    __throw_regex_error(error_type __ecode __attribute__((__unused__)),
-			const char* __what __attribute__((__unused__)))
-    { _GLIBCXX_THROW_OR_ABORT(regex_error(__ecode, __what)); }
-    /// @endcond
-  };
-
+private:
   /// @cond undocumented
+  regex_error(error_type __ecode, const char *__what)
+      : std::runtime_error(__what), _M_code(__ecode) {}
 
   [[__noreturn__]]
-  void
-  __throw_regex_error(regex_constants::error_type __ecode);
-
-  [[__noreturn__]]
-  inline void
-  __throw_regex_error(regex_constants::error_type __ecode, const char* __what);
-
+  friend void
+  __throw_regex_error(error_type __ecode __attribute__((__unused__)),
+                      const char *__what __attribute__((__unused__))) {
+    _GLIBCXX_THROW_OR_ABORT(regex_error(__ecode, __what));
+  }
   /// @endcond
+};
 
-  ///@} // group regex
+/// @cond undocumented
+
+[[__noreturn__]]
+void __throw_regex_error(regex_constants::error_type __ecode);
+
+[[__noreturn__]]
+inline void __throw_regex_error(regex_constants::error_type __ecode,
+                                const char *__what);
+
+/// @endcond
+
+///@} // group regex
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)

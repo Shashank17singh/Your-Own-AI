@@ -1,10 +1,11 @@
 """Different kinds of SAX Exceptions"""
+
 import sys
+
 if sys.platform[:4] == "java":
     from java.lang import Exception
 del sys
 
-# ===== SAXEXCEPTION =====
 
 class SAXException(Exception):
     """Encapsulate an XML error or warning. This class can contain
@@ -41,18 +42,14 @@ class SAXException(Exception):
         raise AttributeError("__getitem__")
 
 
-# ===== SAXPARSEEXCEPTION =====
-
 class SAXParseException(SAXException):
     """Encapsulate an XML parse error or warning.
-
     This exception will include information for locating the error in
     the original XML document. Note that although the application will
     receive a SAXParseException as the argument to the handlers in the
     ErrorHandler interface, the application is not actually required
     to raise the exception; instead, it can simply read the
     information in it and take a different action.
-
     Since this exception is a subclass of SAXException, it inherits
     the ability to wrap another exception."""
 
@@ -60,11 +57,6 @@ class SAXParseException(SAXException):
         "Creates the exception. The exception parameter is allowed to be None."
         SAXException.__init__(self, msg, exception)
         self._locator = locator
-
-        # We need to cache this stuff at construction time.
-        # If this exception is raised, the objects through which we must
-        # traverse to get this information may be deleted by the time
-        # it gets caught.
         self._systemId = self._locator.getSystemId()
         self._colnum = self._locator.getColumnNumber()
         self._linenum = self._locator.getLineNumber()
@@ -100,31 +92,23 @@ class SAXParseException(SAXException):
         return "%s:%s:%s: %s" % (sysid, linenum, colnum, self._msg)
 
 
-# ===== SAXNOTRECOGNIZEDEXCEPTION =====
-
 class SAXNotRecognizedException(SAXException):
     """Exception class for an unrecognized identifier.
-
     An XMLReader will raise this exception when it is confronted with an
     unrecognized feature or property. SAX applications and extensions may
     use this class for similar purposes."""
 
 
-# ===== SAXNOTSUPPORTEDEXCEPTION =====
-
 class SAXNotSupportedException(SAXException):
     """Exception class for an unsupported operation.
-
     An XMLReader will raise this exception when a service it cannot
     perform is requested (specifically setting a state or value). SAX
     applications and extensions may use this class for similar
     purposes."""
 
-# ===== SAXNOTSUPPORTEDEXCEPTION =====
 
 class SAXReaderNotAvailable(SAXNotSupportedException):
     """Exception class for a missing driver.
-
     An XMLReader module (driver) should raise this exception when it
     is first imported, e.g. when a support module cannot be imported.
     It also may be raised during parsing, e.g. if executing an external

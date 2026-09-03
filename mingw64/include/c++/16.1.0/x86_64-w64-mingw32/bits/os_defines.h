@@ -28,15 +28,15 @@
  */
 
 #ifndef _GLIBCXX_OS_DEFINES
-#  define _GLIBCXX_OS_DEFINES
+#define _GLIBCXX_OS_DEFINES
 
 // System-specific #define, typedefs, corrections, etc, go here.  This
 // file will come before all others.
 
 //  Define as 0, if you want, to enable inlining of gthread functions.
 //  By default, don't pollute libstdc++ with win32api names.
-#if !defined (__GTHREAD_HIDE_WIN32API)
-# define __GTHREAD_HIDE_WIN32API 1
+#if !defined(__GTHREAD_HIDE_WIN32API)
+#define __GTHREAD_HIDE_WIN32API 1
 #endif
 
 // Don't let win32api windef.h define min and max as macros
@@ -50,14 +50,14 @@
 #undef __USE_MINGW_ANSI_STDIO
 #define __USE_MINGW_ANSI_STDIO 1
 
-#if defined (_GLIBCXX_DLL)
-#define _GLIBCXX_PSEUDO_VISIBILITY_default __attribute__ ((__dllimport__))
+#if defined(_GLIBCXX_DLL)
+#define _GLIBCXX_PSEUDO_VISIBILITY_default __attribute__((__dllimport__))
 #else
 #define _GLIBCXX_PSEUDO_VISIBILITY_default
 #endif
 #define _GLIBCXX_PSEUDO_VISIBILITY_hidden
 
-#define _GLIBCXX_PSEUDO_VISIBILITY(V) _GLIBCXX_PSEUDO_VISIBILITY_ ## V
+#define _GLIBCXX_PSEUDO_VISIBILITY(V) _GLIBCXX_PSEUDO_VISIBILITY_##V
 
 // See libstdc++/20806.
 #define _GLIBCXX_HAVE_DOS_BASED_FILESYSTEM 1
@@ -70,7 +70,7 @@
 // See libstdc++/51135
 // Class constructors/destructors have __thiscall calling-convention on
 // IA 32-bit
-#if defined (__i386__)
+#if defined(__i386__)
 #define _GLIBCXX_CDTOR_CALLABI __thiscall
 #endif
 

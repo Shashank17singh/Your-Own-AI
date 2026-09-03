@@ -17,15 +17,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-
 #pragma once
-
-#define DPFLTR_ERROR_LEVEL                  0
-#define DPFLTR_WARNING_LEVEL                1
-#define DPFLTR_TRACE_LEVEL                  2
-#define DPFLTR_INFO_LEVEL                   3
-#define DPFLTR_MASK                         0x80000000
-
+#define DPFLTR_ERROR_LEVEL 0
+#define DPFLTR_WARNING_LEVEL 1
+#define DPFLTR_TRACE_LEVEL 2
+#define DPFLTR_INFO_LEVEL 3
+#define DPFLTR_MASK 0x80000000
 typedef enum _DPFLTR_TYPE {
   DPFLTR_SYSTEM_ID = 0,
   DPFLTR_SMSS_ID = 1,
@@ -175,4 +172,3 @@ typedef enum _DPFLTR_TYPE {
   DPFLTR_DRIVEEXTENDER_ID = 145,
   DPFLTR_ENDOFTABLE_ID
 } DPFLTR_TYPE;
-

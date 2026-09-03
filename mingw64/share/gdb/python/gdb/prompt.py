@@ -1,23 +1,6 @@
-# Extended prompt utilities.
-# Copyright (C) 2011-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """Extended prompt library functions."""
 
 import os
-
 import gdb
 
 
@@ -111,7 +94,6 @@ prompt_substitutions = {
 def prompt_help():
     """Generate help dynamically from the __doc__ strings of attribute
     functions."""
-
     result = ""
     keys = sorted(prompt_substitutions.keys())
     for key in keys:
@@ -125,7 +107,6 @@ The meaning of the argument depends on the particular substitution."""
 
 def substitute_prompt(prompt):
     "Perform substitutions on PROMPT."
-
     result = ""
     plen = len(prompt)
     i = 0
@@ -135,15 +116,12 @@ def substitute_prompt(prompt):
             if i >= plen:
                 break
             cmdch = prompt[i]
-
             if cmdch in prompt_substitutions:
                 cmd = prompt_substitutions[cmdch]
-
                 if i + 1 < plen and prompt[i + 1] == "{":
                     j = i + 1
                     while j < plen and prompt[j] != "}":
                         j = j + 1
-                    # Just ignore formatting errors.
                     if j >= plen or prompt[j] != "}":
                         arg = None
                     else:
@@ -153,12 +131,8 @@ def substitute_prompt(prompt):
                     arg = None
                 result += str(cmd(arg))
             else:
-                # Unrecognized escapes are turned into the escaped
-                # character itself.
                 result += prompt[i]
         else:
             result += prompt[i]
-
         i = i + 1
-
     return result

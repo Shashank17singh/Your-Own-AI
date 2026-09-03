@@ -26,8 +26,7 @@ typedef struct hwloop_info_d *hwloop_info;
 
 /* Information about a loop we have found (or are in the process of
    finding).  */
-struct GTY (()) hwloop_info_d
-{
+struct GTY(()) hwloop_info_d {
   /* loop number, for dumps */
   int loop_no;
 
@@ -138,23 +137,22 @@ struct GTY (()) hwloop_info_d
    If a valid loop can't be found, the FAIL function is called;
    otherwise the OPT function is called for each loop, visiting
    innermost loops first and ascending.  */
-struct hw_doloop_hooks
-{
+struct hw_doloop_hooks {
   /* Examine INSN.  If it is a suitable doloop_end pattern, return the
      iteration register, which should be a single hard register.
      Otherwise, return NULL_RTX.  */
-  rtx (*end_pattern_reg) (rtx_insn *insn);
+  rtx (*end_pattern_reg)(rtx_insn *insn);
   /* Optimize LOOP.  The target should perform any additional analysis
      (e.g. checking that the loop isn't too long), and then perform
      its transformations.  Return true if successful, false if the
      loop should be marked bad.  If it returns false, the FAIL
      function is called.  */
-  bool (*opt) (hwloop_info loop);
+  bool (*opt)(hwloop_info loop);
   /* Handle a loop that was marked bad for any reason.  This could be
      used to split the doloop_end pattern.  */
-  void (*fail) (hwloop_info loop);
+  void (*fail)(hwloop_info loop);
 };
 
-extern void reorg_loops (bool, struct hw_doloop_hooks *);
+extern void reorg_loops(bool, struct hw_doloop_hooks *);
 
 #endif /* GCC_HW_DOLOOP_H */

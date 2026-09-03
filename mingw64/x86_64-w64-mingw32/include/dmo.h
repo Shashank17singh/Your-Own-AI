@@ -15,12 +15,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef __DMO_H__
 #define __DMO_H__
-
 #include <mediaerr.h>
-
 #ifdef FIX_LOCK_NAME
 #define Lock DMOLock
 #endif
@@ -30,5 +27,4 @@
 #endif
 #include <dmoreg.h>
 #include <dmort.h>
-
-#endif  /* __DMO_H__ */
+#endif /* __DMO_H__ */

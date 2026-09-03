@@ -5,9 +5,7 @@
  */
 #ifndef _DDAOERR_H_
 #define _DDAOERR_H_
-
-#define DBDAOERR(x) MAKE_SCODE(SEVERITY_ERROR,FACILITY_CONTROL,x)
-
+#define DBDAOERR(x) MAKE_SCODE(SEVERITY_ERROR, FACILITY_CONTROL, x)
 #define E_DAO_InternalError DBDAOERR(3000)
 #define E_DAO_InvalidParameter DBDAOERR(3001)
 #define E_DAO_CantBegin DBDAOERR(3002)

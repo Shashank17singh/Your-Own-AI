@@ -15,46 +15,39 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef __DSHOW_INCLUDED__
 #define __DSHOW_INCLUDED__
-
 #define AM_NOVTABLE
-
 #include <windows.h>
 #ifndef __WINESRC__
-# include <windowsx.h>
+#include <windowsx.h>
 #endif
-#include <olectl.h>
 #include <ddraw.h>
 #include <mmsystem.h>
+#include <olectl.h>
 #ifndef NO_DSHOW_STRSAFE
 #define NO_SHLWAPI_STRFCNS
 #include <strsafe.h>
 #endif
-
 #ifndef NUMELMS
-#define NUMELMS(array) (sizeof(array)/sizeof((array)[0]))
+#define NUMELMS(array) (sizeof(array) / sizeof((array)[0]))
 #endif
-
-#include <strmif.h>
 #include <amvideo.h>
+#include <strmif.h>
 #ifdef DSHOW_USE_AMAUDIO
 #include <amaudio.h>
 #endif
 #include <control.h>
+#include <errors.h>
 #include <evcode.h>
 #include <uuids.h>
-#include <errors.h>
 /* FIXME: #include <edevdefs.h> */
 #include <audevcod.h>
 /* FIXME: #include <dvdevcod.h> */
-
 #ifndef OATRUE
 #define OATRUE (-1)
 #endif
 #ifndef OAFALSE
 #define OAFALSE (0)
 #endif
-
 #endif /* __DSHOW_INCLUDED__ */

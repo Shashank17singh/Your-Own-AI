@@ -29,18 +29,17 @@ typedef struct ddg *ddg_ptr;
 typedef struct ddg_scc *ddg_scc_ptr;
 typedef struct ddg_all_sccs *ddg_all_sccs_ptr;
 
-enum dep_type {TRUE_DEP, OUTPUT_DEP, ANTI_DEP};
-enum dep_data_type {REG_OR_MEM_DEP, REG_DEP, MEM_DEP, REG_AND_MEM_DEP};
+enum dep_type { TRUE_DEP, OUTPUT_DEP, ANTI_DEP };
+enum dep_data_type { REG_OR_MEM_DEP, REG_DEP, MEM_DEP, REG_AND_MEM_DEP };
 
 /* The following two macros enables direct access to the successors and
    predecessors bitmaps held in each ddg_node.  Do not make changes to
    these bitmaps, unless you want to change the DDG.  */
-#define NODE_SUCCESSORS(x)  ((x)->successors)
-#define NODE_PREDECESSORS(x)  ((x)->predecessors)
+#define NODE_SUCCESSORS(x) ((x)->successors)
+#define NODE_PREDECESSORS(x) ((x)->predecessors)
 
 /* A structure that represents a node in the DDG.  */
-struct ddg_node
-{
+struct ddg_node {
   /* Each node has a unique CUID index.  These indices increase monotonically
      (according to the order of the corresponding INSN in the BB), starting
      from 0 with no gaps.  */
@@ -76,8 +75,7 @@ struct ddg_node
 };
 
 /* A structure that represents an edge in the DDG.  */
-struct ddg_edge
-{
+struct ddg_edge {
   /* The source and destination nodes of the dependency edge.  */
   ddg_node_ptr src;
   ddg_node_ptr dest;
@@ -104,8 +102,7 @@ struct ddg_edge
 };
 
 /* This structure holds the Data Dependence Graph for a basic block.  */
-struct ddg
-{
+struct ddg {
   /* The basic block for which this DDG is built.  */
   basic_block bb;
 
@@ -133,10 +130,8 @@ struct ddg
   ddg_edge_ptr *backarcs;
 };
 
-
 /* Holds information on an SCC (Strongly Connected Component) of the DDG.  */
-struct ddg_scc
-{
+struct ddg_scc {
   /* A bitmap that represents the nodes of the DDG that are in the SCC.  */
   sbitmap nodes;
 
@@ -149,8 +144,7 @@ struct ddg_scc
 };
 
 /* This structure holds the SCCs of the DDG.  */
-struct ddg_all_sccs
-{
+struct ddg_all_sccs {
   /* Array that holds the SCCs in the DDG, and their number.  */
   ddg_scc_ptr *sccs;
   int num_sccs;
@@ -158,25 +152,24 @@ struct ddg_all_sccs
   ddg_ptr ddg;
 };
 
-
-ddg_ptr create_ddg (basic_block, int closing_branch_deps);
-void free_ddg (ddg_ptr);
+ddg_ptr create_ddg(basic_block, int closing_branch_deps);
+void free_ddg(ddg_ptr);
 
-void print_ddg (FILE *, ddg_ptr);
-void vcg_print_ddg (FILE *, ddg_ptr);
-void print_ddg_edge (FILE *, ddg_edge_ptr);
-void print_sccs (FILE *, ddg_all_sccs_ptr, ddg_ptr);
+void print_ddg(FILE *, ddg_ptr);
+void vcg_print_ddg(FILE *, ddg_ptr);
+void print_ddg_edge(FILE *, ddg_edge_ptr);
+void print_sccs(FILE *, ddg_all_sccs_ptr, ddg_ptr);
 
-ddg_node_ptr get_node_of_insn (ddg_ptr, rtx_insn *);
+ddg_node_ptr get_node_of_insn(ddg_ptr, rtx_insn *);
 
-void find_successors (sbitmap result, ddg_ptr, sbitmap);
-void find_predecessors (sbitmap result, ddg_ptr, sbitmap);
+void find_successors(sbitmap result, ddg_ptr, sbitmap);
+void find_predecessors(sbitmap result, ddg_ptr, sbitmap);
 
-ddg_all_sccs_ptr create_ddg_all_sccs (ddg_ptr);
-void free_ddg_all_sccs (ddg_all_sccs_ptr);
+ddg_all_sccs_ptr create_ddg_all_sccs(ddg_ptr);
+void free_ddg_all_sccs(ddg_all_sccs_ptr);
 
-int find_nodes_on_paths (sbitmap result, ddg_ptr, sbitmap from, sbitmap to);
+int find_nodes_on_paths(sbitmap result, ddg_ptr, sbitmap from, sbitmap to);
 
-bool autoinc_var_is_used_p (rtx_insn *, rtx_insn *);
+bool autoinc_var_is_used_p(rtx_insn *, rtx_insn *);
 
 #endif /* GCC_DDG_H */

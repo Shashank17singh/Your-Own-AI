@@ -34,8 +34,8 @@
 #include <bits/c++config.h>
 #include <bits/exception_defines.h>
 
-#if (_GLIBCXX_HOSTED && __cpp_exceptions && __cplusplus > 202302L \
-     && __cpp_constexpr_exceptions >= 202411L)
+#if (_GLIBCXX_HOSTED && __cpp_exceptions && __cplusplus > 202302L &&           \
+     __cpp_constexpr_exceptions >= 202411L)
 // This is a complicated case.  Classes like std::logic_error
 // are defined in <stdexcept> but need std::string and <string>
 // needs __throw_logic_error and a few others.  So, for C++26

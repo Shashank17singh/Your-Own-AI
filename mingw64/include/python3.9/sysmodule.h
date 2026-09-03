@@ -14,10 +14,8 @@ PyAPI_FUNC(void) PySys_SetArgv(int, wchar_t **);
 PyAPI_FUNC(void) PySys_SetArgvEx(int, wchar_t **, int);
 PyAPI_FUNC(void) PySys_SetPath(const wchar_t *);
 
-PyAPI_FUNC(void) PySys_WriteStdout(const char *format, ...)
-                 Py_PRINTF(1, 2);
-PyAPI_FUNC(void) PySys_WriteStderr(const char *format, ...)
-                 Py_PRINTF(1, 2);
+PyAPI_FUNC(void) PySys_WriteStdout(const char *format, ...) Py_PRINTF(1, 2);
+PyAPI_FUNC(void) PySys_WriteStderr(const char *format, ...) Py_PRINTF(1, 2);
 PyAPI_FUNC(void) PySys_FormatStdout(const char *format, ...);
 PyAPI_FUNC(void) PySys_FormatStderr(const char *format, ...);
 
@@ -30,9 +28,9 @@ PyAPI_FUNC(void) PySys_AddXOption(const wchar_t *);
 PyAPI_FUNC(PyObject *) PySys_GetXOptions(void);
 
 #ifndef Py_LIMITED_API
-#  define Py_CPYTHON_SYSMODULE_H
-#  include  "cpython/sysmodule.h"
-#  undef Py_CPYTHON_SYSMODULE_H
+#define Py_CPYTHON_SYSMODULE_H
+#include "cpython/sysmodule.h"
+#undef Py_CPYTHON_SYSMODULE_H
 #endif
 
 #ifdef __cplusplus

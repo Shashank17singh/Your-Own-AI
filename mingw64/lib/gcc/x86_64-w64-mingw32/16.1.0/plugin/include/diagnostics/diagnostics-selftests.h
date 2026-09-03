@@ -27,25 +27,25 @@ namespace diagnostics {
 
 namespace selftest {
 
-extern void run_diagnostics_selftests ();
+extern void run_diagnostics_selftests();
 
 /* Declarations for specific families of tests (by source file within
    "diagnostics/"), in alphabetical order.  */
 
-extern void changes_cc_tests ();
-extern void color_cc_tests ();
-extern void context_cc_tests ();
-extern void digraphs_cc_tests ();
-extern void file_cache_cc_tests ();
-extern void html_sink_cc_tests ();
-extern void lazy_paths_cc_tests ();
-extern void output_spec_cc_tests ();
-extern void paths_output_cc_tests ();
-extern void sarif_sink_cc_tests ();
-extern void selftest_logical_locations_cc_tests ();
-extern void source_printing_cc_tests ();
+extern void changes_cc_tests();
+extern void color_cc_tests();
+extern void context_cc_tests();
+extern void digraphs_cc_tests();
+extern void file_cache_cc_tests();
+extern void html_sink_cc_tests();
+extern void lazy_paths_cc_tests();
+extern void output_spec_cc_tests();
+extern void paths_output_cc_tests();
+extern void sarif_sink_cc_tests();
+extern void selftest_logical_locations_cc_tests();
+extern void source_printing_cc_tests();
 
-} /* end of namespace diagnostics::selftest.  */
+} // namespace selftest
 
 } // namespace diagnostics
 

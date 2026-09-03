@@ -2,39 +2,29 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-
 #ifndef _WINNLS_
 #define _WINNLS_
-
 #include <winapifamily.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #ifndef NOAPISET
 #include <datetimeapi.h>
 #include <libloaderapi.h>
 #endif
-
 #ifndef NONLS
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
 #ifndef _NORMALIZE_
 #define WINNORMALIZEAPI DECLSPEC_IMPORT
 #else
 #define WINNORMALIZEAPI
 #endif
-
 #define MAX_LEADBYTES 12
 #define MAX_DEFAULTCHAR 2
-
 #define HIGH_SURROGATE_START 0xd800
 #define HIGH_SURROGATE_END 0xdbff
 #define LOW_SURROGATE_START 0xdc00
 #define LOW_SURROGATE_END 0xdfff
-
 #define MB_PRECOMPOSED 0x00000001
 #define MB_COMPOSITE 0x00000002
 #define MB_USEGLYPHCHARS 0x00000004
@@ -47,11 +37,9 @@ extern "C" {
 #endif
 #define WC_COMPOSITECHECK 0x00000200
 #define WC_NO_BEST_FIT_CHARS 0x00000400
-
 #define CT_CTYPE1 0x00000001
 #define CT_CTYPE2 0x00000002
 #define CT_CTYPE3 0x00000004
-
 #define C1_UPPER 0x0001
 #define C1_LOWER 0x0002
 #define C1_DIGIT 0x0004
@@ -62,7 +50,6 @@ extern "C" {
 #define C1_XDIGIT 0x0080
 #define C1_ALPHA 0x0100
 #define C1_DEFINED 0x0200
-
 #define C2_LEFTTORIGHT 0x0001
 #define C2_RIGHTTOLEFT 0x0002
 #define C2_EUROPENUMBER 0x0003
@@ -74,9 +61,7 @@ extern "C" {
 #define C2_SEGMENTSEPARATOR 0x0009
 #define C2_WHITESPACE 0x000a
 #define C2_OTHERNEUTRAL 0x000b
-
 #define C2_NOTAPPLICABLE 0x0000
-
 #define C3_NONSPACING 0x0001
 #define C3_DIACRITIC 0x0002
 #define C3_VOWELMARK 0x0004
@@ -91,65 +76,48 @@ extern "C" {
 #define C3_HIGHSURROGATE 0x0800
 #define C3_LOWSURROGATE 0x1000
 #define C3_ALPHA 0x8000
-
 #define C3_NOTAPPLICABLE 0x0000
-
 #define NORM_IGNORECASE 0x00000001
 #define NORM_IGNORENONSPACE 0x00000002
 #define NORM_IGNORESYMBOLS 0x00000004
-
 #define LINGUISTIC_IGNORECASE 0x00000010
 #define LINGUISTIC_IGNOREDIACRITIC 0x00000020
-
 #define NORM_IGNOREKANATYPE 0x00010000
 #define NORM_IGNOREWIDTH 0x00020000
 #define NORM_LINGUISTIC_CASING 0x08000000
-
 #define MAP_FOLDCZONE 0x00000010
 #define MAP_PRECOMPOSED 0x00000020
 #define MAP_COMPOSITE 0x00000040
 #define MAP_FOLDDIGITS 0x00000080
-
 #define MAP_EXPAND_LIGATURES 0x00002000
-
 #define LCMAP_LOWERCASE 0x00000100
 #define LCMAP_UPPERCASE 0x00000200
 #if WINVER >= 0x0601
 #define LCMAP_TITLECASE 0x00000300
 #endif
-
 #define LCMAP_SORTKEY 0x00000400
 #define LCMAP_BYTEREV 0x00000800
-
 #define LCMAP_HIRAGANA 0x00100000
 #define LCMAP_KATAKANA 0x00200000
 #define LCMAP_HALFWIDTH 0x00400000
 #define LCMAP_FULLWIDTH 0x00800000
-
 #define LCMAP_LINGUISTIC_CASING 0x01000000
-
 #define LCMAP_SIMPLIFIED_CHINESE 0x02000000
 #define LCMAP_TRADITIONAL_CHINESE 0x04000000
-
 #if WINVER >= 0x0602
 #define LCMAP_SORTHANDLE 0x20000000
 #define LCMAP_HASH 0x00040000
 #endif
-
 #define FIND_STARTSWITH 0x00100000
 #define FIND_ENDSWITH 0x00200000
 #define FIND_FROMSTART 0x00400000
 #define FIND_FROMEND 0x00800000
-
 #define LGRPID_INSTALLED 0x00000001
 #define LGRPID_SUPPORTED 0x00000002
-
 #define LCID_INSTALLED 0x00000001
 #define LCID_SUPPORTED 0x00000002
 #define LCID_ALTERNATE_SORTS 0x00000004
-
 #if WINVER >= 0x0600
-
 #define LOCALE_ALL 0
 #define LOCALE_WINDOWS 0x00000001
 #define LOCALE_SUPPLEMENTAL 0x00000002
@@ -160,31 +128,23 @@ extern "C" {
 #define LOCALE_NEUTRALDATA 0x00000010
 #define LOCALE_SPECIFICDATA 0x00000020
 #endif
-
 #define CP_INSTALLED 0x00000001
 #define CP_SUPPORTED 0x00000002
-
 #define SORT_STRINGSORT 0x00001000
-
 #if WINVER >= 0x0601
 #define SORT_DIGITSASNUMBERS 0x00000008
 #endif
-
 #define CSTR_LESS_THAN 1
 #define CSTR_EQUAL 2
 #define CSTR_GREATER_THAN 3
-
 #define CP_ACP 0
 #define CP_OEMCP 1
 #define CP_MACCP 2
 #define CP_THREAD_ACP 3
 #define CP_SYMBOL 42
-
 #define CP_UTF7 65000
 #define CP_UTF8 65001
-
 #define CTRY_DEFAULT 0
-
 #define CTRY_ALBANIA 355
 #define CTRY_ALGERIA 213
 #define CTRY_ARGENTINA 54
@@ -296,7 +256,6 @@ extern "C" {
 #define CTRY_VIET_NAM 84
 #define CTRY_YEMEN 967
 #define CTRY_ZIMBABWE 263
-
 #define LOCALE_SLOCALIZEDDISPLAYNAME 0x00000002
 #if WINVER >= 0x0601
 #define LOCALE_ALLOW_NEUTRAL_NAMES 0x08000000
@@ -305,23 +264,18 @@ extern "C" {
 #define LOCALE_RETURN_NUMBER 0x20000000
 #define LOCALE_USE_CP_ACP 0x40000000
 #define LOCALE_NOUSEROVERRIDE 0x80000000
-
 #if WINVER >= 0x0601
 #define LOCALE_SENGLISHDISPLAYNAME 0x00000072
 #define LOCALE_SNATIVEDISPLAYNAME 0x00000073
 #endif
-
 #if WINVER >= 0x0600
 #define LOCALE_SLOCALIZEDLANGUAGENAME 0x0000006f
 #endif
-
 #define LOCALE_SENGLISHLANGUAGENAME 0x00001001
 #define LOCALE_SNATIVELANGUAGENAME 0x00000004
-
 #define LOCALE_SLOCALIZEDCOUNTRYNAME 0x00000006
 #define LOCALE_SENGLISHCOUNTRYNAME 0x00001002
 #define LOCALE_SNATIVECOUNTRYNAME 0x00000008
-
 #define LOCALE_SLANGUAGE 0x00000002
 #if WINVER >= 0x0600
 #define LOCALE_SLANGDISPLAYNAME 0x0000006f
@@ -331,26 +285,19 @@ extern "C" {
 #define LOCALE_SCOUNTRY 0x00000006
 #define LOCALE_SENGCOUNTRY 0x00001002
 #define LOCALE_SNATIVECTRYNAME 0x00000008
-
 #define LOCALE_ILANGUAGE 0x00000001
-
 #define LOCALE_SABBREVLANGNAME 0x00000003
-
 #define LOCALE_ICOUNTRY 0x00000005
 #define LOCALE_SABBREVCTRYNAME 0x00000007
 #define LOCALE_IGEOID 0x0000005b
-
 #define LOCALE_IDEFAULTLANGUAGE 0x00000009
 #define LOCALE_IDEFAULTCOUNTRY 0x0000000a
 #define LOCALE_IDEFAULTCODEPAGE 0x0000000b
 #define LOCALE_IDEFAULTANSICODEPAGE 0x00001004
 #define LOCALE_IDEFAULTMACCODEPAGE 0x00001011
-
 #define LOCALE_IDIALINGCODE 0x00000005
-
 #define LOCALE_SLIST 0x0000000c
 #define LOCALE_IMEASURE 0x0000000d
-
 #define LOCALE_SDECIMAL 0x0000000e
 #define LOCALE_STHOUSAND 0x0000000f
 #define LOCALE_SGROUPING 0x00000010
@@ -358,7 +305,6 @@ extern "C" {
 #define LOCALE_ILZERO 0x00000012
 #define LOCALE_INEGNUMBER 0x00001010
 #define LOCALE_SNATIVEDIGITS 0x00000013
-
 #define LOCALE_SCURRENCY 0x00000014
 #define LOCALE_SINTLSYMBOL 0x00000015
 #define LOCALE_SMONDECIMALSEP 0x00000016
@@ -368,7 +314,6 @@ extern "C" {
 #define LOCALE_IINTLCURRDIGITS 0x0000001a
 #define LOCALE_ICURRENCY 0x0000001b
 #define LOCALE_INEGCURR 0x0000001c
-
 #define LOCALE_SDATE 0x0000001d
 #define LOCALE_STIME 0x0000001e
 #define LOCALE_SSHORTDATE 0x0000001f
@@ -386,12 +331,10 @@ extern "C" {
 #define LOCALE_IMONLZERO 0x00000027
 #define LOCALE_S1159 0x00000028
 #define LOCALE_S2359 0x00000029
-
 #define LOCALE_ICALENDARTYPE 0x00001009
 #define LOCALE_IOPTIONALCALENDAR 0x0000100b
 #define LOCALE_IFIRSTDAYOFWEEK 0x0000100c
 #define LOCALE_IFIRSTWEEKOFYEAR 0x0000100d
-
 #define LOCALE_SDAYNAME1 0x0000002a
 #define LOCALE_SDAYNAME2 0x0000002b
 #define LOCALE_SDAYNAME3 0x0000002c
@@ -432,7 +375,6 @@ extern "C" {
 #define LOCALE_SABBREVMONTHNAME11 0x0000004e
 #define LOCALE_SABBREVMONTHNAME12 0x0000004f
 #define LOCALE_SABBREVMONTHNAME13 0x0000100f
-
 #define LOCALE_SPOSITIVESIGN 0x00000050
 #define LOCALE_SNEGATIVESIGN 0x00000051
 #define LOCALE_IPOSSIGNPOSN 0x00000052
@@ -441,11 +383,9 @@ extern "C" {
 #define LOCALE_IPOSSEPBYSPACE 0x00000055
 #define LOCALE_INEGSYMPRECEDES 0x00000056
 #define LOCALE_INEGSEPBYSPACE 0x00000057
-
 #define LOCALE_FONTSIGNATURE 0x00000058
 #define LOCALE_SISO639LANGNAME 0x00000059
 #define LOCALE_SISO3166CTRYNAME 0x0000005a
-
 #define LOCALE_IDEFAULTEBCDICCODEPAGE 0x00001012
 #define LOCALE_IPAPERSIZE 0x0000100a
 #define LOCALE_SENGCURRNAME 0x00001007
@@ -453,7 +393,6 @@ extern "C" {
 #define LOCALE_SYEARMONTH 0x00001006
 #define LOCALE_SSORTNAME 0x00001013
 #define LOCALE_IDIGITSUBSTITUTION 0x00001014
-
 #if WINVER >= 0x0600
 #define LOCALE_SNAME 0x0000005c
 #define LOCALE_SDURATION 0x0000005d
@@ -474,10 +413,8 @@ extern "C" {
 #define LOCALE_SPARENT 0x0000006d
 #define LOCALE_SCONSOLEFALLBACKNAME 0x0000006e
 #endif
-
 #if WINVER >= 0x0601
 #define LOCALE_IREADINGLAYOUT 0x00000070
-
 #define LOCALE_INEUTRAL 0x00000071
 #define LOCALE_INEGATIVEPERCENT 0x00000074
 #define LOCALE_IPOSITIVEPERCENT 0x00000075
@@ -488,25 +425,20 @@ extern "C" {
 #define LOCALE_SOPENTYPELANGUAGETAG 0x0000007a
 #define LOCALE_SSORTLOCALE 0x0000007b
 #endif
-
 #if WINVER >= _WIN32_WINNT_WIN8
 #define LOCALE_SRELATIVELONGDATE 0x0000007c
 #endif
-
 #if WINVER >= _WIN32_WINNT_WIN10
 #define LOCALE_SSHORTESTAM 0x0000007e
 #define LOCALE_SSHORTESTPM 0x0000007f
 #endif
-
 #define TIME_NOMINUTESORSECONDS 0x00000001
 #define TIME_NOSECONDS 0x00000002
 #define TIME_NOTIMEMARKER 0x00000004
 #define TIME_FORCE24HOURFORMAT 0x00000008
-
 #define DATE_SHORTDATE 0x00000001
 #define DATE_LONGDATE 0x00000002
 #define DATE_USE_ALT_CALENDAR 0x00000004
-
 #define DATE_YEARMONTH 0x00000008
 #define DATE_LTRREADING 0x00000010
 #define DATE_RTLREADING 0x00000020
@@ -516,14 +448,12 @@ extern "C" {
 #if WINVER >= _WIN32_WINNT_WINTHRESHOLD
 #define DATE_MONTHDAY 0x00000080
 #endif
-
 #define CAL_NOUSEROVERRIDE LOCALE_NOUSEROVERRIDE
 #define CAL_USE_CP_ACP LOCALE_USE_CP_ACP
 #define CAL_RETURN_NUMBER LOCALE_RETURN_NUMBER
 #if WINVER >= 0x0601
 #define CAL_RETURN_GENITIVE_NAMES LOCALE_RETURN_GENITIVE_NAMES
 #endif
-
 #define CAL_ICALINTVALUE 0x00000001
 #define CAL_SCALNAME 0x00000002
 #define CAL_IYEAROFFSETRANGE 0x00000003
@@ -544,7 +474,6 @@ extern "C" {
 #define CAL_SABBREVDAYNAME5 0x00000012
 #define CAL_SABBREVDAYNAME6 0x00000013
 #define CAL_SABBREVDAYNAME7 0x00000014
-
 #define CAL_SMONTHNAME1 0x00000015
 #define CAL_SMONTHNAME2 0x00000016
 #define CAL_SMONTHNAME3 0x00000017
@@ -594,9 +523,7 @@ extern "C" {
 #define CAL_SENGLISHABBREVERANAME 0x0000003c
 #endif
 #define CAL_SJAPANESEERAFIRSTYEAR 0x0000003d
-
 #define ENUM_ALL_CALENDARS 0xffffffff
-
 #define CAL_GREGORIAN 1
 #define CAL_GREGORIAN_US 2
 #define CAL_JAPAN 3
@@ -610,7 +537,6 @@ extern "C" {
 #define CAL_GREGORIAN_XLIT_ENGLISH 11
 #define CAL_GREGORIAN_XLIT_FRENCH 12
 #define CAL_UMALQURA 23
-
 #define LGRPID_WESTERN_EUROPE 0x0001
 #define LGRPID_CENTRAL_EUROPE 0x0002
 #define LGRPID_BALTIC 0x0003
@@ -629,9 +555,7 @@ extern "C" {
 #define LGRPID_INDIC 0x000f
 #define LGRPID_GEORGIAN 0x0010
 #define LGRPID_ARMENIAN 0x0011
-
 #if WINVER >= 0x0600
-
 #define MUI_LANGUAGE_ID 0x4
 #define MUI_LANGUAGE_NAME 0x8
 #define MUI_MERGE_SYSTEM_FALLBACK 0x10
@@ -655,230 +579,206 @@ extern "C" {
 #define MUI_QUERY_LANGUAGE_NAME 0x004
 #define MUI_QUERY_RESOURCE_TYPES 0x008
 #define MUI_FILEINFO_VERSION 0x001
-
 #define MUI_FULL_LANGUAGE 0x01
 #define MUI_PARTIAL_LANGUAGE 0x02
 #define MUI_LIP_LANGUAGE 0x04
 #define MUI_LANGUAGE_INSTALLED 0x20
 #define MUI_LANGUAGE_LICENSED 0x40
-
 #define MUI_CALLBACK_ALL_FLAGS MUI_CALLBACK_FLAG_UPGRADED_INSTALLATION
 #endif
-
-  typedef DWORD LGRPID;
-  typedef DWORD LCTYPE;
-  typedef DWORD CALTYPE;
-  typedef DWORD CALID;
-
-  typedef struct _cpinfo {
-    UINT MaxCharSize;
-    BYTE DefaultChar[MAX_DEFAULTCHAR];
-    BYTE LeadByte[MAX_LEADBYTES];
-  } CPINFO,*LPCPINFO;
-  typedef struct _cpinfoexA {
-    UINT MaxCharSize;
-    BYTE DefaultChar[MAX_DEFAULTCHAR];
-    BYTE LeadByte[MAX_LEADBYTES];
-    WCHAR UnicodeDefaultChar;
-    UINT CodePage;
-    CHAR CodePageName[MAX_PATH];
-  } CPINFOEXA,*LPCPINFOEXA;
-
-  typedef struct _cpinfoexW {
-    UINT MaxCharSize;
-    BYTE DefaultChar[MAX_DEFAULTCHAR];
-    BYTE LeadByte[MAX_LEADBYTES];
-    WCHAR UnicodeDefaultChar;
-    UINT CodePage;
-    WCHAR CodePageName[MAX_PATH];
-  } CPINFOEXW,*LPCPINFOEXW;
-
-  __MINGW_TYPEDEF_AW(CPINFOEX)
-  __MINGW_TYPEDEF_AW(LPCPINFOEX)
-
-  typedef struct _numberfmtA {
-    UINT NumDigits;
-    UINT LeadingZero;
-    UINT Grouping;
-    LPSTR lpDecimalSep;
-    LPSTR lpThousandSep;
-    UINT NegativeOrder;
-  } NUMBERFMTA,*LPNUMBERFMTA;
-  typedef struct _numberfmtW {
-    UINT NumDigits;
-    UINT LeadingZero;
-    UINT Grouping;
-    LPWSTR lpDecimalSep;
-    LPWSTR lpThousandSep;
-    UINT NegativeOrder;
-  } NUMBERFMTW,*LPNUMBERFMTW;
-
-  __MINGW_TYPEDEF_AW(NUMBERFMT)
-  __MINGW_TYPEDEF_AW(LPNUMBERFMT)
-
-  typedef struct _currencyfmtA {
-    UINT NumDigits;
-    UINT LeadingZero;
-    UINT Grouping;
-    LPSTR lpDecimalSep;
-    LPSTR lpThousandSep;
-    UINT NegativeOrder;
-    UINT PositiveOrder;
-    LPSTR lpCurrencySymbol;
-  } CURRENCYFMTA,*LPCURRENCYFMTA;
-
-  typedef struct _currencyfmtW {
-    UINT NumDigits;
-    UINT LeadingZero;
-    UINT Grouping;
-    LPWSTR lpDecimalSep;
-    LPWSTR lpThousandSep;
-    UINT NegativeOrder;
-    UINT PositiveOrder;
-    LPWSTR lpCurrencySymbol;
-  } CURRENCYFMTW,*LPCURRENCYFMTW;
-
-  __MINGW_TYPEDEF_AW(CURRENCYFMT)
-  __MINGW_TYPEDEF_AW(LPCURRENCYFMT)
-
-  enum SYSNLS_FUNCTION {
-    COMPARE_STRING = 0x1
-  };
-
-  typedef DWORD NLS_FUNCTION;
-
+typedef DWORD LGRPID;
+typedef DWORD LCTYPE;
+typedef DWORD CALTYPE;
+typedef DWORD CALID;
+typedef struct _cpinfo {
+  UINT MaxCharSize;
+  BYTE DefaultChar[MAX_DEFAULTCHAR];
+  BYTE LeadByte[MAX_LEADBYTES];
+} CPINFO, *LPCPINFO;
+typedef struct _cpinfoexA {
+  UINT MaxCharSize;
+  BYTE DefaultChar[MAX_DEFAULTCHAR];
+  BYTE LeadByte[MAX_LEADBYTES];
+  WCHAR UnicodeDefaultChar;
+  UINT CodePage;
+  CHAR CodePageName[MAX_PATH];
+} CPINFOEXA, *LPCPINFOEXA;
+typedef struct _cpinfoexW {
+  UINT MaxCharSize;
+  BYTE DefaultChar[MAX_DEFAULTCHAR];
+  BYTE LeadByte[MAX_LEADBYTES];
+  WCHAR UnicodeDefaultChar;
+  UINT CodePage;
+  WCHAR CodePageName[MAX_PATH];
+} CPINFOEXW, *LPCPINFOEXW;
+__MINGW_TYPEDEF_AW(CPINFOEX)
+__MINGW_TYPEDEF_AW(LPCPINFOEX)
+typedef struct _numberfmtA {
+  UINT NumDigits;
+  UINT LeadingZero;
+  UINT Grouping;
+  LPSTR lpDecimalSep;
+  LPSTR lpThousandSep;
+  UINT NegativeOrder;
+} NUMBERFMTA, *LPNUMBERFMTA;
+typedef struct _numberfmtW {
+  UINT NumDigits;
+  UINT LeadingZero;
+  UINT Grouping;
+  LPWSTR lpDecimalSep;
+  LPWSTR lpThousandSep;
+  UINT NegativeOrder;
+} NUMBERFMTW, *LPNUMBERFMTW;
+__MINGW_TYPEDEF_AW(NUMBERFMT)
+__MINGW_TYPEDEF_AW(LPNUMBERFMT)
+typedef struct _currencyfmtA {
+  UINT NumDigits;
+  UINT LeadingZero;
+  UINT Grouping;
+  LPSTR lpDecimalSep;
+  LPSTR lpThousandSep;
+  UINT NegativeOrder;
+  UINT PositiveOrder;
+  LPSTR lpCurrencySymbol;
+} CURRENCYFMTA, *LPCURRENCYFMTA;
+typedef struct _currencyfmtW {
+  UINT NumDigits;
+  UINT LeadingZero;
+  UINT Grouping;
+  LPWSTR lpDecimalSep;
+  LPWSTR lpThousandSep;
+  UINT NegativeOrder;
+  UINT PositiveOrder;
+  LPWSTR lpCurrencySymbol;
+} CURRENCYFMTW, *LPCURRENCYFMTW;
+__MINGW_TYPEDEF_AW(CURRENCYFMT)
+__MINGW_TYPEDEF_AW(LPCURRENCYFMT)
+enum SYSNLS_FUNCTION { COMPARE_STRING = 0x1 };
+typedef DWORD NLS_FUNCTION;
 #if WINVER >= 0x0602
-  typedef struct _nlsversioninfo {
-    DWORD dwNLSVersionInfoSize;
-    DWORD dwNLSVersion;
-    DWORD dwDefinedVersion;
-    DWORD dwEffectiveId;
-    GUID guidCustomVersion;
-  } NLSVERSIONINFO,*LPNLSVERSIONINFO;
+typedef struct _nlsversioninfo {
+  DWORD dwNLSVersionInfoSize;
+  DWORD dwNLSVersion;
+  DWORD dwDefinedVersion;
+  DWORD dwEffectiveId;
+  GUID guidCustomVersion;
+} NLSVERSIONINFO, *LPNLSVERSIONINFO;
 #else
-  typedef struct _nlsversioninfo {
-    DWORD dwNLSVersionInfoSize;
-    DWORD dwNLSVersion;
-    DWORD dwDefinedVersion;
-  } NLSVERSIONINFO,*LPNLSVERSIONINFO;
+typedef struct _nlsversioninfo {
+  DWORD dwNLSVersionInfoSize;
+  DWORD dwNLSVersion;
+  DWORD dwDefinedVersion;
+} NLSVERSIONINFO, *LPNLSVERSIONINFO;
 #endif
-
-  typedef struct _nlsversioninfoex {
-    DWORD dwNLSVersionInfoSize;
-    DWORD dwNLSVersion;
-    DWORD dwDefinedVersion;
-    DWORD dwEffectiveId;
-    GUID guidCustomVersion;
-  } NLSVERSIONINFOEX,*LPNLSVERSIONINFOEX;
-
-  typedef LONG GEOID;
-  typedef DWORD GEOTYPE;
-  typedef DWORD GEOCLASS;
-
+typedef struct _nlsversioninfoex {
+  DWORD dwNLSVersionInfoSize;
+  DWORD dwNLSVersion;
+  DWORD dwDefinedVersion;
+  DWORD dwEffectiveId;
+  GUID guidCustomVersion;
+} NLSVERSIONINFOEX, *LPNLSVERSIONINFOEX;
+typedef LONG GEOID;
+typedef DWORD GEOTYPE;
+typedef DWORD GEOCLASS;
 #define GEOID_NOT_AVAILABLE -1
-
-  enum SYSGEOTYPE {
-    GEO_NATION = 0x0001,
-    GEO_LATITUDE = 0x0002,
-    GEO_LONGITUDE = 0x0003,
-    GEO_ISO2 = 0x0004,
-    GEO_ISO3 = 0x0005,
-    GEO_RFC1766 = 0x0006,
-    GEO_LCID = 0x0007,
-    GEO_FRIENDLYNAME= 0x0008,
-    GEO_OFFICIALNAME= 0x0009,
-    GEO_TIMEZONES = 0x000a,
-    GEO_OFFICIALLANGUAGES = 0x000b,
-    GEO_ISO_UN_NUMBER = 0x000c,
-    GEO_PARENT = 0x000d,
-    GEO_DIALINGCODE = 0x000e,
-    GEO_CURRENCYCODE= 0x000f,
-    GEO_CURRENCYSYMBOL= 0x0010,
+enum SYSGEOTYPE {
+  GEO_NATION = 0x0001,
+  GEO_LATITUDE = 0x0002,
+  GEO_LONGITUDE = 0x0003,
+  GEO_ISO2 = 0x0004,
+  GEO_ISO3 = 0x0005,
+  GEO_RFC1766 = 0x0006,
+  GEO_LCID = 0x0007,
+  GEO_FRIENDLYNAME = 0x0008,
+  GEO_OFFICIALNAME = 0x0009,
+  GEO_TIMEZONES = 0x000a,
+  GEO_OFFICIALLANGUAGES = 0x000b,
+  GEO_ISO_UN_NUMBER = 0x000c,
+  GEO_PARENT = 0x000d,
+  GEO_DIALINGCODE = 0x000e,
+  GEO_CURRENCYCODE = 0x000f,
+  GEO_CURRENCYSYMBOL = 0x0010,
 #if NTDDI_VERSION >= NTDDI_WIN10_RS3
-    GEO_NAME = 0x0011,
-    GEO_ID = 0x0012
+  GEO_NAME = 0x0011,
+  GEO_ID = 0x0012
 #endif
-  };
-
-  enum SYSGEOCLASS {
-    GEOCLASS_NATION = 16,
-    GEOCLASS_REGION = 14,
-    GEOCLASS_ALL = 0
-  };
-
+};
+enum SYSGEOCLASS {
+  GEOCLASS_NATION = 16,
+  GEOCLASS_REGION = 14,
+  GEOCLASS_ALL = 0
+};
 #if WINVER >= 0x0600
-  typedef enum _NORM_FORM {
-    NormalizationOther = 0,
-    NormalizationC = 0x1,
-    NormalizationD = 0x2,
-    NormalizationKC = 0x5,
-    NormalizationKD = 0x6
-  } NORM_FORM;
-
+typedef enum _NORM_FORM {
+  NormalizationOther = 0,
+  NormalizationC = 0x1,
+  NormalizationD = 0x2,
+  NormalizationKC = 0x5,
+  NormalizationKD = 0x6
+} NORM_FORM;
 #define IDN_ALLOW_UNASSIGNED 0x01
 #define IDN_USE_STD3_ASCII_RULES 0x02
 #define IDN_EMAIL_ADDRESS 0x04
 #define IDN_RAW_PUNYCODE 0x08
-
 #define VS_ALLOW_LATIN 0x0001
-
 #define GSS_ALLOW_INHERITED_COMMON 0x0001
 #endif
-
 #ifdef STRICT
-  typedef WINBOOL (CALLBACK *LANGUAGEGROUP_ENUMPROCA) (LGRPID, LPSTR, LPSTR, DWORD, LONG_PTR);
-  typedef WINBOOL (CALLBACK *LANGGROUPLOCALE_ENUMPROCA) (LGRPID, LCID, LPSTR, LONG_PTR);
-  typedef WINBOOL (CALLBACK *UILANGUAGE_ENUMPROCA) (LPSTR, LONG_PTR);
-  typedef WINBOOL (CALLBACK *CODEPAGE_ENUMPROCA) (LPSTR);
-  typedef WINBOOL (CALLBACK *DATEFMT_ENUMPROCA) (LPSTR);
-  typedef WINBOOL (CALLBACK *DATEFMT_ENUMPROCEXA) (LPSTR, CALID);
-  typedef WINBOOL (CALLBACK *TIMEFMT_ENUMPROCA) (LPSTR);
-  typedef WINBOOL (CALLBACK *CALINFO_ENUMPROCA) (LPSTR);
-  typedef WINBOOL (CALLBACK *CALINFO_ENUMPROCEXA) (LPSTR, CALID);
-  typedef WINBOOL (CALLBACK *LOCALE_ENUMPROCA) (LPSTR);
-  typedef WINBOOL (CALLBACK *LOCALE_ENUMPROCW) (LPWSTR);
-  typedef WINBOOL (CALLBACK *LANGUAGEGROUP_ENUMPROCW) (LGRPID, LPWSTR, LPWSTR, DWORD, LONG_PTR);
-  typedef WINBOOL (CALLBACK *LANGGROUPLOCALE_ENUMPROCW) (LGRPID, LCID, LPWSTR, LONG_PTR);
-  typedef WINBOOL (CALLBACK *UILANGUAGE_ENUMPROCW) (LPWSTR, LONG_PTR);
-  typedef WINBOOL (CALLBACK *CODEPAGE_ENUMPROCW) (LPWSTR);
-  typedef WINBOOL (CALLBACK *DATEFMT_ENUMPROCW) (LPWSTR);
-  typedef WINBOOL (CALLBACK *DATEFMT_ENUMPROCEXW) (LPWSTR, CALID);
-  typedef WINBOOL (CALLBACK *TIMEFMT_ENUMPROCW) (LPWSTR);
-  typedef WINBOOL (CALLBACK *CALINFO_ENUMPROCW) (LPWSTR);
-  typedef WINBOOL (CALLBACK *CALINFO_ENUMPROCEXW) (LPWSTR, CALID);
-  typedef WINBOOL (CALLBACK *GEO_ENUMPROC) (GEOID);
-  #if NTDDI_VERSION >= NTDDI_WIN10_RS3
-  typedef WINBOOL (CALLBACK *GEO_ENUMNAMEPROC) (PWSTR, LPARAM);
-  #endif
-#else
-  typedef FARPROC LANGUAGEGROUP_ENUMPROCA;
-  typedef FARPROC LANGGROUPLOCALE_ENUMPROCA;
-  typedef FARPROC UILANGUAGE_ENUMPROCA;
-  typedef FARPROC CODEPAGE_ENUMPROCA;
-  typedef FARPROC DATEFMT_ENUMPROCA;
-  typedef FARPROC DATEFMT_ENUMPROCEXA;
-  typedef FARPROC TIMEFMT_ENUMPROCA;
-  typedef FARPROC CALINFO_ENUMPROCA;
-  typedef FARPROC CALINFO_ENUMPROCEXA;
-  typedef FARPROC GEO_ENUMPROC;
-  typedef FARPROC LOCALE_ENUMPROCA;
-  typedef FARPROC LOCALE_ENUMPROCW;
-  typedef FARPROC LANGUAGEGROUP_ENUMPROCW;
-  typedef FARPROC LANGGROUPLOCALE_ENUMPROCW;
-  typedef FARPROC UILANGUAGE_ENUMPROCW;
-  typedef FARPROC CODEPAGE_ENUMPROCW;
-  typedef FARPROC DATEFMT_ENUMPROCW;
-  typedef FARPROC DATEFMT_ENUMPROCEXW;
-  typedef FARPROC TIMEFMT_ENUMPROCW;
-  typedef FARPROC CALINFO_ENUMPROCW;
-  typedef FARPROC CALINFO_ENUMPROCEXW;
-  #if NTDDI_VERSION >= NTDDI_WIN10_RS3
-  typedef FARPROC GEO_ENUMNAMEPROC;
-  #endif
+typedef WINBOOL(CALLBACK *LANGUAGEGROUP_ENUMPROCA)(LGRPID, LPSTR, LPSTR, DWORD,
+                                                   LONG_PTR);
+typedef WINBOOL(CALLBACK *LANGGROUPLOCALE_ENUMPROCA)(LGRPID, LCID, LPSTR,
+                                                     LONG_PTR);
+typedef WINBOOL(CALLBACK *UILANGUAGE_ENUMPROCA)(LPSTR, LONG_PTR);
+typedef WINBOOL(CALLBACK *CODEPAGE_ENUMPROCA)(LPSTR);
+typedef WINBOOL(CALLBACK *DATEFMT_ENUMPROCA)(LPSTR);
+typedef WINBOOL(CALLBACK *DATEFMT_ENUMPROCEXA)(LPSTR, CALID);
+typedef WINBOOL(CALLBACK *TIMEFMT_ENUMPROCA)(LPSTR);
+typedef WINBOOL(CALLBACK *CALINFO_ENUMPROCA)(LPSTR);
+typedef WINBOOL(CALLBACK *CALINFO_ENUMPROCEXA)(LPSTR, CALID);
+typedef WINBOOL(CALLBACK *LOCALE_ENUMPROCA)(LPSTR);
+typedef WINBOOL(CALLBACK *LOCALE_ENUMPROCW)(LPWSTR);
+typedef WINBOOL(CALLBACK *LANGUAGEGROUP_ENUMPROCW)(LGRPID, LPWSTR, LPWSTR,
+                                                   DWORD, LONG_PTR);
+typedef WINBOOL(CALLBACK *LANGGROUPLOCALE_ENUMPROCW)(LGRPID, LCID, LPWSTR,
+                                                     LONG_PTR);
+typedef WINBOOL(CALLBACK *UILANGUAGE_ENUMPROCW)(LPWSTR, LONG_PTR);
+typedef WINBOOL(CALLBACK *CODEPAGE_ENUMPROCW)(LPWSTR);
+typedef WINBOOL(CALLBACK *DATEFMT_ENUMPROCW)(LPWSTR);
+typedef WINBOOL(CALLBACK *DATEFMT_ENUMPROCEXW)(LPWSTR, CALID);
+typedef WINBOOL(CALLBACK *TIMEFMT_ENUMPROCW)(LPWSTR);
+typedef WINBOOL(CALLBACK *CALINFO_ENUMPROCW)(LPWSTR);
+typedef WINBOOL(CALLBACK *CALINFO_ENUMPROCEXW)(LPWSTR, CALID);
+typedef WINBOOL(CALLBACK *GEO_ENUMPROC)(GEOID);
+#if NTDDI_VERSION >= NTDDI_WIN10_RS3
+typedef WINBOOL(CALLBACK *GEO_ENUMNAMEPROC)(PWSTR, LPARAM);
 #endif
-
+#else
+typedef FARPROC LANGUAGEGROUP_ENUMPROCA;
+typedef FARPROC LANGGROUPLOCALE_ENUMPROCA;
+typedef FARPROC UILANGUAGE_ENUMPROCA;
+typedef FARPROC CODEPAGE_ENUMPROCA;
+typedef FARPROC DATEFMT_ENUMPROCA;
+typedef FARPROC DATEFMT_ENUMPROCEXA;
+typedef FARPROC TIMEFMT_ENUMPROCA;
+typedef FARPROC CALINFO_ENUMPROCA;
+typedef FARPROC CALINFO_ENUMPROCEXA;
+typedef FARPROC GEO_ENUMPROC;
+typedef FARPROC LOCALE_ENUMPROCA;
+typedef FARPROC LOCALE_ENUMPROCW;
+typedef FARPROC LANGUAGEGROUP_ENUMPROCW;
+typedef FARPROC LANGGROUPLOCALE_ENUMPROCW;
+typedef FARPROC UILANGUAGE_ENUMPROCW;
+typedef FARPROC CODEPAGE_ENUMPROCW;
+typedef FARPROC DATEFMT_ENUMPROCW;
+typedef FARPROC DATEFMT_ENUMPROCEXW;
+typedef FARPROC TIMEFMT_ENUMPROCW;
+typedef FARPROC CALINFO_ENUMPROCW;
+typedef FARPROC CALINFO_ENUMPROCEXW;
+#if NTDDI_VERSION >= NTDDI_WIN10_RS3
+typedef FARPROC GEO_ENUMNAMEPROC;
+#endif
+#endif
 #ifdef UNICODE
-
 #define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCW
 #define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCW
 #define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCW
@@ -890,7 +790,6 @@ extern "C" {
 #define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXW
 #define LOCALE_ENUMPROC LOCALE_ENUMPROCW
 #else
-
 #define LANGUAGEGROUP_ENUMPROC LANGUAGEGROUP_ENUMPROCA
 #define LANGGROUPLOCALE_ENUMPROC LANGGROUPLOCALE_ENUMPROCA
 #define UILANGUAGE_ENUMPROC UILANGUAGE_ENUMPROCA
@@ -902,98 +801,167 @@ extern "C" {
 #define CALINFO_ENUMPROCEX CALINFO_ENUMPROCEXA
 #define LOCALE_ENUMPROC LOCALE_ENUMPROCA
 #endif
-
-  typedef struct _FILEMUIINFO {
-    DWORD dwSize;
-    DWORD dwVersion;
-    DWORD dwFileType;
-    BYTE pChecksum[16];
-    BYTE pServiceChecksum[16];
-    DWORD dwLanguageNameOffset;
-    DWORD dwTypeIDMainSize;
-    DWORD dwTypeIDMainOffset;
-    DWORD dwTypeNameMainOffset;
-    DWORD dwTypeIDMUISize;
-    DWORD dwTypeIDMUIOffset;
-    DWORD dwTypeNameMUIOffset;
-    BYTE abBuffer[8];
-  } FILEMUIINFO,*PFILEMUIINFO;
-
+typedef struct _FILEMUIINFO {
+  DWORD dwSize;
+  DWORD dwVersion;
+  DWORD dwFileType;
+  BYTE pChecksum[16];
+  BYTE pServiceChecksum[16];
+  DWORD dwLanguageNameOffset;
+  DWORD dwTypeIDMainSize;
+  DWORD dwTypeIDMainOffset;
+  DWORD dwTypeNameMainOffset;
+  DWORD dwTypeIDMUISize;
+  DWORD dwTypeIDMUIOffset;
+  DWORD dwTypeNameMUIOffset;
+  BYTE abBuffer[8];
+} FILEMUIINFO, *PFILEMUIINFO;
 #ifndef NOAPISET
 #include <stringapiset.h>
 #endif
-
-#define IS_HIGH_SURROGATE(wch) (((wch) >= HIGH_SURROGATE_START) && ((wch) <= HIGH_SURROGATE_END))
-#define IS_LOW_SURROGATE(wch) (((wch) >= LOW_SURROGATE_START) && ((wch) <= LOW_SURROGATE_END))
-#define IS_SURROGATE_PAIR(hs, ls) (IS_HIGH_SURROGATE (hs) && IS_LOW_SURROGATE (ls))
-
-#define FILEMUIINFO_GET_CULTURE(pInfo) ((LPWSTR) ((pInfo->dwLanguageNameOffset>0)? (ULONG_PTR)pInfo+pInfo->dwLanguageNameOffset:NULL))
-#define FILEMUIINFO_GET_MAIN_TYPEIDS(pInfo) ((DWORD *) ((pInfo->dwTypeIDMainOffset>0)? (ULONG_PTR)pInfo+pInfo->dwTypeIDMainOffset:NULL))
-#define FILEMUIINFO_GET_MAIN_TYPEID(pInfo, iType) (((iType<pInfo->dwTypeIDMainSize)&& (pInfo->dwTypeIDMainOffset>0))? *((DWORD *) ((ULONG_PTR)pInfo+pInfo->dwTypeIDMainOffset)+iType):0)
-#define FILEMUIINFO_GET_MAIN_TYPENAMES(pInfo) ((LPWSTR) ((pInfo->dwTypeNameMainOffset>0)? (ULONG_PTR)pInfo+pInfo->dwTypeNameMainOffset:NULL))
-#define FILEMUIINFO_GET_MUI_TYPEIDS(pInfo) ((DWORD *) ((pInfo->dwTypeIDMUIOffset>0)? (ULONG_PTR)pInfo+pInfo->dwTypeIDMUIOffset:NULL))
-#define FILEMUIINFO_GET_MUI_TYPEID(pInfo, iType) (((iType<pInfo->dwTypeIDMUISize)&& (pInfo->dwTypeIDMUIOffset>0))? *((DWORD *) ((ULONG_PTR)pInfo+pInfo->dwTypeIDMUIOffset)+iType):0)
-#define FILEMUIINFO_GET_MUI_TYPENAMES(pInfo) ((LPWSTR) ((pInfo->dwTypeNameMUIOffset>0)? (ULONG_PTR)pInfo+pInfo->dwTypeNameMUIOffset:NULL))
-
-  WINBASEAPI WINBOOL WINAPI IsValidCodePage (UINT CodePage);
+#define IS_HIGH_SURROGATE(wch)                                                 \
+  (((wch) >= HIGH_SURROGATE_START) && ((wch) <= HIGH_SURROGATE_END))
+#define IS_LOW_SURROGATE(wch)                                                  \
+  (((wch) >= LOW_SURROGATE_START) && ((wch) <= LOW_SURROGATE_END))
+#define IS_SURROGATE_PAIR(hs, ls)                                              \
+  (IS_HIGH_SURROGATE(hs) && IS_LOW_SURROGATE(ls))
+#define FILEMUIINFO_GET_CULTURE(pInfo)                                         \
+  ((LPWSTR)((pInfo->dwLanguageNameOffset > 0)                                  \
+                ? (ULONG_PTR)pInfo + pInfo->dwLanguageNameOffset               \
+                : NULL))
+#define FILEMUIINFO_GET_MAIN_TYPEIDS(pInfo)                                    \
+  ((DWORD *)((pInfo->dwTypeIDMainOffset > 0)                                   \
+                 ? (ULONG_PTR)pInfo + pInfo->dwTypeIDMainOffset                \
+                 : NULL))
+#define FILEMUIINFO_GET_MAIN_TYPEID(pInfo, iType)                              \
+  (((iType < pInfo->dwTypeIDMainSize) && (pInfo->dwTypeIDMainOffset > 0))      \
+       ? *((DWORD *)((ULONG_PTR)pInfo + pInfo->dwTypeIDMainOffset) + iType)    \
+       : 0)
+#define FILEMUIINFO_GET_MAIN_TYPENAMES(pInfo)                                  \
+  ((LPWSTR)((pInfo->dwTypeNameMainOffset > 0)                                  \
+                ? (ULONG_PTR)pInfo + pInfo->dwTypeNameMainOffset               \
+                : NULL))
+#define FILEMUIINFO_GET_MUI_TYPEIDS(pInfo)                                     \
+  ((DWORD *)((pInfo->dwTypeIDMUIOffset > 0)                                    \
+                 ? (ULONG_PTR)pInfo + pInfo->dwTypeIDMUIOffset                 \
+                 : NULL))
+#define FILEMUIINFO_GET_MUI_TYPEID(pInfo, iType)                               \
+  (((iType < pInfo->dwTypeIDMUISize) && (pInfo->dwTypeIDMUIOffset > 0))        \
+       ? *((DWORD *)((ULONG_PTR)pInfo + pInfo->dwTypeIDMUIOffset) + iType)     \
+       : 0)
+#define FILEMUIINFO_GET_MUI_TYPENAMES(pInfo)                                   \
+  ((LPWSTR)((pInfo->dwTypeNameMUIOffset > 0)                                   \
+                ? (ULONG_PTR)pInfo + pInfo->dwTypeNameMUIOffset                \
+                : NULL))
+WINBASEAPI WINBOOL WINAPI IsValidCodePage(UINT CodePage);
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  WINBASEAPI UINT WINAPI GetACP (void);
-  WINBASEAPI WINBOOL WINAPI IsDBCSLeadByte (BYTE TestChar);
-  WINBASEAPI WINBOOL WINAPI IsDBCSLeadByteEx (UINT CodePage, BYTE TestChar);
-  WINBASEAPI WINBOOL WINAPI IsNLSDefinedString (NLS_FUNCTION Function, DWORD dwFlags, LPNLSVERSIONINFO lpVersionInformation, LPCWSTR lpString, INT cchStr);
-  WINBASEAPI int WINAPI GetLocaleInfoW (LCID Locale, LCTYPE LCType, LPWSTR lpLCData, int cchData);
-  WINBASEAPI int WINAPI GetLocaleInfoA (LCID Locale, LCTYPE LCType, LPSTR lpLCData, int cchData);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+WINBASEAPI UINT WINAPI GetACP(void);
+WINBASEAPI WINBOOL WINAPI IsDBCSLeadByte(BYTE TestChar);
+WINBASEAPI WINBOOL WINAPI IsDBCSLeadByteEx(UINT CodePage, BYTE TestChar);
+WINBASEAPI WINBOOL WINAPI IsNLSDefinedString(
+    NLS_FUNCTION Function, DWORD dwFlags, LPNLSVERSIONINFO lpVersionInformation,
+    LPCWSTR lpString, INT cchStr);
+WINBASEAPI int WINAPI GetLocaleInfoW(LCID Locale, LCTYPE LCType,
+                                     LPWSTR lpLCData, int cchData);
+WINBASEAPI int WINAPI GetLocaleInfoA(LCID Locale, LCTYPE LCType, LPSTR lpLCData,
+                                     int cchData);
 #ifndef UNICODE
 #define GetLocaleInfo GetLocaleInfoA
 #else
 #define GetLocaleInfo GetLocaleInfoW
 #endif
-
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINBASEAPI UINT WINAPI GetOEMCP (void);
-  WINBASEAPI int WINAPI CompareStringA (LCID Locale, DWORD dwCmpFlags, PCNZCH lpString1, int cchCount1, PCNZCH lpString2, int cchCount2);
-  WINBASEAPI int WINAPI LCMapStringW (LCID Locale, DWORD dwMapFlags, LPCWSTR lpSrcStr, int cchSrc, LPWSTR lpDestStr, int cchDest);
-  WINBASEAPI int WINAPI LCMapStringA (LCID Locale, DWORD dwMapFlags, LPCSTR lpSrcStr, int cchSrc, LPSTR lpDestStr, int cchDest);
-  WINBASEAPI int WINAPI GetNumberFormatA (LCID Locale, DWORD dwFlags, LPCSTR lpValue, CONST NUMBERFMTA *lpFormat, LPSTR lpNumberStr, int cchNumber);
-  WINBASEAPI int WINAPI GetNumberFormatW (LCID Locale, DWORD dwFlags, LPCWSTR lpValue, CONST NUMBERFMTW *lpFormat, LPWSTR lpNumberStr, int cchNumber);
-  WINBASEAPI int WINAPI GetCurrencyFormatA (LCID Locale, DWORD dwFlags, LPCSTR lpValue, CONST CURRENCYFMTA *lpFormat, LPSTR lpCurrencyStr, int cchCurrency);
-  WINBASEAPI int WINAPI GetCurrencyFormatW (LCID Locale, DWORD dwFlags, LPCWSTR lpValue, CONST CURRENCYFMTW *lpFormat, LPWSTR lpCurrencyStr, int cchCurrency);
-  WINBASEAPI WINBOOL WINAPI EnumCalendarInfoA (CALINFO_ENUMPROCA lpCalInfoEnumProc, LCID Locale, CALID Calendar, CALTYPE CalType);
-  WINBASEAPI WINBOOL WINAPI EnumCalendarInfoW (CALINFO_ENUMPROCW lpCalInfoEnumProc, LCID Locale, CALID Calendar, CALTYPE CalType);
-  WINBASEAPI WINBOOL WINAPI EnumCalendarInfoExA (CALINFO_ENUMPROCEXA lpCalInfoEnumProcEx, LCID Locale, CALID Calendar, CALTYPE CalType);
-  WINBASEAPI WINBOOL WINAPI EnumCalendarInfoExW (CALINFO_ENUMPROCEXW lpCalInfoEnumProcEx, LCID Locale, CALID Calendar, CALTYPE CalType);
-  WINBASEAPI WINBOOL WINAPI EnumTimeFormatsA (TIMEFMT_ENUMPROCA lpTimeFmtEnumProc, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumTimeFormatsW (TIMEFMT_ENUMPROCW lpTimeFmtEnumProc, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumDateFormatsA (DATEFMT_ENUMPROCA lpDateFmtEnumProc, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumDateFormatsW (DATEFMT_ENUMPROCW lpDateFmtEnumProc, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumDateFormatsExA (DATEFMT_ENUMPROCEXA lpDateFmtEnumProcEx, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumDateFormatsExW (DATEFMT_ENUMPROCEXW lpDateFmtEnumProcEx, LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI IsValidLanguageGroup (LGRPID LanguageGroup, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI GetNLSVersion (NLS_FUNCTION Function, LCID Locale, LPNLSVERSIONINFO lpVersionInformation);
-  WINBASEAPI WINBOOL WINAPI IsValidLocale (LCID Locale, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI SetLocaleInfoA (LCID Locale, LCTYPE LCType, LPCSTR lpLCData);
-  WINBASEAPI WINBOOL WINAPI SetLocaleInfoW (LCID Locale, LCTYPE LCType, LPCWSTR lpLCData);
-  WINBASEAPI int WINAPI GetCalendarInfoA (LCID Locale, CALID Calendar, CALTYPE CalType, LPSTR lpCalData, int cchData, LPDWORD lpValue);
-  WINBASEAPI int WINAPI GetCalendarInfoW (LCID Locale, CALID Calendar, CALTYPE CalType, LPWSTR lpCalData, int cchData, LPDWORD lpValue);
-  WINBASEAPI WINBOOL WINAPI SetCalendarInfoA (LCID Locale, CALID Calendar, CALTYPE CalType, LPCSTR lpCalData);
-  WINBASEAPI WINBOOL WINAPI SetCalendarInfoW (LCID Locale, CALID Calendar, CALTYPE CalType, LPCWSTR lpCalData);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINBASEAPI UINT WINAPI GetOEMCP(void);
+WINBASEAPI int WINAPI CompareStringA(LCID Locale, DWORD dwCmpFlags,
+                                     PCNZCH lpString1, int cchCount1,
+                                     PCNZCH lpString2, int cchCount2);
+WINBASEAPI int WINAPI LCMapStringW(LCID Locale, DWORD dwMapFlags,
+                                   LPCWSTR lpSrcStr, int cchSrc,
+                                   LPWSTR lpDestStr, int cchDest);
+WINBASEAPI int WINAPI LCMapStringA(LCID Locale, DWORD dwMapFlags,
+                                   LPCSTR lpSrcStr, int cchSrc, LPSTR lpDestStr,
+                                   int cchDest);
+WINBASEAPI int WINAPI GetNumberFormatA(LCID Locale, DWORD dwFlags,
+                                       LPCSTR lpValue,
+                                       CONST NUMBERFMTA *lpFormat,
+                                       LPSTR lpNumberStr, int cchNumber);
+WINBASEAPI int WINAPI GetNumberFormatW(LCID Locale, DWORD dwFlags,
+                                       LPCWSTR lpValue,
+                                       CONST NUMBERFMTW *lpFormat,
+                                       LPWSTR lpNumberStr, int cchNumber);
+WINBASEAPI int WINAPI GetCurrencyFormatA(LCID Locale, DWORD dwFlags,
+                                         LPCSTR lpValue,
+                                         CONST CURRENCYFMTA *lpFormat,
+                                         LPSTR lpCurrencyStr, int cchCurrency);
+WINBASEAPI int WINAPI GetCurrencyFormatW(LCID Locale, DWORD dwFlags,
+                                         LPCWSTR lpValue,
+                                         CONST CURRENCYFMTW *lpFormat,
+                                         LPWSTR lpCurrencyStr, int cchCurrency);
+WINBASEAPI WINBOOL WINAPI EnumCalendarInfoA(CALINFO_ENUMPROCA lpCalInfoEnumProc,
+                                            LCID Locale, CALID Calendar,
+                                            CALTYPE CalType);
+WINBASEAPI WINBOOL WINAPI EnumCalendarInfoW(CALINFO_ENUMPROCW lpCalInfoEnumProc,
+                                            LCID Locale, CALID Calendar,
+                                            CALTYPE CalType);
+WINBASEAPI WINBOOL WINAPI
+EnumCalendarInfoExA(CALINFO_ENUMPROCEXA lpCalInfoEnumProcEx, LCID Locale,
+                    CALID Calendar, CALTYPE CalType);
+WINBASEAPI WINBOOL WINAPI
+EnumCalendarInfoExW(CALINFO_ENUMPROCEXW lpCalInfoEnumProcEx, LCID Locale,
+                    CALID Calendar, CALTYPE CalType);
+WINBASEAPI WINBOOL WINAPI EnumTimeFormatsA(TIMEFMT_ENUMPROCA lpTimeFmtEnumProc,
+                                           LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW lpTimeFmtEnumProc,
+                                           LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumDateFormatsA(DATEFMT_ENUMPROCA lpDateFmtEnumProc,
+                                           LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumDateFormatsW(DATEFMT_ENUMPROCW lpDateFmtEnumProc,
+                                           LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumDateFormatsExA(
+    DATEFMT_ENUMPROCEXA lpDateFmtEnumProcEx, LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumDateFormatsExW(
+    DATEFMT_ENUMPROCEXW lpDateFmtEnumProcEx, LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI IsValidLanguageGroup(LGRPID LanguageGroup,
+                                               DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI GetNLSVersion(NLS_FUNCTION Function, LCID Locale,
+                                        LPNLSVERSIONINFO lpVersionInformation);
+WINBASEAPI WINBOOL WINAPI IsValidLocale(LCID Locale, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI SetLocaleInfoA(LCID Locale, LCTYPE LCType,
+                                         LPCSTR lpLCData);
+WINBASEAPI WINBOOL WINAPI SetLocaleInfoW(LCID Locale, LCTYPE LCType,
+                                         LPCWSTR lpLCData);
+WINBASEAPI int WINAPI GetCalendarInfoA(LCID Locale, CALID Calendar,
+                                       CALTYPE CalType, LPSTR lpCalData,
+                                       int cchData, LPDWORD lpValue);
+WINBASEAPI int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar,
+                                       CALTYPE CalType, LPWSTR lpCalData,
+                                       int cchData, LPDWORD lpValue);
+WINBASEAPI WINBOOL WINAPI SetCalendarInfoA(LCID Locale, CALID Calendar,
+                                           CALTYPE CalType, LPCSTR lpCalData);
+WINBASEAPI WINBOOL WINAPI SetCalendarInfoW(LCID Locale, CALID Calendar,
+                                           CALTYPE CalType, LPCWSTR lpCalData);
 #if WINVER >= 0x0600
-  WINBASEAPI int WINAPI GetDurationFormat (LCID Locale, DWORD dwFlags, CONST SYSTEMTIME *lpDuration, ULONGLONG ullDuration, LPCWSTR lpFormat, LPWSTR lpDurationStr, int cchDuration);
-  WINBASEAPI int WINAPI FindNLSString (LCID Locale, DWORD dwFindNLSStringFlags, LPCWSTR lpStringSource, int cchSource, LPCWSTR lpStringValue, int cchValue, LPINT pcchFound);
+WINBASEAPI int WINAPI GetDurationFormat(LCID Locale, DWORD dwFlags,
+                                        CONST SYSTEMTIME *lpDuration,
+                                        ULONGLONG ullDuration, LPCWSTR lpFormat,
+                                        LPWSTR lpDurationStr, int cchDuration);
+WINBASEAPI int WINAPI FindNLSString(LCID Locale, DWORD dwFindNLSStringFlags,
+                                    LPCWSTR lpStringSource, int cchSource,
+                                    LPCWSTR lpStringValue, int cchValue,
+                                    LPINT pcchFound);
 #endif
 #if WINVER >= 0x0601
-  WINBASEAPI WINBOOL WINAPI LoadStringByReference (DWORD Flags, PCWSTR Language, PCWSTR SourceString, PWSTR Buffer, ULONG cchBuffer, PCWSTR Directory, PULONG pcchBufferOut);
+WINBASEAPI WINBOOL WINAPI LoadStringByReference(DWORD Flags, PCWSTR Language,
+                                                PCWSTR SourceString,
+                                                PWSTR Buffer, ULONG cchBuffer,
+                                                PCWSTR Directory,
+                                                PULONG pcchBufferOut);
 #endif
-
 #define SetLocaleInfo __MINGW_NAME_AW(SetLocaleInfo)
 #define GetCalendarInfo __MINGW_NAME_AW(GetCalendarInfo)
 #define SetCalendarInfo __MINGW_NAME_AW(SetCalendarInfo)
-
 #if WINVER >= 0x0601
 #define MUI_FORMAT_REG_COMPAT 0x0001
 #define MUI_FORMAT_INF_COMPAT 0x0002
@@ -1001,14 +969,12 @@ extern "C" {
 #define MUI_SKIP_STRING_CACHE 0x0008
 #define MUI_IMMUTABLE_LOOKUP 0x0010
 #endif
-
 #ifndef UNICODE
 #define CompareString CompareStringA
 #define LCMapString LCMapStringA
 #else
 #define LCMapString LCMapStringW
 #endif
-
 #define GetNumberFormat __MINGW_NAME_AW(GetNumberFormat)
 #define GetCurrencyFormat __MINGW_NAME_AW(GetCurrencyFormat)
 #define EnumCalendarInfo __MINGW_NAME_AW(EnumCalendarInfo)
@@ -1016,149 +982,241 @@ extern "C" {
 #define EnumTimeFormats __MINGW_NAME_AW(EnumTimeFormats)
 #define EnumDateFormats __MINGW_NAME_AW(EnumDateFormats)
 #define EnumDateFormatsEx __MINGW_NAME_AW(EnumDateFormatsEx)
-
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  WINBASEAPI int WINAPI GetGeoInfoA (GEOID Location, GEOTYPE GeoType, LPSTR lpGeoData, int cchData, LANGID LangId);
-  WINBASEAPI int WINAPI GetGeoInfoW (GEOID Location, GEOTYPE GeoType, LPWSTR lpGeoData, int cchData, LANGID LangId);
-  WINBASEAPI WINBOOL WINAPI EnumSystemGeoID (GEOCLASS GeoClass, GEOID ParentGeoId, GEO_ENUMPROC lpGeoEnumProc);
-  WINBASEAPI GEOID WINAPI GetUserGeoID (GEOCLASS GeoClass);
-  WINBASEAPI int WINAPI GetUserDefaultGeoName (LPWSTR geoName, int geoNameCount);
-  WINBASEAPI WINBOOL WINAPI GetCPInfo (UINT CodePage, LPCPINFO lpCPInfo);
-  WINBASEAPI WINBOOL WINAPI GetCPInfoExA (UINT CodePage, DWORD dwFlags, LPCPINFOEXA lpCPInfoEx);
-  WINBASEAPI WINBOOL WINAPI GetCPInfoExW (UINT CodePage, DWORD dwFlags, LPCPINFOEXW lpCPInfoEx);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+WINBASEAPI int WINAPI GetGeoInfoA(GEOID Location, GEOTYPE GeoType,
+                                  LPSTR lpGeoData, int cchData, LANGID LangId);
+WINBASEAPI int WINAPI GetGeoInfoW(GEOID Location, GEOTYPE GeoType,
+                                  LPWSTR lpGeoData, int cchData, LANGID LangId);
+WINBASEAPI WINBOOL WINAPI EnumSystemGeoID(GEOCLASS GeoClass, GEOID ParentGeoId,
+                                          GEO_ENUMPROC lpGeoEnumProc);
+WINBASEAPI GEOID WINAPI GetUserGeoID(GEOCLASS GeoClass);
+WINBASEAPI int WINAPI GetUserDefaultGeoName(LPWSTR geoName, int geoNameCount);
+WINBASEAPI WINBOOL WINAPI GetCPInfo(UINT CodePage, LPCPINFO lpCPInfo);
+WINBASEAPI WINBOOL WINAPI GetCPInfoExA(UINT CodePage, DWORD dwFlags,
+                                       LPCPINFOEXA lpCPInfoEx);
+WINBASEAPI WINBOOL WINAPI GetCPInfoExW(UINT CodePage, DWORD dwFlags,
+                                       LPCPINFOEXW lpCPInfoEx);
 #if WINVER >= 0x0600
-  WINBASEAPI int WINAPI LCIDToLocaleName (LCID Locale, LPWSTR lpName, int cchName, DWORD dwFlags);
-  WINBASEAPI LCID WINAPI LocaleNameToLCID (LPCWSTR lpName, DWORD dwFlags);
+WINBASEAPI int WINAPI LCIDToLocaleName(LCID Locale, LPWSTR lpName, int cchName,
+                                       DWORD dwFlags);
+WINBASEAPI LCID WINAPI LocaleNameToLCID(LPCWSTR lpName, DWORD dwFlags);
 #endif
-
 #if NTDDI_VERSION >= NTDDI_WIN10_RS3
-  WINBASEAPI int WINAPI GetGeoInfoEx (PWSTR location, GEOTYPE geoType, PWSTR geoData, int geoDataCount);
-  WINBASEAPI WINBOOL WINAPI SetUserGeoName (PWSTR geoName);
+WINBASEAPI int WINAPI GetGeoInfoEx(PWSTR location, GEOTYPE geoType,
+                                   PWSTR geoData, int geoDataCount);
+WINBASEAPI WINBOOL WINAPI SetUserGeoName(PWSTR geoName);
 #endif
-
 #define GetGeoInfo __MINGW_NAME_AW(GetGeoInfo)
 #define GetCPInfoEx __MINGW_NAME_AW(GetCPInfoEx)
-
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
-  WINBASEAPI WINBOOL WINAPI SetUserGeoID (GEOID GeoId);
-  WINBASEAPI LCID WINAPI ConvertDefaultLocale (LCID Locale);
-  WINBASEAPI LCID WINAPI GetThreadLocale (void);
-  WINBASEAPI WINBOOL WINAPI SetThreadLocale (LCID Locale);
-  WINBASEAPI LANGID WINAPI GetSystemDefaultUILanguage (void);
-  WINBASEAPI LANGID WINAPI GetSystemDefaultLangID (void);
-  WINBASEAPI LCID WINAPI GetSystemDefaultLCID (void);
-  WINBASEAPI LCID WINAPI GetUserDefaultLCID (void);
-  WINBASEAPI LANGID WINAPI SetThreadUILanguage (LANGID LangId);
-  WINBASEAPI WINBOOL WINAPI GetStringTypeA (LCID Locale, DWORD dwInfoType, LPCSTR lpSrcStr, int cchSrc, LPWORD lpCharType);
-  WINBASEAPI int WINAPI FoldStringA (DWORD dwMapFlags, LPCSTR lpSrcStr, int cchSrc, LPSTR lpDestStr, int cchDest);
-  WINBASEAPI WINBOOL WINAPI EnumSystemLocalesA (LOCALE_ENUMPROCA lpLocaleEnumProc, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumSystemLocalesW (LOCALE_ENUMPROCW lpLocaleEnumProc, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumSystemLanguageGroupsA (LANGUAGEGROUP_ENUMPROCA lpLanguageGroupEnumProc, DWORD dwFlags, LONG_PTR lParam);
-  WINBASEAPI WINBOOL WINAPI EnumSystemLanguageGroupsW (LANGUAGEGROUP_ENUMPROCW lpLanguageGroupEnumProc, DWORD dwFlags, LONG_PTR lParam);
-  WINBASEAPI WINBOOL WINAPI EnumLanguageGroupLocalesA (LANGGROUPLOCALE_ENUMPROCA lpLangGroupLocaleEnumProc, LGRPID LanguageGroup, DWORD dwFlags, LONG_PTR lParam);
-  WINBASEAPI WINBOOL WINAPI EnumLanguageGroupLocalesW (LANGGROUPLOCALE_ENUMPROCW lpLangGroupLocaleEnumProc, LGRPID LanguageGroup, DWORD dwFlags, LONG_PTR lParam);
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+WINBASEAPI WINBOOL WINAPI SetUserGeoID(GEOID GeoId);
+WINBASEAPI LCID WINAPI ConvertDefaultLocale(LCID Locale);
+WINBASEAPI LCID WINAPI GetThreadLocale(void);
+WINBASEAPI WINBOOL WINAPI SetThreadLocale(LCID Locale);
+WINBASEAPI LANGID WINAPI GetSystemDefaultUILanguage(void);
+WINBASEAPI LANGID WINAPI GetSystemDefaultLangID(void);
+WINBASEAPI LCID WINAPI GetSystemDefaultLCID(void);
+WINBASEAPI LCID WINAPI GetUserDefaultLCID(void);
+WINBASEAPI LANGID WINAPI SetThreadUILanguage(LANGID LangId);
+WINBASEAPI WINBOOL WINAPI GetStringTypeA(LCID Locale, DWORD dwInfoType,
+                                         LPCSTR lpSrcStr, int cchSrc,
+                                         LPWORD lpCharType);
+WINBASEAPI int WINAPI FoldStringA(DWORD dwMapFlags, LPCSTR lpSrcStr, int cchSrc,
+                                  LPSTR lpDestStr, int cchDest);
+WINBASEAPI WINBOOL WINAPI EnumSystemLocalesA(LOCALE_ENUMPROCA lpLocaleEnumProc,
+                                             DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI EnumSystemLocalesW(LOCALE_ENUMPROCW lpLocaleEnumProc,
+                                             DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI
+EnumSystemLanguageGroupsA(LANGUAGEGROUP_ENUMPROCA lpLanguageGroupEnumProc,
+                          DWORD dwFlags, LONG_PTR lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumSystemLanguageGroupsW(LANGUAGEGROUP_ENUMPROCW lpLanguageGroupEnumProc,
+                          DWORD dwFlags, LONG_PTR lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumLanguageGroupLocalesA(LANGGROUPLOCALE_ENUMPROCA lpLangGroupLocaleEnumProc,
+                          LGRPID LanguageGroup, DWORD dwFlags, LONG_PTR lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumLanguageGroupLocalesW(LANGGROUPLOCALE_ENUMPROCW lpLangGroupLocaleEnumProc,
+                          LGRPID LanguageGroup, DWORD dwFlags, LONG_PTR lParam);
 #if WINVER >= 0x0600
-  WINBASEAPI LANGID WINAPI GetThreadUILanguage (void);
-  WINBASEAPI WINBOOL WINAPI GetProcessPreferredUILanguages (DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer, PULONG pcchLanguagesBuffer);
-  WINBASEAPI WINBOOL WINAPI SetProcessPreferredUILanguages (DWORD dwFlags, PCZZWSTR pwszLanguagesBuffer, PULONG pulNumLanguages);
-  WINBASEAPI WINBOOL WINAPI GetUserPreferredUILanguages (DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer, PULONG pcchLanguagesBuffer);
-  WINBASEAPI WINBOOL WINAPI GetSystemPreferredUILanguages (DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer, PULONG pcchLanguagesBuffer);
-  WINBASEAPI WINBOOL WINAPI GetThreadPreferredUILanguages (DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer, PULONG pcchLanguagesBuffer);
-  WINBASEAPI WINBOOL WINAPI SetThreadPreferredUILanguages (DWORD dwFlags, PCZZWSTR pwszLanguagesBuffer, PULONG pulNumLanguages);
-  WINBASEAPI WINBOOL WINAPI GetFileMUIInfo (DWORD dwFlags, PCWSTR pcwszFilePath, PFILEMUIINFO pFileMUIInfo, DWORD *pcbFileMUIInfo);
-  WINBASEAPI WINBOOL WINAPI GetFileMUIPath (DWORD dwFlags, PCWSTR pcwszFilePath, PWSTR pwszLanguage, PULONG pcchLanguage, PWSTR pwszFileMUIPath, PULONG pcchFileMUIPath, PULONGLONG pululEnumerator);
-  WINBASEAPI WINBOOL WINAPI GetUILanguageInfo (DWORD dwFlags, PCZZWSTR pwmszLanguage, PZZWSTR pwszFallbackLanguages, PDWORD pcchFallbackLanguages, PDWORD pAttributes);
-  WINBASEAPI WINBOOL WINAPI NotifyUILanguageChange (DWORD dwFlags, PCWSTR pcwstrNewLanguage, PCWSTR pcwstrPreviousLanguage, DWORD dwReserved, PDWORD pdwStatusRtrn);
+WINBASEAPI LANGID WINAPI GetThreadUILanguage(void);
+WINBASEAPI WINBOOL WINAPI GetProcessPreferredUILanguages(
+    DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer,
+    PULONG pcchLanguagesBuffer);
+WINBASEAPI WINBOOL WINAPI SetProcessPreferredUILanguages(
+    DWORD dwFlags, PCZZWSTR pwszLanguagesBuffer, PULONG pulNumLanguages);
+WINBASEAPI WINBOOL WINAPI GetUserPreferredUILanguages(
+    DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer,
+    PULONG pcchLanguagesBuffer);
+WINBASEAPI WINBOOL WINAPI GetSystemPreferredUILanguages(
+    DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer,
+    PULONG pcchLanguagesBuffer);
+WINBASEAPI WINBOOL WINAPI GetThreadPreferredUILanguages(
+    DWORD dwFlags, PULONG pulNumLanguages, PZZWSTR pwszLanguagesBuffer,
+    PULONG pcchLanguagesBuffer);
+WINBASEAPI WINBOOL WINAPI SetThreadPreferredUILanguages(
+    DWORD dwFlags, PCZZWSTR pwszLanguagesBuffer, PULONG pulNumLanguages);
+WINBASEAPI WINBOOL WINAPI GetFileMUIInfo(DWORD dwFlags, PCWSTR pcwszFilePath,
+                                         PFILEMUIINFO pFileMUIInfo,
+                                         DWORD *pcbFileMUIInfo);
+WINBASEAPI WINBOOL WINAPI GetFileMUIPath(DWORD dwFlags, PCWSTR pcwszFilePath,
+                                         PWSTR pwszLanguage,
+                                         PULONG pcchLanguage,
+                                         PWSTR pwszFileMUIPath,
+                                         PULONG pcchFileMUIPath,
+                                         PULONGLONG pululEnumerator);
+WINBASEAPI WINBOOL WINAPI GetUILanguageInfo(DWORD dwFlags,
+                                            PCZZWSTR pwmszLanguage,
+                                            PZZWSTR pwszFallbackLanguages,
+                                            PDWORD pcchFallbackLanguages,
+                                            PDWORD pAttributes);
+WINBASEAPI WINBOOL WINAPI NotifyUILanguageChange(DWORD dwFlags,
+                                                 PCWSTR pcwstrNewLanguage,
+                                                 PCWSTR pcwstrPreviousLanguage,
+                                                 DWORD dwReserved,
+                                                 PDWORD pdwStatusRtrn);
 #endif
-
 #ifndef UNICODE
 #define FoldString FoldStringA
 #endif
-
 #define EnumSystemLocales __MINGW_NAME_AW(EnumSystemLocales)
 #define EnumSystemLanguageGroups __MINGW_NAME_AW(EnumSystemLanguageGroups)
 #define EnumLanguageGroupLocales __MINGW_NAME_AW(EnumLanguageGroupLocales)
 #define EnumUILanguages __MINGW_NAME_AW(EnumUILanguages)
-
 #if NTDDI_VERSION >= NTDDI_WIN10_RS3
-  WINBASEAPI WINBOOL WINAPI EnumSystemGeoNames (GEOCLASS geoClass, GEO_ENUMNAMEPROC geoEnumProc, LPARAM data);
+WINBASEAPI WINBOOL WINAPI EnumSystemGeoNames(GEOCLASS geoClass,
+                                             GEO_ENUMNAMEPROC geoEnumProc,
+                                             LPARAM data);
 #endif
-
 #if NTDDI_VERSION >= NTDDI_WIN10_VB
-  DECLARE_HANDLE(HSAVEDUILANGUAGES);
-  WINBASEAPI WINBOOL WINAPI SetThreadPreferredUILanguages2 (ULONG flags, PCZZWSTR languages, PULONG numLanguagesSet, HSAVEDUILANGUAGES *snapshot);
-  WINBASEAPI void WINAPI RestoreThreadPreferredUILanguages (const HSAVEDUILANGUAGES snapshot);
+DECLARE_HANDLE(HSAVEDUILANGUAGES);
+WINBASEAPI WINBOOL WINAPI SetThreadPreferredUILanguages2(
+    ULONG flags, PCZZWSTR languages, PULONG numLanguagesSet,
+    HSAVEDUILANGUAGES *snapshot);
+WINBASEAPI void WINAPI
+RestoreThreadPreferredUILanguages(const HSAVEDUILANGUAGES snapshot);
 #endif /* NTDDI_WIN10_VB */
-
 #endif
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_APP)
-  WINBASEAPI WINBOOL WINAPI GetStringTypeExA (LCID Locale, DWORD dwInfoType, LPCSTR lpSrcStr, int cchSrc, LPWORD lpCharType);
-  WINBASEAPI LANGID WINAPI GetUserDefaultUILanguage (void);
-  WINBASEAPI WINBOOL WINAPI EnumUILanguagesA (UILANGUAGE_ENUMPROCA lpUILanguageEnumProc, DWORD dwFlags, LONG_PTR lParam);
-  WINBASEAPI WINBOOL WINAPI EnumUILanguagesW (UILANGUAGE_ENUMPROCW lpUILanguageEnumProc, DWORD dwFlags, LONG_PTR lParam);
-  WINBASEAPI WINBOOL WINAPI EnumSystemCodePagesA (CODEPAGE_ENUMPROCA lpCodePageEnumProc, DWORD dwFlags);
-  WINBASEAPI WINBOOL WINAPI EnumSystemCodePagesW (CODEPAGE_ENUMPROCW lpCodePageEnumProc, DWORD dwFlags);
-  WINBASEAPI LANGID WINAPI GetUserDefaultLangID (void);
-
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+WINBASEAPI WINBOOL WINAPI GetStringTypeExA(LCID Locale, DWORD dwInfoType,
+                                           LPCSTR lpSrcStr, int cchSrc,
+                                           LPWORD lpCharType);
+WINBASEAPI LANGID WINAPI GetUserDefaultUILanguage(void);
+WINBASEAPI WINBOOL WINAPI EnumUILanguagesA(
+    UILANGUAGE_ENUMPROCA lpUILanguageEnumProc, DWORD dwFlags, LONG_PTR lParam);
+WINBASEAPI WINBOOL WINAPI EnumUILanguagesW(
+    UILANGUAGE_ENUMPROCW lpUILanguageEnumProc, DWORD dwFlags, LONG_PTR lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumSystemCodePagesA(CODEPAGE_ENUMPROCA lpCodePageEnumProc, DWORD dwFlags);
+WINBASEAPI WINBOOL WINAPI
+EnumSystemCodePagesW(CODEPAGE_ENUMPROCW lpCodePageEnumProc, DWORD dwFlags);
+WINBASEAPI LANGID WINAPI GetUserDefaultLangID(void);
 #ifndef UNICODE
 #define GetStringTypeEx GetStringTypeExA
 #endif
-
 #define EnumSystemCodePages __MINGW_NAME_AW(EnumSystemCodePages)
-
 #if WINVER >= 0x0600
-
 #define LOCALE_NAME_USER_DEFAULT NULL
 #define LOCALE_NAME_INVARIANT L""
 #define LOCALE_NAME_SYSTEM_DEFAULT L"!x-sys-default-locale"
-
-  typedef WINBOOL (CALLBACK *CALINFO_ENUMPROCEXEX) (LPWSTR, CALID, LPWSTR, LPARAM);
-  typedef WINBOOL (CALLBACK *DATEFMT_ENUMPROCEXEX) (LPWSTR, CALID, LPARAM);
-  typedef WINBOOL (CALLBACK *TIMEFMT_ENUMPROCEX) (LPWSTR, LPARAM);
-  typedef WINBOOL (CALLBACK *LOCALE_ENUMPROCEX) (LPWSTR, DWORD, LPARAM);
-
-  WINNORMALIZEAPI int WINAPI NormalizeString (NORM_FORM NormForm, LPCWSTR lpSrcString, int cwSrcLength, LPWSTR lpDstString, int cwDstLength);
-  WINNORMALIZEAPI WINBOOL WINAPI IsNormalizedString (NORM_FORM NormForm, LPCWSTR lpString, int cwLength);
-  WINNORMALIZEAPI int WINAPI IdnToAscii (DWORD dwFlags, LPCWSTR lpUnicodeCharStr, int cchUnicodeChar, LPWSTR lpASCIICharStr, int cchASCIIChar);
-  WINNORMALIZEAPI int WINAPI IdnToNameprepUnicode (DWORD dwFlags, LPCWSTR lpUnicodeCharStr, int cchUnicodeChar, LPWSTR lpNameprepCharStr, int cchNameprepChar);
-  WINNORMALIZEAPI int WINAPI IdnToUnicode (DWORD dwFlags, LPCWSTR lpASCIICharStr, int cchASCIIChar, LPWSTR lpUnicodeCharStr, int cchUnicodeChar);
-
-  WINBASEAPI WINBOOL WINAPI VerifyScripts (DWORD dwFlags, LPCWSTR lpLocaleScripts, int cchLocaleScripts, LPCWSTR lpTestScripts, int cchTestScripts);
-  WINBASEAPI int WINAPI GetStringScripts (DWORD dwFlags, LPCWSTR lpString, int cchString, LPWSTR lpScripts, int cchScripts);
-  WINBASEAPI int WINAPI GetLocaleInfoEx (LPCWSTR lpLocaleName, LCTYPE LCType, LPWSTR lpLCData, int cchData);
-  WINBASEAPI int WINAPI GetCalendarInfoEx (LPCWSTR lpLocaleName, CALID Calendar, LPCWSTR lpReserved, CALTYPE CalType, LPWSTR lpCalData, int cchData, LPDWORD lpValue);
-  WINBASEAPI int WINAPI GetDurationFormatEx (LPCWSTR lpLocaleName, DWORD dwFlags, CONST SYSTEMTIME *lpDuration, ULONGLONG ullDuration, LPCWSTR lpFormat, LPWSTR lpDurationStr, int cchDuration);
-  WINBASEAPI int WINAPI GetNumberFormatEx (LPCWSTR lpLocaleName, DWORD dwFlags, LPCWSTR lpValue, CONST NUMBERFMTW *lpFormat, LPWSTR lpNumberStr, int cchNumber);
-  WINBASEAPI int WINAPI GetCurrencyFormatEx (LPCWSTR lpLocaleName, DWORD dwFlags, LPCWSTR lpValue, CONST CURRENCYFMTW *lpFormat, LPWSTR lpCurrencyStr, int cchCurrency);
-  WINBASEAPI int WINAPI GetUserDefaultLocaleName (LPWSTR lpLocaleName, int cchLocaleName);
-  WINBASEAPI int WINAPI GetSystemDefaultLocaleName (LPWSTR lpLocaleName, int cchLocaleName);
-  WINBASEAPI WINBOOL WINAPI GetNLSVersionEx (NLS_FUNCTION function, LPCWSTR lpLocaleName, LPNLSVERSIONINFOEX lpVersionInformation);
-  WINBASEAPI int WINAPI FindNLSStringEx (LPCWSTR lpLocaleName, DWORD dwFindNLSStringFlags, LPCWSTR lpStringSource, int cchSource, LPCWSTR lpStringValue, int cchValue, LPINT pcchFound, LPNLSVERSIONINFO lpVersionInformation, LPVOID lpReserved, LPARAM sortHandle);
-  WINBASEAPI int WINAPI LCMapStringEx (LPCWSTR lpLocaleName, DWORD dwMapFlags, LPCWSTR lpSrcStr, int cchSrc, LPWSTR lpDestStr, int cchDest, LPNLSVERSIONINFO lpVersionInformation, LPVOID lpReserved, LPARAM sortHandle);
-  WINBASEAPI WINBOOL WINAPI IsValidLocaleName (LPCWSTR lpLocaleName);
-  WINBASEAPI WINBOOL WINAPI EnumCalendarInfoExEx (CALINFO_ENUMPROCEXEX pCalInfoEnumProcExEx, LPCWSTR lpLocaleName, CALID Calendar, LPCWSTR lpReserved, CALTYPE CalType, LPARAM lParam);
-  WINBASEAPI WINBOOL WINAPI EnumDateFormatsExEx (DATEFMT_ENUMPROCEXEX lpDateFmtEnumProcExEx, LPCWSTR lpLocaleName, DWORD dwFlags, LPARAM lParam);
-  WINBASEAPI WINBOOL WINAPI EnumTimeFormatsEx (TIMEFMT_ENUMPROCEX lpTimeFmtEnumProcEx, LPCWSTR lpLocaleName, DWORD dwFlags, LPARAM lParam);
-  WINBASEAPI WINBOOL WINAPI EnumSystemLocalesEx (LOCALE_ENUMPROCEX lpLocaleEnumProcEx, DWORD dwFlags, LPARAM lParam, LPVOID lpReserved);
+typedef WINBOOL(CALLBACK *CALINFO_ENUMPROCEXEX)(LPWSTR, CALID, LPWSTR, LPARAM);
+typedef WINBOOL(CALLBACK *DATEFMT_ENUMPROCEXEX)(LPWSTR, CALID, LPARAM);
+typedef WINBOOL(CALLBACK *TIMEFMT_ENUMPROCEX)(LPWSTR, LPARAM);
+typedef WINBOOL(CALLBACK *LOCALE_ENUMPROCEX)(LPWSTR, DWORD, LPARAM);
+WINNORMALIZEAPI int WINAPI NormalizeString(NORM_FORM NormForm,
+                                           LPCWSTR lpSrcString, int cwSrcLength,
+                                           LPWSTR lpDstString, int cwDstLength);
+WINNORMALIZEAPI WINBOOL WINAPI IsNormalizedString(NORM_FORM NormForm,
+                                                  LPCWSTR lpString,
+                                                  int cwLength);
+WINNORMALIZEAPI int WINAPI IdnToAscii(DWORD dwFlags, LPCWSTR lpUnicodeCharStr,
+                                      int cchUnicodeChar, LPWSTR lpASCIICharStr,
+                                      int cchASCIIChar);
+WINNORMALIZEAPI int WINAPI IdnToNameprepUnicode(DWORD dwFlags,
+                                                LPCWSTR lpUnicodeCharStr,
+                                                int cchUnicodeChar,
+                                                LPWSTR lpNameprepCharStr,
+                                                int cchNameprepChar);
+WINNORMALIZEAPI int WINAPI IdnToUnicode(DWORD dwFlags, LPCWSTR lpASCIICharStr,
+                                        int cchASCIIChar,
+                                        LPWSTR lpUnicodeCharStr,
+                                        int cchUnicodeChar);
+WINBASEAPI WINBOOL WINAPI VerifyScripts(DWORD dwFlags, LPCWSTR lpLocaleScripts,
+                                        int cchLocaleScripts,
+                                        LPCWSTR lpTestScripts,
+                                        int cchTestScripts);
+WINBASEAPI int WINAPI GetStringScripts(DWORD dwFlags, LPCWSTR lpString,
+                                       int cchString, LPWSTR lpScripts,
+                                       int cchScripts);
+WINBASEAPI int WINAPI GetLocaleInfoEx(LPCWSTR lpLocaleName, LCTYPE LCType,
+                                      LPWSTR lpLCData, int cchData);
+WINBASEAPI int WINAPI GetCalendarInfoEx(LPCWSTR lpLocaleName, CALID Calendar,
+                                        LPCWSTR lpReserved, CALTYPE CalType,
+                                        LPWSTR lpCalData, int cchData,
+                                        LPDWORD lpValue);
+WINBASEAPI int WINAPI GetDurationFormatEx(LPCWSTR lpLocaleName, DWORD dwFlags,
+                                          CONST SYSTEMTIME *lpDuration,
+                                          ULONGLONG ullDuration,
+                                          LPCWSTR lpFormat,
+                                          LPWSTR lpDurationStr,
+                                          int cchDuration);
+WINBASEAPI int WINAPI GetNumberFormatEx(LPCWSTR lpLocaleName, DWORD dwFlags,
+                                        LPCWSTR lpValue,
+                                        CONST NUMBERFMTW *lpFormat,
+                                        LPWSTR lpNumberStr, int cchNumber);
+WINBASEAPI int WINAPI GetCurrencyFormatEx(LPCWSTR lpLocaleName, DWORD dwFlags,
+                                          LPCWSTR lpValue,
+                                          CONST CURRENCYFMTW *lpFormat,
+                                          LPWSTR lpCurrencyStr,
+                                          int cchCurrency);
+WINBASEAPI int WINAPI GetUserDefaultLocaleName(LPWSTR lpLocaleName,
+                                               int cchLocaleName);
+WINBASEAPI int WINAPI GetSystemDefaultLocaleName(LPWSTR lpLocaleName,
+                                                 int cchLocaleName);
+WINBASEAPI WINBOOL WINAPI
+GetNLSVersionEx(NLS_FUNCTION function, LPCWSTR lpLocaleName,
+                LPNLSVERSIONINFOEX lpVersionInformation);
+WINBASEAPI int WINAPI FindNLSStringEx(LPCWSTR lpLocaleName,
+                                      DWORD dwFindNLSStringFlags,
+                                      LPCWSTR lpStringSource, int cchSource,
+                                      LPCWSTR lpStringValue, int cchValue,
+                                      LPINT pcchFound,
+                                      LPNLSVERSIONINFO lpVersionInformation,
+                                      LPVOID lpReserved, LPARAM sortHandle);
+WINBASEAPI int WINAPI LCMapStringEx(LPCWSTR lpLocaleName, DWORD dwMapFlags,
+                                    LPCWSTR lpSrcStr, int cchSrc,
+                                    LPWSTR lpDestStr, int cchDest,
+                                    LPNLSVERSIONINFO lpVersionInformation,
+                                    LPVOID lpReserved, LPARAM sortHandle);
+WINBASEAPI WINBOOL WINAPI IsValidLocaleName(LPCWSTR lpLocaleName);
+WINBASEAPI WINBOOL WINAPI EnumCalendarInfoExEx(
+    CALINFO_ENUMPROCEXEX pCalInfoEnumProcExEx, LPCWSTR lpLocaleName,
+    CALID Calendar, LPCWSTR lpReserved, CALTYPE CalType, LPARAM lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumDateFormatsExEx(DATEFMT_ENUMPROCEXEX lpDateFmtEnumProcExEx,
+                    LPCWSTR lpLocaleName, DWORD dwFlags, LPARAM lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumTimeFormatsEx(TIMEFMT_ENUMPROCEX lpTimeFmtEnumProcEx, LPCWSTR lpLocaleName,
+                  DWORD dwFlags, LPARAM lParam);
+WINBASEAPI WINBOOL WINAPI
+EnumSystemLocalesEx(LOCALE_ENUMPROCEX lpLocaleEnumProcEx, DWORD dwFlags,
+                    LPARAM lParam, LPVOID lpReserved);
 #endif
 #if WINVER >= 0x0601
-  WINBASEAPI int WINAPI ResolveLocaleName (LPCWSTR lpNameToResolve, LPWSTR lpLocaleName, int cchLocaleName);
+WINBASEAPI int WINAPI ResolveLocaleName(LPCWSTR lpNameToResolve,
+                                        LPWSTR lpLocaleName, int cchLocaleName);
 #endif
 #if WINVER >= 0x0602
-  WINBASEAPI DWORD WINAPI IsValidNLSVersion (NLS_FUNCTION function, LPCWSTR lpLocaleName, LPNLSVERSIONINFOEX lpVersionInformation);
+WINBASEAPI
+    DWORD WINAPI IsValidNLSVersion(NLS_FUNCTION function, LPCWSTR lpLocaleName,
+                                   LPNLSVERSIONINFOEX lpVersionInformation);
 #endif
 #endif
-
 #endif
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif

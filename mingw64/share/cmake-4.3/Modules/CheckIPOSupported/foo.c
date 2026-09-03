@@ -1,4 +1,1 @@
-int foo(void)
-{
-  return 0x42;
-}
+int foo(void) { return 0x42; }

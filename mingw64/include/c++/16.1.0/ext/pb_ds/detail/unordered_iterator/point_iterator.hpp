@@ -44,8 +44,7 @@
 
 #ifdef PB_DS_CLASS_C_DEC
 /// Find type iterator.
-class point_iterator_
-{
+class point_iterator_ {
 public:
   /// Category.
   typedef trivial_iterator_tag iterator_category;
@@ -69,56 +68,45 @@ public:
   typedef const_reference_ const_reference;
 
   /// Default constructor.
-  inline
-  point_iterator_()
-  : m_p_value(0)
-  { }
+  inline point_iterator_() : m_p_value(0) {}
 
   /// Copy constructor.
-  inline
-  point_iterator_(const point_iterator_& other)
-  : m_p_value(other.m_p_value)
-  { }
+  inline point_iterator_(const point_iterator_ &other)
+      : m_p_value(other.m_p_value) {}
 
   /// Access.
-  pointer
-  operator->() const
-  {
+  pointer operator->() const {
     _GLIBCXX_DEBUG_ASSERT(m_p_value != 0);
     return (m_p_value);
   }
 
   /// Access.
-  reference
-  operator*() const
-  {
+  reference operator*() const {
     _GLIBCXX_DEBUG_ASSERT(m_p_value != 0);
     return (*m_p_value);
   }
 
   /// Compares content to a different iterator object.
-  bool
-  operator==(const point_iterator_& other) const
-  { return m_p_value == other.m_p_value; }
+  bool operator==(const point_iterator_ &other) const {
+    return m_p_value == other.m_p_value;
+  }
 
   /// Compares content to a different iterator object.
-  bool
-  operator==(const point_const_iterator_& other) const
-  { return m_p_value == other.m_p_value; }
+  bool operator==(const point_const_iterator_ &other) const {
+    return m_p_value == other.m_p_value;
+  }
 
   /// Compares content to a different iterator object.
-  bool
-  operator!=(const point_iterator_& other) const
-  { return m_p_value != other.m_p_value; }
+  bool operator!=(const point_iterator_ &other) const {
+    return m_p_value != other.m_p_value;
+  }
 
   /// Compares content (negatively) to a different iterator object.
-  bool
-  operator!=(const point_const_iterator_& other) const
-  { return m_p_value != other.m_p_value; }
+  bool operator!=(const point_const_iterator_ &other) const {
+    return m_p_value != other.m_p_value;
+  }
 
-  inline
-  point_iterator_(pointer p_value) : m_p_value(p_value)
-  { }
+  inline point_iterator_(pointer p_value) : m_p_value(p_value) {}
 
 protected:
   friend class point_const_iterator_;

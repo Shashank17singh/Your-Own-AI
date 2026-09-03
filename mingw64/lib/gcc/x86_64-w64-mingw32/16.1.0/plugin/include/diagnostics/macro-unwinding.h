@@ -24,11 +24,9 @@ namespace diagnostics {
 
 struct diagnostic_info;
 
-extern void virt_loc_aware_text_finalizer (text_sink &,
-					   const diagnostic_info *);
+extern void virt_loc_aware_text_finalizer(text_sink &, const diagnostic_info *);
 
-extern void maybe_unwind_expanded_macro_loc (text_sink &,
-					     location_t where);
+extern void maybe_unwind_expanded_macro_loc(text_sink &, location_t where);
 
 } // namespace diagnostics
 

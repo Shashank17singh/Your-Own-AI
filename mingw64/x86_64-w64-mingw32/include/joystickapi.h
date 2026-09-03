@@ -3,28 +3,20 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef _JOYSTICKAPI_H_
 #define _JOYSTICKAPI_H_
-
 #include <apiset.h>
 #include <apisetcconv.h>
-
 #include <mmsyscom.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-
 #ifndef MMNOJOY
-
 #define JOYERR_NOERROR (0)
-#define JOYERR_PARMS (JOYERR_BASE+5)
-#define JOYERR_NOCANDO (JOYERR_BASE+6)
-#define JOYERR_UNPLUGGED (JOYERR_BASE+7)
-
+#define JOYERR_PARMS (JOYERR_BASE + 5)
+#define JOYERR_NOCANDO (JOYERR_BASE + 6)
+#define JOYERR_UNPLUGGED (JOYERR_BASE + 7)
 #define JOY_BUTTON1 0x0001
 #define JOY_BUTTON2 0x0002
 #define JOY_BUTTON3 0x0004
@@ -33,7 +25,6 @@ extern "C" {
 #define JOY_BUTTON2CHG 0x0200
 #define JOY_BUTTON3CHG 0x0400
 #define JOY_BUTTON4CHG 0x0800
-
 #define JOY_BUTTON5 __MSABI_LONG(0x00000010)
 #define JOY_BUTTON6 __MSABI_LONG(0x00000020)
 #define JOY_BUTTON7 __MSABI_LONG(0x00000040)
@@ -62,13 +53,11 @@ extern "C" {
 #define JOY_BUTTON30 __MSABI_LONG(0x20000000)
 #define JOY_BUTTON31 __MSABI_LONG(0x40000000)
 #define JOY_BUTTON32 __MSABI_LONG(0x80000000)
-
-#define JOY_POVCENTERED ((WORD)-1)
+#define JOY_POVCENTERED ((WORD) - 1)
 #define JOY_POVFORWARD 0
 #define JOY_POVRIGHT 9000
 #define JOY_POVBACKWARD 18000
 #define JOY_POVLEFT 27000
-
 #define JOY_RETURNX __MSABI_LONG(0x00000001)
 #define JOY_RETURNY __MSABI_LONG(0x00000002)
 #define JOY_RETURNZ __MSABI_LONG(0x00000004)
@@ -81,7 +70,9 @@ extern "C" {
 #define JOY_RETURNPOVCTS __MSABI_LONG(0x00000200)
 #define JOY_RETURNCENTERED __MSABI_LONG(0x00000400)
 #define JOY_USEDEADZONE __MSABI_LONG(0x00000800)
-#define JOY_RETURNALL (JOY_RETURNX | JOY_RETURNY | JOY_RETURNZ | JOY_RETURNR | JOY_RETURNU | JOY_RETURNV | JOY_RETURNPOV | JOY_RETURNBUTTONS)
+#define JOY_RETURNALL                                                          \
+  (JOY_RETURNX | JOY_RETURNY | JOY_RETURNZ | JOY_RETURNR | JOY_RETURNU |       \
+   JOY_RETURNV | JOY_RETURNPOV | JOY_RETURNBUTTONS)
 #define JOY_CAL_READALWAYS __MSABI_LONG(0x00010000)
 #define JOY_CAL_READXYONLY __MSABI_LONG(0x00020000)
 #define JOY_CAL_READ3 __MSABI_LONG(0x00040000)
@@ -94,10 +85,8 @@ extern "C" {
 #define JOY_CAL_READRONLY __MSABI_LONG(0x02000000)
 #define JOY_CAL_READUONLY __MSABI_LONG(0x04000000)
 #define JOY_CAL_READVONLY __MSABI_LONG(0x08000000)
-
 #define JOYSTICKID1 0
 #define JOYSTICKID2 1
-
 #define JOYCAPS_HASZ 0x0001
 #define JOYCAPS_HASR 0x0002
 #define JOYCAPS_HASU 0x0004
@@ -105,7 +94,6 @@ extern "C" {
 #define JOYCAPS_HASPOV 0x0010
 #define JOYCAPS_POV4DIR 0x0020
 #define JOYCAPS_POVCTS 0x0040
-
 typedef struct tagJOYCAPSA {
   WORD wMid;
   WORD wPid;
@@ -132,7 +120,6 @@ typedef struct tagJOYCAPSA {
   CHAR szRegKey[MAXPNAMELEN];
   CHAR szOEMVxD[MAX_JOYSTICKOEMVXDNAME];
 } JOYCAPSA, *PJOYCAPSA, *NPJOYCAPSA, *LPJOYCAPSA;
-
 typedef struct tagJOYCAPSW {
   WORD wMid;
   WORD wPid;
@@ -159,12 +146,10 @@ typedef struct tagJOYCAPSW {
   WCHAR szRegKey[MAXPNAMELEN];
   WCHAR szOEMVxD[MAX_JOYSTICKOEMVXDNAME];
 } JOYCAPSW, *PJOYCAPSW, *NPJOYCAPSW, *LPJOYCAPSW;
-
 __MINGW_TYPEDEF_AW(JOYCAPS)
 __MINGW_TYPEDEF_AW(PJOYCAPS)
 __MINGW_TYPEDEF_AW(NPJOYCAPS)
 __MINGW_TYPEDEF_AW(LPJOYCAPS)
-
 typedef struct tagJOYCAPS2A {
   WORD wMid;
   WORD wPid;
@@ -194,7 +179,6 @@ typedef struct tagJOYCAPS2A {
   GUID ProductGuid;
   GUID NameGuid;
 } JOYCAPS2A, *PJOYCAPS2A, *NPJOYCAPS2A, *LPJOYCAPS2A;
-
 typedef struct tagJOYCAPS2W {
   WORD wMid;
   WORD wPid;
@@ -224,19 +208,16 @@ typedef struct tagJOYCAPS2W {
   GUID ProductGuid;
   GUID NameGuid;
 } JOYCAPS2W, *PJOYCAPS2W, *NPJOYCAPS2W, *LPJOYCAPS2W;
-
 __MINGW_TYPEDEF_AW(JOYCAPS2)
 __MINGW_TYPEDEF_AW(PJOYCAPS2)
 __MINGW_TYPEDEF_AW(NPJOYCAPS2)
 __MINGW_TYPEDEF_AW(LPJOYCAPS2)
-
 typedef struct joyinfo_tag {
   UINT wXpos;
   UINT wYpos;
   UINT wZpos;
   UINT wButtons;
 } JOYINFO, *PJOYINFO, *NPJOYINFO, *LPJOYINFO;
-
 typedef struct joyinfoex_tag {
   DWORD dwSize;
   DWORD dwFlags;
@@ -252,29 +233,23 @@ typedef struct joyinfoex_tag {
   DWORD dwReserved1;
   DWORD dwReserved2;
 } JOYINFOEX, *PJOYINFOEX, *NPJOYINFOEX, *LPJOYINFOEX;
-
 WINMMAPI MMRESULT WINAPI joyGetPosEx(UINT uJoyID, LPJOYINFOEX pji);
-
 WINMMAPI UINT WINAPI joyGetNumDevs(void);
-
-WINMMAPI MMRESULT WINAPI joyGetDevCapsA(UINT_PTR uJoyID, LPJOYCAPSA pjc, UINT cbjc);
-WINMMAPI MMRESULT WINAPI joyGetDevCapsW(UINT_PTR uJoyID, LPJOYCAPSW pjc, UINT cbjc);
+WINMMAPI MMRESULT WINAPI joyGetDevCapsA(UINT_PTR uJoyID, LPJOYCAPSA pjc,
+                                        UINT cbjc);
+WINMMAPI MMRESULT WINAPI joyGetDevCapsW(UINT_PTR uJoyID, LPJOYCAPSW pjc,
+                                        UINT cbjc);
 #define joyGetDevCaps __MINGW_NAME_AW(joyGetDevCaps)
-
 WINMMAPI MMRESULT WINAPI joyGetPos(UINT uJoyID, LPJOYINFO pji);
 WINMMAPI MMRESULT WINAPI joyGetThreshold(UINT uJoyID, LPUINT puThreshold);
 WINMMAPI MMRESULT WINAPI joyReleaseCapture(UINT uJoyID);
-WINMMAPI MMRESULT WINAPI joySetCapture(HWND hwnd, UINT uJoyID, UINT uPeriod, WINBOOL fChanged);
+WINMMAPI MMRESULT WINAPI joySetCapture(HWND hwnd, UINT uJoyID, UINT uPeriod,
+                                       WINBOOL fChanged);
 WINMMAPI MMRESULT WINAPI joySetThreshold(UINT uJoyID, UINT uThreshold);
-
 WINMMAPI MMRESULT WINAPI joyConfigChanged(DWORD dwFlags);
-
-#endif  /* ifndef MMNOJOY */
-
+#endif /* ifndef MMNOJOY */
 #endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* _JOYSTICKAPI_H_ */

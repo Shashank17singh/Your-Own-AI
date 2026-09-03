@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <xtestintrin.h> directly; include <x86gprintrin.h> instead."
+#error "Never use <xtestintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _XTESTINTRIN_H_INCLUDED
@@ -37,10 +37,9 @@
 /* Return non-zero if the instruction executes inside an RTM or HLE code
    region.  Return zero otherwise.   */
 extern __inline int
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_xtest (void)
-{
-  return __builtin_ia32_xtest ();
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _xtest(void) {
+  return __builtin_ia32_xtest();
 }
 
 #ifdef __DISABLE_RTM__

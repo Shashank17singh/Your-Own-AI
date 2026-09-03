@@ -1,5 +1,5 @@
 #ifndef Py_CPYTHON_TUPLEOBJECT_H
-#  error "this header file must not be included directly"
+#error "this header file must not be included directly"
 #endif
 
 #ifdef __cplusplus
@@ -7,11 +7,11 @@ extern "C" {
 #endif
 
 typedef struct {
-    PyObject_VAR_HEAD
-    /* ob_item contains space for 'ob_size' elements.
-       Items must normally not be NULL, except during construction when
-       the tuple is not yet visible outside the function that builds it. */
-    PyObject *ob_item[1];
+  PyObject_VAR_HEAD
+      /* ob_item contains space for 'ob_size' elements.
+         Items must normally not be NULL, except during construction when
+         the tuple is not yet visible outside the function that builds it. */
+      PyObject *ob_item[1];
 } PyTupleObject;
 
 PyAPI_FUNC(int) _PyTuple_Resize(PyObject **, Py_ssize_t);
@@ -22,7 +22,7 @@ PyAPI_FUNC(void) _PyTuple_MaybeUntrack(PyObject *);
 /* Cast argument to PyTupleObject* type. */
 #define _PyTuple_CAST(op) (assert(PyTuple_Check(op)), (PyTupleObject *)(op))
 
-#define PyTuple_GET_SIZE(op)    Py_SIZE(_PyTuple_CAST(op))
+#define PyTuple_GET_SIZE(op) Py_SIZE(_PyTuple_CAST(op))
 
 #define PyTuple_GET_ITEM(op, i) (_PyTuple_CAST(op)->ob_item[i])
 

@@ -1,6 +1,6 @@
 """Synchronization primitives."""
 
-__all__ = ('Lock', 'Event', 'Condition', 'Semaphore', 'BoundedSemaphore')
+__all__ = ("Lock", "Event", "Condition", "Semaphore", "BoundedSemaphore")
 
 import collections
 import warnings
@@ -81,16 +81,19 @@ class Lock(_ContextManagerMixin):
             self._loop = events.get_event_loop()
         else:
             self._loop = loop
-            warnings.warn("The loop argument is deprecated since Python 3.8, "
-                          "and scheduled for removal in Python 3.10.",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "The loop argument is deprecated since Python 3.8, "
+                "and scheduled for removal in Python 3.10.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     def __repr__(self):
         res = super().__repr__()
-        extra = 'locked' if self._locked else 'unlocked'
+        extra = "locked" if self._locked else "unlocked"
         if self._waiters:
-            extra = f'{extra}, waiters:{len(self._waiters)}'
-        return f'<{res[1:-1]} [{extra}]>'
+            extra = f"{extra}, waiters:{len(self._waiters)}"
+        return f"<{res[1:-1]} [{extra}]>"
 
     def locked(self):
         """Return True if lock is acquired."""
@@ -102,8 +105,9 @@ class Lock(_ContextManagerMixin):
         This method blocks until the lock is unlocked, then sets it to
         locked and returns True.
         """
-        if (not self._locked and (self._waiters is None or
-                all(w.cancelled() for w in self._waiters))):
+        if not self._locked and (
+            self._waiters is None or all(w.cancelled() for w in self._waiters)
+        ):
             self._locked = True
             return True
 
@@ -143,7 +147,7 @@ class Lock(_ContextManagerMixin):
             self._locked = False
             self._wake_up_first()
         else:
-            raise RuntimeError('Lock is not acquired.')
+            raise RuntimeError("Lock is not acquired.")
 
     def _wake_up_first(self):
         """Wake up the first waiter if it isn't done."""
@@ -177,16 +181,19 @@ class Event:
             self._loop = events.get_event_loop()
         else:
             self._loop = loop
-            warnings.warn("The loop argument is deprecated since Python 3.8, "
-                          "and scheduled for removal in Python 3.10.",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "The loop argument is deprecated since Python 3.8, "
+                "and scheduled for removal in Python 3.10.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     def __repr__(self):
         res = super().__repr__()
-        extra = 'set' if self._value else 'unset'
+        extra = "set" if self._value else "unset"
         if self._waiters:
-            extra = f'{extra}, waiters:{len(self._waiters)}'
-        return f'<{res[1:-1]} [{extra}]>'
+            extra = f"{extra}, waiters:{len(self._waiters)}"
+        return f"<{res[1:-1]} [{extra}]>"
 
     def is_set(self):
         """Return True if and only if the internal flag is true."""
@@ -244,9 +251,12 @@ class Condition(_ContextManagerMixin):
             self._loop = events.get_event_loop()
         else:
             self._loop = loop
-            warnings.warn("The loop argument is deprecated since Python 3.8, "
-                          "and scheduled for removal in Python 3.10.",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "The loop argument is deprecated since Python 3.8, "
+                "and scheduled for removal in Python 3.10.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         if lock is None:
             lock = Lock(loop=loop)
@@ -263,10 +273,10 @@ class Condition(_ContextManagerMixin):
 
     def __repr__(self):
         res = super().__repr__()
-        extra = 'locked' if self.locked() else 'unlocked'
+        extra = "locked" if self.locked() else "unlocked"
         if self._waiters:
-            extra = f'{extra}, waiters:{len(self._waiters)}'
-        return f'<{res[1:-1]} [{extra}]>'
+            extra = f"{extra}, waiters:{len(self._waiters)}"
+        return f"<{res[1:-1]} [{extra}]>"
 
     async def wait(self):
         """Wait until notified.
@@ -280,7 +290,7 @@ class Condition(_ContextManagerMixin):
         awakened, it re-acquires the lock and returns True.
         """
         if not self.locked():
-            raise RuntimeError('cannot wait on un-acquired lock')
+            raise RuntimeError("cannot wait on un-acquired lock")
 
         self.release()
         try:
@@ -331,7 +341,7 @@ class Condition(_ContextManagerMixin):
         not release the lock, its caller should.
         """
         if not self.locked():
-            raise RuntimeError('cannot notify on un-acquired lock')
+            raise RuntimeError("cannot notify on un-acquired lock")
 
         idx = 0
         for fut in self._waiters:
@@ -375,16 +385,19 @@ class Semaphore(_ContextManagerMixin):
             self._loop = events.get_event_loop()
         else:
             self._loop = loop
-            warnings.warn("The loop argument is deprecated since Python 3.8, "
-                          "and scheduled for removal in Python 3.10.",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "The loop argument is deprecated since Python 3.8, "
+                "and scheduled for removal in Python 3.10.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     def __repr__(self):
         res = super().__repr__()
-        extra = 'locked' if self.locked() else f'unlocked, value:{self._value}'
+        extra = "locked" if self.locked() else f"unlocked, value:{self._value}"
         if self._waiters:
-            extra = f'{extra}, waiters:{len(self._waiters)}'
-        return f'<{res[1:-1]} [{extra}]>'
+            extra = f"{extra}, waiters:{len(self._waiters)}"
+        return f"<{res[1:-1]} [{extra}]>"
 
     def _wake_up_next(self):
         while self._waiters:
@@ -438,14 +451,17 @@ class BoundedSemaphore(Semaphore):
 
     def __init__(self, value=1, *, loop=None):
         if loop:
-            warnings.warn("The loop argument is deprecated since Python 3.8, "
-                          "and scheduled for removal in Python 3.10.",
-                          DeprecationWarning, stacklevel=2)
+            warnings.warn(
+                "The loop argument is deprecated since Python 3.8, "
+                "and scheduled for removal in Python 3.10.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         self._bound_value = value
         super().__init__(value, loop=loop)
 
     def release(self):
         if self._value >= self._bound_value:
-            raise ValueError('BoundedSemaphore released too many times')
+            raise ValueError("BoundedSemaphore released too many times")
         super().release()

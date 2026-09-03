@@ -5,25 +5,21 @@
  */
 #ifndef MAPICODE_H
 #define MAPICODE_H
-
 #include <winerror.h>
-
-#define MAKE_MAPI_SCODE(sev,fac,code) ((SCODE) (((unsigned __LONG32)(sev)<<31) | ((unsigned __LONG32)(fac)<<16) | ((unsigned __LONG32)(code))))
-
-#define MAKE_MAPI_E(err) (MAKE_MAPI_SCODE(1,FACILITY_ITF,err))
-#define MAKE_MAPI_S(warn) (MAKE_MAPI_SCODE(0,FACILITY_ITF,warn))
-
+#define MAKE_MAPI_SCODE(sev, fac, code)                                        \
+  ((SCODE)(((unsigned __LONG32)(sev) << 31) |                                  \
+           ((unsigned __LONG32)(fac) << 16) | ((unsigned __LONG32)(code))))
+#define MAKE_MAPI_E(err) (MAKE_MAPI_SCODE(1, FACILITY_ITF, err))
+#define MAKE_MAPI_S(warn) (MAKE_MAPI_SCODE(0, FACILITY_ITF, warn))
 #ifdef SUCCESS_SUCCESS
 #undef SUCCESS_SUCCESS
 #endif
 #define SUCCESS_SUCCESS __MSABI_LONG(0)
-
 #define MAPI_E_CALL_FAILED E_FAIL
 #define MAPI_E_NOT_ENOUGH_MEMORY E_OUTOFMEMORY
 #define MAPI_E_INVALID_PARAMETER E_INVALIDARG
 #define MAPI_E_INTERFACE_NOT_SUPPORTED E_NOINTERFACE
 #define MAPI_E_NO_ACCESS E_ACCESSDENIED
-
 #define MAPI_E_NO_SUPPORT MAKE_MAPI_E(0x102)
 #define MAPI_E_BAD_CHARWIDTH MAKE_MAPI_E(0x103)
 #define MAPI_E_STRING_TOO_LONG MAKE_MAPI_E(0x105)
@@ -93,11 +89,9 @@
 #define MAPI_E_FOLDER_CYCLE MAKE_MAPI_E(0x60B)
 #define MAPI_W_PARTIAL_COMPLETION MAKE_MAPI_S(0x680)
 #define MAPI_E_AMBIGUOUS_RECIP MAKE_MAPI_E(0x700)
-
 #ifndef MakeResult
 #define MakeResult(_s) ResultFromScode(_s)
 #endif
-
 #ifndef HR_SUCCEEDED
 #define HR_SUCCEEDED(_hr) SUCCEEDED((SCODE)(_hr))
 #define HR_FAILED(_hr) FAILED((SCODE)(_hr))

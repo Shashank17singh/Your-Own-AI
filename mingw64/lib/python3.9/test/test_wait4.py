@@ -1,5 +1,4 @@
-"""This test checks for correct wait4() behavior.
-"""
+"""This test checks for correct wait4() behavior."""
 
 import os
 import time
@@ -9,14 +8,14 @@ from test.fork_wait import ForkWait
 from test import support
 
 # If either of these do not exist, skip this test.
-support.get_attribute(os, 'fork')
-support.get_attribute(os, 'wait4')
+support.get_attribute(os, "fork")
+support.get_attribute(os, "wait4")
 
 
 class Wait4Test(ForkWait):
     def wait_impl(self, cpid, *, exitcode):
         option = os.WNOHANG
-        if sys.platform.startswith('aix'):
+        if sys.platform.startswith("aix"):
             # Issue #11185: wait4 is broken on AIX and will always return 0
             # with WNOHANG.
             option = 0
@@ -32,8 +31,10 @@ class Wait4Test(ForkWait):
         self.assertEqual(os.waitstatus_to_exitcode(status), exitcode)
         self.assertTrue(rusage)
 
+
 def tearDownModule():
     support.reap_children()
+
 
 if __name__ == "__main__":
     unittest.main()

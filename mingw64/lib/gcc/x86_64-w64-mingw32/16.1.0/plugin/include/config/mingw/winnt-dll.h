@@ -21,10 +21,10 @@ http://www.gnu.org/licenses/.  */
 
 #ifndef USED_FOR_TARGET
 
-extern bool is_imported_p (rtx x);
-extern alias_set_type ix86_GOT_alias_set (void);
-extern alias_set_type mingw_GOT_alias_set (void);
-extern rtx legitimize_pe_coff_symbol (rtx addr, bool inreg);
+extern bool is_imported_p(rtx x);
+extern alias_set_type ix86_GOT_alias_set(void);
+extern alias_set_type mingw_GOT_alias_set(void);
+extern rtx legitimize_pe_coff_symbol(rtx addr, bool inreg);
 
 #endif /* not USED_FOR_TARGET.  */
 

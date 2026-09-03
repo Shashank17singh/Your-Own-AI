@@ -26,7 +26,7 @@ struct target_gcse {
   /* Nonzero for each mode that supports (set (reg) (reg)).
      This is trivially true for integer and floating point values.
      It may or may not be true for condition codes.  */
-  char x_can_copy[(int) NUM_MACHINE_MODES];
+  char x_can_copy[(int)NUM_MACHINE_MODES];
 
   /* True if the previous field has been initialized.  */
   bool x_can_copy_init_p;
@@ -39,8 +39,8 @@ extern struct target_gcse *this_target_gcse;
 #define this_target_gcse (&default_target_gcse)
 #endif
 
-void gcse_cc_finalize (void);
-extern bool gcse_or_cprop_is_too_expensive (const char *);
-extern rtx_insn *insert_insn_end_basic_block (rtx_insn *, basic_block);
+void gcse_cc_finalize(void);
+extern bool gcse_or_cprop_is_too_expensive(const char *);
+extern rtx_insn *insert_insn_end_basic_block(rtx_insn *, basic_block);
 
 #endif

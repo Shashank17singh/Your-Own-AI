@@ -17,7 +17,6 @@ import sys
 import unittest
 from test.support import run_unittest, save_restore_warnings_filters
 
-
 here = os.path.dirname(__file__) or os.curdir
 
 

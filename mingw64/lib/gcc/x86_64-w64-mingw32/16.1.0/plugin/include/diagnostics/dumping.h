@@ -24,25 +24,24 @@ along with GCC; see the file COPYING3.  If not see
 namespace diagnostics {
 namespace dumping {
 
-extern void emit_indent (FILE *outfile, int indent);
-extern void emit_heading (FILE *outfile, int indent,
-			  const char *text);
+extern void emit_indent(FILE *outfile, int indent);
+extern void emit_heading(FILE *outfile, int indent, const char *text);
 
-extern void emit_string_field (FILE *outfile, int indent,
-			       const char *label, const char *value);
-extern void emit_bool_field (FILE *outfile, int indent,
-				const char *label, bool value);
-extern void emit_size_t_field (FILE *outfile, int indent,
-			       const char *label, size_t value);
-extern void emit_int_field (FILE *outfile, int indent,
-			    const char *label, int value);
-extern void emit_unsigned_field (FILE *outfile, int indent,
-				 const char *label, unsigned value);
+extern void emit_string_field(FILE *outfile, int indent, const char *label,
+                              const char *value);
+extern void emit_bool_field(FILE *outfile, int indent, const char *label,
+                            bool value);
+extern void emit_size_t_field(FILE *outfile, int indent, const char *label,
+                              size_t value);
+extern void emit_int_field(FILE *outfile, int indent, const char *label,
+                           int value);
+extern void emit_unsigned_field(FILE *outfile, int indent, const char *label,
+                                unsigned value);
 
-extern void emit_none (FILE *outfile, int indent);
+extern void emit_none(FILE *outfile, int indent);
 
-#define DIAGNOSTICS_DUMPING_EMIT_BOOL_FIELD(FLAG) \
-  dumping::emit_bool_field (outfile, indent, #FLAG, FLAG)
+#define DIAGNOSTICS_DUMPING_EMIT_BOOL_FIELD(FLAG)                              \
+  dumping::emit_bool_field(outfile, indent, #FLAG, FLAG)
 
 } // namespace dumping
 } // namespace diagnostics

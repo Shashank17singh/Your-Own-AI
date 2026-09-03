@@ -13,8 +13,7 @@ extern "C" {
 
 #ifndef Py_LIMITED_API
 typedef struct {
-    PyObject_HEAD
-    double ob_fval;
+  PyObject_HEAD double ob_fval;
 } PyFloatObject;
 #endif
 
@@ -27,19 +26,21 @@ PyAPI_DATA(PyTypeObject) PyFloat_Type;
 #define Py_RETURN_NAN return PyFloat_FromDouble(Py_NAN)
 #endif
 
-#define Py_RETURN_INF(sign) do                     \
-    if (copysign(1., sign) == 1.) {                \
-        return PyFloat_FromDouble(Py_HUGE_VAL);    \
-    } else {                        \
-        return PyFloat_FromDouble(-Py_HUGE_VAL);   \
-    } while(0)
+#define Py_RETURN_INF(sign)                                                    \
+  do                                                                           \
+    if (copysign(1., sign) == 1.) {                                            \
+      return PyFloat_FromDouble(Py_HUGE_VAL);                                  \
+    } else {                                                                   \
+      return PyFloat_FromDouble(-Py_HUGE_VAL);                                 \
+    }                                                                          \
+  while (0)
 
 PyAPI_FUNC(double) PyFloat_GetMax(void);
 PyAPI_FUNC(double) PyFloat_GetMin(void);
 PyAPI_FUNC(PyObject *) PyFloat_GetInfo(void);
 
 /* Return Python float from string PyObject. */
-PyAPI_FUNC(PyObject *) PyFloat_FromString(PyObject*);
+PyAPI_FUNC(PyObject *) PyFloat_FromString(PyObject *);
 
 /* Return Python float from C double. */
 PyAPI_FUNC(PyObject *) PyFloat_FromDouble(double);
@@ -100,16 +101,14 @@ PyAPI_FUNC(double) _PyFloat_Unpack2(const unsigned char *p, int le);
 PyAPI_FUNC(double) _PyFloat_Unpack4(const unsigned char *p, int le);
 PyAPI_FUNC(double) _PyFloat_Unpack8(const unsigned char *p, int le);
 
-PyAPI_FUNC(void) _PyFloat_DebugMallocStats(FILE* out);
+PyAPI_FUNC(void) _PyFloat_DebugMallocStats(FILE *out);
 
 /* Format the object based on the format_spec, as defined in PEP 3101
    (Advanced String Formatting). */
-PyAPI_FUNC(int) _PyFloat_FormatAdvancedWriter(
-    _PyUnicodeWriter *writer,
-    PyObject *obj,
-    PyObject *format_spec,
-    Py_ssize_t start,
-    Py_ssize_t end);
+PyAPI_FUNC(int)
+    _PyFloat_FormatAdvancedWriter(_PyUnicodeWriter *writer, PyObject *obj,
+                                  PyObject *format_spec, Py_ssize_t start,
+                                  Py_ssize_t end);
 #endif /* Py_LIMITED_API */
 
 #ifdef __cplusplus

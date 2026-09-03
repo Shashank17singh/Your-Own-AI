@@ -36,43 +36,39 @@
 
 #include <bits/functional_hash.h>
 #if __cplusplus >= 202002L
-# include <compare>
+#include <compare>
 #endif
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
-  struct monostate { };
+struct monostate {};
 
-  constexpr bool operator==(monostate, monostate) noexcept { return true; }
+constexpr bool operator==(monostate, monostate) noexcept { return true; }
 #ifdef __cpp_lib_three_way_comparison
-  constexpr strong_ordering
-  operator<=>(monostate, monostate) noexcept { return strong_ordering::equal; }
+constexpr strong_ordering operator<=>(monostate, monostate) noexcept {
+  return strong_ordering::equal;
+}
 #else
-  constexpr bool operator!=(monostate, monostate) noexcept { return false; }
-  constexpr bool operator<(monostate, monostate) noexcept { return false; }
-  constexpr bool operator>(monostate, monostate) noexcept { return false; }
-  constexpr bool operator<=(monostate, monostate) noexcept { return true; }
-  constexpr bool operator>=(monostate, monostate) noexcept { return true; }
+constexpr bool operator!=(monostate, monostate) noexcept { return false; }
+constexpr bool operator<(monostate, monostate) noexcept { return false; }
+constexpr bool operator>(monostate, monostate) noexcept { return false; }
+constexpr bool operator<=(monostate, monostate) noexcept { return true; }
+constexpr bool operator>=(monostate, monostate) noexcept { return true; }
 #endif
 
-  template<>
-    struct hash<monostate>
-    {
+template <> struct hash<monostate> {
 #if __cplusplus < 202002L
-      using result_type [[__deprecated__]] = size_t;
-      using argument_type [[__deprecated__]] = monostate;
+  using result_type [[__deprecated__]] = size_t;
+  using argument_type [[__deprecated__]] = monostate;
 #endif
 
-      size_t
-      operator()(const monostate&) const noexcept
-      {
-	constexpr size_t __magic_monostate_hash = -7777;
-	return __magic_monostate_hash;
-      }
-    };
+  size_t operator()(const monostate &) const noexcept {
+    constexpr size_t __magic_monostate_hash = -7777;
+    return __magic_monostate_hash;
+  }
+};
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)
 #endif // __glibcxx_variant
 #endif /* _GLIBCXX_MONOSTATE_H */

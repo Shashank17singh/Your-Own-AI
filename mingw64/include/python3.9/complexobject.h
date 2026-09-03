@@ -8,8 +8,8 @@ extern "C" {
 
 #ifndef Py_LIMITED_API
 typedef struct {
-    double real;
-    double imag;
+  double real;
+  double imag;
 } Py_complex;
 
 /* Operations on complex numbers from complexmodule.c */
@@ -31,8 +31,7 @@ real and imaginary parts.
 */
 #ifndef Py_LIMITED_API
 typedef struct {
-    PyObject_HEAD
-    Py_complex cval;
+  PyObject_HEAD Py_complex cval;
 } PyComplexObject;
 #endif
 
@@ -55,12 +54,10 @@ PyAPI_FUNC(Py_complex) PyComplex_AsCComplex(PyObject *op);
 /* Format the object based on the format_spec, as defined in PEP 3101
    (Advanced String Formatting). */
 #ifndef Py_LIMITED_API
-PyAPI_FUNC(int) _PyComplex_FormatAdvancedWriter(
-    _PyUnicodeWriter *writer,
-    PyObject *obj,
-    PyObject *format_spec,
-    Py_ssize_t start,
-    Py_ssize_t end);
+PyAPI_FUNC(int)
+    _PyComplex_FormatAdvancedWriter(_PyUnicodeWriter *writer, PyObject *obj,
+                                    PyObject *format_spec, Py_ssize_t start,
+                                    Py_ssize_t end);
 #endif
 
 #ifdef __cplusplus

@@ -24,7 +24,6 @@ a copy of the GCC Runtime Library Exception along with this program;
 see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 <http://www.gnu.org/licenses/>.  */
 
-
 /* CAVEAT: Coverage information files should not be parsed directly,
    instead use `gcov --json-format`, which provides
    machine-readable coverage information.
@@ -47,25 +46,26 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    string. Zero length and NULL strings are simply stored as a length
    of zero (they have no trailing NUL).
 
-   	int32:  byte3 byte2 byte1 byte0 | byte0 byte1 byte2 byte3
-	int64:  int32:low int32:high
-	string: int32:0 | int32:length char* char:0
-	item: int32 | int64 | string
+        int32:  byte3 byte2 byte1 byte0 | byte0 byte1 byte2 byte3
+        int64:  int32:low int32:high
+        string: int32:0 | int32:length char* char:0
+        item: int32 | int64 | string
 
    The basic format of the notes file is
 
-	file : int32:magic int32:version int32:stamp int32:support_unexecuted_blocks record*
+        file : int32:magic int32:version int32:stamp
+   int32:support_unexecuted_blocks record*
 
    The basic format of the data file is
 
-   	file : int32:magic int32:version int32:stamp record*
+        file : int32:magic int32:version int32:stamp record*
 
    A filename header may be used to provide a filename for the data in
    a stream of data to support gcov in freestanding environments.  This
    header is used by the merge-stream subcommand of the gcov-tool.  The
    format of the filename header is
 
-	filename-header : int32:magic int32:version string
+        filename-header : int32:magic int32:version string
 
    The magic ident is different for the notes and the data files as
    well as the filename header.  The magic ident is used to determine
@@ -94,9 +94,9 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
    A record has a tag, length and variable amount of data.
 
-   	record: header data
-	header: int32:tag int32:length
-	data: item*
+        record: header data
+        header: int32:tag int32:length
+        data: item*
 
    Records are not nested, but there is a record hierarchy.  Tag
    numbers reflect this hierarchy.  Tags are unique across note and
@@ -114,18 +114,16 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    file.
 
    The notes file contains the following records
-   	note: unit function-graph*
-	unit: header int32:checksum string:source
-	function-graph: announce_function basic_blocks {arcs | lines}*
-	announce_function: header int32:ident
-		int32:lineno_checksum int32:cfg_checksum
-		string:name string:source int32:start_lineno int32:start_column int32:end_lineno
-	basic_block: header int32:flags*
-	arcs: header int32:block_no arc*
-	arc:  int32:dest_block int32:flags
-        lines: header int32:block_no line*
+        note: unit function-graph*
+        unit: header int32:checksum string:source
+        function-graph: announce_function basic_blocks {arcs | lines}*
+        announce_function: header int32:ident
+                int32:lineno_checksum int32:cfg_checksum
+                string:name string:source int32:start_lineno int32:start_column
+   int32:end_lineno basic_block: header int32:flags* arcs: header int32:block_no
+   arc* arc:  int32:dest_block int32:flags lines: header int32:block_no line*
                int32:0 string:NULL
-	line:  int32:line_no | int32:0 string:filename
+        line:  int32:line_no | int32:0 string:filename
 
    The BASIC_BLOCK record holds per-bb flags.  The number of blocks
    can be inferred from its data length.  There is one ARCS record per
@@ -144,14 +142,14 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    blocks they are for.
 
    The data file contains the following records.
-	data: {unit summary:object function-data*}*
-	unit: header int32:checksum
-	function-data:	announce_function present counts
-	announce_function: header int32:ident
-		int32:lineno_checksum int32:cfg_checksum
-	present: header int32:present
-	counts: header int64:count*
-	summary: int32:checksum int32:runs int32:sum_max
+        data: {unit summary:object function-data*}*
+        unit: header int32:checksum
+        function-data:	announce_function present counts
+        announce_function: header int32:ident
+                int32:lineno_checksum int32:cfg_checksum
+        present: header int32:present
+        counts: header int64:count*
+        summary: int32:checksum int32:runs int32:sum_max
 
    The ANNOUNCE_FUNCTION record is the same as that in the note file,
    but without the source location.  The COUNTS gives the
@@ -179,8 +177,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
 struct gcov_kvp;
 
-struct gcov_kvp
-{
+struct gcov_kvp {
   gcov_type value;
   gcov_type count;
   struct gcov_kvp *next;
@@ -201,13 +198,13 @@ typedef uint64_t gcov_type_unsigned;
 #endif
 #endif
 
-#if defined (HOST_HAS_F_SETLKW)
+#if defined(HOST_HAS_F_SETLKW)
 #define GCOV_LOCKED 1
 #else
 #define GCOV_LOCKED 0
 #endif
 
-#if defined (HOST_HAS_LK_LOCK)
+#if defined(HOST_HAS_LK_LOCK)
 #define GCOV_LOCKED_WITH_LOCKING 1
 #else
 #define GCOV_LOCKED_WITH_LOCKING 0
@@ -224,8 +221,8 @@ typedef uint64_t gcov_type_unsigned;
 #if IN_LIBGCOV
 #define gcov_nonruntime_assert(EXPR) ((void)(0 && (EXPR)))
 #else
-#define gcov_nonruntime_assert(EXPR) gcc_assert (EXPR)
-#define gcov_error(...) fatal_error (input_location, __VA_ARGS__)
+#define gcov_nonruntime_assert(EXPR) gcc_assert(EXPR)
+#define gcov_error(...) fatal_error(input_location, __VA_ARGS__)
 #endif
 
 /* File suffixes.  */
@@ -233,18 +230,16 @@ typedef uint64_t gcov_type_unsigned;
 #define GCOV_NOTE_SUFFIX ".gcno"
 
 /* File magic. Must not be palindromes.  */
-#define GCOV_DATA_MAGIC ((gcov_unsigned_t)0x67636461) /* "gcda" */
-#define GCOV_NOTE_MAGIC ((gcov_unsigned_t)0x67636e6f) /* "gcno" */
+#define GCOV_DATA_MAGIC ((gcov_unsigned_t)0x67636461)     /* "gcda" */
+#define GCOV_NOTE_MAGIC ((gcov_unsigned_t)0x67636e6f)     /* "gcno" */
 #define GCOV_FILENAME_MAGIC ((gcov_unsigned_t)0x6763666e) /* "gcfn" */
 
 #include "version.h"
 
 /* Convert a magic or version number to a 4 character string.  */
-#define GCOV_UNSIGNED2STRING(ARRAY,VALUE)	\
-  ((ARRAY)[0] = (char)((VALUE) >> 24),		\
-   (ARRAY)[1] = (char)((VALUE) >> 16),		\
-   (ARRAY)[2] = (char)((VALUE) >> 8),		\
-   (ARRAY)[3] = (char)((VALUE) >> 0))
+#define GCOV_UNSIGNED2STRING(ARRAY, VALUE)                                     \
+  ((ARRAY)[0] = (char)((VALUE) >> 24), (ARRAY)[1] = (char)((VALUE) >> 16),     \
+   (ARRAY)[2] = (char)((VALUE) >> 8), (ARRAY)[3] = (char)((VALUE) >> 0))
 
 /* The record tags.  Values [1..3f] are for tags which may be in either
    file.  Values [41..9f] for those in the note file and [a1..ff] for
@@ -252,41 +247,40 @@ typedef uint64_t gcov_type_unsigned;
    file marker -- it is not required to be present.
    All length values are in bytes.  */
 
-#define GCOV_WORD_SIZE		4
+#define GCOV_WORD_SIZE 4
 
-#define GCOV_TAG_FUNCTION	 ((gcov_unsigned_t)0x01000000)
+#define GCOV_TAG_FUNCTION ((gcov_unsigned_t)0x01000000)
 #define GCOV_TAG_FUNCTION_LENGTH (3 * GCOV_WORD_SIZE)
-#define GCOV_TAG_BLOCKS		 ((gcov_unsigned_t)0x01410000)
+#define GCOV_TAG_BLOCKS ((gcov_unsigned_t)0x01410000)
 #define GCOV_TAG_BLOCKS_LENGTH(NUM) (NUM)
-#define GCOV_TAG_ARCS		 ((gcov_unsigned_t)0x01430000)
-#define GCOV_TAG_ARCS_LENGTH(NUM)  (1 + (NUM) * 2 * GCOV_WORD_SIZE)
-#define GCOV_TAG_ARCS_NUM(LENGTH)  (((LENGTH / GCOV_WORD_SIZE) - 1) / 2)
-#define GCOV_TAG_CONDS		   ((gcov_unsigned_t)0x01470000)
+#define GCOV_TAG_ARCS ((gcov_unsigned_t)0x01430000)
+#define GCOV_TAG_ARCS_LENGTH(NUM) (1 + (NUM) * 2 * GCOV_WORD_SIZE)
+#define GCOV_TAG_ARCS_NUM(LENGTH) (((LENGTH / GCOV_WORD_SIZE) - 1) / 2)
+#define GCOV_TAG_CONDS ((gcov_unsigned_t)0x01470000)
 #define GCOV_TAG_CONDS_LENGTH(NUM) ((NUM) * 2 * GCOV_WORD_SIZE)
 #define GCOV_TAG_CONDS_NUM(LENGTH) (((LENGTH) / GCOV_WORD_SIZE) / 2)
-#define GCOV_TAG_PATHS		   ((gcov_unsigned_t)0x01490000)
+#define GCOV_TAG_PATHS ((gcov_unsigned_t)0x01490000)
 #define GCOV_TAG_PATHS_LENGTH(NUM) ((NUM) * GCOV_WORD_SIZE)
 #define GCOV_TAG_PATHS_NUM(LENGTH) (((LENGTH) / GCOV_WORD_SIZE))
-#define GCOV_TAG_LINES		 ((gcov_unsigned_t)0x01450000)
-#define GCOV_TAG_COUNTER_BASE 	 ((gcov_unsigned_t)0x01a10000)
+#define GCOV_TAG_LINES ((gcov_unsigned_t)0x01450000)
+#define GCOV_TAG_COUNTER_BASE ((gcov_unsigned_t)0x01a10000)
 #define GCOV_TAG_COUNTER_LENGTH(NUM) ((NUM) * 2 * GCOV_WORD_SIZE)
 #define GCOV_TAG_COUNTER_NUM(LENGTH) ((LENGTH / GCOV_WORD_SIZE) / 2)
-#define GCOV_TAG_OBJECT_SUMMARY  ((gcov_unsigned_t)0xa1000000)
+#define GCOV_TAG_OBJECT_SUMMARY ((gcov_unsigned_t)0xa1000000)
 #define GCOV_TAG_OBJECT_SUMMARY_LENGTH (2 * GCOV_WORD_SIZE)
 #define GCOV_TAG_PROGRAM_SUMMARY ((gcov_unsigned_t)0xa3000000) /* Obsolete */
 
-#define GCOV_TAG_AFDO_SUMMARY    ((gcov_unsigned_t)0xa8000000)
+#define GCOV_TAG_AFDO_SUMMARY ((gcov_unsigned_t)0xa8000000)
 #define GCOV_TAG_AFDO_FILE_NAMES ((gcov_unsigned_t)0xaa000000)
 #define GCOV_TAG_AFDO_FUNCTION ((gcov_unsigned_t)0xac000000)
 #define GCOV_TAG_AFDO_WORKING_SET ((gcov_unsigned_t)0xaf000000)
-
 
 /* Counters that are collected.  */
 
 #define DEF_GCOV_COUNTER(COUNTER, NAME, MERGE_FN) COUNTER,
 enum {
 #include "gcov-counter.def"
-GCOV_COUNTERS
+  GCOV_COUNTERS
 };
 #undef DEF_GCOV_COUNTER
 
@@ -299,7 +293,7 @@ GCOV_COUNTERS
 #define GCOV_LAST_VALUE_COUNTER (GCOV_COUNTERS - 1)
 
 /* Number of counters used for value profiling.  */
-#define GCOV_N_VALUE_COUNTERS \
+#define GCOV_N_VALUE_COUNTERS                                                  \
   (GCOV_LAST_VALUE_COUNTER - GCOV_FIRST_VALUE_COUNTER + 1)
 
 /* Number of top N counters when being in memory.  */
@@ -312,14 +306,14 @@ GCOV_COUNTERS
 #define GCOV_TOPN_MAXIMUM_TRACKED_VALUES 32
 
 /* Convert a counter index to a tag.  */
-#define GCOV_TAG_FOR_COUNTER(COUNT)				\
-	(GCOV_TAG_COUNTER_BASE + ((gcov_unsigned_t)(COUNT) << 17))
+#define GCOV_TAG_FOR_COUNTER(COUNT)                                            \
+  (GCOV_TAG_COUNTER_BASE + ((gcov_unsigned_t)(COUNT) << 17))
 /* Convert a tag to a counter.  */
-#define GCOV_COUNTER_FOR_TAG(TAG)					\
-	((unsigned)(((TAG) - GCOV_TAG_COUNTER_BASE) >> 17))
+#define GCOV_COUNTER_FOR_TAG(TAG)                                              \
+  ((unsigned)(((TAG) - GCOV_TAG_COUNTER_BASE) >> 17))
 /* Check whether a tag is a counter tag.  */
-#define GCOV_TAG_IS_COUNTER(TAG)				\
-	(!((TAG) & 0xFFFF) && GCOV_COUNTER_FOR_TAG (TAG) < GCOV_COUNTERS)
+#define GCOV_TAG_IS_COUNTER(TAG)                                               \
+  (!((TAG) & 0xFFFF) && GCOV_COUNTER_FOR_TAG(TAG) < GCOV_COUNTERS)
 
 /* The tag level mask has 1's in the position of the inner levels, &
    the lsb of the current level, and zero on the current and outer
@@ -327,35 +321,33 @@ GCOV_COUNTERS
 #define GCOV_TAG_MASK(TAG) (((TAG) - 1) ^ (TAG))
 
 /* Return nonzero if SUB is an immediate subtag of TAG.  */
-#define GCOV_TAG_IS_SUBTAG(TAG,SUB)				\
-	(GCOV_TAG_MASK (TAG) >> 8 == GCOV_TAG_MASK (SUB) 	\
-	 && !(((SUB) ^ (TAG)) & ~GCOV_TAG_MASK (TAG)))
+#define GCOV_TAG_IS_SUBTAG(TAG, SUB)                                           \
+  (GCOV_TAG_MASK(TAG) >> 8 == GCOV_TAG_MASK(SUB) &&                            \
+   !(((SUB) ^ (TAG)) & ~GCOV_TAG_MASK(TAG)))
 
 /* Return nonzero if SUB is at a sublevel to TAG.  */
-#define GCOV_TAG_IS_SUBLEVEL(TAG,SUB)				\
-     	(GCOV_TAG_MASK (TAG) > GCOV_TAG_MASK (SUB))
+#define GCOV_TAG_IS_SUBLEVEL(TAG, SUB) (GCOV_TAG_MASK(TAG) > GCOV_TAG_MASK(SUB))
 
 /* Basic block flags.  */
-#define GCOV_BLOCK_UNEXPECTED	(1 << 1)
+#define GCOV_BLOCK_UNEXPECTED (1 << 1)
 
 /* Arc flags.  */
-#define GCOV_ARC_ON_TREE 	(1 << 0)
-#define GCOV_ARC_FAKE		(1 << 1)
-#define GCOV_ARC_FALLTHROUGH	(1 << 2)
-#define GCOV_ARC_TRUE		(1 << 3)
-#define GCOV_ARC_FALSE		(1 << 4)
+#define GCOV_ARC_ON_TREE (1 << 0)
+#define GCOV_ARC_FAKE (1 << 1)
+#define GCOV_ARC_FALLTHROUGH (1 << 2)
+#define GCOV_ARC_TRUE (1 << 3)
+#define GCOV_ARC_FALSE (1 << 4)
 
 /* Object & program summary record.  */
 
-struct gcov_summary
-{
-  gcov_unsigned_t runs;		/* Number of program runs.  */
-  gcov_type sum_max;    	/* Sum of individual run max values.  */
-  gcov_type cutoff;		/* Values smaller than this value are not
-				   reliable (0 may mean non-zero).
-				   For read profile cutoff is typically 1
-				   however when we scale up or use auto-fdo
-				   it may become bigger value.  */
+struct gcov_summary {
+  gcov_unsigned_t runs; /* Number of program runs.  */
+  gcov_type sum_max;    /* Sum of individual run max values.  */
+  gcov_type cutoff;     /* Values smaller than this value are not
+                           reliable (0 may mean non-zero).
+                           For read profile cutoff is typically 1
+                           however when we scale up or use auto-fdo
+                           it may become bigger value.  */
 };
 
 #if !defined(inhibit_libc)
@@ -370,39 +362,39 @@ struct gcov_summary
    functions for writing.  Your file may become corrupted if you break
    these invariants.  */
 
-#if !IN_LIBGCOV || defined (IN_GCOV_TOOL)
-GCOV_LINKAGE int gcov_magic (gcov_unsigned_t, gcov_unsigned_t);
+#if !IN_LIBGCOV || defined(IN_GCOV_TOOL)
+GCOV_LINKAGE int gcov_magic(gcov_unsigned_t, gcov_unsigned_t);
 #endif
 
 /* Available everywhere.  */
-GCOV_LINKAGE int gcov_open (const char *, int) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE int gcov_close (void) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE gcov_unsigned_t gcov_read_unsigned (void) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE gcov_type gcov_read_counter (void) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE void gcov_read_summary (struct gcov_summary *) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE const char *gcov_read_string (void);
-GCOV_LINKAGE void gcov_sync (gcov_position_t /*base*/,
-			     gcov_unsigned_t /*length */);
-char *mangle_path (char const *base);
+GCOV_LINKAGE int gcov_open(const char *, int) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE int gcov_close(void) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE gcov_unsigned_t gcov_read_unsigned(void) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE gcov_type gcov_read_counter(void) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE void gcov_read_summary(struct gcov_summary *) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE const char *gcov_read_string(void);
+GCOV_LINKAGE void gcov_sync(gcov_position_t /*base*/,
+                            gcov_unsigned_t /*length */);
+char *mangle_path(char const *base);
 
 #if !IN_GCOV
 /* Available outside gcov */
-GCOV_LINKAGE void gcov_write (const void *, unsigned) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE void gcov_write_unsigned (gcov_unsigned_t) ATTRIBUTE_HIDDEN;
-GCOV_LINKAGE int gcov_is_error (void);
+GCOV_LINKAGE void gcov_write(const void *, unsigned) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE void gcov_write_unsigned(gcov_unsigned_t) ATTRIBUTE_HIDDEN;
+GCOV_LINKAGE int gcov_is_error(void);
 #endif
 
 #if !IN_GCOV && !IN_LIBGCOV
 /* Available only in compiler */
-GCOV_LINKAGE void gcov_write_string (const char *);
-GCOV_LINKAGE void gcov_write_filename (const char *);
-GCOV_LINKAGE gcov_position_t gcov_write_tag (gcov_unsigned_t);
-GCOV_LINKAGE void gcov_write_length (gcov_position_t /*position*/);
+GCOV_LINKAGE void gcov_write_string(const char *);
+GCOV_LINKAGE void gcov_write_filename(const char *);
+GCOV_LINKAGE gcov_position_t gcov_write_tag(gcov_unsigned_t);
+GCOV_LINKAGE void gcov_write_length(gcov_position_t /*position*/);
 #endif
 
 #if IN_GCOV > 0
 /* Available in gcov */
-GCOV_LINKAGE time_t gcov_time (void);
+GCOV_LINKAGE time_t gcov_time(void);
 #endif
 
 #endif /* !inhibit_libc  */

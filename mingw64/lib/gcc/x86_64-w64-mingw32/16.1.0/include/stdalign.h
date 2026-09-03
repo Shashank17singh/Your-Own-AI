@@ -39,4 +39,4 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
 #endif
 
-#endif	/* stdalign.h */
+#endif /* stdalign.h */

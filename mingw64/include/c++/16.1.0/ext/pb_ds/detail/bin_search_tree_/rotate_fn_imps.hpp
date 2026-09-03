@@ -41,10 +41,7 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-rotate_left(node_pointer p_x)
-{
+inline void PB_DS_CLASS_C_DEC::rotate_left(node_pointer p_x) {
   node_pointer p_y = p_x->m_p_right;
 
   p_x->m_p_right = p_y->m_p_left;
@@ -67,15 +64,12 @@ rotate_left(node_pointer p_x)
   PB_DS_ASSERT_NODE_CONSISTENT(p_x)
   PB_DS_ASSERT_NODE_CONSISTENT(p_y)
 
-  apply_update(p_x, (node_update* )this);
-  apply_update(p_x->m_p_parent, (node_update* )this);
+  apply_update(p_x, (node_update *)this);
+  apply_update(p_x->m_p_parent, (node_update *)this);
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-rotate_right(node_pointer p_x)
-{
+inline void PB_DS_CLASS_C_DEC::rotate_right(node_pointer p_x) {
   node_pointer p_y = p_x->m_p_left;
 
   p_x->m_p_left = p_y->m_p_right;
@@ -98,15 +92,12 @@ rotate_right(node_pointer p_x)
   PB_DS_ASSERT_NODE_CONSISTENT(p_x)
   PB_DS_ASSERT_NODE_CONSISTENT(p_y)
 
-  apply_update(p_x, (node_update* )this);
-  apply_update(p_x->m_p_parent, (node_update* )this);
+  apply_update(p_x, (node_update *)this);
+  apply_update(p_x->m_p_parent, (node_update *)this);
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-rotate_parent(node_pointer p_nd)
-{
+inline void PB_DS_CLASS_C_DEC::rotate_parent(node_pointer p_nd) {
   node_pointer p_parent = p_nd->m_p_parent;
 
   if (p_nd == p_parent->m_p_left)
@@ -116,14 +107,11 @@ rotate_parent(node_pointer p_nd)
 
   _GLIBCXX_DEBUG_ASSERT(p_parent->m_p_parent = p_nd);
   _GLIBCXX_DEBUG_ASSERT(p_nd->m_p_left == p_parent ||
-		   p_nd->m_p_right == p_parent);
+                        p_nd->m_p_right == p_parent);
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-update_subtree_size(node_pointer p_nd)
-{
+inline void PB_DS_CLASS_C_DEC::update_subtree_size(node_pointer p_nd) {
   size_type size = 1;
   if (p_nd->m_p_left)
     size += p_nd->m_p_left->m_subtree_size;
@@ -134,48 +122,40 @@ update_subtree_size(node_pointer p_nd)
 
 PB_DS_CLASS_T_DEC
 inline void
-PB_DS_CLASS_C_DEC::
-apply_update(node_pointer p_nd, null_node_update_pointer /*p_update*/)
-{
+PB_DS_CLASS_C_DEC::apply_update(node_pointer p_nd,
+                                null_node_update_pointer /*p_update*/) {
   update_subtree_size(p_nd);
 }
 
 PB_DS_CLASS_T_DEC
-template<typename Node_Update_>
-inline void
-PB_DS_CLASS_C_DEC::
-apply_update(node_pointer p_nd, Node_Update_*  /*p_update*/)
-{
+template <typename Node_Update_>
+inline void PB_DS_CLASS_C_DEC::apply_update(node_pointer p_nd,
+                                            Node_Update_ * /*p_update*/) {
   update_subtree_size(p_nd);
   node_update::operator()(node_iterator(p_nd),
-			  node_const_iterator(static_cast<node_pointer>(0)));
+                          node_const_iterator(static_cast<node_pointer>(0)));
 }
 
 PB_DS_CLASS_T_DEC
-template<typename Node_Update_>
-inline void
-PB_DS_CLASS_C_DEC::
-update_to_top(node_pointer p_nd, Node_Update_* p_update)
-{
-  while (p_nd != m_p_head)
-    {
-      apply_update(p_nd, p_update);
+template <typename Node_Update_>
+inline void PB_DS_CLASS_C_DEC::update_to_top(node_pointer p_nd,
+                                             Node_Update_ *p_update) {
+  while (p_nd != m_p_head) {
+    apply_update(p_nd, p_update);
 
-      p_nd = p_nd->m_p_parent;
-    }
+    p_nd = p_nd->m_p_parent;
+  }
 }
 
 PB_DS_CLASS_T_DEC
 inline void
-PB_DS_CLASS_C_DEC::
-update_to_top(node_pointer p_nd, null_node_update_pointer /*p_update */)
-{
-  while (p_nd != m_p_head)
-    {
-      update_subtree_size(p_nd);
+PB_DS_CLASS_C_DEC::update_to_top(node_pointer p_nd,
+                                 null_node_update_pointer /*p_update */) {
+  while (p_nd != m_p_head) {
+    update_subtree_size(p_nd);
 
-      p_nd = p_nd->m_p_parent;
-    }
+    p_nd = p_nd->m_p_parent;
+  }
 }
 
 #endif

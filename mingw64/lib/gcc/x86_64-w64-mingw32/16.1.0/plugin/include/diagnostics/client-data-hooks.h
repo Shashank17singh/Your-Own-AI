@@ -31,85 +31,74 @@ class client_version_info;
 /* A bundle of additional metadata, owned by the diagnostics::context,
    for querying things about the client, like version data.  */
 
-class client_data_hooks
-{
- public:
-  virtual ~client_data_hooks () {}
+class client_data_hooks {
+public:
+  virtual ~client_data_hooks() {}
 
-  void dump (FILE *out, int indent) const;
-  void DEBUG_FUNCTION dump () const { dump (stderr, 0); }
+  void dump(FILE *out, int indent) const;
+  void DEBUG_FUNCTION dump() const { dump(stderr, 0); }
 
   /* Get version info for this client, or NULL.  */
-  virtual const client_version_info *get_any_version_info () const = 0;
+  virtual const client_version_info *get_any_version_info() const = 0;
 
   /* Get the current logical_locations::manager for this client, or null.  */
   virtual const logical_locations::manager *
-  get_logical_location_manager () const = 0;
+  get_logical_location_manager() const = 0;
 
   /* Get the current logical location, or null.
      If this returns a non-null logical location, then
      get_logical_location_manager must return non-null.  */
-  virtual logical_locations::key
-  get_current_logical_location () const = 0;
+  virtual logical_locations::key get_current_logical_location() const = 0;
 
   /* Get a sourceLanguage value for FILENAME, or return NULL.
      See SARIF v2.1.0 Appendix J for suggested values.  */
   virtual const char *
-  maybe_get_sarif_source_language (const char *filename) const = 0;
+  maybe_get_sarif_source_language(const char *filename) const = 0;
 
   /* Hook to allow client to populate a SARIF "invocation" object with
      a custom property bag (see SARIF v2.1.0 section 3.8).  */
   virtual void
-  add_sarif_invocation_properties (sarif_object &invocation_obj) const = 0;
+  add_sarif_invocation_properties(sarif_object &invocation_obj) const = 0;
 };
 
 /* Implementation of client_data_hooks that delegates vfuncs to an
    optional inner object.  */
 
-class client_data_hooks_decorator : public client_data_hooks
-{
- public:
-  client_data_hooks_decorator (const client_data_hooks *inner)
-  : m_inner (inner)
-  {
-  }
+class client_data_hooks_decorator : public client_data_hooks {
+public:
+  client_data_hooks_decorator(const client_data_hooks *inner)
+      : m_inner(inner) {}
 
-  const client_version_info *get_any_version_info () const override
-  {
+  const client_version_info *get_any_version_info() const override {
     if (m_inner)
-      return m_inner->get_any_version_info ();
+      return m_inner->get_any_version_info();
     return nullptr;
   }
 
   const logical_locations::manager *
-  get_logical_location_manager () const override
-  {
+  get_logical_location_manager() const override {
     if (m_inner)
-      return m_inner->get_logical_location_manager ();
+      return m_inner->get_logical_location_manager();
     return nullptr;
   }
 
-  logical_locations::key
-  get_current_logical_location () const override
-  {
+  logical_locations::key get_current_logical_location() const override {
     if (m_inner)
-      return m_inner->get_current_logical_location ();
-    return logical_locations::key ();
+      return m_inner->get_current_logical_location();
+    return logical_locations::key();
   }
 
   const char *
-  maybe_get_sarif_source_language (const char *filename) const override
-  {
+  maybe_get_sarif_source_language(const char *filename) const override {
     if (m_inner)
-      return m_inner->maybe_get_sarif_source_language (filename);
+      return m_inner->maybe_get_sarif_source_language(filename);
     return nullptr;
   }
 
   void
-  add_sarif_invocation_properties (sarif_object &invocation_obj) const override
-  {
+  add_sarif_invocation_properties(sarif_object &invocation_obj) const override {
     if (m_inner)
-      m_inner->add_sarif_invocation_properties (invocation_obj);
+      m_inner->add_sarif_invocation_properties(invocation_obj);
   }
 
 private:
@@ -121,52 +110,49 @@ class client_plugin_info;
 /* Abstract base class for a diagnostics::context to get at
    version information about the client.  */
 
-class client_version_info
-{
+class client_version_info {
 public:
-  class plugin_visitor
-  {
+  class plugin_visitor {
   public:
-    virtual void on_plugin (const client_plugin_info &) = 0;
+    virtual void on_plugin(const client_plugin_info &) = 0;
   };
 
-  virtual ~client_version_info () {}
+  virtual ~client_version_info() {}
 
   /* Get a string suitable for use as the value of the "name" property
      (SARIF v2.1.0 section 3.19.8).  */
-  virtual const char *get_tool_name () const = 0;
+  virtual const char *get_tool_name() const = 0;
 
   /* Create a string suitable for use as the value of the "fullName" property
      (SARIF v2.1.0 section 3.19.9).  */
-  virtual char *maybe_make_full_name () const = 0;
+  virtual char *maybe_make_full_name() const = 0;
 
   /* Get a string suitable for use as the value of the "version" property
      (SARIF v2.1.0 section 3.19.13).  */
-  virtual const char *get_version_string () const = 0;
+  virtual const char *get_version_string() const = 0;
 
   /* Create a string suitable for use as the value of the "informationUri"
      property (SARIF v2.1.0 section 3.19.17).  */
-  virtual char *maybe_make_version_url () const = 0;
+  virtual char *maybe_make_version_url() const = 0;
 
-  virtual void for_each_plugin (plugin_visitor &v) const = 0;
+  virtual void for_each_plugin(plugin_visitor &v) const = 0;
 };
 
 /* Abstract base class for a diagnostics::context to get at
    information about a specific plugin within a client.  */
 
-class client_plugin_info
-{
+class client_plugin_info {
 public:
   /* For use e.g. by SARIF "name" property (SARIF v2.1.0 section 3.19.8).  */
-  virtual const char *get_short_name () const = 0;
+  virtual const char *get_short_name() const = 0;
 
   /* For use e.g. by SARIF "fullName" property
      (SARIF v2.1.0 section 3.19.9).  */
-  virtual const char *get_full_name () const = 0;
+  virtual const char *get_full_name() const = 0;
 
   /* For use e.g. by SARIF "version" property
      (SARIF v2.1.0 section 3.19.13).  */
-  virtual const char *get_version () const = 0;
+  virtual const char *get_version() const = 0;
 };
 
 } // namespace diagnostics
@@ -176,6 +162,6 @@ public:
    langhooks, etc).  */
 
 extern std::unique_ptr<diagnostics::client_data_hooks>
-make_compiler_data_hooks ();
+make_compiler_data_hooks();
 
 #endif /* ! GCC_DIAGNOSTICS_CLIENT_DATA_HOOKS_H */

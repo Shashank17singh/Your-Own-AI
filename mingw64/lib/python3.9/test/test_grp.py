@@ -3,7 +3,8 @@
 import unittest
 from test import support
 
-grp = support.import_module('grp')
+grp = support.import_module("grp")
+
 
 class GroupDatabaseTestCase(unittest.TestCase):
 
@@ -29,14 +30,14 @@ class GroupDatabaseTestCase(unittest.TestCase):
     def test_values_extended(self):
         entries = grp.getgrall()
         if len(entries) > 1000:  # Huge group file (NIS?) -- skip the rest
-            self.skipTest('huge group file, extended test skipped')
+            self.skipTest("huge group file, extended test skipped")
 
         for e in entries:
             e2 = grp.getgrgid(e.gr_gid)
             self.check_value(e2)
             self.assertEqual(e2.gr_gid, e.gr_gid)
             name = e.gr_name
-            if name.startswith('+') or name.startswith('-'):
+            if name.startswith("+") or name.startswith("-"):
                 # NIS-related entry
                 continue
             e2 = grp.getgrnam(name)
@@ -51,14 +52,14 @@ class GroupDatabaseTestCase(unittest.TestCase):
         self.assertRaises(TypeError, grp.getgrnam)
         self.assertRaises(TypeError, grp.getgrall, 42)
         # embedded null character
-        self.assertRaises(ValueError, grp.getgrnam, 'a\x00b')
+        self.assertRaises(ValueError, grp.getgrnam, "a\x00b")
 
         # try to get some errors
         bynames = {}
         bygids = {}
-        for (n, p, g, mem) in grp.getgrall():
-            if not n or n == '+':
-                continue # skip NIS entries etc.
+        for n, p, g, mem in grp.getgrall():
+            if not n or n == "+":
+                continue  # skip NIS entries etc.
             bynames[n] = g
             bygids[g] = n
 
@@ -68,10 +69,10 @@ class GroupDatabaseTestCase(unittest.TestCase):
         while fakename in bynames:
             chars = list(fakename)
             for i in range(len(chars)):
-                if chars[i] == 'z':
-                    chars[i] = 'A'
+                if chars[i] == "z":
+                    chars[i] = "A"
                     break
-                elif chars[i] == 'Z':
+                elif chars[i] == "Z":
                     continue
                 else:
                     chars[i] = chr(ord(chars[i]) + 1)
@@ -83,7 +84,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
                 except IndexError:
                     # should never happen... if so, just forget it
                     break
-            fakename = ''.join(chars)
+            fakename = "".join(chars)
 
         self.assertRaises(KeyError, grp.getgrnam, fakename)
 
@@ -97,7 +98,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
     def test_noninteger_gid(self):
         entries = grp.getgrall()
         if not entries:
-            self.skipTest('no groups')
+            self.skipTest("no groups")
         # Choose an existent gid.
         gid = entries[0][2]
         self.assertWarns(DeprecationWarning, grp.getgrgid, float(gid))

@@ -33,21 +33,21 @@
 #endif
 
 #if __cplusplus >= 201103L
-# include <ext/aligned_buffer.h>
+#include <ext/aligned_buffer.h>
 #endif
 #include <ext/alloc_traits.h>
 #include <ext/atomicity.h>
 #include <ext/iterator>
 #include <ext/numeric_traits.h>
 #include <ext/pointer.h>
-#include <ext/typelist.h>
 #include <ext/type_traits.h>
+#include <ext/typelist.h>
 
 #if _GLIBCXX_HOSTED
 #include <ext/algorithm>
 #include <ext/bitmap_allocator.h>
 #if __cplusplus >= 201103L
-# include <ext/cmath>
+#include <ext/cmath>
 #endif
 #include <ext/concurrence.h>
 #include <ext/debug_allocator.h>
@@ -61,8 +61,15 @@
 #include <ext/pod_char_traits.h>
 #include <ext/pool_allocator.h>
 #if __cplusplus >= 201103L
-# include <ext/random>
+#include <ext/random>
 #endif
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/exception.hpp>
+#include <ext/pb_ds/hash_policy.hpp>
+#include <ext/pb_ds/list_update_policy.hpp>
+#include <ext/pb_ds/priority_queue.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/trie_policy.hpp>
 #include <ext/rb_tree>
 #include <ext/rope>
 #include <ext/slist>
@@ -70,16 +77,9 @@
 #include <ext/stdio_sync_filebuf.h>
 #include <ext/throw_allocator.h>
 #include <ext/vstring.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/priority_queue.hpp>
-#include <ext/pb_ds/exception.hpp>
-#include <ext/pb_ds/hash_policy.hpp>
-#include <ext/pb_ds/list_update_policy.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#include <ext/pb_ds/trie_policy.hpp>
 
 #ifdef _GLIBCXX_HAVE_ICONV
- #include <ext/codecvt_specializations.h>
- #include <ext/enc_filebuf.h>
+#include <ext/codecvt_specializations.h>
+#include <ext/enc_filebuf.h>
 #endif
 #endif // HOSTED

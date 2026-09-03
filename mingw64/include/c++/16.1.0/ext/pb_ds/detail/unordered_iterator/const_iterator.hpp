@@ -44,9 +44,7 @@
 
 #ifdef PB_DS_CLASS_C_DEC
 /// Const range-type iterator.
-class const_iterator_
-: public point_const_iterator_
-{
+class const_iterator_ : public point_const_iterator_ {
 public:
   /// Category.
   typedef std::forward_iterator_tag iterator_category;
@@ -70,22 +68,17 @@ public:
   typedef const_reference_ const_reference;
 
   /// Default constructor.
-  const_iterator_() : m_p_tbl(0)
-  { }
+  const_iterator_() : m_p_tbl(0) {}
 
   /// Increments.
-  const_iterator_&
-  operator++()
-  {
+  const_iterator_ &operator++() {
     m_p_tbl->inc_it_state(base_type::m_p_value, m_pos);
     return *this;
   }
 
   /// Increments.
-  const_iterator_
-  operator++(int)
-  {
-    const_iterator_ ret =* this;
+  const_iterator_ operator++(int) {
+    const_iterator_ ret = *this;
     m_p_tbl->inc_it_state(base_type::m_p_value, m_pos);
     return ret;
   }
@@ -98,16 +91,15 @@ protected:
    *      pointer and position (e.g., this is called from within a find()
    *      of a table.
    * */
-  const_iterator_(const_pointer_ p_value,  PB_DS_GEN_POS pos,
-		  const PB_DS_CLASS_C_DEC* p_tbl)
-  : point_const_iterator_(p_value), m_p_tbl(p_tbl), m_pos(pos)
-  { }
+  const_iterator_(const_pointer_ p_value, PB_DS_GEN_POS pos,
+                  const PB_DS_CLASS_C_DEC *p_tbl)
+      : point_const_iterator_(p_value), m_p_tbl(p_tbl), m_pos(pos) {}
 
   /**
    *  Pointer to the table object which created the iterator (used for
    *      incrementing its position.
    * */
-  const PB_DS_CLASS_C_DEC* m_p_tbl;
+  const PB_DS_CLASS_C_DEC *m_p_tbl;
 
   PB_DS_GEN_POS m_pos;
 

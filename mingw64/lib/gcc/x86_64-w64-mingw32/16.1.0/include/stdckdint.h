@@ -28,13 +28,13 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
 #define __STDC_VERSION_STDCKDINT_H__ 202311L
 
-#define ckd_add(r, a, b) ((_Bool) __builtin_add_overflow (a, b, r))
-#define ckd_sub(r, a, b) ((_Bool) __builtin_sub_overflow (a, b, r))
-#define ckd_mul(r, a, b) ((_Bool) __builtin_mul_overflow (a, b, r))
+#define ckd_add(r, a, b) ((_Bool)__builtin_add_overflow(a, b, r))
+#define ckd_sub(r, a, b) ((_Bool)__builtin_sub_overflow(a, b, r))
+#define ckd_mul(r, a, b) ((_Bool)__builtin_mul_overflow(a, b, r))
 
 /* Allow for the C library to add its part to the header.  */
-#if !defined (_LIBC_STDCKDINT_H) && __has_include_next (<stdckdint.h>)
-# include_next <stdckdint.h>
+#if !defined(_LIBC_STDCKDINT_H) && __has_include_next(<stdckdint.h>)
+#include_next <stdckdint.h>
 #endif
 
 #endif /* stdckdint.h */

@@ -24,8 +24,7 @@ along with GCC; see the file COPYING3.  If not see
    Note that this is useful exclusively before the code is converted
    into SSA form.  Once the program is in SSA form, the standard
    operand interface should be used to analyze/modify statements.  */
-struct walk_stmt_info
-{
+struct walk_stmt_info {
   /* Points to the current statement being walked.  */
   gimple_stmt_iterator gsi;
   gimple *stmt;
@@ -80,22 +79,22 @@ struct walk_stmt_info
    sub-statements of the statement (the default value of this flag is
    'false').  The third argument is an anonymous pointer to data
    to be used by the callback.  */
-typedef tree (*walk_stmt_fn) (gimple_stmt_iterator *, bool *,
-			      struct walk_stmt_info *);
+typedef tree (*walk_stmt_fn)(gimple_stmt_iterator *, bool *,
+                             struct walk_stmt_info *);
 
-extern gimple *walk_gimple_seq_mod (gimple_seq *, walk_stmt_fn, walk_tree_fn,
-				   struct walk_stmt_info *);
-extern gimple *walk_gimple_seq (gimple_seq, walk_stmt_fn, walk_tree_fn,
-			       struct walk_stmt_info *);
-extern tree walk_gimple_op (gimple *, walk_tree_fn, struct walk_stmt_info *);
-extern tree walk_gimple_stmt (gimple_stmt_iterator *, walk_stmt_fn,
-			      walk_tree_fn, struct walk_stmt_info *);
-typedef bool (*walk_stmt_load_store_addr_fn) (gimple *, tree, tree, void *);
-extern bool walk_stmt_load_store_addr_ops (gimple *, void *,
-					   walk_stmt_load_store_addr_fn,
-					   walk_stmt_load_store_addr_fn,
-					   walk_stmt_load_store_addr_fn);
-extern bool walk_stmt_load_store_ops (gimple *, void *,
-				      walk_stmt_load_store_addr_fn,
-				      walk_stmt_load_store_addr_fn);
+extern gimple *walk_gimple_seq_mod(gimple_seq *, walk_stmt_fn, walk_tree_fn,
+                                   struct walk_stmt_info *);
+extern gimple *walk_gimple_seq(gimple_seq, walk_stmt_fn, walk_tree_fn,
+                               struct walk_stmt_info *);
+extern tree walk_gimple_op(gimple *, walk_tree_fn, struct walk_stmt_info *);
+extern tree walk_gimple_stmt(gimple_stmt_iterator *, walk_stmt_fn, walk_tree_fn,
+                             struct walk_stmt_info *);
+typedef bool (*walk_stmt_load_store_addr_fn)(gimple *, tree, tree, void *);
+extern bool walk_stmt_load_store_addr_ops(gimple *, void *,
+                                          walk_stmt_load_store_addr_fn,
+                                          walk_stmt_load_store_addr_fn,
+                                          walk_stmt_load_store_addr_fn);
+extern bool walk_stmt_load_store_ops(gimple *, void *,
+                                     walk_stmt_load_store_addr_fn,
+                                     walk_stmt_load_store_addr_fn);
 #endif /* GCC_GIMPLE_WALK_H */

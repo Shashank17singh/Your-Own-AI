@@ -9,21 +9,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 typedef enum _SysmonDataType {
-  sysmonDataAvg     = 1,
-  sysmonDataMin     = 2,
-  sysmonDataMax     = 3,
-  sysmonDataTime    = 4,
-  sysmonDataCount   = 5 
+  sysmonDataAvg = 1,
+  sysmonDataMin = 2,
+  sysmonDataMax = 3,
+  sysmonDataTime = 4,
+  sysmonDataCount = 5
 } SysmonDataType;
-
 typedef enum _SysmonBatchReason {
-  SysmonBatchNone          = 0,
-  SysmonBatchAddFiles      = 1,
-  SysmonBatchAddCounters   = 2 
+  SysmonBatchNone = 0,
+  SysmonBatchAddFiles = 1,
+  SysmonBatchAddCounters = 2
 } SysmonBatchReason;
-
 #ifdef __cplusplus
 }
 #endif

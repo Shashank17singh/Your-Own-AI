@@ -16,31 +16,22 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef __ERRORS__
 #define __ERRORS__
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define AMOVIEAPI
-
-#define VFW_FIRST_CODE      0x200
-#define MAX_ERROR_TEXT_LEN  160
-
+#define VFW_FIRST_CODE 0x200
+#define MAX_ERROR_TEXT_LEN 160
 #include <vfwmsgs.h>
-
-typedef WINBOOL (WINAPI* AMGETERRORTEXTPROCA)(HRESULT,char*,DWORD);
-typedef WINBOOL (WINAPI* AMGETERRORTEXTPROCW)(HRESULT,WCHAR*,DWORD);
+typedef WINBOOL(WINAPI *AMGETERRORTEXTPROCA)(HRESULT, char *, DWORD);
+typedef WINBOOL(WINAPI *AMGETERRORTEXTPROCW)(HRESULT, WCHAR *, DWORD);
 __MINGW_TYPEDEF_AW(AMGETERRORTEXTPROC)
-
-DWORD WINAPI AMGetErrorTextA(HRESULT,LPSTR,DWORD);
-DWORD WINAPI AMGetErrorTextW(HRESULT,LPWSTR,DWORD);
+DWORD WINAPI AMGetErrorTextA(HRESULT, LPSTR, DWORD);
+DWORD WINAPI AMGetErrorTextW(HRESULT, LPWSTR, DWORD);
 #define AMGetErrorText __MINGW_NAME_AW(AMGetErrorText)
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __ERRORS__ */

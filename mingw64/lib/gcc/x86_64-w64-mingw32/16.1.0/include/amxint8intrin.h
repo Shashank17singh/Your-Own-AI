@@ -35,23 +35,24 @@
 #endif /* __AMX_INT8__ */
 
 #if defined(__x86_64__)
-#define _tile_int8_dp_internal(name,dst,src1,src2)					\
-  __asm__ volatile							\
-  ("{"#name"\t%%tmm%c[_src2], %%tmm%c[_src1], %%tmm%c[_dst]		\
-   |"#name"\ttmm%c[_dst], tmm%c[_src1], tmm%c[_src2]}"		\
-   ::[_dst]"i"(dst),[_src1]"i"(src1),[_src2]"i"(src2))
+#define _tile_int8_dp_internal(name, dst, src1, src2)                          \
+  __asm__ volatile(                                                            \
+      "{" #name                                                                \
+      "\t%%tmm%c[_src2], %%tmm%c[_src1], %%tmm%c[_dst]		\
+   |" #name "\ttmm%c[_dst], tmm%c[_src1], tmm%c[_src2]}" ::[_dst] "i"(dst),    \
+      [_src1] "i"(src1), [_src2] "i"(src2))
 
-#define _tile_dpbssd(dst,src1,src2)					\
-  _tile_int8_dp_internal (tdpbssd, dst, src1, src2)
+#define _tile_dpbssd(dst, src1, src2)                                          \
+  _tile_int8_dp_internal(tdpbssd, dst, src1, src2)
 
-#define _tile_dpbsud(dst,src1,src2)					\
-  _tile_int8_dp_internal (tdpbsud, dst, src1, src2)
+#define _tile_dpbsud(dst, src1, src2)                                          \
+  _tile_int8_dp_internal(tdpbsud, dst, src1, src2)
 
-#define _tile_dpbusd(dst,src1,src2)					\
-  _tile_int8_dp_internal (tdpbusd, dst, src1, src2)
+#define _tile_dpbusd(dst, src1, src2)                                          \
+  _tile_int8_dp_internal(tdpbusd, dst, src1, src2)
 
-#define _tile_dpbuud(dst,src1,src2)					\
-  _tile_int8_dp_internal (tdpbuud, dst, src1, src2)
+#define _tile_dpbuud(dst, src1, src2)                                          \
+  _tile_int8_dp_internal(tdpbuud, dst, src1, src2)
 
 #endif
 

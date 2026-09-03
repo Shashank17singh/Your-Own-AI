@@ -41,23 +41,17 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-deallocate_links_in_list(entry_pointer p_e)
-{
-  while (p_e != 0)
-    {
-      entry_pointer p_dealloc_e = p_e;
-      p_e = p_e->m_p_next;
-      s_entry_allocator.deallocate(p_dealloc_e, 1);
-    }
+void PB_DS_CLASS_C_DEC::deallocate_links_in_list(entry_pointer p_e) {
+  while (p_e != 0) {
+    entry_pointer p_dealloc_e = p_e;
+    p_e = p_e->m_p_next;
+    s_entry_allocator.deallocate(p_dealloc_e, 1);
+  }
 }
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::entry_pointer
-PB_DS_CLASS_C_DEC::
-get_entry(const_reference r_val, true_type)
-{
+PB_DS_CLASS_C_DEC::get_entry(const_reference r_val, true_type) {
   // Following line might throw an exception.
   entry_pointer p_e = s_entry_allocator.allocate(1);
 
@@ -68,9 +62,7 @@ get_entry(const_reference r_val, true_type)
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::entry_pointer
-PB_DS_CLASS_C_DEC::
-get_entry(const_reference r_val, false_type)
-{
+PB_DS_CLASS_C_DEC::get_entry(const_reference r_val, false_type) {
   // Following line might throw an exception.
   entry_pointer p_e = s_entry_allocator.allocate(1);
   cond_dealtor_t cond(p_e);
@@ -82,10 +74,7 @@ get_entry(const_reference r_val, false_type)
 }
 
 PB_DS_CLASS_T_DEC
-inline void
-PB_DS_CLASS_C_DEC::
-rels_entry(entry_pointer p_e)
-{
+inline void PB_DS_CLASS_C_DEC::rels_entry(entry_pointer p_e) {
   // The following lines cannot throw exceptions (unless if key-data dtors do).
   p_e->m_value.~value_type();
   s_entry_allocator.deallocate(p_e, 1);

@@ -22,58 +22,55 @@ along with GCC; see the file COPYING3.  If not see
 
 #if !defined(IN_LIBGCC2) && !defined(IN_TARGET_LIBS) && !defined(IN_RTS)
 
-enum debug_info_type
-{
-  DINFO_TYPE_NONE,		  /* No debug info.  */
-  DINFO_TYPE_DWARF2,		  /* Dwarf v2 debug info.  */
-  DINFO_TYPE_VMS,		  /* VMS debug info.  */
-  DINFO_TYPE_CTF,		  /* CTF debug info.  */
-  DINFO_TYPE_BTF,		  /* BTF debug info.  */
-  DINFO_TYPE_CODEVIEW,		  /* CodeView debug info.  */
-  DINFO_TYPE_BTF_WITH_CORE,	  /* BTF debug info with CO-RE relocations.  */
+enum debug_info_type {
+  DINFO_TYPE_NONE,          /* No debug info.  */
+  DINFO_TYPE_DWARF2,        /* Dwarf v2 debug info.  */
+  DINFO_TYPE_VMS,           /* VMS debug info.  */
+  DINFO_TYPE_CTF,           /* CTF debug info.  */
+  DINFO_TYPE_BTF,           /* BTF debug info.  */
+  DINFO_TYPE_CODEVIEW,      /* CodeView debug info.  */
+  DINFO_TYPE_BTF_WITH_CORE, /* BTF debug info with CO-RE relocations.  */
   DINFO_TYPE_MAX = DINFO_TYPE_BTF_WITH_CORE /* Marker only.  */
 };
 
-#define NO_DEBUG      (0U)
+#define NO_DEBUG (0U)
 /* Write DWARF2 debug info (using dwarf2out.cc).  */
-#define DWARF2_DEBUG  (1U << DINFO_TYPE_DWARF2)
+#define DWARF2_DEBUG (1U << DINFO_TYPE_DWARF2)
 /* Write VMS debug info (using vmsdbgout.cc).  */
-#define VMS_DEBUG     (1U << DINFO_TYPE_VMS)
+#define VMS_DEBUG (1U << DINFO_TYPE_VMS)
 /* Write CTF debug info (using ctfout.cc).  */
-#define CTF_DEBUG     (1U << DINFO_TYPE_CTF)
+#define CTF_DEBUG (1U << DINFO_TYPE_CTF)
 /* Write BTF debug info (using btfout.cc).  */
-#define BTF_DEBUG     (1U << DINFO_TYPE_BTF)
+#define BTF_DEBUG (1U << DINFO_TYPE_BTF)
 /* Write CodeView debug info (using dwarf2codeview.cc).  */
-#define CODEVIEW_DEBUG     (1U << DINFO_TYPE_CODEVIEW)
+#define CODEVIEW_DEBUG (1U << DINFO_TYPE_CODEVIEW)
 /* Write BTF debug info for BPF CO-RE usecase (using btfout.cc).  */
-#define BTF_WITH_CORE_DEBUG     (1U << DINFO_TYPE_BTF_WITH_CORE)
+#define BTF_WITH_CORE_DEBUG (1U << DINFO_TYPE_BTF_WITH_CORE)
 
 /* Note: Adding new definitions to handle -combination- of debug formats,
    like VMS_AND_DWARF2_DEBUG is not recommended.  This definition remains
    here for historical reasons.  */
 /* Write VMS debug info (using vmsdbgout.cc) and DWARF v2 debug info (using
    dwarf2out.cc).  */
-#define VMS_AND_DWARF2_DEBUG  ((VMS_DEBUG | DWARF2_DEBUG))
+#define VMS_AND_DWARF2_DEBUG ((VMS_DEBUG | DWARF2_DEBUG))
 
-enum debug_info_levels
-{
-  DINFO_LEVEL_NONE,	/* Write no debugging info.  */
-  DINFO_LEVEL_TERSE,	/* Write minimal info to support tracebacks only.  */
-  DINFO_LEVEL_NORMAL,	/* Write info for all declarations (and line table).  */
-  DINFO_LEVEL_VERBOSE	/* Write normal info plus #define/#undef info.  */
+enum debug_info_levels {
+  DINFO_LEVEL_NONE,   /* Write no debugging info.  */
+  DINFO_LEVEL_TERSE,  /* Write minimal info to support tracebacks only.  */
+  DINFO_LEVEL_NORMAL, /* Write info for all declarations (and line table).  */
+  DINFO_LEVEL_VERBOSE /* Write normal info plus #define/#undef info.  */
 };
 
 /* CTF debug info levels.
    CTF debug info levels are untied with DWARF debug info levels because CTF
    may co-exist with DWARF.  */
-enum ctf_debug_info_levels
-{
-  CTFINFO_LEVEL_NONE = 0,     /* Write no CTF debug info.  */
-  CTFINFO_LEVEL_TERSE = 1,    /* Write CTF information to support tracebacks
-				 only.  Not Implemented.  */
-  CTFINFO_LEVEL_NORMAL = 2    /* Write CTF type information for all entities
-				 (functions, data objects, variables etc.)
-				 at file-scope or global-scope only.  */
+enum ctf_debug_info_levels {
+  CTFINFO_LEVEL_NONE = 0,  /* Write no CTF debug info.  */
+  CTFINFO_LEVEL_TERSE = 1, /* Write CTF information to support tracebacks
+                              only.  Not Implemented.  */
+  CTFINFO_LEVEL_NORMAL = 2 /* Write CTF type information for all entities
+                              (functions, data objects, variables etc.)
+                              at file-scope or global-scope only.  */
 };
 
 /* A major contribution to object and executable size is debug
@@ -84,12 +81,11 @@ enum ctf_debug_info_levels
    indicates that the struct is being handled indirectly, via
    a pointer.  See opts.cc for the implementation. */
 
-enum debug_info_usage
-{
-  DINFO_USAGE_DFN,	/* A struct definition. */
-  DINFO_USAGE_DIR_USE,	/* A direct use, such as the type of a variable. */
-  DINFO_USAGE_IND_USE,	/* An indirect use, such as through a pointer. */
-  DINFO_USAGE_NUM_ENUMS	/* The number of enumerators. */
+enum debug_info_usage {
+  DINFO_USAGE_DFN,      /* A struct definition. */
+  DINFO_USAGE_DIR_USE,  /* A direct use, such as the type of a variable. */
+  DINFO_USAGE_IND_USE,  /* An indirect use, such as through a pointer. */
+  DINFO_USAGE_NUM_ENUMS /* The number of enumerators. */
 };
 
 /* A major contribution to object and executable size is debug
@@ -117,35 +113,32 @@ enum debug_info_usage
    The remaining types of files are library headers and application
    headers.  We cannot currently distinguish these two types.  */
 
-enum debug_struct_file
-{
-  DINFO_STRUCT_FILE_NONE,   /* Debug no structs. */
-  DINFO_STRUCT_FILE_BASE,   /* Debug structs defined in files with the
-                               same base name as the compilation unit. */
-  DINFO_STRUCT_FILE_SYS,    /* Also debug structs defined in system
-                               header files.  */
-  DINFO_STRUCT_FILE_ANY     /* Debug structs defined in all files. */
+enum debug_struct_file {
+  DINFO_STRUCT_FILE_NONE, /* Debug no structs. */
+  DINFO_STRUCT_FILE_BASE, /* Debug structs defined in files with the
+                             same base name as the compilation unit. */
+  DINFO_STRUCT_FILE_SYS,  /* Also debug structs defined in system
+                             header files.  */
+  DINFO_STRUCT_FILE_ANY   /* Debug structs defined in all files. */
 };
 
 /* Balance between GNAT encodings and standard DWARF to emit.  */
 
-enum dwarf_gnat_encodings
-{
-  DWARF_GNAT_ENCODINGS_ALL = 0,	    /* Emit all GNAT encodings, then emit as
-				       much standard DWARF as possible so it
-				       does not conflict with GNAT
-				       encodings.  */
-  DWARF_GNAT_ENCODINGS_GDB = 1,	    /* Emit as much standard DWARF as possible
-				       as long as GDB handles them.  Emit GNAT
-				       encodings for the rest.  */
-  DWARF_GNAT_ENCODINGS_MINIMAL = 2  /* Emit all the standard DWARF we can.
-				       Emit GNAT encodings for the rest.  */
+enum dwarf_gnat_encodings {
+  DWARF_GNAT_ENCODINGS_ALL = 0,    /* Emit all GNAT encodings, then emit as
+                                      much standard DWARF as possible so it
+                                      does not conflict with GNAT
+                                      encodings.  */
+  DWARF_GNAT_ENCODINGS_GDB = 1,    /* Emit as much standard DWARF as possible
+                                      as long as GDB handles them.  Emit GNAT
+                                      encodings for the rest.  */
+  DWARF_GNAT_ENCODINGS_MINIMAL = 2 /* Emit all the standard DWARF we can.
+                                      Emit GNAT encodings for the rest.  */
 };
 
 /* Enumerate Objective-c instance variable visibility settings. */
 
-enum ivar_visibility
-{
+enum ivar_visibility {
   IVAR_VISIBILITY_PRIVATE,
   IVAR_VISIBILITY_PROTECTED,
   IVAR_VISIBILITY_PUBLIC,
@@ -153,16 +146,10 @@ enum ivar_visibility
 };
 
 /* The stack reuse level.  */
-enum stack_reuse_level
-{
-  SR_NONE,
-  SR_NAMED_VARS,
-  SR_ALL
-};
+enum stack_reuse_level { SR_NONE, SR_NAMED_VARS, SR_ALL };
 
 /* Control Flow Redundancy hardening options for noreturn calls.  */
-enum hardcfr_noret
-{
+enum hardcfr_noret {
   HCFRNR_NEVER,
   HCFRNR_NOTHROW,
   HCFRNR_NO_XTHROW,
@@ -171,38 +158,30 @@ enum hardcfr_noret
 };
 
 /* The live patching level.  */
-enum live_patching_level
-{
+enum live_patching_level {
   LIVE_PATCHING_NONE = 0,
   LIVE_PATCHING_INLINE_ONLY_STATIC,
   LIVE_PATCHING_INLINE_CLONE
 };
 
 /* The algorithm used for basic block reordering.  */
-enum reorder_blocks_algorithm
-{
+enum reorder_blocks_algorithm {
   REORDER_BLOCKS_ALGORITHM_SIMPLE,
   REORDER_BLOCKS_ALGORITHM_STC
 };
 
 /* The algorithm used for the integrated register allocator (IRA).  */
-enum ira_algorithm
-{
-  IRA_ALGORITHM_CB,
-  IRA_ALGORITHM_PRIORITY
-};
+enum ira_algorithm { IRA_ALGORITHM_CB, IRA_ALGORITHM_PRIORITY };
 
 /* The regions used for the integrated register allocator (IRA).  */
-enum ira_region
-{
+enum ira_region {
   IRA_REGION_ONE,
   IRA_REGION_ALL,
   IRA_REGION_MIXED,
 };
 
 /* The options for excess precision.  */
-enum excess_precision
-{
+enum excess_precision {
   EXCESS_PRECISION_DEFAULT,
   EXCESS_PRECISION_FAST,
   EXCESS_PRECISION_STANDARD,
@@ -210,8 +189,7 @@ enum excess_precision
 };
 
 /* The options for which values of FLT_EVAL_METHOD are permissible.  */
-enum permitted_flt_eval_methods
-{
+enum permitted_flt_eval_methods {
   PERMITTED_FLT_EVAL_METHODS_DEFAULT,
   PERMITTED_FLT_EVAL_METHODS_TS_18661,
   PERMITTED_FLT_EVAL_METHODS_C11
@@ -225,8 +203,7 @@ enum permitted_flt_eval_methods
 
    -fstack-check= does not prevent stack-clash style attacks.  For that
    you want -fstack-clash-protection.  */
-enum stack_check_type
-{
+enum stack_check_type {
   /* Do not check the stack.  */
   NO_STACK_CHECK = 0,
 
@@ -245,8 +222,7 @@ enum stack_check_type
 };
 
 /* Type of callgraph information.  */
-enum callgraph_info_type
-{
+enum callgraph_info_type {
   /* No information.  */
   NO_CALLGRAPH_INFO = 0,
 
@@ -343,16 +319,14 @@ enum sanitize_code {
   /* Memory Tagging.  */
   SANITIZE_MEMTAG = SANITIZE_MEMTAG_STACK,
   SANITIZE_SHIFT = SANITIZE_SHIFT_BASE | SANITIZE_SHIFT_EXPONENT,
-  SANITIZE_UNDEFINED = SANITIZE_SHIFT | SANITIZE_DIVIDE | SANITIZE_UNREACHABLE
-		       | SANITIZE_VLA | SANITIZE_NULL | SANITIZE_RETURN
-		       | SANITIZE_SI_OVERFLOW | SANITIZE_BOOL | SANITIZE_ENUM
-		       | SANITIZE_BOUNDS | SANITIZE_ALIGNMENT
-		       | SANITIZE_NONNULL_ATTRIBUTE
-		       | SANITIZE_RETURNS_NONNULL_ATTRIBUTE
-		       | SANITIZE_OBJECT_SIZE | SANITIZE_VPTR
-		       | SANITIZE_POINTER_OVERFLOW | SANITIZE_BUILTIN,
-  SANITIZE_UNDEFINED_NONDEFAULT = SANITIZE_FLOAT_DIVIDE | SANITIZE_FLOAT_CAST
-				  | SANITIZE_BOUNDS_STRICT
+  SANITIZE_UNDEFINED = SANITIZE_SHIFT | SANITIZE_DIVIDE | SANITIZE_UNREACHABLE |
+      SANITIZE_VLA | SANITIZE_NULL | SANITIZE_RETURN | SANITIZE_SI_OVERFLOW |
+      SANITIZE_BOOL | SANITIZE_ENUM | SANITIZE_BOUNDS | SANITIZE_ALIGNMENT |
+      SANITIZE_NONNULL_ATTRIBUTE | SANITIZE_RETURNS_NONNULL_ATTRIBUTE |
+      SANITIZE_OBJECT_SIZE | SANITIZE_VPTR | SANITIZE_POINTER_OVERFLOW |
+      SANITIZE_BUILTIN,
+  SANITIZE_UNDEFINED_NONDEFAULT = SANITIZE_FLOAT_DIVIDE | SANITIZE_FLOAT_CAST |
+      SANITIZE_BOUNDS_STRICT
 };
 
 /* Sanitizer flag type.  */
@@ -360,26 +334,26 @@ typedef uint64_t sanitize_code_type;
 
 /* Different settings for zeroing subset of registers.  */
 namespace zero_regs_flags {
-  const unsigned int UNSET = 0;
-  const unsigned int SKIP = 1UL << 0;
-  const unsigned int ONLY_USED = 1UL << 1;
-  const unsigned int ONLY_GPR = 1UL << 2;
-  const unsigned int ONLY_ARG = 1UL << 3;
-  const unsigned int ENABLED = 1UL << 4;
-  const unsigned int LEAFY_MODE = 1UL << 5;
-  const unsigned int USED_GPR_ARG = ENABLED | ONLY_USED | ONLY_GPR | ONLY_ARG;
-  const unsigned int USED_GPR = ENABLED | ONLY_USED | ONLY_GPR;
-  const unsigned int USED_ARG = ENABLED | ONLY_USED | ONLY_ARG;
-  const unsigned int USED = ENABLED | ONLY_USED;
-  const unsigned int ALL_GPR_ARG = ENABLED | ONLY_GPR | ONLY_ARG;
-  const unsigned int ALL_GPR = ENABLED | ONLY_GPR;
-  const unsigned int ALL_ARG = ENABLED | ONLY_ARG;
-  const unsigned int ALL = ENABLED;
-  const unsigned int LEAFY_GPR_ARG = ENABLED | LEAFY_MODE | ONLY_GPR | ONLY_ARG;
-  const unsigned int LEAFY_GPR = ENABLED | LEAFY_MODE | ONLY_GPR;
-  const unsigned int LEAFY_ARG = ENABLED | LEAFY_MODE | ONLY_ARG;
-  const unsigned int LEAFY = ENABLED | LEAFY_MODE;
-}
+const unsigned int UNSET = 0;
+const unsigned int SKIP = 1UL << 0;
+const unsigned int ONLY_USED = 1UL << 1;
+const unsigned int ONLY_GPR = 1UL << 2;
+const unsigned int ONLY_ARG = 1UL << 3;
+const unsigned int ENABLED = 1UL << 4;
+const unsigned int LEAFY_MODE = 1UL << 5;
+const unsigned int USED_GPR_ARG = ENABLED | ONLY_USED | ONLY_GPR | ONLY_ARG;
+const unsigned int USED_GPR = ENABLED | ONLY_USED | ONLY_GPR;
+const unsigned int USED_ARG = ENABLED | ONLY_USED | ONLY_ARG;
+const unsigned int USED = ENABLED | ONLY_USED;
+const unsigned int ALL_GPR_ARG = ENABLED | ONLY_GPR | ONLY_ARG;
+const unsigned int ALL_GPR = ENABLED | ONLY_GPR;
+const unsigned int ALL_ARG = ENABLED | ONLY_ARG;
+const unsigned int ALL = ENABLED;
+const unsigned int LEAFY_GPR_ARG = ENABLED | LEAFY_MODE | ONLY_GPR | ONLY_ARG;
+const unsigned int LEAFY_GPR = ENABLED | LEAFY_MODE | ONLY_GPR;
+const unsigned int LEAFY_ARG = ENABLED | LEAFY_MODE | ONLY_ARG;
+const unsigned int LEAFY = ENABLED | LEAFY_MODE;
+} // namespace zero_regs_flags
 
 /* Settings of flag_incremental_link.  */
 enum incremental_link {
@@ -400,9 +374,9 @@ enum sanitize_coverage_code {
 
 /* flag_vtable_verify initialization levels. */
 enum vtv_priority {
-  VTV_NO_PRIORITY       = 0,  /* i.E. Do NOT do vtable verification. */
+  VTV_NO_PRIORITY = 0, /* i.E. Do NOT do vtable verification. */
   VTV_STANDARD_PRIORITY = 1,
-  VTV_PREINIT_PRIORITY  = 2
+  VTV_PREINIT_PRIORITY = 2
 };
 
 /* flag_lto_partition initialization values.  */
@@ -440,8 +414,7 @@ enum lto_linker_output {
 
 /* gfortran -finit-real= values.  */
 
-enum gfc_init_local_real
-{
+enum gfc_init_local_real {
   GFC_INIT_REAL_OFF = 0,
   GFC_INIT_REAL_ZERO,
   GFC_INIT_REAL_NAN,
@@ -452,18 +425,15 @@ enum gfc_init_local_real
 
 /* gfortran -fcoarray= values.  */
 
-enum gfc_fcoarray
-{
+enum gfc_fcoarray {
   GFC_FCOARRAY_NONE = 0,
   GFC_FCOARRAY_SINGLE,
   GFC_FCOARRAY_LIB
 };
 
-
 /* gfortran -fconvert= values; used for unformatted I/O.
    Keep in sync with GFC_CONVERT_* in gcc/fortran/libgfortran.h.   */
-enum gfc_convert
-{
+enum gfc_convert {
   GFC_FLAG_CONVERT_NATIVE = 0,
   GFC_FLAG_CONVERT_SWAP,
   GFC_FLAG_CONVERT_BIG,
@@ -478,7 +448,6 @@ enum gfc_convert
   GFC_FLAG_CONVERT_R16_IBM_LITTLE,
 };
 
-
 /* gfortran -finline-intrinsics= values;
    We use two identical bits for each value, and initialize with alternated
    bits, so that we can check whether a value has been set by checking whether
@@ -487,31 +456,28 @@ enum gfc_convert
 #define GFC_INL_INTR_VAL(idx) (3 << (2 * idx))
 #define GFC_INL_INTR_UNSET_VAL(val) (0x55555555 & (val))
 
-enum gfc_inlineable_intrinsics
-{
+enum gfc_inlineable_intrinsics {
   GFC_FLAG_INLINE_INTRINSIC_NONE = 0,
-  GFC_FLAG_INLINE_INTRINSIC_MAXLOC = GFC_INL_INTR_VAL (0),
-  GFC_FLAG_INLINE_INTRINSIC_MINLOC = GFC_INL_INTR_VAL (1),
-  GFC_FLAG_INLINE_INTRINSIC_ALL = GFC_FLAG_INLINE_INTRINSIC_MAXLOC
-				  | GFC_FLAG_INLINE_INTRINSIC_MINLOC,
+  GFC_FLAG_INLINE_INTRINSIC_MAXLOC = GFC_INL_INTR_VAL(0),
+  GFC_FLAG_INLINE_INTRINSIC_MINLOC = GFC_INL_INTR_VAL(1),
+  GFC_FLAG_INLINE_INTRINSIC_ALL = GFC_FLAG_INLINE_INTRINSIC_MAXLOC |
+      GFC_FLAG_INLINE_INTRINSIC_MINLOC,
 
-  GFC_FLAG_INLINE_INTRINSIC_NONE_UNSET
-		  = GFC_INL_INTR_UNSET_VAL (GFC_FLAG_INLINE_INTRINSIC_NONE),
-  GFC_FLAG_INLINE_INTRINSIC_MAXLOC_UNSET
-		  = GFC_INL_INTR_UNSET_VAL (GFC_FLAG_INLINE_INTRINSIC_MAXLOC),
-  GFC_FLAG_INLINE_INTRINSIC_MINLOC_UNSET
-		  = GFC_INL_INTR_UNSET_VAL (GFC_FLAG_INLINE_INTRINSIC_MINLOC),
-  GFC_FLAG_INLINE_INTRINSIC_ALL_UNSET
-		  = GFC_INL_INTR_UNSET_VAL (GFC_FLAG_INLINE_INTRINSIC_ALL)
+  GFC_FLAG_INLINE_INTRINSIC_NONE_UNSET =
+      GFC_INL_INTR_UNSET_VAL(GFC_FLAG_INLINE_INTRINSIC_NONE),
+  GFC_FLAG_INLINE_INTRINSIC_MAXLOC_UNSET =
+      GFC_INL_INTR_UNSET_VAL(GFC_FLAG_INLINE_INTRINSIC_MAXLOC),
+  GFC_FLAG_INLINE_INTRINSIC_MINLOC_UNSET =
+      GFC_INL_INTR_UNSET_VAL(GFC_FLAG_INLINE_INTRINSIC_MINLOC),
+  GFC_FLAG_INLINE_INTRINSIC_ALL_UNSET =
+      GFC_INL_INTR_UNSET_VAL(GFC_FLAG_INLINE_INTRINSIC_ALL)
 };
 
 #undef GFC_INL_INTR_UNSET_VAL
 #undef GFC_INL_INTR_VAL
 
-
 /* Inline String Operations functions.  */
-enum ilsop_fn
-{
+enum ilsop_fn {
   ILSOP_NONE = 0,
   ILSOP_MEMSET = 1 << 0,
   ILSOP_MEMCPY = 1 << 1,
@@ -521,8 +487,7 @@ enum ilsop_fn
 };
 
 /* Control-Flow Protection values.  */
-enum cf_protection_level
-{
+enum cf_protection_level {
   CF_NONE = 0,
   CF_BRANCH = 1 << 0,
   CF_RETURN = 1 << 1,
@@ -532,8 +497,7 @@ enum cf_protection_level
 };
 
 /* Parloops schedule type.  */
-enum parloops_schedule_type
-{
+enum parloops_schedule_type {
   PARLOOPS_SCHEDULE_STATIC = 0,
   PARLOOPS_SCHEDULE_DYNAMIC,
   PARLOOPS_SCHEDULE_GUIDED,
@@ -542,42 +506,31 @@ enum parloops_schedule_type
 };
 
 /* Ranger debug mode.  */
-enum ranger_debug
-{
+enum ranger_debug {
   RANGER_DEBUG_NONE = 0,
   RANGER_DEBUG_TRACE = 1,
   RANGER_DEBUG_CACHE = 2,
   RANGER_DEBUG_GORI = 4,
   RANGER_DEBUG_TRACE_GORI = (RANGER_DEBUG_TRACE | RANGER_DEBUG_GORI),
   RANGER_DEBUG_TRACE_CACHE = (RANGER_DEBUG_TRACE | RANGER_DEBUG_CACHE),
-  RANGER_DEBUG_ALL = (RANGER_DEBUG_GORI | RANGER_DEBUG_CACHE
-		      | RANGER_DEBUG_TRACE)
+  RANGER_DEBUG_ALL =
+      (RANGER_DEBUG_GORI | RANGER_DEBUG_CACHE | RANGER_DEBUG_TRACE)
 };
 
 /* Jump threader verbose dumps.  */
-enum threader_debug
-{
-  THREADER_DEBUG_NONE = 0,
-  THREADER_DEBUG_ALL = 1
-};
+enum threader_debug { THREADER_DEBUG_NONE = 0, THREADER_DEBUG_ALL = 1 };
 
 /* Modes of OpenACC 'kernels' constructs handling.  */
-enum openacc_kernels
-{
-  OPENACC_KERNELS_DECOMPOSE,
-  OPENACC_KERNELS_PARLOOPS
-};
+enum openacc_kernels { OPENACC_KERNELS_DECOMPOSE, OPENACC_KERNELS_PARLOOPS };
 
 /* Modes of OpenACC privatization diagnostics.  */
-enum openacc_privatization
-{
+enum openacc_privatization {
   OPENACC_PRIVATIZATION_QUIET,
   OPENACC_PRIVATIZATION_NOISY
 };
 
 /* Targets for -fopenmp-target-simd-clone.  */
-enum omp_target_simd_clone_device_kind
-{
+enum omp_target_simd_clone_device_kind {
   OMP_TARGET_SIMD_CLONE_NONE = 0,
   OMP_TARGET_SIMD_CLONE_HOST = 1,
   OMP_TARGET_SIMD_CLONE_NOHOST = 2,

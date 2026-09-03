@@ -15,41 +15,30 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
-
 #ifndef _D2DBASETYPES_INCLUDED
 #define _D2DBASETYPES_INCLUDED
-
 #ifndef D3DCOLORVALUE_DEFINED
-typedef struct D3DCOLORVALUE
-{
-    float r;
-    float g;
-    float b;
-    float a;
+typedef struct D3DCOLORVALUE {
+  float r;
+  float g;
+  float b;
+  float a;
 } D3DCOLORVALUE;
 #define D3DCOLORVALUE_DEFINED
 #endif
-
 typedef D3DCOLORVALUE D2D_COLOR_F;
-
-typedef struct D2D_SIZE_F
-{
-    float width;
-    float height;
+typedef struct D2D_SIZE_F {
+  float width;
+  float height;
 } D2D_SIZE_F;
-
-typedef struct D2D_POINT_2U
-{
-    UINT32 x;
-    UINT32 y;
+typedef struct D2D_POINT_2U {
+  UINT32 x;
+  UINT32 y;
 } D2D_POINT_2U;
-
-typedef struct D2D_RECT_U
-{
-    UINT32 left;
-    UINT32 top;
-    UINT32 right;
-    UINT32 bottom;
+typedef struct D2D_RECT_U {
+  UINT32 left;
+  UINT32 top;
+  UINT32 right;
+  UINT32 bottom;
 } D2D_RECT_U;
-
 #endif /* _D2DBASETYPES_INCLUDED */

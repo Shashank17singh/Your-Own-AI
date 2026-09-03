@@ -5,19 +5,13 @@
  */
 #ifndef _WINABLE_
 #define _WINABLE_
-
 #include <apisetcconv.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include <stdarg.h>
-
-  WINBOOL WINAPI BlockInput(WINBOOL fBlockIt);
-
+WINBOOL WINAPI BlockInput(WINBOOL fBlockIt);
 #define CCHILDREN_FRAME 7
-
 #ifdef __cplusplus
 }
 #endif

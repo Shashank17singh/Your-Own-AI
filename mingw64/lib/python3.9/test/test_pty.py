@@ -1,7 +1,7 @@
 from test.support import verbose, import_module, reap_children
 
 # Skip these tests if termios is not available
-import_module('termios')
+import_module("termios")
 
 import errno
 import pty
@@ -10,16 +10,19 @@ import sys
 import select
 import signal
 import socket
-import io # readline
+import io  # readline
 import unittest
 
 TEST_STRING_1 = b"I wish to buy a fish license.\n"
 TEST_STRING_2 = b"For my pet fish, Eric.\n"
 
 if verbose:
+
     def debug(msg):
         print(msg)
+
 else:
+
     def debug(msg):
         pass
 
@@ -34,6 +37,7 @@ else:
 # test suite deterministic and OS-independent, the functions _readline
 # and normalize_output can be used.
 
+
 def normalize_output(data):
     # Some operating systems do conversions on newline.  We could possibly fix
     # that by doing the appropriate termios.tcsetattr()s.  I couldn't figure out
@@ -46,19 +50,19 @@ def normalize_output(data):
     # from someone more knowledgable.
 
     # OSF/1 (Tru64) apparently turns \n into \r\r\n.
-    if data.endswith(b'\r\r\n'):
-        return data.replace(b'\r\r\n', b'\n')
+    if data.endswith(b"\r\r\n"):
+        return data.replace(b"\r\r\n", b"\n")
 
-    if data.endswith(b'\r\n'):
-        return data.replace(b'\r\n', b'\n')
+    if data.endswith(b"\r\n"):
+        return data.replace(b"\r\n", b"\n")
 
     return data
 
+
 def _readline(fd):
     """Read one line.  May block forever if no newline is read."""
-    reader = io.FileIO(fd, mode='rb', closefd=False)
+    reader = io.FileIO(fd, mode="rb", closefd=False)
     return reader.readline()
-
 
 
 # Marginal testing of pty suite. Cannot do extensive 'do or fail' testing
@@ -91,8 +95,7 @@ class PtyTest(unittest.TestCase):
         try:
             debug("Calling master_open()")
             master_fd, slave_name = pty.master_open()
-            debug("Got master_fd '%d', slave_name '%s'" %
-                  (master_fd, slave_name))
+            debug("Got master_fd '%d', slave_name '%s'" % (master_fd, slave_name))
             debug("Calling slave_open(%r)" % (slave_name,))
             slave_fd = pty.slave_open(slave_name)
             debug("Got slave_fd '%d'" % slave_fd)
@@ -100,7 +103,7 @@ class PtyTest(unittest.TestCase):
             # " An optional feature could not be imported " ... ?
             raise unittest.SkipTest("Pseudo-terminals (seemingly) not functional.")
 
-        self.assertTrue(os.isatty(slave_fd), 'slave_fd is not a tty')
+        self.assertTrue(os.isatty(slave_fd), "slave_fd is not a tty")
 
         # Solaris requires reading the fd before anything is returned.
         # My guess is that since we open and close the slave fd
@@ -112,7 +115,7 @@ class PtyTest(unittest.TestCase):
             os.set_blocking(master_fd, False)
             try:
                 s1 = os.read(master_fd, 1024)
-                self.assertEqual(b'', s1)
+                self.assertEqual(b"", s1)
             except OSError as e:
                 if e.errno != errno.EAGAIN:
                     raise
@@ -123,14 +126,13 @@ class PtyTest(unittest.TestCase):
         debug("Writing to slave_fd")
         os.write(slave_fd, TEST_STRING_1)
         s1 = _readline(master_fd)
-        self.assertEqual(b'I wish to buy a fish license.\n',
-                         normalize_output(s1))
+        self.assertEqual(b"I wish to buy a fish license.\n", normalize_output(s1))
 
         debug("Writing chunked output")
         os.write(slave_fd, TEST_STRING_2[:5])
         os.write(slave_fd, TEST_STRING_2[5:])
         s2 = _readline(master_fd)
-        self.assertEqual(b'For my pet fish, Eric.\n', normalize_output(s2))
+        self.assertEqual(b"For my pet fish, Eric.\n", normalize_output(s2))
 
         os.close(slave_fd)
         # closing master_fd can raise a SIGHUP if the process is
@@ -190,8 +192,7 @@ class PtyTest(unittest.TestCase):
                     break
                 if not data:
                     break
-                sys.stdout.write(str(data.replace(b'\r\n', b'\n'),
-                                     encoding='ascii'))
+                sys.stdout.write(str(data.replace(b"\r\n", b"\n"), encoding="ascii"))
 
             ##line = os.read(master_fd, 80)
             ##lines = line.replace('\r\n', '\n').split('\n')
@@ -199,7 +200,7 @@ class PtyTest(unittest.TestCase):
             ##             'Good: OSError was raised.', '']:
             ##    raise TestFailed("Unexpected output from child: %r" % line)
 
-            (pid, status) = os.waitpid(pid, 0)
+            pid, status = os.waitpid(pid, 0)
             res = os.waitstatus_to_exitcode(status)
             debug("Child (%d) exited with code %d (status %d)." % (pid, res, status))
             if res == 1:
@@ -276,8 +277,8 @@ class SmallPtyTests(unittest.TestCase):
         masters = [s.fileno() for s in socketpair]
 
         # Feed data.  Smaller than PIPEBUF.  These writes will not block.
-        os.write(masters[1], b'from master')
-        os.write(write_to_stdin_fd, b'from stdin')
+        os.write(masters[1], b"from master")
+        os.write(write_to_stdin_fd, b"from stdin")
 
         # Expect two select calls, the last one will cause IndexError
         pty.select = self._mock_select
@@ -291,8 +292,8 @@ class SmallPtyTests(unittest.TestCase):
         # Test that the right data went to the right places.
         rfds = select.select([read_from_stdout_fd, masters[1]], [], [], 0)[0]
         self.assertEqual([read_from_stdout_fd, masters[1]], rfds)
-        self.assertEqual(os.read(read_from_stdout_fd, 20), b'from master')
-        self.assertEqual(os.read(masters[1], 20), b'from stdin')
+        self.assertEqual(os.read(read_from_stdout_fd, 20), b"from master")
+        self.assertEqual(os.read(masters[1], 20), b"from stdin")
 
     def test__copy_eof_on_all(self):
         """Test the empty read EOF case on both master_fd and stdin."""
@@ -320,6 +321,7 @@ class SmallPtyTests(unittest.TestCase):
 
 def tearDownModule():
     reap_children()
+
 
 if __name__ == "__main__":
     unittest.main()

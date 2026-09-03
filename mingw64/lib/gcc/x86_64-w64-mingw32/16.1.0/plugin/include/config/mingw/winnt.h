@@ -20,21 +20,21 @@ http://www.gnu.org/licenses/.  */
 
 #ifndef USED_FOR_TARGET
 
-extern tree aarch64_handle_ms_abi_attribute (tree *, tree, tree, int, bool *);
-extern tree mingw_handle_selectany_attribute (tree *, tree, tree, int, bool *);
+extern tree aarch64_handle_ms_abi_attribute(tree *, tree, tree, int, bool *);
+extern tree mingw_handle_selectany_attribute(tree *, tree, tree, int, bool *);
 
-extern void mingw_pe_asm_named_section (const char *, unsigned int, tree);
-extern void mingw_pe_asm_lto_start (void);
-extern void mingw_pe_asm_lto_end (void);
-extern void mingw_pe_declare_type (FILE *, const char *, bool, bool);
-extern void mingw_pe_encode_section_info (tree, rtx, int);
-extern void mingw_pe_file_end (void);
-extern void mingw_pe_maybe_record_exported_symbol (tree, const char *, int);
-extern void mingw_pe_record_stub (const char *, bool);
-extern unsigned int mingw_pe_section_type_flags (tree, const char *, int);
-extern section *mingw_pe_select_section (tree, int, unsigned HOST_WIDE_INT);
-extern void mingw_pe_unique_section (tree, int);
-extern bool mingw_pe_valid_dllimport_attribute_p (const_tree);
+extern void mingw_pe_asm_named_section(const char *, unsigned int, tree);
+extern void mingw_pe_asm_lto_start(void);
+extern void mingw_pe_asm_lto_end(void);
+extern void mingw_pe_declare_type(FILE *, const char *, bool, bool);
+extern void mingw_pe_encode_section_info(tree, rtx, int);
+extern void mingw_pe_file_end(void);
+extern void mingw_pe_maybe_record_exported_symbol(tree, const char *, int);
+extern void mingw_pe_record_stub(const char *, bool);
+extern unsigned int mingw_pe_section_type_flags(tree, const char *, int);
+extern section *mingw_pe_select_section(tree, int, unsigned HOST_WIDE_INT);
+extern void mingw_pe_unique_section(tree, int);
+extern bool mingw_pe_valid_dllimport_attribute_p(const_tree);
 
 #endif /* not USED_FOR_TARGET.  */
 

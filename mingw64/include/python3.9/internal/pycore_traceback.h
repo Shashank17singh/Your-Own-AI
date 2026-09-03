@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #ifndef Py_BUILD_CORE
-#  error "this header requires Py_BUILD_CORE define"
+#error "this header requires Py_BUILD_CORE define"
 #endif
 
 /* Forward declaration */
@@ -28,9 +28,7 @@ struct _is;
 
    This function is signal safe. */
 
-PyAPI_FUNC(void) _Py_DumpTraceback(
-    int fd,
-    PyThreadState *tstate);
+PyAPI_FUNC(void) _Py_DumpTraceback(int fd, PyThreadState *tstate);
 
 /* Write the traceback of all threads into the file 'fd'. current_thread can be
    NULL.
@@ -55,10 +53,9 @@ PyAPI_FUNC(void) _Py_DumpTraceback(
 
    This function is signal safe. */
 
-PyAPI_FUNC(const char*) _Py_DumpTracebackThreads(
-    int fd,
-    struct _is *interp,
-    PyThreadState *current_tstate);
+PyAPI_FUNC(const char *)
+    _Py_DumpTracebackThreads(int fd, struct _is *interp,
+                             PyThreadState *current_tstate);
 
 /* Write a Unicode object into the file descriptor fd. Encode the string to
    ASCII using the backslashreplace error handler.
@@ -72,9 +69,7 @@ PyAPI_FUNC(void) _Py_DumpASCII(int fd, PyObject *text);
 /* Format an integer as decimal into the file descriptor fd.
 
    This function is signal safe. */
-PyAPI_FUNC(void) _Py_DumpDecimal(
-    int fd,
-    unsigned long value);
+PyAPI_FUNC(void) _Py_DumpDecimal(int fd, unsigned long value);
 
 /* Format an integer as hexadecimal into the file descriptor fd with at least
    width digits.
@@ -82,14 +77,11 @@ PyAPI_FUNC(void) _Py_DumpDecimal(
    The maximum width is sizeof(unsigned long)*2 digits.
 
    This function is signal safe. */
-PyAPI_FUNC(void) _Py_DumpHexadecimal(
-    int fd,
-    unsigned long value,
-    Py_ssize_t width);
+PyAPI_FUNC(void)
+    _Py_DumpHexadecimal(int fd, unsigned long value, Py_ssize_t width);
 
-PyAPI_FUNC(PyObject*) _PyTraceBack_FromFrame(
-    PyObject *tb_next,
-    PyFrameObject *frame);
+PyAPI_FUNC(PyObject *)
+    _PyTraceBack_FromFrame(PyObject *tb_next, PyFrameObject *frame);
 
 #ifdef __cplusplus
 }

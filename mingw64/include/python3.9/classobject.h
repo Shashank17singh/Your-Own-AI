@@ -10,11 +10,11 @@ extern "C" {
 #endif
 
 typedef struct {
-    PyObject_HEAD
-    PyObject *im_func;   /* The callable object implementing the method */
-    PyObject *im_self;   /* The instance it is bound to */
-    PyObject *im_weakreflist; /* List of weak references */
-    vectorcallfunc vectorcall;
+  PyObject_HEAD PyObject
+      *im_func;             /* The callable object implementing the method */
+  PyObject *im_self;        /* The instance it is bound to */
+  PyObject *im_weakreflist; /* List of weak references */
+  vectorcallfunc vectorcall;
 } PyMethodObject;
 
 PyAPI_DATA(PyTypeObject) PyMethod_Type;
@@ -28,14 +28,11 @@ PyAPI_FUNC(PyObject *) PyMethod_Self(PyObject *);
 
 /* Macros for direct access to these values. Type checks are *not*
    done, so use with care. */
-#define PyMethod_GET_FUNCTION(meth) \
-        (((PyMethodObject *)meth) -> im_func)
-#define PyMethod_GET_SELF(meth) \
-        (((PyMethodObject *)meth) -> im_self)
+#define PyMethod_GET_FUNCTION(meth) (((PyMethodObject *)meth)->im_func)
+#define PyMethod_GET_SELF(meth) (((PyMethodObject *)meth)->im_self)
 
 typedef struct {
-    PyObject_HEAD
-    PyObject *func;
+  PyObject_HEAD PyObject *func;
 } PyInstanceMethodObject;
 
 PyAPI_DATA(PyTypeObject) PyInstanceMethod_Type;
@@ -47,8 +44,8 @@ PyAPI_FUNC(PyObject *) PyInstanceMethod_Function(PyObject *);
 
 /* Macros for direct access to these values. Type checks are *not*
    done, so use with care. */
-#define PyInstanceMethod_GET_FUNCTION(meth) \
-        (((PyInstanceMethodObject *)meth) -> func)
+#define PyInstanceMethod_GET_FUNCTION(meth)                                    \
+  (((PyInstanceMethodObject *)meth)->func)
 
 #ifdef __cplusplus
 }

@@ -22,7 +22,8 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <xsaveoptintrin.h> directly; include <x86gprintrin.h> instead."
+#error                                                                         \
+    "Never use <xsaveoptintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _XSAVEOPTINTRIN_H_INCLUDED
@@ -35,18 +36,16 @@
 #endif /* __XSAVEOPT__ */
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_xsaveopt (void *__P, long long __M)
-{
-  __builtin_ia32_xsaveopt (__P, __M);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _xsaveopt(void *__P, long long __M) {
+  __builtin_ia32_xsaveopt(__P, __M);
 }
 
 #ifdef __x86_64__
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_xsaveopt64 (void *__P, long long __M)
-{
-  __builtin_ia32_xsaveopt64 (__P, __M);
+    __attribute__((__gnu_inline__, __always_inline__,
+                   __artificial__)) _xsaveopt64(void *__P, long long __M) {
+  __builtin_ia32_xsaveopt64(__P, __M);
 }
 #endif
 

@@ -4,7 +4,7 @@ Generic dylib path manipulation
 
 import re
 
-__all__ = ['dylib_info']
+__all__ = ["dylib_info"]
 
 DYLIB_RE = re.compile(r"""(?x)
 (?P<location>^.*)(?:^|/)
@@ -15,6 +15,7 @@ DYLIB_RE = re.compile(r"""(?x)
     \.dylib$
 )
 """)
+
 
 def dylib_info(filename):
     """
@@ -49,15 +50,23 @@ def test_dylib_info():
             name=name,
             shortname=shortname,
             version=version,
-            suffix=suffix
+            suffix=suffix,
         )
-    assert dylib_info('completely/invalid') is None
-    assert dylib_info('completely/invalide_debug') is None
-    assert dylib_info('P/Foo.dylib') == d('P', 'Foo.dylib', 'Foo')
-    assert dylib_info('P/Foo_debug.dylib') == d('P', 'Foo_debug.dylib', 'Foo', suffix='debug')
-    assert dylib_info('P/Foo.A.dylib') == d('P', 'Foo.A.dylib', 'Foo', 'A')
-    assert dylib_info('P/Foo_debug.A.dylib') == d('P', 'Foo_debug.A.dylib', 'Foo_debug', 'A')
-    assert dylib_info('P/Foo.A_debug.dylib') == d('P', 'Foo.A_debug.dylib', 'Foo', 'A', 'debug')
 
-if __name__ == '__main__':
+    assert dylib_info("completely/invalid") is None
+    assert dylib_info("completely/invalide_debug") is None
+    assert dylib_info("P/Foo.dylib") == d("P", "Foo.dylib", "Foo")
+    assert dylib_info("P/Foo_debug.dylib") == d(
+        "P", "Foo_debug.dylib", "Foo", suffix="debug"
+    )
+    assert dylib_info("P/Foo.A.dylib") == d("P", "Foo.A.dylib", "Foo", "A")
+    assert dylib_info("P/Foo_debug.A.dylib") == d(
+        "P", "Foo_debug.A.dylib", "Foo_debug", "A"
+    )
+    assert dylib_info("P/Foo.A_debug.dylib") == d(
+        "P", "Foo.A_debug.dylib", "Foo", "A", "debug"
+    )
+
+
+if __name__ == "__main__":
     test_dylib_info()

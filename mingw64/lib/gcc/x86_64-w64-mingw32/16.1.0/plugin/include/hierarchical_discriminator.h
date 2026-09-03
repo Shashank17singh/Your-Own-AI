@@ -19,13 +19,13 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_HIERARCHICAL_DISCRIMINATOR_H
 #define GCC_HIERARCHICAL_DISCRIMINATOR_H
 
+#include "basic-block.h"
 #include "config.h"
-#include "system.h"
 #include "coretypes.h"
 #include "gimple.h"
-#include "tree.h"
-#include "basic-block.h"
 #include "input.h"
+#include "system.h"
+#include "tree.h"
 
 /* Hierarchical discriminator layout (32 bits total):
    Discriminator format: [Base:8][Multiplicity:7][CopyID:11][Unused:6]
@@ -35,48 +35,46 @@ along with GCC; see the file COPYING3.  If not see
    - Unused: bits 26-31 (6 bits, reserved)
 
    Base discriminator: Used by front-end and early passes to distinguish
-		       different statements on the same source line.
+                       different statements on the same source line.
 
    Multiplicity: Represents when a single IR statement corresponds to
-		 multiple scalar iterations or executions
+                 multiple scalar iterations or executions
 
    CopyID: Unique identifier for distinct code copies to distinguish
  */
 
-
 /* Helper function to assign discriminators to a statement.
    This preserves the base discriminator and updates multiplicity
    and/or copyid.  */
-extern void assign_discriminators_to_stmt (gimple* stmt,
-					   unsigned int multiplicity_factor,
-					   unsigned int copyid);
+extern void assign_discriminators_to_stmt(gimple *stmt,
+                                          unsigned int multiplicity_factor,
+                                          unsigned int copyid);
 
 /* Helper function to assign discriminators to all statements in a basic
    block.  This preserves the base discriminator and updates multiplicity
    and/or copyid.  PHI statements, PHI arguments, and edge locations are
    also updated.  */
-extern void assign_discriminators_to_bb (basic_block bb,
-					 unsigned int multiplicity_factor,
-					 unsigned int copyid);
+extern void assign_discriminators_to_bb(basic_block bb,
+                                        unsigned int multiplicity_factor,
+                                        unsigned int copyid);
 
 /* Helper function to assign discriminators to all basic blocks in a loop.
    This is used by loop versioning passes to distinguish different versions
    of the same loop and to indicate vectorization factors.  */
-extern void assign_discriminators_to_loop (class loop *loop,
-					   unsigned int multiplicity_factor,
-					   unsigned int copyid);
+extern void assign_discriminators_to_loop(class loop *loop,
+                                          unsigned int multiplicity_factor,
+                                          unsigned int copyid);
 
 /* Copy ID allocator for tracking unique copy_id assignments per location.
    This ensures that nested code duplication (e.g., unroll + vectorize) gets
    unique copy_ids even when the same location is duplicated
    multiple times.  */
 
-struct copyid_allocator
-{
+struct copyid_allocator {
   /* Hash map from location to the next available copy_id base.
      Key: location_t, Value: unsigned int (next available base).  */
   hash_map<int_hash<location_t, UNKNOWN_LOCATION, UNKNOWN_LOCATION>,
-	   unsigned int> *location_map;
+           unsigned int> *location_map;
 
   /* Whether the allocator has been initialized.  */
   bool initialized;
@@ -85,9 +83,9 @@ struct copyid_allocator
 /* Allocate a unique copy_id base for the given location.
    STRIDE indicates how many copy_ids to reserve (for unrolling N times,
    use stride=N).  Returns the base copy_id.  */
-extern unsigned int allocate_copyid_base (location_t loc, unsigned int stride);
+extern unsigned int allocate_copyid_base(location_t loc, unsigned int stride);
 
 /* Free the copy_id allocator for a function.  */
-extern void free_copyid_allocator (struct function *fn);
+extern void free_copyid_allocator(struct function *fn);
 
 #endif /* GCC_HIERARCHICAL_DISCRIMINATOR_H.  */

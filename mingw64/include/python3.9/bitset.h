@@ -7,15 +7,15 @@ extern "C" {
 
 /* Bitset interface */
 
-#define BYTE            char
+#define BYTE char
 typedef BYTE *bitset;
 
 #define testbit(ss, ibit) (((ss)[BIT2BYTE(ibit)] & BIT2MASK(ibit)) != 0)
 
-#define BITSPERBYTE     (8*sizeof(BYTE))
-#define BIT2BYTE(ibit)  ((ibit) / BITSPERBYTE)
+#define BITSPERBYTE (8 * sizeof(BYTE))
+#define BIT2BYTE(ibit) ((ibit) / BITSPERBYTE)
 #define BIT2SHIFT(ibit) ((ibit) % BITSPERBYTE)
-#define BIT2MASK(ibit)  (1 << BIT2SHIFT(ibit))
+#define BIT2MASK(ibit) (1 << BIT2SHIFT(ibit))
 
 #ifdef __cplusplus
 }

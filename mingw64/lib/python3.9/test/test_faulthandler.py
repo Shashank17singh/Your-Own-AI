@@ -18,16 +18,15 @@ except ImportError:
     _testcapi = None
 
 TIMEOUT = 0.5
-MS_WINDOWS = (os.name == 'nt')
-_cflags = sysconfig.get_config_var('CFLAGS') or ''
-_config_args = sysconfig.get_config_var('CONFIG_ARGS') or ''
+MS_WINDOWS = os.name == "nt"
+_cflags = sysconfig.get_config_var("CFLAGS") or ""
+_config_args = sysconfig.get_config_var("CONFIG_ARGS") or ""
 UB_SANITIZER = (
-    '-fsanitize=undefined' in _cflags or
-    '--with-undefined-behavior-sanitizer' in _config_args
+    "-fsanitize=undefined" in _cflags
+    or "--with-undefined-behavior-sanitizer" in _config_args
 )
 MEMORY_SANITIZER = (
-    '-fsanitize=memory' in _cflags or
-    '--with-memory-sanitizer' in _config_args
+    "-fsanitize=memory" in _cflags or "--with-memory-sanitizer" in _config_args
 )
 
 
@@ -36,14 +35,15 @@ def expected_traceback(lineno1, lineno2, header, min_count=1):
     regex += '  File "<string>", line %s in func\n' % lineno1
     regex += '  File "<string>", line %s in <module>' % lineno2
     if 1 < min_count:
-        return '^' + (regex + '\n') * (min_count - 1) + regex
+        return "^" + (regex + "\n") * (min_count - 1) + regex
     else:
-        return '^' + regex + '$'
+        return "^" + regex + "$"
+
 
 def skip_segfault_on_android(test):
     # Issue #32138: Raising SIGSEGV on Android may not cause a crash.
-    return unittest.skipIf(is_android,
-                           'raising SIGSEGV on Android is unreliable')(test)
+    return unittest.skipIf(is_android, "raising SIGSEGV on Android is unreliable")(test)
+
 
 @contextmanager
 def temporary_filename():
@@ -52,6 +52,7 @@ def temporary_filename():
         yield filename
     finally:
         support.unlink(filename)
+
 
 class FaultHandlerTests(unittest.TestCase):
     def get_output(self, code, filename=None, fd=None):
@@ -69,28 +70,37 @@ class FaultHandlerTests(unittest.TestCase):
         if fd is not None:
             pass_fds.append(fd)
         with support.SuppressCrashReport():
-            process = script_helper.spawn_python('-c', code, pass_fds=pass_fds)
+            process = script_helper.spawn_python("-c", code, pass_fds=pass_fds)
             with process:
                 output, stderr = process.communicate()
                 exitcode = process.wait()
-        output = output.decode('ascii', 'backslashreplace')
+        output = output.decode("ascii", "backslashreplace")
         if filename:
-            self.assertEqual(output, '')
+            self.assertEqual(output, "")
             with open(filename, "rb") as fp:
                 output = fp.read()
-            output = output.decode('ascii', 'backslashreplace')
+            output = output.decode("ascii", "backslashreplace")
         elif fd is not None:
-            self.assertEqual(output, '')
+            self.assertEqual(output, "")
             os.lseek(fd, os.SEEK_SET, 0)
             with open(fd, "rb", closefd=False) as fp:
                 output = fp.read()
-            output = output.decode('ascii', 'backslashreplace')
+            output = output.decode("ascii", "backslashreplace")
         return output.splitlines(), exitcode
 
-    def check_error(self, code, line_number, fatal_error, *,
-                    filename=None, all_threads=True, other_regex=None,
-                    fd=None, know_current_thread=True,
-                    py_fatal_error=False):
+    def check_error(
+        self,
+        code,
+        line_number,
+        fatal_error,
+        *,
+        filename=None,
+        all_threads=True,
+        other_regex=None,
+        fd=None,
+        know_current_thread=True,
+        py_fatal_error=False,
+    ):
         """
         Check that the fault handler for fatal errors is enabled and check the
         traceback from the child process output.
@@ -99,11 +109,11 @@ class FaultHandlerTests(unittest.TestCase):
         """
         if all_threads:
             if know_current_thread:
-                header = 'Current thread 0x[0-9a-f]+'
+                header = "Current thread 0x[0-9a-f]+"
             else:
-                header = 'Thread 0x[0-9a-f]+'
+                header = "Thread 0x[0-9a-f]+"
         else:
-            header = 'Stack'
+            header = "Stack"
         regex = r"""
             (?m)^{fatal_error}
 
@@ -112,97 +122,110 @@ class FaultHandlerTests(unittest.TestCase):
             """
         if py_fatal_error:
             fatal_error += "\nPython runtime state: initialized"
-        regex = dedent(regex).format(
-            lineno=line_number,
-            fatal_error=fatal_error,
-            header=header).strip()
+        regex = (
+            dedent(regex)
+            .format(lineno=line_number, fatal_error=fatal_error, header=header)
+            .strip()
+        )
         if other_regex:
-            regex += '|' + other_regex
+            regex += "|" + other_regex
         output, exitcode = self.get_output(code, filename=filename, fd=fd)
-        output = '\n'.join(output)
+        output = "\n".join(output)
         self.assertRegex(output, regex)
         self.assertNotEqual(exitcode, 0)
 
     def check_fatal_error(self, code, line_number, name_regex, func=None, **kw):
         if func:
-            name_regex = '%s: %s' % (func, name_regex)
-        fatal_error = 'Fatal Python error: %s' % name_regex
+            name_regex = "%s: %s" % (func, name_regex)
+        fatal_error = "Fatal Python error: %s" % name_regex
         self.check_error(code, line_number, fatal_error, **kw)
 
     def check_windows_exception(self, code, line_number, name_regex, **kw):
-        fatal_error = 'Windows fatal exception: %s' % name_regex
+        fatal_error = "Windows fatal exception: %s" % name_regex
         self.check_error(code, line_number, fatal_error, **kw)
 
-    @unittest.skipIf(sys.platform.startswith('aix'),
-                     "the first page of memory is a mapped read-only on AIX")
+    @unittest.skipIf(
+        sys.platform.startswith("aix"),
+        "the first page of memory is a mapped read-only on AIX",
+    )
     def test_read_null(self):
         if not MS_WINDOWS:
-            self.check_fatal_error("""
+            self.check_fatal_error(
+                """
                 import faulthandler
                 faulthandler.enable()
                 faulthandler._read_null()
                 """,
                 3,
                 # Issue #12700: Read NULL raises SIGILL on Mac OS X Lion
-                '(?:Segmentation fault'
-                    '|Bus error'
-                    '|Illegal instruction)')
+                "(?:Segmentation fault" "|Bus error" "|Illegal instruction)",
+            )
         else:
-            self.check_windows_exception("""
+            self.check_windows_exception(
+                """
                 import faulthandler
                 faulthandler.enable()
                 faulthandler._read_null()
                 """,
                 3,
-                'access violation')
+                "access violation",
+            )
 
     @skip_segfault_on_android
     def test_sigsegv(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._sigsegv()
             """,
             3,
-            'Segmentation fault')
+            "Segmentation fault",
+        )
 
     def test_fatal_error_c_thread(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._fatal_error_c_thread()
             """,
             3,
-            'in new thread',
+            "in new thread",
             know_current_thread=False,
-            func='faulthandler_fatal_error_thread',
-            py_fatal_error=True)
+            func="faulthandler_fatal_error_thread",
+            py_fatal_error=True,
+        )
 
     def test_sigabrt(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._sigabrt()
             """,
             3,
-            'Aborted')
+            "Aborted",
+        )
 
-    @unittest.skipIf(sys.platform == 'win32',
-                     "SIGFPE cannot be caught on Windows")
+    @unittest.skipIf(sys.platform == "win32", "SIGFPE cannot be caught on Windows")
     def test_sigfpe(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._sigfpe()
             """,
             3,
-            'Floating point exception')
+            "Floating point exception",
+        )
 
-    @unittest.skipIf(_testcapi is None, 'need _testcapi')
-    @unittest.skipUnless(hasattr(signal, 'SIGBUS'), 'need signal.SIGBUS')
+    @unittest.skipIf(_testcapi is None, "need _testcapi")
+    @unittest.skipUnless(hasattr(signal, "SIGBUS"), "need signal.SIGBUS")
     @skip_segfault_on_android
     def test_sigbus(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             import signal
 
@@ -210,13 +233,15 @@ class FaultHandlerTests(unittest.TestCase):
             signal.raise_signal(signal.SIGBUS)
             """,
             5,
-            'Bus error')
+            "Bus error",
+        )
 
-    @unittest.skipIf(_testcapi is None, 'need _testcapi')
-    @unittest.skipUnless(hasattr(signal, 'SIGILL'), 'need signal.SIGILL')
+    @unittest.skipIf(_testcapi is None, "need _testcapi")
+    @unittest.skipUnless(hasattr(signal, "SIGILL"), "need signal.SIGILL")
     @skip_segfault_on_android
     def test_sigill(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             import signal
 
@@ -224,96 +249,120 @@ class FaultHandlerTests(unittest.TestCase):
             signal.raise_signal(signal.SIGILL)
             """,
             5,
-            'Illegal instruction')
+            "Illegal instruction",
+        )
 
     def test_fatal_error(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler._fatal_error(b'xyz')
             """,
             2,
-            'xyz',
-            func='faulthandler_fatal_error_py',
-            py_fatal_error=True)
+            "xyz",
+            func="faulthandler_fatal_error_py",
+            py_fatal_error=True,
+        )
 
     def test_fatal_error_without_gil(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler._fatal_error(b'xyz', True)
             """,
             2,
-            'xyz',
-            func='faulthandler_fatal_error_py',
-            py_fatal_error=True)
+            "xyz",
+            func="faulthandler_fatal_error_py",
+            py_fatal_error=True,
+        )
 
-    @unittest.skipIf(sys.platform.startswith('openbsd'),
-                     "Issue #12868: sigaltstack() doesn't work on "
-                     "OpenBSD if Python is compiled with pthread")
-    @unittest.skipIf(not hasattr(faulthandler, '_stack_overflow'),
-                     'need faulthandler._stack_overflow()')
+    @unittest.skipIf(
+        sys.platform.startswith("openbsd"),
+        "Issue #12868: sigaltstack() doesn't work on "
+        "OpenBSD if Python is compiled with pthread",
+    )
+    @unittest.skipIf(
+        not hasattr(faulthandler, "_stack_overflow"),
+        "need faulthandler._stack_overflow()",
+    )
     def test_stack_overflow(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._stack_overflow()
             """,
             3,
-            '(?:Segmentation fault|Bus error)',
-            other_regex='unable to raise a stack overflow')
+            "(?:Segmentation fault|Bus error)",
+            other_regex="unable to raise a stack overflow",
+        )
 
     @skip_segfault_on_android
     def test_gil_released(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable()
             faulthandler._sigsegv(True)
             """,
             3,
-            'Segmentation fault')
+            "Segmentation fault",
+        )
 
-    @unittest.skipIf(UB_SANITIZER or MEMORY_SANITIZER,
-                     "sanitizer builds change crashing process output.")
+    @unittest.skipIf(
+        UB_SANITIZER or MEMORY_SANITIZER,
+        "sanitizer builds change crashing process output.",
+    )
     @skip_segfault_on_android
     def test_enable_file(self):
         with temporary_filename() as filename:
-            self.check_fatal_error("""
+            self.check_fatal_error(
+                """
                 import faulthandler
                 output = open({filename}, 'wb')
                 faulthandler.enable(output)
                 faulthandler._sigsegv()
                 """.format(filename=repr(filename)),
                 4,
-                'Segmentation fault',
-                filename=filename)
+                "Segmentation fault",
+                filename=filename,
+            )
 
-    @unittest.skipIf(sys.platform == "win32",
-                     "subprocess doesn't support pass_fds on Windows")
-    @unittest.skipIf(UB_SANITIZER or MEMORY_SANITIZER,
-                     "sanitizer builds change crashing process output.")
+    @unittest.skipIf(
+        sys.platform == "win32", "subprocess doesn't support pass_fds on Windows"
+    )
+    @unittest.skipIf(
+        UB_SANITIZER or MEMORY_SANITIZER,
+        "sanitizer builds change crashing process output.",
+    )
     @skip_segfault_on_android
     def test_enable_fd(self):
-        with tempfile.TemporaryFile('wb+') as fp:
+        with tempfile.TemporaryFile("wb+") as fp:
             fd = fp.fileno()
-            self.check_fatal_error("""
+            self.check_fatal_error(
+                """
                 import faulthandler
                 import sys
                 faulthandler.enable(%s)
                 faulthandler._sigsegv()
                 """ % fd,
                 4,
-                'Segmentation fault',
-                fd=fd)
+                "Segmentation fault",
+                fd=fd,
+            )
 
     @skip_segfault_on_android
     def test_enable_single_thread(self):
-        self.check_fatal_error("""
+        self.check_fatal_error(
+            """
             import faulthandler
             faulthandler.enable(all_threads=False)
             faulthandler._sigsegv()
             """,
             3,
-            'Segmentation fault',
-            all_threads=False)
+            "Segmentation fault",
+            all_threads=False,
+        )
 
     @skip_segfault_on_android
     def test_disable(self):
@@ -323,11 +372,12 @@ class FaultHandlerTests(unittest.TestCase):
             faulthandler.disable()
             faulthandler._sigsegv()
             """
-        not_expected = 'Fatal Python error'
+        not_expected = "Fatal Python error"
         stderr, exitcode = self.get_output(code)
-        stderr = '\n'.join(stderr)
-        self.assertTrue(not_expected not in stderr,
-                     "%r is present in %r" % (not_expected, stderr))
+        stderr = "\n".join(stderr)
+        self.assertTrue(
+            not_expected not in stderr, "%r is present in %r" % (not_expected, stderr)
+        )
         self.assertNotEqual(exitcode, 0)
 
     def test_is_enabled(self):
@@ -363,9 +413,17 @@ class FaultHandlerTests(unittest.TestCase):
     def test_sys_xoptions(self):
         # Test python -X faulthandler
         code = "import faulthandler; print(faulthandler.is_enabled())"
-        args = filter(None, (sys.executable,
-                             "-E" if sys.flags.ignore_environment else "",
-                             "-X", "faulthandler", "-c", code))
+        args = filter(
+            None,
+            (
+                sys.executable,
+                "-E" if sys.flags.ignore_environment else "",
+                "-X",
+                "faulthandler",
+                "-c",
+                code,
+            ),
+        )
         env = os.environ.copy()
         env.pop("PYTHONFAULTHANDLER", None)
         # don't use assert_python_ok() because it always enables faulthandler
@@ -377,16 +435,16 @@ class FaultHandlerTests(unittest.TestCase):
         code = "import faulthandler; print(faulthandler.is_enabled())"
         args = (sys.executable, "-c", code)
         env = dict(os.environ)
-        env['PYTHONFAULTHANDLER'] = ''
-        env['PYTHONDEVMODE'] = ''
+        env["PYTHONFAULTHANDLER"] = ""
+        env["PYTHONDEVMODE"] = ""
         # don't use assert_python_ok() because it always enables faulthandler
         output = subprocess.check_output(args, env=env)
         self.assertEqual(output.rstrip(), b"False")
 
         # non-empty env var
         env = dict(os.environ)
-        env['PYTHONFAULTHANDLER'] = '1'
-        env['PYTHONDEVMODE'] = ''
+        env["PYTHONFAULTHANDLER"] = "1"
+        env["PYTHONDEVMODE"] = ""
         output = subprocess.check_output(args, env=env)
         self.assertEqual(output.rstrip(), b"True")
 
@@ -427,10 +485,10 @@ class FaultHandlerTests(unittest.TestCase):
         else:
             lineno = 14
         expected = [
-            'Stack (most recent call first):',
+            "Stack (most recent call first):",
             '  File "<string>", line %s in funcB' % lineno,
             '  File "<string>", line 17 in funcA',
-            '  File "<string>", line 19 in <module>'
+            '  File "<string>", line 19 in <module>',
         ]
         trace, exitcode = self.get_output(code, filename, fd)
         self.assertEqual(trace, expected)
@@ -443,16 +501,17 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_dump_traceback(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
-                     "subprocess doesn't support pass_fds on Windows")
+    @unittest.skipIf(
+        sys.platform == "win32", "subprocess doesn't support pass_fds on Windows"
+    )
     def test_dump_traceback_fd(self):
-        with tempfile.TemporaryFile('wb+') as fp:
+        with tempfile.TemporaryFile("wb+") as fp:
             self.check_dump_traceback(fd=fp.fileno())
 
     def test_truncate(self):
         maxlen = 500
-        func_name = 'x' * (maxlen + 50)
-        truncated = 'x' * maxlen + '...'
+        func_name = "x" * (maxlen + 50)
+        truncated = "x" * maxlen + "..."
         code = """
             import faulthandler
 
@@ -465,9 +524,9 @@ class FaultHandlerTests(unittest.TestCase):
             func_name=func_name,
         )
         expected = [
-            'Stack (most recent call first):',
+            "Stack (most recent call first):",
             '  File "<string>", line 4 in %s' % truncated,
-            '  File "<string>", line 6 in <module>'
+            '  File "<string>", line 6 in <module>',
         ]
         trace, exitcode = self.get_output(code)
         self.assertEqual(trace, expected)
@@ -512,7 +571,7 @@ class FaultHandlerTests(unittest.TestCase):
             """
         code = code.format(filename=repr(filename))
         output, exitcode = self.get_output(code, filename)
-        output = '\n'.join(output)
+        output = "\n".join(output)
         if filename:
             lineno = 8
         else:
@@ -539,8 +598,9 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_dump_traceback_threads(filename)
 
-    def check_dump_traceback_later(self, repeat=False, cancel=False, loops=1,
-                                   *, filename=None, fd=None):
+    def check_dump_traceback_later(
+        self, repeat=False, cancel=False, loops=1, *, filename=None, fd=None
+    ):
         """
         Check how many times the traceback is written in timeout x 2.5 seconds,
         or timeout x 3.5 seconds if cancel is True: 1, 2 or 3 times depending
@@ -588,17 +648,20 @@ class FaultHandlerTests(unittest.TestCase):
             fd=fd,
         )
         trace, exitcode = self.get_output(code, filename)
-        trace = '\n'.join(trace)
+        trace = "\n".join(trace)
 
         if not cancel:
             count = loops
             if repeat:
                 count *= 2
-            header = r'Timeout \(%s\)!\nThread 0x[0-9a-f]+ \(most recent call first\):\n' % timeout_str
+            header = (
+                r"Timeout \(%s\)!\nThread 0x[0-9a-f]+ \(most recent call first\):\n"
+                % timeout_str
+            )
             regex = expected_traceback(17, 26, header, min_count=count)
             self.assertRegex(trace, regex)
         else:
-            self.assertEqual(trace, '')
+            self.assertEqual(trace, "")
         self.assertEqual(exitcode, 0)
 
     def test_dump_traceback_later(self):
@@ -614,19 +677,22 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_dump_traceback_later(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
-                     "subprocess doesn't support pass_fds on Windows")
+    @unittest.skipIf(
+        sys.platform == "win32", "subprocess doesn't support pass_fds on Windows"
+    )
     def test_dump_traceback_later_fd(self):
-        with tempfile.TemporaryFile('wb+') as fp:
+        with tempfile.TemporaryFile("wb+") as fp:
             self.check_dump_traceback_later(fd=fp.fileno())
 
     def test_dump_traceback_later_twice(self):
         self.check_dump_traceback_later(loops=2)
 
-    @unittest.skipIf(not hasattr(faulthandler, "register"),
-                     "need faulthandler.register")
-    def check_register(self, filename=False, all_threads=False,
-                       unregister=False, chain=False, fd=None):
+    @unittest.skipIf(
+        not hasattr(faulthandler, "register"), "need faulthandler.register"
+    )
+    def check_register(
+        self, filename=False, all_threads=False, unregister=False, chain=False, fd=None
+    ):
         """
         Register a handler displaying the traceback on a user signal. Raise the
         signal and check the written traceback.
@@ -691,16 +757,16 @@ class FaultHandlerTests(unittest.TestCase):
             fd=fd,
         )
         trace, exitcode = self.get_output(code, filename)
-        trace = '\n'.join(trace)
+        trace = "\n".join(trace)
         if not unregister:
             if all_threads:
-                regex = r'Current thread 0x[0-9a-f]+ \(most recent call first\):\n'
+                regex = r"Current thread 0x[0-9a-f]+ \(most recent call first\):\n"
             else:
-                regex = r'Stack \(most recent call first\):\n'
+                regex = r"Stack \(most recent call first\):\n"
             regex = expected_traceback(14, 32, regex)
             self.assertRegex(trace, regex)
         else:
-            self.assertEqual(trace, '')
+            self.assertEqual(trace, "")
         if unregister:
             self.assertNotEqual(exitcode, 0)
         else:
@@ -716,10 +782,11 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_register(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
-                     "subprocess doesn't support pass_fds on Windows")
+    @unittest.skipIf(
+        sys.platform == "win32", "subprocess doesn't support pass_fds on Windows"
+    )
     def test_register_fd(self):
-        with tempfile.TemporaryFile('wb+') as fp:
+        with tempfile.TemporaryFile("wb+") as fp:
             self.check_register(fd=fp.fileno())
 
     def test_register_threads(self):
@@ -752,26 +819,28 @@ class FaultHandlerTests(unittest.TestCase):
             with self.check_stderr_none():
                 faulthandler.register(signal.SIGUSR1)
 
-    @unittest.skipUnless(MS_WINDOWS, 'specific to Windows')
+    @unittest.skipUnless(MS_WINDOWS, "specific to Windows")
     def test_raise_exception(self):
         for exc, name in (
-            ('EXCEPTION_ACCESS_VIOLATION', 'access violation'),
-            ('EXCEPTION_INT_DIVIDE_BY_ZERO', 'int divide by zero'),
-            ('EXCEPTION_STACK_OVERFLOW', 'stack overflow'),
+            ("EXCEPTION_ACCESS_VIOLATION", "access violation"),
+            ("EXCEPTION_INT_DIVIDE_BY_ZERO", "int divide by zero"),
+            ("EXCEPTION_STACK_OVERFLOW", "stack overflow"),
         ):
-            self.check_windows_exception(f"""
+            self.check_windows_exception(
+                f"""
                 import faulthandler
                 faulthandler.enable()
                 faulthandler._raise_exception(faulthandler._{exc})
                 """,
                 3,
-                name)
+                name,
+            )
 
-    @unittest.skipUnless(MS_WINDOWS, 'specific to Windows')
+    @unittest.skipUnless(MS_WINDOWS, "specific to Windows")
     def test_ignore_exception(self):
         for exc_code in (
-            0xE06D7363,   # MSC exception ("Emsc")
-            0xE0434352,   # COM Callable Runtime exception ("ECCR")
+            0xE06D7363,  # MSC exception ("Emsc")
+            0xE0434352,  # COM Callable Runtime exception ("ECCR")
         ):
             code = f"""
                     import faulthandler
@@ -783,7 +852,7 @@ class FaultHandlerTests(unittest.TestCase):
             self.assertEqual(output, [])
             self.assertEqual(exitcode, exc_code)
 
-    @unittest.skipUnless(MS_WINDOWS, 'specific to Windows')
+    @unittest.skipUnless(MS_WINDOWS, "specific to Windows")
     def test_raise_nonfatal_exception(self):
         # These exceptions are not strictly errors. Letting
         # faulthandler display the traceback when they are
@@ -803,15 +872,13 @@ class FaultHandlerTests(unittest.TestCase):
                 import faulthandler
                 faulthandler.enable()
                 faulthandler._raise_exception(0x{exc:x})
-                """
-            )
+                """)
             self.assertEqual(output, [])
             # On Windows older than 7 SP1, the actual exception code has
             # bit 29 cleared.
-            self.assertIn(exitcode,
-                          (exc, exc & ~0x10000000))
+            self.assertIn(exitcode, (exc, exc & ~0x10000000))
 
-    @unittest.skipUnless(MS_WINDOWS, 'specific to Windows')
+    @unittest.skipUnless(MS_WINDOWS, "specific to Windows")
     def test_disable_windows_exc_handler(self):
         code = dedent("""
             import faulthandler

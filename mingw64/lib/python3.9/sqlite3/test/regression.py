@@ -1,4 +1,4 @@
-#-*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 # pysqlite2/test/regression.py: pysqlite regression tests
 #
 # Copyright (C) 2006-2010 Gerhard Häring <gh@ghaering.de>
@@ -27,6 +27,7 @@ import sqlite3 as sqlite
 import weakref
 import functools
 from test import support
+
 
 class RegressionTests(unittest.TestCase):
     def setUp(self):
@@ -58,7 +59,9 @@ class RegressionTests(unittest.TestCase):
         cursors = [con.cursor() for x in range(5)]
         cursors[0].execute("create table test(x)")
         for i in range(10):
-            cursors[0].executemany("insert into test(x) values (?)", [(x,) for x in range(10)])
+            cursors[0].executemany(
+                "insert into test(x) values (?)", [(x,) for x in range(10)]
+            )
 
         for i in range(5):
             cursors[i].execute(" " * i + "select x from test")
@@ -87,7 +90,9 @@ class RegressionTests(unittest.TestCase):
             cur.execute("select 1 x union select " + str(i))
         con.close()
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 2, 2), 'needs sqlite 3.2.2 or newer')
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 2, 2), "needs sqlite 3.2.2 or newer"
+    )
     def CheckOnConflictRollback(self):
         con = sqlite.connect(":memory:")
         con.execute("create table foo(x, unique(x) on conflict rollback)")
@@ -124,7 +129,7 @@ class RegressionTests(unittest.TestCase):
         a statement. This test exhibits the problem.
         """
         SELECT = "select * from foo"
-        con = sqlite.connect(":memory:",detect_types=sqlite.PARSE_DECLTYPES)
+        con = sqlite.connect(":memory:", detect_types=sqlite.PARSE_DECLTYPES)
         con.execute("create table foo(bar timestamp)")
         con.execute("insert into foo(bar) values (?)", (datetime.datetime.now(),))
         con.execute(SELECT).close()
@@ -139,8 +144,9 @@ class RegressionTests(unittest.TestCase):
             def __conform__(self, protocol):
                 parameters.clear()
                 return "..."
+
         parameters = [X(), 0]
-        con = sqlite.connect(":memory:",detect_types=sqlite.PARSE_DECLTYPES)
+        con = sqlite.connect(":memory:", detect_types=sqlite.PARSE_DECLTYPES)
         con.execute("create table foo(bar X, baz integer)")
         # Should not crash
         with self.assertRaises(IndexError):
@@ -150,8 +156,9 @@ class RegressionTests(unittest.TestCase):
         # When porting the module to Python 3.0, the error message about
         # decoding errors disappeared. This verifies they're back again.
         with self.assertRaises(sqlite.OperationalError) as cm:
-            self.con.execute("select 'xxx' || ? || 'yyy' colname",
-                             (bytes(bytearray([250])),)).fetchone()
+            self.con.execute(
+                "select 'xxx' || ? || 'yyy' colname", (bytes(bytearray([250])),)
+            ).fetchone()
         msg = "Could not decode to UTF-8 column 'colname' with text 'xxx"
         self.assertIn(msg, str(cm.exception))
 
@@ -166,6 +173,7 @@ class RegressionTests(unittest.TestCase):
         class CustomStr(str):
             def upper(self):
                 return None
+
             def __del__(self):
                 con.isolation_level = ""
 
@@ -182,8 +190,11 @@ class RegressionTests(unittest.TestCase):
         con.isolation_level = None
         con.isolation_level = "DEFERRED"
         pairs = [
-            (1, TypeError), (b'', TypeError), ("abc", ValueError),
-            ("IMMEDIATE\0EXCLUSIVE", ValueError), ("\xe9", ValueError),
+            (1, TypeError),
+            (b"", TypeError),
+            ("abc", ValueError),
+            ("IMMEDIATE\0EXCLUSIVE", ValueError),
+            ("\xe9", ValueError),
         ]
         for value, exc in pairs:
             with self.subTest(level=value):
@@ -196,6 +207,7 @@ class RegressionTests(unittest.TestCase):
         Verifies that cursor methods check whether base class __init__ was
         called.
         """
+
         class Cursor(sqlite.Cursor):
             def __init__(self, con):
                 pass
@@ -204,15 +216,19 @@ class RegressionTests(unittest.TestCase):
         cur = Cursor(con)
         with self.assertRaises(sqlite.ProgrammingError):
             cur.execute("select 4+5").fetchall()
-        with self.assertRaisesRegex(sqlite.ProgrammingError,
-                                    r'^Base Cursor\.__init__ not called\.$'):
+        with self.assertRaisesRegex(
+            sqlite.ProgrammingError, r"^Base Cursor\.__init__ not called\.$"
+        ):
             cur.close()
 
     def CheckStrSubclass(self):
         """
         The Python 3.0 port of the module didn't cope with values of subclasses of str.
         """
-        class MyStr(str): pass
+
+        class MyStr(str):
+            pass
+
         self.con.execute("select ?", (MyStr("abc"),))
 
     def CheckConnectionConstructorCallCheck(self):
@@ -220,6 +236,7 @@ class RegressionTests(unittest.TestCase):
         Verifies that connection methods check whether base class __init__ was
         called.
         """
+
         class Connection(sqlite.Connection):
             def __init__(self, name):
                 pass
@@ -233,6 +250,7 @@ class RegressionTests(unittest.TestCase):
         Verifies that subclassed cursor classes are correctly registered with
         the connection object, too.  (fetch-across-rollback problem)
         """
+
         class Connection(sqlite.Connection):
             def cursor(self):
                 return Cursor(self)
@@ -280,9 +298,14 @@ class RegressionTests(unittest.TestCase):
     def CheckCollation(self):
         def collation_cb(a, b):
             return 1
-        self.assertRaises(sqlite.ProgrammingError, self.con.create_collation,
+
+        self.assertRaises(
+            sqlite.ProgrammingError,
+            self.con.create_collation,
             # Lone surrogate cannot be encoded to the default encoding (utf8)
-            "\uDC80", collation_cb)
+            "\udc80",
+            collation_cb,
+        )
 
     def CheckRecursiveCursorUse(self):
         """
@@ -302,8 +325,7 @@ class RegressionTests(unittest.TestCase):
             yield 1
 
         with self.assertRaises(sqlite.ProgrammingError):
-            cur.executemany("insert into b (baz) values (?)",
-                            ((i,) for i in foo()))
+            cur.executemany("insert into b (baz) values (?)", ((i,) for i in foo()))
 
     def CheckConvertTimestampMicrosecondPadding(self):
         """
@@ -326,16 +348,17 @@ class RegressionTests(unittest.TestCase):
         cur.execute("SELECT * FROM t")
         values = [x[0] for x in cur.fetchall()]
 
-        self.assertEqual(values, [
-            datetime.datetime(2012, 4, 4, 15, 6, 0, 456000),
-            datetime.datetime(2012, 4, 4, 15, 6, 0, 123456),
-        ])
+        self.assertEqual(
+            values,
+            [
+                datetime.datetime(2012, 4, 4, 15, 6, 0, 456000),
+                datetime.datetime(2012, 4, 4, 15, 6, 0, 123456),
+            ],
+        )
 
     def CheckInvalidIsolationLevelType(self):
         # isolation level is a string, not an integer
-        self.assertRaises(TypeError,
-                          sqlite.connect, ":memory:", isolation_level=123)
-
+        self.assertRaises(TypeError, sqlite.connect, ":memory:", isolation_level=123)
 
     def CheckNullCharacter(self):
         # Issue #21147
@@ -382,8 +405,10 @@ class RegressionTests(unittest.TestCase):
         The interpreter shouldn't crash in case Cursor.__init__() is called
         more than once.
         """
+
         def callback(*args):
             pass
+
         con = sqlite.connect(":memory:")
         cur = sqlite.Cursor(con)
         ref = weakref.ref(cur, callback)
@@ -402,9 +427,11 @@ class RegressionTests(unittest.TestCase):
             def log(self, *args):
                 return sqlite.SQLITE_OK
 
-        for method in [self.con.set_trace_callback,
-                       functools.partial(self.con.set_progress_handler, n=1),
-                       self.con.set_authorizer]:
+        for method in [
+            self.con.set_trace_callback,
+            functools.partial(self.con.set_progress_handler, n=1),
+            self.con.set_authorizer,
+        ]:
             printer_instance = Printer()
             method(printer_instance.log)
             method(printer_instance.log)
@@ -412,16 +439,15 @@ class RegressionTests(unittest.TestCase):
             method(None)
 
 
-
 def suite():
     regression_suite = unittest.makeSuite(RegressionTests, "Check")
-    return unittest.TestSuite((
-        regression_suite,
-    ))
+    return unittest.TestSuite((regression_suite,))
+
 
 def test():
     runner = unittest.TextTestRunner()
     runner.run(suite())
+
 
 if __name__ == "__main__":
     test()

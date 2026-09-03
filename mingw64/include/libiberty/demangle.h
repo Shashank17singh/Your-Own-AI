@@ -25,8 +25,7 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-
-#if !defined (DEMANGLE_H)
+#if !defined(DEMANGLE_H)
 #define DEMANGLE_H
 
 #include "libiberty.h"
@@ -37,29 +36,32 @@ extern "C" {
 
 /* Options passed to cplus_demangle (in 2nd parameter). */
 
-#define DMGL_NO_OPTS	 0		/* For readability... */
-#define DMGL_PARAMS	 (1 << 0)	/* Include function args */
-#define DMGL_ANSI	 (1 << 1)	/* Include const, volatile, etc */
-#define DMGL_JAVA	 (1 << 2)	/* Demangle as Java rather than C++. */
-#define DMGL_VERBOSE	 (1 << 3)	/* Include implementation details.  */
-#define DMGL_TYPES	 (1 << 4)	/* Also try to demangle type encodings.  */
-#define DMGL_RET_POSTFIX (1 << 5)       /* Print function return types (when
-					   present) after function signature.
-					   It applies only to the toplevel
-					   function type.  */
-#define DMGL_RET_DROP	 (1 << 6)       /* Suppress printing function return
-					   types, even if present.  It applies
-					   only to the toplevel function type.
-					   */
+#define DMGL_NO_OPTS 0        /* For readability... */
+#define DMGL_PARAMS (1 << 0)  /* Include function args */
+#define DMGL_ANSI (1 << 1)    /* Include const, volatile, etc */
+#define DMGL_JAVA (1 << 2)    /* Demangle as Java rather than C++. */
+#define DMGL_VERBOSE (1 << 3) /* Include implementation details.  */
+#define DMGL_TYPES (1 << 4)   /* Also try to demangle type encodings.  */
+#define DMGL_RET_POSTFIX                                                       \
+  (1 << 5) /* Print function return types (when                                \
+              present) after function signature.                               \
+              It applies only to the toplevel                                  \
+              function type.  */
+#define DMGL_RET_DROP                                                          \
+  (1 << 6) /* Suppress printing function return                                \
+              types, even if present.  It applies                              \
+              only to the toplevel function type.                              \
+              */
 
-#define DMGL_AUTO	 (1 << 8)
-#define DMGL_GNU_V3	 (1 << 14)
-#define DMGL_GNAT	 (1 << 15)
-#define DMGL_DLANG	 (1 << 16)
-#define DMGL_RUST	 (1 << 17)	/* Rust wraps GNU_V3 style mangling.  */
+#define DMGL_AUTO (1 << 8)
+#define DMGL_GNU_V3 (1 << 14)
+#define DMGL_GNAT (1 << 15)
+#define DMGL_DLANG (1 << 16)
+#define DMGL_RUST (1 << 17) /* Rust wraps GNU_V3 style mangling.  */
 
 /* If none of these are set, use 'current_demangling_style' as the default. */
-#define DMGL_STYLE_MASK (DMGL_AUTO|DMGL_GNU_V3|DMGL_JAVA|DMGL_GNAT|DMGL_DLANG|DMGL_RUST)
+#define DMGL_STYLE_MASK                                                        \
+  (DMGL_AUTO | DMGL_GNU_V3 | DMGL_JAVA | DMGL_GNAT | DMGL_DLANG | DMGL_RUST)
 
 /* Disable a limit on the depth of recursion in mangled strings.
    Note if this limit is disabled then stack exhaustion is possible when
@@ -80,8 +82,7 @@ extern "C" {
    for operator "->", even though the first is lucid style and the second
    is ARM style. (FIXME?) */
 
-extern enum demangling_styles
-{
+extern enum demangling_styles {
   no_demangling = -1,
   unknown_demangling = 0,
   auto_demangling = DMGL_AUTO,
@@ -94,78 +95,68 @@ extern enum demangling_styles
 
 /* Define string names for the various demangling styles. */
 
-#define NO_DEMANGLING_STYLE_STRING            "none"
-#define AUTO_DEMANGLING_STYLE_STRING	      "auto"
-#define GNU_V3_DEMANGLING_STYLE_STRING        "gnu-v3"
-#define JAVA_DEMANGLING_STYLE_STRING          "java"
-#define GNAT_DEMANGLING_STYLE_STRING          "gnat"
-#define DLANG_DEMANGLING_STYLE_STRING         "dlang"
-#define RUST_DEMANGLING_STYLE_STRING          "rust"
+#define NO_DEMANGLING_STYLE_STRING "none"
+#define AUTO_DEMANGLING_STYLE_STRING "auto"
+#define GNU_V3_DEMANGLING_STYLE_STRING "gnu-v3"
+#define JAVA_DEMANGLING_STYLE_STRING "java"
+#define GNAT_DEMANGLING_STYLE_STRING "gnat"
+#define DLANG_DEMANGLING_STYLE_STRING "dlang"
+#define RUST_DEMANGLING_STYLE_STRING "rust"
 
 /* Some macros to test what demangling style is active. */
 
 #define CURRENT_DEMANGLING_STYLE current_demangling_style
-#define AUTO_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_AUTO)
-#define GNU_V3_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_GNU_V3)
-#define JAVA_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_JAVA)
-#define GNAT_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_GNAT)
-#define DLANG_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_DLANG)
-#define RUST_DEMANGLING (((int) CURRENT_DEMANGLING_STYLE) & DMGL_RUST)
+#define AUTO_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_AUTO)
+#define GNU_V3_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_GNU_V3)
+#define JAVA_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_JAVA)
+#define GNAT_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_GNAT)
+#define DLANG_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_DLANG)
+#define RUST_DEMANGLING (((int)CURRENT_DEMANGLING_STYLE) & DMGL_RUST)
 
 /* Provide information about the available demangle styles. This code is
    pulled from gdb into libiberty because it is useful to binutils also.  */
 
-extern const struct demangler_engine
-{
+extern const struct demangler_engine {
   const char *const demangling_style_name;
   const enum demangling_styles demangling_style;
   const char *const demangling_style_doc;
 } libiberty_demanglers[];
 
-extern char *
-cplus_demangle (const char *mangled, int options);
+extern char *cplus_demangle(const char *mangled, int options);
 
 /* Note: This sets global state.  FIXME if you care about multi-threading. */
 
 extern enum demangling_styles
-cplus_demangle_set_style (enum demangling_styles style);
+cplus_demangle_set_style(enum demangling_styles style);
 
-extern enum demangling_styles
-cplus_demangle_name_to_style (const char *name);
+extern enum demangling_styles cplus_demangle_name_to_style(const char *name);
 
 /* Callback typedef for allocation-less demangler interfaces. */
-typedef void (*demangle_callbackref) (const char *, size_t, void *);
+typedef void (*demangle_callbackref)(const char *, size_t, void *);
 
 /* V3 ABI demangling entry points, defined in cp-demangle.c.  Callback
    variants return non-zero on success, zero on error.  char* variants
    return a string allocated by malloc on success, NULL on error.  */
-extern int
-cplus_demangle_v3_callback (const char *mangled, int options,
-                            demangle_callbackref callback, void *opaque);
+extern int cplus_demangle_v3_callback(const char *mangled, int options,
+                                      demangle_callbackref callback,
+                                      void *opaque);
 
-extern char*
-cplus_demangle_v3 (const char *mangled, int options);
+extern char *cplus_demangle_v3(const char *mangled, int options);
 
-extern int
-java_demangle_v3_callback (const char *mangled,
-                           demangle_callbackref callback, void *opaque);
+extern int java_demangle_v3_callback(const char *mangled,
+                                     demangle_callbackref callback,
+                                     void *opaque);
 
-extern char*
-java_demangle_v3 (const char *mangled);
+extern char *java_demangle_v3(const char *mangled);
 
-char *
-ada_demangle (const char *mangled, int options);
+char *ada_demangle(const char *mangled, int options);
 
-extern char *
-dlang_demangle (const char *mangled, int options);
+extern char *dlang_demangle(const char *mangled, int options);
 
-extern int
-rust_demangle_callback (const char *mangled, int options,
-                        demangle_callbackref callback, void *opaque);
+extern int rust_demangle_callback(const char *mangled, int options,
+                                  demangle_callbackref callback, void *opaque);
 
-
-extern char *
-rust_demangle (const char *mangled, int options);
+extern char *rust_demangle(const char *mangled, int options);
 
 enum gnu_v3_ctor_kinds {
   gnu_v3_complete_object_ctor = 1,
@@ -182,9 +173,7 @@ enum gnu_v3_ctor_kinds {
    in the G++ V3 ABI demangling style.  Specifically, return an `enum
    gnu_v3_ctor_kinds' value indicating what kind of constructor
    it is.  */
-extern enum gnu_v3_ctor_kinds
-	is_gnu_v3_mangled_ctor (const char *name);
-
+extern enum gnu_v3_ctor_kinds is_gnu_v3_mangled_ctor(const char *name);
 
 enum gnu_v3_dtor_kinds {
   gnu_v3_deleting_dtor = 1,
@@ -201,8 +190,7 @@ enum gnu_v3_dtor_kinds {
    in the G++ V3 ABI demangling style.  Specifically, return an `enum
    gnu_v3_dtor_kinds' value, indicating what kind of destructor
    it is.  */
-extern enum gnu_v3_dtor_kinds
-	is_gnu_v3_mangled_dtor (const char *name);
+extern enum gnu_v3_dtor_kinds is_gnu_v3_mangled_dtor(const char *name);
 
 /* The V3 demangler works in two passes.  The first pass builds a tree
    representation of the mangled name, and the second pass turns the
@@ -218,8 +206,7 @@ extern enum gnu_v3_dtor_kinds
    right (a component type with only one subtree puts it in the left
    subtree).  */
 
-enum demangle_component_type
-{
+enum demangle_component_type {
   /* A name, with a length and a pointer to a string.  */
   DEMANGLE_COMPONENT_NAME,
   /* A qualified name.  The left subtree is a class or namespace or
@@ -488,8 +475,7 @@ struct demangle_builtin_type_info;
    not well protected against macros defined by the file including
    this one.  We can fix this if it ever becomes a problem.  */
 
-struct demangle_component
-{
+struct demangle_component {
   /* The type of this component.  */
   enum demangle_component_type type;
 
@@ -499,27 +485,23 @@ struct demangle_component
   int d_printing;
   int d_counting;
 
-  union
-  {
+  union {
     /* For DEMANGLE_COMPONENT_NAME.  */
-    struct
-    {
+    struct {
       /* A pointer to the name (which need not NULL terminated) and
-	 its length.  */
+         its length.  */
       const char *s;
       int len;
     } s_name;
 
     /* For DEMANGLE_COMPONENT_OPERATOR.  */
-    struct
-    {
+    struct {
       /* Operator.  */
       const struct demangle_operator_info *op;
     } s_operator;
 
     /* For DEMANGLE_COMPONENT_EXTENDED_OPERATOR.  */
-    struct
-    {
+    struct {
       /* Number of arguments.  */
       int args;
       /* Name.  */
@@ -527,8 +509,7 @@ struct demangle_component
     } s_extended_operator;
 
     /* For DEMANGLE_COMPONENT_FIXED_TYPE.  */
-    struct
-    {
+    struct {
       /* The length, indicated by a C integer type name.  */
       struct demangle_component *length;
       /* _Accum or _Fract?  */
@@ -538,8 +519,7 @@ struct demangle_component
     } s_fixed;
 
     /* For DEMANGLE_COMPONENT_CTOR.  */
-    struct
-    {
+    struct {
       /* Kind of constructor.  */
       enum gnu_v3_ctor_kinds kind;
       /* Name.  */
@@ -547,8 +527,7 @@ struct demangle_component
     } s_ctor;
 
     /* For DEMANGLE_COMPONENT_DTOR.  */
-    struct
-    {
+    struct {
       /* Kind of destructor.  */
       enum gnu_v3_dtor_kinds kind;
       /* Name.  */
@@ -556,15 +535,13 @@ struct demangle_component
     } s_dtor;
 
     /* For DEMANGLE_COMPONENT_BUILTIN_TYPE.  */
-    struct
-    {
+    struct {
       /* Builtin type.  */
       const struct demangle_builtin_type_info *type;
     } s_builtin;
 
     /* For DEMANGLE_COMPONENT_EXTENDED_BUILTIN_TYPE.  */
-    struct
-    {
+    struct {
       /* Builtin type.  */
       const struct demangle_builtin_type_info *type;
       short arg;
@@ -572,38 +549,33 @@ struct demangle_component
     } s_extended_builtin;
 
     /* For DEMANGLE_COMPONENT_SUB_STD.  */
-    struct
-    {
+    struct {
       /* Standard substitution string.  */
-      const char* string;
+      const char *string;
       /* Length of string.  */
       int len;
     } s_string;
 
     /* For DEMANGLE_COMPONENT_*_PARAM.  */
-    struct
-    {
+    struct {
       /* Parameter index.  */
       long number;
     } s_number;
 
     /* For DEMANGLE_COMPONENT_CHARACTER.  */
-    struct
-    {
+    struct {
       int character;
     } s_character;
 
     /* For other types.  */
-    struct
-    {
+    struct {
       /* Left (or only) subtree.  */
       struct demangle_component *left;
       /* Right subtree.  */
       struct demangle_component *right;
     } s_binary;
 
-    struct
-    {
+    struct {
       /* subtree, same place as d_left.  */
       struct demangle_component *sub;
       /* integer.  */
@@ -621,26 +593,23 @@ struct demangle_component
    subtree.  Returns non-zero on success, zero on failure, such as an
    unrecognized or inappropriate component type.  */
 
-extern int
-cplus_demangle_fill_component (struct demangle_component *fill,
-                               enum demangle_component_type,
-                               struct demangle_component *left,
-                               struct demangle_component *right);
+extern int cplus_demangle_fill_component(struct demangle_component *fill,
+                                         enum demangle_component_type,
+                                         struct demangle_component *left,
+                                         struct demangle_component *right);
 
 /* Fill in a DEMANGLE_COMPONENT_NAME.  Returns non-zero on success,
    zero for bad arguments.  */
 
-extern int
-cplus_demangle_fill_name (struct demangle_component *fill,
-                          const char *, int);
+extern int cplus_demangle_fill_name(struct demangle_component *fill,
+                                    const char *, int);
 
 /* Fill in a DEMANGLE_COMPONENT_BUILTIN_TYPE, using the name of the
    builtin type (e.g., "int", etc.).  Returns non-zero on success,
    zero if the type is not recognized.  */
 
-extern int
-cplus_demangle_fill_builtin_type (struct demangle_component *fill,
-                                  const char *type_name);
+extern int cplus_demangle_fill_builtin_type(struct demangle_component *fill,
+                                            const char *type_name);
 
 /* Fill in a DEMANGLE_COMPONENT_OPERATOR, using the name of the
    operator and the number of arguments which it takes (the latter is
@@ -648,34 +617,31 @@ cplus_demangle_fill_builtin_type (struct demangle_component *fill,
    such as '-').  Returns non-zero on success, zero if the operator is
    not recognized.  */
 
-extern int
-cplus_demangle_fill_operator (struct demangle_component *fill,
-                              const char *opname, int args);
+extern int cplus_demangle_fill_operator(struct demangle_component *fill,
+                                        const char *opname, int args);
 
 /* Fill in a DEMANGLE_COMPONENT_EXTENDED_OPERATOR, providing the
    number of arguments and the name.  Returns non-zero on success,
    zero for bad arguments.  */
 
 extern int
-cplus_demangle_fill_extended_operator (struct demangle_component *fill,
-                                       int numargs,
-                                       struct demangle_component *nm);
+cplus_demangle_fill_extended_operator(struct demangle_component *fill,
+                                      int numargs,
+                                      struct demangle_component *nm);
 
 /* Fill in a DEMANGLE_COMPONENT_CTOR.  Returns non-zero on success,
    zero for bad arguments.  */
 
-extern int
-cplus_demangle_fill_ctor (struct demangle_component *fill,
-                          enum gnu_v3_ctor_kinds kind,
-                          struct demangle_component *name);
+extern int cplus_demangle_fill_ctor(struct demangle_component *fill,
+                                    enum gnu_v3_ctor_kinds kind,
+                                    struct demangle_component *name);
 
 /* Fill in a DEMANGLE_COMPONENT_DTOR.  Returns non-zero on success,
    zero for bad arguments.  */
 
-extern int
-cplus_demangle_fill_dtor (struct demangle_component *fill,
-                          enum gnu_v3_dtor_kinds kind,
-                          struct demangle_component *name);
+extern int cplus_demangle_fill_dtor(struct demangle_component *fill,
+                                    enum gnu_v3_dtor_kinds kind,
+                                    struct demangle_component *name);
 
 /* This function translates a mangled name into a struct
    demangle_component tree.  The first argument is the mangled name.
@@ -686,7 +652,7 @@ cplus_demangle_fill_dtor (struct demangle_component *fill,
    needed.  */
 
 extern struct demangle_component *
-cplus_demangle_v3_components (const char *mangled, int options, void **mem);
+cplus_demangle_v3_components(const char *mangled, int options, void **mem);
 
 /* This function takes a struct demangle_component tree and returns
    the corresponding demangled string.  The first argument is DMGL_*
@@ -700,11 +666,9 @@ cplus_demangle_v3_components (const char *mangled, int options, void **mem);
    by the fourth argument to 0 for an invalid tree, or to 1 for a
    memory allocation error.  */
 
-extern char *
-cplus_demangle_print (int options,
-                      struct demangle_component *tree,
-                      int estimated_length,
-                      size_t *p_allocated_size);
+extern char *cplus_demangle_print(int options, struct demangle_component *tree,
+                                  int estimated_length,
+                                  size_t *p_allocated_size);
 
 /* This function takes a struct demangle_component tree and passes back
    a demangled string in one or more calls to a callback function.
@@ -720,13 +684,13 @@ cplus_demangle_print (int options,
    by malloc()), and so is normally safe for use where the heap has been
    corrupted.  On success, this function returns 1; on failure, 0.  */
 
-extern int
-cplus_demangle_print_callback (int options,
-                               struct demangle_component *tree,
-                               demangle_callbackref callback, void *opaque);
+extern int cplus_demangle_print_callback(int options,
+                                         struct demangle_component *tree,
+                                         demangle_callbackref callback,
+                                         void *opaque);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* DEMANGLE_H */
+#endif /* DEMANGLE_H */

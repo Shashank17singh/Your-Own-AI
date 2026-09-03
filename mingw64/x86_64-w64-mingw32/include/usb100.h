@@ -11,14 +11,10 @@
  *
  * Add winap-family check and move content into usbspec.h header by Kai Tietz.
  */
-
 #ifndef __USB100_H__
 #define __USB100_H__
-
 #include <winapifamily.h>
-
-#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #include "usbspec.h"
 #endif
-
 #endif

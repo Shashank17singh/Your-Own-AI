@@ -21,26 +21,19 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_PEX_H
 #define GCC_PEX_H
 
-struct file_wrapper
-{
+struct file_wrapper {
   enum class ownership { owned, borrowed };
 
-  file_wrapper (FILE *file, enum ownership ownership)
-  : m_file (file),
-    m_ownership (ownership)
-  {
-  }
-  ~file_wrapper ()
-  {
-    if (m_ownership == ownership::owned)
-      {
-	gcc_assert (m_file);
-	fclose (m_file);
-      }
+  file_wrapper(FILE *file, enum ownership ownership)
+      : m_file(file), m_ownership(ownership) {}
+  ~file_wrapper() {
+    if (m_ownership == ownership::owned) {
+      gcc_assert(m_file);
+      fclose(m_file);
+    }
   }
 
-  std::unique_ptr<std::vector<char>>
-  read_all ();
+  std::unique_ptr<std::vector<char>> read_all();
 
   FILE *m_file;
   enum ownership m_ownership;
@@ -48,50 +41,36 @@ struct file_wrapper
 
 // RAII wrapper around pex_obj
 
-struct pex
-{
-  pex (int flags, const char *pname, const char *tempbase)
-  : m_obj (pex_init (flags, pname, tempbase))
-  {
+struct pex {
+  pex(int flags, const char *pname, const char *tempbase)
+      : m_obj(pex_init(flags, pname, tempbase)) {}
+
+  ~pex() { pex_free(m_obj); }
+
+  const char *run(int flags, const char *executable, char *const *argv,
+                  const char *outname, const char *errname, int *err) {
+    return pex_run(m_obj, flags, executable, argv, outname, errname, err);
   }
 
-  ~pex ()
-  {
-    pex_free (m_obj);
+  const char *run(int flags, const char *executable,
+                  const std::vector<std::string> &args, const char *outname,
+                  const char *errname, int *err);
+
+  file_wrapper input_file(int flags, const char *in_name) {
+    return file_wrapper(pex_input_file(m_obj, flags, in_name),
+                        /* closed on first call to pex_run.  */
+                        file_wrapper::ownership::borrowed);
   }
 
-  const char *
-  run (int flags, const char *executable, char * const *argv,
-       const char *outname, const char *errname, int *err)
-  {
-    return pex_run (m_obj, flags, executable, argv, outname, errname, err);
+  file_wrapper input_pipe(bool binary = true) {
+    return file_wrapper(pex_input_pipe(m_obj, binary),
+                        /* closed on first call to pex_run.  */
+                        file_wrapper::ownership::borrowed);
   }
 
-  const char *
-  run (int flags, const char *executable, const std::vector<std::string> &args,
-       const char *outname, const char *errname, int *err);
-
-  file_wrapper
-  input_file (int flags, const char *in_name)
-  {
-    return file_wrapper (pex_input_file (m_obj, flags, in_name),
-			 /* closed on first call to pex_run.  */
-			 file_wrapper::ownership::borrowed);
-  }
-
-  file_wrapper
-  input_pipe (bool binary = true)
-  {
-    return file_wrapper (pex_input_pipe (m_obj, binary),
-			 /* closed on first call to pex_run.  */
-			 file_wrapper::ownership::borrowed);
-  }
-
-  file_wrapper
-  read_output (bool binary = true)
-  {
-    return file_wrapper (pex_read_output (m_obj, binary),
-			 file_wrapper::ownership::borrowed);
+  file_wrapper read_output(bool binary = true) {
+    return file_wrapper(pex_read_output(m_obj, binary),
+                        file_wrapper::ownership::borrowed);
   }
 
   pex_obj *m_obj;

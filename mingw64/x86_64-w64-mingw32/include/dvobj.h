@@ -6,5 +6,4 @@
 #ifndef RC_INVOKED
 #warning Your code should include ole2.h instead of dvobj.h
 #endif
-
 #include <ole2.h>

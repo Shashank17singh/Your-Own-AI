@@ -22,8 +22,7 @@ along with GCC; see the file COPYING3.  If not see
 #define GCC_MEM_STATS_TRAITS_H
 
 /* Memory allocation origin.  */
-enum mem_alloc_origin
-{
+enum mem_alloc_origin {
   HASH_TABLE_ORIGIN,
   HASH_MAP_ORIGIN,
   HASH_SET_ORIGIN,
@@ -35,7 +34,8 @@ enum mem_alloc_origin
 };
 
 /* Verbose names of the memory allocation origin.  */
-static const char * mem_alloc_origin_names[] = { "Hash tables", "Hash maps",
-  "Hash sets", "Heap vectors", "Bitmaps", "GGC memory", "Allocation pool" };
+static const char *mem_alloc_origin_names[] = {
+    "Hash tables", "Hash maps",  "Hash sets",      "Heap vectors",
+    "Bitmaps",     "GGC memory", "Allocation pool"};
 
 #endif // GCC_MEM_STATS_TRAITS_H

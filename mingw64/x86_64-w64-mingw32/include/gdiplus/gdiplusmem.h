@@ -19,24 +19,19 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-
 #ifndef __GDIPLUS_MEM_H
 #define __GDIPLUS_MEM_H
-#if __GNUC__ >=3
+#if __GNUC__ >= 3
 #pragma GCC system_header
 #endif
-
 #ifdef __cplusplus
 namespace DllExports {
 extern "C" {
 #endif
-
-VOID* WINGDIPAPI GdipAlloc(size_t);
-VOID WINGDIPAPI GdipFree(VOID*);
-
+VOID *WINGDIPAPI GdipAlloc(size_t);
+VOID WINGDIPAPI GdipFree(VOID *);
 #ifdef __cplusplus
-}  /* extern "C" */
-}  /* namespace DllExports */
+} /* extern "C" */
+} /* namespace DllExports */
 #endif
-
 #endif /* __GDIPLUS_MEM_H */

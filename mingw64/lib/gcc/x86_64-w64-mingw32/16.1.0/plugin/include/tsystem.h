@@ -41,13 +41,13 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define _GNU_SOURCE 1
 
 /* GCC supplies these headers.  */
-#include <stddef.h>
 #include <float.h>
+#include <stddef.h>
 
 #ifdef inhibit_libc
 
 #ifndef malloc
-extern void *malloc (size_t);
+extern void *malloc(size_t);
 #endif
 
 #ifndef calloc
@@ -59,27 +59,27 @@ extern void *realloc(void *, size_t);
 #endif
 
 #ifndef free
-extern void free (void *);
+extern void free(void *);
 #endif
 
 #ifndef atexit
-extern int atexit (void (*)(void));
+extern int atexit(void (*)(void));
 #endif
 
 #ifndef abort
-#define abort() __builtin_trap ()
+#define abort() __builtin_trap()
 #endif
 
 #ifndef strlen
-extern size_t strlen (const char *);
+extern size_t strlen(const char *);
 #endif
 
 #ifndef memcpy
-extern void *memcpy (void *, const void *, size_t);
+extern void *memcpy(void *, const void *, size_t);
 #endif
 
 #ifndef memset
-extern void *memset (void *, int, size_t);
+extern void *memset(void *, int, size_t);
 #endif
 
 #else /* ! inhibit_libc */
@@ -105,8 +105,8 @@ extern int errno;
 #endif
 
 /* If these system headers do not exist, fixincludes must create them.  */
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 /* GCC supplies this header.  */
@@ -127,14 +127,14 @@ extern int errno;
 #define alloca(x) __builtin_alloca(x)
 
 #ifdef ENABLE_RUNTIME_CHECKING
-#define gcc_assert(EXPR) ((void)(!(EXPR) ? abort (), 0 : 0))
+#define gcc_assert(EXPR) ((void)(!(EXPR) ? abort(), 0 : 0))
 #else
 /* Include EXPR, so that unused variable warnings do not occur.  */
 #define gcc_assert(EXPR) ((void)(0 && (EXPR)))
 #endif
 /* Use gcc_unreachable() to mark unreachable locations (like an
    unreachable default case of a switch.  Do not use gcc_assert(0).  */
-#define gcc_unreachable() (abort ())
+#define gcc_unreachable() (abort())
 
 /* Filename handling macros.  */
 #include "filenames.h"

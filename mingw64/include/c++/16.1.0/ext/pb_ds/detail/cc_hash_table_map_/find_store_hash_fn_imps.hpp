@@ -38,4 +38,3 @@
  * Contains implementations of cc_ht_map_'s find related functions,
  * when the hash value is stored.
  */
-

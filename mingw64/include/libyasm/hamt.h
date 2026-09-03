@@ -46,8 +46,10 @@ typedef struct HAMTEntry HAMTEntry;
  * \return New, empty, hash array mapped trie.
  */
 YASM_LIB_DECL
-HAMT *HAMT_create(int nocase, /*@exits@*/ void (*error_func)
-    (const char *file, unsigned int line, const char *message));
+HAMT *HAMT_create(int nocase,
+                  /*@exits@*/ void (*error_func)(const char *file,
+                                                 unsigned int line,
+                                                 const char *message));
 
 /** Delete HAMT and all data associated with it.  Uses deletefunc() to delete
  * each data item.
@@ -56,9 +58,9 @@ HAMT *HAMT_create(int nocase, /*@exits@*/ void (*error_func)
  */
 YASM_LIB_DECL
 void HAMT_destroy(/*@only@*/ HAMT *hamt,
-                  void (*deletefunc) (/*@only@*/ void *data));
+                  void (*deletefunc)(/*@only@*/ void *data));
 
-/** Insert key into HAMT, associating it with data. 
+/** Insert key into HAMT, associating it with data.
  * If the key is not present in the HAMT, inserts it, sets *replace to 1, and
  *  returns the data passed in.
  * If the key is already present and *replace is 0, deletes the data passed
@@ -77,7 +79,7 @@ void HAMT_destroy(/*@only@*/ HAMT *hamt,
 YASM_LIB_DECL
 /*@dependent@*/ void *HAMT_insert(HAMT *hamt, /*@dependent@*/ const char *str,
                                   /*@only@*/ void *data, int *replace,
-                                  void (*deletefunc) (/*@only@*/ void *data));
+                                  void (*deletefunc)(/*@only@*/ void *data));
 
 /** Search for the data associated with a key in the HAMT.
  * \param hamt          Hash array mapped trie
@@ -87,7 +89,7 @@ YASM_LIB_DECL
 YASM_LIB_DECL
 /*@dependent@*/ /*@null@*/ void *HAMT_search(HAMT *hamt, const char *str);
 
-/** Traverse over all keys in HAMT, calling function on each data item. 
+/** Traverse over all keys in HAMT, calling function on each data item.
  * \param hamt          Hash array mapped trie
  * \param d             Data to pass to each call to func.
  * \param func          Function to call
@@ -96,8 +98,8 @@ YASM_LIB_DECL
  */
 YASM_LIB_DECL
 int HAMT_traverse(HAMT *hamt, /*@null@*/ void *d,
-                  int (*func) (/*@dependent@*/ /*@null@*/ void *node,
-                               /*@null@*/ void *d));
+                  int (*func)(/*@dependent@*/ /*@null@*/ void *node,
+                              /*@null@*/ void *d));
 
 /** Get the first entry in a HAMT.
  * \param hamt          Hash array mapped trie

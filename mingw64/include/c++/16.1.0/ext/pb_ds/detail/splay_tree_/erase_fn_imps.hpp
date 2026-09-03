@@ -41,10 +41,7 @@
 #ifdef PB_DS_CLASS_C_DEC
 
 PB_DS_CLASS_T_DEC
-inline bool
-PB_DS_CLASS_C_DEC::
-erase(key_const_reference r_key)
-{
+inline bool PB_DS_CLASS_C_DEC::erase(key_const_reference r_key) {
   point_iterator it = find(r_key);
   if (it == base_type::end())
     return false;
@@ -54,9 +51,7 @@ erase(key_const_reference r_key)
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::iterator
-PB_DS_CLASS_C_DEC::
-erase(iterator it)
-{
+PB_DS_CLASS_C_DEC::erase(iterator it) {
   PB_DS_ASSERT_VALID((*this))
   if (it == base_type::end())
     return it;
@@ -69,9 +64,7 @@ erase(iterator it)
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::reverse_iterator
-PB_DS_CLASS_C_DEC::
-erase(reverse_iterator it)
-{
+PB_DS_CLASS_C_DEC::erase(reverse_iterator it) {
   PB_DS_ASSERT_VALID((*this))
   if (it.m_p_nd == base_type::m_p_head)
     return (it);
@@ -83,33 +76,25 @@ erase(reverse_iterator it)
 }
 
 PB_DS_CLASS_T_DEC
-template<typename Pred>
+template <typename Pred>
 inline typename PB_DS_CLASS_C_DEC::size_type
-PB_DS_CLASS_C_DEC::
-erase_if(Pred pred)
-{
+PB_DS_CLASS_C_DEC::erase_if(Pred pred) {
   PB_DS_ASSERT_VALID((*this))
   size_type num_ersd = 0;
   iterator it = base_type::begin();
-  while (it != base_type::end())
-    {
-      if (pred(*it))
-        {
-	  ++num_ersd;
-	  it = erase(it);
-        }
-      else
-	++it;
-    }
+  while (it != base_type::end()) {
+    if (pred(*it)) {
+      ++num_ersd;
+      it = erase(it);
+    } else
+      ++it;
+  }
   PB_DS_ASSERT_VALID((*this))
   return num_ersd;
 }
 
 PB_DS_CLASS_T_DEC
-void
-PB_DS_CLASS_C_DEC::
-erase_node(node_pointer p_nd)
-{
+void PB_DS_CLASS_C_DEC::erase_node(node_pointer p_nd) {
   _GLIBCXX_DEBUG_ASSERT(p_nd != 0);
   splay(p_nd);
 
@@ -121,14 +106,13 @@ erase_node(node_pointer p_nd)
 
   base_type::update_min_max_for_erased_node(p_nd);
   base_type::actual_erase_node(p_nd);
-  if (p_r == 0)
-    {
-      base_type::m_p_head->m_p_parent = p_l;
-      if (p_l != 0)
-	p_l->m_p_parent = base_type::m_p_head;
-      PB_DS_ASSERT_VALID((*this))
-      return;
-    }
+  if (p_r == 0) {
+    base_type::m_p_head->m_p_parent = p_l;
+    if (p_l != 0)
+      p_l->m_p_parent = base_type::m_p_head;
+    PB_DS_ASSERT_VALID((*this))
+    return;
+  }
 
   node_pointer p_target_r = leftmost(p_r);
   _GLIBCXX_DEBUG_ASSERT(p_target_r != 0);
@@ -144,14 +128,12 @@ erase_node(node_pointer p_nd)
   if (p_l != 0)
     p_l->m_p_parent = p_target_r;
   PB_DS_ASSERT_VALID((*this))
-  this->apply_update(p_target_r, (node_update*)this);
+  this->apply_update(p_target_r, (node_update *)this);
 }
 
 PB_DS_CLASS_T_DEC
 inline typename PB_DS_CLASS_C_DEC::node_pointer
-PB_DS_CLASS_C_DEC::
-leftmost(node_pointer p_nd)
-{
+PB_DS_CLASS_C_DEC::leftmost(node_pointer p_nd) {
   _GLIBCXX_DEBUG_ASSERT(p_nd != 0);
   while (p_nd->m_p_left != 0)
     p_nd = p_nd->m_p_left;

@@ -24,15 +24,13 @@ along with GCC; see the file COPYING3.  If not see
 
 /* Abstract subclass of diagnostics::option_id_manager for gcc options.  */
 
-class gcc_diagnostic_option_id_manager : public diagnostics::option_id_manager
-{
+class gcc_diagnostic_option_id_manager : public diagnostics::option_id_manager {
 public:
-  char *make_option_url (diagnostics::option_id option_id) const final override;
+  char *make_option_url(diagnostics::option_id option_id) const final override;
 
 protected:
-  gcc_diagnostic_option_id_manager (unsigned lang_mask)
-  : m_lang_mask (lang_mask)
-  {}
+  gcc_diagnostic_option_id_manager(unsigned lang_mask)
+      : m_lang_mask(lang_mask) {}
 
   unsigned m_lang_mask;
 };
@@ -40,54 +38,43 @@ protected:
 /* Concrete implementation of diagnostics::option_id_manager for compiler.  */
 
 class compiler_diagnostic_option_id_manager
-  : public gcc_diagnostic_option_id_manager
-{
+    : public gcc_diagnostic_option_id_manager {
 public:
-  compiler_diagnostic_option_id_manager (const diagnostics::context &context,
-					 unsigned lang_mask,
-					 void *opts)
-  : gcc_diagnostic_option_id_manager (lang_mask),
-    m_context (context),
-    m_opts (opts)
-  {
-  }
+  compiler_diagnostic_option_id_manager(const diagnostics::context &context,
+                                        unsigned lang_mask, void *opts)
+      : gcc_diagnostic_option_id_manager(lang_mask), m_context(context),
+        m_opts(opts) {}
 
-  int option_enabled_p (diagnostics::option_id option_id) const final override;
-  char *
-  make_option_name (diagnostics::option_id option_id,
-		    enum diagnostics::kind orig_diag_kind,
-		    enum diagnostics::kind diag_kind) const final override;
+  int option_enabled_p(diagnostics::option_id option_id) const final override;
+  char *make_option_name(diagnostics::option_id option_id,
+                         enum diagnostics::kind orig_diag_kind,
+                         enum diagnostics::kind diag_kind) const final override;
 
 private:
   const diagnostics::context &m_context;
   void *m_opts;
 };
 
-class gcc_extension_factory
-{
+class gcc_extension_factory {
 public:
-  virtual ~gcc_extension_factory () {}
+  virtual ~gcc_extension_factory() {}
 
   virtual std::unique_ptr<diagnostics::sink::extension>
-  make_cfg_extension (diagnostics::sink &sink) const = 0;
+  make_cfg_extension(diagnostics::sink &sink) const = 0;
 
   static const gcc_extension_factory *singleton;
 };
 
+extern void handle_OPT_fdiagnostics_add_output_(const gcc_options &opts,
+                                                diagnostics::context &dc,
+                                                const char *arg,
+                                                location_t loc);
 
-extern void
-handle_OPT_fdiagnostics_add_output_ (const gcc_options &opts,
-				     diagnostics::context &dc,
-				     const char *arg,
-				     location_t loc);
+extern void handle_OPT_fdiagnostics_set_output_(const gcc_options &opts,
+                                                diagnostics::context &dc,
+                                                const char *arg,
+                                                location_t loc);
 
-extern void
-handle_OPT_fdiagnostics_set_output_ (const gcc_options &opts,
-				     diagnostics::context &dc,
-				     const char *arg,
-				     location_t loc);
-
-extern const char *
-get_diagnostic_file_output_basename (const gcc_options &opts);
+extern const char *get_diagnostic_file_output_basename(const gcc_options &opts);
 
 #endif

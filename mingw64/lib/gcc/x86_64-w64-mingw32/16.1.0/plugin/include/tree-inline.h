@@ -21,26 +21,19 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_TREE_INLINE_H
 #define GCC_TREE_INLINE_H
 
-
 struct cgraph_edge;
 
 /* Indicate the desired behavior wrt call graph edges.  We can either
    duplicate the edge (inlining, cloning), move the edge (versioning,
    parallelization), or move the edges of the clones (saving).  */
 
-enum copy_body_cge_which
-{
-  CB_CGE_DUPLICATE,
-  CB_CGE_MOVE,
-  CB_CGE_MOVE_CLONES
-};
+enum copy_body_cge_which { CB_CGE_DUPLICATE, CB_CGE_MOVE, CB_CGE_MOVE_CLONES };
 
-typedef int_hash <unsigned short, 0> dependence_hash;
+typedef int_hash<unsigned short, 0> dependence_hash;
 
 /* Data required for function body duplication.  */
 
-struct copy_body_data
-{
+struct copy_body_data {
   /* FUNCTION_DECL for function being inlined, or in general the
      source function providing the original trees.  */
   tree src_fn;
@@ -68,7 +61,7 @@ struct copy_body_data
   hash_map<tree, tree> *decl_map;
 
   /* Create a new decl to replace DECL in the destination function.  */
-  tree (*copy_decl) (tree, struct copy_body_data *);
+  tree (*copy_decl)(tree, struct copy_body_data *);
 
   /* Current BLOCK.  */
   tree block;
@@ -177,13 +170,12 @@ struct copy_body_data
   /* Hash set of SSA names that have been killed during call graph edge
    redirection and should not be introduced into debug statements or NULL if no
    SSA_NAME was deleted during redirections happened.  */
-  hash_set <tree> *killed_new_ssa_names;
+  hash_set<tree> *killed_new_ssa_names;
 };
 
 /* Weights of constructions for estimate_num_insns.  */
 
-struct eni_weights
-{
+struct eni_weights {
   /* Cost per call.  */
   unsigned call_cost;
 
@@ -226,30 +218,30 @@ extern eni_weights eni_size_weights;
 extern eni_weights eni_time_weights;
 
 /* Function prototypes.  */
-void init_inline_once (void);
-extern tree copy_tree_body_r (tree *, int *, void *);
-extern void insert_decl_map (copy_body_data *, tree, tree);
-unsigned int optimize_inline_calls (tree);
-tree maybe_inline_call_in_expr (tree);
-bool tree_inlinable_function_p (tree);
-tree copy_tree_r (tree *, int *, void *);
-tree copy_decl_no_change (tree decl, copy_body_data *id);
-int estimate_move_cost (tree type, bool);
-int estimate_num_insns (gimple *, eni_weights *);
-int estimate_num_insns_fn (tree, eni_weights *);
-int estimate_num_insns_seq (gimple_seq, eni_weights *);
-bool tree_versionable_function_p (tree);
-extern tree remap_decl (tree decl, copy_body_data *id);
-extern tree remap_type (tree type, copy_body_data *id);
-extern gimple_seq copy_gimple_seq_and_replace_locals (gimple_seq seq);
-extern tree copy_fn (tree, tree&, tree&);
-extern const char *copy_forbidden (struct function *fun);
-extern tree copy_decl_for_dup_finish (copy_body_data *id, tree decl, tree copy);
-extern tree copy_decl_to_var (tree, copy_body_data *);
-extern tree force_value_to_type (tree type, tree value);
+void init_inline_once(void);
+extern tree copy_tree_body_r(tree *, int *, void *);
+extern void insert_decl_map(copy_body_data *, tree, tree);
+unsigned int optimize_inline_calls(tree);
+tree maybe_inline_call_in_expr(tree);
+bool tree_inlinable_function_p(tree);
+tree copy_tree_r(tree *, int *, void *);
+tree copy_decl_no_change(tree decl, copy_body_data *id);
+int estimate_move_cost(tree type, bool);
+int estimate_num_insns(gimple *, eni_weights *);
+int estimate_num_insns_fn(tree, eni_weights *);
+int estimate_num_insns_seq(gimple_seq, eni_weights *);
+bool tree_versionable_function_p(tree);
+extern tree remap_decl(tree decl, copy_body_data *id);
+extern tree remap_type(tree type, copy_body_data *id);
+extern gimple_seq copy_gimple_seq_and_replace_locals(gimple_seq seq);
+extern tree copy_fn(tree, tree &, tree &);
+extern const char *copy_forbidden(struct function *fun);
+extern tree copy_decl_for_dup_finish(copy_body_data *id, tree decl, tree copy);
+extern tree copy_decl_to_var(tree, copy_body_data *);
+extern tree force_value_to_type(tree type, tree value);
 
 /* This is in tree-inline.cc since the routine uses
    data structures from the inliner.  */
-extern tree build_duplicate_type (tree);
+extern tree build_duplicate_type(tree);
 
 #endif /* GCC_TREE_INLINE_H */

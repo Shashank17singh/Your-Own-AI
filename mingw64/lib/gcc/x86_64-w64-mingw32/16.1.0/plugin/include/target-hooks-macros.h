@@ -24,7 +24,7 @@
    DEFHOOKPODX(NAME, TYPE, INIT): Like DEFHOOKPOD, but share documentation
    with the previous 'hook'.  */
 #ifndef DEFHOOKPODX
-#define DEFHOOKPODX(NAME, TYPE, INIT) DEFHOOKPOD (NAME, 0, TYPE, INIT)
+#define DEFHOOKPODX(NAME, TYPE, INIT) DEFHOOKPOD(NAME, 0, TYPE, INIT)
 #endif
 
 /* HOOKSTRUCT(FRAGMENT): Declarator fragments to encapsulate all the
@@ -37,10 +37,12 @@
    HOOK_VECTOR_END: Close a struct declaration, providing a member declarator
                     name for nested use.  */
 #ifndef HOOK_VECTOR_1
-#define HOOK_VECTOR_1(NAME, FRAGMENT) HOOKSTRUCT (FRAGMENT)
+#define HOOK_VECTOR_1(NAME, FRAGMENT) HOOKSTRUCT(FRAGMENT)
 #endif
 #define HOOK_VECTOR(INIT_NAME, SNAME) HOOK_VECTOR_1 (INIT_NAME, struct SNAME {)
-#define HOOK_VECTOR_END(DECL_NAME) HOOK_VECTOR_1(,} DECL_NAME ;)
+#define HOOK_VECTOR_END(DECL_NAME) HOOK_VECTOR_1(,                             \
+  }                                                                            \
+  DECL_NAME;)
 
 /* FIXME: For pre-existing hooks, we can't place the documentation in the
    documentation field here till we get permission from the FSF to include

@@ -25,9 +25,6 @@ along with GCC; see the file COPYING3.  If not see
    unsigned types.  The signedness of a tree type can be found by
    using the TYPE_SIGN macro.  */
 
-enum signop {
-  SIGNED,
-  UNSIGNED
-};
+enum signop { SIGNED, UNSIGNED };
 
 #endif

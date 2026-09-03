@@ -27,23 +27,19 @@ namespace ana {
 
 /* Base class for svalues and regions: has a complexity and a numeric ID.  */
 
-class symbol
-{
- public:
+class symbol {
+public:
   typedef unsigned id_t;
 
-  const complexity &get_complexity () const { return m_complexity; }
+  const complexity &get_complexity() const { return m_complexity; }
 
-  id_t get_id () const { return m_id; }
-  static int cmp_ids (const symbol *s1, const symbol *s2);
+  id_t get_id() const { return m_id; }
+  static int cmp_ids(const symbol *s1, const symbol *s2);
 
- protected:
-  symbol (complexity c, unsigned id)
-  : m_complexity (c),
-    m_id (id)
-  {}
+protected:
+  symbol(complexity c, unsigned id) : m_complexity(c), m_id(id) {}
 
- private:
+private:
   complexity m_complexity;
   id_t m_id; // for deterministic sorting at this stage, for dumps
 };

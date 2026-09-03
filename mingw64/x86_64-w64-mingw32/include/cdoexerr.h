@@ -77,7 +77,6 @@
 #define IDS_FW __MSABI_LONG(0x0001100B)
 #define IDS_RE __MSABI_LONG(0x0001100C)
 #define IDS_CODEPAGE __MSABI_LONG(0x0001100D)
-
 #ifdef CDOSVR
 #define IDS_CalendarFolder __MSABI_LONG(0x0001100E)
 #define IDS_ContactsFolder __MSABI_LONG(0x0001100F)
@@ -86,7 +85,6 @@
 #define IDS_NotesFolder __MSABI_LONG(0x00011012)
 #define IDS_TasksFolder __MSABI_LONG(0x00011013)
 #endif
-
 #define IDS_NewFolder __MSABI_LONG(0x00011014)
 #define IDS_Location __MSABI_LONG(0x00011015)
 #define IDS_StartTime __MSABI_LONG(0x00011016)
@@ -175,7 +173,6 @@
 #define IDS_Arab __MSABI_LONG(0x00011149)
 #define IDS_Taipei __MSABI_LONG(0x0001114A)
 #define IDS_Sydney2000 __MSABI_LONG(0x0001114B)
-
 #ifdef CDOSVR
 #define evtMethodCalled __MSABI_LONG(0x00032000)
 #define evtMethodReturning __MSABI_LONG(0x00032001)

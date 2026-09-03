@@ -32,8 +32,7 @@ extern bool ira_use_lra_p;
    mode or when the conflict table is too big.  */
 extern bool ira_conflicts_p;
 
-struct target_ira
-{
+struct target_ira {
   /* Map: hard register number -> allocno class it belongs to.  If the
      corresponding class is NO_REGS, the hard register is not available
      for allocation.  */
@@ -116,7 +115,8 @@ struct target_ira
   /* Array whose values are hard regset of hard registers available for
      the allocation of given register class whose targetm.hard_regno_mode_ok
      values for given mode are false.  */
-  HARD_REG_SET x_ira_prohibited_class_mode_regs[N_REG_CLASSES][NUM_MACHINE_MODES];
+  HARD_REG_SET x_ira_prohibited_class_mode_regs[N_REG_CLASSES]
+                                               [NUM_MACHINE_MODES];
 
   /* When an allocatable hard register in given mode can not be placed in given
      register class, it is in the set of the following array element.  It can
@@ -131,50 +131,36 @@ extern struct target_ira *this_target_ira;
 #define this_target_ira (&default_target_ira)
 #endif
 
-#define ira_hard_regno_allocno_class \
+#define ira_hard_regno_allocno_class                                           \
   (this_target_ira->x_ira_hard_regno_allocno_class)
-#define ira_allocno_classes_num \
-  (this_target_ira->x_ira_allocno_classes_num)
-#define ira_allocno_classes \
-  (this_target_ira->x_ira_allocno_classes)
-#define ira_allocno_class_translate \
+#define ira_allocno_classes_num (this_target_ira->x_ira_allocno_classes_num)
+#define ira_allocno_classes (this_target_ira->x_ira_allocno_classes)
+#define ira_allocno_class_translate                                            \
   (this_target_ira->x_ira_allocno_class_translate)
-#define ira_pressure_classes_num \
-  (this_target_ira->x_ira_pressure_classes_num)
-#define ira_pressure_classes \
-  (this_target_ira->x_ira_pressure_classes)
-#define ira_pressure_class_translate \
+#define ira_pressure_classes_num (this_target_ira->x_ira_pressure_classes_num)
+#define ira_pressure_classes (this_target_ira->x_ira_pressure_classes)
+#define ira_pressure_class_translate                                           \
   (this_target_ira->x_ira_pressure_class_translate)
-#define ira_stack_reg_pressure_class \
+#define ira_stack_reg_pressure_class                                           \
   (this_target_ira->x_ira_stack_reg_pressure_class)
-#define ira_reg_class_max_nregs \
-  (this_target_ira->x_ira_reg_class_max_nregs)
-#define ira_reg_class_min_nregs \
-  (this_target_ira->x_ira_reg_class_min_nregs)
-#define ira_memory_move_cost \
-  (this_target_ira->x_ira_memory_move_cost)
-#define ira_class_hard_regs \
-  (this_target_ira->x_ira_class_hard_regs)
-#define ira_class_hard_regs_num \
-  (this_target_ira->x_ira_class_hard_regs_num)
-#define ira_class_subset_p \
-  (this_target_ira->x_ira_class_subset_p)
-#define ira_reg_class_subset \
-  (this_target_ira->x_ira_reg_class_subset)
-#define ira_reg_classes_intersect_p \
+#define ira_reg_class_max_nregs (this_target_ira->x_ira_reg_class_max_nregs)
+#define ira_reg_class_min_nregs (this_target_ira->x_ira_reg_class_min_nregs)
+#define ira_memory_move_cost (this_target_ira->x_ira_memory_move_cost)
+#define ira_class_hard_regs (this_target_ira->x_ira_class_hard_regs)
+#define ira_class_hard_regs_num (this_target_ira->x_ira_class_hard_regs_num)
+#define ira_class_subset_p (this_target_ira->x_ira_class_subset_p)
+#define ira_reg_class_subset (this_target_ira->x_ira_reg_class_subset)
+#define ira_reg_classes_intersect_p                                            \
   (this_target_ira->x_ira_reg_classes_intersect_p)
-#define ira_class_singleton \
-  (this_target_ira->x_ira_class_singleton)
-#define ira_no_alloc_regs \
-  (this_target_ira->x_ira_no_alloc_regs)
-#define ira_prohibited_class_mode_regs \
+#define ira_class_singleton (this_target_ira->x_ira_class_singleton)
+#define ira_no_alloc_regs (this_target_ira->x_ira_no_alloc_regs)
+#define ira_prohibited_class_mode_regs                                         \
   (this_target_ira->x_ira_prohibited_class_mode_regs)
-#define ira_exclude_class_mode_regs \
+#define ira_exclude_class_mode_regs                                            \
   (this_target_ira->x_ira_exclude_class_mode_regs)
 
 /* Major structure describing equivalence info for a pseudo.  */
-struct ira_reg_equiv_s
-{
+struct ira_reg_equiv_s {
   /* True if we can use this as a general equivalence.  */
   bool defined_p;
   /* True if we can use this equivalence only for caller save/restore
@@ -197,49 +183,48 @@ extern int ira_reg_equiv_len;
 /* Info about equiv. info for each register.  */
 extern struct ira_reg_equiv_s *ira_reg_equiv;
 
-extern void ira_init_once (void);
-extern void ira_init (void);
-extern void ira_setup_eliminable_regset (void);
-extern rtx ira_eliminate_regs (rtx, machine_mode);
-extern void ira_set_pseudo_classes (bool, FILE *);
-extern void ira_expand_reg_equiv (void);
-extern void ira_update_equiv_info_by_shuffle_insn (int, int, rtx_insn *);
+extern void ira_init_once(void);
+extern void ira_init(void);
+extern void ira_setup_eliminable_regset(void);
+extern rtx ira_eliminate_regs(rtx, machine_mode);
+extern void ira_set_pseudo_classes(bool, FILE *);
+extern void ira_expand_reg_equiv(void);
+extern void ira_update_equiv_info_by_shuffle_insn(int, int, rtx_insn *);
 
-extern void ira_sort_regnos_for_alter_reg (int *, int, machine_mode *);
-extern void ira_mark_allocation_change (int);
-extern void ira_mark_memory_move_deletion (int, int);
-extern bool ira_reassign_pseudos (int *, int, HARD_REG_SET, HARD_REG_SET *,
-				  HARD_REG_SET *, bitmap);
-extern rtx ira_reuse_stack_slot (int, poly_uint64, poly_uint64);
-extern void ira_mark_new_stack_slot (rtx, int, poly_uint64);
-extern bool ira_better_spill_reload_regno_p (int *, int *, rtx, rtx, rtx_insn *);
-extern bool ira_bad_reload_regno (int, rtx, rtx);
+extern void ira_sort_regnos_for_alter_reg(int *, int, machine_mode *);
+extern void ira_mark_allocation_change(int);
+extern void ira_mark_memory_move_deletion(int, int);
+extern bool ira_reassign_pseudos(int *, int, HARD_REG_SET, HARD_REG_SET *,
+                                 HARD_REG_SET *, bitmap);
+extern rtx ira_reuse_stack_slot(int, poly_uint64, poly_uint64);
+extern void ira_mark_new_stack_slot(rtx, int, poly_uint64);
+extern bool ira_better_spill_reload_regno_p(int *, int *, rtx, rtx, rtx_insn *);
+extern bool ira_bad_reload_regno(int, rtx, rtx);
 
-extern void ira_adjust_equiv_reg_cost (unsigned, int);
+extern void ira_adjust_equiv_reg_cost(unsigned, int);
 
-extern bool ira_former_scratch_p (int regno);
-extern bool ira_former_scratch_operand_p (rtx_insn *insn, int nop);
-extern void ira_register_new_scratch_op (rtx_insn *insn, int nop, int icode);
-extern bool ira_remove_insn_scratches (rtx_insn *insn, bool all_p, FILE *dump_file,
-				       rtx (*get_reg) (rtx original));
-extern void ira_restore_scratches (FILE *dump_file);
-extern void ira_nullify_asm_goto (rtx_insn *insn);
+extern bool ira_former_scratch_p(int regno);
+extern bool ira_former_scratch_operand_p(rtx_insn *insn, int nop);
+extern void ira_register_new_scratch_op(rtx_insn *insn, int nop, int icode);
+extern bool ira_remove_insn_scratches(rtx_insn *insn, bool all_p,
+                                      FILE *dump_file,
+                                      rtx (*get_reg)(rtx original));
+extern void ira_restore_scratches(FILE *dump_file);
+extern void ira_nullify_asm_goto(rtx_insn *insn);
 
 /* ira-costs.cc */
-extern void ira_costs_cc_finalize (void);
+extern void ira_costs_cc_finalize(void);
 
 /* ira-lives.cc */
-extern rtx non_conflicting_reg_copy_p (rtx_insn *);
+extern rtx non_conflicting_reg_copy_p(rtx_insn *);
 
 /* Spilling static chain pseudo may result in generation of wrong
    non-local goto code using frame-pointer to address saved stack
    pointer value after restoring old frame pointer value.  The
    function returns TRUE if REGNO is such a static chain pseudo.  */
-inline bool
-non_spilled_static_chain_regno_p (int regno)
-{
-  return (cfun->static_chain_decl && crtl->has_nonlocal_goto
-	  && REG_EXPR (regno_reg_rtx[regno]) == cfun->static_chain_decl);
+inline bool non_spilled_static_chain_regno_p(int regno) {
+  return (cfun->static_chain_decl && crtl->has_nonlocal_goto &&
+          REG_EXPR(regno_reg_rtx[regno]) == cfun->static_chain_decl);
 }
 
 #endif /* GCC_IRA_H */

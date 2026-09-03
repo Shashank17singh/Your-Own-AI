@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #ifndef _X86GPRINTRIN_H_INCLUDED
-# error "Never use <clwbintrin.h> directly; include <x86gprintrin.h> instead."
+#error "Never use <clwbintrin.h> directly; include <x86gprintrin.h> instead."
 #endif
 
 #ifndef _CLWBINTRIN_H_INCLUDED
@@ -35,10 +35,9 @@
 #endif /* __CLWB__ */
 
 extern __inline void
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm_clwb (void *__A)
-{
-  __builtin_ia32_clwb (__A);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm_clwb(void *__A) {
+  __builtin_ia32_clwb(__A);
 }
 
 #ifdef __DISABLE_CLWB__

@@ -25,66 +25,58 @@ struct register_pass_info;
 
 /* Define a list of pass lists so that both passes.cc and plugins can easily
    find all the pass lists.  */
-#define GCC_PASS_LISTS \
-  DEF_PASS_LIST (all_lowering_passes) \
-  DEF_PASS_LIST (all_small_ipa_passes) \
-  DEF_PASS_LIST (all_regular_ipa_passes) \
-  DEF_PASS_LIST (all_late_ipa_passes) \
-  DEF_PASS_LIST (all_passes)
+#define GCC_PASS_LISTS                                                         \
+  DEF_PASS_LIST(all_lowering_passes)                                           \
+  DEF_PASS_LIST(all_small_ipa_passes)                                          \
+  DEF_PASS_LIST(all_regular_ipa_passes)                                        \
+  DEF_PASS_LIST(all_late_ipa_passes)                                           \
+  DEF_PASS_LIST(all_passes)
 
 #define DEF_PASS_LIST(LIST) PASS_LIST_NO_##LIST,
-enum pass_list
-{
-  GCC_PASS_LISTS
-  PASS_LIST_NUM
-};
+enum pass_list { GCC_PASS_LISTS PASS_LIST_NUM };
 #undef DEF_PASS_LIST
 
 namespace gcc {
 
 class context;
 
-class pass_manager
-{
+class pass_manager {
 public:
-  pass_manager (context *ctxt);
-  ~pass_manager ();
+  pass_manager(context *ctxt);
+  ~pass_manager();
 
-  void register_pass (struct register_pass_info *pass_info);
-  void register_one_dump_file (opt_pass *pass);
+  void register_pass(struct register_pass_info *pass_info);
+  void register_one_dump_file(opt_pass *pass);
 
-  opt_pass *get_pass_for_id (int id) const;
+  opt_pass *get_pass_for_id(int id) const;
 
-  void dump_passes () const;
+  void dump_passes() const;
 
-  void dump_profile_report () const;
+  void dump_profile_report() const;
 
-  void finish_optimization_passes ();
+  void finish_optimization_passes();
 
   /* Access to specific passes, so that the majority can be private.  */
-  void execute_early_local_passes ();
-  unsigned int execute_pass_mode_switching ();
+  void execute_early_local_passes();
+  unsigned int execute_pass_mode_switching();
 
   /* Various passes are manually cloned by avr and epiphany. */
-  opt_pass *get_pass_split_all_insns () const {
+  opt_pass *get_pass_split_all_insns() const {
     return m_pass_split_all_insns_1;
   }
-  opt_pass *get_pass_mode_switching () const {
-    return m_pass_mode_switching_1;
-  }
-  opt_pass *get_pass_peephole2 () const { return m_pass_peephole2_1; }
-  opt_pass *get_pass_profile () const { return m_pass_profile_1; }
-  opt_pass *get_pass_auto_profile () const { return m_pass_ipa_auto_profile_1; }
+  opt_pass *get_pass_mode_switching() const { return m_pass_mode_switching_1; }
+  opt_pass *get_pass_peephole2() const { return m_pass_peephole2_1; }
+  opt_pass *get_pass_profile() const { return m_pass_profile_1; }
+  opt_pass *get_pass_auto_profile() const { return m_pass_ipa_auto_profile_1; }
 
-  void register_pass_name (opt_pass *pass, const char *name);
+  void register_pass_name(opt_pass *pass, const char *name);
 
-  opt_pass *get_pass_by_name (const char *name);
+  opt_pass *get_pass_by_name(const char *name);
 
-  opt_pass *get_rest_of_compilation () const
-  {
+  opt_pass *get_rest_of_compilation() const {
     return m_pass_rest_of_compilation_1;
   }
-  opt_pass *get_clean_slate () const { return m_pass_clean_state_1; }
+  opt_pass *get_clean_slate() const { return m_pass_clean_state_1; }
 
 public:
   /* The root of the compilation pass tree, once constructed.  */
@@ -101,9 +93,9 @@ public:
   opt_pass **pass_lists[PASS_LIST_NUM];
 
 private:
-  void set_pass_for_id (int id, opt_pass *pass);
-  void register_dump_files (opt_pass *pass);
-  void create_pass_tab () const;
+  void set_pass_for_id(int id, opt_pass *pass);
+  void register_dump_files(opt_pass *pass);
+  void create_pass_tab() const;
 
 private:
   context *m_ctxt;
@@ -129,9 +121,9 @@ private:
 #define INSERT_PASSES_AFTER(PASS)
 #define PUSH_INSERT_PASSES_WITHIN(PASS, NUM)
 #define POP_INSERT_PASSES()
-#define NEXT_PASS(PASS, NUM) opt_pass *m_ ## PASS ## _ ## NUM
-#define NEXT_PASS_WITH_ARG(PASS, NUM, ARG) NEXT_PASS (PASS, NUM)
-#define NEXT_PASS_WITH_ARGS(PASS, NUM, ...) NEXT_PASS (PASS, NUM)
+#define NEXT_PASS(PASS, NUM) opt_pass *m_##PASS##_##NUM
+#define NEXT_PASS_WITH_ARG(PASS, NUM, ARG) NEXT_PASS(PASS, NUM)
+#define NEXT_PASS_WITH_ARGS(PASS, NUM, ...) NEXT_PASS(PASS, NUM)
 #define TERMINATE_PASS_LIST(PASS)
 
 #include "pass-instances.def"

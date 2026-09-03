@@ -25,18 +25,18 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 /*
  * ISO C Standard:  7.17  Common definitions  <stddef.h>
  */
-#if (!defined(_STDDEF_H) && !defined(_STDDEF_H_) && !defined(_ANSI_STDDEF_H) \
-     && !defined(__STDDEF_H__)) \
-    || defined(__need_wchar_t) || defined(__need_size_t) \
-    || defined(__need_ptrdiff_t) || defined(__need_NULL) \
-    || defined(__need_wint_t)
+#if (!defined(_STDDEF_H) && !defined(_STDDEF_H_) &&                            \
+     !defined(_ANSI_STDDEF_H) && !defined(__STDDEF_H__)) ||                    \
+    defined(__need_wchar_t) || defined(__need_size_t) ||                       \
+    defined(__need_ptrdiff_t) || defined(__need_NULL) ||                       \
+    defined(__need_wint_t)
 
 /* Any one of these symbols __need_* means that GNU libc
    wants us just to define one data type.  So don't define
    the symbols that indicate this file's entire job has been done.  */
-#if (!defined(__need_wchar_t) && !defined(__need_size_t)	\
-     && !defined(__need_ptrdiff_t) && !defined(__need_NULL)	\
-     && !defined(__need_wint_t))
+#if (!defined(__need_wchar_t) && !defined(__need_size_t) &&                    \
+     !defined(__need_ptrdiff_t) && !defined(__need_NULL) &&                    \
+     !defined(__need_wint_t))
 #define _STDDEF_H
 #define _STDDEF_H_
 /* snaroff@next.com says the NeXT needs this.  */
@@ -51,7 +51,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #include <machine/ansi.h>
 #endif
 
-#if defined (__FreeBSD__)
+#if defined(__FreeBSD__)
 #include <sys/_types.h>
 #endif
 
@@ -70,15 +70,15 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #endif
 #endif
 /* Undef _FOO_T_ if we are supposed to define foo_t.  */
-#if defined (__need_ptrdiff_t) || defined (_STDDEF_H_)
+#if defined(__need_ptrdiff_t) || defined(_STDDEF_H_)
 #undef _PTRDIFF_T_
 #undef _BSD_PTRDIFF_T_
 #endif
-#if defined (__need_size_t) || defined (_STDDEF_H_)
+#if defined(__need_size_t) || defined(_STDDEF_H_)
 #undef _SIZE_T_
 #undef _BSD_SIZE_T_
 #endif
-#if defined (__need_wchar_t) || defined (_STDDEF_H_)
+#if defined(__need_wchar_t) || defined(_STDDEF_H_)
 #undef _WCHAR_T_
 #undef _BSD_WCHAR_T_
 #endif
@@ -86,7 +86,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 
 /* Sequent's header files use _PTRDIFF_T_ in some conflicting way.
    Just ignore it.  */
-#if defined (__sequent__) && defined (_PTRDIFF_T_)
+#if defined(__sequent__) && defined(_PTRDIFF_T_)
 #undef _PTRDIFF_T_
 #endif
 
@@ -94,15 +94,15 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    include guards are set in the includers of this code, rather than as
    part of it.  This means the we must unset them or the intended code
    here will be bypassed (resulting in undefined values).  */
-#if defined (__APPLE__)
-# if defined(__has_feature) && __has_feature(modules)
-#  if defined (__need_ptrdiff_t)
-#   undef __PTRDIFF_T
-#  endif
-#  if defined (__need_size_t)
-#   undef __SIZE_T
-#  endif
-# endif
+#if defined(__APPLE__)
+#if defined(__has_feature) && __has_feature(modules)
+#if defined(__need_ptrdiff_t)
+#undef __PTRDIFF_T
+#endif
+#if defined(__need_size_t)
+#undef __SIZE_T
+#endif
+#endif
 #endif
 
 /* On VxWorks, <type/vxTypesBase.h> may have defined macros like
@@ -111,15 +111,16 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    not defined, and so that defining this macro defines _GCC_SIZE_T.
    If we find that the macros are still defined at this point, we must
    invoke them so that the type is defined as expected.  */
-#if defined (_TYPE_ptrdiff_t) && (defined (__need_ptrdiff_t) || defined (_STDDEF_H_))
+#if defined(_TYPE_ptrdiff_t) &&                                                \
+    (defined(__need_ptrdiff_t) || defined(_STDDEF_H_))
 _TYPE_ptrdiff_t;
 #undef _TYPE_ptrdiff_t
 #endif
-#if defined (_TYPE_size_t) && (defined (__need_size_t) || defined (_STDDEF_H_))
+#if defined(_TYPE_size_t) && (defined(__need_size_t) || defined(_STDDEF_H_))
 _TYPE_size_t;
 #undef _TYPE_size_t
 #endif
-#if defined (_TYPE_wchar_t) && (defined (__need_wchar_t) || defined (_STDDEF_H_))
+#if defined(_TYPE_wchar_t) && (defined(__need_wchar_t) || defined(_STDDEF_H_))
 _TYPE_wchar_t;
 #undef _TYPE_wchar_t
 #endif
@@ -134,8 +135,8 @@ _TYPE_wchar_t;
 
 /* Define this type if we are doing the whole job,
    or if we want this type in particular.  */
-#if defined (_STDDEF_H) || defined (__need_ptrdiff_t)
-#ifndef _PTRDIFF_T	/* in case <sys/types.h> has defined it. */
+#if defined(_STDDEF_H) || defined(__need_ptrdiff_t)
+#ifndef _PTRDIFF_T /* in case <sys/types.h> has defined it. */
 #ifndef _T_PTRDIFF_
 #ifndef _T_PTRDIFF
 #ifndef __PTRDIFF_T
@@ -171,7 +172,7 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 #endif /* _PTRDIFF_T */
 
 /* If this symbol has done its job, get rid of it.  */
-#undef	__need_ptrdiff_t
+#undef __need_ptrdiff_t
 
 #endif /* _STDDEF_H or __need_ptrdiff_t.  */
 
@@ -179,10 +180,10 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 
 /* Define this type if we are doing the whole job,
    or if we want this type in particular.  */
-#if defined (_STDDEF_H) || defined (__need_size_t)
-#ifndef __size_t__	/* BeOS */
-#ifndef __SIZE_T__	/* Cray Unicos/Mk */
-#ifndef _SIZE_T	/* in case <sys/types.h> has defined it. */
+#if defined(_STDDEF_H) || defined(__need_size_t)
+#ifndef __size_t__ /* BeOS */
+#ifndef __SIZE_T__ /* Cray Unicos/Mk */
+#ifndef _SIZE_T    /* in case <sys/types.h> has defined it. */
 #ifndef _SYS_SIZE_T_H
 #ifndef _T_SIZE_
 #ifndef _T_SIZE
@@ -191,15 +192,15 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 #ifndef _BSD_SIZE_T_
 #ifndef _SIZE_T_DEFINED_
 #ifndef _SIZE_T_DEFINED
-#ifndef _BSD_SIZE_T_DEFINED_	/* Darwin */
-#ifndef _SIZE_T_DECLARED	/* FreeBSD 5 */
-#ifndef __DEFINED_size_t	/* musl libc */
+#ifndef _BSD_SIZE_T_DEFINED_ /* Darwin */
+#ifndef _SIZE_T_DECLARED     /* FreeBSD 5 */
+#ifndef __DEFINED_size_t     /* musl libc */
 #ifndef ___int_size_t_h
 #ifndef _GCC_SIZE_T
 #ifndef _SIZET_
 #ifndef __size_t
-#define __size_t__	/* BeOS */
-#define __SIZE_T__	/* Cray Unicos/Mk */
+#define __size_t__ /* BeOS */
+#define __SIZE_T__ /* Cray Unicos/Mk */
 #define _SIZE_T
 #define _SYS_SIZE_T_H
 #define _T_SIZE_
@@ -209,16 +210,14 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 #define _BSD_SIZE_T_
 #define _SIZE_T_DEFINED_
 #define _SIZE_T_DEFINED
-#define _BSD_SIZE_T_DEFINED_	/* Darwin */
-#define _SIZE_T_DECLARED	/* FreeBSD 5 */
-#define __DEFINED_size_t	/* musl libc */
+#define _BSD_SIZE_T_DEFINED_ /* Darwin */
+#define _SIZE_T_DECLARED     /* FreeBSD 5 */
+#define __DEFINED_size_t     /* musl libc */
 #define ___int_size_t_h
 #define _GCC_SIZE_T
 #define _SIZET_
-#if defined (__FreeBSD__) \
-  || defined(__DragonFly__) \
-  || defined(__FreeBSD_kernel__) \
-  || defined(__VMS__)
+#if defined(__FreeBSD__) || defined(__DragonFly__) ||                          \
+    defined(__FreeBSD_kernel__) || defined(__VMS__)
 /* __size_t is a typedef, must not trash it.  */
 #else
 #define __size_t
@@ -226,7 +225,7 @@ typedef __PTRDIFF_TYPE__ ptrdiff_t;
 #ifndef __SIZE_TYPE__
 #define __SIZE_TYPE__ long unsigned int
 #endif
-#if !(defined (__GNUG__) && defined (size_t))
+#if !(defined(__GNUG__) && defined(size_t))
 typedef __SIZE_TYPE__ size_t;
 #ifdef __BEOS__
 typedef long ssize_t;
@@ -250,9 +249,8 @@ typedef long ssize_t;
 #endif /* _SIZE_T */
 #endif /* __SIZE_T__ */
 #endif /* __size_t__ */
-#undef	__need_size_t
+#undef __need_size_t
 #endif /* _STDDEF_H or __need_size_t.  */
-
 
 /* Wide character type.
    Locale-writers should change this as necessary to
@@ -261,27 +259,27 @@ typedef long ssize_t;
 
 /* Define this type if we are doing the whole job,
    or if we want this type in particular.  */
-#if defined (_STDDEF_H) || defined (__need_wchar_t)
-#ifndef __wchar_t__	/* BeOS */
-#ifndef __WCHAR_T__	/* Cray Unicos/Mk */
+#if defined(_STDDEF_H) || defined(__need_wchar_t)
+#ifndef __wchar_t__ /* BeOS */
+#ifndef __WCHAR_T__ /* Cray Unicos/Mk */
 #ifndef _WCHAR_T
 #ifndef _T_WCHAR_
 #ifndef _T_WCHAR
 #ifndef __WCHAR_T
 #ifndef _WCHAR_T_
 #ifndef _BSD_WCHAR_T_
-#ifndef _BSD_WCHAR_T_DEFINED_    /* Darwin */
-#ifndef _BSD_RUNE_T_DEFINED_	/* Darwin */
-#ifndef _WCHAR_T_DECLARED /* FreeBSD 5 */
-#ifndef __DEFINED_wchar_t /* musl libc */
+#ifndef _BSD_WCHAR_T_DEFINED_ /* Darwin */
+#ifndef _BSD_RUNE_T_DEFINED_  /* Darwin */
+#ifndef _WCHAR_T_DECLARED     /* FreeBSD 5 */
+#ifndef __DEFINED_wchar_t     /* musl libc */
 #ifndef _WCHAR_T_DEFINED_
 #ifndef _WCHAR_T_DEFINED
 #ifndef _WCHAR_T_H
 #ifndef ___int_wchar_t_h
 #ifndef __INT_WCHAR_T_H
 #ifndef _GCC_WCHAR_T
-#define __wchar_t__	/* BeOS */
-#define __WCHAR_T__	/* Cray Unicos/Mk */
+#define __wchar_t__ /* BeOS */
+#define __WCHAR_T__ /* Cray Unicos/Mk */
 #define _WCHAR_T
 #define _T_WCHAR_
 #define _T_WCHAR
@@ -310,11 +308,11 @@ typedef long ssize_t;
 #ifdef _BSD_WCHAR_T_
 #undef _BSD_WCHAR_T_
 #ifdef _BSD_RUNE_T_
-#if !defined (_ANSI_SOURCE) && !defined (_POSIX_SOURCE)
+#if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
 typedef _BSD_RUNE_T_ rune_t;
 #define _BSD_WCHAR_T_DEFINED_
-#define _BSD_RUNE_T_DEFINED_	/* Darwin */
-#if defined (__FreeBSD__) && (__FreeBSD__ < 5)
+#define _BSD_RUNE_T_DEFINED_ /* Darwin */
+#if defined(__FreeBSD__) && (__FreeBSD__ < 5)
 /* Why is this file so hard to maintain properly?  In contrast to
    the comment above regarding BSD/386 1.1, on FreeBSD for as long
    as the symbol has existed, _BSD_RUNE_T_ must not stay defined or
@@ -327,11 +325,11 @@ typedef _BSD_RUNE_T_ rune_t;
 /* FreeBSD 5 can't be handled well using "traditional" logic above
    since it no longer defines _BSD_RUNE_T_ yet still desires to export
    rune_t in some cases... */
-#if defined (__FreeBSD__) && (__FreeBSD__ >= 5)
-#if !defined (_ANSI_SOURCE) && !defined (_POSIX_SOURCE)
+#if defined(__FreeBSD__) && (__FreeBSD__ >= 5)
+#if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
 #if __BSD_VISIBLE
 #ifndef _RUNE_T_DECLARED
-typedef __rune_t        rune_t;
+typedef __rune_t rune_t;
 #define _RUNE_T_DECLARED
 #endif
 #endif
@@ -362,10 +360,10 @@ typedef __WCHAR_TYPE__ wchar_t;
 #endif
 #endif /* __WCHAR_T__ */
 #endif /* __wchar_t__ */
-#undef	__need_wchar_t
+#undef __need_wchar_t
 #endif /* _STDDEF_H or __need_wchar_t.  */
 
-#if defined (__need_wint_t)
+#if defined(__need_wint_t)
 #ifndef _WINT_T
 #define _WINT_T
 
@@ -411,28 +409,28 @@ typedef __WINT_TYPE__ wint_t;
 
 /* A null pointer constant.  */
 
-#if defined (_STDDEF_H) || defined (__need_NULL)
-#undef NULL		/* in case <stdio.h> has defined it. */
+#if defined(_STDDEF_H) || defined(__need_NULL)
+#undef NULL /* in case <stdio.h> has defined it. */
 #ifdef __GNUG__
 #define NULL __null
-#else   /* G++ */
+#else /* G++ */
 #ifndef __cplusplus
 #define NULL ((void *)0)
-#else   /* C++ */
+#else /* C++ */
 #define NULL 0
-#endif  /* C++ */
-#endif  /* G++ */
-#endif	/* NULL not defined and <stddef.h> or need NULL.  */
-#undef	__need_NULL
+#endif /* C++ */
+#endif /* G++ */
+#endif /* NULL not defined and <stddef.h> or need NULL.  */
+#undef __need_NULL
 
 #ifdef _STDDEF_H
 
 /* Offset of member MEMBER in a struct of type TYPE. */
-#undef offsetof		/* in case a system header has defined it. */
-#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
+#undef offsetof /* in case a system header has defined it. */
+#define offsetof(TYPE, MEMBER) __builtin_offsetof(TYPE, MEMBER)
 
-#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) \
-  || (defined(__cplusplus) && __cplusplus >= 201103L)
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) ||              \
+    (defined(__cplusplus) && __cplusplus >= 201103L)
 #ifndef _GCC_MAX_ALIGN_T
 #define _GCC_MAX_ALIGN_T
 /* Type whose alignment is supported in every context and is at least
@@ -440,14 +438,16 @@ typedef __WINT_TYPE__ wint_t;
    specifiers.  */
 typedef struct {
   long long __max_align_ll __attribute__((__aligned__(__alignof__(long long))));
-  long double __max_align_ld __attribute__((__aligned__(__alignof__(long double))));
+  long double __max_align_ld
+      __attribute__((__aligned__(__alignof__(long double))));
   /* _Float128 is defined as a basic type, so max_align_t must be
      sufficiently aligned for it.  This code must work in C++, so we
      use __float128 here; that is only available on some
      architectures, but only on i386 is extra alignment needed for
      __float128.  */
 #ifdef __i386__
-  __float128 __max_align_f128 __attribute__((__aligned__(__alignof(__float128))));
+  __float128 __max_align_f128
+      __attribute__((__aligned__(__alignof(__float128))));
 #endif
 } max_align_t;
 #endif
@@ -456,22 +456,22 @@ typedef struct {
 #if defined(__cplusplus) && __cplusplus >= 201103L
 #ifndef _GXX_NULLPTR_T
 #define _GXX_NULLPTR_T
-  typedef decltype(nullptr) nullptr_t;
+typedef decltype(nullptr) nullptr_t;
 #endif
 #endif /* C++11.  */
 
-#if defined (__STDC_VERSION__) && __STDC_VERSION__ > 201710L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ > 201710L
 #ifndef _GCC_NULLPTR_T
 #define _GCC_NULLPTR_T
-  typedef __typeof__(nullptr) nullptr_t;
+typedef __typeof__(nullptr) nullptr_t;
 #endif
 #ifndef __STDC_VERSION_STDDEF_H__
-#define unreachable() (__builtin_unreachable ())
-#define __STDC_VERSION_STDDEF_H__	202311L
+#define unreachable() (__builtin_unreachable())
+#define __STDC_VERSION_STDDEF_H__ 202311L
 #endif
 #endif /* C23.  */
 
 #endif /* _STDDEF_H was defined this time */
 
-#endif /* !_STDDEF_H && !_STDDEF_H_ && !_ANSI_STDDEF_H && !__STDDEF_H__
-	  || __need_XXX was not defined before */
+#endif /* !_STDDEF_H && !_STDDEF_H_ && !_ANSI_STDDEF_H && !__STDDEF_H__        \
+          || __need_XXX was not defined before */

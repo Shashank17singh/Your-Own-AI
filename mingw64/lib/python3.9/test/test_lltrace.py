@@ -13,7 +13,7 @@ class TestLLTrace(unittest.TestCase):
         # bpo-34113. The crash happened at the command line console of
         # debug Python builds with __ltrace__ enabled (only possible in console),
         # when the interal Python stack was negatively adjusted
-        with open(support.TESTFN, 'w') as fd:
+        with open(support.TESTFN, "w") as fd:
             self.addCleanup(os.unlink, support.TESTFN)
             fd.write(textwrap.dedent("""\
             import code
@@ -26,6 +26,7 @@ class TestLLTrace(unittest.TestCase):
             """))
 
             assert_python_ok(support.TESTFN)
+
 
 if __name__ == "__main__":
     unittest.main()

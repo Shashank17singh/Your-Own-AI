@@ -1,21 +1,4 @@
-# Type printer commands.
-# Copyright (C) 2010-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import copy
-
 import gdb
 
 """GDB commands for working with type-printers."""
@@ -23,7 +6,6 @@ import gdb
 
 class InfoTypePrinter(gdb.Command):
     """GDB command to list all registered type-printers.
-
     Usage: info type-printers"""
 
     def __init__(self):
@@ -31,8 +13,6 @@ class InfoTypePrinter(gdb.Command):
 
     def list_type_printers(self, type_printers):
         """Print a list of type printers."""
-        # A potential enhancement is to provide an option to list printers in
-        # "lookup order" (i.e. unsorted).
         sorted_type_printers = sorted(copy.copy(type_printers), key=lambda x: x.name)
         for printer in sorted_type_printers:
             if printer.enabled:
@@ -101,9 +81,7 @@ class _EnableOrDisableCommand(gdb.Command):
 
 class EnableTypePrinter(_EnableOrDisableCommand):
     """GDB command to enable the specified type printer.
-
     Usage: enable type-printer NAME
-
     NAME is the name of the type-printer."""
 
     def __init__(self):
@@ -112,9 +90,7 @@ class EnableTypePrinter(_EnableOrDisableCommand):
 
 class DisableTypePrinter(_EnableOrDisableCommand):
     """GDB command to disable the specified type-printer.
-
     Usage: disable type-printer NAME
-
     NAME is the name of the type-printer."""
 
     def __init__(self):

@@ -1,5 +1,5 @@
-
 import unittest
+
 
 class ExceptionTestCase(unittest.TestCase):
     def test_try_except_else_finally(self):
@@ -8,7 +8,7 @@ class ExceptionTestCase(unittest.TestCase):
         hit_finally = False
 
         try:
-            raise Exception('nyaa!')
+            raise Exception("nyaa!")
         except:
             hit_except = True
         else:
@@ -43,7 +43,7 @@ class ExceptionTestCase(unittest.TestCase):
         hit_finally = False
 
         try:
-            raise Exception('yarr!')
+            raise Exception("yarr!")
         except:
             hit_except = True
         finally:
@@ -70,7 +70,7 @@ class ExceptionTestCase(unittest.TestCase):
         hit_except = False
 
         try:
-            raise Exception('ahoy!')
+            raise Exception("ahoy!")
         except:
             hit_except = True
 
@@ -91,7 +91,7 @@ class ExceptionTestCase(unittest.TestCase):
         hit_else = False
 
         try:
-            raise Exception('foo!')
+            raise Exception("foo!")
         except:
             hit_except = True
         else:
@@ -131,7 +131,7 @@ class ExceptionTestCase(unittest.TestCase):
 
         try:
             try:
-                raise Exception('inner exception')
+                raise Exception("inner exception")
             except:
                 hit_inner_except = True
             finally:
@@ -158,7 +158,7 @@ class ExceptionTestCase(unittest.TestCase):
             else:
                 hit_inner_else = True
 
-            raise Exception('outer exception')
+            raise Exception("outer exception")
         except:
             hit_except = True
         else:
@@ -172,5 +172,6 @@ class ExceptionTestCase(unittest.TestCase):
         self.assertTrue(hit_finally)
         self.assertTrue(hit_except)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

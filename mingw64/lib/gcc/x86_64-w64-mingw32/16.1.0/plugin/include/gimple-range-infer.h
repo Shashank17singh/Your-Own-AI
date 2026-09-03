@@ -55,40 +55,45 @@ along with GCC; see the file COPYING3.  If not see
 //   name (i)  - The i'th SSA_NAME in this record.
 //   range (i) - The range of the i'th SSA_NAME.
 
-class gimple_infer_range
-{
+class gimple_infer_range {
 public:
-  gimple_infer_range (gimple *s, range_query *q = NULL,
-		      bool use_rangeops = false);
-  gimple_infer_range (tree name, vrange &r);
-  inline unsigned num () const { return num_args; }
-  inline tree name (unsigned index) const
-    { gcc_checking_assert (index < num_args); return m_names[index]; }
-  inline const vrange& range (unsigned index) const
-    { gcc_checking_assert (index < num_args); return m_ranges[index]; }
+  gimple_infer_range(gimple *s, range_query *q = NULL,
+                     bool use_rangeops = false);
+  gimple_infer_range(tree name, vrange &r);
+  inline unsigned num() const { return num_args; }
+  inline tree name(unsigned index) const {
+    gcc_checking_assert(index < num_args);
+    return m_names[index];
+  }
+  inline const vrange &range(unsigned index) const {
+    gcc_checking_assert(index < num_args);
+    return m_ranges[index];
+  }
+
 private:
-  void add_range (tree name, vrange &range);
-  void add_nonzero (tree name);
-  void check_assume_func (gcall *call);
+  void add_range(tree name, vrange &range);
+  void add_nonzero(tree name);
+  void check_assume_func(gcall *call);
   unsigned num_args;
   static const int size_limit = 10;
   tree m_names[size_limit];
   value_range m_ranges[size_limit];
-  inline void bump_index () { if (num_args < size_limit - 1) num_args++; }
+  inline void bump_index() {
+    if (num_args < size_limit - 1)
+      num_args++;
+  }
   friend class non_null_wrapper;
 };
 
 // This is the basic infer oracle API.  Default functionaility does nothing.
 
-class infer_range_oracle
-{
+class infer_range_oracle {
 public:
-  infer_range_oracle () { }
-  virtual ~infer_range_oracle () { }
-  virtual void add_ranges (gimple *, gimple_infer_range &) { }
-  virtual bool has_range_p (basic_block, tree = NULL_TREE) { return false; }
-  virtual bool maybe_adjust_range (vrange &, tree, basic_block)
-      { return false; }
+  infer_range_oracle() {}
+  virtual ~infer_range_oracle() {}
+  virtual void add_ranges(gimple *, gimple_infer_range &) {}
+  virtual bool has_range_p(basic_block, tree = NULL_TREE) { return false; }
+  virtual bool maybe_adjust_range(vrange &, tree, basic_block) { return false; }
 };
 
 // This class manages a list of inferred ranges for each basic block.
@@ -107,29 +112,28 @@ public:
 //   range NAME may have in block BB.  If there are on inferred ranges in
 //   block BB, then R will be unchanged, otherwise the ranges are intersected.
 
-class infer_range_manager : public infer_range_oracle
-{
+class infer_range_manager : public infer_range_oracle {
 public:
-  infer_range_manager (bool do_search, range_query *q = NULL);
-  virtual ~infer_range_manager ();
-  virtual void add_ranges (gimple *s, gimple_infer_range &ir);
-  virtual bool has_range_p (basic_block bb, tree name = NULL_TREE);
-  virtual bool maybe_adjust_range (vrange &r, tree name, basic_block bb);
+  infer_range_manager(bool do_search, range_query *q = NULL);
+  virtual ~infer_range_manager();
+  virtual void add_ranges(gimple *s, gimple_infer_range &ir);
+  virtual bool has_range_p(basic_block bb, tree name = NULL_TREE);
+  virtual bool maybe_adjust_range(vrange &r, tree name, basic_block bb);
+
 private:
-  void add_range (tree name, gimple *s, const vrange &r);
-  void add_nonzero (tree name, gimple *s);
-  class exit_range_head
-  {
+  void add_range(tree name, gimple *s, const vrange &r);
+  void add_nonzero(tree name, gimple *s);
+  class exit_range_head {
   public:
-    bitmap m_names;		// list of names with an outgoing range.
+    bitmap m_names; // list of names with an outgoing range.
     class exit_range *head;
     int m_num_ranges;
-    exit_range *find_ptr (tree name);
+    exit_range *find_ptr(tree name);
   };
-  void register_all_uses (tree name);
-  vec <exit_range_head> m_on_exit;
-  const vrange &get_nonzero (tree name);
-  vec <vrange *> m_nonzero;
+  void register_all_uses(tree name);
+  vec<exit_range_head> m_on_exit;
+  const vrange &get_nonzero(tree name);
+  vec<vrange *> m_nonzero;
   bitmap m_seen;
   bitmap_obstack m_bitmaps;
   struct obstack m_list_obstack;

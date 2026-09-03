@@ -2,9 +2,9 @@ import os
 import sys
 import unittest
 
-
 here = os.path.dirname(__file__)
 loader = unittest.defaultTestLoader
+
 
 def suite():
     suite = unittest.TestSuite()
@@ -14,7 +14,7 @@ def suite():
             __import__(modname)
             module = sys.modules[modname]
             suite.addTest(loader.loadTestsFromModule(module))
-    suite.addTest(loader.loadTestsFromName('unittest.test.testmock'))
+    suite.addTest(loader.loadTestsFromName("unittest.test.testmock"))
     return suite
 
 

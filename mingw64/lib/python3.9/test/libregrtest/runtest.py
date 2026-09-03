@@ -119,21 +119,21 @@ class Timeout(Failed):
 
 # Minimum duration of a test to display its duration or to mention that
 # the test is running in background
-PROGRESS_MIN_TIME = 30.0   # seconds
+PROGRESS_MIN_TIME = 30.0  # seconds
 
 # small set of tests to determine if we have a basically functioning interpreter
 # (i.e. if any of these fail, then anything else is likely to follow)
 STDTESTS = [
-    'test_grammar',
-    'test_opcodes',
-    'test_dict',
-    'test_builtin',
-    'test_exceptions',
-    'test_types',
-    'test_unittest',
-    'test_doctest',
-    'test_doctest2',
-    'test_support'
+    "test_grammar",
+    "test_opcodes",
+    "test_dict",
+    "test_builtin",
+    "test_exceptions",
+    "test_types",
+    "test_unittest",
+    "test_doctest",
+    "test_doctest2",
+    "test_support",
 ]
 
 # set of tests that we don't want to be executed when using regrtest
@@ -168,11 +168,11 @@ def findtests(testdir=None, stdtests=STDTESTS, nottests=NOTTESTS):
 
 
 def get_abs_module(ns: Namespace, test_name: str) -> str:
-    if test_name.startswith('test.') or ns.testdir:
+    if test_name.startswith("test.") or ns.testdir:
         return test_name
     else:
         # Import it from the test package
-        return 'test.' + test_name
+        return "test." + test_name
 
 
 def _runtest(ns: Namespace, test_name: str) -> TestResult:
@@ -181,7 +181,7 @@ def _runtest(ns: Namespace, test_name: str) -> TestResult:
 
     output_on_failure = ns.verbose3
 
-    use_timeout = (ns.timeout is not None)
+    use_timeout = ns.timeout is not None
     if use_timeout:
         faulthandler.dump_traceback_later(ns.timeout, exit=True)
 
@@ -201,8 +201,7 @@ def _runtest(ns: Namespace, test_name: str) -> TestResult:
             try:
                 sys.stdout = stream
                 sys.stderr = stream
-                result = _runtest_inner(ns, test_name,
-                                        display_failure=False)
+                result = _runtest_inner(ns, test_name, display_failure=False)
                 if not isinstance(result, Passed):
                     output = stream.getvalue()
                     orig_stderr.write(output)
@@ -214,15 +213,12 @@ def _runtest(ns: Namespace, test_name: str) -> TestResult:
             # Tell tests to be moderately quiet
             support.verbose = ns.verbose
 
-            result = _runtest_inner(ns, test_name,
-                                    display_failure=not ns.verbose)
+            result = _runtest_inner(ns, test_name, display_failure=not ns.verbose)
 
         if xml_list:
             import xml.etree.ElementTree as ET
-            result.xml_data = [
-                ET.tostring(x).decode('us-ascii')
-                for x in xml_list
-            ]
+
+            result.xml_data = [ET.tostring(x).decode("us-ascii") for x in xml_list]
 
         result.duration_sec = time.perf_counter() - start_time
         return result
@@ -248,8 +244,7 @@ def runtest(ns: Namespace, test_name: str) -> TestResult:
     except:
         if not ns.pgo:
             msg = traceback.format_exc()
-            print(f"test {test_name} crashed -- {msg}",
-                  file=sys.stderr, flush=True)
+            print(f"test {test_name} crashed -- {msg}", file=sys.stderr, flush=True)
         return Failed(test_name)
 
 
@@ -294,8 +289,9 @@ def _runtest_inner2(ns: Namespace, test_name: str) -> bool:
 
     if gc.garbage:
         support.environment_altered = True
-        print_warning(f"{test_name} created {len(gc.garbage)} "
-                      f"uncollectable object(s).")
+        print_warning(
+            f"{test_name} created {len(gc.garbage)} " f"uncollectable object(s)."
+        )
 
         # move the uncollectable objects somewhere,
         # so we don't see them again
@@ -322,7 +318,9 @@ def _runtest_inner(
     try:
         clear_caches()
 
-        with saved_test_environment(test_name, ns.verbose, ns.quiet, pgo=ns.pgo) as environment:
+        with saved_test_environment(
+            test_name, ns.verbose, ns.quiet, pgo=ns.pgo
+        ) as environment:
             refleak = _runtest_inner2(ns, test_name)
     except support.ResourceDenied as msg:
         if not ns.quiet and not ns.pgo:
@@ -352,8 +350,7 @@ def _runtest_inner(
     except:
         if not ns.pgo:
             msg = traceback.format_exc()
-            print(f"test {test_name} crashed -- {msg}",
-                  file=sys.stderr, flush=True)
+            print(f"test {test_name} crashed -- {msg}", file=sys.stderr, flush=True)
         return UncaughtException(test_name)
 
     if refleak:
@@ -381,12 +378,14 @@ def cleanup_test_droppings(test_name: str, verbose: int) -> None:
 
         if os.path.isdir(name):
             import shutil
+
             kind, nuker = "directory", shutil.rmtree
         elif os.path.isfile(name):
             kind, nuker = "file", os.unlink
         else:
-            raise RuntimeError(f"os.path says {name!r} exists but is neither "
-                               f"directory nor file")
+            raise RuntimeError(
+                f"os.path says {name!r} exists but is neither " f"directory nor file"
+            )
 
         if verbose:
             print_warning(f"{test_name} left behind {kind} {name!r}")
@@ -394,9 +393,12 @@ def cleanup_test_droppings(test_name: str, verbose: int) -> None:
 
         try:
             import stat
+
             # fix possible permissions problems that might prevent cleanup
             os.chmod(name, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
             nuker(name)
         except Exception as exc:
-            print_warning(f"{test_name} left behind {kind} {name!r} "
-                          f"and it couldn't be removed: {exc}")
+            print_warning(
+                f"{test_name} left behind {kind} {name!r} "
+                f"and it couldn't be removed: {exc}"
+            )

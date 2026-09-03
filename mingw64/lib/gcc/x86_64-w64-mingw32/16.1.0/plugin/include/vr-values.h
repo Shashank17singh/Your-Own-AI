@@ -26,36 +26,34 @@ along with GCC; see the file COPYING3.  If not see
 
 // Class to simplify a statement using range information.
 
-class simplify_using_ranges
-{
+class simplify_using_ranges {
 public:
-  simplify_using_ranges (range_query *query = NULL,
-			 int not_executable_flag = 0);
-  ~simplify_using_ranges ();
-  bool simplify (gimple_stmt_iterator *);
-  bool fold_cond (gcond *);
-private:
-  void legacy_fold_cond (gcond *, edge *);
-  tree legacy_fold_cond_overflow (gimple *stmt);
-  tree fold_cond_with_ops (tree_code, tree, tree, gimple *s);
-  bool simplify_casted_compare (tree_code &cond_code, tree &op0, tree &op1);
-  bool simplify_truth_ops_using_ranges (gimple_stmt_iterator *, gimple *);
-  bool simplify_div_or_mod_using_ranges (gimple_stmt_iterator *, gimple *);
-  bool simplify_abs_using_ranges (gimple_stmt_iterator *, gimple *);
-  bool simplify_bit_ops_using_ranges (gimple_stmt_iterator *, gimple *);
-  bool simplify_min_or_max_using_ranges (gimple_stmt_iterator *, gimple *);
-  bool simplify_cond_using_ranges_1 (gcond *);
-  bool simplify_compare_using_ranges_1 (tree_code &, tree &, tree &, gimple *);
-  bool simplify_compare_assign_using_ranges_1 (gimple_stmt_iterator *, gimple *);
-  bool simplify_switch_using_ranges (gswitch *);
-  bool simplify_float_conversion_using_ranges (gimple_stmt_iterator *,
-					       gimple *);
-  bool simplify_internal_call_using_ranges (gimple_stmt_iterator *, gimple *);
+  simplify_using_ranges(range_query *query = NULL, int not_executable_flag = 0);
+  ~simplify_using_ranges();
+  bool simplify(gimple_stmt_iterator *);
+  bool fold_cond(gcond *);
 
-  bool two_valued_val_range_p (tree, tree *, tree *, gimple *);
-  bool op_with_boolean_value_range_p (tree, gimple *);
-  void set_and_propagate_unexecutable (edge e);
-  void cleanup_edges_and_switches (void);
+private:
+  void legacy_fold_cond(gcond *, edge *);
+  tree legacy_fold_cond_overflow(gimple *stmt);
+  tree fold_cond_with_ops(tree_code, tree, tree, gimple *s);
+  bool simplify_casted_compare(tree_code &cond_code, tree &op0, tree &op1);
+  bool simplify_truth_ops_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_div_or_mod_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_abs_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_bit_ops_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_min_or_max_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_cond_using_ranges_1(gcond *);
+  bool simplify_compare_using_ranges_1(tree_code &, tree &, tree &, gimple *);
+  bool simplify_compare_assign_using_ranges_1(gimple_stmt_iterator *, gimple *);
+  bool simplify_switch_using_ranges(gswitch *);
+  bool simplify_float_conversion_using_ranges(gimple_stmt_iterator *, gimple *);
+  bool simplify_internal_call_using_ranges(gimple_stmt_iterator *, gimple *);
+
+  bool two_valued_val_range_p(tree, tree *, tree *, gimple *);
+  bool op_with_boolean_value_range_p(tree, gimple *);
+  void set_and_propagate_unexecutable(edge e);
+  void cleanup_edges_and_switches(void);
 
   /* Vectors of edges that need removing and switch statements that
      need updating.  It is expected that a pass using the simplification
@@ -70,13 +68,13 @@ private:
   vec<edge> to_remove_edges;
   vec<switch_update> to_update_switch_stmts;
   class range_query *query;
-  int m_not_executable_flag;   // Non zero if not_executable flag exists.
-  vec<edge> m_flag_set_edges;  // List of edges with flag to be cleared.
+  int m_not_executable_flag;  // Non zero if not_executable flag exists.
+  vec<edge> m_flag_set_edges; // List of edges with flag to be cleared.
 };
 
-extern bool range_fits_type_p (const irange *vr,
-			       unsigned dest_precision, signop dest_sgn);
-extern bool range_of_var_in_loop (vrange &, tree var, class loop *, gimple *,
-				  range_query *);
+extern bool range_fits_type_p(const irange *vr, unsigned dest_precision,
+                              signop dest_sgn);
+extern bool range_of_var_in_loop(vrange &, tree var, class loop *, gimple *,
+                                 range_query *);
 
 #endif /* GCC_VR_VALUES_H */

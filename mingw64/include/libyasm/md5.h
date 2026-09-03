@@ -14,9 +14,9 @@
    and always using it seems to have few disadvantages.  */
 
 typedef struct yasm_md5_context {
-        unsigned long buf[4];
-        unsigned long bits[2];
-        unsigned char in[64];
+  unsigned long buf[4];
+  unsigned long bits[2];
+  unsigned char in[64];
 } yasm_md5_context;
 
 YASM_LIB_DECL

@@ -59,76 +59,70 @@
 #ifndef _STL_RELOPS_H
 #define _STL_RELOPS_H 1
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
-  namespace rel_ops _GLIBCXX20_DEPRECATED_SUGGEST("<=>")
-  {
-    /** @namespace std::rel_ops
-     *  @brief  The generated relational operators are sequestered here.
-     *
-     *  Libstdc++ headers must not use the contents of `rel_ops`.
-     *  User code should also avoid them, because unconstrained function
-     *  templates are too greedy and can easily cause ambiguities.
-     *
-     *  C++20 default comparisons are a better solution.
-     */
+namespace rel_ops _GLIBCXX20_DEPRECATED_SUGGEST("<=>") {
+/** @namespace std::rel_ops
+ *  @brief  The generated relational operators are sequestered here.
+ *
+ *  Libstdc++ headers must not use the contents of `rel_ops`.
+ *  User code should also avoid them, because unconstrained function
+ *  templates are too greedy and can easily cause ambiguities.
+ *
+ *  C++20 default comparisons are a better solution.
+ */
 
-    /**
-     *  @brief Defines @c != for arbitrary types, in terms of @c ==.
-     *  @param  __x  A thing.
-     *  @param  __y  Another thing.
-     *  @return   __x != __y
-     *
-     *  This function uses @c == to determine its result.
-     */
-    template <class _Tp>
-      inline bool
-      operator!=(const _Tp& __x, const _Tp& __y)
-      { return !(__x == __y); }
+/**
+ *  @brief Defines @c != for arbitrary types, in terms of @c ==.
+ *  @param  __x  A thing.
+ *  @param  __y  Another thing.
+ *  @return   __x != __y
+ *
+ *  This function uses @c == to determine its result.
+ */
+template <class _Tp> inline bool operator!=(const _Tp &__x, const _Tp &__y) {
+  return !(__x == __y);
+}
 
-    /**
-     *  @brief Defines @c > for arbitrary types, in terms of @c <.
-     *  @param  __x  A thing.
-     *  @param  __y  Another thing.
-     *  @return   __x > __y
-     *
-     *  This function uses @c < to determine its result.
-     */
-    template <class _Tp>
-      inline bool
-      operator>(const _Tp& __x, const _Tp& __y)
-      { return __y < __x; }
+/**
+ *  @brief Defines @c > for arbitrary types, in terms of @c <.
+ *  @param  __x  A thing.
+ *  @param  __y  Another thing.
+ *  @return   __x > __y
+ *
+ *  This function uses @c < to determine its result.
+ */
+template <class _Tp> inline bool operator>(const _Tp &__x, const _Tp &__y) {
+  return __y < __x;
+}
 
-    /**
-     *  @brief Defines @c <= for arbitrary types, in terms of @c <.
-     *  @param  __x  A thing.
-     *  @param  __y  Another thing.
-     *  @return   __x <= __y
-     *
-     *  This function uses @c < to determine its result.
-     */
-    template <class _Tp>
-      inline bool
-      operator<=(const _Tp& __x, const _Tp& __y)
-      { return !(__y < __x); }
+/**
+ *  @brief Defines @c <= for arbitrary types, in terms of @c <.
+ *  @param  __x  A thing.
+ *  @param  __y  Another thing.
+ *  @return   __x <= __y
+ *
+ *  This function uses @c < to determine its result.
+ */
+template <class _Tp> inline bool operator<=(const _Tp &__x, const _Tp &__y) {
+  return !(__y < __x);
+}
 
-    /**
-     *  @brief Defines @c >= for arbitrary types, in terms of @c <.
-     *  @param  __x  A thing.
-     *  @param  __y  Another thing.
-     *  @return   __x >= __y
-     *
-     *  This function uses @c < to determine its result.
-     */
-    template <class _Tp>
-      inline bool
-      operator>=(const _Tp& __x, const _Tp& __y)
-      { return !(__x < __y); }
-  } // namespace rel_ops
+/**
+ *  @brief Defines @c >= for arbitrary types, in terms of @c <.
+ *  @param  __x  A thing.
+ *  @param  __y  Another thing.
+ *  @return   __x >= __y
+ *
+ *  This function uses @c < to determine its result.
+ */
+template <class _Tp> inline bool operator>=(const _Tp &__x, const _Tp &__y) {
+  return !(__x < __y);
+}
+} // namespace rel_ops _GLIBCXX20_DEPRECATED_SUGGEST("<=>")
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif /* _STL_RELOPS_H */

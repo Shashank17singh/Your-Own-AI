@@ -5,10 +5,8 @@
  */
 #ifndef _DLGSH_INCLUDED_
 #define _DLGSH_INCLUDED_
-
 #define ctlFirst 0x0400
 #define ctlLast 0x04ff
-
 #define psh1 0x0400
 #define psh2 0x0401
 #define psh3 0x0402
@@ -26,7 +24,6 @@
 #define psh15 0x040e
 #define pshHelp psh15
 #define psh16 0x040f
-
 #define chx1 0x0410
 #define chx2 0x0411
 #define chx3 0x0412
@@ -43,7 +40,6 @@
 #define chx14 0x041d
 #define chx15 0x041e
 #define chx16 0x041f
-
 #define rad1 0x0420
 #define rad2 0x0421
 #define rad3 0x0422
@@ -60,7 +56,6 @@
 #define rad14 0x042d
 #define rad15 0x042e
 #define rad16 0x042f
-
 #define grp1 0x0430
 #define grp2 0x0431
 #define grp3 0x0432
@@ -77,7 +72,6 @@
 #define ico2 0x043d
 #define ico3 0x043e
 #define ico4 0x043f
-
 #define stc1 0x0440
 #define stc2 0x0441
 #define stc3 0x0442
@@ -110,7 +104,6 @@
 #define stc30 0x045d
 #define stc31 0x045e
 #define stc32 0x045f
-
 #define lst1 0x0460
 #define lst2 0x0461
 #define lst3 0x0462
@@ -127,7 +120,6 @@
 #define lst14 0x046d
 #define lst15 0x046e
 #define lst16 0x046f
-
 #define cmb1 0x0470
 #define cmb2 0x0471
 #define cmb3 0x0472
@@ -144,7 +136,6 @@
 #define cmb14 0x047d
 #define cmb15 0x047e
 #define cmb16 0x047f
-
 #define edt1 0x0480
 #define edt2 0x0481
 #define edt3 0x0482
@@ -161,7 +152,6 @@
 #define edt14 0x048d
 #define edt15 0x048e
 #define edt16 0x048f
-
 #define scr1 0x0490
 #define scr2 0x0491
 #define scr3 0x0492
@@ -170,9 +160,7 @@
 #define scr6 0x0495
 #define scr7 0x0496
 #define scr8 0x0497
-
 #define ctl1 0x04A0
-
 #define FILEOPENORD 1536
 #define MULTIFILEOPENORD 1537
 #define PRINTDLGORD 1538
@@ -183,14 +171,12 @@
 #define FORMATDLGORD31 1543
 #define FORMATDLGORD30 1544
 #define RUNDLGORD 1545
-
 #define PAGESETUPDLGORD 1546
 #define NEWFILEOPENORD 1547
 #define PRINTDLGEXORD 1549
 #define PAGESETUPDLGORDMOTIF 1550
 #define COLORMGMTDLGORD 1551
 #define NEWFILEOPENV2ORD 1552
-
 typedef struct tagCRGB {
   BYTE bRed;
   BYTE bGreen;

@@ -44,35 +44,34 @@ class changed_file;
    later fix-its to allow for the changes made by earlier ones.  This
    is done by the various "get_effective_column" methods.  */
 
-class change_set
-{
- public:
-  change_set (file_cache &);
+class change_set {
+public:
+  change_set(file_cache &);
 
-  bool valid_p () const { return m_valid; }
+  bool valid_p() const { return m_valid; }
 
-  void add_fixits (rich_location *richloc);
+  void add_fixits(rich_location *richloc);
 
-  char *get_content (const char *filename);
+  char *get_content(const char *filename);
 
-  int get_effective_column (const char *filename, int line, int column);
+  int get_effective_column(const char *filename, int line, int column);
 
-  char *generate_diff (bool show_filenames);
-  void print_diff (pretty_printer *pp, bool show_filenames);
+  char *generate_diff(bool show_filenames);
+  void print_diff(pretty_printer *pp, bool show_filenames);
 
-  file_cache &get_file_cache () const { return m_file_cache; }
+  file_cache &get_file_cache() const { return m_file_cache; }
 
- private:
-  bool apply_fixit (const fixit_hint *hint);
-  changed_file *get_file (const char *filename);
-  changed_file &get_or_insert_file (const char *filename);
+private:
+  bool apply_fixit(const fixit_hint *hint);
+  changed_file *get_file(const char *filename);
+  changed_file &get_or_insert_file(const char *filename);
 
   file_cache &m_file_cache;
   bool m_valid;
   typed_splay_tree<const char *, changed_file *> m_files;
 };
 
-} // namespace diagnostics::changes
+} // namespace changes
 } // namespace diagnostics
 
 #endif /* GCC_DIAGNOSTICS_CHANGES_H.  */

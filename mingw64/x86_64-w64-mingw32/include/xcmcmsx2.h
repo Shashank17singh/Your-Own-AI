@@ -5,29 +5,24 @@
  */
 #ifndef _XCMCMSX2_H
 #define _XCMCMSX2_H
-
-#include <xcmcmsxt.h>
 #include <mapidefs.h>
 #include <xcmc.h>
-
+#include <xcmcmsxt.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #ifdef MAPIX_H
-  STDMETHODIMP_(SCODE) ScMAPIXFromCMC(CMC_session_id cmc_session,ULONG ulFlags,LPCIID lpInterface,LPMAPISESSION *lppMAPISession);
+STDMETHODIMP_(SCODE)
+ScMAPIXFromCMC(CMC_session_id cmc_session, ULONG ulFlags, LPCIID lpInterface,
+               LPMAPISESSION *lppMAPISession);
 #endif
-
-#define CMC_X_MS_ATTACH_MESSAGE ((CMC_flags) 4)
-
-  typedef struct {
-    CMC_message_reference *message;
-    CMC_uint32 id;
-    CMC_buffer object;
-  } CMC_X_MS_ATTACH;
-
+#define CMC_X_MS_ATTACH_MESSAGE ((CMC_flags)4)
+typedef struct {
+  CMC_message_reference *message;
+  CMC_uint32 id;
+  CMC_buffer object;
+} CMC_X_MS_ATTACH;
 #ifdef __cplusplus
 }
 #endif
 #endif
-

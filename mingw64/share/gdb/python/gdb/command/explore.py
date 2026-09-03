@@ -1,19 +1,3 @@
-# GDB 'explore' command.
-# Copyright (C) 2012-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """Implementation of the GDB 'explore' command using the GDB Python API."""
 
 import gdb
@@ -22,9 +6,7 @@ import gdb
 class Explorer(object):
     """Internal class which invokes other explorers."""
 
-    # This map is filled by the Explorer.init_env() function
     type_code_to_explorer_map = {}
-
     _SCALAR_TYPE_LIST = (
         gdb.TYPE_CODE_CHAR,
         gdb.TYPE_CODE_INT,
@@ -38,7 +20,6 @@ class Explorer(object):
     def guard_expr(expr):
         length = len(expr)
         guard = False
-
         if expr[0] == "(" and expr[length - 1] == ")":
             pass
         else:
@@ -56,7 +37,6 @@ class Explorer(object):
                     guard = True
                     break
                 i += 1
-
         if guard:
             return "(" + expr + ")"
         else:
@@ -65,7 +45,6 @@ class Explorer(object):
     @staticmethod
     def explore_expr(expr, value, is_child):
         """Main function to explore an expression value.
-
         Arguments:
             expr: The expression string that is being explored.
             value: The gdb.Value value of the expression.
@@ -75,7 +54,6 @@ class Explorer(object):
                       entered an expression which evaluates to a struct, then
                       when exploring the fields of the struct, is_child is set
                       to True internally.
-
         Returns:
             No return value.
         """
@@ -90,7 +68,6 @@ class Explorer(object):
     @staticmethod
     def explore_type(name, datatype, is_child):
         """Main function to explore a data type.
-
         Arguments:
             name: The string representing the path to the data type being
                   explored.
@@ -100,7 +77,6 @@ class Explorer(object):
                       entered by the user.  For example, if the user entered
                       the name of struct type, then when exploring the fields
                       of the struct, is_child is set to True internally.
-
         Returns:
             No return value.
         """
@@ -145,10 +121,8 @@ class Explorer(object):
             gdb.TYPE_CODE_FLT or
             gdb.TYPE_CODE_VOID or
             gdb.TYPE_CODE_ENUM.
-
         Arguments:
             type: The type to be checked.
-
         Returns:
             'True' if 'type' is a scalar type. 'False' otherwise.
         """
@@ -196,11 +170,9 @@ class ScalarExplorer(object):
         """
         print("'%s' is a scalar value of type '%s'." % (expr, value.type))
         print("%s = %s" % (expr, str(value)))
-
         if is_child:
             Explorer.return_to_parent_value_prompt()
             Explorer.return_to_parent_value()
-
         return False
 
     @staticmethod
@@ -219,11 +191,9 @@ class ScalarExplorer(object):
                 print("%s is of a scalar type '%s'." % (name, str(datatype)))
             else:
                 print("'%s' is a scalar type." % name)
-
         if is_child:
             Explorer.return_to_enclosing_type_prompt()
             Explorer.return_to_enclosing_type()
-
         return False
 
 
@@ -258,7 +228,6 @@ class PointerExplorer(object):
                 "*%s" % Explorer.guard_expr(expr), deref_value, is_child
             )
             return False
-
         option = input("Continue exploring it as a pointer to an " "array [y/n]: ")
         if option == "y":
             while True:
@@ -281,7 +250,6 @@ class PointerExplorer(object):
                     continue
                 Explorer.explore_expr(element_expr, element, True)
             return False
-
         if is_child:
             Explorer.return_to_parent_value()
         return False
@@ -293,7 +261,6 @@ class PointerExplorer(object):
         """
         target_type = datatype.target()
         print("\n%s is a pointer to a value of type '%s'." % (name, str(target_type)))
-
         Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
         return False
 
@@ -342,7 +309,6 @@ class ArrayExplorer(object):
             if is_child:
                 Explorer.return_to_parent_value()
             return False
-
         element = None
         try:
             element = value[index]
@@ -351,7 +317,6 @@ class ArrayExplorer(object):
             print("Cannot read value at index %d." % index)
             input("Press enter to continue... ")
             return True
-
         Explorer.explore_expr(
             "%s[%d]" % (Explorer.guard_expr(expr), index), element, True
         )
@@ -364,7 +329,6 @@ class ArrayExplorer(object):
         """
         target_type = datatype.target()
         print("%s is an array of '%s'." % (name, str(target_type)))
-
         Explorer.explore_type("the array element of %s" % name, target_type, is_child)
         return False
 
@@ -379,7 +343,6 @@ class CompoundExplorer(object):
         for pair in print_list:
             if max_field_name_length < len(pair[0]):
                 max_field_name_length = len(pair[0])
-
         for pair in print_list:
             print("  %*s = %s" % (max_field_name_length, pair[0], pair[1]))
 
@@ -389,7 +352,6 @@ class CompoundExplorer(object):
         for field in fields:
             if not field.artificial:
                 real_field_count = real_field_count + 1
-
         return real_field_count
 
     @staticmethod
@@ -400,12 +362,10 @@ class CompoundExplorer(object):
         datatype = value.type
         type_code = datatype.code
         fields = datatype.fields()
-
         if type_code == gdb.TYPE_CODE_STRUCT:
             type_desc = "struct/class"
         else:
             type_desc = "union"
-
         if CompoundExplorer._get_real_field_count(fields) == 0:
             print(
                 "The value of '%s' is a %s of type '%s' with no fields."
@@ -414,12 +374,10 @@ class CompoundExplorer(object):
             if is_child:
                 Explorer.return_to_parent_value_prompt()
             return False
-
         print(
             "The value of '%s' is a %s of type '%s' with the following "
             "fields:\n" % (expr, type_desc, str(value.type))
         )
-
         has_explorable_fields = False
         choice_to_compound_field_map = {}
         current_choice = 0
@@ -456,18 +414,14 @@ class CompoundExplorer(object):
                         str(field.type),
                     )
                     has_explorable_fields = True
-
             choice_to_compound_field_map[str(current_choice)] = (
                 field_full_name,
                 field_value,
             )
             current_choice = current_choice + 1
-
             print_list.append((field.name, literal_value))
-
         CompoundExplorer._print_fields(print_list)
         print("")
-
         if has_explorable_fields:
             choice = input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
@@ -483,7 +437,6 @@ class CompoundExplorer(object):
         else:
             if is_child:
                 Explorer.return_to_parent_value_prompt()
-
         return False
 
     @staticmethod
@@ -497,7 +450,6 @@ class CompoundExplorer(object):
             type_desc = "struct/class"
         else:
             type_desc = "union"
-
         fields = datatype.fields()
         if CompoundExplorer._get_real_field_count(fields) == 0:
             if is_child:
@@ -509,7 +461,6 @@ class CompoundExplorer(object):
             else:
                 print("'%s' is a %s with no fields." % (name, type_desc))
             return False
-
         if is_child:
             print(
                 "%s is a %s of type '%s' "
@@ -517,7 +468,6 @@ class CompoundExplorer(object):
             )
         else:
             print("'%s' is a %s with the following " "fields:\n" % (name, type_desc))
-
         current_choice = 0
         choice_to_compound_field_map = {}
         print_list = []
@@ -540,10 +490,8 @@ class CompoundExplorer(object):
                 field_desc,
             )
             current_choice = current_choice + 1
-
         CompoundExplorer._print_fields(print_list)
         print("")
-
         if len(choice_to_compound_field_map) > 0:
             choice = input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
@@ -569,7 +517,6 @@ class CompoundExplorer(object):
         else:
             if is_child:
                 Explorer.return_to_enclosing_type_prompt()
-
         return False
 
 
@@ -587,7 +534,6 @@ class TypedefExplorer(object):
             "which is a typedef of type '%s'"
             % (expr, str(value.type), str(actual_type))
         )
-
         Explorer.explore_expr(expr, value.cast(actual_type), is_child)
         return False
 
@@ -603,7 +549,6 @@ class TypedefExplorer(object):
             )
         else:
             print("The type '%s' is a typedef of type '%s'." % (name, str(actual_type)))
-
         Explorer.explore_type(name, actual_type, is_child)
         return False
 
@@ -615,14 +560,11 @@ class ExploreUtils(object):
     def check_args(name, arg_str):
         """Utility to check if adequate number of arguments are passed to an
         explore command.
-
         Arguments:
             name: The name of the explore command.
             arg_str: The argument string passed to the explore command.
-
         Returns:
             True if adequate arguments are passed, false otherwise.
-
         Raises:
             gdb.GdbError if adequate arguments are not passed.
         """
@@ -636,20 +578,15 @@ class ExploreUtils(object):
     def get_type_from_str(type_str):
         """A utility function to deduce the gdb.Type value from a string
         representing the type.
-
         Arguments:
             type_str: The type string from which the gdb.Type value should be
                       deduced.
-
         Returns:
             The deduced gdb.Type value if possible, None otherwise.
         """
         try:
-            # Assume the current language to be C/C++ and make a try.
             return gdb.parse_and_eval("(%s *)0" % type_str).type.target()
         except RuntimeError:
-            # If assumption of current language to be C/C++ was wrong, then
-            # lookup the type using the API.
             try:
                 return gdb.lookup_type(type_str)
             except RuntimeError:
@@ -659,11 +596,9 @@ class ExploreUtils(object):
     def get_value_from_str(value_str):
         """A utility function to deduce the gdb.Value value from a string
         representing the value.
-
         Arguments:
             value_str: The value string from which the gdb.Value value should
                        be deduced.
-
         Returns:
             The deduced gdb.Value value if possible, None otherwise.
         """
@@ -675,9 +610,7 @@ class ExploreUtils(object):
 
 class ExploreCommand(gdb.Command):
     """Explore a value or a type valid in the current context.
-
     Usage: explore ARG
-
     - ARG is either a valid expression or a type name.
     - At any stage of exploration, hit the return key (instead of a
     choice, if any) to return to the enclosing type or value."""
@@ -690,20 +623,14 @@ class ExploreCommand(gdb.Command):
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore", arg_str) is False:
             return
-
-        # Check if it is a value
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is not None:
             Explorer.explore_expr(arg_str, value, False)
             return
-
-        # If it is not a value, check if it is a type
         datatype = ExploreUtils.get_type_from_str(arg_str)
         if datatype is not None:
             Explorer.explore_type(arg_str, datatype, False)
             return
-
-        # If it is neither a value nor a type, raise an error.
         raise gdb.GdbError(
             (
                 "'%s' neither evaluates to a value nor is a type "
@@ -714,9 +641,7 @@ class ExploreCommand(gdb.Command):
 
 class ExploreValueCommand(gdb.Command):
     """Explore value of an expression valid in the current context.
-
     Usage: explore value ARG
-
     - ARG is a valid expression.
     - At any stage of exploration, hit the return key (instead of a
     choice, if any) to return to the enclosing value."""
@@ -729,7 +654,6 @@ class ExploreValueCommand(gdb.Command):
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore value", arg_str) is False:
             return
-
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is None:
             raise gdb.GdbError(
@@ -739,15 +663,12 @@ class ExploreValueCommand(gdb.Command):
                 )
             )
             return
-
         Explorer.explore_expr(arg_str, value, False)
 
 
 class ExploreTypeCommand(gdb.Command):
     """Explore a type or the type of an expression.
-
     Usage: explore type ARG
-
     - ARG is a valid expression or a type name.
     - At any stage of exploration, hit the return key (instead of a
     choice, if any) to return to the enclosing type."""
@@ -760,25 +681,21 @@ class ExploreTypeCommand(gdb.Command):
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore type", arg_str) is False:
             return
-
         datatype = ExploreUtils.get_type_from_str(arg_str)
         if datatype is not None:
             Explorer.explore_type(arg_str, datatype, False)
             return
-
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is not None:
             print("'%s' is of type '%s'." % (arg_str, str(value.type)))
             Explorer.explore_type(str(value.type), value.type, False)
             return
-
         raise gdb.GdbError(
             ("'%s' is not a type or value in the current " "context." % arg_str)
         )
 
 
 Explorer.init_env()
-
 ExploreCommand()
 ExploreValueCommand()
 ExploreTypeCommand()

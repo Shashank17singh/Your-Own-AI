@@ -35,39 +35,39 @@
  * #yasm_listfmt implementation.
  */
 typedef struct yasm_listfmt_base {
-    /** #yasm_listfmt_module implementation for this list format. */
-    const struct yasm_listfmt_module *module;
+  /** #yasm_listfmt_module implementation for this list format. */
+  const struct yasm_listfmt_module *module;
 } yasm_listfmt_base;
 #endif
 
 /** YASM list format module interface. */
 typedef struct yasm_listfmt_module {
-    /** One-line description of the list format. */
-    const char *name;
+  /** One-line description of the list format. */
+  const char *name;
 
-    /** Keyword used to select list format. */
-    const char *keyword;
+  /** Keyword used to select list format. */
+  const char *keyword;
 
-    /** Create list format.
-     * Module-level implementation of yasm_listfmt_create().
-     * The filenames are provided solely for informational purposes.
-     * \param in_filename   primary input filename
-     * \param obj_filename  object filename
-     * \return NULL if unable to initialize.
-     */
-    /*@null@*/ /*@only@*/ yasm_listfmt * (*create)
-        (const char *in_filename, const char *obj_filename);
+  /** Create list format.
+   * Module-level implementation of yasm_listfmt_create().
+   * The filenames are provided solely for informational purposes.
+   * \param in_filename   primary input filename
+   * \param obj_filename  object filename
+   * \return NULL if unable to initialize.
+   */
+  /*@null@*/ /*@only@*/ yasm_listfmt *(*create)(const char *in_filename,
+                                                const char *obj_filename);
 
-    /** Module-level implementation of yasm_listfmt_destroy().
-     * Call yasm_listfmt_destroy() instead of calling this function.
-     */
-    void (*destroy) (/*@only@*/ yasm_listfmt *listfmt);
+  /** Module-level implementation of yasm_listfmt_destroy().
+   * Call yasm_listfmt_destroy() instead of calling this function.
+   */
+  void (*destroy)(/*@only@*/ yasm_listfmt *listfmt);
 
-    /** Module-level implementation of yasm_listfmt_output().
-     * Call yasm_listfmt_output() instead of calling this function.
-     */
-    void (*output) (yasm_listfmt *listfmt, FILE *f, yasm_linemap *linemap,
-                    yasm_arch *arch);
+  /** Module-level implementation of yasm_listfmt_output().
+   * Call yasm_listfmt_output() instead of calling this function.
+   */
+  void (*output)(yasm_listfmt *listfmt, FILE *f, yasm_linemap *linemap,
+                 yasm_arch *arch);
 } yasm_listfmt_module;
 
 /** Get the keyword used to select a list format.
@@ -84,9 +84,9 @@ const char *yasm_listfmt_keyword(const yasm_listfmt *listfmt);
  * \param obj_filename  object filename
  * \return NULL if object format does not provide needed support.
  */
-/*@null@*/ /*@only@*/ yasm_listfmt *yasm_listfmt_create
-    (const yasm_listfmt_module *module, const char *in_filename,
-     const char *obj_filename);
+/*@null@*/ /*@only@*/ yasm_listfmt *
+yasm_listfmt_create(const yasm_listfmt_module *module, const char *in_filename,
+                    const char *obj_filename);
 
 /** Cleans up any allocated list format memory.
  * \param listfmt       list format
@@ -100,24 +100,24 @@ void yasm_listfmt_destroy(/*@only@*/ yasm_listfmt *listfmt);
  * \param linemap       line mapping repository
  * \param arch          architecture
  */
-void yasm_listfmt_output(yasm_listfmt *listfmt, FILE *f,
-                         yasm_linemap *linemap, yasm_arch *arch);
+void yasm_listfmt_output(yasm_listfmt *listfmt, FILE *f, yasm_linemap *linemap,
+                         yasm_arch *arch);
 
 #ifndef YASM_DOXYGEN
 
 /* Inline macro implementations for listfmt functions */
 
-#define yasm_listfmt_keyword(listfmt) \
-    (((yasm_listfmt_base *)listfmt)->module->keyword)
+#define yasm_listfmt_keyword(listfmt)                                          \
+  (((yasm_listfmt_base *)listfmt)->module->keyword)
 
-#define yasm_listfmt_create(module, in_filename, obj_filename) \
-    module->create(in_filename, obj_filename)
+#define yasm_listfmt_create(module, in_filename, obj_filename)                 \
+  module->create(in_filename, obj_filename)
 
-#define yasm_listfmt_destroy(listfmt) \
-    ((yasm_listfmt_base *)listfmt)->module->destroy(listfmt)
+#define yasm_listfmt_destroy(listfmt)                                          \
+  ((yasm_listfmt_base *)listfmt)->module->destroy(listfmt)
 
-#define yasm_listfmt_output(listfmt, f, linemap, a) \
-    ((yasm_listfmt_base *)listfmt)->module->output(listfmt, f, linemap, a)
+#define yasm_listfmt_output(listfmt, f, linemap, a)                            \
+  ((yasm_listfmt_base *)listfmt)->module->output(listfmt, f, linemap, a)
 
 #endif
 

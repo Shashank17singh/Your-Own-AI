@@ -22,8 +22,7 @@ along with GCC; see the file COPYING3.  If not see
 
 /* Aliasing information for SSA_NAMEs representing pointer variables.  */
 
-struct GTY(()) ptr_info_def
-{
+struct GTY(()) ptr_info_def {
   /* The points-to solution.  */
   struct pt_solution pt;
 
@@ -45,108 +44,94 @@ struct GTY(()) ptr_info_def
   unsigned int misalign;
 };
 
-
 #define SSANAMES(fun) (fun)->gimple_df->ssa_names
 #define DEFAULT_DEFS(fun) (fun)->gimple_df->default_defs
 
-#define num_ssa_names (vec_safe_length (cfun->gimple_df->ssa_names))
+#define num_ssa_names (vec_safe_length(cfun->gimple_df->ssa_names))
 #define ssa_name(i) ((*cfun->gimple_df->ssa_names)[(i)])
 
-#define FOR_EACH_SSA_NAME(I, VAR, FN)					\
-  for (I = 1; SSANAMES (FN)->iterate (I, &VAR); ++I)			\
+#define FOR_EACH_SSA_NAME(I, VAR, FN)                                          \
+  for (I = 1; SSANAMES(FN)->iterate(I, &VAR); ++I)                             \
     if (VAR)
 
 /* Sets the value range to SSA.  */
-extern bool set_range_info (tree, const vrange &);
-extern void set_nonzero_bits (tree, const wide_int &);
-extern void set_bitmask (tree, const wide_int &value, const wide_int &mask);
-extern wide_int get_nonzero_bits (const_tree);
-extern wide_int get_known_nonzero_bits (const_tree);
-extern bool ssa_name_has_boolean_range (tree, gimple * = nullptr);
-extern void init_ssanames (struct function *, int);
-extern void fini_ssanames (struct function *);
-extern void ssanames_print_statistics (void);
-extern tree make_ssa_name_fn (struct function *, tree, gimple *,
-			      unsigned int version = 0);
-extern void init_ssa_name_imm_use (tree);
-extern void release_ssa_name_fn (struct function *, tree);
-extern bool get_ptr_info_alignment (struct ptr_info_def *, unsigned int *,
-				    unsigned int *);
-extern void mark_ptr_info_alignment_unknown (struct ptr_info_def *);
-extern void set_ptr_info_alignment (struct ptr_info_def *, unsigned int,
-				    unsigned int);
-extern void adjust_ptr_info_misalignment (struct ptr_info_def *, poly_uint64);
-extern struct ptr_info_def *get_ptr_info (tree);
-extern void set_ptr_nonnull (tree);
+extern bool set_range_info(tree, const vrange &);
+extern void set_nonzero_bits(tree, const wide_int &);
+extern void set_bitmask(tree, const wide_int &value, const wide_int &mask);
+extern wide_int get_nonzero_bits(const_tree);
+extern wide_int get_known_nonzero_bits(const_tree);
+extern bool ssa_name_has_boolean_range(tree, gimple * = nullptr);
+extern void init_ssanames(struct function *, int);
+extern void fini_ssanames(struct function *);
+extern void ssanames_print_statistics(void);
+extern tree make_ssa_name_fn(struct function *, tree, gimple *,
+                             unsigned int version = 0);
+extern void init_ssa_name_imm_use(tree);
+extern void release_ssa_name_fn(struct function *, tree);
+extern bool get_ptr_info_alignment(struct ptr_info_def *, unsigned int *,
+                                   unsigned int *);
+extern void mark_ptr_info_alignment_unknown(struct ptr_info_def *);
+extern void set_ptr_info_alignment(struct ptr_info_def *, unsigned int,
+                                   unsigned int);
+extern void adjust_ptr_info_misalignment(struct ptr_info_def *, poly_uint64);
+extern struct ptr_info_def *get_ptr_info(tree);
+extern void set_ptr_nonnull(tree);
 
-extern tree copy_ssa_name_fn (struct function *, tree, gimple *);
-extern tree duplicate_ssa_name_fn (struct function *, tree, gimple *);
-extern void duplicate_ssa_name_ptr_info (tree, struct ptr_info_def *);
-extern void duplicate_ssa_name_range_info (tree dest, tree src);
-extern void maybe_duplicate_ssa_info_at_copy (tree dest, tree src);
-extern void reset_flow_sensitive_info (tree);
-extern void reset_flow_sensitive_info_in_bb (basic_block);
-extern void release_defs (gimple *);
-extern void replace_ssa_name_symbol (tree, tree);
-extern void flush_ssaname_freelist (void);
-
+extern tree copy_ssa_name_fn(struct function *, tree, gimple *);
+extern tree duplicate_ssa_name_fn(struct function *, tree, gimple *);
+extern void duplicate_ssa_name_ptr_info(tree, struct ptr_info_def *);
+extern void duplicate_ssa_name_range_info(tree dest, tree src);
+extern void maybe_duplicate_ssa_info_at_copy(tree dest, tree src);
+extern void reset_flow_sensitive_info(tree);
+extern void reset_flow_sensitive_info_in_bb(basic_block);
+extern void release_defs(gimple *);
+extern void replace_ssa_name_symbol(tree, tree);
+extern void flush_ssaname_freelist(void);
 
 /* Return an SSA_NAME node for variable VAR defined in statement STMT
    in function cfun.  */
 
-inline tree
-make_ssa_name (tree var, gimple *stmt = NULL)
-{
-  return make_ssa_name_fn (cfun, var, stmt);
+inline tree make_ssa_name(tree var, gimple *stmt = NULL) {
+  return make_ssa_name_fn(cfun, var, stmt);
 }
 
 /* Return an SSA_NAME node using the template SSA name NAME defined in
    statement STMT in function cfun.  */
 
-inline tree
-copy_ssa_name (tree var, gimple *stmt = NULL)
-{
-  return copy_ssa_name_fn (cfun, var, stmt);
+inline tree copy_ssa_name(tree var, gimple *stmt = NULL) {
+  return copy_ssa_name_fn(cfun, var, stmt);
 }
 
 /*  Creates a duplicate of a SSA name NAME tobe defined by statement STMT
     in function cfun.  */
 
-inline tree
-duplicate_ssa_name (tree var, gimple *stmt)
-{
-  return duplicate_ssa_name_fn (cfun, var, stmt);
+inline tree duplicate_ssa_name(tree var, gimple *stmt) {
+  return duplicate_ssa_name_fn(cfun, var, stmt);
 }
 
 /* Release the SSA name NAME used in function cfun.  */
 
-inline void
-release_ssa_name (tree name)
-{
-  release_ssa_name_fn (cfun, name);
-}
+inline void release_ssa_name(tree name) { release_ssa_name_fn(cfun, name); }
 
 /* Return an anonymous SSA_NAME node for type TYPE defined in statement STMT
    in function cfun.  Arrange so that it uses NAME in dumps.  */
 
-inline tree
-make_temp_ssa_name (tree type, gimple *stmt, const char *name)
-{
+inline tree make_temp_ssa_name(tree type, gimple *stmt, const char *name) {
   tree ssa_name;
-  gcc_checking_assert (TYPE_P (type));
-  ssa_name = make_ssa_name_fn (cfun, type, stmt);
-  SET_SSA_NAME_VAR_OR_IDENTIFIER (ssa_name, get_identifier (name));
+  gcc_checking_assert(TYPE_P(type));
+  ssa_name = make_ssa_name_fn(cfun, type, stmt);
+  SET_SSA_NAME_VAR_OR_IDENTIFIER(ssa_name, get_identifier(name));
   return ssa_name;
 }
 
 /* A class which is used to save/restore the flow sensitive information.  */
-class flow_sensitive_info_storage
-{
+class flow_sensitive_info_storage {
 public:
-  void save (tree);
-  void save_and_clear (tree);
-  void restore (tree);
-  void clear_storage ();
+  void save(tree);
+  void save_and_clear(tree);
+  void restore(tree);
+  void clear_storage();
+
 private:
   /* 0 means there is nothing saved.
      1 means non pointer is saved.

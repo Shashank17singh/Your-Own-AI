@@ -39,54 +39,40 @@
 
 // Used by C++17 containers and Library Fundamentals v2 headers.
 #if __cplusplus >= 201402L
-namespace std
-{
+namespace std {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
-  namespace __detail
-  {
-    template<typename _Container, typename _UnsafeContainer,
-	     typename _Predicate>
-      _GLIBCXX20_CONSTEXPR
-      typename _Container::size_type
-      __erase_if(_Container& __cont, _UnsafeContainer& __ucont,
-		 _Predicate __pred)
-      {
-	const auto __osz = __ucont.size();
-	const auto __end = __ucont.end();
-	auto __removed = std::__remove_if(__ucont.begin(), __end,
-					  std::move(__pred));
-	if (__removed != __end)
-	  {
-	    __cont.erase(__niter_wrap(__cont.begin(), __removed),
-			 __cont.end());
-	    return __osz - __ucont.size();
-	  }
+namespace __detail {
+template <typename _Container, typename _UnsafeContainer, typename _Predicate>
+_GLIBCXX20_CONSTEXPR typename _Container::size_type
+__erase_if(_Container &__cont, _UnsafeContainer &__ucont, _Predicate __pred) {
+  const auto __osz = __ucont.size();
+  const auto __end = __ucont.end();
+  auto __removed = std::__remove_if(__ucont.begin(), __end, std::move(__pred));
+  if (__removed != __end) {
+    __cont.erase(__niter_wrap(__cont.begin(), __removed), __cont.end());
+    return __osz - __ucont.size();
+  }
 
-	return 0;
-      }
+  return 0;
+}
 
-    template<typename _Container, typename _UnsafeContainer,
-	     typename _Predicate>
-      typename _Container::size_type
-      __erase_nodes_if(_Container& __cont, _UnsafeContainer& __ucont,
-		       _Predicate __pred)
-      {
-	typename _Container::size_type __num = 0;
-	for (auto __iter = __ucont.begin(), __last = __ucont.end();
-	     __iter != __last;)
-	  {
-	    if (__pred(*__iter))
-	      {
-		__iter = __cont.erase(__iter);
-		++__num;
-	      }
-	    else
-	      ++__iter;
-	  }
-	return __num;
-      }
-  } // namespace __detail
+template <typename _Container, typename _UnsafeContainer, typename _Predicate>
+typename _Container::size_type __erase_nodes_if(_Container &__cont,
+                                                _UnsafeContainer &__ucont,
+                                                _Predicate __pred) {
+  typename _Container::size_type __num = 0;
+  for (auto __iter = __ucont.begin(), __last = __ucont.end();
+       __iter != __last;) {
+    if (__pred(*__iter)) {
+      __iter = __cont.erase(__iter);
+      ++__num;
+    } else
+      ++__iter;
+  }
+  return __num;
+}
+} // namespace __detail
 
 _GLIBCXX_END_NAMESPACE_VERSION
 } // namespace std

@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-PyAPI_FUNC(PyObject *) _PyImport_FindBuiltin(
-    PyThreadState *tstate,
-    const char *name             /* UTF-8 encoded string */
+PyAPI_FUNC(PyObject *)
+    _PyImport_FindBuiltin(PyThreadState *tstate,
+                          const char *name /* UTF-8 encoded string */
     );
 
 #ifdef HAVE_FORK

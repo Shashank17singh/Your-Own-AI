@@ -12,7 +12,7 @@ class ClearTest(unittest.TestCase):
     """
 
     def inner(self, x=5, **kwargs):
-        1/0
+        1 / 0
 
     def outer(self, **kwargs):
         try:
@@ -32,6 +32,7 @@ class ClearTest(unittest.TestCase):
     def test_clear_locals(self):
         class C:
             pass
+
         c = C()
         wr = weakref.ref(c)
         exc = self.outer(c=c)
@@ -46,6 +47,7 @@ class ClearTest(unittest.TestCase):
 
     def test_clear_generator(self):
         endly = False
+
         def g():
             nonlocal endly
             try:
@@ -53,6 +55,7 @@ class ClearTest(unittest.TestCase):
                 self.inner()
             finally:
                 endly = True
+
         gen = g()
         next(gen)
         self.assertFalse(endly)
@@ -63,7 +66,7 @@ class ClearTest(unittest.TestCase):
     def test_clear_executing(self):
         # Attempting to clear an executing frame is forbidden.
         try:
-            1/0
+            1 / 0
         except ZeroDivisionError as e:
             f = e.__traceback__.tb_frame
         with self.assertRaises(RuntimeError):
@@ -74,10 +77,11 @@ class ClearTest(unittest.TestCase):
     def test_clear_executing_generator(self):
         # Attempting to clear an executing generator frame is forbidden.
         endly = False
+
         def g():
             nonlocal endly
             try:
-                1/0
+                1 / 0
             except ZeroDivisionError as e:
                 f = e.__traceback__.tb_frame
                 with self.assertRaises(RuntimeError):
@@ -87,6 +91,7 @@ class ClearTest(unittest.TestCase):
                 yield f
             finally:
                 endly = True
+
         gen = g()
         f = next(gen)
         self.assertFalse(endly)
@@ -98,8 +103,10 @@ class ClearTest(unittest.TestCase):
     def test_clear_refcycles(self):
         # .clear() doesn't leave any refcycle behind
         with support.disable_gc():
+
             class C:
                 pass
+
             c = C()
             wr = weakref.ref(c)
             exc = self.outer(c=c)
@@ -115,11 +122,14 @@ class FrameAttrsTest(unittest.TestCase):
         def outer():
             x = 5
             y = 6
+
             def inner():
                 z = x + 2
-                1/0
+                1 / 0
                 t = 9
+
             return inner()
+
         try:
             outer()
         except ZeroDivisionError as e:
@@ -133,10 +143,10 @@ class FrameAttrsTest(unittest.TestCase):
     def test_locals(self):
         f, outer, inner = self.make_frames()
         outer_locals = outer.f_locals
-        self.assertIsInstance(outer_locals.pop('inner'), types.FunctionType)
-        self.assertEqual(outer_locals, {'x': 5, 'y': 6})
+        self.assertIsInstance(outer_locals.pop("inner"), types.FunctionType)
+        self.assertEqual(outer_locals, {"x": 5, "y": 6})
         inner_locals = inner.f_locals
-        self.assertEqual(inner_locals, {'x': 5, 'z': 7})
+        self.assertEqual(inner_locals, {"x": 5, "z": 7})
 
     def test_clear_locals(self):
         # Test f_locals after clear() (issue #21897)
@@ -171,10 +181,12 @@ class ReprTest(unittest.TestCase):
         def outer():
             x = 5
             y = 6
+
             def inner():
                 z = x + 2
-                1/0
+                1 / 0
                 t = 9
+
             return inner()
 
         offset = outer.__code__.co_firstlineno
@@ -191,15 +203,21 @@ class ReprTest(unittest.TestCase):
 
         f_this, f_outer, f_inner = frames
         file_repr = re.escape(repr(__file__))
-        self.assertRegex(repr(f_this),
-                         r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code test_repr>$"
-                         % (file_repr, offset + 23))
-        self.assertRegex(repr(f_outer),
-                         r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code outer>$"
-                         % (file_repr, offset + 7))
-        self.assertRegex(repr(f_inner),
-                         r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code inner>$"
-                         % (file_repr, offset + 5))
+        self.assertRegex(
+            repr(f_this),
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code test_repr>$"
+            % (file_repr, offset + 23),
+        )
+        self.assertRegex(
+            repr(f_outer),
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code outer>$"
+            % (file_repr, offset + 7),
+        )
+        self.assertRegex(
+            repr(f_inner),
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code inner>$"
+            % (file_repr, offset + 5),
+        )
 
 
 if __name__ == "__main__":

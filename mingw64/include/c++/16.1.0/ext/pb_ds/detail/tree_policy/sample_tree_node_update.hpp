@@ -41,22 +41,20 @@
 #ifndef PB_DS_SAMPLE_TREE_NODE_UPDATOR_HPP
 #define PB_DS_SAMPLE_TREE_NODE_UPDATOR_HPP
 
-namespace __gnu_pbds
-{
-  /// A sample node updator.
-  template<typename Const_Node_Iter, typename Node_Iter, typename Cmp_Fn,
-	   typename _Alloc>
-  class sample_tree_node_update
-  {
-    typedef std::size_t metadata_type;
+namespace __gnu_pbds {
+/// A sample node updator.
+template <typename Const_Node_Iter, typename Node_Iter, typename Cmp_Fn,
+          typename _Alloc>
+class sample_tree_node_update {
+  typedef std::size_t metadata_type;
 
-    /// Default constructor.
-    sample_tree_node_update();
+  /// Default constructor.
+  sample_tree_node_update();
 
-    /// Updates the rank of a node through a node_iterator node_it;
-    /// end_nd_it is the end node iterator.
-    inline void
-    operator()(node_iterator node_it, node_const_iterator end_nd_it) const;
-  };
-}
+  /// Updates the rank of a node through a node_iterator node_it;
+  /// end_nd_it is the end node iterator.
+  inline void operator()(node_iterator node_it,
+                         node_const_iterator end_nd_it) const;
+};
+} // namespace __gnu_pbds
 #endif // #ifndef PB_DS_SAMPLE_TREE_NODE_UPDATOR_HPP

@@ -23,34 +23,20 @@ along with GCC; see the file COPYING3.  If not see
 
 /* RAII wrapper around obstack.  */
 
-struct auto_obstack
-{
-  auto_obstack ()
-  {
-    obstack_init (&m_obstack);
+struct auto_obstack {
+  auto_obstack() { obstack_init(&m_obstack); }
+
+  ~auto_obstack() { obstack_free(&m_obstack, NULL); }
+
+  operator obstack &() { return m_obstack; }
+
+  void grow(const void *src, size_t length) {
+    obstack_grow(&m_obstack, src, length);
   }
 
-  ~auto_obstack ()
-  {
-    obstack_free (&m_obstack, NULL);
-  }
+  void *object_base() const { return m_obstack.object_base; }
 
-  operator obstack & () { return m_obstack; }
-
-  void grow (const void *src, size_t length)
-  {
-    obstack_grow (&m_obstack, src, length);
-  }
-
-  void *object_base () const
-  {
-    return m_obstack.object_base;
-  }
-
-  size_t object_size () const
-  {
-    return obstack_object_size (&m_obstack);
-  }
+  size_t object_size() const { return obstack_object_size(&m_obstack); }
 
   obstack m_obstack;
 };

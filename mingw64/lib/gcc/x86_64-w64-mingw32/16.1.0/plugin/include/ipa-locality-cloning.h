@@ -21,8 +21,7 @@ along with GCC; see the file COPYING3.  If not see
 #define IPA_LOCALITY_CLONING_H
 
 /* Structure describing locality partitions.  */
-struct locality_partition_def
-{
+struct locality_partition_def {
   int part_id;
   vec<cgraph_node *> nodes;
   int insns;

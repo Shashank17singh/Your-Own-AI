@@ -1,4 +1,4 @@
-#-*- coding: iso-8859-1 -*-
+# -*- coding: iso-8859-1 -*-
 # pysqlite2/test/hooks.py: tests for various SQLite-specific hooks
 #
 # Copyright (C) 2006-2007 Gerhard Häring <gh@ghaering.de>
@@ -26,6 +26,7 @@ import sqlite3 as sqlite
 
 from test.support import TESTFN, unlink
 
+
 class CollationTests(unittest.TestCase):
     def CheckCreateCollationNotString(self):
         con = sqlite.connect(":memory:")
@@ -36,7 +37,7 @@ class CollationTests(unittest.TestCase):
         con = sqlite.connect(":memory:")
         with self.assertRaises(TypeError) as cm:
             con.create_collation("X", 42)
-        self.assertEqual(str(cm.exception), 'parameter must be callable')
+        self.assertEqual(str(cm.exception), "parameter must be callable")
 
     def CheckCreateCollationNotAscii(self):
         con = sqlite.connect(":memory:")
@@ -47,6 +48,7 @@ class CollationTests(unittest.TestCase):
         class BadUpperStr(str):
             def upper(self):
                 return None
+
         con = sqlite.connect(":memory:")
         mycoll = lambda x, y: -((x > y) - (x < y))
         con.create_collation(BadUpperStr("mycoll"), mycoll)
@@ -57,11 +59,12 @@ class CollationTests(unittest.TestCase):
             select 'b' as x
             ) order by x collate mycoll
             """).fetchall()
-        self.assertEqual(result[0][0], 'b')
-        self.assertEqual(result[1][0], 'a')
+        self.assertEqual(result[0][0], "b")
+        self.assertEqual(result[1][0], "a")
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 2, 1),
-                     'old SQLite versions crash on this test')
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 2, 1), "old SQLite versions crash on this test"
+    )
     def CheckCollationIsUsed(self):
         def mycoll(x, y):
             # reverse order
@@ -79,18 +82,20 @@ class CollationTests(unittest.TestCase):
             ) order by x collate mycoll
             """
         result = con.execute(sql).fetchall()
-        self.assertEqual(result, [('c',), ('b',), ('a',)],
-                         msg='the expected order was not returned')
+        self.assertEqual(
+            result, [("c",), ("b",), ("a",)], msg="the expected order was not returned"
+        )
 
         con.create_collation("mycoll", None)
         with self.assertRaises(sqlite.OperationalError) as cm:
             result = con.execute(sql).fetchall()
-        self.assertEqual(str(cm.exception), 'no such collation sequence: mycoll')
+        self.assertEqual(str(cm.exception), "no such collation sequence: mycoll")
 
     def CheckCollationReturnsLargeInteger(self):
         def mycoll(x, y):
             # reverse order
             return -((x > y) - (x < y)) * 2**32
+
         con = sqlite.connect(":memory:")
         con.create_collation("mycoll", mycoll)
         sql = """
@@ -103,8 +108,9 @@ class CollationTests(unittest.TestCase):
             ) order by x collate mycoll
             """
         result = con.execute(sql).fetchall()
-        self.assertEqual(result, [('c',), ('b',), ('a',)],
-                         msg="the expected order was not returned")
+        self.assertEqual(
+            result, [("c",), ("b",), ("a",)], msg="the expected order was not returned"
+        )
 
     def CheckCollationRegisterTwice(self):
         """
@@ -117,8 +123,8 @@ class CollationTests(unittest.TestCase):
         result = con.execute("""
             select x from (select 'a' as x union select 'b' as x) order by x collate mycoll
             """).fetchall()
-        self.assertEqual(result[0][0], 'b')
-        self.assertEqual(result[1][0], 'a')
+        self.assertEqual(result[0][0], "b")
+        self.assertEqual(result[1][0], "a")
 
     def CheckDeregisterCollation(self):
         """
@@ -129,8 +135,11 @@ class CollationTests(unittest.TestCase):
         con.create_collation("mycoll", lambda x, y: (x > y) - (x < y))
         con.create_collation("mycoll", None)
         with self.assertRaises(sqlite.OperationalError) as cm:
-            con.execute("select 'a' as x union select 'b' as x order by x collate mycoll")
-        self.assertEqual(str(cm.exception), 'no such collation sequence: mycoll')
+            con.execute(
+                "select 'a' as x union select 'b' as x order by x collate mycoll"
+            )
+        self.assertEqual(str(cm.exception), "no such collation sequence: mycoll")
+
 
 class ProgressTests(unittest.TestCase):
     def CheckProgressHandlerUsed(self):
@@ -139,15 +148,16 @@ class ProgressTests(unittest.TestCase):
         """
         con = sqlite.connect(":memory:")
         progress_calls = []
+
         def progress():
             progress_calls.append(None)
             return 0
+
         con.set_progress_handler(progress, 1)
         con.execute("""
             create table foo(a, b)
             """)
         self.assertTrue(progress_calls)
-
 
     def CheckOpcodeCount(self):
         """
@@ -155,9 +165,11 @@ class ProgressTests(unittest.TestCase):
         """
         con = sqlite.connect(":memory:")
         progress_calls = []
+
         def progress():
             progress_calls.append(None)
             return 0
+
         con.set_progress_handler(progress, 1)
         curs = con.cursor()
         curs.execute("""
@@ -177,14 +189,15 @@ class ProgressTests(unittest.TestCase):
         Test that returning a non-zero value stops the operation in progress.
         """
         con = sqlite.connect(":memory:")
+
         def progress():
             return 1
+
         con.set_progress_handler(progress, 1)
         curs = con.cursor()
         self.assertRaises(
-            sqlite.OperationalError,
-            curs.execute,
-            "create table bar (a, b)")
+            sqlite.OperationalError, curs.execute, "create table bar (a, b)"
+        )
 
     def CheckClearHandler(self):
         """
@@ -192,14 +205,17 @@ class ProgressTests(unittest.TestCase):
         """
         con = sqlite.connect(":memory:")
         action = 0
+
         def progress():
             nonlocal action
             action = 1
             return 0
+
         con.set_progress_handler(progress, 1)
         con.set_progress_handler(None, 1)
         con.execute("select 1 union select 2 union select 3").fetchall()
         self.assertEqual(action, 0, "progress handler was not cleared")
+
 
 class TraceCallbackTests(unittest.TestCase):
     def CheckTraceCallbackUsed(self):
@@ -208,8 +224,10 @@ class TraceCallbackTests(unittest.TestCase):
         """
         con = sqlite.connect(":memory:")
         traced_statements = []
+
         def trace(statement):
             traced_statements.append(statement)
+
         con.set_trace_callback(trace)
         con.execute("create table foo(a, b)")
         self.assertTrue(traced_statements)
@@ -221,8 +239,10 @@ class TraceCallbackTests(unittest.TestCase):
         """
         con = sqlite.connect(":memory:")
         traced_statements = []
+
         def trace(statement):
             traced_statements.append(statement)
+
         con.set_trace_callback(trace)
         con.set_trace_callback(None)
         con.execute("create table foo(a, b)")
@@ -232,11 +252,13 @@ class TraceCallbackTests(unittest.TestCase):
         """
         Test that the statement can contain unicode literals.
         """
-        unicode_value = '\xf6\xe4\xfc\xd6\xc4\xdc\xdf\u20ac'
+        unicode_value = "\xf6\xe4\xfc\xd6\xc4\xdc\xdf\u20ac"
         con = sqlite.connect(":memory:")
         traced_statements = []
+
         def trace(statement):
             traced_statements.append(statement)
+
         con.set_trace_callback(trace)
         con.execute("create table foo(x)")
         # Can't execute bound parameters as their values don't appear
@@ -244,19 +266,23 @@ class TraceCallbackTests(unittest.TestCase):
         # (cf. http://www.sqlite.org/draft/releaselog/3_6_21.html)
         con.execute("insert into foo(x) values ('%s')" % unicode_value)
         con.commit()
-        self.assertTrue(any(unicode_value in stmt for stmt in traced_statements),
-                        "Unicode data %s garbled in trace callback: %s"
-                        % (ascii(unicode_value), ', '.join(map(ascii, traced_statements))))
+        self.assertTrue(
+            any(unicode_value in stmt for stmt in traced_statements),
+            "Unicode data %s garbled in trace callback: %s"
+            % (ascii(unicode_value), ", ".join(map(ascii, traced_statements))),
+        )
 
-    @unittest.skipIf(sqlite.sqlite_version_info < (3, 3, 9), "sqlite3_prepare_v2 is not available")
+    @unittest.skipIf(
+        sqlite.sqlite_version_info < (3, 3, 9), "sqlite3_prepare_v2 is not available"
+    )
     def CheckTraceCallbackContent(self):
         # set_trace_callback() shouldn't produce duplicate content (bpo-26187)
         traced_statements = []
+
         def trace(statement):
             traced_statements.append(statement)
 
-        queries = ["create table foo(x)",
-                   "insert into foo(x) values(1)"]
+        queries = ["create table foo(x)", "insert into foo(x) values(1)"]
         self.addCleanup(unlink, TESTFN)
         con1 = sqlite.connect(TESTFN, isolation_level=None)
         con2 = sqlite.connect(TESTFN)
@@ -282,9 +308,11 @@ def suite():
     trace_suite = unittest.makeSuite(TraceCallbackTests, "Check")
     return unittest.TestSuite((collation_suite, progress_suite, trace_suite))
 
+
 def test():
     runner = unittest.TextTestRunner()
     runner.run(suite())
+
 
 if __name__ == "__main__":
     test()

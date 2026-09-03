@@ -3,6 +3,7 @@
 This has been broken out into its own test module because of its
 running time.
 """
+
 # Author: Collin Winter
 
 # Python imports
@@ -13,7 +14,7 @@ import test.support
 from . import support
 
 
-@test.support.requires_resource('cpu')
+@test.support.requires_resource("cpu")
 class Test_all(support.TestCase):
 
     def setUp(self):
@@ -23,5 +24,6 @@ class Test_all(support.TestCase):
         for filepath in support.all_project_files():
             self.refactor.refactor_file(filepath)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

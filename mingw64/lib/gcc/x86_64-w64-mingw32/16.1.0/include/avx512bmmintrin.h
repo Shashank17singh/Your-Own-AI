@@ -22,7 +22,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #if !defined _IMMINTRIN_H_INCLUDED
-# error "Never use <avx512bmmintrin.h> directly; include <immintrin.h> instead."
+#error "Never use <avx512bmmintrin.h> directly; include <immintrin.h> instead."
 #endif
 
 #ifndef _AVX512BMMINTRIN_H_INCLUDED
@@ -35,50 +35,38 @@
 #endif /* __AVX512BMM__ */
 
 extern __inline __m512i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_bmacor16x16x16 (__m512i __A, __m512i __B, __m512i __C)
-{
-  return (__m512i) __builtin_ia32_vbmacor16x16x16_v32hi ((__v32hi) __A,
-							 (__v32hi) __B,
-							 (__v32hi) __C);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_bmacor16x16x16(__m512i __A, __m512i __B, __m512i __C) {
+  return (__m512i)__builtin_ia32_vbmacor16x16x16_v32hi(
+      (__v32hi)__A, (__v32hi)__B, (__v32hi)__C);
 }
 
 extern __inline __m512i
-__attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_bmacxor16x16x16 (__m512i __A, __m512i __B, __m512i __C)
-{
-  return (__m512i) __builtin_ia32_vbmacxor16x16x16_v32hi ((__v32hi) __A,
-							  (__v32hi) __B,
-							  (__v32hi) __C);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_bmacxor16x16x16(__m512i __A, __m512i __B, __m512i __C) {
+  return (__m512i)__builtin_ia32_vbmacxor16x16x16_v32hi(
+      (__v32hi)__A, (__v32hi)__B, (__v32hi)__C);
 }
 
 extern __inline __m512i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_mask_bitrev_epi8 (__mmask64 __U, __m512i __A, __m512i __B)
-{
-  return (__m512i) __builtin_ia32_vbitrevb512_mask ((__v64qi) __A,
-						    (__v64qi) __B,
-						    (__mmask64) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_mask_bitrev_epi8(__mmask64 __U, __m512i __A, __m512i __B) {
+  return (__m512i)__builtin_ia32_vbitrevb512_mask((__v64qi)__A, (__v64qi)__B,
+                                                  (__mmask64)__U);
 }
 
 extern __inline __m512i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_maskz_bitrev_epi8 (__mmask64 __U, __m512i __A)
-{
-  return (__m512i) __builtin_ia32_vbitrevb512_mask ((__v64qi) __A,
-						    (__v64qi)(__m512i)
-						    _mm512_setzero_epi32 (),
-						    (__mmask64) __U);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_maskz_bitrev_epi8(__mmask64 __U, __m512i __A) {
+  return (__m512i)__builtin_ia32_vbitrevb512_mask(
+      (__v64qi)__A, (__v64qi)(__m512i)_mm512_setzero_epi32(), (__mmask64)__U);
 }
 
 extern __inline __m512i
-__attribute__ ((__gnu_inline__, __always_inline__, __artificial__))
-_mm512_bitrev_epi8 (__m512i __A)
-{
-  return (__m512i) __builtin_ia32_vbitrevb512_mask ((__v64qi) __A,
-						    (__v64qi)(__m512i)
-						    _mm512_undefined_epi32 (),
-						    (__mmask64) -1);
+    __attribute__((__gnu_inline__, __always_inline__, __artificial__))
+    _mm512_bitrev_epi8(__m512i __A) {
+  return (__m512i)__builtin_ia32_vbitrevb512_mask(
+      (__v64qi)__A, (__v64qi)(__m512i)_mm512_undefined_epi32(), (__mmask64)-1);
 }
 
 #ifdef __DISABLE_AVX512BMM__

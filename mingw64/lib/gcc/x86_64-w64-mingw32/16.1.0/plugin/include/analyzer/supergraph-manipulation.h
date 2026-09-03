@@ -26,32 +26,25 @@ along with GCC; see the file COPYING3.  If not see
 namespace ana {
 namespace supergraph_manipulation {
 
-class worklist
-{
+class worklist {
 public:
-  worklist ()
-  : m_indices ()
-  {
-    bitmap_clear (m_indices);
-  }
+  worklist() : m_indices() { bitmap_clear(m_indices); }
 
-  void ensure_node_queued (supernode *node, ana::logger *logger)
-  {
-    if (bitmap_bit_p (m_indices, node->m_id))
+  void ensure_node_queued(supernode *node, ana::logger *logger) {
+    if (bitmap_bit_p(m_indices, node->m_id))
       return; // already in queue
     if (logger)
-      logger->log ("queued SN: %i", node->m_id);
-    m_queue.push_back (node);
-    bitmap_set_bit (m_indices, node->m_id);
+      logger->log("queued SN: %i", node->m_id);
+    m_queue.push_back(node);
+    bitmap_set_bit(m_indices, node->m_id);
   }
 
-  supernode *pop ()
-  {
-    if (m_queue.empty ())
+  supernode *pop() {
+    if (m_queue.empty())
       return nullptr;
-    supernode *node = m_queue.front ();
-    m_queue.pop_front ();
-    bitmap_clear_bit (m_indices, node->m_id);
+    supernode *node = m_queue.front();
+    m_queue.pop_front();
+    bitmap_clear_bit(m_indices, node->m_id);
     return node;
   }
 
@@ -64,8 +57,7 @@ private:
   auto_bitmap m_indices;
 };
 
-
-} // namespace ana::supergraph_manipulation
+} // namespace supergraph_manipulation
 } // namespace ana
 
 #endif /* #if ENABLE_ANALYZER */

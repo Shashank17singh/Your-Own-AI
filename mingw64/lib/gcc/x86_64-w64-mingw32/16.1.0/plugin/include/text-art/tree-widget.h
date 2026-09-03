@@ -28,48 +28,37 @@ namespace text_art {
 
 class dump_widget_info;
 
-class tree_widget : public widget
-{
+class tree_widget : public widget {
 public:
-  tree_widget (std::unique_ptr<widget> node,
-	       const theme &theme,
-	       style::id_t style_id)
-  : m_node (std::move (node)),
-    m_theme (theme),
-    m_style_id (style_id)
-  {
-  }
+  tree_widget(std::unique_ptr<widget> node, const theme &theme,
+              style::id_t style_id)
+      : m_node(std::move(node)), m_theme(theme), m_style_id(style_id) {}
 
   static std::unique_ptr<tree_widget>
-  make (styled_string str, const theme &theme, style::id_t style_id);
+  make(styled_string str, const theme &theme, style::id_t style_id);
 
-  static std::unique_ptr<tree_widget>
-  make (const dump_widget_info &dwi, pretty_printer *pp);
+  static std::unique_ptr<tree_widget> make(const dump_widget_info &dwi,
+                                           pretty_printer *pp);
 
-  static std::unique_ptr<tree_widget>
-  make (const dump_widget_info &dwi, const char *str);
+  static std::unique_ptr<tree_widget> make(const dump_widget_info &dwi,
+                                           const char *str);
 
-  static std::unique_ptr<tree_widget>
-  from_fmt (const dump_widget_info &dwi,
-	    printer_fn format_decoder,
-	    const char *fmt, ...)
-    ATTRIBUTE_GCC_PPDIAG(3, 4);
+  static std::unique_ptr<tree_widget> from_fmt(const dump_widget_info &dwi,
+                                               printer_fn format_decoder,
+                                               const char *fmt, ...)
+      ATTRIBUTE_GCC_PPDIAG(3, 4);
 
-  const char *get_desc () const override;
-  canvas::size_t calc_req_size () final override;
-  void update_child_alloc_rects () final override;
-  void paint_to_canvas (canvas &canvas) final override;
+  const char *get_desc() const override;
+  canvas::size_t calc_req_size() final override;
+  void update_child_alloc_rects() final override;
+  void paint_to_canvas(canvas &canvas) final override;
 
-  void add_child (std::unique_ptr<widget> child)
-  {
+  void add_child(std::unique_ptr<widget> child) {
     if (child)
-      m_children.push_back (std::move (child));
+      m_children.push_back(std::move(child));
   }
 
-  size_t get_num_children () const
-  {
-    return m_children.size ();
-  }
+  size_t get_num_children() const { return m_children.size(); }
 
 private:
   std::unique_ptr<widget> m_node;

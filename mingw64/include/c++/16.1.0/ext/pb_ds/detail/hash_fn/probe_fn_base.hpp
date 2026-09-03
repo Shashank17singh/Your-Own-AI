@@ -43,18 +43,14 @@
 
 #include <functional>
 
-namespace __gnu_pbds
-{
-  namespace detail
-  {
-    /// Probe functor base.
-    template<typename _Alloc>
-    class probe_fn_base
-    {
-    protected:
-      ~probe_fn_base() { }
-    };
+namespace __gnu_pbds {
+namespace detail {
+/// Probe functor base.
+template <typename _Alloc> class probe_fn_base {
+protected:
+  ~probe_fn_base() {}
+};
 } // namespace detail
 } // namespace __gnu_pbds
 
-#endif 
+#endif

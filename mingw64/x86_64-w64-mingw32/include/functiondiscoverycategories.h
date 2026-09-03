@@ -5,12 +5,10 @@
  */
 #ifndef _INC_FUNCTIONDISCOVERYCATEGORIES
 #define _INC_FUNCTIONDISCOVERYCATEGORIES
-
 #if (_WIN32_WINNT >= 0x0600)
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #define FCTN_CATEGORY_DEVICES /*Not used??*/
 #define FCTN_CATEGORY_NETBIOS L"Provider\\Microsoft.Networking.Netbios"
 #define FCTN_CATEGORY_NETWORKDEVICES L"Layered\\Microsoft.Networking.Devices"
@@ -21,8 +19,8 @@ extern "C" {
 #define FCTN_CATEGORY_SSDP L"Provider\\Microsoft.Networking.SSDP"
 #define FCTN_CATEGORY_WCN L"Provider\\Microsoft.Networking.WCN"
 #define FCTN_CATEGORY_WSDISCOVERY L"Provider\\Microsoft.Networking.WSD"
-
-/* Magic Subcatagory defintions - http://msdn.microsoft.com/en-us/library/aa364815%28v=VS.85%29.aspx */
+/* Magic Subcatagory defintions -
+ * http://msdn.microsoft.com/en-us/library/aa364815%28v=VS.85%29.aspx */
 #ifdef __cplusplus
 }
 #endif

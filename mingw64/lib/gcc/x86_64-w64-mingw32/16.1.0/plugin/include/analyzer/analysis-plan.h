@@ -31,18 +31,17 @@ namespace ana {
    - which callgraph edges should use call summaries
    TODO: the above is a work-in-progress.  */
 
-class analysis_plan : public log_user
-{
+class analysis_plan : public log_user {
 public:
-  analysis_plan (const supergraph &sg, logger *logger);
-  ~analysis_plan ();
+  analysis_plan(const supergraph &sg, logger *logger);
+  ~analysis_plan();
 
-  int cmp_function (function *fun_a, function *fun_b) const;
+  int cmp_function(function *fun_a, function *fun_b) const;
 
-  bool use_summary_p (const cgraph_edge *edge) const;
+  bool use_summary_p(const cgraph_edge *edge) const;
 
 private:
-  DISABLE_COPY_AND_ASSIGN (analysis_plan);
+  DISABLE_COPY_AND_ASSIGN(analysis_plan);
 
   const supergraph &m_sg;
 

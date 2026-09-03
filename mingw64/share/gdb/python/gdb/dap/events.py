@@ -1,29 +1,9 @@
-# Copyright 2022-2025 Free Software Foundation, Inc.
-
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import gdb
-
 from .modules import is_module, make_module
 from .scopes import set_finish_value
 from .server import send_event
 from .startup import exec_and_log, in_gdb_thread, log
 
-# True when the inferior is thought to be running, False otherwise.
-# This may be accessed from any thread, which can be racy.  However,
-# this is unimportant because this global is only used for the
-# 'notStopped' response, which itself is inherently racy.
 inferior_running = False
 
 
@@ -43,8 +23,6 @@ def _on_exit(event):
     send_event("terminated")
 
 
-# When None, a "process" event has already been sent.  When a string,
-# it is the "startMethod" for that event.
 _process_event_kind = None
 
 
@@ -57,7 +35,6 @@ def send_process_event_once():
         data = {
             "isLocalProcess": is_local,
             "startMethod": _process_event_kind,
-            # Could emit 'pointerSize' here too if we cared to.
         }
         if inf.progspace.filename:
             data["name"] = inf.progspace.filename
@@ -70,7 +47,6 @@ def send_process_event_once():
 @in_gdb_thread
 def expect_process(reason):
     """Indicate that DAP is starting or attaching to a process.
-
     REASON is the "startMethod" to include in the "process" event.
     """
     global _process_event_kind
@@ -163,24 +139,16 @@ _expected_pause = False
 @in_gdb_thread
 def exec_and_expect_stop(cmd, expected_pause=False, propagate_exception=False):
     """A wrapper for exec_and_log that sets the continue-suppression flag.
-
     When EXPECTED_PAUSE is True, a stop that looks like a pause (e.g.,
     a SIGINT) will be reported as "pause" instead.
     """
     global _expected_pause
     _expected_pause = expected_pause
     global _suppress_cont
-    # If we're expecting a pause, then we're definitely not
-    # continuing.
     _suppress_cont = not expected_pause
-    # FIXME if the call fails should we clear _suppress_cont?
     exec_and_log(cmd, propagate_exception)
 
 
-# Map from gdb stop reasons to DAP stop reasons.  Some of these can't
-# be seen ordinarily in DAP -- only if the client lets the user toggle
-# some settings (e.g. stop-on-solib-events) or enter commands (e.g.,
-# 'until').
 stop_reason_map = {
     "breakpoint-hit": "breakpoint",
     "watchpoint-trigger": "data breakpoint",
@@ -208,7 +176,6 @@ stop_reason_map = {
 def _on_stop(event):
     global inferior_running
     inferior_running = False
-
     log("entering _on_stop: " + repr(event))
     if hasattr(event, "details"):
         log("   details: " + repr(event.details))
@@ -220,16 +187,12 @@ def _on_stop(event):
         obj["hitBreakpointIds"] = [x.number for x in event.breakpoints]
     if hasattr(event, "details") and "finish-value" in event.details:
         set_finish_value(event.details["finish-value"])
-
     global _expected_pause
     global _expected_stop_reason
     if _expected_stop_reason is not None:
         obj["reason"] = _expected_stop_reason
         _expected_stop_reason = None
     elif "reason" not in event.details:
-        # This can only really happen via a "repl" evaluation of
-        # something like "attach".  In this case just emit a generic
-        # stop.
         obj["reason"] = "stopped"
     elif (
         _expected_pause
@@ -243,11 +206,6 @@ def _on_stop(event):
     send_event("stopped", obj)
 
 
-# This keeps a bit of state between the start of an inferior call and
-# the end.  If the inferior was already running when the call started
-# (as can happen if a breakpoint condition calls a function), then we
-# do not want to emit 'continued' or 'stop' events for the call.  Note
-# that, for some reason, gdb.events.cont does not fire for an infcall.
 _infcall_was_running = False
 
 
@@ -260,15 +218,11 @@ def _on_inferior_call(event):
         if not _infcall_was_running:
             _cont(None)
     else:
-        # If the inferior is already marked as stopped here, then that
-        # means that the call caused some other stop, and we don't
-        # want to double-report it.
         if not _infcall_was_running and inferior_running:
             inferior_running = False
             obj = {
                 "threadId": gdb.selected_thread().global_num,
                 "allThreadsStopped": True,
-                # DAP says any string is ok.
                 "reason": "function call",
             }
             global _expected_pause

@@ -3,11 +3,11 @@
  * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-#include <wabdefs.h>
-#include <wabcode.h>
-#include <wabtags.h>
-#include <wabutil.h>
-#include <wabiab.h>
 #include <wabapi.h>
+#include <wabcode.h>
+#include <wabdefs.h>
+#include <wabiab.h>
 #include <wabmem.h>
 #include <wabnot.h>
+#include <wabtags.h>
+#include <wabutil.h>

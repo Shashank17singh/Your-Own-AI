@@ -5,9 +5,7 @@
  */
 #ifndef _INC_PBT
 #define _INC_PBT
-
 #define WM_POWERBROADCAST 0x0218
-
 #ifndef _WIN32_WCE
 #define PBT_APMQUERYSUSPEND 0x0000
 #define PBT_APMQUERYSTANDBY 0x0001
@@ -24,5 +22,4 @@
 #define PBT_APMOEMEVENT 0x000B
 #define PBT_APMRESUMEAUTOMATIC 0x0012
 #endif
-
 #endif

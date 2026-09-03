@@ -47,9 +47,9 @@ YASM_LIB_DECL
  * \return Associated data (NULL if none).
  */
 YASM_LIB_DECL
-/*@dependent@*/ /*@null@*/ void *yasm__assoc_data_get
-    (/*@null@*/ yasm__assoc_data *assoc_data,
-     const yasm_assoc_data_callback *callback);
+/*@dependent@*/ /*@null@*/ void *
+yasm__assoc_data_get(/*@null@*/ yasm__assoc_data *assoc_data,
+                     const yasm_assoc_data_callback *callback);
 
 /** Add associated data to a associated data container.
  * \attention Deletes any existing associated data for that data callback.
@@ -58,15 +58,15 @@ YASM_LIB_DECL
  * \param data          data to associate
  */
 YASM_LIB_DECL
-/*@only@*/ yasm__assoc_data *yasm__assoc_data_add
-    (/*@null@*/ /*@only@*/ yasm__assoc_data *assoc_data,
-     const yasm_assoc_data_callback *callback,
-     /*@only@*/ /*@null@*/ void *data);
+/*@only@*/ yasm__assoc_data *
+yasm__assoc_data_add(/*@null@*/ /*@only@*/ yasm__assoc_data *assoc_data,
+                     const yasm_assoc_data_callback *callback,
+                     /*@only@*/ /*@null@*/ void *data);
 
 /** Destroy all associated data in a container. */
 YASM_LIB_DECL
-void yasm__assoc_data_destroy
-    (/*@null@*/ /*@only@*/ yasm__assoc_data *assoc_data);
+void yasm__assoc_data_destroy(
+    /*@null@*/ /*@only@*/ yasm__assoc_data *assoc_data);
 
 /** Print all associated data in a container. */
 YASM_LIB_DECL

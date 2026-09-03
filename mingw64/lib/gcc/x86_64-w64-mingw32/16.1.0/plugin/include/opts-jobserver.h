@@ -24,22 +24,21 @@ See dbgcnt.def for usage information.  */
 
 using namespace std;
 
-struct jobserver_info
-{
+struct jobserver_info {
   /* Default constructor.  */
-  jobserver_info ();
+  jobserver_info();
 
   /* Connect to the server.  */
-  void connect ();
+  void connect();
 
   /* Disconnect from the server.  */
-  void disconnect ();
+  void disconnect();
 
   /* Get token from the server.  */
-  bool get_token ();
+  bool get_token();
 
   /* Return token to the server.  */
-  void return_token ();
+  void return_token();
 
   /* Error message if there is a problem.  */
   string error_msg = "";

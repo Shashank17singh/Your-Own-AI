@@ -22,20 +22,19 @@ along with GCC; see the file COPYING3.  If not see
 
 #include "pointer-query.h"
 
-class array_bounds_checker
-{
+class array_bounds_checker {
   friend class check_array_bounds_dom_walker;
 
 public:
-  array_bounds_checker (struct function *);
-  void check ();
+  array_bounds_checker(struct function *);
+  void check();
 
 private:
-  static tree check_array_bounds (tree *tp, int *walk_subtree, void *data);
-  bool check_array_ref (location_t, tree, gimple *, bool ignore_off_by_one);
-  bool check_mem_ref (location_t, tree, gimple *, bool ignore_off_by_one);
-  void check_addr_expr (location_t, tree, gimple *);
-  void get_value_range (irange &r, const_tree op, gimple *);
+  static tree check_array_bounds(tree *tp, int *walk_subtree, void *data);
+  bool check_array_ref(location_t, tree, gimple *, bool ignore_off_by_one);
+  bool check_mem_ref(location_t, tree, gimple *, bool ignore_off_by_one);
+  void check_addr_expr(location_t, tree, gimple *);
+  void get_value_range(irange &r, const_tree op, gimple *);
 
   /* Current function.  */
   struct function *fun;

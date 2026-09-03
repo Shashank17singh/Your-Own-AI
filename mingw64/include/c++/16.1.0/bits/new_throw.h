@@ -36,41 +36,36 @@
 
 #include <bits/c++config.h>
 #include <bits/exception_defines.h>
-#if (_GLIBCXX_HOSTED && __cpp_exceptions && __cplusplus > 202302L \
-     && __cpp_constexpr_exceptions >= 202411L)
+#if (_GLIBCXX_HOSTED && __cpp_exceptions && __cplusplus > 202302L &&           \
+     __cpp_constexpr_exceptions >= 202411L)
 #include <bits/new_except.h>
 #endif
 
-namespace std _GLIBCXX_VISIBILITY(default)
-{
+namespace std _GLIBCXX_VISIBILITY(default) {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 
 #if _GLIBCXX_HOSTED
-#if (__cpp_exceptions && __cplusplus > 202302L \
-     && __cpp_constexpr_exceptions >= 202411L)
-  // Helper for exception objects in <new>
-  [[noreturn, __gnu__::__always_inline__]] constexpr void
-  __throw_bad_alloc(void)
-  {
-    throw bad_alloc();
-  }
+#if (__cpp_exceptions && __cplusplus > 202302L &&                              \
+     __cpp_constexpr_exceptions >= 202411L)
+// Helper for exception objects in <new>
+[[noreturn, __gnu__::__always_inline__]] constexpr void
+__throw_bad_alloc(void) {
+  throw bad_alloc();
+}
 
-  [[noreturn, __gnu__::__always_inline__]] constexpr void
-  __throw_bad_array_new_length(void)
-  {
-    throw bad_array_new_length();
-  }
+[[noreturn, __gnu__::__always_inline__]] constexpr void
+__throw_bad_array_new_length(void) {
+  throw bad_array_new_length();
+}
 #else
-  // Helper for exception objects in <new>
-  void
-  __throw_bad_alloc(void) __attribute__((__noreturn__));
+// Helper for exception objects in <new>
+void __throw_bad_alloc(void) __attribute__((__noreturn__));
 
-  void
-  __throw_bad_array_new_length(void) __attribute__((__noreturn__));
+void __throw_bad_array_new_length(void) __attribute__((__noreturn__));
 #endif
 #endif // HOSTED
 
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace
+} // namespace std _GLIBCXX_VISIBILITY(default)
 
 #endif

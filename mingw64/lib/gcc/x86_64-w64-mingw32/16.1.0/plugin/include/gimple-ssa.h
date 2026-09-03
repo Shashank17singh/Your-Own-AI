@@ -33,37 +33,28 @@ struct GTY((for_user)) tm_restart_node {
 
 /* Hasher for tm_restart_node.  */
 
-struct tm_restart_hasher : ggc_ptr_hash<tm_restart_node>
-{
-  static hashval_t hash (tm_restart_node *n) { return htab_hash_pointer (n); }
+struct tm_restart_hasher : ggc_ptr_hash<tm_restart_node> {
+  static hashval_t hash(tm_restart_node *n) { return htab_hash_pointer(n); }
 
-  static bool
-  equal (tm_restart_node *a, tm_restart_node *b)
-  {
-    return a == b;
-  }
+  static bool equal(tm_restart_node *a, tm_restart_node *b) { return a == b; }
 };
 
-extern void gt_ggc_mx (gimple *&);
-extern void gt_pch_nx (gimple *&);
+extern void gt_ggc_mx(gimple *&);
+extern void gt_pch_nx(gimple *&);
 
-struct ssa_name_hasher : ggc_ptr_hash<tree_node>
-{
+struct ssa_name_hasher : ggc_ptr_hash<tree_node> {
   /* Hash a tree in a uid_decl_map.  */
 
-  static hashval_t
-  hash (tree item)
-  {
+  static hashval_t hash(tree item) {
     return item->ssa_name.var->decl_minimal.uid;
   }
 
   /* Return true if the DECL_UID in both trees are equal.  */
 
-  static bool
-  equal (tree a, tree b)
-{
-  return (a->ssa_name.var->decl_minimal.uid == b->ssa_name.var->decl_minimal.uid);
-}
+  static bool equal(tree a, tree b) {
+    return (a->ssa_name.var->decl_minimal.uid ==
+            b->ssa_name.var->decl_minimal.uid);
+  }
 };
 
 /* Gimple dataflow datastructure. All publicly available fields shall have
@@ -83,7 +74,7 @@ struct GTY(()) gimple_df {
 
   /* A map of decls to artificial ssa-names that point to the partition
      of the decl.  */
-  hash_map<tree, tree> * GTY((skip(""))) decls_to_pointers;
+  hash_map<tree, tree> *GTY((skip(""))) decls_to_pointers;
 
   /* Free list of SSA_NAMEs.  */
   vec<tree, va_gc> *free_ssanames;
@@ -116,49 +107,39 @@ struct GTY(()) gimple_df {
   hash_table<tm_restart_hasher> *tm_restart;
 };
 
-
 /* Return true when gimple SSA form was built.
    gimple_in_ssa_p is queried by gimplifier in various early stages before SSA
    infrastructure is initialized.  Check for presence of the datastructures
    at first place.  */
-inline bool
-gimple_in_ssa_p (const struct function *fun)
-{
+inline bool gimple_in_ssa_p(const struct function *fun) {
   return fun && fun->gimple_df && fun->gimple_df->in_ssa_p;
 }
 
 /* Artificial variable used for the virtual operand FUD chain.  */
-inline tree
-gimple_vop (const struct function *fun)
-{
-  gcc_checking_assert (fun && fun->gimple_df);
+inline tree gimple_vop(const struct function *fun) {
+  gcc_checking_assert(fun && fun->gimple_df);
   return fun->gimple_df->vop;
 }
 
 /* Return the set of VUSE operand for statement G.  */
 
-inline use_operand_p
-gimple_vuse_op (const gimple *g)
-{
+inline use_operand_p gimple_vuse_op(const gimple *g) {
   struct use_optype_d *ops;
   const gimple_statement_with_memory_ops *mem_ops_stmt =
-     dyn_cast <const gimple_statement_with_memory_ops *> (g);
+      dyn_cast<const gimple_statement_with_memory_ops *>(g);
   if (!mem_ops_stmt)
     return NULL_USE_OPERAND_P;
   ops = mem_ops_stmt->use_ops;
-  if (ops
-      && USE_OP_PTR (ops)->use == &mem_ops_stmt->vuse)
-    return USE_OP_PTR (ops);
+  if (ops && USE_OP_PTR(ops)->use == &mem_ops_stmt->vuse)
+    return USE_OP_PTR(ops);
   return NULL_USE_OPERAND_P;
 }
 
 /* Return the set of VDEF operand for statement G.  */
 
-inline def_operand_p
-gimple_vdef_op (gimple *g)
-{
+inline def_operand_p gimple_vdef_op(gimple *g) {
   gimple_statement_with_memory_ops *mem_ops_stmt =
-     dyn_cast <gimple_statement_with_memory_ops *> (g);
+      dyn_cast<gimple_statement_with_memory_ops *>(g);
   if (!mem_ops_stmt)
     return NULL_DEF_OPERAND_P;
   if (mem_ops_stmt->vdef)
@@ -168,36 +149,27 @@ gimple_vdef_op (gimple *g)
 
 /* Mark statement S as modified, and update it.  */
 
-inline void
-update_stmt (gimple *s)
-{
-  if (gimple_has_ops (s))
-    {
-      gimple_set_modified (s, true);
-      update_stmt_operands (cfun, s);
-    }
+inline void update_stmt(gimple *s) {
+  if (gimple_has_ops(s)) {
+    gimple_set_modified(s, true);
+    update_stmt_operands(cfun, s);
+  }
 }
 
 /* Update statement S if it has been optimized.  */
 
-inline void
-update_stmt_if_modified (gimple *s)
-{
-  if (gimple_modified_p (s))
-    update_stmt_operands (cfun, s);
+inline void update_stmt_if_modified(gimple *s) {
+  if (gimple_modified_p(s))
+    update_stmt_operands(cfun, s);
 }
 
 /* Mark statement S as modified, and update it.  */
 
-inline void
-update_stmt_fn (struct function *fn, gimple *s)
-{
-  if (gimple_has_ops (s))
-    {
-      gimple_set_modified (s, true);
-      update_stmt_operands (fn, s);
-    }
+inline void update_stmt_fn(struct function *fn, gimple *s) {
+  if (gimple_has_ops(s)) {
+    gimple_set_modified(s, true);
+    update_stmt_operands(fn, s);
+  }
 }
-
 
 #endif /* GCC_GIMPLE_SSA_H */
