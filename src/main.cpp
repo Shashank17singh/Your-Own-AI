@@ -1,3 +1,9 @@
+#ifdef _WIN32
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0A00
+#endif
+#include <windows.h>
+#endif
 #include "httplib.h"
 #include <algorithm>
 #include <chrono>
@@ -1170,3 +1176,4 @@ int main() {
   svr.listen("0.0.0.0", 8080);
   return 0;
 }
+
