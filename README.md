@@ -144,11 +144,21 @@ cd Your-Own-AI
 
 ### Step 5 - Compile the C++ Server
 
+Using CMake is recommended:
+
 ```bash
-g++ -std=c++17 -O2 main.cpp -o db -lws2_32
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release
 ```
 
-This produces `db.exe` in about 10–20 seconds.
+This produces `vectordb.exe` in the `build/` (or `build/Release/`) folder.
+
+Alternatively, you can compile directly with g++:
+```bash
+g++ -std=c++17 -O2 -Iinclude src/main.cpp -o db -lws2_32
+```
+This produces `db.exe`.
 
 > **Troubleshooting:**
 > - `g++: command not found` → MSYS2 not in PATH, redo Step 1 point 5
@@ -168,7 +178,9 @@ ollama serve
 **Terminal 2** - Start the VectorDB server:
 
 ```bash
-./db
+./build/vectordb.exe    # If you used CMake
+# OR
+./db.exe                # If you compiled directly
 ```
 
 You should see:
@@ -271,11 +283,14 @@ curl -X POST http://localhost:8080/doc/ask `
 ##  Project Structure
 
 ```
-VectorDB/
-├── main.cpp        ← C++ backend (HNSW, KD-Tree, BruteForce, REST API, RAG)
-├── httplib.h       ← Single-header HTTP server library (cpp-httplib)
-├── index.html      ← Frontend (PCA scatter plot, chat UI, benchmark)
-└── README.md       ← This file
+Your-Own-AI/
+├── src/
+│   └── main.cpp        ← C++ backend (HNSW, KD-Tree, BruteForce, REST API, RAG)
+├── include/
+│   └── httplib.h       ← Single-header HTTP server library (cpp-httplib)
+├── CMakeLists.txt      ← Build configuration
+├── index.html          ← Frontend (PCA scatter plot, chat UI, benchmark)
+└── README.md           ← This file
 ```
 
 ### Architecture (main.cpp)
