@@ -15,7 +15,7 @@
 
 ##  Overview
 
-Built a vector database in C++, following a project-based systems curriculum, implementing **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
+A high-performance vector database written in modern C++, developed as part of a project-based systems programming curriculum. It implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
 
 ---
 
