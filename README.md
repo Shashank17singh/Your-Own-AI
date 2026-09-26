@@ -15,7 +15,7 @@
 
 ##  Overview
 
-A high-performance vector database written in modern C++, independently architected. It implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
+A high-performance vector database written in modern C++, architected and developed end-to-end. It implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
 
 ---
 
