@@ -1,32 +1,32 @@
-import unittest
-import unittest.mock
-from test.support import (
-    verbose,
-    refcount_test,
-    run_unittest,
-    cpython_only,
-    start_threads,
-    temp_dir,
-    TESTFN,
-    unlink,
-    import_module,
-)
-from test.support.script_helper import assert_python_ok, make_script
-
 import gc
 import sys
 import sysconfig
 import textwrap
 import threading
 import time
+import unittest
+import unittest.mock
 import weakref
+
+from test.support import (
+    TESTFN,
+    cpython_only,
+    import_module,
+    refcount_test,
+    run_unittest,
+    start_threads,
+    temp_dir,
+    unlink,
+    verbose,
+)
+from test.support.script_helper import assert_python_ok, make_script
 
 try:
     from _testcapi import with_tp_del
 except ImportError:
 
     def with_tp_del(cls):
-        class C(object):
+        class C:
             def __new__(cls, *args, **kwargs):
                 raise TypeError("requires _testcapi.with_tp_del")
 
@@ -47,13 +47,13 @@ except ImportError:
 
 # An instance of C1055820 has a self-loop, so becomes cyclic trash when
 # unreachable.
-class C1055820(object):
+class C1055820:
     def __init__(self, i):
         self.i = i
         self.loop = self
 
 
-class GC_Detector(object):
+class GC_Detector:
     # Create an instance I.  Then gc hasn't happened again so long as
     # I.gc_happened is false.
 
@@ -69,7 +69,7 @@ class GC_Detector(object):
 
 
 @with_tp_del
-class Uncollectable(object):
+class Uncollectable:
     """Create a reference cycle with multiple __del__ methods.
 
     An object in a reference cycle will never have zero references,
@@ -134,7 +134,7 @@ class GCTests(unittest.TestCase):
         self.assertNotEqual(gc.collect(), 0)
 
     def test_newstyleclass(self):
-        class A(object):
+        class A:
             pass
 
         gc.collect()
@@ -152,7 +152,7 @@ class GCTests(unittest.TestCase):
         self.assertNotEqual(gc.collect(), 0)
 
     def test_newinstance(self):
-        class A(object):
+        class A:
             pass
 
         a = A()
@@ -224,11 +224,11 @@ class GCTests(unittest.TestCase):
         # A() is uncollectable if it is part of a cycle, make sure it shows up
         # in gc.garbage.
         @with_tp_del
-        class A(object):
+        class A:
             def __tp_del__(self):
                 pass
 
-        class B(object):
+        class B:
             pass
 
         a = A()
@@ -312,7 +312,7 @@ class GCTests(unittest.TestCase):
         gc.enable()
         gc.set_threshold(1)
 
-        class A(object):
+        class A:
             def __del__(self):
                 dir(self)
 
@@ -514,7 +514,7 @@ class GCTests(unittest.TestCase):
         # boom__new and boom2_new are exactly like boom and boom2, except use
         # new-style classes.
 
-        class Boom_New(object):
+        class Boom_New:
             def __getattr__(self, someattribute):
                 del self.attr
                 raise AttributeError
@@ -531,7 +531,7 @@ class GCTests(unittest.TestCase):
         self.assertEqual(len(gc.garbage), garbagelen)
 
     def test_boom2_new(self):
-        class Boom2_New(object):
+        class Boom2_New:
             def __init__(self):
                 self.x = 0
 
@@ -736,13 +736,13 @@ class GCTests(unittest.TestCase):
 
         stderr = run_command(code % "0")
         self.assertIn(
-            b"ResourceWarning: gc: 2 uncollectable objects at " b"shutdown; use", stderr
+            b"ResourceWarning: gc: 2 uncollectable objects at shutdown; use", stderr
         )
         self.assertNotIn(b"<X 'first'>", stderr)
         # With DEBUG_UNCOLLECTABLE, the garbage list gets printed
         stderr = run_command(code % "gc.DEBUG_UNCOLLECTABLE")
         self.assertIn(
-            b"ResourceWarning: gc: 2 uncollectable objects at " b"shutdown", stderr
+            b"ResourceWarning: gc: 2 uncollectable objects at shutdown", stderr
         )
         self.assertTrue(
             (b"[<X 'first'>, <X 'second'>]" in stderr)
@@ -1034,7 +1034,7 @@ class GCTests(unittest.TestCase):
         callback = unittest.mock.Mock()
 
         class A:
-            __slots__ = ["a", "y", "wz"]
+            __slots__ = ["a", "wz", "y"]
 
         class Z:
             pass

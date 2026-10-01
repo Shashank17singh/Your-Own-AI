@@ -1,7 +1,8 @@
 # line 1
 "A module docstring."
 
-import sys, inspect
+import inspect
+import sys
 
 # line 5
 
@@ -54,7 +55,6 @@ class StupidGit:
     @property
     def contradiction(self):
         "The automatic gainsaying."
-        pass
 
 
 # line 53

@@ -1,35 +1,36 @@
 """Tests for distutils.util."""
 
+import _osx_support
 import os
 import sys
 import unittest
 from copy import copy
-from test.support import run_unittest
-from unittest import mock
-
-from distutils.errors import DistutilsPlatformError, DistutilsByteCompileError
+from distutils import (
+    sysconfig,
+    util,  # used to patch _environ_checked
+)
+from distutils.errors import DistutilsByteCompileError, DistutilsPlatformError
+from distutils.sysconfig import get_config_vars
+from distutils.tests import support
 from distutils.util import (
-    get_platform,
-    convert_path,
+    byte_compile,
     change_root,
     check_environ,
+    convert_path,
+    get_platform,
+    grok_environment_error,
+    rfc822_escape,
     split_quoted,
     strtobool,
-    rfc822_escape,
-    byte_compile,
-    grok_environment_error,
 )
-from distutils import util  # used to patch _environ_checked
-from distutils.sysconfig import get_config_vars
-from distutils import sysconfig
-from distutils.tests import support
-import _osx_support
+from unittest import mock
+
+from test.support import run_unittest
 
 
 class UtilTestCase(support.EnvironGuard, unittest.TestCase):
-
     def setUp(self):
-        super(UtilTestCase, self).setUp()
+        super().setUp()
         # saving the environment
         self.name = os.name
         self.platform = sys.platform
@@ -64,7 +65,7 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
         else:
             del os.uname
         sysconfig._config_vars = copy(self._config_vars)
-        super(UtilTestCase, self).tearDown()
+        super().tearDown()
 
     def _set_uname(self, uname):
         self._uname = uname
@@ -76,17 +77,13 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
 
         # windows XP, 32bits
         os.name = "nt"
-        sys.version = (
-            "2.4.4 (#71, Oct 18 2006, 08:34:43) " "[MSC v.1310 32 bit (Intel)]"
-        )
+        sys.version = "2.4.4 (#71, Oct 18 2006, 08:34:43) [MSC v.1310 32 bit (Intel)]"
         sys.platform = "win32"
         self.assertEqual(get_platform(), "win32")
 
         # windows XP, amd64
         os.name = "nt"
-        sys.version = (
-            "2.4.4 (#71, Oct 18 2006, 08:34:43) " "[MSC v.1310 32 bit (Amd64)]"
-        )
+        sys.version = "2.4.4 (#71, Oct 18 2006, 08:34:43) [MSC v.1310 32 bit (Amd64)]"
         sys.platform = "win32"
         self.assertEqual(get_platform(), "win-amd64")
 
@@ -114,7 +111,7 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
         get_config_vars()["MACOSX_DEPLOYMENT_TARGET"] = "10.3"
 
         get_config_vars()["CFLAGS"] = (
-            "-fno-strict-aliasing -DNDEBUG -g " "-fwrapv -O3 -Wall -Wstrict-prototypes"
+            "-fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes"
         )
 
         cursize = sys.maxsize
@@ -334,7 +331,7 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
     def test_rfc822_escape(self):
         header = "I am a\npoor\nlonesome\nheader\n"
         res = rfc822_escape(header)
-        wanted = ("I am a%(8s)spoor%(8s)slonesome%(8s)s" "header%(8s)s") % {
+        wanted = ("I am a%(8s)spoor%(8s)slonesome%(8s)sheader%(8s)s") % {
             "8s": "\n" + 8 * " "
         }
         self.assertEqual(res, wanted)
@@ -351,7 +348,7 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
 
     def test_grok_environment_error(self):
         # test obsolete function to ensure backward compat (#4931)
-        exc = IOError("Unable to find batch file")
+        exc = OSError("Unable to find batch file")
         msg = grok_environment_error(exc)
         self.assertEqual(msg, "error: Unable to find batch file")
 

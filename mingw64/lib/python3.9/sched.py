@@ -23,10 +23,10 @@ The action function may be an instance method so it
 has another way to reference private data (besides global variables).
 """
 
-import time
 import heapq
-from collections import namedtuple
 import threading
+import time
+from collections import namedtuple
 from time import monotonic as _time
 
 __all__ = ["scheduler"]
@@ -66,7 +66,6 @@ _sentinel = object()
 
 
 class scheduler:
-
     def __init__(self, timefunc=_time, delayfunc=time.sleep):
         """Initialize a new instance, passing the time and delay
         functions"""

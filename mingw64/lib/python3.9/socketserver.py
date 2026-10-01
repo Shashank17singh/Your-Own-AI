@@ -123,34 +123,34 @@ BaseServer:
 __version__ = "0.4"
 
 
-import socket
-import selectors
 import os
+import selectors
+import socket
 import sys
 import threading
 from io import BufferedIOBase
 from time import monotonic as time
 
 __all__ = [
-    "BaseServer",
-    "TCPServer",
-    "UDPServer",
-    "ThreadingUDPServer",
-    "ThreadingTCPServer",
     "BaseRequestHandler",
-    "StreamRequestHandler",
+    "BaseServer",
     "DatagramRequestHandler",
+    "StreamRequestHandler",
+    "TCPServer",
     "ThreadingMixIn",
+    "ThreadingTCPServer",
+    "ThreadingUDPServer",
+    "UDPServer",
 ]
 if hasattr(os, "fork"):
-    __all__.extend(["ForkingUDPServer", "ForkingTCPServer", "ForkingMixIn"])
+    __all__.extend(["ForkingMixIn", "ForkingTCPServer", "ForkingUDPServer"])
 if hasattr(socket, "AF_UNIX"):
     __all__.extend(
         [
-            "UnixStreamServer",
-            "UnixDatagramServer",
-            "ThreadingUnixStreamServer",
             "ThreadingUnixDatagramServer",
+            "ThreadingUnixStreamServer",
+            "UnixDatagramServer",
+            "UnixStreamServer",
         ]
     )
 
@@ -221,7 +221,6 @@ class BaseServer:
         May be overridden.
 
         """
-        pass
 
     def serve_forever(self, poll_interval=0.5):
         """Handle one request at a time until shutdown.
@@ -268,7 +267,6 @@ class BaseServer:
         May be overridden by a subclass / Mixin to implement any code that
         needs to be run during the loop.
         """
-        pass
 
     # The distinction between handling, getting, processing and finishing a
     # request is fairly arbitrary.  Remember:
@@ -339,7 +337,6 @@ class BaseServer:
 
         Overridden by ForkingMixIn.
         """
-        pass
 
     def verify_request(self, request, client_address):
         """Verify the request.  May be overridden.
@@ -364,7 +361,6 @@ class BaseServer:
         May be overridden.
 
         """
-        pass
 
     def finish_request(self, request, client_address):
         """Finish one request by instantiating RequestHandlerClass."""
@@ -376,7 +372,6 @@ class BaseServer:
 
     def close_request(self, request):
         """Called to clean up an individual request."""
-        pass
 
     def handle_error(self, request, client_address):
         """Handle an error gracefully.  May be overridden.
@@ -831,7 +826,7 @@ class StreamRequestHandler(BaseRequestHandler):
         if not self.wfile.closed:
             try:
                 self.wfile.flush()
-            except socket.error:
+            except OSError:
                 # A final socket error may have occurred here, such as
                 # the local error ECONNABORTED.
                 pass

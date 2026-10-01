@@ -2,6 +2,7 @@
 Test suite for _osx_support: shared OS X support functions.
 """
 
+import _osx_support
 import os
 import platform
 import stat
@@ -10,12 +11,9 @@ import unittest
 
 import test.support
 
-import _osx_support
-
 
 @unittest.skipUnless(sys.platform.startswith("darwin"), "requires OS X")
 class Test_OSXSupport(unittest.TestCase):
-
     def setUp(self):
         self.maxDiff = None
         self.prog_name = "bogus_program_xxxx"
@@ -281,11 +279,11 @@ class Test_OSXSupport(unittest.TestCase):
         }
         expected_vars = {
             "CC": "clang",
-            "CFLAGS": "-fno-strict-aliasing  -g -O3 -arch ppc -arch i386  " " ",
+            "CFLAGS": "-fno-strict-aliasing  -g -O3 -arch ppc -arch i386   ",
             "LDFLAGS": "-arch ppc -arch i386   -g",
             "CPPFLAGS": "-I.  ",
             "BLDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386 -g",
-            "LDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386 " " -g",
+            "LDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386  -g",
         }
         self.add_expected_saved_initial_values(config_vars, expected_vars)
 
@@ -307,11 +305,11 @@ class Test_OSXSupport(unittest.TestCase):
         }
         expected_vars = {
             "CC": "clang",
-            "CFLAGS": "-fno-strict-aliasing  -g -O3 -arch ppc -arch i386  " " ",
+            "CFLAGS": "-fno-strict-aliasing  -g -O3 -arch ppc -arch i386   ",
             "LDFLAGS": "-arch ppc -arch i386   -g",
             "CPPFLAGS": "-I.  ",
             "BLDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386 -g",
-            "LDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386 " " -g",
+            "LDSHARED": "gcc-4.0 -bundle  -arch ppc -arch i386  -g",
         }
         self.add_expected_saved_initial_values(config_vars, expected_vars)
 

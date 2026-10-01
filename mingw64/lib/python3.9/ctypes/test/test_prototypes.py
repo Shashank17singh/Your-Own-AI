@@ -1,7 +1,3 @@
-from ctypes import *
-from ctypes.test import need_symbol
-import unittest
-
 # IMPORTANT INFO:
 #
 # Consider this call:
@@ -21,8 +17,10 @@ import unittest
 # probably point to deallocated space.
 #
 # In this case, there would have to be an additional reference to the argument...
-
 import _ctypes_test
+import unittest
+from ctypes import *
+from ctypes.test import need_symbol
 
 testdll = CDLL(_ctypes_test.__file__)
 
@@ -48,7 +46,6 @@ def c_wbuffer(init):
 
 
 class CharPointersTestCase(unittest.TestCase):
-
     def setUp(self):
         func = testdll._testfunc_p_p
         func.restype = c_long
@@ -168,7 +165,6 @@ class CharPointersTestCase(unittest.TestCase):
 
 @need_symbol("c_wchar")
 class WCharPointersTestCase(unittest.TestCase):
-
     def setUp(self):
         func = testdll._testfunc_p_p
         func.restype = c_int

@@ -30,7 +30,7 @@ def start():
     function_2()
     function_3(1, 2)
     function_4(test=42)
-    function_5(*(1, 2), **{"test": 42})
+    function_5(*(1, 2), test=42)
 
 
 start()

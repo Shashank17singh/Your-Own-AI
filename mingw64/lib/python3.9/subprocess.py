@@ -42,17 +42,17 @@ getstatusoutput(...): Runs a command in the shell, waits for it to complete,
 """
 
 import builtins
+import contextlib
 import errno
 import io
 import os
-import time
 import signal
 import sys
 import threading
-import warnings
-import contextlib
-from time import monotonic as _time
+import time
 import types
+import warnings
+from time import monotonic as _time
 
 try:
     import pwd
@@ -64,27 +64,27 @@ except ImportError:
     grp = None
 
 __all__ = [
-    "Popen",
+    "DEVNULL",
     "PIPE",
     "STDOUT",
-    "call",
-    "check_call",
-    "getstatusoutput",
-    "getoutput",
-    "check_output",
-    "run",
     "CalledProcessError",
-    "DEVNULL",
+    "CompletedProcess",
+    "Popen",
     "SubprocessError",
     "TimeoutExpired",
-    "CompletedProcess",
+    "call",
+    "check_call",
+    "check_output",
+    "getoutput",
+    "getstatusoutput",
+    "run",
 ]
 # NOTE: We intentionally exclude list2cmdline as it is
 # considered an internal implementation detail.  issue10838.
 
 try:
-    import msvcrt
     import _winapi
+    import msvcrt
 
     _mswindows = True
 except ModuleNotFoundError:
@@ -93,48 +93,27 @@ except ModuleNotFoundError:
     import select
     import selectors
 else:
-    from _winapi import (
-        CREATE_NEW_CONSOLE,
-        CREATE_NEW_PROCESS_GROUP,
-        STD_INPUT_HANDLE,
-        STD_OUTPUT_HANDLE,
-        STD_ERROR_HANDLE,
-        SW_HIDE,
-        STARTF_USESTDHANDLES,
-        STARTF_USESHOWWINDOW,
-        ABOVE_NORMAL_PRIORITY_CLASS,
-        BELOW_NORMAL_PRIORITY_CLASS,
-        HIGH_PRIORITY_CLASS,
-        IDLE_PRIORITY_CLASS,
-        NORMAL_PRIORITY_CLASS,
-        REALTIME_PRIORITY_CLASS,
-        CREATE_NO_WINDOW,
-        DETACHED_PROCESS,
-        CREATE_DEFAULT_ERROR_MODE,
-        CREATE_BREAKAWAY_FROM_JOB,
-    )
-
     __all__.extend(
         [
-            "CREATE_NEW_CONSOLE",
-            "CREATE_NEW_PROCESS_GROUP",
-            "STD_INPUT_HANDLE",
-            "STD_OUTPUT_HANDLE",
-            "STD_ERROR_HANDLE",
-            "SW_HIDE",
-            "STARTF_USESTDHANDLES",
-            "STARTF_USESHOWWINDOW",
-            "STARTUPINFO",
             "ABOVE_NORMAL_PRIORITY_CLASS",
             "BELOW_NORMAL_PRIORITY_CLASS",
+            "CREATE_BREAKAWAY_FROM_JOB",
+            "CREATE_DEFAULT_ERROR_MODE",
+            "CREATE_NEW_CONSOLE",
+            "CREATE_NEW_PROCESS_GROUP",
+            "CREATE_NO_WINDOW",
+            "DETACHED_PROCESS",
             "HIGH_PRIORITY_CLASS",
             "IDLE_PRIORITY_CLASS",
             "NORMAL_PRIORITY_CLASS",
             "REALTIME_PRIORITY_CLASS",
-            "CREATE_NO_WINDOW",
-            "DETACHED_PROCESS",
-            "CREATE_DEFAULT_ERROR_MODE",
-            "CREATE_BREAKAWAY_FROM_JOB",
+            "STARTF_USESHOWWINDOW",
+            "STARTF_USESTDHANDLES",
+            "STARTUPINFO",
+            "STD_ERROR_HANDLE",
+            "STD_INPUT_HANDLE",
+            "STD_OUTPUT_HANDLE",
+            "SW_HIDE",
         ]
     )
 
@@ -490,7 +469,7 @@ def check_output(*popenargs, timeout=None, **kwargs):
     return run(*popenargs, stdout=PIPE, timeout=timeout, check=True, **kwargs).stdout
 
 
-class CompletedProcess(object):
+class CompletedProcess:
     """A process that has finished running.
 
     This is returned by run().
@@ -510,13 +489,13 @@ class CompletedProcess(object):
 
     def __repr__(self):
         args = [
-            "args={!r}".format(self.args),
-            "returncode={!r}".format(self.returncode),
+            f"args={self.args!r}",
+            f"returncode={self.returncode!r}",
         ]
         if self.stdout is not None:
-            args.append("stdout={!r}".format(self.stdout))
+            args.append(f"stdout={self.stdout!r}")
         if self.stderr is not None:
-            args.append("stderr={!r}".format(self.stderr))
+            args.append(f"stderr={self.stderr!r}")
         return "{}({})".format(type(self).__name__, ", ".join(args))
 
     __class_getitem__ = classmethod(types.GenericAlias)
@@ -567,7 +546,7 @@ def run(
     if capture_output:
         if kwargs.get("stdout") is not None or kwargs.get("stderr") is not None:
             raise ValueError(
-                "stdout and stderr arguments may not be used " "with capture_output."
+                "stdout and stderr arguments may not be used with capture_output."
             )
         kwargs["stdout"] = PIPE
         kwargs["stderr"] = PIPE
@@ -770,7 +749,7 @@ def _use_posix_spawn():
 _USE_POSIX_SPAWN = _use_posix_spawn()
 
 
-class Popen(object):
+class Popen:
     """Execute a child program in a new process.
 
     For a complete description of the arguments see the Python documentation.
@@ -873,20 +852,16 @@ class Popen(object):
 
         if _mswindows:
             if preexec_fn is not None:
-                raise ValueError("preexec_fn is not supported on Windows " "platforms")
+                raise ValueError("preexec_fn is not supported on Windows platforms")
         else:
             # POSIX
             if pass_fds and not close_fds:
                 warnings.warn("pass_fds overriding close_fds.", RuntimeWarning)
                 close_fds = True
             if startupinfo is not None:
-                raise ValueError(
-                    "startupinfo is only supported on Windows " "platforms"
-                )
+                raise ValueError("startupinfo is only supported on Windows platforms")
             if creationflags != 0:
-                raise ValueError(
-                    "creationflags is only supported on Windows " "platforms"
-                )
+                raise ValueError("creationflags is only supported on Windows platforms")
 
         self.args = args
         self.stdin = None
@@ -962,7 +937,7 @@ class Popen(object):
         if group is not None:
             if not hasattr(os, "setregid"):
                 raise ValueError(
-                    "The 'group' parameter is not supported on the " "current platform"
+                    "The 'group' parameter is not supported on the current platform"
                 )
 
             elif isinstance(group, str):
@@ -977,7 +952,7 @@ class Popen(object):
                 gid = group
             else:
                 raise TypeError(
-                    "Group must be a string or an integer, not {}".format(type(group))
+                    f"Group must be a string or an integer, not {type(group)}"
                 )
 
             if gid < 0:
@@ -1010,7 +985,7 @@ class Popen(object):
                 else:
                     raise TypeError(
                         "Items in extra_groups must be a string "
-                        "or integer, not {}".format(type(extra_group))
+                        f"or integer, not {type(extra_group)}"
                     )
 
             # make sure that the gids are all positive here so we can do less
@@ -1023,7 +998,7 @@ class Popen(object):
         if user is not None:
             if not hasattr(os, "setreuid"):
                 raise ValueError(
-                    "The 'user' parameter is not supported on " "the current platform"
+                    "The 'user' parameter is not supported on the current platform"
                 )
 
             elif isinstance(user, str):
@@ -1044,7 +1019,7 @@ class Popen(object):
 
         try:
             if p2cwrite != -1:
-                self.stdin = io.open(p2cwrite, "wb", bufsize)
+                self.stdin = open(p2cwrite, "wb", bufsize)
                 if self.text_mode:
                     self.stdin = io.TextIOWrapper(
                         self.stdin,
@@ -1054,13 +1029,13 @@ class Popen(object):
                         errors=errors,
                     )
             if c2pread != -1:
-                self.stdout = io.open(c2pread, "rb", bufsize)
+                self.stdout = open(c2pread, "rb", bufsize)
                 if self.text_mode:
                     self.stdout = io.TextIOWrapper(
                         self.stdout, encoding=encoding, errors=errors
                     )
             if errread != -1:
-                self.stderr = io.open(errread, "rb", bufsize)
+                self.stderr = open(errread, "rb", bufsize)
                 if self.text_mode:
                     self.stderr = io.TextIOWrapper(
                         self.stderr, encoding=encoding, errors=errors
@@ -1508,9 +1483,7 @@ class Popen(object):
                 args = list2cmdline([args])
             elif isinstance(args, os.PathLike):
                 if shell:
-                    raise TypeError(
-                        "path-like args is not allowed when " "shell is true"
-                    )
+                    raise TypeError("path-like args is not allowed when shell is true")
                 args = list2cmdline([args])
             else:
                 args = list2cmdline(args)
@@ -1570,7 +1543,7 @@ class Popen(object):
                 startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
                 startupinfo.wShowWindow = _winapi.SW_HIDE
                 comspec = os.environ.get("COMSPEC", "cmd.exe")
-                args = '{} /c "{}"'.format(comspec, args)
+                args = f'{comspec} /c "{args}"'
 
             if cwd is not None:
                 cwd = os.fsdecode(cwd)
@@ -1707,7 +1680,7 @@ class Popen(object):
             elif sig == signal.CTRL_BREAK_EVENT:
                 os.kill(self.pid, signal.CTRL_BREAK_EVENT)
             else:
-                raise ValueError("Unsupported signal: {}".format(sig))
+                raise ValueError(f"Unsupported signal: {sig}")
 
         def terminate(self):
             """Terminates the process."""
@@ -1860,9 +1833,7 @@ class Popen(object):
                 args = [args]
             elif isinstance(args, os.PathLike):
                 if shell:
-                    raise TypeError(
-                        "path-like args is not allowed when " "shell is true"
-                    )
+                    raise TypeError("path-like args is not allowed when shell is true")
                 args = [args]
             else:
                 args = list(args)
@@ -2016,9 +1987,7 @@ class Popen(object):
                 except ValueError:
                     exception_name = b"SubprocessError"
                     hex_errno = b"0"
-                    err_msg = "Bad exception data from child: {!r}".format(
-                        bytes(errpipe_data)
-                    )
+                    err_msg = f"Bad exception data from child: {bytes(errpipe_data)!r}"
                 child_exception_type = getattr(
                     builtins, exception_name.decode("ascii"), SubprocessError
                 )

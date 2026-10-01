@@ -1,7 +1,8 @@
 # Run the _testcapi module tests (tests for the Python/C API):  by defn,
 # these are all functions _testcapi exports whose name begins with 'test_'.
 
-from collections import OrderedDict
+import importlib.machinery
+import importlib.util
 import os
 import pickle
 import random
@@ -13,8 +14,8 @@ import threading
 import time
 import unittest
 import weakref
-import importlib.machinery
-import importlib.util
+from collections import OrderedDict
+
 from test import support
 from test.support import MISSING_C_DOCSTRINGS
 from test.support.script_helper import assert_python_failure, assert_python_ok
@@ -44,7 +45,6 @@ class InstanceMethod:
 
 
 class CAPITest(unittest.TestCase):
-
     def test_instancemethod(self):
         inst = InstanceMethod()
         self.assertEqual(id(inst), inst.id())
@@ -64,7 +64,7 @@ class CAPITest(unittest.TestCase):
                 [
                     sys.executable,
                     "-c",
-                    "import _testcapi;" "_testcapi.crash_no_current_thread()",
+                    "import _testcapi;_testcapi.crash_no_current_thread()",
                 ],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -114,7 +114,7 @@ class CAPITest(unittest.TestCase):
     @unittest.skipUnless(_posixsubprocess, "_posixsubprocess required for this test.")
     def test_seq_bytes_to_charp_array(self):
         # Issue #15732: crash in _PySequence_BytesToCharpArray()
-        class Z(object):
+        class Z:
             def __len__(self):
                 return 1
 
@@ -145,7 +145,7 @@ class CAPITest(unittest.TestCase):
         )
 
         # Issue #15736: overflow in _PySequence_BytesToCharpArray()
-        class Z(object):
+        class Z:
             def __len__(self):
                 return sys.maxsize
 
@@ -180,7 +180,7 @@ class CAPITest(unittest.TestCase):
 
     @unittest.skipUnless(_posixsubprocess, "_posixsubprocess required for this test.")
     def test_subprocess_fork_exec(self):
-        class Z(object):
+        class Z:
             def __len__(self):
                 return 1
 
@@ -326,7 +326,7 @@ class CAPITest(unittest.TestCase):
                 _testcapi.return_null_without_error()
             self.assertRegex(
                 str(cm.exception),
-                "return_null_without_error.* " "returned NULL without setting an error",
+                "return_null_without_error.* returned NULL without setting an error",
             )
 
     def test_return_result_with_error(self):
@@ -363,7 +363,7 @@ class CAPITest(unittest.TestCase):
                 _testcapi.return_result_with_error()
             self.assertRegex(
                 str(cm.exception),
-                "return_result_with_error.* " "returned a result with an error set",
+                "return_result_with_error.* returned a result with an error set",
             )
 
     def test_buildvalue_N(self):
@@ -696,7 +696,6 @@ class CAPITest(unittest.TestCase):
 
 
 class TestPendingCalls(unittest.TestCase):
-
     def pendingcalls_submit(self, l, n):
         def callback():
             # this function can be interrupted by thread switching so let's
@@ -740,7 +739,7 @@ class TestPendingCalls(unittest.TestCase):
         n = 32  # total callbacks
         threads = []
 
-        class foo(object):
+        class foo:
             pass
 
         context = foo()
@@ -782,17 +781,16 @@ class TestPendingCalls(unittest.TestCase):
 
 
 class SubinterpreterTest(unittest.TestCase):
-
     def test_subinterps(self):
         import builtins
 
         r, w = os.pipe()
-        code = """if 1:
+        code = f"""if 1:
             import sys, builtins, pickle
-            with open({:d}, "wb") as f:
+            with open({w:d}, "wb") as f:
                 pickle.dump(id(sys.modules), f)
                 pickle.dump(id(builtins), f)
-            """.format(w)
+            """
         with open(r, "rb") as f:
             ret = support.run_in_subinterp(code)
             self.assertEqual(ret, 0)
@@ -801,9 +799,9 @@ class SubinterpreterTest(unittest.TestCase):
 
     def test_subinterps_recent_language_features(self):
         r, w = os.pipe()
-        code = """if 1:
+        code = f"""if 1:
             import pickle
-            with open({:d}, "wb") as f:
+            with open({w:d}, "wb") as f:
 
                 @(lambda x:x)  # Py 3.9
                 def noop(x): return x
@@ -813,7 +811,7 @@ class SubinterpreterTest(unittest.TestCase):
                 async def foo(arg): return await arg  # Py 3.5
 
                 pickle.dump(dict(a=a, b=b), f)
-            """.format(w)
+            """
 
         with open(r, "rb") as f:
             ret = support.run_in_subinterp(code)
@@ -835,7 +833,6 @@ class SubinterpreterTest(unittest.TestCase):
 
 
 class TestThreadState(unittest.TestCase):
-
     @support.reap_threads
     def test_thread_state(self):
         # some extra thread-state tests driven via _testcapi

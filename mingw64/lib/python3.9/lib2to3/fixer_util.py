@@ -3,10 +3,10 @@
 # Author: Collin Winter
 
 # Local imports
-from .pgen2 import token
-from .pytree import Leaf, Node
-from .pygram import python_symbols as syms
 from . import patcomp
+from .pgen2 import token
+from .pygram import python_symbols as syms
+from .pytree import Leaf, Node
 
 ###########################################################
 ### Common node-construction "macros"
@@ -448,9 +448,11 @@ def find_binding(name, node, package=None):
                         )
                         if n:
                             ret = n
-        elif child.type in _def_syms and child.children[1].value == name:
-            ret = child
-        elif _is_import_binding(child, name, package):
+        elif (
+            child.type in _def_syms
+            and child.children[1].value == name
+            or _is_import_binding(child, name, package)
+        ):
             ret = child
         elif child.type == syms.simple_stmt:
             ret = find_binding(name, child, package)
@@ -515,8 +517,8 @@ def _is_import_binding(node, name, package=None):
             child = n.children[2]
             if child.type == token.NAME and child.value == name:
                 return node
-        elif n.type == token.NAME and n.value == name:
-            return node
-        elif package and n.type == token.STAR:
+        elif (
+            n.type == token.NAME and n.value == name or package and n.type == token.STAR
+        ):
             return node
     return None

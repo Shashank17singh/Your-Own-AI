@@ -19,34 +19,34 @@ parsing quirks from older RFCs are retained. The testcases in
 test_urlparse.py provides a good indicator of parsing behavior.
 """
 
+import collections
 import re
 import sys
 import types
-import collections
 import warnings
 
 __all__ = [
-    "urlparse",
-    "urlunparse",
-    "urljoin",
-    "urldefrag",
-    "urlsplit",
-    "urlunsplit",
-    "urlencode",
+    "DefragResult",
+    "DefragResultBytes",
+    "ParseResult",
+    "ParseResultBytes",
+    "SplitResult",
+    "SplitResultBytes",
     "parse_qs",
     "parse_qsl",
     "quote",
-    "quote_plus",
     "quote_from_bytes",
+    "quote_plus",
     "unquote",
     "unquote_plus",
     "unquote_to_bytes",
-    "DefragResult",
-    "ParseResult",
-    "SplitResult",
-    "DefragResultBytes",
-    "ParseResultBytes",
-    "SplitResultBytes",
+    "urldefrag",
+    "urlencode",
+    "urljoin",
+    "urlparse",
+    "urlsplit",
+    "urlunparse",
+    "urlunsplit",
 ]
 uses_relative = [
     "",
@@ -154,9 +154,7 @@ uses_fragment = [
     "file",
     "prospero",
 ]
-scheme_chars = (
-    "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "0123456789" "+-."
-)
+scheme_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-."
 _UNSAFE_URL_BYTES_TO_REMOVE = ["\t", "\r", "\n"]
 MAX_CACHE_SIZE = 20
 _parse_cache = {}
@@ -194,7 +192,7 @@ def _coerce_args(*args):
     return _decode_args(args) + (_encode_result,)
 
 
-class _ResultMixinStr(object):
+class _ResultMixinStr:
     """Standard approach to encoding parsed results from str to bytes"""
 
     __slots__ = ()
@@ -203,7 +201,7 @@ class _ResultMixinStr(object):
         return self._encoded_counterpart(*(x.encode(encoding, errors) for x in self))
 
 
-class _ResultMixinBytes(object):
+class _ResultMixinBytes:
     """Standard approach to decoding parsed results from bytes to str"""
 
     __slots__ = ()
@@ -212,7 +210,7 @@ class _ResultMixinBytes(object):
         return self._decoded_counterpart(*(x.decode(encoding, errors) for x in self))
 
 
-class _NetlocResultMixinBase(object):
+class _NetlocResultMixinBase:
     """Shared methods for the parsed result objects containing a netloc element"""
 
     __slots__ = ()
@@ -828,7 +826,7 @@ def unquote_plus(string, encoding="utf-8", errors="replace"):
 
 
 _ALWAYS_SAFE = frozenset(
-    b"ABCDEFGHIJKLMNOPQRSTUVWXYZ" b"abcdefghijklmnopqrstuvwxyz" b"0123456789" b"_.-~"
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-~"
 )
 _ALWAYS_SAFE_BYTES = bytes(_ALWAYS_SAFE)
 _safe_quoters = {}
@@ -848,7 +846,7 @@ class Quoter(collections.defaultdict):
         return "<%s %r>" % (self.__class__.__name__, dict(self))
 
     def __missing__(self, b):
-        res = chr(b) if b in self.safe else "%{:02X}".format(b)
+        res = chr(b) if b in self.safe else f"%{b:02X}"
         self[b] = res
         return res
 
@@ -960,7 +958,7 @@ def urlencode(
         except TypeError:
             ty, va, tb = sys.exc_info()
             raise TypeError(
-                "not a valid non-string sequence " "or mapping object"
+                "not a valid non-string sequence or mapping object"
             ).with_traceback(tb)
     l = []
     if not doseq:

@@ -3,14 +3,14 @@ Tests for uu module.
 Nick Mathewson
 """
 
-import unittest
-from test import support
-
+import io
 import os
 import stat
 import sys
+import unittest
 import uu
-import io
+
+from test import support
 
 plaintext = b"The symbols on top of your keyboard are !@#$%^&*()_+|~\n"
 
@@ -31,7 +31,7 @@ class FakeIO(io.TextIOWrapper):
     def __init__(
         self, initial_value="", encoding="utf-8", errors="strict", newline="\n"
     ):
-        super(FakeIO, self).__init__(
+        super().__init__(
             io.BytesIO(), encoding=encoding, errors=errors, newline=newline
         )
         self._encoding = encoding
@@ -64,7 +64,6 @@ def encodedtextwrapped(mode, filename, backtick=False):
 
 
 class UUTest(unittest.TestCase):
-
     def test_encode(self):
         inp = io.BytesIO(plaintext)
         out = io.BytesIO()
@@ -156,7 +155,6 @@ class UUTest(unittest.TestCase):
 
 
 class UUStdIOTest(unittest.TestCase):
-
     def setUp(self):
         self.stdin = sys.stdin
         self.stdout = sys.stdout
@@ -184,7 +182,6 @@ class UUStdIOTest(unittest.TestCase):
 
 
 class UUFileTest(unittest.TestCase):
-
     def setUp(self):
         self.tmpin = support.TESTFN_ASCII + "i"
         self.tmpout = support.TESTFN_ASCII + "o"
@@ -195,9 +192,8 @@ class UUFileTest(unittest.TestCase):
         with open(self.tmpin, "wb") as fin:
             fin.write(plaintext)
 
-        with open(self.tmpin, "rb") as fin:
-            with open(self.tmpout, "wb") as fout:
-                uu.encode(fin, fout, self.tmpin, mode=0o644)
+        with open(self.tmpin, "rb") as fin, open(self.tmpout, "wb") as fout:
+            uu.encode(fin, fout, self.tmpin, mode=0o644)
 
         with open(self.tmpout, "rb") as fout:
             s = fout.read()

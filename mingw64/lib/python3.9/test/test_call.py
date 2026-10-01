@@ -1,18 +1,18 @@
 import unittest
+
 from test.support import cpython_only
 
 try:
     import _testcapi
 except ImportError:
     _testcapi = None
-import struct
 import collections
-import itertools
 import gc
+import itertools
+import struct
 
 
 class FunctionCalls(unittest.TestCase):
-
     def test_kwargs_order(self):
         # bpo-34320:  **kwargs should preserve order of passed OrderedDict
         od = collections.OrderedDict([("a", 1), ("b", 2)])
@@ -29,7 +29,6 @@ class FunctionCalls(unittest.TestCase):
 
 @cpython_only
 class CFunctionCallsErrorMessages(unittest.TestCase):
-
     def test_varargs0(self):
         msg = r"__contains__\(\) takes exactly one argument \(0 given\)"
         self.assertRaisesRegex(TypeError, msg, {}.__contains__)
@@ -212,7 +211,7 @@ class TestCallingConventions(unittest.TestCase):
 
     def test_varargs_keywords_ext(self):
         self.assertEqual(
-            self.obj.meth_varargs_keywords(*[1, 2], **{"a": 3, "b": 4}),
+            self.obj.meth_varargs_keywords(*[1, 2], a=3, b=4),
             (self.expected_self, (1, 2), {"a": 3, "b": 4}),
         )
 
@@ -324,7 +323,7 @@ class TestCallingConventions(unittest.TestCase):
 
     def test_fastcall_keywords_ext(self):
         self.assertEqual(
-            self.obj.meth_fastcall_keywords(*(1, 2), **{"a": 3, "b": 4}),
+            self.obj.meth_fastcall_keywords(*(1, 2), a=3, b=4),
             (self.expected_self, (1, 2), {"a": 3, "b": 4}),
         )
 
@@ -595,7 +594,6 @@ def testfunction_kw(self, *, kw):
 
 
 class TestPEP590(unittest.TestCase):
-
     def test_method_descriptor_flag(self):
         import functools
 
@@ -676,8 +674,8 @@ class TestPEP590(unittest.TestCase):
         ]
 
         from _testcapi import pyobject_vectorcall, pyvectorcall_call
-        from types import MethodType
         from functools import partial
+        from types import MethodType
 
         def vectorcall(func, args, kwargs):
             args = *args, *kwargs.values()

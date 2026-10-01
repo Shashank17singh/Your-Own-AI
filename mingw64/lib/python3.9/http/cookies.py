@@ -133,7 +133,7 @@ import re
 import string
 import types
 
-__all__ = ["CookieError", "BaseCookie", "SimpleCookie"]
+__all__ = ["BaseCookie", "CookieError", "SimpleCookie"]
 
 _nulljoin = "".join
 _semispacejoin = "; ".join
@@ -572,7 +572,6 @@ class BaseCookie(dict):
             # self.update() wouldn't call our custom __setitem__
             for key, value in rawdata.items():
                 self[key] = value
-        return
 
     def __parse_string(self, str, patt=_CookiePattern):
         i = 0  # Our starting point

@@ -1,5 +1,5 @@
-import unittest
 import colorsys
+import unittest
 
 
 def frange(start, stop, step):
@@ -9,7 +9,6 @@ def frange(start, stop, step):
 
 
 class ColorsysTest(unittest.TestCase):
-
     def assertTripleEqual(self, tr1, tr2):
         self.assertEqual(len(tr1), 3)
         self.assertEqual(len(tr2), 3)

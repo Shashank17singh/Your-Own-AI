@@ -1,16 +1,15 @@
-from .. import abc
-from .. import util
+from .. import abc, util
 
 machinery = util.import_importlib("importlib.machinery")
 
-from test.support import captured_stdout
 import types
 import unittest
 import warnings
 
+from test.support import captured_stdout
+
 
 class ExecModuleTests(abc.LoaderTests):
-
     def exec_module(self, name):
         with util.uncache(name), captured_stdout() as stdout:
             spec = self.machinery.ModuleSpec(
@@ -46,9 +45,7 @@ class ExecModuleTests(abc.LoaderTests):
             self.assertEqual(
                 attr_value,
                 value,
-                "for {name}.{attr}, {given!r} != {expected!r}".format(
-                    name=name, attr=attr, given=attr_value, expected=value
-                ),
+                f"for {name}.{attr}, {attr_value!r} != {value!r}",
             )
         self.assertEqual(output, "Hello world!\n")
 
@@ -62,9 +59,7 @@ class ExecModuleTests(abc.LoaderTests):
                 self.assertEqual(
                     attr_value,
                     value,
-                    "for {name}.{attr}, {given} != {expected!r}".format(
-                        name=name, attr=attr, given=attr_value, expected=value
-                    ),
+                    f"for {name}.{attr}, {attr_value} != {value!r}",
                 )
             self.assertEqual(output, "Hello world!\n")
 
@@ -97,7 +92,6 @@ Frozen_ExecModuleTests, Source_ExecModuleTests = util.test_both(
 
 
 class LoaderTests(abc.LoaderTests):
-
     def test_module(self):
         with util.uncache("__hello__"), captured_stdout() as stdout:
             with warnings.catch_warnings():

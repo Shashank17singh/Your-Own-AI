@@ -19,7 +19,7 @@ import pickle
 from . import token
 
 
-class Grammar(object):
+class Grammar:
     """Pgen parsing tables conversion class.
 
     Once initialized, this class supplies the grammar tables for the

@@ -9,11 +9,13 @@ import sysconfig
 import threading
 import urllib.request
 import warnings
+
 from test import support
 from test.libregrtest.utils import print_warning
 
 try:
-    import _multiprocessing, multiprocessing.process
+    import _multiprocessing
+    import multiprocessing.process
 except ImportError:
     multiprocessing = None
 

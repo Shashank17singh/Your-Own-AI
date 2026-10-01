@@ -3,6 +3,7 @@
 
 import sys
 import unittest
+
 from test import support
 
 
@@ -22,7 +23,7 @@ class PropertyDel(PropertyBase):
     pass
 
 
-class BaseClass(object):
+class BaseClass:
     def __init__(self):
         self._spam = 5
 
@@ -41,7 +42,6 @@ class BaseClass(object):
 
 
 class SubClass(BaseClass):
-
     @BaseClass.spam.getter
     def spam(self):
         """SubClass.getter"""
@@ -56,7 +56,7 @@ class SubClass(BaseClass):
         raise PropertyDel(self._spam)
 
 
-class PropertyDocBase(object):
+class PropertyDocBase:
     _spam = 1
 
     def _get_spam(self):
@@ -79,7 +79,7 @@ class PropertySubNewGetter(BaseClass):
         return 5
 
 
-class PropertyNewGetter(object):
+class PropertyNewGetter:
     @property
     def spam(self):
         """original docstring"""
@@ -148,7 +148,7 @@ class PropertyTests(unittest.TestCase):
     def test_property___isabstractmethod__descriptor(self):
         for val in (True, False, [], [1], "", "1"):
 
-            class C(object):
+            class C:
                 def foo(self):
                     pass
 
@@ -159,7 +159,7 @@ class PropertyTests(unittest.TestCase):
 
         # check that the property's __isabstractmethod__ descriptor does the
         # right thing when presented with a value that fails truth testing:
-        class NotBool(object):
+        class NotBool:
             def __bool__(self):
                 raise ValueError()
 
@@ -167,7 +167,7 @@ class PropertyTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
 
-            class C(object):
+            class C:
                 def foo(self):
                     pass
 
@@ -189,8 +189,7 @@ class PropertyTests(unittest.TestCase):
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
     )
     def test_property_decorator_doc_writable(self):
-        class PropertyWritableDoc(object):
-
+        class PropertyWritableDoc:
             @property
             def spam(self):
                 """Eggs"""
@@ -249,11 +248,10 @@ class PropertySubSlots(property):
 
 
 class PropertySubclassTests(unittest.TestCase):
-
     def test_slots_docstring_copy_exception(self):
         try:
 
-            class Foo(object):
+            class Foo:
                 @PropertySubSlots
                 def spam(self):
                     """Trying to copy this docstring will raise an exception"""
@@ -268,7 +266,7 @@ class PropertySubclassTests(unittest.TestCase):
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
     )
     def test_docstring_copy(self):
-        class Foo(object):
+        class Foo:
             @PropertySub
             def spam(self):
                 """spam wrapped in property subclass"""
@@ -280,7 +278,7 @@ class PropertySubclassTests(unittest.TestCase):
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
     )
     def test_property_setter_copies_getter_docstring(self):
-        class Foo(object):
+        class Foo:
             def __init__(self):
                 self._spam = 1
 
@@ -317,7 +315,7 @@ class PropertySubclassTests(unittest.TestCase):
     )
     def test_property_new_getter_new_docstring(self):
 
-        class Foo(object):
+        class Foo:
             @PropertySub
             def spam(self):
                 """a docstring"""
@@ -330,7 +328,7 @@ class PropertySubclassTests(unittest.TestCase):
 
         self.assertEqual(Foo.spam.__doc__, "a new docstring")
 
-        class FooBase(object):
+        class FooBase:
             @PropertySub
             def spam(self):
                 """a docstring"""

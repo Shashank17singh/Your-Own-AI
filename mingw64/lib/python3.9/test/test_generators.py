@@ -1,10 +1,10 @@
 import copy
 import gc
+import inspect
 import pickle
 import sys
 import unittest
 import weakref
-import inspect
 
 from test import support
 
@@ -22,7 +22,6 @@ except ImportError:
     "needs _testcapi.raise_SIGINT_then_send_None",
 )
 class SignalAndYieldFromTest(unittest.TestCase):
-
     def generator1(self):
         return (yield from self.generator2())
 
@@ -46,7 +45,6 @@ class SignalAndYieldFromTest(unittest.TestCase):
 
 
 class FinalizationTest(unittest.TestCase):
-
     def test_frame_resurrect(self):
         # A generator frame can be resurrected by a generator's finalization.
         def gen():
@@ -117,7 +115,6 @@ class FinalizationTest(unittest.TestCase):
 
 
 class GeneratorTest(unittest.TestCase):
-
     def test_name(self):
         def func():
             yield 1
@@ -350,7 +347,6 @@ class ExceptionTest(unittest.TestCase):
 
 
 class GeneratorThrowTest(unittest.TestCase):
-
     def test_exception_context_with_yield(self):
         def f():
             try:
@@ -448,7 +444,6 @@ class GeneratorThrowTest(unittest.TestCase):
 
 
 class GeneratorStackTraceTest(unittest.TestCase):
-
     def check_stack_names(self, frame, expected):
         names = []
         while frame:

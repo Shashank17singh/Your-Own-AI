@@ -1,15 +1,15 @@
 """Tests for C-implemented GenericAlias."""
 
-import unittest
 import pickle
-from collections import defaultdict, deque, OrderedDict, Counter, UserDict, UserList
+import unittest
+from collections import Counter, OrderedDict, UserDict, UserList, defaultdict, deque
 from collections.abc import *
 from concurrent.futures import Future
 from concurrent.futures.thread import _WorkItem
-from contextlib import AbstractContextManager, AbstractAsyncContextManager
+from contextlib import AbstractAsyncContextManager, AbstractContextManager
 from contextvars import ContextVar, Token
 from dataclasses import Field
-from functools import partial, partialmethod, cached_property
+from functools import cached_property, partial, partialmethod
 from mailbox import Mailbox, _PartialFile
 
 try:
@@ -19,8 +19,8 @@ except ImportError:
 from difflib import SequenceMatcher
 from filecmp import dircmp
 from fileinput import FileInput
-from itertools import chain
 from http.cookies import Morsel
+from itertools import chain
 from multiprocessing.managers import ValueProxy
 from multiprocessing.pool import ApplyResult
 
@@ -29,18 +29,17 @@ try:
 except ImportError:
     # multiprocessing.shared_memory is not available on e.g. Android
     ShareableList = None
+import typing
 from multiprocessing.queues import SimpleQueue as MPSimpleQueue
 from os import DirEntry
-from re import Pattern, Match
-from types import GenericAlias, MappingProxyType, AsyncGeneratorType
-from tempfile import TemporaryDirectory, SpooledTemporaryFile
-from urllib.parse import SplitResult, ParseResult
-from unittest.case import _AssertRaisesContext
 from queue import Queue, SimpleQueue
-from weakref import WeakSet, ReferenceType, ref
-import typing
-
+from re import Match, Pattern
+from tempfile import SpooledTemporaryFile, TemporaryDirectory
+from types import AsyncGeneratorType, GenericAlias, MappingProxyType
 from typing import TypeVar
+from unittest.case import _AssertRaisesContext
+from urllib.parse import ParseResult, SplitResult
+from weakref import ReferenceType, WeakSet, ref
 
 T = TypeVar("T")
 K = TypeVar("K")
@@ -224,7 +223,7 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(a.__parameters__, ())
 
     def test_parameters(self):
-        from typing import List, Dict, Callable
+        from collections.abc import Callable
 
         D0 = dict[str, int]
         self.assertEqual(D0.__args__, (str, int))
@@ -250,21 +249,21 @@ class BaseTest(unittest.TestCase):
         L2 = list[list[T]]
         self.assertEqual(L2.__args__, (list[T],))
         self.assertEqual(L2.__parameters__, (T,))
-        L3 = list[List[T]]
-        self.assertEqual(L3.__args__, (List[T],))
+        L3 = list[list[T]]
+        self.assertEqual(L3.__args__, (list[T],))
         self.assertEqual(L3.__parameters__, (T,))
-        L4a = list[Dict[K, V]]
-        self.assertEqual(L4a.__args__, (Dict[K, V],))
+        L4a = list[dict[K, V]]
+        self.assertEqual(L4a.__args__, (dict[K, V],))
         self.assertEqual(L4a.__parameters__, (K, V))
-        L4b = list[Dict[T, int]]
-        self.assertEqual(L4b.__args__, (Dict[T, int],))
+        L4b = list[dict[T, int]]
+        self.assertEqual(L4b.__args__, (dict[T, int],))
         self.assertEqual(L4b.__parameters__, (T,))
         L5 = list[Callable[[K, V], K]]
         self.assertEqual(L5.__args__, (Callable[[K, V], K],))
         self.assertEqual(L5.__parameters__, (K, V))
 
     def test_parameter_chaining(self):
-        from typing import List, Dict, Union, Callable
+        from collections.abc import Callable
 
         self.assertEqual(list[T][int], list[int])
         self.assertEqual(dict[str, T][int], dict[str, int])
@@ -278,13 +277,13 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(list[dict[K, V]][str, int], list[dict[str, int]])
         self.assertEqual(dict[T, list[int]][str], dict[str, list[int]])
 
-        self.assertEqual(list[List[T]][int], list[List[int]])
-        self.assertEqual(list[Dict[K, V]][str, int], list[Dict[str, int]])
-        self.assertEqual(list[Union[K, V]][str, int], list[Union[str, int]])
+        self.assertEqual(list[list[T]][int], list[list[int]])
+        self.assertEqual(list[dict[K, V]][str, int], list[dict[str, int]])
+        self.assertEqual(list[K | V][str, int], list[str | int])
         self.assertEqual(
             list[Callable[[K, V], K]][str, int], list[Callable[[str, int], str]]
         )
-        self.assertEqual(dict[T, List[int]][str], dict[str, List[int]])
+        self.assertEqual(dict[T, list[int]][str], dict[str, list[int]])
 
         with self.assertRaises(TypeError):
             list[int][int]
@@ -427,7 +426,7 @@ class BaseTest(unittest.TestCase):
 
         # bpo-42195
         with self.subTest(
-            "Testing collections.abc.Callable's consistency " "with typing.Callable"
+            "Testing collections.abc.Callable's consistency with typing.Callable"
         ):
             c1 = typing.Callable[[int, str], dict]
             c2 = Callable[[int, str], dict]

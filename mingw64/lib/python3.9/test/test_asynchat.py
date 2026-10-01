@@ -1,8 +1,5 @@
 # test asynchat
 
-from test import support
-from test.support import socket_helper
-
 import asynchat
 import asyncore
 import errno
@@ -12,6 +9,9 @@ import threading
 import time
 import unittest
 import unittest.mock
+
+from test import support
+from test.support import socket_helper
 
 HOST = socket_helper.HOST
 SERVER_QUIT = b"QUIT\n"
@@ -65,7 +65,6 @@ class echo_server(threading.Thread):
 
 
 class echo_client(asynchat.async_chat):
-
     def __init__(self, terminator, server_port):
         asynchat.async_chat.__init__(self)
         self.contents = []

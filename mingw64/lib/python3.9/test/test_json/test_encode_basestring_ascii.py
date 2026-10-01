@@ -1,6 +1,7 @@
 from collections import OrderedDict
-from test.test_json import PyTest, CTest
+
 from test.support import bigaddrspacetest
+from test.test_json import CTest, PyTest
 
 CASES = [
     (
@@ -37,9 +38,7 @@ class TestEncodeBasestringAscii:
             self.assertEqual(
                 result,
                 expect,
-                "{0!r} != {1!r} for {2}({3!r})".format(
-                    result, expect, fname, input_string
-                ),
+                f"{result!r} != {expect!r} for {fname}({input_string!r})",
             )
 
     def test_ordered_dict(self):

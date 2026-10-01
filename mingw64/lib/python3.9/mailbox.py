@@ -6,18 +6,18 @@
 # or returning from a flush() method.  See functions _sync_flush() and
 # _sync_close().
 
-import os
-import time
 import calendar
-import socket
-import errno
-import copy
-import warnings
-import email
-import email.message
-import email.generator
-import io
 import contextlib
+import copy
+import email
+import email.generator
+import email.message
+import errno
+import io
+import os
+import socket
+import time
+import warnings
 from types import GenericAlias
 
 try:
@@ -26,23 +26,23 @@ except ImportError:
     fcntl = None
 
 __all__ = [
-    "Mailbox",
-    "Maildir",
-    "mbox",
     "MH",
-    "Babyl",
     "MMDF",
-    "Message",
-    "MaildirMessage",
-    "mboxMessage",
-    "MHMessage",
+    "Babyl",
     "BabylMessage",
-    "MMDFMessage",
     "Error",
-    "NoSuchMailboxError",
-    "NotEmptyError",
     "ExternalClashError",
     "FormatError",
+    "MHMessage",
+    "MMDFMessage",
+    "Mailbox",
+    "Maildir",
+    "MaildirMessage",
+    "Message",
+    "NoSuchMailboxError",
+    "NotEmptyError",
+    "mbox",
+    "mboxMessage",
 ]
 
 linesep = os.linesep.encode("ascii")
@@ -175,8 +175,7 @@ class Mailbox:
         """Delete an arbitrary (key, message) pair and return it."""
         for key in self.iterkeys():
             return (key, self.pop(key))  # This is only run once.
-        else:
-            raise KeyError("No messages in mailbox")
+        raise KeyError("No messages in mailbox")
 
     def update(self, arg=None):
         """Change the messages that correspond to certain keys."""
@@ -219,7 +218,7 @@ class Mailbox:
             return message.encode("ascii")
         except UnicodeError:
             raise ValueError(
-                "String input must be ASCII-only; " "use bytes or a Message instead"
+                "String input must be ASCII-only; use bytes or a Message instead"
             )
 
     # Whether each message must end in a newline
@@ -242,7 +241,7 @@ class Mailbox:
         elif isinstance(message, (str, bytes, io.StringIO)):
             if isinstance(message, io.StringIO):
                 warnings.warn(
-                    "Use of StringIO input is deprecated, " "use BytesIO instead",
+                    "Use of StringIO input is deprecated, use BytesIO instead",
                     DeprecationWarning,
                     3,
                 )
@@ -443,7 +442,6 @@ class Maildir(Mailbox):
         """Write any pending changes to disk."""
         # Maildir changes are always written immediately, so there's nothing
         # to do.
-        pass
 
     def lock(self):
         """Lock the mailbox."""
@@ -1482,7 +1480,7 @@ class Babyl(_singlefileMailbox):
         elif isinstance(message, (bytes, str, io.StringIO)):
             if isinstance(message, io.StringIO):
                 warnings.warn(
-                    "Use of StringIO input is deprecated, " "use BytesIO instead",
+                    "Use of StringIO input is deprecated, use BytesIO instead",
                     DeprecationWarning,
                     3,
                 )
@@ -1531,9 +1529,7 @@ class Babyl(_singlefileMailbox):
                 # Universal newline support.
                 if line.endswith(b"\r\n"):
                     line = line[:-2] + linesep
-                elif line.endswith(b"\r"):
-                    line = line[:-1] + linesep
-                elif line.endswith(b"\n"):
+                elif line.endswith(b"\r") or line.endswith(b"\n"):
                     line = line[:-1] + linesep
                 self._file.write(line)
         else:

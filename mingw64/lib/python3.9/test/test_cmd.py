@@ -4,9 +4,10 @@ Original by Michael Schneider
 """
 
 import cmd
+import io
 import sys
 import unittest
-import io
+
 from test import support
 
 
@@ -162,16 +163,13 @@ class samplecmdclass(cmd.Cmd):
 
     def help_add(self):
         print("help text for add")
-        return
 
     def do_exit(self, arg):
         return True
 
 
 class TestAlternateInput(unittest.TestCase):
-
     class simplecmd(cmd.Cmd):
-
         def do_print(self, args):
             print(args, file=self.stdout)
 
@@ -179,7 +177,6 @@ class TestAlternateInput(unittest.TestCase):
             return True
 
     class simplecmd2(simplecmd):
-
         def do_EOF(self, args):
             print("*** Unknown syntax: EOF", file=self.stdout)
             return True
@@ -191,7 +188,7 @@ class TestAlternateInput(unittest.TestCase):
         cmd.use_rawinput = False
         cmd.cmdloop()
         self.assertMultiLineEqual(
-            output.getvalue(), ("(Cmd) test\n" "(Cmd) test2\n" "(Cmd) ")
+            output.getvalue(), ("(Cmd) test\n(Cmd) test2\n(Cmd) ")
         )
 
     def test_input_reset_at_EOF(self):
@@ -202,7 +199,7 @@ class TestAlternateInput(unittest.TestCase):
         cmd.cmdloop()
         self.assertMultiLineEqual(
             output.getvalue(),
-            ("(Cmd) test\n" "(Cmd) test2\n" "(Cmd) *** Unknown syntax: EOF\n"),
+            ("(Cmd) test\n(Cmd) test2\n(Cmd) *** Unknown syntax: EOF\n"),
         )
         input = io.StringIO("print \n\n")
         output = io.StringIO()
@@ -210,7 +207,7 @@ class TestAlternateInput(unittest.TestCase):
         cmd.stdout = output
         cmd.cmdloop()
         self.assertMultiLineEqual(
-            output.getvalue(), ("(Cmd) \n" "(Cmd) \n" "(Cmd) *** Unknown syntax: EOF\n")
+            output.getvalue(), ("(Cmd) \n(Cmd) \n(Cmd) *** Unknown syntax: EOF\n")
         )
 
 

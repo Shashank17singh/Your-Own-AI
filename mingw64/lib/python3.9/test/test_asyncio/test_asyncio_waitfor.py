@@ -1,6 +1,6 @@
 import asyncio
-import unittest
 import time
+import unittest
 
 
 def tearDownModule():
@@ -32,7 +32,6 @@ class SlowTask:
 
 
 class AsyncioWaitForTest(unittest.TestCase):
-
     async def atest_asyncio_wait_for_cancelled(self):
         t = SlowTask()
 

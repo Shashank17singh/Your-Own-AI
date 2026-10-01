@@ -1,4 +1,3 @@
-from contextlib import contextmanager
 import datetime
 import faulthandler
 import os
@@ -6,11 +5,13 @@ import signal
 import subprocess
 import sys
 import sysconfig
-from test import support
-from test.support import script_helper, is_android
 import tempfile
 import unittest
+from contextlib import contextmanager
 from textwrap import dedent
+
+from test import support
+from test.support import is_android, script_helper
 
 try:
     import _testcapi
@@ -158,7 +159,7 @@ class FaultHandlerTests(unittest.TestCase):
                 """,
                 3,
                 # Issue #12700: Read NULL raises SIGILL on Mac OS X Lion
-                "(?:Segmentation fault" "|Bus error" "|Illegal instruction)",
+                "(?:Segmentation fault|Bus error|Illegal instruction)",
             )
         else:
             self.check_windows_exception(
@@ -317,12 +318,12 @@ class FaultHandlerTests(unittest.TestCase):
     def test_enable_file(self):
         with temporary_filename() as filename:
             self.check_fatal_error(
-                """
+                f"""
                 import faulthandler
-                output = open({filename}, 'wb')
+                output = open({filename!r}, 'wb')
                 faulthandler.enable(output)
                 faulthandler._sigsegv()
-                """.format(filename=repr(filename)),
+                """,
                 4,
                 "Segmentation fault",
                 filename=filename,
@@ -345,7 +346,8 @@ class FaultHandlerTests(unittest.TestCase):
                 import sys
                 faulthandler.enable(%s)
                 faulthandler._sigsegv()
-                """ % fd,
+                """
+                % fd,
                 4,
                 "Segmentation fault",
                 fd=fd,

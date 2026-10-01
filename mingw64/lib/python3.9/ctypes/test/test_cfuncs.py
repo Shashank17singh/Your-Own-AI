@@ -1,11 +1,10 @@
 # A lot of failures in these tests on Mac OS X.
 # Byte order related?
 
+import _ctypes_test
 import unittest
 from ctypes import *
 from ctypes.test import need_symbol
-
-import _ctypes_test
 
 
 class CFunctions(unittest.TestCase):

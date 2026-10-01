@@ -1,11 +1,11 @@
 """Tests for distutils._msvccompiler."""
 
+import os
 import sys
 import unittest
-import os
-
 from distutils.errors import DistutilsPlatformError
 from distutils.tests import support
+
 from test.support import run_unittest
 
 SKIP_MESSAGE = None if sys.platform == "win32" else "These tests are only for win32"
@@ -13,9 +13,8 @@ SKIP_MESSAGE = None if sys.platform == "win32" else "These tests are only for wi
 
 @unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class msvccompilerTestCase(support.TempdirManager, unittest.TestCase):
-
     def test_no_compiler(self):
-        import distutils._msvccompiler as _msvccompiler
+        from distutils import _msvccompiler
 
         # makes sure query_vcvarsall raises
         # a DistutilsPlatformError if the compiler
@@ -35,7 +34,7 @@ class msvccompilerTestCase(support.TempdirManager, unittest.TestCase):
             _msvccompiler._find_vcvarsall = old_find_vcvarsall
 
     def test_get_vc_env_unicode(self):
-        import distutils._msvccompiler as _msvccompiler
+        from distutils import _msvccompiler
 
         test_var = "ṰḖṤṪ┅ṼẨṜ"
         test_value = "₃⁴₅"
@@ -53,7 +52,7 @@ class msvccompilerTestCase(support.TempdirManager, unittest.TestCase):
                 os.environ["DISTUTILS_USE_SDK"] = old_distutils_use_sdk
 
     def test_get_vc2017(self):
-        import distutils._msvccompiler as _msvccompiler
+        from distutils import _msvccompiler
 
         # This function cannot be mocked, so pass it if we find VS 2017
         # and mark it skipped if we do not.
@@ -65,7 +64,7 @@ class msvccompilerTestCase(support.TempdirManager, unittest.TestCase):
             raise unittest.SkipTest("VS 2017 is not installed")
 
     def test_get_vc2015(self):
-        import distutils._msvccompiler as _msvccompiler
+        from distutils import _msvccompiler
 
         # This function cannot be mocked, so pass it if we find VS 2015
         # and mark it skipped if we do not.

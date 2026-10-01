@@ -4,21 +4,21 @@ import contextlib
 import errno
 import functools
 import importlib
-from importlib import machinery, util, invalidate_caches
-from importlib.abc import ResourceReader
 import io
 import marshal
 import os
 import os.path
-from pathlib import Path, PurePath
-from test import support
-import unittest
 import sys
 import tempfile
 import types
+import unittest
+from importlib import invalidate_caches, machinery, util
+from importlib.abc import ResourceReader
+from pathlib import Path, PurePath
 
-from . import data01
-from . import zipdata01
+from test import support
+
+from . import data01, zipdata01
 
 BUILTINS = types.SimpleNamespace()
 BUILTINS.good_name = None
@@ -72,7 +72,7 @@ def specialize_class(cls, kind, base=None, **kwargs):
         base = unittest.TestCase
     elif not isinstance(base, type):
         base = base[kind]
-    name = "{}_{}".format(kind, cls.__name__)
+    name = f"{kind}_{cls.__name__}"
     bases = (cls, base)
     specialized = types.new_class(name, bases)
     specialized.__module__ = cls.__module__
@@ -123,7 +123,7 @@ def submodule(parent, name, pkg_dir, content=""):
     path = os.path.join(pkg_dir, name + ".py")
     with open(path, "w") as subfile:
         subfile.write(content)
-    return "{}.{}".format(parent, name), path
+    return f"{parent}.{name}", path
 
 
 def get_code_from_pyc(pyc_path):
@@ -146,7 +146,7 @@ def uncache(*names):
     """
     for name in names:
         if name in ("sys", "marshal", "imp"):
-            raise ValueError("cannot uncache {0}".format(name))
+            raise ValueError(f"cannot uncache {name}")
         try:
             del sys.modules[name]
         except KeyError:
@@ -164,25 +164,24 @@ def uncache(*names):
 @contextlib.contextmanager
 def temp_module(name, content="", *, pkg=False):
     conflicts = [n for n in sys.modules if n.partition(".")[0] == name]
-    with support.temp_cwd(None) as cwd:
-        with uncache(name, *conflicts):
-            with support.DirsOnSysPath(cwd):
-                invalidate_caches()
+    with support.temp_cwd(None) as cwd, uncache(name, *conflicts):
+        with support.DirsOnSysPath(cwd):
+            invalidate_caches()
 
-                location = os.path.join(cwd, name)
-                if pkg:
-                    modpath = os.path.join(location, "__init__.py")
-                    os.mkdir(name)
-                else:
-                    modpath = location + ".py"
-                    if content is None:
-                        # Make sure the module file gets created.
-                        content = ""
-                if content is not None:
-                    # not a namespace package
-                    with open(modpath, "w") as modfile:
-                        modfile.write(content)
-                yield location
+            location = os.path.join(cwd, name)
+            if pkg:
+                modpath = os.path.join(location, "__init__.py")
+                os.mkdir(name)
+            else:
+                modpath = location + ".py"
+                if content is None:
+                    # Make sure the module file gets created.
+                    content = ""
+            if content is not None:
+                # not a namespace package
+                with open(modpath, "w") as modfile:
+                    modfile.write(content)
+            yield location
 
 
 @contextlib.contextmanager
@@ -211,7 +210,7 @@ def import_state(**kwargs):
                 new_value = default
             setattr(sys, attr, new_value)
         if len(kwargs):
-            raise ValueError("unrecognized arguments: {0}".format(kwargs.keys()))
+            raise ValueError(f"unrecognized arguments: {kwargs.keys()}")
         yield
     finally:
         for attr, value in originals.items():
@@ -421,7 +420,6 @@ def mock_path_hook(*entries, importer):
 
 
 class CASEOKTestBase:
-
     def caseok_env_changed(self, *, should_exist):
         possibilities = b"PYTHONCASEOK", "PYTHONCASEOK"
         if (

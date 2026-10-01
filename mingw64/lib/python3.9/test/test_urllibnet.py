@@ -1,14 +1,14 @@
-import unittest
-from test import support
-from test.support import socket_helper
-
 import contextlib
+import email.message
+import os
 import socket
+import time
+import unittest
 import urllib.parse
 import urllib.request
-import os
-import email.message
-import time
+
+from test import support
+from test.support import socket_helper
 
 support.requires("network")
 
@@ -77,7 +77,7 @@ class urlopenNetworkTests(unittest.TestCase):
             ):
                 self.assertTrue(
                     hasattr(open_url, attr),
-                    "object returned from " "urlopen lacks the %s attribute" % attr,
+                    "object returned from urlopen lacks the %s attribute" % attr,
                 )
             self.assertTrue(open_url.read(), "calling 'read' failed")
 
@@ -98,8 +98,7 @@ class urlopenNetworkTests(unittest.TestCase):
             self.assertIsInstance(
                 info_obj,
                 email.message.Message,
-                "object returned by 'info' is not an "
-                "instance of email.message.Message",
+                "object returned by 'info' is not an instance of email.message.Message",
             )
             self.assertEqual(info_obj.get_content_subtype(), "html")
 
@@ -159,7 +158,7 @@ class urlopenNetworkTests(unittest.TestCase):
             "(e.g. returns 404 or hijacks page)"
         )
         with self.assertRaises(OSError, msg=failure_explanation):
-            urllib.request.urlopen("http://{}/".format(bogus_domain))
+            urllib.request.urlopen(f"http://{bogus_domain}/")
 
 
 class urlretrieveNetworkTests(unittest.TestCase):
@@ -184,12 +183,12 @@ class urlretrieveNetworkTests(unittest.TestCase):
         with self.urlretrieve(self.logo) as (file_location, info):
             self.assertTrue(
                 os.path.exists(file_location),
-                "file location returned by" " urlretrieve is not a valid path",
+                "file location returned by urlretrieve is not a valid path",
             )
             with open(file_location, "rb") as f:
                 self.assertTrue(
                     f.read(),
-                    "reading from the file location returned" " by urlretrieve failed",
+                    "reading from the file location returned by urlretrieve failed",
                 )
 
     def test_specified_path(self):

@@ -18,7 +18,6 @@ def count_instr_recursively(f, opname):
 
 
 class TestTranforms(BytecodeTestCase):
-
     def check_jump_targets(self, code):
         instructions = list(dis.get_instructions(code))
         targets = {instr.offset: instr for instr in instructions}
@@ -122,7 +121,7 @@ class TestTranforms(BytecodeTestCase):
 
         def f():
             "Adding a docstring made this test fail in Py2.5.0"
-            return None
+            return
 
         self.assertNotInBytecode(f, "LOAD_GLOBAL")
         self.assertInBytecode(f, "LOAD_CONST", None)
@@ -674,13 +673,12 @@ class TestTranforms(BytecodeTestCase):
 
 
 class TestBuglets(unittest.TestCase):
-
     def test_bug_11510(self):
         # folded constant set optimization was commingled with the tuple
         # unpacking optimization which would fail if the set had duplicate
         # elements so that the set length was unexpected
         def f():
-            x, y = {1, 1}
+            x, y = {1}
             return x, y
 
         with self.assertRaises(ValueError):

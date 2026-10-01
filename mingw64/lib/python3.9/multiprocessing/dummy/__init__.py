@@ -8,45 +8,47 @@
 #
 
 __all__ = [
-    "Process",
-    "current_process",
-    "active_children",
-    "freeze_support",
-    "Lock",
-    "RLock",
-    "Semaphore",
+    "Barrier",
     "BoundedSemaphore",
     "Condition",
     "Event",
-    "Barrier",
-    "Queue",
+    "JoinableQueue",
+    "Lock",
     "Manager",
     "Pipe",
     "Pool",
-    "JoinableQueue",
+    "Process",
+    "Queue",
+    "RLock",
+    "Semaphore",
+    "active_children",
+    "current_process",
+    "freeze_support",
 ]
 
 #
 # Imports
 #
 
-import threading
-import sys
-import weakref
 import array
+import sys
+import threading
+import weakref
+from queue import Queue
+from threading import (
+    Barrier,
+    BoundedSemaphore,
+    Condition,
+    Event,
+    Lock,
+    RLock,
+    Semaphore,
+)
 
 from .connection import Pipe
-from threading import Lock, RLock, Semaphore, BoundedSemaphore
-from threading import Event, Condition, Barrier
-from queue import Queue
-
-#
-#
-#
 
 
 class DummyProcess(threading.Thread):
-
     def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
         threading.Thread.__init__(self, group, target, name, args, kwargs)
         self._pid = None
@@ -57,9 +59,7 @@ class DummyProcess(threading.Thread):
     def start(self):
         if self._parent is not current_process():
             raise RuntimeError(
-                "Parent is {0!r} but current_process is {1!r}".format(
-                    self._parent, current_process()
-                )
+                f"Parent is {self._parent!r} but current_process is {current_process()!r}"
             )
         self._start_called = True
         if hasattr(self._parent, "_children"):
@@ -73,10 +73,6 @@ class DummyProcess(threading.Thread):
         else:
             return None
 
-
-#
-#
-#
 
 Process = DummyProcess
 current_process = threading.current_thread
@@ -95,12 +91,7 @@ def freeze_support():
     pass
 
 
-#
-#
-#
-
-
-class Namespace(object):
+class Namespace:
     def __init__(self, /, **kwds):
         self.__dict__.update(kwds)
 
@@ -122,7 +113,7 @@ def Array(typecode, sequence, lock=True):
     return array.array(typecode, sequence)
 
 
-class Value(object):
+class Value:
     def __init__(self, typecode, value, lock=True):
         self._typecode = typecode
         self._value = value

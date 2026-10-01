@@ -5,13 +5,13 @@
 
 __author__ = "Brian Quinlan (brian@sweetapp.com)"
 
-from concurrent.futures import _base
 import itertools
+import os
 import queue
 import threading
 import types
 import weakref
-import os
+from concurrent.futures import _base
 
 _threads_queues = weakref.WeakKeyDictionary()
 _shutdown = False
@@ -38,7 +38,7 @@ def _python_exit():
 threading._register_atexit(_python_exit)
 
 
-class _WorkItem(object):
+class _WorkItem:
     def __init__(self, future, fn, args, kwargs):
         self.future = future
         self.fn = fn
@@ -111,7 +111,6 @@ class BrokenThreadPool(_base.BrokenExecutor):
 
 
 class ThreadPoolExecutor(_base.Executor):
-
     # Used to assign unique thread names when thread_name_prefix is not supplied.
     _counter = itertools.count().__next__
 
@@ -164,7 +163,7 @@ class ThreadPoolExecutor(_base.Executor):
                 raise RuntimeError("cannot schedule new futures after shutdown")
             if _shutdown:
                 raise RuntimeError(
-                    "cannot schedule new futures after " "interpreter shutdown"
+                    "cannot schedule new futures after interpreter shutdown"
                 )
 
             f = _base.Future()
@@ -206,7 +205,7 @@ class ThreadPoolExecutor(_base.Executor):
     def _initializer_failed(self):
         with self._shutdown_lock:
             self._broken = (
-                "A thread initializer failed, the thread pool " "is not usable anymore"
+                "A thread initializer failed, the thread pool is not usable anymore"
             )
             # Drain work queue and mark pending futures failed
             while True:

@@ -5,6 +5,7 @@ Based on an original test by Roger E. Masse.
 """
 
 import unittest
+
 from test import support
 
 with support.check_warnings(("", DeprecationWarning)):
@@ -12,7 +13,6 @@ with support.check_warnings(("", DeprecationWarning)):
 
 
 class BinHexTestCase(unittest.TestCase):
-
     def setUp(self):
         # binhex supports only file names encodable to Latin1
         self.fname1 = support.TESTFN_ASCII + "1"

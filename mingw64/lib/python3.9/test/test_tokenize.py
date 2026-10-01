@@ -1,27 +1,30 @@
-from test import support
-from tokenize import (
-    tokenize,
-    _tokenize,
-    untokenize,
-    NUMBER,
-    NAME,
-    OP,
-    STRING,
-    ENDMARKER,
-    ENCODING,
-    tok_name,
-    detect_encoding,
-    open as tokenize_open,
-    Untokenizer,
-    generate_tokens,
-    NEWLINE,
-)
-from io import BytesIO, StringIO
-import unittest
-from unittest import TestCase, mock
-from test.test_grammar import VALID_UNDERSCORE_LITERALS, INVALID_UNDERSCORE_LITERALS
 import os
 import token
+import unittest
+from io import BytesIO, StringIO
+from tokenize import (
+    ENCODING,
+    ENDMARKER,
+    NAME,
+    NEWLINE,
+    NUMBER,
+    OP,
+    STRING,
+    Untokenizer,
+    _tokenize,
+    detect_encoding,
+    generate_tokens,
+    tok_name,
+    tokenize,
+    untokenize,
+)
+from tokenize import (
+    open as tokenize_open,
+)
+from unittest import TestCase, mock
+
+from test import support
+from test.test_grammar import INVALID_UNDERSCORE_LITERALS, VALID_UNDERSCORE_LITERALS
 
 
 # Converts a source string into a list of textual representation
@@ -67,7 +70,7 @@ class TokenizeTest(TestCase):
     def test_implicit_newline(self):
         # Make sure that the tokenizer puts in an implicit NEWLINE
         # when the input lacks a trailing new line.
-        f = BytesIO("x".encode("utf-8"))
+        f = BytesIO(b"x")
         tokens = list(tokenize(f.readline))
         self.assertEqual(tokens[-2].type, NEWLINE)
         self.assertEqual(tokens[-1].type, ENDMARKER)
@@ -82,7 +85,7 @@ class TokenizeTest(TestCase):
     """,
         )
         self.check_tokenize(
-            "if False:\n" "    # NL\n" "    \n" "    True = False # NEWLINE\n",
+            "if False:\n    # NL\n    \n    True = False # NEWLINE\n",
             """\
     NAME       'if'          (1, 0) (1, 2)
     NAME       'False'       (1, 3) (1, 8)
@@ -107,7 +110,7 @@ def k(x):
 """
         readline = BytesIO(indent_error_file).readline
         with self.assertRaisesRegex(
-            IndentationError, "unindent does not match any " "outer indentation level"
+            IndentationError, "unindent does not match any outer indentation level"
         ):
             for tok in tokenize(readline):
                 pass
@@ -818,7 +821,7 @@ def"',
     def test_tabs(self):
         # Evil tabs
         self.check_tokenize(
-            "def f():\n" "\tif x\n" "        \tpass",
+            "def f():\n\tif x\n        \tpass",
             """\
     NAME       'def'         (1, 0) (1, 3)
     NAME       'f'           (1, 4) (1, 5)
@@ -1228,7 +1231,6 @@ def decistmt(s):
 
 
 class TestMisc(TestCase):
-
     def test_decistmt(self):
         # Substitute Decimals for floats in a string of statements.
         # This is an example from the docs.
@@ -1291,7 +1293,6 @@ class TestTokenizerAdheresToPep0263(TestCase):
 
 
 class Test_Tokenize(TestCase):
-
     def test__tokenize_decodes_with_specified_encoding(self):
         literal = '"ЉЊЈЁЂ"'
         line = literal.encode("utf-8")
@@ -1331,7 +1332,6 @@ class Test_Tokenize(TestCase):
 
 
 class TestDetectEncoding(TestCase):
-
     def get_readline(self, lines):
         index = 0
 
@@ -1574,7 +1574,7 @@ class TestDetectEncoding(TestCase):
             # Make sure lacking a name isn't an issue.
             del ins.name
             detect_encoding(ins.readline)
-        with self.assertRaisesRegex(SyntaxError, ".*{}".format(path)):
+        with self.assertRaisesRegex(SyntaxError, f".*{path}"):
             ins = Bunk(lines, path)
             detect_encoding(ins.readline)
 
@@ -1587,7 +1587,6 @@ class TestDetectEncoding(TestCase):
 
 
 class TestTokenize(TestCase):
-
     def test_tokenize(self):
         import tokenize as tokenize_module
 
@@ -1635,7 +1634,7 @@ class TestTokenize(TestCase):
     def test_oneline_defs(self):
         buf = []
         for i in range(500):
-            buf.append("def i{i}(): return {i}".format(i=i))
+            buf.append(f"def i{i}(): return {i}")
         buf.append("OK")
         buf = "\n".join(buf)
 
@@ -1765,7 +1764,6 @@ class TestTokenize(TestCase):
 
 
 class UntokenizeTest(TestCase):
-
     def test_bad_input_order(self):
         # raise if previous row
         u = Untokenizer()
@@ -1807,7 +1805,6 @@ class UntokenizeTest(TestCase):
 
 
 class TestRoundtrip(TestCase):
-
     def check_roundtrip(self, f):
         """
         Test roundtrip for `untokenize`. `f` is an open file or a string.
@@ -1843,15 +1840,15 @@ class TestRoundtrip(TestCase):
     def test_roundtrip(self):
         # There are some standard formatting practices that are easy to get right.
 
-        self.check_roundtrip("if x == 1:\n" "    print(x)\n")
-        self.check_roundtrip("# This is a comment\n" "# This also\n")
+        self.check_roundtrip("if x == 1:\n    print(x)\n")
+        self.check_roundtrip("# This is a comment\n# This also\n")
 
         # Some people use different formatting conventions, which makes
         # untokenize a little trickier. Note that this test involves trailing
         # whitespace after the colon. Note that we use hex escapes to make the
         # two trailing blanks apparent in the expected output.
 
-        self.check_roundtrip("if x == 1 : \n" "  print(x)\n")
+        self.check_roundtrip("if x == 1 : \n  print(x)\n")
         fn = support.findfile("tokenize_tests.txt")
         with open(fn, "rb") as f:
             self.check_roundtrip(f)
@@ -1901,8 +1898,8 @@ class TestRoundtrip(TestCase):
 
     def test_backslash_continuation(self):
         # Backslash means line continuation, except for comments
-        self.check_roundtrip("x=1+\\\n" "1\n" "# This is a comment\\\n" "# This also\n")
-        self.check_roundtrip("# Comment \\\n" "x = 0")
+        self.check_roundtrip("x=1+\\\n1\n# This is a comment\\\n# This also\n")
+        self.check_roundtrip("# Comment \\\nx = 0")
 
     def test_string_concatenation(self):
         # Two string literals on the same line
@@ -1912,7 +1909,8 @@ class TestRoundtrip(TestCase):
         # Test roundtrip on random python modules.
         # pass the '-ucpu' option to process the full directory.
 
-        import glob, random
+        import glob
+        import random
 
         fn = support.findfile("tokenize_tests.txt")
         tempdir = os.path.dirname(fn) or os.curdir
@@ -1933,9 +1931,8 @@ class TestRoundtrip(TestCase):
         for testfile in testfiles:
             if support.verbose >= 2:
                 print("tokenize", testfile)
-            with open(testfile, "rb") as f:
-                with self.subTest(file=testfile):
-                    self.check_roundtrip(f)
+            with open(testfile, "rb") as f, self.subTest(file=testfile):
+                self.check_roundtrip(f)
 
     def roundtrip(self, code):
         if isinstance(code, str):

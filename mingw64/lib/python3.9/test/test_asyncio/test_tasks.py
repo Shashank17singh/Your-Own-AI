@@ -1,5 +1,6 @@
 """Tests for tasks.py."""
 
+import asyncio
 import collections
 import contextlib
 import contextvars
@@ -14,15 +15,12 @@ import traceback
 import types
 import unittest
 import weakref
+from asyncio import coroutines, futures, tasks
 from unittest import mock
 
-import asyncio
-from asyncio import coroutines
-from asyncio import futures
-from asyncio import tasks
-from test.test_asyncio import utils as test_utils
 from test import support
 from test.support.script_helper import assert_python_ok
+from test.test_asyncio import utils as test_utils
 
 
 def tearDownModule():
@@ -80,7 +78,6 @@ def get_innermost_context(exc):
 
 
 class Dummy:
-
     def __repr__(self):
         return "<Dummy>"
 
@@ -109,7 +106,6 @@ _EPSILON = 0.0001
 
 
 class BaseTaskTests:
-
     Task = None
     Future = None
 
@@ -437,9 +433,7 @@ class BaseTaskTests:
         # function, as expected, and have a qualified name (__qualname__
         # attribute).
         coro_name = "notmuch"
-        coro_qualname = (
-            "BaseTaskTests.test_task_repr_coro_decorator" ".<locals>.notmuch"
-        )
+        coro_qualname = "BaseTaskTests.test_task_repr_coro_decorator.<locals>.notmuch"
         self.assertEqual(gen.__name__, coro_name)
         self.assertEqual(gen.__qualname__, coro_qualname)
 
@@ -555,7 +549,7 @@ class BaseTaskTests:
         async def run():
             try:
                 raise KeyError(3)
-            except Exception as exc:
+            except Exception:
                 task = self.new_task(loop, raise_error())
                 try:
                     await task
@@ -2452,12 +2446,11 @@ class BaseTaskTests:
 
     @mock.patch("asyncio.coroutines.logger")
     def test_coroutine_never_yielded(self, m_log):
-        with set_coroutine_debug(True):
-            with self.assertWarns(DeprecationWarning):
+        with set_coroutine_debug(True), self.assertWarns(DeprecationWarning):
 
-                @asyncio.coroutine
-                def coro_noop():
-                    pass
+            @asyncio.coroutine
+            def coro_noop():
+                pass
 
         tb_filename = __file__
         tb_lineno = sys._getframe().f_lineno + 2
@@ -2627,7 +2620,7 @@ class BaseTaskTests:
                     # The exact traceback seems to vary in CI.
                     self.assertIn(depth, (2, 3))
                 else:
-                    self.fail("gather did not propagate the cancellation " "request")
+                    self.fail("gather did not propagate the cancellation request")
 
     def test_exception_traceback(self):
         # See http://bugs.python.org/issue28843
@@ -2899,7 +2892,6 @@ def add_subclass_tests(cls):
 
 
 class SetMethodsTest:
-
     def test_set_result_causes_invalid_state(self):
         Future = type(self).Future
         self.loop.call_exception_handler = exc_handler = mock.Mock()
@@ -2956,7 +2948,6 @@ class SetMethodsTest:
     "requires the C _asyncio module",
 )
 class CTask_CFuture_Tests(BaseTaskTests, SetMethodsTest, test_utils.TestCase):
-
     Task = getattr(tasks, "_CTask", None)
     Future = getattr(futures, "_CFuture", None)
 
@@ -2991,7 +2982,6 @@ class CTask_CFuture_Tests(BaseTaskTests, SetMethodsTest, test_utils.TestCase):
 )
 @add_subclass_tests
 class CTask_CFuture_SubclassTests(BaseTaskTests, test_utils.TestCase):
-
     Task = getattr(tasks, "_CTask", None)
     Future = getattr(futures, "_CFuture", None)
 
@@ -2999,7 +2989,6 @@ class CTask_CFuture_SubclassTests(BaseTaskTests, test_utils.TestCase):
 @unittest.skipUnless(hasattr(tasks, "_CTask"), "requires the C _asyncio module")
 @add_subclass_tests
 class CTaskSubclass_PyFuture_Tests(BaseTaskTests, test_utils.TestCase):
-
     Task = getattr(tasks, "_CTask", None)
     Future = futures._PyFuture
 
@@ -3007,27 +2996,23 @@ class CTaskSubclass_PyFuture_Tests(BaseTaskTests, test_utils.TestCase):
 @unittest.skipUnless(hasattr(futures, "_CFuture"), "requires the C _asyncio module")
 @add_subclass_tests
 class PyTask_CFutureSubclass_Tests(BaseTaskTests, test_utils.TestCase):
-
     Future = getattr(futures, "_CFuture", None)
     Task = tasks._PyTask
 
 
 @unittest.skipUnless(hasattr(tasks, "_CTask"), "requires the C _asyncio module")
 class CTask_PyFuture_Tests(BaseTaskTests, test_utils.TestCase):
-
     Task = getattr(tasks, "_CTask", None)
     Future = futures._PyFuture
 
 
 @unittest.skipUnless(hasattr(futures, "_CFuture"), "requires the C _asyncio module")
 class PyTask_CFuture_Tests(BaseTaskTests, test_utils.TestCase):
-
     Task = tasks._PyTask
     Future = getattr(futures, "_CFuture", None)
 
 
 class PyTask_PyFuture_Tests(BaseTaskTests, SetMethodsTest, test_utils.TestCase):
-
     Task = tasks._PyTask
     Future = futures._PyFuture
 
@@ -3040,7 +3025,6 @@ class PyTask_PyFuture_SubclassTests(BaseTaskTests, test_utils.TestCase):
 
 @unittest.skipUnless(hasattr(tasks, "_CTask"), "requires the C _asyncio module")
 class CTask_Future_Tests(test_utils.TestCase):
-
     def test_foobar(self):
         class Fut(asyncio.Future):
             @property
@@ -3196,7 +3180,6 @@ class CIntrospectionTests(test_utils.TestCase, BaseTaskIntrospectionTests):
 
 
 class BaseCurrentLoopTests:
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.new_event_loop()
@@ -3225,20 +3208,17 @@ class BaseCurrentLoopTests:
 
 
 class PyCurrentLoopTests(BaseCurrentLoopTests, test_utils.TestCase):
-
     def new_task(self, coro):
         return tasks._PyTask(coro, loop=self.loop)
 
 
 @unittest.skipUnless(hasattr(tasks, "_CTask"), "requires the C _asyncio module")
 class CCurrentLoopTests(BaseCurrentLoopTests, test_utils.TestCase):
-
     def new_task(self, coro):
-        return getattr(tasks, "_CTask")(coro, loop=self.loop)
+        return tasks._CTask(coro, loop=self.loop)
 
 
 class GenericTaskTests(test_utils.TestCase):
-
     def test_future_subclass(self):
         self.assertTrue(issubclass(asyncio.Task, asyncio.Future))
 
@@ -3262,7 +3242,6 @@ class GenericTaskTests(test_utils.TestCase):
 
 
 class GatherTestsBase:
-
     def setUp(self):
         super().setUp()
         self.one_loop = self.new_test_loop()
@@ -3362,7 +3341,6 @@ class GatherTestsBase:
 
 
 class FutureGatherTests(GatherTestsBase, test_utils.TestCase):
-
     def wrap_futures(self, *futures):
         return futures
 
@@ -3446,7 +3424,6 @@ class FutureGatherTests(GatherTestsBase, test_utils.TestCase):
 
 
 class CoroutineGatherTests(GatherTestsBase, test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         asyncio.set_event_loop(self.one_loop)

@@ -8,6 +8,7 @@
 # the problems prior to the issue12268 patch reliably on Linux and OSX.
 #  - gregory.p.smith
 
+# Test import all of the things we're about to try testing up front.
 import os
 import select
 import signal
@@ -15,10 +16,6 @@ import subprocess
 import sys
 import time
 import unittest
-
-# Test import all of the things we're about to try testing up front.
-import _io
-import _pyio
 
 
 @unittest.skipUnless(os.name == "posix", "tests requires a posix system.")

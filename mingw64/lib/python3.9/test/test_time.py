@@ -1,4 +1,3 @@
-from test import support
 import decimal
 import enum
 import locale
@@ -6,9 +5,11 @@ import math
 import platform
 import sys
 import sysconfig
-import time
 import threading
+import time
 import unittest
+
+from test import support
 
 try:
     import _testcapi
@@ -51,7 +52,6 @@ ROUNDING_MODES = (
 
 
 class TimeTestCase(unittest.TestCase):
-
     def setUp(self):
         self.t = time.time()
 
@@ -109,9 +109,7 @@ class TimeTestCase(unittest.TestCase):
         clk_id = time.pthread_getcpuclockid(threading.get_ident())
         self.assertTrue(type(clk_id) is int)
         # when in 32-bit mode AIX only returns the predefined constant
-        if not platform.system() == "AIX":
-            self.assertNotEqual(clk_id, time.CLOCK_THREAD_CPUTIME_ID)
-        elif sys.maxsize.bit_length() > 32:
+        if not platform.system() == "AIX" or sys.maxsize.bit_length() > 32:
             self.assertNotEqual(clk_id, time.CLOCK_THREAD_CPUTIME_ID)
         else:
             self.assertEqual(clk_id, time.CLOCK_THREAD_CPUTIME_ID)
@@ -236,7 +234,7 @@ class TimeTestCase(unittest.TestCase):
         # strftime may succeed or raise ValueError depending on
         # the platform.
         for x in ["", "A", "%A", "%AA"]:
-            for y in range(0x0, 0x10):
+            for y in range(0x10):
                 for z in ["%", "A%", "AA%", "%A%", "A%A%", "%#"]:
                     try:
                         time.strftime(x * y + z)
@@ -393,7 +391,7 @@ class TimeTestCase(unittest.TestCase):
             # on some operating systems (e.g. FreeBSD), which is wrong. See for
             # example this bug:
             # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=93810
-            self.assertIn(time.tzname[0], ("AEST" "EST"), time.tzname[0])
+            self.assertIn(time.tzname[0], ("AESTEST"), time.tzname[0])
             self.assertTrue(time.tzname[1] in ("AEDT", "EDT"), str(time.tzname[1]))
             self.assertEqual(len(time.tzname), 2)
             self.assertEqual(time.daylight, 1)
@@ -612,7 +610,6 @@ class _TestAsctimeYear:
 
 
 class _TestStrftimeYear:
-
     # Issue 13305:  For years < 1000, the value is not always
     # padded to 4 digits across platforms.  The C standard
     # assumes year >= 1900, so it does not specify the number
@@ -974,7 +971,7 @@ class TestCPyTime(CPyTimeTestCase, unittest.TestCase):
             return divmod(us, SEC_TO_US)
 
         if sys.platform == "win32":
-            from _testcapi import LONG_MIN, LONG_MAX
+            from _testcapi import LONG_MAX, LONG_MIN
 
             # On Windows, timeval.tv_sec type is a C long
             def seconds_filter(secs):
@@ -1102,8 +1099,8 @@ class TestTimeWeaklinking(unittest.TestCase):
     #
     # See the section on Weak Linking in Mac/README.txt for more information.
     def test_clock_functions(self):
-        import sysconfig
         import platform
+        import sysconfig
 
         config_vars = sysconfig.get_config_vars()
         var_name = "HAVE_CLOCK_GETTIME"

@@ -295,7 +295,6 @@ def coroutine(func):
         func.__class__ is FunctionType
         and getattr(func, "__code__", None).__class__ is CodeType
     ):
-
         co_flags = func.__code__.co_flags
 
         # Check if 'func' is a coroutine function.
@@ -317,8 +316,8 @@ def coroutine(func):
     # compiled with Cython).
 
     # Delay functools and _collections_abc import for speeding up types import.
-    import functools
     import _collections_abc
+    import functools
 
     @functools.wraps(func)
     def wrapped(*args, **kwargs):

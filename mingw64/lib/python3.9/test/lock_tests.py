@@ -2,19 +2,19 @@
 Various tests for synchronization primitives.
 """
 
-import os
 import gc
+import os
 import sys
-import time
-from _thread import start_new_thread, TIMEOUT_MAX
 import threading
+import time
 import unittest
 import weakref
+from _thread import TIMEOUT_MAX, start_new_thread
 
 from test import support
 
 requires_fork = unittest.skipUnless(
-    hasattr(os, "fork"), "platform doesn't support fork " "(no _at_fork_reinit method)"
+    hasattr(os, "fork"), "platform doesn't support fork (no _at_fork_reinit method)"
 )
 
 
@@ -23,7 +23,7 @@ def _wait():
     time.sleep(0.01)
 
 
-class Bunch(object):
+class Bunch:
     """
     A bunch of threads.
     """
@@ -957,7 +957,6 @@ class BarrierTests(BaseTestCase):
                 results2.append(True)
             except RuntimeError:
                 self.barrier.abort()
-                pass
 
         self.run_threads(f)
         self.assertEqual(len(results1), 0)
@@ -1014,7 +1013,6 @@ class BarrierTests(BaseTestCase):
                 results2.append(True)
             except RuntimeError:
                 self.barrier.abort()
-                pass
             # Synchronize and reset the barrier.  Must synchronize first so
             # that everyone has left it when we reset, and after so that no
             # one enters it before the reset.

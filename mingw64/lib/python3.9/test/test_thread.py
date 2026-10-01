@@ -1,12 +1,11 @@
-import os
-import unittest
-import random
-from test import support
 import _thread as thread
+import os
+import random
 import time
+import unittest
 import weakref
 
-from test import lock_tests
+from test import lock_tests, support
 
 NUMTASKS = 10
 NUMTRIPS = 3
@@ -23,7 +22,6 @@ def verbose_print(arg):
 
 
 class BasicThreadTest(unittest.TestCase):
-
     def setUp(self):
         self.done_mutex = thread.allocate_lock()
         self.done_mutex.acquire()
@@ -38,7 +36,6 @@ class BasicThreadTest(unittest.TestCase):
 
 
 class ThreadRunningTests(BasicThreadTest):
-
     def newtask(self):
         with self.running_mutex:
             self.next_ident += 1
@@ -79,9 +76,9 @@ class ThreadRunningTests(BasicThreadTest):
         try:
             thread.stack_size(4096)
         except ValueError:
-            verbose_print("caught expected ValueError setting " "stack_size(4096)")
+            verbose_print("caught expected ValueError setting stack_size(4096)")
         except thread.error:
-            self.skipTest("platform does not support changing thread stack " "size")
+            self.skipTest("platform does not support changing thread stack size")
 
         fail_msg = "stack_size(%d) failed - should succeed"
         for tss in (262144, 0x100000, 0):
@@ -179,7 +176,6 @@ class Barrier:
 
 
 class BarrierTest(BasicThreadTest):
-
     def test_barrier(self):
         with support.wait_threads_exit():
             self.bar = Barrier(NUMTASKS)

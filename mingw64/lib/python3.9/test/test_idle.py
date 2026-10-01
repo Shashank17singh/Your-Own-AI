@@ -1,4 +1,5 @@
 import unittest
+
 from test.support import import_module
 
 # Skip test_idle if _tkinter wasn't built, if tkinter is missing,
@@ -15,7 +16,6 @@ idlelib.testing = True
 
 # Unittest.main and test.libregrtest.runtest.runtest_inner
 # call load_tests, when present here, to discover tests to run.
-from idlelib.idle_test import load_tests
 
 if __name__ == "__main__":
     tk.NoDefaultRoot()

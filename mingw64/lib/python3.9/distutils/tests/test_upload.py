@@ -2,18 +2,16 @@
 
 import os
 import unittest
-import unittest.mock as mock
-from urllib.error import HTTPError
-
-from test.support import run_unittest
-
 from distutils.command import upload as upload_mod
 from distutils.command.upload import upload
 from distutils.core import Distribution
 from distutils.errors import DistutilsError
 from distutils.log import ERROR, INFO
-
 from distutils.tests.test_config import PYPIRC, BasePyPIRCCommandTestCase
+from unittest import mock
+from urllib.error import HTTPError
+
+from test.support import run_unittest
 
 PYPIRC_LONG_PASSWORD = """\
 [distutils]
@@ -45,8 +43,7 @@ username:me
 """
 
 
-class FakeOpen(object):
-
+class FakeOpen:
     def __init__(self, url, msg=None, code=None):
         self.url = url
         if not isinstance(url, str):
@@ -69,9 +66,8 @@ class FakeOpen(object):
 
 
 class uploadTestCase(BasePyPIRCCommandTestCase):
-
     def setUp(self):
-        super(uploadTestCase, self).setUp()
+        super().setUp()
         self.old_open = upload_mod.urlopen
         upload_mod.urlopen = self._urlopen
         self.last_open = None
@@ -80,7 +76,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
 
     def tearDown(self):
         upload_mod.urlopen = self.old_open
-        super(uploadTestCase, self).tearDown()
+        super().tearDown()
 
     def _urlopen(self, url):
         self.last_open = FakeOpen(url, msg=self.next_msg, code=self.next_code)
@@ -146,7 +142,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
         self.assertIn(b"protocol_version", data)
         self.assertIn(b"sha256_digest", data)
         self.assertIn(
-            b"cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf" b"6860",
+            b"cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf6860",
             data,
         )
         if b"md5_digest" in data:

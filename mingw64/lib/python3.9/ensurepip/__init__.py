@@ -1,14 +1,14 @@
 import os
 import os.path
-import sys
 import runpy
-import tempfile
 import subprocess
+import sys
+import tempfile
 from importlib import resources
 
 from . import _bundled
 
-__all__ = ["version", "bootstrap"]
+__all__ = ["bootstrap", "version"]
 
 
 _SETUPTOOLS_VERSION = "57.4.0"
@@ -121,7 +121,7 @@ def _bootstrap(
         # additional paths that need added to sys.path
         additional_paths = []
         for project, version, py_tag in _PROJECTS:
-            wheel_name = "{}-{}-{}-none-any.whl".format(project, version, py_tag)
+            wheel_name = f"{project}-{version}-{py_tag}-none-any.whl"
             whl = resources.read_binary(
                 _bundled,
                 wheel_name,
@@ -182,7 +182,7 @@ def _main(argv=None):
     parser.add_argument(
         "--version",
         action="version",
-        version="pip {}".format(version()),
+        version=f"pip {version()}",
         help="Show the version of pip that is bundled with this Python.",
     )
     parser.add_argument(
@@ -191,9 +191,7 @@ def _main(argv=None):
         action="count",
         default=0,
         dest="verbosity",
-        help=(
-            "Give more output. Option is additive, and can be used up to 3 " "times."
-        ),
+        help=("Give more output. Option is additive, and can be used up to 3 times."),
     )
     parser.add_argument(
         "-U",

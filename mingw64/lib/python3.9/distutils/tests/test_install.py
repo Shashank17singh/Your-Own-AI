@@ -1,23 +1,20 @@
 """Tests for distutils.command.install."""
 
 import os
+import site
 import sys
 import unittest
-import site
-
-from test.support import captured_stdout, run_unittest
-
 from distutils import sysconfig
-from distutils.command.install import install
 from distutils.command import install as install_module
 from distutils.command.build_ext import build_ext
-from distutils.command.install import INSTALL_SCHEMES
+from distutils.command.install import INSTALL_SCHEMES, install
 from distutils.core import Distribution
 from distutils.errors import DistutilsOptionError
 from distutils.extension import Extension
-
 from distutils.tests import support
+
 from test import support as test_support
+from test.support import captured_stdout, run_unittest
 
 
 def _make_ext_name(modname):
@@ -30,7 +27,6 @@ class InstallTestCase(
     support.LoggingSilencer,
     unittest.TestCase,
 ):
-
     def test_home_installation_scheme(self):
         # This ensure two things:
         # - that --home generates the desired set of directory names

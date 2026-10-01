@@ -6,8 +6,9 @@ import locale
 import sys
 import textwrap
 import unittest
+
 from test import support
-from test.support.script_helper import assert_python_ok, assert_python_failure
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 MS_WINDOWS = sys.platform == "win32"
 POSIX_LOCALES = ("C", "POSIX")

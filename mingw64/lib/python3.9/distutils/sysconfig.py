@@ -187,8 +187,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
             return os.path.join(prefix, "Lib", "site-packages")
     else:
         raise DistutilsPlatformError(
-            "I don't know where Python installs its library "
-            "on platform '%s'" % os.name
+            "I don't know where Python installs its library on platform '%s'" % os.name
         )
 
 
@@ -311,7 +310,7 @@ def get_makefile_filename():
     if python_build:
         return os.path.join(_sys_home or project_base, "Makefile")
     lib_dir = get_python_lib(plat_specific=0, standard_lib=1)
-    config_file = "config-{}{}".format(get_python_version(), build_flags)
+    config_file = f"config-{get_python_version()}{build_flags}"
     if hasattr(sys.implementation, "_multiarch"):
         config_file += "-%s" % sys.implementation._multiarch
     return os.path.join(lib_dir, config_file, "Makefile")
@@ -328,7 +327,6 @@ def parse_config_h(fp, g=None):
         g = {}
     define_rx = re.compile("#define ([A-Z][A-Za-z0-9_]+) (.*)\n")
     undef_rx = re.compile("/[*] #undef ([A-Z][A-Za-z0-9_]+) [*]/\n")
-    #
     while True:
         line = fp.readline()
         if not line:
@@ -444,7 +442,6 @@ def parse_makefile(fn, g=None):
                         del notdone[name]
 
                         if name.startswith("PY_") and name[3:] in renamed_variables:
-
                             name = name[3:]
                             if name not in done:
                                 done[name] = value

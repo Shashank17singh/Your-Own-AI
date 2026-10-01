@@ -6,6 +6,7 @@ import threading
 import time
 import unittest
 import weakref
+
 from test import support
 from test.support import gc_collect
 
@@ -55,7 +56,6 @@ class _TriggerThread(threading.Thread):
 
 
 class BlockingTestMixin:
-
     def do_blocking_test(self, block_func, block_args, trigger_func, trigger_args):
         thread = _TriggerThread(trigger_func, trigger_args)
         thread.start()
@@ -253,7 +253,6 @@ class BaseQueueTestMixin(BlockingTestMixin):
 
 
 class QueueTest(BaseQueueTestMixin):
-
     def setUp(self):
         self.type2test = self.queue.Queue
         super().setUp()
@@ -269,7 +268,6 @@ class CQueueTest(QueueTest, unittest.TestCase):
 
 
 class LifoQueueTest(BaseQueueTestMixin):
-
     def setUp(self):
         self.type2test = self.queue.LifoQueue
         super().setUp()
@@ -285,7 +283,6 @@ class CLifoQueueTest(LifoQueueTest, unittest.TestCase):
 
 
 class PriorityQueueTest(BaseQueueTestMixin):
-
     def setUp(self):
         self.type2test = self.queue.PriorityQueue
         super().setUp()
@@ -306,7 +303,6 @@ class FailingQueueException(Exception):
 
 
 class FailingQueueTest(BlockingTestMixin):
-
     def setUp(self):
 
         Queue = self.queue.Queue
@@ -435,7 +431,6 @@ class CFailingQueueTest(FailingQueueTest, unittest.TestCase):
 
 
 class BaseSimpleQueueTest:
-
     def setUp(self):
         self.q = self.type2test()
 
@@ -618,7 +613,6 @@ class BaseSimpleQueueTest:
 
 
 class PySimpleQueueTest(BaseSimpleQueueTest, unittest.TestCase):
-
     queue = py_queue
 
     def setUp(self):
@@ -628,7 +622,6 @@ class PySimpleQueueTest(BaseSimpleQueueTest, unittest.TestCase):
 
 @need_c_queue
 class CSimpleQueueTest(BaseSimpleQueueTest, unittest.TestCase):
-
     queue = c_queue
 
     def setUp(self):
@@ -650,7 +643,7 @@ class CSimpleQueueTest(BaseSimpleQueueTest, unittest.TestCase):
         # This test exploits the fact that __del__ in a reference cycle
         # can be called any time the GC may run.
 
-        class Circular(object):
+        class Circular:
             def __init__(self):
                 self.circular = self
 

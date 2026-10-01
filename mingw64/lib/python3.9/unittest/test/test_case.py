@@ -1,23 +1,24 @@
 import contextlib
 import difflib
-import pprint
+import inspect
+import logging
 import pickle
+import pprint
 import re
 import sys
-import logging
+import unittest
 import warnings
 import weakref
-import inspect
 from copy import deepcopy
-from test import support
-import unittest
 from unittest.test.support import (
+    LegacyLoggingResult,
+    LoggingResult,
+    ResultWithNoStartTestRunStopTestRun,
     TestEquality,
     TestHashing,
-    LoggingResult,
-    LegacyLoggingResult,
-    ResultWithNoStartTestRunStopTestRun,
 )
+
+from test import support
 from test.support import captured_stderr, gc_collect
 
 log_foo = logging.getLogger("foo")
@@ -25,7 +26,7 @@ log_foobar = logging.getLogger("foo.bar")
 log_quux = logging.getLogger("quux")
 
 
-class Test(object):
+class Test:
     "Keep these TestCase classes out of the main namespace"
 
     class Foo(unittest.TestCase):
@@ -43,7 +44,7 @@ class Test(object):
         """A test case which logs its calls."""
 
         def __init__(self, events):
-            super(Test.LoggingTestCase, self).__init__("test")
+            super().__init__("test")
             self.events = events
 
         def setUp(self):
@@ -536,7 +537,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
         """
         self.assertEqual(
             self.shortDescription(),
-            "Tests shortDescription() for a method with a longer " "docstring.",
+            "Tests shortDescription() for a method with a longer docstring.",
         )
 
     def testShortDescriptionWhitespaceTrimming(self):
@@ -550,7 +551,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
         )
 
     def testAddTypeEqualityFunc(self):
-        class SadSnake(object):
+        class SadSnake:
             """Dummy class for test_addTypeEqualityFunc."""
 
         s1, s2 = SadSnake(), SadSnake()
@@ -1479,16 +1480,14 @@ test case
         self.checkAssertLogsPerLogger("foo")
 
     def testAssertLogsFailureNoLogs(self):
-        with self.assertNoStderr():
-            with self.assertRaises(self.failureException):
-                with self.assertLogs():
-                    pass
+        with self.assertNoStderr(), self.assertRaises(self.failureException):
+            with self.assertLogs():
+                pass
 
     def testAssertLogsFailureLevelTooHigh(self):
-        with self.assertNoStderr():
-            with self.assertRaises(self.failureException):
-                with self.assertLogs(level="WARNING"):
-                    log_foo.info("1")
+        with self.assertNoStderr(), self.assertRaises(self.failureException):
+            with self.assertLogs(level="WARNING"):
+                log_foo.info("1")
 
     def testAssertLogsFailureMismatchingLogger(self):
         with self.assertLogs("quux", level="ERROR"):

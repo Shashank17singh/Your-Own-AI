@@ -1,17 +1,17 @@
+import _ast
 import dis
 import math
 import os
-import unittest
 import sys
-import _ast
 import tempfile
 import types
+import unittest
+
 from test import support
-from test.support import script_helper, FakePath
+from test.support import FakePath, script_helper
 
 
 class TestSpecifics(unittest.TestCase):
-
     def compile_single(self, source):
         compile(source, "<single>", "single")
 
@@ -96,8 +96,6 @@ class TestSpecifics(unittest.TestCase):
         class A:
             "Non-mapping"
 
-            pass
-
         m = A()
         self.assertRaises(TypeError, exec, "z = a", g, m)
 
@@ -162,7 +160,7 @@ if 1:
         s256 = "".join(["\n"] * 256 + ["spam"])
         co = compile(s256, "fn", "exec")
         self.assertEqual(co.co_firstlineno, 257)
-        self.assertEqual(co.co_lnotab, bytes())
+        self.assertEqual(co.co_lnotab, b"")
 
     def test_literals_with_leading_zeroes(self):
         for arg in [
@@ -364,7 +362,7 @@ if 1:
     def test_subscripts(self):
         # SF bug 1448804
         # Class to make testing subscript results easy
-        class str_map(object):
+        class str_map:
             def __init__(self):
                 self.data = {}
 
@@ -449,8 +447,6 @@ if 1:
             def f():
                 __mangled = 1
                 __not_mangled__ = 2
-                import __mangled_mod
-                import __package__.module
 
         self.assertIn("_A__mangled", A.f.__code__.co_varnames)
         self.assertIn("__not_mangled__", A.f.__code__.co_varnames)
@@ -583,9 +579,7 @@ if 1:
             expect_ok = prefix + repeated * success_depth
             self.compile_single(expect_ok)
             broken = prefix + repeated * fail_depth
-            details = "Compiling ({!r} + {!r} * {})".format(
-                prefix, repeated, fail_depth
-            )
+            details = f"Compiling ({prefix!r} + {repeated!r} * {fail_depth})"
             with self.assertRaises(RecursionError, msg=details):
                 self.compile_single(broken)
 
@@ -756,8 +750,7 @@ if 1:
         def unused_block_while_else():
             while 1:
                 return None
-            else:
-                return 42
+            return 42
 
         funcs = [
             unused_block_if,
@@ -857,7 +850,8 @@ class TestStackSizeStability(unittest.TestCase):
 
         sizes = [compile_snippet(i).co_stacksize for i in range(2, 5)]
         if len(set(sizes)) != 1:
-            import dis, io
+            import dis
+            import io
 
             out = io.StringIO()
             dis.dis(compile_snippet(1), file=out)

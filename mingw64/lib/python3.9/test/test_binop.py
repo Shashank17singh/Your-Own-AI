@@ -1,8 +1,8 @@
 """Tests for binary operators on subtypes of built-in types."""
 
 import unittest
-from operator import eq, le, ne
 from abc import ABCMeta
+from operator import eq, le, ne
 
 
 def gcd(a, b):
@@ -30,10 +30,10 @@ def isRat(x):
     return isinstance(x, Rat)
 
 
-class Rat(object):
+class Rat:
     """Rational number implemented as a normalized pair of ints."""
 
-    __slots__ = ["_Rat__num", "_Rat__den"]
+    __slots__ = ["_Rat__den", "_Rat__num"]
 
     def __init__(self, num=0, den=1):
         """Constructor: Rat([num[, den]]).
@@ -418,7 +418,7 @@ class OperationOrderTests(unittest.TestCase):
         self.assertEqual(op_sequence(le, B, V), ["B.__le__", "V.__ge__"])
 
 
-class SupEq(object):
+class SupEq:
     """Class that can test equality"""
 
     def __eq__(self, other):
@@ -431,11 +431,11 @@ class S(SupEq):
     __eq__ = None
 
 
-class F(object):
+class F:
     """Independent class that should fall back"""
 
 
-class X(object):
+class X:
     """Independent class that should fail"""
 
     __eq__ = None

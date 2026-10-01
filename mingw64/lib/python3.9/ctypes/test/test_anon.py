@@ -1,10 +1,10 @@
 import unittest
-import test.support
 from ctypes import *
+
+import test.support
 
 
 class AnonTest(unittest.TestCase):
-
     def test_anon(self):
         class ANON(Union):
             _fields_ = [("a", c_int), ("b", c_int)]

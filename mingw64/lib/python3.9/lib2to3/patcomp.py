@@ -13,12 +13,11 @@ __author__ = "Guido van Rossum <guido@python.org>"
 # Python imports
 import io
 
-# Fairly local imports
-from .pgen2 import driver, literals, token, tokenize, parse, grammar
-
 # Really local imports
-from . import pytree
-from . import pygram
+from . import pygram, pytree
+
+# Fairly local imports
+from .pgen2 import driver, grammar, literals, parse, token, tokenize
 
 
 class PatternSyntaxError(Exception):
@@ -35,8 +34,7 @@ def tokenize_wrapper(input):
             yield quintuple
 
 
-class PatternCompiler(object):
-
+class PatternCompiler:
     def __init__(self, grammar_file=None):
         """Initializer.
 

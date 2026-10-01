@@ -8,7 +8,6 @@ from ctypes import *
 
 
 class MyTestCase(unittest.TestCase):
-
     def test_incomplete_example(self):
         lpcell = POINTER("cell")
 

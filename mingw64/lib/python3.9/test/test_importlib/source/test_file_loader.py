@@ -1,5 +1,4 @@
-from .. import abc
-from .. import util
+from .. import abc, util
 
 importlib = util.import_importlib("importlib")
 importlib_abc = util.import_importlib("importlib.abc")
@@ -18,9 +17,7 @@ import unittest
 import warnings
 
 from test.support import make_legacy_pyc, unload
-
-from test.test_py_compile import without_source_date_epoch
-from test.test_py_compile import SourceDateEpochTestMeta
+from test.test_py_compile import SourceDateEpochTestMeta, without_source_date_epoch
 
 
 class SimpleTest(abc.LoaderTests):
@@ -147,7 +144,7 @@ class SimpleTest(abc.LoaderTests):
             self.assertIn(
                 "testing_var",
                 module.__dict__,
-                "'testing_var' not in " "{0}".format(list(module.__dict__.keys())),
+                f"'testing_var' not in {list(module.__dict__.keys())}",
             )
             self.assertEqual(module, sys.modules["_temp"])
             self.assertEqual(id(module), module_id)
@@ -169,10 +166,9 @@ class SimpleTest(abc.LoaderTests):
                 loader.exec_module(orig_module)
             for attr in attributes:
                 self.assertEqual(getattr(orig_module, attr), value)
-            with self.assertRaises(SyntaxError):
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore", DeprecationWarning)
-                    loader.load_module(name)
+            with self.assertRaises(SyntaxError), warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                loader.load_module(name)
             for attr in attributes:
                 self.assertEqual(getattr(orig_module, attr), value)
 
@@ -182,10 +178,9 @@ class SimpleTest(abc.LoaderTests):
             with open(mapping["_temp"], "w") as file:
                 file.write("=")
             loader = self.machinery.SourceFileLoader("_temp", mapping["_temp"])
-            with self.assertRaises(SyntaxError):
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore", DeprecationWarning)
-                    loader.load_module("_temp")
+            with self.assertRaises(SyntaxError), warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                loader.load_module("_temp")
             self.assertNotIn("_temp", sys.modules)
 
     def test_file_from_empty_string_dir(self):
@@ -224,9 +219,7 @@ class SimpleTest(abc.LoaderTests):
             except OSError as e:
                 if e.errno != getattr(errno, "EOVERFLOW", None):
                     raise
-                self.skipTest(
-                    "cannot set modification time to large integer ({})".format(e)
-                )
+                self.skipTest(f"cannot set modification time to large integer ({e})")
             loader = self.machinery.SourceFileLoader("_temp", mapping["_temp"])
             # PEP 451
             module = types.ModuleType("_temp")
@@ -251,10 +244,9 @@ class SimpleTest(abc.LoaderTests):
         module.__spec__ = self.machinery.ModuleSpec("bad name", loader)
         with self.assertRaises(ImportError):
             loader.exec_module(module)
-        with self.assertRaises(ImportError):
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore", DeprecationWarning)
-                loader.load_module("bad name")
+        with self.assertRaises(ImportError), warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            loader.load_module("bad name")
 
     @util.writes_bytecode_files
     def test_checked_hash_based_pyc(self):
@@ -289,8 +281,9 @@ class SimpleTest(abc.LoaderTests):
 
     @util.writes_bytecode_files
     def test_overridden_checked_hash_based_pyc(self):
-        with util.create_modules("_temp") as mapping, unittest.mock.patch(
-            "_imp.check_hash_based_pycs", "never"
+        with (
+            util.create_modules("_temp") as mapping,
+            unittest.mock.patch("_imp.check_hash_based_pycs", "never"),
         ):
             source = mapping["_temp"]
             pyc = self.util.cache_from_source(source)
@@ -345,8 +338,9 @@ class SimpleTest(abc.LoaderTests):
 
     @util.writes_bytecode_files
     def test_overridden_unchecked_hash_based_pyc(self):
-        with util.create_modules("_temp") as mapping, unittest.mock.patch(
-            "_imp.check_hash_based_pycs", "always"
+        with (
+            util.create_modules("_temp") as mapping,
+            unittest.mock.patch("_imp.check_hash_based_pycs", "always"),
         ):
             source = mapping["_temp"]
             pyc = self.util.cache_from_source(source)
@@ -396,7 +390,6 @@ class SourceDateEpoch_SimpleTest(
 
 
 class BadBytecodeTest:
-
     def import_(self, file, module_name):
         raise NotImplementedError
 
@@ -407,7 +400,7 @@ class BadBytecodeTest:
         manipulator,
         *,
         del_source=False,
-        invalidation_mode=py_compile.PycInvalidationMode.TIMESTAMP
+        invalidation_mode=py_compile.PycInvalidationMode.TIMESTAMP,
     ):
         """Manipulate the bytecode of a module by passing it into a callable
         that returns what to use as the new bytecode."""
@@ -536,7 +529,6 @@ class BadBytecodeTest:
 
 
 class BadBytecodeTestPEP451(BadBytecodeTest):
-
     def import_(self, file, module_name):
         loader = self.loader(module_name, file)
         module = types.ModuleType(module_name)
@@ -545,7 +537,6 @@ class BadBytecodeTestPEP451(BadBytecodeTest):
 
 
 class BadBytecodeTestPEP302(BadBytecodeTest):
-
     def import_(self, file, module_name):
         loader = self.loader(module_name, file)
         with warnings.catch_warnings():
@@ -555,7 +546,6 @@ class BadBytecodeTestPEP302(BadBytecodeTest):
 
 
 class SourceLoaderBadBytecodeTest:
-
     @classmethod
     def setUpClass(cls):
         cls.loader = cls.machinery.SourceFileLoader
@@ -731,7 +721,6 @@ Frozen_SourceBadBytecodePEP302, Source_SourceBadBytecodePEP302 = util.test_both(
 
 
 class SourcelessLoaderBadBytecodeTest:
-
     @classmethod
     def setUpClass(cls):
         cls.loader = cls.machinery.SourcelessFileLoader

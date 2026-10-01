@@ -249,47 +249,34 @@
     "switch": "D",
     "comment": "Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "IncludePaths",
     "switch": "I",
     "comment": "Include Paths",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "BrowseFile",
     "switch": "FR",
     "comment": "Generate Browse Information File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ObjectFileName",
     "switch": "Fo",
     "comment": "Object File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "AssembledCodeListingFile",
     "switch": "Fl",
     "comment": "Assembled Code Listing File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   }
 ]

@@ -1,5 +1,4 @@
-from .. import abc
-from .. import util
+from .. import abc, util
 
 machinery = util.import_importlib("importlib.machinery")
 

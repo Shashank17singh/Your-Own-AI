@@ -2,16 +2,15 @@
 Unit tests for refactor.py.
 """
 
-import sys
-import os
 import codecs
 import io
+import os
 import re
-import tempfile
 import shutil
+import sys
+import tempfile
 import unittest
-
-from lib2to3 import refactor, pygram, fixer_base
+from lib2to3 import fixer_base, pygram, refactor
 from lib2to3.pgen2 import token
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -27,7 +26,6 @@ _2TO3_FIXERS = refactor.get_fixers_from_package("lib2to3.fixes")
 
 
 class TestRefactoringTool(unittest.TestCase):
-
     def setUp(self):
         sys.path.append(FIXER_DIR)
 
@@ -166,7 +164,6 @@ from __future__ import print_function"""
     def test_refactor_stdin(self):
 
         class MyRT(refactor.RefactoringTool):
-
             def print_output(self, old_text, new_text, filename, equal):
                 results.extend([old_text, new_text, filename, equal])
 

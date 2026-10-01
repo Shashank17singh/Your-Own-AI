@@ -1,23 +1,21 @@
-import unittest
-import unittest.mock
-import test.support
-import os
-import os.path
 import contextlib
-import sys
-
 import ensurepip
 import ensurepip._uninstall
+import os
+import os.path
+import sys
+import unittest
+import unittest.mock
+
+import test.support
 
 
 class TestEnsurePipVersion(unittest.TestCase):
-
     def test_returns_version(self):
         self.assertEqual(ensurepip._PIP_VERSION, ensurepip.version())
 
 
 class EnsurepipMixin:
-
     def setUp(self):
         run_pip_patch = unittest.mock.patch("ensurepip._run_pip")
         self.run_pip = run_pip_patch.start()
@@ -35,7 +33,6 @@ class EnsurepipMixin:
 
 
 class TestBootstrap(EnsurepipMixin, unittest.TestCase):
-
     def test_basic_bootstrapping(self):
         ensurepip.bootstrap()
 
@@ -212,7 +209,6 @@ def fake_pip(version=ensurepip._PIP_VERSION):
 
 
 class TestUninstall(EnsurepipMixin, unittest.TestCase):
-
     def test_uninstall_skipped_when_not_installed(self):
         with fake_pip(None):
             ensurepip._uninstall_helper()
@@ -307,7 +303,6 @@ EXPECTED_VERSION_OUTPUT = "pip " + ensurepip._PIP_VERSION
 
 
 class TestBootstrappingMainFunction(EnsurepipMixin, unittest.TestCase):
-
     def test_bootstrap_version(self):
         with test.support.captured_stdout() as stdout:
             with self.assertRaises(SystemExit):
@@ -343,7 +338,6 @@ class TestBootstrappingMainFunction(EnsurepipMixin, unittest.TestCase):
 
 
 class TestUninstallationMainFunction(EnsurepipMixin, unittest.TestCase):
-
     def test_uninstall_version(self):
         with test.support.captured_stdout() as stdout:
             with self.assertRaises(SystemExit):

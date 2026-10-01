@@ -68,39 +68,37 @@ Debugger commands
 # NOTE: the actual command documentation is collected from docstrings of the
 # commands and is appended to __doc__ after the class has been defined.
 
-import os
-import io
-import re
-import sys
-import cmd
 import bdb
-import dis
+import cmd
 import code
+import dis
 import glob
-import pprint
-import signal
 import inspect
+import io
+import linecache
+import os
+import pprint
+import re
+import signal
+import sys
 import tokenize
 import traceback
-import linecache
 
 
 class Restart(Exception):
     """Causes a debugger to be restarted for the debugged python program."""
 
-    pass
-
 
 __all__ = [
-    "run",
-    "pm",
     "Pdb",
-    "runeval",
-    "runctx",
-    "runcall",
-    "set_trace",
-    "post_mortem",
     "help",
+    "pm",
+    "post_mortem",
+    "run",
+    "runcall",
+    "runctx",
+    "runeval",
+    "set_trace",
 ]
 
 
@@ -153,7 +151,6 @@ line_prefix = "\n-> "  # Probably a better default
 
 
 class Pdb(bdb.Bdb, cmd.Cmd):
-
     _previous_sigint_handler = None
 
     def __init__(
@@ -544,7 +541,7 @@ class Pdb(bdb.Bdb, cmd.Cmd):
             return [prefix + n for n in dir(obj) if n.startswith(dotted[-1])]
         else:
             # Complete a simple name.
-            return [n for n in ns.keys() if n.startswith(text)]
+            return [n for n in ns if n.startswith(text)]
 
     # Command definitions, called by cmdloop()
     # The argument is the remaining string on the command line
@@ -1028,7 +1025,7 @@ class Pdb(bdb.Bdb, cmd.Cmd):
                 self.error("Error in argument: %r" % arg)
                 return
             if lineno <= self.curframe.f_lineno:
-                self.error('"until" line number is smaller than current ' "line number")
+                self.error('"until" line number is smaller than current line number')
                 return
         else:
             lineno = None
@@ -1735,7 +1732,7 @@ def post_mortem(t=None):
         t = sys.exc_info()[2]
     if t is None:
         raise ValueError(
-            "A valid traceback must be passed if no " "exception is being handled"
+            "A valid traceback must be passed if no exception is being handled"
         )
 
     p = Pdb()

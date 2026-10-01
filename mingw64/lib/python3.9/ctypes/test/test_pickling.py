@@ -1,7 +1,7 @@
-import unittest
-import pickle
-from ctypes import *
 import _ctypes_test
+import pickle
+import unittest
+from ctypes import *
 
 dll = CDLL(_ctypes_test.__file__)
 

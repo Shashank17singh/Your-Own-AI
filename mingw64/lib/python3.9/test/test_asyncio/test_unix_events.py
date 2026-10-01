@@ -14,6 +14,7 @@ import tempfile
 import threading
 import unittest
 from unittest import mock
+
 from test import support
 from test.support import socket_helper
 
@@ -22,8 +23,8 @@ if sys.platform == "win32":
 
 
 import asyncio
-from asyncio import log
-from asyncio import unix_events
+from asyncio import log, unix_events
+
 from test.test_asyncio import utils as test_utils
 
 MOCK_ANY = mock.ANY
@@ -44,7 +45,6 @@ def close_pipe_transport(transport):
 
 @unittest.skipUnless(signal, "Signals are not supported")
 class SelectorEventLoopSignalTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.SelectorEventLoop()
@@ -263,7 +263,6 @@ class SelectorEventLoopSignalTests(test_utils.TestCase):
 
 @unittest.skipUnless(hasattr(socket, "AF_UNIX"), "UNIX Sockets are not supported")
 class SelectorEventLoopUnixSocketTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.SelectorEventLoop()
@@ -411,7 +410,6 @@ class SelectorEventLoopUnixSocketTests(test_utils.TestCase):
         with self.assertRaisesRegex(
             ValueError, "you have to pass server_hostname when using ssl"
         ):
-
             self.loop.run_until_complete(coro)
 
     def test_create_unix_connection_ssl_timeout_with_plain_sock(self):
@@ -429,7 +427,6 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
     DATA = b"12345abcde" * 16 * 1024  # 160 KiB
 
     class MyProto(asyncio.Protocol):
-
         def __init__(self, loop):
             self.started = False
             self.closed = False
@@ -634,7 +631,6 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
 
 
 class UnixReadPipeTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -713,7 +709,7 @@ class UnixReadPipeTransportTests(test_utils.TestCase):
         tr._close.assert_called_with(err)
         m_logexc.assert_called_with(
             test_utils.MockPattern(
-                "Fatal read error on pipe transport" "\nprotocol:.*\ntransport:.*"
+                "Fatal read error on pipe transport\nprotocol:.*\ntransport:.*"
             ),
             exc_info=(OSError, MOCK_ANY, MOCK_ANY),
         )
@@ -812,7 +808,6 @@ class UnixReadPipeTransportTests(test_utils.TestCase):
 
 
 class UnixWritePipeTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -1087,7 +1082,6 @@ class UnixWritePipeTransportTests(test_utils.TestCase):
 
 
 class AbstractChildWatcherTests(unittest.TestCase):
-
     def test_not_implemented(self):
         f = mock.Mock()
         watcher = asyncio.AbstractChildWatcher()
@@ -1101,7 +1095,6 @@ class AbstractChildWatcherTests(unittest.TestCase):
 
 
 class BaseChildWatcherTests(unittest.TestCase):
-
     def test_not_implemented(self):
         f = mock.Mock()
         watcher = unix_events.BaseChildWatcher()
@@ -1121,7 +1114,6 @@ WaitPidMocks = collections.namedtuple(
 
 
 class ChildWatcherTestsMixin:
-
     ignore_warnings = mock.patch.object(log.logger, "warning")
 
     def setUp(self):
@@ -1178,15 +1170,13 @@ class ChildWatcherTestsMixin:
             def patch(target, wrapper):
                 return mock.patch(target, wraps=wrapper, new_callable=mock.Mock)
 
-            with patch("os.WTERMSIG", self.WTERMSIG) as m_WTERMSIG, patch(
-                "os.WEXITSTATUS", self.WEXITSTATUS
-            ) as m_WEXITSTATUS, patch(
-                "os.WIFSIGNALED", self.WIFSIGNALED
-            ) as m_WIFSIGNALED, patch(
-                "os.WIFEXITED", self.WIFEXITED
-            ) as m_WIFEXITED, patch(
-                "os.waitpid", self.waitpid
-            ) as m_waitpid:
+            with (
+                patch("os.WTERMSIG", self.WTERMSIG) as m_WTERMSIG,
+                patch("os.WEXITSTATUS", self.WEXITSTATUS) as m_WEXITSTATUS,
+                patch("os.WIFSIGNALED", self.WIFSIGNALED) as m_WIFSIGNALED,
+                patch("os.WIFEXITED", self.WIFEXITED) as m_WIFEXITED,
+                patch("os.waitpid", self.waitpid) as m_waitpid,
+            ):
                 func(
                     self,
                     WaitPidMocks(
@@ -1624,7 +1614,6 @@ class ChildWatcherTestsMixin:
         m.waitpid.side_effect = ValueError
 
         with mock.patch.object(log.logger, "error") as m_error:
-
             self.assertEqual(self.watcher._sig_chld(), None)
             self.assertTrue(m_error.called)
 
@@ -1698,10 +1687,10 @@ class ChildWatcherTestsMixin:
         self.loop = self.new_test_loop()
         patch = mock.patch.object
 
-        with patch(old_loop, "remove_signal_handler") as m_old_remove, patch(
-            self.loop, "add_signal_handler"
-        ) as m_new_add:
-
+        with (
+            patch(old_loop, "remove_signal_handler") as m_old_remove,
+            patch(self.loop, "add_signal_handler") as m_new_add,
+        ):
             self.watcher.attach_loop(self.loop)
 
             m_old_remove.assert_called_once_with(signal.SIGCHLD)
@@ -1734,7 +1723,6 @@ class ChildWatcherTestsMixin:
         with mock.patch.object(
             old_loop, "remove_signal_handler"
         ) as m_remove_signal_handler:
-
             with self.assertWarnsRegex(RuntimeWarning, "A loop is being detached"):
                 self.watcher.attach_loop(None)
 
@@ -1753,7 +1741,6 @@ class ChildWatcherTestsMixin:
         self.loop = self.new_test_loop()
 
         with mock.patch.object(self.loop, "add_signal_handler") as m_add_signal_handler:
-
             self.watcher.attach_loop(self.loop)
 
             m_add_signal_handler.assert_called_once_with(
@@ -1798,7 +1785,6 @@ class ChildWatcherTestsMixin:
             with mock.patch.object(
                 self.loop, "remove_signal_handler"
             ) as m_remove_signal_handler:
-
                 self.watcher.close()
 
                 m_remove_signal_handler.assert_called_once_with(signal.SIGCHLD)
@@ -1818,7 +1804,6 @@ class FastChildWatcherTests(ChildWatcherTestsMixin, test_utils.TestCase):
 
 
 class PolicyTests(unittest.TestCase):
-
     def create_policy(self):
         return asyncio.DefaultEventLoopPolicy()
 
@@ -1887,7 +1872,6 @@ class PolicyTests(unittest.TestCase):
 
 
 class TestFunctional(unittest.TestCase):
-
     def setUp(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)

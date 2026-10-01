@@ -13,27 +13,29 @@ import sys
 import threading
 import warnings
 
-from . import base_events
-from . import base_subprocess
-from . import constants
-from . import coroutines
-from . import events
-from . import exceptions
-from . import futures
-from . import selector_events
-from . import tasks
-from . import transports
+from . import (
+    base_events,
+    base_subprocess,
+    constants,
+    coroutines,
+    events,
+    exceptions,
+    futures,
+    selector_events,
+    tasks,
+    transports,
+)
 from .log import logger
 
 __all__ = (
-    "SelectorEventLoop",
     "AbstractChildWatcher",
-    "SafeChildWatcher",
-    "FastChildWatcher",
-    "PidfdChildWatcher",
-    "MultiLoopChildWatcher",
-    "ThreadedChildWatcher",
     "DefaultEventLoopPolicy",
+    "FastChildWatcher",
+    "MultiLoopChildWatcher",
+    "PidfdChildWatcher",
+    "SafeChildWatcher",
+    "SelectorEventLoop",
+    "ThreadedChildWatcher",
 )
 
 
@@ -43,7 +45,6 @@ if sys.platform == "win32":  # pragma: no cover
 
 def _sighandler_noop(signum, frame):
     """Dummy signal handler."""
-    pass
 
 
 class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
@@ -86,7 +87,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
         Raise RuntimeError if there is a problem setting up the handler.
         """
         if coroutines.iscoroutine(callback) or coroutines.iscoroutinefunction(callback):
-            raise TypeError("coroutines cannot be used " "with add_signal_handler()")
+            raise TypeError("coroutines cannot be used with add_signal_handler()")
         self._check_signal(sig)
         self._check_closed()
         try:
@@ -321,7 +322,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
                 except OSError as err:
                     # Directory may have permissions only to create socket.
                     logger.error(
-                        "Unable to check or remove stale UNIX socket " "%r: %r",
+                        "Unable to check or remove stale UNIX socket %r: %r",
                         path,
                         err,
                     )
@@ -368,7 +369,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
             raise exceptions.SendfileNotAvailableError("os.sendfile() is not available")
         try:
             fileno = file.fileno()
-        except (AttributeError, io.UnsupportedOperation) as err:
+        except (AttributeError, io.UnsupportedOperation):
             raise exceptions.SendfileNotAvailableError("not a regular file")
         try:
             fsize = os.fstat(fileno).st_size
@@ -488,7 +489,6 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
 
 
 class _UnixReadPipeTransport(transports.ReadTransport):
-
     max_size = 256 * 1024  # max bytes we read in one event loop iteration
 
     def __init__(self, loop, pipe, protocol, waiter=None, extra=None):
@@ -623,7 +623,6 @@ class _UnixReadPipeTransport(transports.ReadTransport):
 
 
 class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTransport):
-
     def __init__(self, loop, pipe, protocol, waiter=None, extra=None):
         super().__init__(extra, loop)
         self._extra["pipe"] = pipe
@@ -643,7 +642,7 @@ class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTran
             self._fileno = None
             self._protocol = None
             raise ValueError(
-                "Pipe transport is only for " "pipes, sockets and character devices"
+                "Pipe transport is only for pipes, sockets and character devices"
             )
 
         os.set_blocking(self._fileno, False)
@@ -707,7 +706,7 @@ class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTran
         if self._conn_lost or self._closing:
             if self._conn_lost >= constants.LOG_THRESHOLD_FOR_CONNLOST_WRITES:
                 logger.warning(
-                    "pipe closed by peer or " "os.write(pipe, data) raised exception."
+                    "pipe closed by peer or os.write(pipe, data) raised exception."
                 )
             self._conn_lost += 1
             return
@@ -830,7 +829,6 @@ class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTran
 
 
 class _UnixSubprocessTransport(base_subprocess.BaseSubprocessTransport):
-
     def _start(self, args, shell, stdin, stdout, stderr, bufsize, **kwargs):
         stdin_w = None
         if stdin == subprocess.PIPE:
@@ -971,8 +969,7 @@ class PidfdChildWatcher(AbstractChildWatcher):
     def attach_loop(self, loop):
         if self._loop is not None and loop is None and self._callbacks:
             warnings.warn(
-                "A loop is being detached "
-                "from a child watcher with pending handlers",
+                "A loop is being detached from a child watcher with pending handlers",
                 RuntimeWarning,
             )
         for pidfd, _, _ in self._callbacks.values():
@@ -1035,7 +1032,6 @@ def _compute_returncode(status):
 
 
 class BaseChildWatcher(AbstractChildWatcher):
-
     def __init__(self):
         self._loop = None
         self._callbacks = {}
@@ -1057,8 +1053,7 @@ class BaseChildWatcher(AbstractChildWatcher):
 
         if self._loop is not None and loop is None and self._callbacks:
             warnings.warn(
-                "A loop is being detached "
-                "from a child watcher with pending handlers",
+                "A loop is being detached from a child watcher with pending handlers",
                 RuntimeWarning,
             )
 
@@ -1255,7 +1250,7 @@ class FastChildWatcher(BaseChildWatcher):
                         self._zombies[pid] = returncode
                         if self._loop.get_debug():
                             logger.debug(
-                                "unknown process %s exited " "with returncode %s",
+                                "unknown process %s exited with returncode %s",
                                 pid,
                                 returncode,
                             )
@@ -1269,7 +1264,7 @@ class FastChildWatcher(BaseChildWatcher):
 
             if callback is None:
                 logger.warning(
-                    "Caught subprocess termination from unknown pid: " "%d -> %d",
+                    "Caught subprocess termination from unknown pid: %d -> %d",
                     pid,
                     returncode,
                 )

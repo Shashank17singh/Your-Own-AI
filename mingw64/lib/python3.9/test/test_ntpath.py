@@ -3,9 +3,10 @@ import os
 import sys
 import unittest
 import warnings
-from test.support import TestFailed, FakePath
-from test import support, test_genericpath
 from tempfile import TemporaryFile
+
+from test import support, test_genericpath
+from test.support import FakePath, TestFailed
 
 try:
     import nt
@@ -35,7 +36,7 @@ else:
         result_len = GSPN(path, None, 0)
         if not result_len:
             raise OSError(
-                "failed to get short path name 0x{:08X}".format(ctypes.get_last_error())
+                f"failed to get short path name 0x{ctypes.get_last_error():08X}"
             )
         result = ctypes.create_unicode_buffer(result_len)
         result_len = GSPN(path, result, result_len)
@@ -569,9 +570,9 @@ class TestNtpath(NtpathTestCase):
             check("$spam}bar", "%s}bar" % nonascii)
             check("$%s}bar" % nonascii, "$%s}bar" % nonascii)
             check("%spam% bar", "%s bar" % nonascii)
-            check("%{}% bar".format(nonascii), "ham%s bar" % nonascii)
+            check(f"%{nonascii}% bar", "ham%s bar" % nonascii)
             check("%spam%bar", "%sbar" % nonascii)
-            check("%{}%bar".format(nonascii), "ham%sbar" % nonascii)
+            check(f"%{nonascii}%bar", "ham%sbar" % nonascii)
 
     def test_expanduser(self):
         tester('ntpath.expanduser("test")', "test")
@@ -800,7 +801,6 @@ class NtCommonTest(test_genericpath.CommonTest, unittest.TestCase):
 
 
 class PathLikeTests(NtpathTestCase):
-
     path = ntpath
 
     def setUp(self):

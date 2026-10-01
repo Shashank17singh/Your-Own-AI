@@ -1,84 +1,755 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-resolution="landscape">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, height=1080">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      @font-face { font-family: "Fira Code"; src: local("Fira Code"); }
-      * { box-sizing: border-box; }
-      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #07070f; }
-      #root { width: 100%; height: 100%; overflow: hidden; position: relative; font-family: "Fira Code", "Courier New", monospace; color: #cdd6f4; background: radial-gradient(circle at 50% 45%, #111332 0%, #07070f 58%); }
-      .clip { position: absolute; inset: 0; overflow: hidden; }
-      .scene { position: absolute; inset: 0; }
-      .grid { position: absolute; inset: 0; opacity: .28; background-image: linear-gradient(rgba(108,99,255,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(108,99,255,.18) 1px, transparent 1px); background-size: 64px 64px; }
-      .eyebrow { color: #00d9ff; font-size: 20px; letter-spacing: 5px; font-weight: 600; }
-      .headline { font-size: 92px; line-height: 1.03; letter-spacing: -4px; font-weight: 700; text-shadow: 0 0 34px rgba(108,99,255,.35); }
-      .subline { color: #8f91b2; font-size: 22px; letter-spacing: 1px; line-height: 1.6; }
-      .glow { position: absolute; width: 480px; height: 480px; border-radius: 50%; filter: blur(45px); opacity: .25; }
-      .cyan { background: #00d9ff; } .violet { background: #6c63ff; } .green { background: #a6e3a1; } .amber { background: #ffb74d; }
-      .cluster { position: absolute; width: 250px; height: 180px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; }
-      .dot { position: absolute; width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 0 18px currentColor; }
-      .panel { background: rgba(12,12,24,.94); border: 1px solid #252545; border-radius: 18px; box-shadow: 0 20px 80px rgba(0,0,0,.35); }
-      .app { width: 1420px; height: 720px; position: absolute; left: 250px; top: 180px; display: grid; grid-template-columns: 260px 1fr 390px; }
-      .side { padding: 28px; border-right: 1px solid #252545; }
-      .side h3, .content h3 { margin: 0 0 20px; font-size: 16px; letter-spacing: 3px; color: #777993; }
-      .side .brand { font-size: 25px; letter-spacing: 4px; background: linear-gradient(90deg,#00d9ff,#6c63ff,#b388ff); -webkit-background-clip: text; color: transparent; margin-bottom: 65px; }
-      .nav { padding: 13px 12px; color: #6f718c; font-size: 14px; margin-bottom: 9px; border-radius: 8px; }
-      .nav.active { color: #cdd6f4; background: rgba(108,99,255,.16); border-left: 3px solid #6c63ff; }
-      .content { padding: 40px; position: relative; border-right: 1px solid #252545; }
-      .inputbox { border: 1px solid #39385b; background: #090914; border-radius: 11px; padding: 20px; height: 142px; color: #cdd6f4; font-size: 18px; line-height: 1.55; }
-      .button { display: inline-block; margin-top: 19px; padding: 14px 20px; border-radius: 8px; background: linear-gradient(135deg,#6c63ff,#4f46e5); color: white; font-size: 15px; letter-spacing: 1px; box-shadow: 0 0 28px rgba(108,99,255,.4); }
-      .right { padding: 32px 26px; }
-      .status { font-size: 14px; color: #a6e3a1; letter-spacing: 1px; margin-bottom: 28px; }
-      .metric { padding: 18px 0; border-bottom: 1px solid #202035; }
-      .metric strong { display: block; font-size: 29px; color: #00d9ff; margin-bottom: 6px; }
-      .metric span { color:#777993; font-size: 13px; }
-      .layers { position: absolute; left: 635px; top: 315px; width: 385px; height: 230px; }
-      .layer { position: absolute; height: 44px; border-radius: 50%; border: 1px solid rgba(0,217,255,.55); background: rgba(0,217,255,.08); box-shadow: 0 0 20px rgba(0,217,255,.16); }
-      .layer.l1 { width: 100px; left: 140px; top: 0; } .layer.l2 { width: 215px; left: 83px; top: 65px; border-color: rgba(108,99,255,.7); } .layer.l3 { width: 360px; left: 10px; top: 137px; border-color: rgba(166,227,161,.62); }
-      .embedtag { position:absolute; left: 672px; top: 238px; color:#a6e3a1; padding: 13px 20px; border: 1px solid rgba(166,227,161,.45); background: rgba(166,227,161,.1); border-radius: 9px; letter-spacing:2px; font-size:19px; }
-      .question { border: 1px solid #39385b; background:#090914; border-radius:10px; padding:18px; font-size:21px; color:#cdd6f4; }
-      .chip { display:inline-block; padding:11px 14px; margin:14px 9px 0 0; border-radius:16px; background:rgba(108,99,255,.14); border:1px solid rgba(108,99,255,.55); color:#c8c5ff; font-size:14px; }
-      .answer { margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(0,217,255,.065); border: 1px solid rgba(0,217,255,.35); color: #dcecff; font-size: 24px; line-height: 1.55; }
-      .localtag { margin-top: 22px; color:#a6e3a1; letter-spacing:2px; font-size:15px; }
-      .lockup { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-      .lockup .final { font-size: 94px; letter-spacing:-5px; font-weight:700; } .lockup .name { margin-top:30px; font-size:32px; letter-spacing:10px; color:#00d9ff; }
-      .tags { display:flex; gap:14px; margin-top:42px; } .tags span { border:1px solid #343456; border-radius:20px; padding:10px 16px; color:#a5a6c5; letter-spacing:2px; font-size:15px; }
+      @font-face {
+        font-family: "Fira Code";
+        src: local("Fira Code");
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #07070f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        font-family: "Fira Code", "Courier New", monospace;
+        color: #cdd6f4;
+        background: radial-gradient(circle at 50% 45%, #111332 0%, #07070f 58%);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+      }
+      .grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.28;
+        background-image:
+          linear-gradient(rgba(108, 99, 255, 0.18) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(108, 99, 255, 0.18) 1px, transparent 1px);
+        background-size: 64px 64px;
+      }
+      .eyebrow {
+        color: #00d9ff;
+        font-size: 20px;
+        letter-spacing: 5px;
+        font-weight: 600;
+      }
+      .headline {
+        font-size: 92px;
+        line-height: 1.03;
+        letter-spacing: -4px;
+        font-weight: 700;
+        text-shadow: 0 0 34px rgba(108, 99, 255, 0.35);
+      }
+      .subline {
+        color: #8f91b2;
+        font-size: 22px;
+        letter-spacing: 1px;
+        line-height: 1.6;
+      }
+      .glow {
+        position: absolute;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        filter: blur(45px);
+        opacity: 0.25;
+      }
+      .cyan {
+        background: #00d9ff;
+      }
+      .violet {
+        background: #6c63ff;
+      }
+      .green {
+        background: #a6e3a1;
+      }
+      .amber {
+        background: #ffb74d;
+      }
+      .cluster {
+        position: absolute;
+        width: 250px;
+        height: 180px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+      }
+      .dot {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        box-shadow: 0 0 18px currentColor;
+      }
+      .panel {
+        background: rgba(12, 12, 24, 0.94);
+        border: 1px solid #252545;
+        border-radius: 18px;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
+      }
+      .app {
+        width: 1420px;
+        height: 720px;
+        position: absolute;
+        left: 250px;
+        top: 180px;
+        display: grid;
+        grid-template-columns: 260px 1fr 390px;
+      }
+      .side {
+        padding: 28px;
+        border-right: 1px solid #252545;
+      }
+      .side h3,
+      .content h3 {
+        margin: 0 0 20px;
+        font-size: 16px;
+        letter-spacing: 3px;
+        color: #777993;
+      }
+      .side .brand {
+        font-size: 25px;
+        letter-spacing: 4px;
+        background: linear-gradient(90deg, #00d9ff, #6c63ff, #b388ff);
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 65px;
+      }
+      .nav {
+        padding: 13px 12px;
+        color: #6f718c;
+        font-size: 14px;
+        margin-bottom: 9px;
+        border-radius: 8px;
+      }
+      .nav.active {
+        color: #cdd6f4;
+        background: rgba(108, 99, 255, 0.16);
+        border-left: 3px solid #6c63ff;
+      }
+      .content {
+        padding: 40px;
+        position: relative;
+        border-right: 1px solid #252545;
+      }
+      .inputbox {
+        border: 1px solid #39385b;
+        background: #090914;
+        border-radius: 11px;
+        padding: 20px;
+        height: 142px;
+        color: #cdd6f4;
+        font-size: 18px;
+        line-height: 1.55;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 19px;
+        padding: 14px 20px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #6c63ff, #4f46e5);
+        color: white;
+        font-size: 15px;
+        letter-spacing: 1px;
+        box-shadow: 0 0 28px rgba(108, 99, 255, 0.4);
+      }
+      .right {
+        padding: 32px 26px;
+      }
+      .status {
+        font-size: 14px;
+        color: #a6e3a1;
+        letter-spacing: 1px;
+        margin-bottom: 28px;
+      }
+      .metric {
+        padding: 18px 0;
+        border-bottom: 1px solid #202035;
+      }
+      .metric strong {
+        display: block;
+        font-size: 29px;
+        color: #00d9ff;
+        margin-bottom: 6px;
+      }
+      .metric span {
+        color: #777993;
+        font-size: 13px;
+      }
+      .layers {
+        position: absolute;
+        left: 635px;
+        top: 315px;
+        width: 385px;
+        height: 230px;
+      }
+      .layer {
+        position: absolute;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 217, 255, 0.55);
+        background: rgba(0, 217, 255, 0.08);
+        box-shadow: 0 0 20px rgba(0, 217, 255, 0.16);
+      }
+      .layer.l1 {
+        width: 100px;
+        left: 140px;
+        top: 0;
+      }
+      .layer.l2 {
+        width: 215px;
+        left: 83px;
+        top: 65px;
+        border-color: rgba(108, 99, 255, 0.7);
+      }
+      .layer.l3 {
+        width: 360px;
+        left: 10px;
+        top: 137px;
+        border-color: rgba(166, 227, 161, 0.62);
+      }
+      .embedtag {
+        position: absolute;
+        left: 672px;
+        top: 238px;
+        color: #a6e3a1;
+        padding: 13px 20px;
+        border: 1px solid rgba(166, 227, 161, 0.45);
+        background: rgba(166, 227, 161, 0.1);
+        border-radius: 9px;
+        letter-spacing: 2px;
+        font-size: 19px;
+      }
+      .question {
+        border: 1px solid #39385b;
+        background: #090914;
+        border-radius: 10px;
+        padding: 18px;
+        font-size: 21px;
+        color: #cdd6f4;
+      }
+      .chip {
+        display: inline-block;
+        padding: 11px 14px;
+        margin: 14px 9px 0 0;
+        border-radius: 16px;
+        background: rgba(108, 99, 255, 0.14);
+        border: 1px solid rgba(108, 99, 255, 0.55);
+        color: #c8c5ff;
+        font-size: 14px;
+      }
+      .answer {
+        margin-top: 40px;
+        padding: 25px;
+        border-radius: 12px;
+        background: rgba(0, 217, 255, 0.065);
+        border: 1px solid rgba(0, 217, 255, 0.35);
+        color: #dcecff;
+        font-size: 24px;
+        line-height: 1.55;
+      }
+      .localtag {
+        margin-top: 22px;
+        color: #a6e3a1;
+        letter-spacing: 2px;
+        font-size: 15px;
+      }
+      .lockup {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .lockup .final {
+        font-size: 94px;
+        letter-spacing: -5px;
+        font-weight: 700;
+      }
+      .lockup .name {
+        margin-top: 30px;
+        font-size: 32px;
+        letter-spacing: 10px;
+        color: #00d9ff;
+      }
+      .tags {
+        display: flex;
+        gap: 14px;
+        margin-top: 42px;
+      }
+      .tags span {
+        border: 1px solid #343456;
+        border-radius: 20px;
+        padding: 10px 16px;
+        color: #a5a6c5;
+        letter-spacing: 2px;
+        font-size: 15px;
+      }
     </style>
   </head>
   <body>
-    <div data-hf-id="hf-at0g" id="root" data-composition-id="main" data-start="0" data-duration="20" data-width="1920" data-height="1080">
-      <section data-hf-id="hf-0gm5" class="clip" data-start="0" data-duration="3" data-track-index="0"><div data-hf-id="hf-yihu" id="s1" class="scene"><div data-hf-id="hf-kxq8" class="grid"></div><div data-hf-id="hf-1ahz" class="glow cyan" style="left:80px;top:200px"></div><div data-hf-id="hf-ej1l" class="glow violet" style="right:80px;top:120px"></div><div data-hf-id="hf-nc7i" style="position:absolute;left:170px;top:250px"><div data-hf-id="hf-cd1z" class="eyebrow">YOUR-OWN-AI // VECTORDB</div><div data-hf-id="hf-1ig5" class="headline" style="margin-top:25px">YOUR DOCS.<br data-hf-id="hf-x5px">YOUR AI. LOCAL.</div><div data-hf-id="hf-rth4" class="subline" style="margin-top:28px">Vector search + RAG, built in C++.</div></div><div data-hf-id="hf-9a8o" id="clusters" style="position:absolute;right:150px;top:320px;width:540px;height:390px"><div data-hf-id="hf-mp3c" class="cluster" style="left:20px;top:20px;border-color:#00d9ff"></div><div data-hf-id="hf-1aql" class="cluster" style="left:230px;top:35px;border-color:#b388ff"></div><div data-hf-id="hf-y7yd" class="cluster" style="left:105px;top:175px;border-color:#a6e3a1"></div><div data-hf-id="hf-mh6n" class="dot" style="left:70px;top:88px;color:#00d9ff"></div><div data-hf-id="hf-1ouh" class="dot" style="left:130px;top:52px;color:#00d9ff"></div><div data-hf-id="hf-wgcx" class="dot" style="left:295px;top:104px;color:#b388ff"></div><div data-hf-id="hf-bn2g" class="dot" style="left:366px;top:74px;color:#b388ff"></div><div data-hf-id="hf-669r" class="dot" style="left:192px;top:250px;color:#a6e3a1"></div><div data-hf-id="hf-uelu" class="dot" style="left:260px;top:286px;color:#a6e3a1"></div><div data-hf-id="hf-ul1f" class="dot" style="left:396px;top:250px;color:#ffb74d"></div></div></div></section>
-      <section data-hf-id="hf-c176" class="clip" data-start="3" data-duration="4" data-track-index="1"><div data-hf-id="hf-ukdt" id="s2" class="scene"><div data-hf-id="hf-6qwo" class="grid"></div><div data-hf-id="hf-c7pf" class="app panel"><aside data-hf-id="hf-ntsi" class="side"><div data-hf-id="hf-7rme" class="brand">VECTORDB</div><div data-hf-id="hf-fun3" class="nav">SEARCH</div><div data-hf-id="hf-eelz" class="nav active">DOCUMENTS</div><div data-hf-id="hf-maqm" class="nav">ASK AI</div></aside><main data-hf-id="hf-147z" class="content"><h3 data-hf-id="hf-jf2e">INSERT DOCUMENT</h3><div data-hf-id="hf-cygf" class="inputbox"><span data-hf-id="hf-ul08" style="color:#a6e3a1">Graph Algorithms Notes</span><br data-hf-id="hf-rsrt"><span data-hf-id="hf-r3ba" style="color:#9294ad">HNSW uses navigable small-world graphs to efficiently find nearest neighbors across high-dimensional vector space.</span></div><div data-hf-id="hf-wufj" id="insertBtn" class="button">EMBED &amp; INSERT</div><div data-hf-id="hf-pa1q" id="embed" class="embedtag">768D EMBEDDING</div><div data-hf-id="hf-ysly" class="layers"><div data-hf-id="hf-omow" class="layer l1"></div><div data-hf-id="hf-zi6j" class="layer l2"></div><div data-hf-id="hf-vk2i" class="layer l3"></div></div></main><aside data-hf-id="hf-vgvj" class="right"><div data-hf-id="hf-tcuy" class="status">● OLLAMA ONLINE</div><div data-hf-id="hf-dq4c" class="metric"><strong data-hf-id="hf-5egx">768</strong><span data-hf-id="hf-nqw3">embedding dimensions</span></div><div data-hf-id="hf-q6lw" class="metric"><strong data-hf-id="hf-xbf6">HNSW</strong><span data-hf-id="hf-pua4">production-grade index</span></div><div data-hf-id="hf-ozot" class="metric"><strong data-hf-id="hf-hj6p">LOCAL</strong><span data-hf-id="hf-e60b">nomic-embed-text</span></div></aside></div></div></section>
-      <section data-hf-id="hf-mxuo" class="clip" data-start="7" data-duration="5" data-track-index="2"><div data-hf-id="hf-tsq0" id="s3" class="scene"><div data-hf-id="hf-5jzl" class="grid"></div><div data-hf-id="hf-fuyr" class="app panel"><aside data-hf-id="hf-77py" class="side"><div data-hf-id="hf-bblm" class="brand">VECTORDB</div><div data-hf-id="hf-kndr" class="nav">SEARCH</div><div data-hf-id="hf-jre3" class="nav">DOCUMENTS</div><div data-hf-id="hf-bk62" class="nav active">ASK AI</div></aside><main data-hf-id="hf-apzz" class="content"><h3 data-hf-id="hf-dct6">ASK YOUR DOCUMENTS</h3><div data-hf-id="hf-ddgq" class="question">How does HNSW speed up search?</div><div data-hf-id="hf-igmx" class="button">ASK AI</div><div data-hf-id="hf-9vvr" style="margin-top:46px"><h3 data-hf-id="hf-iq6v">RETRIEVED CONTEXT</h3><span data-hf-id="hf-cc7d" class="chip">Layered graph</span><span data-hf-id="hf-z8d0" class="chip">Nearest neighbors</span><span data-hf-id="hf-voim" class="chip">Logarithmic search</span></div></main><aside data-hf-id="hf-zebz" class="right"><div data-hf-id="hf-wloy" class="status">● 3 CONTEXTS FOUND</div><div data-hf-id="hf-pdzu" class="metric"><strong data-hf-id="hf-2omd">0.21</strong><span data-hf-id="hf-uiq2">top cosine distance</span></div><div data-hf-id="hf-rdiz" class="metric"><strong data-hf-id="hf-fem3">3</strong><span data-hf-id="hf-gw9y">relevant chunks</span></div></aside></div></div></section>
-      <section data-hf-id="hf-xrq7" class="clip" data-start="12" data-duration="4.5" data-track-index="3"><div data-hf-id="hf-pulz" id="s4" class="scene"><div data-hf-id="hf-5yam" class="grid"></div><div data-hf-id="hf-fgnq" class="app panel"><aside data-hf-id="hf-7m0z" class="side"><div data-hf-id="hf-bpwn" class="brand">VECTORDB</div><div data-hf-id="hf-k92q" class="nav">SEARCH</div><div data-hf-id="hf-6g5n" class="nav">DOCUMENTS</div><div data-hf-id="hf-q872" class="nav active">ASK AI</div></aside><main data-hf-id="hf-aboy" class="content"><h3 data-hf-id="hf-a7on">LOCAL ANSWER</h3><div data-hf-id="hf-trv7" class="answer">It navigates sparse upper layers first, then refines nearby candidates at the dense layer.</div><div data-hf-id="hf-8ix7" class="localtag">● OLLAMA • LLAMA 3.2:1B • LOCAL LLM</div></main><aside data-hf-id="hf-z00y" class="right"><div data-hf-id="hf-c132" class="status">● ANSWER COMPLETE</div><div data-hf-id="hf-rru0" class="metric"><strong data-hf-id="hf-qus6">HNSW</strong><span data-hf-id="hf-cumj">retrieval engine</span></div><div data-hf-id="hf-qkwx" class="metric"><strong data-hf-id="hf-5pvo">RAG</strong><span data-hf-id="hf-ukjn">grounded generation</span></div></aside></div></div></section>
-      <section data-hf-id="hf-o1qg" class="clip" data-start="16.5" data-duration="3.5" data-track-index="4"><div data-hf-id="hf-lwhy" id="s5" class="scene"><div data-hf-id="hf-4rdj" class="grid"></div><div data-hf-id="hf-3xi3" class="glow violet" style="left:250px;top:250px"></div><div data-hf-id="hf-dzfq" class="glow cyan" style="right:250px;top:250px"></div><div data-hf-id="hf-6jvi" class="lockup"><div data-hf-id="hf-l10q" class="final">SEARCH. RETRIEVE. REASON.</div><div data-hf-id="hf-1174" class="name">YOUR-OWN-AI</div><div data-hf-id="hf-k2nf" class="tags"><span data-hf-id="hf-7y7s">C++17</span><span data-hf-id="hf-cj0p">HNSW</span><span data-hf-id="hf-xsv3">OLLAMA</span><span data-hf-id="hf-wurx">RAG</span></div></div></div></section>
-      <audio id="music-bed" data-start="0" data-duration="20" data-track-index="10" data-volume="0.30" src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"></audio>
-      <audio id="sfx-document-click" data-start="4.08" data-duration="0.01" data-track-index="11" data-volume="0.68" src="assets/sfx/click_003.ogg"></audio>
-      <audio id="sfx-embedding-reveal" data-start="4.42" data-duration="0.14" data-track-index="12" data-volume="0.72" src="assets/sfx/impactSoft_medium_002.ogg"></audio>
-      <audio id="sfx-answer-complete" data-start="13.50" data-duration="0.13" data-track-index="13" data-volume="0.55" src="assets/sfx/bong_001.ogg"></audio>
-      <audio id="sfx-final-lockup" data-start="17.42" data-duration="0.14" data-track-index="14" data-volume="0.72" src="assets/sfx/impactSoft_medium_002.ogg"></audio>
+    <div
+      data-hf-id="hf-at0g"
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="20"
+      data-width="1920"
+      data-height="1080"
+    >
+      <section
+        data-hf-id="hf-0gm5"
+        class="clip"
+        data-start="0"
+        data-duration="3"
+        data-track-index="0"
+      >
+        <div data-hf-id="hf-yihu" id="s1" class="scene">
+          <div data-hf-id="hf-kxq8" class="grid"></div>
+          <div
+            data-hf-id="hf-1ahz"
+            class="glow cyan"
+            style="left: 80px; top: 200px"
+          ></div>
+          <div
+            data-hf-id="hf-ej1l"
+            class="glow violet"
+            style="right: 80px; top: 120px"
+          ></div>
+          <div
+            data-hf-id="hf-nc7i"
+            style="position: absolute; left: 170px; top: 250px"
+          >
+            <div data-hf-id="hf-cd1z" class="eyebrow">
+              YOUR-OWN-AI // VECTORDB
+            </div>
+            <div data-hf-id="hf-1ig5" class="headline" style="margin-top: 25px">
+              YOUR DOCS.<br data-hf-id="hf-x5px" />YOUR AI. LOCAL.
+            </div>
+            <div data-hf-id="hf-rth4" class="subline" style="margin-top: 28px">
+              Vector search + RAG, built in C++.
+            </div>
+          </div>
+          <div
+            data-hf-id="hf-9a8o"
+            id="clusters"
+            style="
+              position: absolute;
+              right: 150px;
+              top: 320px;
+              width: 540px;
+              height: 390px;
+            "
+          >
+            <div
+              data-hf-id="hf-mp3c"
+              class="cluster"
+              style="left: 20px; top: 20px; border-color: #00d9ff"
+            ></div>
+            <div
+              data-hf-id="hf-1aql"
+              class="cluster"
+              style="left: 230px; top: 35px; border-color: #b388ff"
+            ></div>
+            <div
+              data-hf-id="hf-y7yd"
+              class="cluster"
+              style="left: 105px; top: 175px; border-color: #a6e3a1"
+            ></div>
+            <div
+              data-hf-id="hf-mh6n"
+              class="dot"
+              style="left: 70px; top: 88px; color: #00d9ff"
+            ></div>
+            <div
+              data-hf-id="hf-1ouh"
+              class="dot"
+              style="left: 130px; top: 52px; color: #00d9ff"
+            ></div>
+            <div
+              data-hf-id="hf-wgcx"
+              class="dot"
+              style="left: 295px; top: 104px; color: #b388ff"
+            ></div>
+            <div
+              data-hf-id="hf-bn2g"
+              class="dot"
+              style="left: 366px; top: 74px; color: #b388ff"
+            ></div>
+            <div
+              data-hf-id="hf-669r"
+              class="dot"
+              style="left: 192px; top: 250px; color: #a6e3a1"
+            ></div>
+            <div
+              data-hf-id="hf-uelu"
+              class="dot"
+              style="left: 260px; top: 286px; color: #a6e3a1"
+            ></div>
+            <div
+              data-hf-id="hf-ul1f"
+              class="dot"
+              style="left: 396px; top: 250px; color: #ffb74d"
+            ></div>
+          </div>
+        </div>
+      </section>
+      <section
+        data-hf-id="hf-c176"
+        class="clip"
+        data-start="3"
+        data-duration="4"
+        data-track-index="1"
+      >
+        <div data-hf-id="hf-ukdt" id="s2" class="scene">
+          <div data-hf-id="hf-6qwo" class="grid"></div>
+          <div data-hf-id="hf-c7pf" class="app panel">
+            <aside data-hf-id="hf-ntsi" class="side">
+              <div data-hf-id="hf-7rme" class="brand">VECTORDB</div>
+              <div data-hf-id="hf-fun3" class="nav">SEARCH</div>
+              <div data-hf-id="hf-eelz" class="nav active">DOCUMENTS</div>
+              <div data-hf-id="hf-maqm" class="nav">ASK AI</div>
+            </aside>
+            <main data-hf-id="hf-147z" class="content">
+              <h3 data-hf-id="hf-jf2e">INSERT DOCUMENT</h3>
+              <div data-hf-id="hf-cygf" class="inputbox">
+                <span data-hf-id="hf-ul08" style="color: #a6e3a1"
+                  >Graph Algorithms Notes</span
+                ><br data-hf-id="hf-rsrt" /><span
+                  data-hf-id="hf-r3ba"
+                  style="color: #9294ad"
+                  >HNSW uses navigable small-world graphs to efficiently find
+                  nearest neighbors across high-dimensional vector space.</span
+                >
+              </div>
+              <div data-hf-id="hf-wufj" id="insertBtn" class="button">
+                EMBED &amp; INSERT
+              </div>
+              <div data-hf-id="hf-pa1q" id="embed" class="embedtag">
+                768D EMBEDDING
+              </div>
+              <div data-hf-id="hf-ysly" class="layers">
+                <div data-hf-id="hf-omow" class="layer l1"></div>
+                <div data-hf-id="hf-zi6j" class="layer l2"></div>
+                <div data-hf-id="hf-vk2i" class="layer l3"></div>
+              </div>
+            </main>
+            <aside data-hf-id="hf-vgvj" class="right">
+              <div data-hf-id="hf-tcuy" class="status">● OLLAMA ONLINE</div>
+              <div data-hf-id="hf-dq4c" class="metric">
+                <strong data-hf-id="hf-5egx">768</strong
+                ><span data-hf-id="hf-nqw3">embedding dimensions</span>
+              </div>
+              <div data-hf-id="hf-q6lw" class="metric">
+                <strong data-hf-id="hf-xbf6">HNSW</strong
+                ><span data-hf-id="hf-pua4">production-grade index</span>
+              </div>
+              <div data-hf-id="hf-ozot" class="metric">
+                <strong data-hf-id="hf-hj6p">LOCAL</strong
+                ><span data-hf-id="hf-e60b">nomic-embed-text</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section
+        data-hf-id="hf-mxuo"
+        class="clip"
+        data-start="7"
+        data-duration="5"
+        data-track-index="2"
+      >
+        <div data-hf-id="hf-tsq0" id="s3" class="scene">
+          <div data-hf-id="hf-5jzl" class="grid"></div>
+          <div data-hf-id="hf-fuyr" class="app panel">
+            <aside data-hf-id="hf-77py" class="side">
+              <div data-hf-id="hf-bblm" class="brand">VECTORDB</div>
+              <div data-hf-id="hf-kndr" class="nav">SEARCH</div>
+              <div data-hf-id="hf-jre3" class="nav">DOCUMENTS</div>
+              <div data-hf-id="hf-bk62" class="nav active">ASK AI</div>
+            </aside>
+            <main data-hf-id="hf-apzz" class="content">
+              <h3 data-hf-id="hf-dct6">ASK YOUR DOCUMENTS</h3>
+              <div data-hf-id="hf-ddgq" class="question">
+                How does HNSW speed up search?
+              </div>
+              <div data-hf-id="hf-igmx" class="button">ASK AI</div>
+              <div data-hf-id="hf-9vvr" style="margin-top: 46px">
+                <h3 data-hf-id="hf-iq6v">RETRIEVED CONTEXT</h3>
+                <span data-hf-id="hf-cc7d" class="chip">Layered graph</span
+                ><span data-hf-id="hf-z8d0" class="chip">Nearest neighbors</span
+                ><span data-hf-id="hf-voim" class="chip"
+                  >Logarithmic search</span
+                >
+              </div>
+            </main>
+            <aside data-hf-id="hf-zebz" class="right">
+              <div data-hf-id="hf-wloy" class="status">● 3 CONTEXTS FOUND</div>
+              <div data-hf-id="hf-pdzu" class="metric">
+                <strong data-hf-id="hf-2omd">0.21</strong
+                ><span data-hf-id="hf-uiq2">top cosine distance</span>
+              </div>
+              <div data-hf-id="hf-rdiz" class="metric">
+                <strong data-hf-id="hf-fem3">3</strong
+                ><span data-hf-id="hf-gw9y">relevant chunks</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section
+        data-hf-id="hf-xrq7"
+        class="clip"
+        data-start="12"
+        data-duration="4.5"
+        data-track-index="3"
+      >
+        <div data-hf-id="hf-pulz" id="s4" class="scene">
+          <div data-hf-id="hf-5yam" class="grid"></div>
+          <div data-hf-id="hf-fgnq" class="app panel">
+            <aside data-hf-id="hf-7m0z" class="side">
+              <div data-hf-id="hf-bpwn" class="brand">VECTORDB</div>
+              <div data-hf-id="hf-k92q" class="nav">SEARCH</div>
+              <div data-hf-id="hf-6g5n" class="nav">DOCUMENTS</div>
+              <div data-hf-id="hf-q872" class="nav active">ASK AI</div>
+            </aside>
+            <main data-hf-id="hf-aboy" class="content">
+              <h3 data-hf-id="hf-a7on">LOCAL ANSWER</h3>
+              <div data-hf-id="hf-trv7" class="answer">
+                It navigates sparse upper layers first, then refines nearby
+                candidates at the dense layer.
+              </div>
+              <div data-hf-id="hf-8ix7" class="localtag">
+                ● OLLAMA • LLAMA 3.2:1B • LOCAL LLM
+              </div>
+            </main>
+            <aside data-hf-id="hf-z00y" class="right">
+              <div data-hf-id="hf-c132" class="status">● ANSWER COMPLETE</div>
+              <div data-hf-id="hf-rru0" class="metric">
+                <strong data-hf-id="hf-qus6">HNSW</strong
+                ><span data-hf-id="hf-cumj">retrieval engine</span>
+              </div>
+              <div data-hf-id="hf-qkwx" class="metric">
+                <strong data-hf-id="hf-5pvo">RAG</strong
+                ><span data-hf-id="hf-ukjn">grounded generation</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <section
+        data-hf-id="hf-o1qg"
+        class="clip"
+        data-start="16.5"
+        data-duration="3.5"
+        data-track-index="4"
+      >
+        <div data-hf-id="hf-lwhy" id="s5" class="scene">
+          <div data-hf-id="hf-4rdj" class="grid"></div>
+          <div
+            data-hf-id="hf-3xi3"
+            class="glow violet"
+            style="left: 250px; top: 250px"
+          ></div>
+          <div
+            data-hf-id="hf-dzfq"
+            class="glow cyan"
+            style="right: 250px; top: 250px"
+          ></div>
+          <div data-hf-id="hf-6jvi" class="lockup">
+            <div data-hf-id="hf-l10q" class="final">
+              SEARCH. RETRIEVE. REASON.
+            </div>
+            <div data-hf-id="hf-1174" class="name">YOUR-OWN-AI</div>
+            <div data-hf-id="hf-k2nf" class="tags">
+              <span data-hf-id="hf-7y7s">C++17</span
+              ><span data-hf-id="hf-cj0p">HNSW</span
+              ><span data-hf-id="hf-xsv3">OLLAMA</span
+              ><span data-hf-id="hf-wurx">RAG</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <audio
+        id="music-bed"
+        data-start="0"
+        data-duration="20"
+        data-track-index="10"
+        data-volume="0.30"
+        src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"
+      ></audio>
+      <audio
+        id="sfx-document-click"
+        data-start="4.08"
+        data-duration="0.01"
+        data-track-index="11"
+        data-volume="0.68"
+        src="assets/sfx/click_003.ogg"
+      ></audio>
+      <audio
+        id="sfx-embedding-reveal"
+        data-start="4.42"
+        data-duration="0.14"
+        data-track-index="12"
+        data-volume="0.72"
+        src="assets/sfx/impactSoft_medium_002.ogg"
+      ></audio>
+      <audio
+        id="sfx-answer-complete"
+        data-start="13.50"
+        data-duration="0.13"
+        data-track-index="13"
+        data-volume="0.55"
+        src="assets/sfx/bong_001.ogg"
+      ></audio>
+      <audio
+        id="sfx-final-lockup"
+        data-start="17.42"
+        data-duration="0.14"
+        data-track-index="14"
+        data-volume="0.72"
+        src="assets/sfx/impactSoft_medium_002.ogg"
+      ></audio>
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo('#s1 .eyebrow', {opacity:0,y:24},{opacity:1,y:0,duration:.45,ease:'power2.out'},0.15)
-        .fromTo('#s1 .headline', {opacity:0,y:42},{opacity:1,y:0,duration:.72,ease:'power3.out'},0.35)
-        .fromTo('#s1 .subline', {opacity:0},{opacity:1,duration:.45},1.1)
-        .fromTo('#clusters', {opacity:0,scale:.8},{opacity:1,scale:1,duration:1,ease:'back.out(1.2)'},.55)
-        .fromTo('#s2 .app', {opacity:0,scale:.94,y:30},{opacity:1,scale:1,y:0,duration:.55,ease:'power3.out'},3.05)
-        .fromTo('#embed', {opacity:0,y:-20,scale:.9},{opacity:1,y:0,scale:1,duration:.4,ease:'back.out(1.6)'},4.1)
-        .fromTo('#s2 .layer', {opacity:0,scale:.3},{opacity:1,scale:1,duration:.45,stagger:.16,ease:'power2.out'},4.45)
-        .fromTo('#s3 .app', {opacity:0,scale:.94,y:30},{opacity:1,scale:1,y:0,duration:.55,ease:'power3.out'},7.05)
-        .fromTo('#s3 .question', {opacity:0},{opacity:1,duration:.35},7.55)
-        .fromTo('#s3 .chip', {opacity:0,y:18,scale:.88},{opacity:1,y:0,scale:1,duration:.35,stagger:.38,ease:'back.out(1.4)'},8.45)
-        .fromTo('#s4 .app', {opacity:0,scale:.94,y:30},{opacity:1,scale:1,y:0,duration:.55,ease:'power3.out'},12.05)
-        .fromTo('#s4 .answer', {opacity:0,y:22},{opacity:1,y:0,duration:.65,ease:'power2.out'},12.7)
-        .fromTo('#s4 .localtag', {opacity:0},{opacity:1,duration:.4},13.55)
-        .fromTo('#s5 .final', {opacity:0,y:34,scale:.94},{opacity:1,y:0,scale:1,duration:.7,ease:'power3.out'},16.7)
-        .fromTo('#s5 .name', {opacity:0,scale:.85},{opacity:1,scale:1,duration:.5,ease:'back.out(1.5)'},17.45)
-        .fromTo('#s5 .tags span', {opacity:0,y:14},{opacity:1,y:0,duration:.35,stagger:.14,ease:'power2.out'},18.05);
-      window.__timelines['main'] = tl;
+      tl.fromTo(
+        "#s1 .eyebrow",
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+        0.15,
+      )
+        .fromTo(
+          "#s1 .headline",
+          { opacity: 0, y: 42 },
+          { opacity: 1, y: 0, duration: 0.72, ease: "power3.out" },
+          0.35,
+        )
+        .fromTo(
+          "#s1 .subline",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.45 },
+          1.1,
+        )
+        .fromTo(
+          "#clusters",
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 1, ease: "back.out(1.2)" },
+          0.55,
+        )
+        .fromTo(
+          "#s2 .app",
+          { opacity: 0, scale: 0.94, y: 30 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          3.05,
+        )
+        .fromTo(
+          "#embed",
+          { opacity: 0, y: -20, scale: 0.9 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" },
+          4.1,
+        )
+        .fromTo(
+          "#s2 .layer",
+          { opacity: 0, scale: 0.3 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.45,
+            stagger: 0.16,
+            ease: "power2.out",
+          },
+          4.45,
+        )
+        .fromTo(
+          "#s3 .app",
+          { opacity: 0, scale: 0.94, y: 30 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          7.05,
+        )
+        .fromTo(
+          "#s3 .question",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35 },
+          7.55,
+        )
+        .fromTo(
+          "#s3 .chip",
+          { opacity: 0, y: 18, scale: 0.88 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.35,
+            stagger: 0.38,
+            ease: "back.out(1.4)",
+          },
+          8.45,
+        )
+        .fromTo(
+          "#s4 .app",
+          { opacity: 0, scale: 0.94, y: 30 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.55, ease: "power3.out" },
+          12.05,
+        )
+        .fromTo(
+          "#s4 .answer",
+          { opacity: 0, y: 22 },
+          { opacity: 1, y: 0, duration: 0.65, ease: "power2.out" },
+          12.7,
+        )
+        .fromTo(
+          "#s4 .localtag",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4 },
+          13.55,
+        )
+        .fromTo(
+          "#s5 .final",
+          { opacity: 0, y: 34, scale: 0.94 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" },
+          16.7,
+        )
+        .fromTo(
+          "#s5 .name",
+          { opacity: 0, scale: 0.85 },
+          { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" },
+          17.45,
+        )
+        .fromTo(
+          "#s5 .tags span",
+          { opacity: 0, y: 14 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.35,
+            stagger: 0.14,
+            ease: "power2.out",
+          },
+          18.05,
+        );
+      window.__timelines["main"] = tl;
       tl.seek(0);
     </script>
   </body>

@@ -1,18 +1,17 @@
-import gc
-import sys
-import unittest
 import collections
-import weakref
-import operator
 import contextlib
 import copy
+import gc
+import operator
+import random
+import sys
 import threading
 import time
-import random
+import unittest
+import weakref
 
 from test import support
-from test.support import script_helper, ALWAYS_EQ
-from test.support import gc_collect
+from test.support import ALWAYS_EQ, gc_collect, script_helper
 
 # Used in ReferencesTestCase.test_ref_created_during_del() .
 ref_from_del = None
@@ -78,7 +77,6 @@ class RefCycle:
 
 
 class TestBase(unittest.TestCase):
-
     def setUp(self):
         self.cbcalled = 0
 
@@ -109,7 +107,6 @@ def collect_in_thread(period=0.0001):
 
 
 class ReferencesTestCase(TestBase):
-
     def test_basic_ref(self):
         self.check_basic_ref(C)
         self.check_basic_ref(create_function)
@@ -275,7 +272,7 @@ class ReferencesTestCase(TestBase):
 
     def test_proxy_unicode(self):
         # See bug 5037
-        class C(object):
+        class C:
             def __str__(self):
                 return "string"
 
@@ -526,7 +523,7 @@ class ReferencesTestCase(TestBase):
         self.assertEqual(
             weakref.getweakrefcount(o),
             0,
-            "weak reference objects not unlinked from" " referent when discarded.",
+            "weak reference objects not unlinked from referent when discarded.",
         )
 
         # assumes ints do not support weakrefs
@@ -611,7 +608,7 @@ class ReferencesTestCase(TestBase):
 
         import gc
 
-        class C(object):
+        class C:
             pass
 
         c = C()
@@ -641,10 +638,10 @@ class ReferencesTestCase(TestBase):
     def test_callback_in_cycle_1(self):
         import gc
 
-        class J(object):
+        class J:
             pass
 
-        class II(object):
+        class II:
             def acallback(self, ignore):
                 self.J
 
@@ -693,7 +690,7 @@ class ReferencesTestCase(TestBase):
         #   "II instance has no attribute 'J'" in <bound method II.acallback
         #       of <?.II instance at 0x00B9B4B8>> ignored
 
-        class J(object):
+        class J:
             pass
 
         class II:
@@ -741,7 +738,7 @@ class ReferencesTestCase(TestBase):
         # The result was a segfault (C.__mro__ was NULL when the callback
         # tried to look up self.me).
 
-        class C(object):
+        class C:
             def cb(self, ignore):
                 self.me
                 self.c1
@@ -773,7 +770,7 @@ class ReferencesTestCase(TestBase):
 
         alist = []
 
-        class C(object):
+        class C:
             def __init__(self, value):
                 self.attribute = value
 
@@ -816,7 +813,7 @@ class ReferencesTestCase(TestBase):
         def safe_callback(ignore):
             alist.append("safe_callback called")
 
-        class C(object):
+        class C:
             def cb(self, ignore):
                 alist.append("cb called")
 
@@ -883,7 +880,7 @@ class ReferencesTestCase(TestBase):
         # A weakref created in an object's __del__() would crash the
         # interpreter when the weakref was cleaned up since it would refer to
         # non-existent memory.  This test should not segfault the interpreter.
-        class Target(object):
+        class Target:
             def __del__(self):
                 global ref_from_del
                 ref_from_del = weakref.ref(self)
@@ -900,7 +897,7 @@ class ReferencesTestCase(TestBase):
 
     def test_classes(self):
         # Check that classes are weakrefable.
-        class A(object):
+        class A:
             pass
 
         l = []
@@ -1037,7 +1034,6 @@ class ReferencesTestCase(TestBase):
 
 
 class SubclassableWeakrefTestCase(TestBase):
-
     def test_subclass_refs(self):
         class MyRef(weakref.ref):
             def __init__(self, ob, callback=None, value=42):
@@ -1150,7 +1146,6 @@ class SubclassableWeakrefTestCase(TestBase):
 
 
 class WeakMethodTestCase(unittest.TestCase):
-
     def _subclass(self):
         """Return an Object subclass overriding `some_method`."""
 
@@ -1297,7 +1292,6 @@ class WeakMethodTestCase(unittest.TestCase):
 
 
 class MappingTestCase(TestBase):
-
     COUNT = 10
 
     def check_len_cycles(self, dict_type, cons):
@@ -1704,7 +1698,7 @@ class MappingTestCase(TestBase):
         self.assertIsNot(
             value1,
             value2,
-            "invalid test" " -- value parameters must be distinct objects",
+            "invalid test -- value parameters must be distinct objects",
         )
         weakdict = klass()
         o = weakdict.setdefault(key, value1)
@@ -1881,7 +1875,7 @@ class MappingTestCase(TestBase):
         d = weakref.WeakKeyDictionary()
         mutate = False
 
-        class C(object):
+        class C:
             def __init__(self, i):
                 self.value = i
 
@@ -2074,7 +2068,6 @@ class WeakKeyDictionaryTestCase(mapping_tests.BasicTestMappingProtocol):
 
 
 class FinalizeTestCase(unittest.TestCase):
-
     class A:
         pass
 

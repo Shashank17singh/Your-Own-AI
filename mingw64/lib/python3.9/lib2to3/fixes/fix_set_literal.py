@@ -5,11 +5,10 @@ Optional fixer to transform set() calls to set literals.
 # Author: Benjamin Peterson
 
 from lib2to3 import fixer_base, pytree
-from lib2to3.fixer_util import token, syms
+from lib2to3.fixer_util import syms, token
 
 
 class FixSetLiteral(fixer_base.BaseFix):
-
     BM_compatible = True
     explicit = True
 

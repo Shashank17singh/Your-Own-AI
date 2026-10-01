@@ -24,31 +24,32 @@ you're working through IDLE, you can import this test module and call test_main(
 with the corresponding argument.
 """
 
-import math
-import os, sys
-import operator
-import warnings
-import pickle, copy
-import unittest
-import numbers
+import copy
+import inspect
 import locale
+import math
+import numbers
+import operator
+import os
+import pickle
+import random
+import sys
+import threading
+import unittest
+import warnings
+
 from test.support import (
-    run_unittest,
-    run_doctest,
-    is_resource_enabled,
-    requires_IEEE_754,
-    requires_docstrings,
-)
-from test.support import (
-    import_fresh_module,
     TestFailed,
-    run_with_locale,
     cpython_only,
     darwin_malloc_err_warning,
+    import_fresh_module,
+    is_resource_enabled,
+    requires_docstrings,
+    requires_IEEE_754,
+    run_doctest,
+    run_unittest,
+    run_with_locale,
 )
-import random
-import inspect
-import threading
 
 if sys.platform == "darwin":
     darwin_malloc_err_warning("test_decimal")
@@ -587,7 +588,7 @@ class ExplicitConstructionTest(unittest.TestCase):
         self.assertEqual(str(d), "0")
 
         # single word longs
-        for n in range(0, 32):
+        for n in range(32):
             for sign in (-1, 1):
                 for x in range(-5, 5):
                     i = sign * (2**n + x)
@@ -1258,13 +1259,15 @@ class FormatTest(unittest.TestCase):
         thousands_sep = locale.localeconv()["thousands_sep"]
         if decimal_point != "\u066b":
             self.skipTest(
-                "inappropriate decimal point separator "
-                "({!a} not {!a})".format(decimal_point, "\u066b")
+                "inappropriate decimal point separator ({!a} not {!a})".format(
+                    decimal_point, "\u066b"
+                )
             )
         if thousands_sep != "\u066c":
             self.skipTest(
-                "inappropriate thousands separator "
-                "({!a} not {!a})".format(thousands_sep, "\u066c")
+                "inappropriate thousands separator ({!a} not {!a})".format(
+                    thousands_sep, "\u066c"
+                )
             )
 
         self.assertEqual(
@@ -1554,8 +1557,8 @@ class ArithmeticOperatorsTest(unittest.TestCase):
                 self.assertIs(
                     expected,
                     got,
-                    "expected {0!r} for operator.{1}({2!r}, {3!r}); "
-                    "got {4!r}".format(expected, op.__name__, x, y, got),
+                    f"expected {expected!r} for operator.{op.__name__}({x!r}, {y!r}); "
+                    f"got {got!r}",
                 )
 
         # repeat the above, but this time trap the InvalidOperation
@@ -1569,9 +1572,9 @@ class ArithmeticOperatorsTest(unittest.TestCase):
                     self.assertIs(
                         expected,
                         got,
-                        "expected {0!r} for "
-                        "operator.{1}({2!r}, {3!r}); "
-                        "got {4!r}".format(expected, op.__name__, x, y, got),
+                        f"expected {expected!r} for "
+                        f"operator.{op.__name__}({x!r}, {y!r}); "
+                        f"got {got!r}",
                     )
 
             for x, y in snan_pairs:
@@ -2605,7 +2608,6 @@ class PyUsabilityTest(UsabilityTest):
 
 
 class PythonAPItests(unittest.TestCase):
-
     def test_abc(self):
         Decimal = self.decimal.Decimal
 
@@ -2943,7 +2945,6 @@ class PyPythonAPItests(PythonAPItests):
 
 
 class ContextAPItests(unittest.TestCase):
-
     def test_none_args(self):
         Context = self.decimal.Context
         InvalidOperation = self.decimal.InvalidOperation
@@ -3016,7 +3017,6 @@ class ContextAPItests(unittest.TestCase):
                 for ri, _ in enumerate(RoundingModes):
                     for fi, _ in enumerate(OrderedSignals[dumper]):
                         for ti, _ in enumerate(OrderedSignals[dumper]):
-
                             prec = random.randrange(1, 100)
                             emin = random.randrange(-100, 0)
                             emax = random.randrange(1, 100)
@@ -3796,14 +3796,13 @@ class ContextWithStatement(unittest.TestCase):
     def test_with_statements_gc2(self):
         localcontext = self.decimal.localcontext
 
-        with localcontext() as c1:
-            with localcontext(c1) as c2:
-                del c1
-                with localcontext(c2) as c3:
-                    del c2
-                    with localcontext(c3) as c4:
-                        del c3
-                        del c4
+        with localcontext() as c1, localcontext(c1) as c2:
+            del c1
+            with localcontext(c2) as c3:
+                del c2
+                with localcontext(c3) as c4:
+                    del c3
+                    del c4
 
     def test_with_statements_gc3(self):
         Context = self.decimal.Context
@@ -3848,7 +3847,6 @@ class PyContextWithStatement(ContextWithStatement):
 
 
 class ContextFlags(unittest.TestCase):
-
     def test_flags_irrelevant(self):
         # check that the result (numeric result + flags raised) of an
         # arithmetic operation doesn't depend on the current flags
@@ -4234,7 +4232,6 @@ class PySpecialContexts(SpecialContexts):
 
 
 class ContextInputValidation(unittest.TestCase):
-
     def test_invalid_context(self):
         Context = self.decimal.Context
         DefaultContext = self.decimal.DefaultContext
@@ -4249,8 +4246,8 @@ class ContextInputValidation(unittest.TestCase):
             self.assertRaises(TypeError, setattr, c, attr, "xyz")
 
         # Emin
-        setattr(c, "Emin", -999999)
-        self.assertEqual(getattr(c, "Emin"), -999999)
+        c.Emin = -999999
+        self.assertEqual(c.Emin, -999999)
         self.assertRaises(ValueError, setattr, c, "Emin", 1)
         self.assertRaises(TypeError, setattr, c, "Emin", (1, 2, 3))
 
@@ -4312,7 +4309,6 @@ class PyContextInputValidation(ContextInputValidation):
 
 
 class ContextSubclassing(unittest.TestCase):
-
     def test_context_subclassing(self):
         decimal = self.decimal
         Decimal = decimal.Decimal
@@ -4379,19 +4375,19 @@ class ContextSubclassing(unittest.TestCase):
             self.assertEqual(getattr(c, attr), getattr(d, attr))
 
         # prec
-        self.assertRaises(ValueError, MyContext, **{"prec": -1})
+        self.assertRaises(ValueError, MyContext, prec=-1)
         c = MyContext(prec=1)
         self.assertEqual(c.prec, 1)
         self.assertRaises(InvalidOperation, c.quantize, Decimal("9e2"), 0)
 
         # rounding
-        self.assertRaises(TypeError, MyContext, **{"rounding": "XYZ"})
+        self.assertRaises(TypeError, MyContext, rounding="XYZ")
         c = MyContext(rounding=ROUND_DOWN, prec=1)
         self.assertEqual(c.rounding, ROUND_DOWN)
         self.assertEqual(c.plus(Decimal("9.9")), 9)
 
         # Emin
-        self.assertRaises(ValueError, MyContext, **{"Emin": 5})
+        self.assertRaises(ValueError, MyContext, Emin=5)
         c = MyContext(Emin=-1, prec=1)
         self.assertEqual(c.Emin, -1)
         x = c.add(Decimal("1e-99"), Decimal("2.234e-2000"))
@@ -4400,7 +4396,7 @@ class ContextSubclassing(unittest.TestCase):
             self.assertTrue(c.flags[signal])
 
         # Emax
-        self.assertRaises(ValueError, MyContext, **{"Emax": -1})
+        self.assertRaises(ValueError, MyContext, Emax=-1)
         c = MyContext(Emax=1, prec=1)
         self.assertEqual(c.Emax, 1)
         self.assertRaises(Overflow, c.add, Decimal("1e99"), Decimal("2.234e2000"))
@@ -4409,21 +4405,21 @@ class ContextSubclassing(unittest.TestCase):
                 self.assertTrue(c.flags[signal])
 
         # capitals
-        self.assertRaises(ValueError, MyContext, **{"capitals": -1})
+        self.assertRaises(ValueError, MyContext, capitals=-1)
         c = MyContext(capitals=0)
         self.assertEqual(c.capitals, 0)
         x = c.create_decimal("1E222")
         self.assertEqual(c.to_sci_string(x), "1e+222")
 
         # clamp
-        self.assertRaises(ValueError, MyContext, **{"clamp": 2})
+        self.assertRaises(ValueError, MyContext, clamp=2)
         c = MyContext(clamp=1, Emax=99)
         self.assertEqual(c.clamp, 1)
         x = c.plus(Decimal("1e99"))
         self.assertEqual(str(x), "1.000000000000000000000000000E+99")
 
         # flags
-        self.assertRaises(TypeError, MyContext, **{"flags": "XYZ"})
+        self.assertRaises(TypeError, MyContext, flags="XYZ")
         c = MyContext(flags=[Rounded, DivisionByZero])
         for signal in (Rounded, DivisionByZero):
             self.assertTrue(c.flags[signal])
@@ -4432,7 +4428,7 @@ class ContextSubclassing(unittest.TestCase):
             self.assertFalse(c.flags[signal])
 
         # traps
-        self.assertRaises(TypeError, MyContext, **{"traps": "XYZ"})
+        self.assertRaises(TypeError, MyContext, traps="XYZ")
         c = MyContext(traps=[Rounded, DivisionByZero])
         for signal in (Rounded, DivisionByZero):
             self.assertTrue(c.traps[signal])
@@ -4451,7 +4447,6 @@ class PyContextSubclassing(ContextSubclassing):
 
 @skip_if_extra_functionality
 class CheckAttributes(unittest.TestCase):
-
     def test_module_attributes(self):
 
         # Architecture dependent context limits
@@ -4481,7 +4476,6 @@ class CheckAttributes(unittest.TestCase):
 
 
 class Coverage(unittest.TestCase):
-
     def test_adjusted(self):
         Decimal = self.decimal.Decimal
 
@@ -5132,20 +5126,18 @@ class CWhitebox(unittest.TestCase):
 
         # OverflowError: _unsafe_setprec, _unsafe_setemin, _unsafe_setemax
         if C.MAX_PREC == 425000000:
-            self.assertRaises(OverflowError, getattr(c, "_unsafe_setprec"), int_max + 1)
-            self.assertRaises(OverflowError, getattr(c, "_unsafe_setemax"), int_max + 1)
-            self.assertRaises(
-                OverflowError, getattr(c, "_unsafe_setemin"), -int_max - 2
-            )
+            self.assertRaises(OverflowError, c._unsafe_setprec, int_max + 1)
+            self.assertRaises(OverflowError, c._unsafe_setemax, int_max + 1)
+            self.assertRaises(OverflowError, c._unsafe_setemin, -int_max - 2)
 
         # ValueError: _unsafe_setprec, _unsafe_setemin, _unsafe_setemax
         if C.MAX_PREC == 425000000:
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setprec"), 0)
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setprec"), 1070000001)
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setemax"), -1)
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setemax"), 1070000001)
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setemin"), -1070000001)
-            self.assertRaises(ValueError, getattr(c, "_unsafe_setemin"), 1)
+            self.assertRaises(ValueError, c._unsafe_setprec, 0)
+            self.assertRaises(ValueError, c._unsafe_setprec, 1070000001)
+            self.assertRaises(ValueError, c._unsafe_setemax, -1)
+            self.assertRaises(ValueError, c._unsafe_setemax, 1070000001)
+            self.assertRaises(ValueError, c._unsafe_setemin, -1070000001)
+            self.assertRaises(ValueError, c._unsafe_setemin, 1)
 
         # capitals, clamp
         for attr in ["capitals", "clamp"]:
@@ -5667,7 +5659,6 @@ class CWhitebox(unittest.TestCase):
         InvalidOperation = C.InvalidOperation
 
         with localcontext() as c:
-
             c.traps[InvalidOperation] = True
 
             # Clamped
@@ -5693,7 +5684,6 @@ class CWhitebox(unittest.TestCase):
         Underflow = C.Underflow
 
         with localcontext() as c:
-
             c.traps[InvalidOperation] = True
             c.traps[Overflow] = True
             c.traps[Underflow] = True

@@ -140,7 +140,7 @@ class DirCompareTestCase(unittest.TestCase):
         self.assertEqual(d.same_files, ["file"])
         self.assertEqual(d.diff_files, [])
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_same),
+            f"diff {self.dir} {self.dir_same}",
             "Identical files : ['file']",
         ]
         self._assert_report(d.report, expected_report)
@@ -158,8 +158,8 @@ class DirCompareTestCase(unittest.TestCase):
         self.assertEqual(d.same_files, ["file"])
         self.assertEqual(d.diff_files, [])
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_diff),
-            "Only in {} : ['file2']".format(self.dir_diff),
+            f"diff {self.dir} {self.dir_diff}",
+            f"Only in {self.dir_diff} : ['file2']",
             "Identical files : ['file']",
         ]
         self._assert_report(d.report, expected_report)
@@ -180,8 +180,8 @@ class DirCompareTestCase(unittest.TestCase):
         self.assertEqual(d.same_files, ["file"])
         self.assertEqual(d.diff_files, [])
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_diff),
-            "Only in {} : ['file2']".format(self.dir),
+            f"diff {self.dir} {self.dir_diff}",
+            f"Only in {self.dir} : ['file2']",
             "Identical files : ['file']",
         ]
         self._assert_report(d.report, expected_report)
@@ -193,7 +193,7 @@ class DirCompareTestCase(unittest.TestCase):
         self.assertEqual(d.same_files, ["file"])
         self.assertEqual(d.diff_files, ["file2"])
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_diff),
+            f"diff {self.dir} {self.dir_diff}",
             "Identical files : ['file']",
             "Differing files : ['file2']",
         ]
@@ -203,7 +203,7 @@ class DirCompareTestCase(unittest.TestCase):
         left_dir, right_dir = self.dir, self.dir_same
         d = filecmp.dircmp(left_dir, right_dir)
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_same),
+            f"diff {self.dir} {self.dir_same}",
             "Identical files : ['file']",
         ]
         self._assert_report(d.report_partial_closure, expected_report)
@@ -212,7 +212,7 @@ class DirCompareTestCase(unittest.TestCase):
         left_dir, right_dir = self.dir, self.dir_same
         d = filecmp.dircmp(left_dir, right_dir)
         expected_report = [
-            "diff {} {}".format(self.dir, self.dir_same),
+            f"diff {self.dir} {self.dir_same}",
             "Identical files : ['file']",
         ]
         self._assert_report(d.report_full_closure, expected_report)

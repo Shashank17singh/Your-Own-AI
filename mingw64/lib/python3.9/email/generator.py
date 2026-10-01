@@ -4,16 +4,15 @@
 
 """Classes to generate plain text from a message object tree."""
 
-__all__ = ["Generator", "DecodedGenerator", "BytesGenerator"]
+__all__ = ["BytesGenerator", "DecodedGenerator", "Generator"]
 
+import random
 import re
 import sys
 import time
-import random
-
 from copy import deepcopy
-from io import StringIO, BytesIO
 from email.utils import _has_surrogates
+from io import BytesIO, StringIO
 
 UNDERSCORE = "_"
 NL = "\n"  # XXX: no longer used by the code below.
@@ -21,7 +20,7 @@ NL = "\n"  # XXX: no longer used by the code below.
 NLCRE = re.compile(r"\r\n|\r|\n")
 fcre = re.compile(r"^From ", re.MULTILINE)
 
-
+
 class Generator:
     """Generates output from a Message object tree.
 
@@ -395,7 +394,7 @@ class Generator:
     def _compile_re(cls, s, flags):
         return re.compile(s, flags)
 
-
+
 class BytesGenerator(Generator):
     """Generates a bytes version of a Message object tree.
 
@@ -436,7 +435,7 @@ class BytesGenerator(Generator):
                 msg._payload = fcre.sub(">From ", msg._payload)
             self._write_lines(msg._payload)
         else:
-            super(BytesGenerator, self)._handle_text(msg)
+            super()._handle_text(msg)
 
     # Default body handler
     _writeBody = _handle_text
@@ -445,7 +444,7 @@ class BytesGenerator(Generator):
     def _compile_re(cls, s, flags):
         return re.compile(s.encode("ascii"), flags)
 
-
+
 _FMT = "[Non-text (%(type)s) part of message omitted, filename %(filename)s]"
 
 
@@ -512,7 +511,7 @@ class DecodedGenerator(Generator):
                     file=self,
                 )
 
-
+
 # Helper used by Generator._make_boundary
 _width = len(repr(sys.maxsize - 1))
 _fmt = "%%0%dd" % _width

@@ -2,20 +2,22 @@
 # is tested, so they all must be present.  This is a way to catch
 # missing ones.
 
-from dataclasses import *
-
-import pickle
-import inspect
 import builtins
+import inspect
+import pickle
 import unittest
-from unittest.mock import Mock
-from typing import ClassVar, Any, List, Union, Tuple, Dict, Generic, TypeVar, Optional
-from typing import get_type_hints
-from collections import deque, OrderedDict, namedtuple
+from collections import OrderedDict, deque, namedtuple
+from dataclasses import *
 from functools import total_ordering
-
-import typing  # Needed for the string "typing.ClassVar[int]" to work as an annotation.
-import dataclasses  # Needed for the string "dataclasses.InitVar[int]" to work as an annotation.
+from typing import (
+    Any,
+    ClassVar,
+    Generic,
+    Optional,
+    TypeVar,
+    get_type_hints,
+)
+from unittest.mock import Mock
 
 
 # Just any custom exception we can catch.
@@ -89,7 +91,7 @@ class TestCase(unittest.TestCase):
 
         # Non-defaults following defaults.
         with self.assertRaisesRegex(
-            TypeError, "non-default argument 'y' follows " "default argument"
+            TypeError, "non-default argument 'y' follows default argument"
         ):
 
             @dataclass
@@ -99,7 +101,7 @@ class TestCase(unittest.TestCase):
 
         # A derived class adds a non-default field after a default one.
         with self.assertRaisesRegex(
-            TypeError, "non-default argument 'y' follows " "default argument"
+            TypeError, "non-default argument 'y' follows default argument"
         ):
 
             @dataclass
@@ -113,7 +115,7 @@ class TestCase(unittest.TestCase):
         # Override a base class field and add a default to
         #  a field which didn't use to have a default.
         with self.assertRaisesRegex(
-            TypeError, "non-default argument 'y' follows " "default argument"
+            TypeError, "non-default argument 'y' follows default argument"
         ):
 
             @dataclass
@@ -453,11 +455,13 @@ class TestCase(unittest.TestCase):
                 lambda a, b: a >= b,
             ]
         ):
-            with self.subTest(idx=idx):
-                with self.assertRaisesRegex(
+            with (
+                self.subTest(idx=idx),
+                self.assertRaisesRegex(
                     TypeError, "not supported between instances of 'B' and 'C'"
-                ):
-                    fn(B(0), C(0))
+                ),
+            ):
+                fn(B(0), C(0))
 
     def test_eq_order(self):
         # Test combining eq and order.
@@ -633,7 +637,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue(the_fields[0].repr)
         self.assertEqual(the_fields[1].name, "y")
         self.assertEqual(the_fields[1].type, str)
-        self.assertIsNone(getattr(C, "y"))
+        self.assertIsNone(C.y)
         self.assertFalse(the_fields[1].init)
         self.assertTrue(the_fields[1].repr)
         self.assertEqual(the_fields[2].name, "z")
@@ -704,7 +708,7 @@ class TestCase(unittest.TestCase):
             with self.subTest(typ=typ):
                 # Can't use a zero-length value.
                 with self.assertRaisesRegex(
-                    ValueError, f"mutable default {typ} for field " "x is not allowed"
+                    ValueError, f"mutable default {typ} for field x is not allowed"
                 ):
 
                     @dataclass
@@ -713,7 +717,7 @@ class TestCase(unittest.TestCase):
 
                 # Nor a non-zero-length value
                 with self.assertRaisesRegex(
-                    ValueError, f"mutable default {typ} for field " "y is not allowed"
+                    ValueError, f"mutable default {typ} for field y is not allowed"
                 ):
 
                     @dataclass
@@ -726,7 +730,7 @@ class TestCase(unittest.TestCase):
 
                 with self.assertRaisesRegex(
                     ValueError,
-                    f"mutable default .*Subclass'>" " for field z is not allowed",
+                    "mutable default .*Subclass'> for field z is not allowed",
                 ):
 
                     @dataclass
@@ -1220,7 +1224,7 @@ class TestCase(unittest.TestCase):
         # Make sure the repr is correct.
         self.assertEqual(repr(InitVar[int]), "dataclasses.InitVar[int]")
         self.assertEqual(
-            repr(InitVar[List[int]]), "dataclasses.InitVar[typing.List[int]]"
+            repr(InitVar[list[int]]), "dataclasses.InitVar[typing.List[int]]"
         )
 
     def test_init_var_inheritance(self):
@@ -1516,7 +1520,7 @@ class TestCase(unittest.TestCase):
         @dataclass
         class C:
             x: int
-            y: List[int] = field(default_factory=list)
+            y: list[int] = field(default_factory=list)
 
         initial = []
         c = C(1, initial)
@@ -1555,17 +1559,17 @@ class TestCase(unittest.TestCase):
         @dataclass
         class GroupList:
             id: int
-            users: List[User]
+            users: list[User]
 
         @dataclass
         class GroupTuple:
             id: int
-            users: Tuple[User, ...]
+            users: tuple[User, ...]
 
         @dataclass
         class GroupDict:
             id: int
-            users: Dict[str, User]
+            users: dict[str, User]
 
         a = User("Alice", 1)
         b = User("Bob", 2)
@@ -1717,7 +1721,7 @@ class TestCase(unittest.TestCase):
         @dataclass
         class C:
             x: int
-            y: List[int] = field(default_factory=list)
+            y: list[int] = field(default_factory=list)
 
         initial = []
         c = C(1, initial)
@@ -1756,17 +1760,17 @@ class TestCase(unittest.TestCase):
         @dataclass
         class GroupList:
             id: int
-            users: List[User]
+            users: list[User]
 
         @dataclass
         class GroupTuple:
             id: int
-            users: Tuple[User, ...]
+            users: tuple[User, ...]
 
         @dataclass
         class GroupDict:
             id: int
-            users: Dict[str, User]
+            users: dict[str, User]
 
         a = User("Alice", 1)
         b = User("Bob", 2)
@@ -2023,7 +2027,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(box.label, "<unknown>")
 
         # Subscripting the resulting class should work, etc.
-        Alias = List[LabeledBox[int]]
+        Alias = list[LabeledBox[int]]
 
     def test_generic_extending(self):
         S = TypeVar("S")
@@ -2088,7 +2092,7 @@ class TestCase(unittest.TestCase):
         @dataclass
         class R:
             x: int
-            y: List[int] = field(default_factory=list)
+            y: list[int] = field(default_factory=list)
 
         q = Q(1)
         q.y = 2
@@ -2202,21 +2206,21 @@ class TestDocString(unittest.TestCase):
     def test_docstring_one_field_with_default_none(self):
         @dataclass
         class C:
-            x: Union[int, type(None)] = None
+            x: int | type(None) = None
 
         self.assertDocStrEqual(C.__doc__, "C(x:Optional[int]=None)")
 
     def test_docstring_list_field(self):
         @dataclass
         class C:
-            x: List[int]
+            x: list[int]
 
         self.assertDocStrEqual(C.__doc__, "C(x:List[int])")
 
     def test_docstring_list_field_with_default_factory(self):
         @dataclass
         class C:
-            x: List[int] = field(default_factory=list)
+            x: list[int] = field(default_factory=list)
 
         self.assertDocStrEqual(C.__doc__, "C(x:List[int]=<factory>)")
 
@@ -2240,7 +2244,6 @@ class TestInit(unittest.TestCase):
         class B:
             def __init__(self):
                 self.z = 100
-                pass
 
         # Make sure that declaring this class doesn't raise an error.
         #  The issue is that we can't override __init__ in our class,
@@ -2500,7 +2503,7 @@ class TestOrdering(unittest.TestCase):
     def test_overwriting_order(self):
         with self.assertRaisesRegex(
             TypeError,
-            "Cannot overwrite attribute __lt__" ".*using functools.total_ordering",
+            "Cannot overwrite attribute __lt__.*using functools.total_ordering",
         ):
 
             @dataclass(order=True)
@@ -2512,7 +2515,7 @@ class TestOrdering(unittest.TestCase):
 
         with self.assertRaisesRegex(
             TypeError,
-            "Cannot overwrite attribute __le__" ".*using functools.total_ordering",
+            "Cannot overwrite attribute __le__.*using functools.total_ordering",
         ):
 
             @dataclass(order=True)
@@ -2524,7 +2527,7 @@ class TestOrdering(unittest.TestCase):
 
         with self.assertRaisesRegex(
             TypeError,
-            "Cannot overwrite attribute __gt__" ".*using functools.total_ordering",
+            "Cannot overwrite attribute __gt__.*using functools.total_ordering",
         ):
 
             @dataclass(order=True)
@@ -2536,7 +2539,7 @@ class TestOrdering(unittest.TestCase):
 
         with self.assertRaisesRegex(
             TypeError,
-            "Cannot overwrite attribute __ge__" ".*using functools.total_ordering",
+            "Cannot overwrite attribute __ge__.*using functools.total_ordering",
         ):
 
             @dataclass(order=True)
@@ -2762,7 +2765,6 @@ class TestHash(unittest.TestCase):
             (True, True, object, "tuple"),
             (True, True, Base, "tuple"),
         ]:
-
             with self.subTest(frozen=frozen, eq=eq, base=base, expected=expected):
                 # First, create the class.
                 if frozen is None and eq is None:
@@ -3142,7 +3144,7 @@ class TestStringAnnotations(unittest.TestCase):
         # typing import *" have been run in this file.
         for typestr in (
             "ClassVar[int]",
-            "ClassVar [int]" " ClassVar [int]",
+            "ClassVar [int] ClassVar [int]",
             "ClassVar",
             " ClassVar ",
             "typing.ClassVar[int]",
@@ -3197,7 +3199,7 @@ class TestStringAnnotations(unittest.TestCase):
         #  dataclasses import *" have been run in this file.
         for typestr in (
             "InitVar[int]",
-            "InitVar [int]" " InitVar [int]",
+            "InitVar [int] InitVar [int]",
             "InitVar",
             " InitVar ",
             "dataclasses.InitVar[int]",
@@ -3241,10 +3243,12 @@ class TestStringAnnotations(unittest.TestCase):
                 self.assertEqual(C(10).x, 10)
 
     def test_classvar_module_level_import(self):
-        from test import dataclass_module_1
-        from test import dataclass_module_1_str
-        from test import dataclass_module_2
-        from test import dataclass_module_2_str
+        from test import (
+            dataclass_module_1,
+            dataclass_module_1_str,
+            dataclass_module_2,
+            dataclass_module_2_str,
+        )
 
         for m in (
             dataclass_module_1,
@@ -3633,7 +3637,7 @@ class TestReplace(unittest.TestCase):
         c.g = c
         self.assertEqual(
             repr(c),
-            "TestReplace.test_recursive_repr_two_attrs" ".<locals>.C(f=..., g=...)",
+            "TestReplace.test_recursive_repr_two_attrs.<locals>.C(f=..., g=...)",
         )
 
     def test_recursive_repr_indirection(self):
@@ -3693,7 +3697,7 @@ class TestReplace(unittest.TestCase):
         c.f = c
         self.assertEqual(
             repr(c),
-            "TestReplace.test_recursive_repr_misc_attrs" ".<locals>.C(f=..., g=1)",
+            "TestReplace.test_recursive_repr_misc_attrs.<locals>.C(f=..., g=1)",
         )
 
     ## def test_initvar(self):

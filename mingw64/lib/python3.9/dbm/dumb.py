@@ -22,9 +22,10 @@ is read when the database is opened, and some updates rewrite the whole index)
 """
 
 import ast as _ast
+import builtins
+import collections.abc
 import io as _io
 import os as _os
-import collections.abc
 
 __all__ = ["error", "open"]
 
@@ -34,7 +35,6 @@ error = OSError
 
 
 class _Database(collections.abc.MutableMapping):
-
     # The on-disk directory and data files can remain in mutually
     # inconsistent states for an arbitrarily long time (see comments
     # at the end of __setitem__).  This is only repaired when _commit()
@@ -80,11 +80,11 @@ class _Database(collections.abc.MutableMapping):
                     pass
         # Mod by Jack: create data file if needed
         try:
-            f = _io.open(self._datfile, "r", encoding="Latin-1")
+            f = builtins.open(self._datfile, "r", encoding="Latin-1")
         except OSError:
             if flag not in ("c", "n"):
                 raise
-            with _io.open(self._datfile, "w", encoding="Latin-1") as f:
+            with builtins.open(self._datfile, "w", encoding="Latin-1") as f:
                 self._chmod(self._datfile)
         else:
             f.close()
@@ -94,7 +94,7 @@ class _Database(collections.abc.MutableMapping):
         self._modified = False
         self._index = {}
         try:
-            f = _io.open(self._dirfile, "r", encoding="Latin-1")
+            f = builtins.open(self._dirfile, "r", encoding="Latin-1")
         except OSError:
             if flag not in ("c", "n"):
                 raise
@@ -146,7 +146,7 @@ class _Database(collections.abc.MutableMapping):
             key = key.encode("utf-8")
         self._verify_open()
         pos, siz = self._index[key]  # may raise KeyError
-        with _io.open(self._datfile, "rb") as f:
+        with builtins.open(self._datfile, "rb") as f:
             f.seek(pos)
             dat = f.read(siz)
         return dat
@@ -156,7 +156,7 @@ class _Database(collections.abc.MutableMapping):
     # to get to an aligned offset.  Return pair
     #     (starting offset of val, len(val))
     def _addval(self, val):
-        with _io.open(self._datfile, "rb+") as f:
+        with builtins.open(self._datfile, "rb+") as f:
             f.seek(0, 2)
             pos = int(f.tell())
             npos = ((pos + _BLOCKSIZE - 1) // _BLOCKSIZE) * _BLOCKSIZE
@@ -170,7 +170,7 @@ class _Database(collections.abc.MutableMapping):
     # pos to hold val, without overwriting some other value.  Return
     # pair (pos, len(val)).
     def _setval(self, pos, val):
-        with _io.open(self._datfile, "rb+") as f:
+        with builtins.open(self._datfile, "rb+") as f:
             f.seek(pos)
             f.write(val)
         return (pos, len(val))
@@ -180,7 +180,7 @@ class _Database(collections.abc.MutableMapping):
     # the in-memory index dict, and append one to the directory file.
     def _addkey(self, key, pos_and_siz_pair):
         self._index[key] = pos_and_siz_pair
-        with _io.open(self._dirfile, "a", encoding="Latin-1") as f:
+        with builtins.open(self._dirfile, "a", encoding="Latin-1") as f:
             self._chmod(self._dirfile)
             f.write("%r, %r\n" % (key.decode("Latin-1"), pos_and_siz_pair))
 

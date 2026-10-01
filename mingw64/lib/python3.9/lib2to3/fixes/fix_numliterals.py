@@ -4,9 +4,9 @@
 # Licensed to PSF under a Contributor Agreement.
 
 # Local imports
-from ..pgen2 import token
 from .. import fixer_base
 from ..fixer_util import Number
+from ..pgen2 import token
 
 
 class FixNumliterals(fixer_base.BaseFix):

@@ -53,18 +53,14 @@
     "switch": "errors",
     "comment": "Redirect error and warning messages.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "FunctionOverride",
     "switch": "funcOverride",
     "comment": "Emit function overriding support for the specified function.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "GenerateDebugInformation",
@@ -78,9 +74,7 @@
     "switch": "machine",
     "comment": "Specify the machine type to set in the PE header.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "NoEsc",
@@ -108,9 +102,7 @@
     "switch": "o",
     "comment": "Specify the name of the object (output) file.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ItBlocks",
@@ -124,17 +116,13 @@
     "switch": "sourcelink",
     "comment": "Specify the configuration file that contains a simple mapping of local file paths to URLs for source files to display in the debugger.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "CommandLineArgumentsViaFile",
     "switch": "via",
     "comment": "Read extra command-line arguments from the specified file.",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   }
 ]

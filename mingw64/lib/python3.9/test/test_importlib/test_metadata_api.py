@@ -1,10 +1,6 @@
 import re
 import textwrap
 import unittest
-
-from collections.abc import Iterator
-
-from . import fixtures
 from importlib.metadata import (
     Distribution,
     PackageNotFoundError,
@@ -16,11 +12,12 @@ from importlib.metadata import (
     version,
 )
 
+from . import fixtures
+
 
 class APITests(
     fixtures.EggInfoPkg, fixtures.DistInfoPkg, fixtures.EggInfoFile, unittest.TestCase
 ):
-
     version_pattern = r"\d+\.\d+(\.\d)?"
 
     def test_retrieves_version_of_self(self):

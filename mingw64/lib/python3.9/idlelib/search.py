@@ -5,10 +5,9 @@ Inherits from SearchDialogBase for GUI and uses searchengine
 to prepare search pattern.
 """
 
-from tkinter import TclError
-
 from idlelib import searchengine
 from idlelib.searchbase import SearchDialogBase
+from tkinter import TclError
 
 
 def _setup(text):
@@ -139,8 +138,8 @@ class SearchDialog(SearchDialogBase):
 
 def _search_dialog(parent):  # htest #
     "Display search test box."
-    from tkinter import Toplevel, Text
-    from tkinter.ttk import Frame, Button
+    from tkinter import Text, Toplevel
+    from tkinter.ttk import Button, Frame
 
     top = Toplevel(parent)
     top.title("Test SearchDialog")

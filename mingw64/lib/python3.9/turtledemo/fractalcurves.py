@@ -8,8 +8,9 @@ methods are taken from the PythonCard example
 scripts for turtle-graphics.
 """
 
+from time import perf_counter as clock
+from time import sleep
 from turtle import *
-from time import sleep, perf_counter as clock
 
 
 class CurvesTurtle(Pen):

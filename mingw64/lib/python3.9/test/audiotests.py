@@ -1,7 +1,8 @@
-from test.support import findfile, TESTFN, unlink
 import array
 import io
 import pickle
+
+from test.support import TESTFN, findfile, unlink
 
 
 class UnseekableIO(io.FileIO):
@@ -52,7 +53,6 @@ class AudioTests:
 
 
 class AudioWriteTests(AudioTests):
-
     def create_file(self, testfile):
         f = self.fout = self.module.open(testfile, "wb")
         f.setnchannels(self.nchannels)
@@ -256,7 +256,6 @@ class AudioWriteTests(AudioTests):
 
 
 class AudioTestsWithSourceFile(AudioTests):
-
     @classmethod
     def setUpClass(cls):
         cls.sndfilepath = findfile(cls.sndfilename, subdir="audiodata")

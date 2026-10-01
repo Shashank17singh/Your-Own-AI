@@ -1,11 +1,11 @@
-import unittest
-import sys
-from test import support
-from test.test_grammar import VALID_UNDERSCORE_LITERALS, INVALID_UNDERSCORE_LITERALS
-
-from random import random
-from math import atan2, isnan, copysign
 import operator
+import sys
+import unittest
+from math import atan2, copysign, isnan
+from random import random
+
+from test import support
+from test.test_grammar import INVALID_UNDERSCORE_LITERALS, VALID_UNDERSCORE_LITERALS
 
 INF = float("inf")
 NAN = float("nan")
@@ -13,7 +13,6 @@ NAN = float("nan")
 
 
 class ComplexTest(unittest.TestCase):
-
     def assertAlmostEqual(self, a, b):
         if isinstance(a, complex):
             if isinstance(b, complex):
@@ -55,10 +54,7 @@ class ComplexTest(unittest.TestCase):
             if isnan(x) and isnan(y):
                 return
         elif x == y:
-            if x != 0.0:
-                return
-            # both zero; check that signs match
-            elif copysign(1.0, x) == copysign(1.0, y):
+            if x != 0.0 or copysign(1.0, x) == copysign(1.0, y):
                 return
             else:
                 msg += ": zeros have different signs"
@@ -277,7 +273,7 @@ class ComplexTest(unittest.TestCase):
             def __complex__(self):
                 return self.value
 
-        class NS(object):
+        class NS:
             def __init__(self, value):
                 self.value = value
 
@@ -320,7 +316,7 @@ class ComplexTest(unittest.TestCase):
         self.assertAlmostEqual(complex(0.0, 3.14), 3.14j)
         self.assertAlmostEqual(complex("1"), 1 + 0j)
         self.assertAlmostEqual(complex("1j"), 1j)
-        self.assertAlmostEqual(complex(), 0)
+        self.assertAlmostEqual(0j, 0)
         self.assertAlmostEqual(complex("-1"), -1)
         self.assertAlmostEqual(complex("+1"), +1)
         self.assertAlmostEqual(complex("(1+2j)"), 1 + 2j)
@@ -768,7 +764,7 @@ class ComplexTest(unittest.TestCase):
             self.assertRaises(ValueError, (1.5 + 0.5j).__format__, t)
 
         # make sure everything works in ''.format()
-        self.assertEqual("*{0:.3f}*".format(3.14159 + 2.71828j), "*3.142+2.718j*")
+        self.assertEqual(f"*{3.14159 + 2.71828j:.3f}*", "*3.142+2.718j*")
 
         # issue 3382
         self.assertEqual(format(complex(NAN, NAN), "f"), "nan+nanj")

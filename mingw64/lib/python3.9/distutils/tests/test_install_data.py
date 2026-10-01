@@ -2,9 +2,9 @@
 
 import os
 import unittest
-
 from distutils.command.install_data import install_data
 from distutils.tests import support
+
 from test.support import run_unittest
 
 
@@ -14,7 +14,6 @@ class InstallDataTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def test_simple_run(self):
         pkg_dir, dist = self.create_dist()
         cmd = install_data(dist)

@@ -1,11 +1,11 @@
 # Python test set -- part 2, opcodes
 
 import unittest
+
 from test import ann_module, support
 
 
 class OpcodeTest(unittest.TestCase):
-
     def test_try_inside_for_loop(self):
         n = 0
         for i in range(10):

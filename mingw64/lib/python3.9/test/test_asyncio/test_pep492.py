@@ -1,12 +1,11 @@
 """Tests support for new syntax introduced by PEP 492."""
 
+import asyncio
 import sys
 import types
 import unittest
-
 from unittest import mock
 
-import asyncio
 from test.test_asyncio import utils as test_utils
 
 
@@ -30,7 +29,6 @@ class FakeCoro:
 
 
 class BaseTest(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.BaseEventLoop()
@@ -41,7 +39,6 @@ class BaseTest(test_utils.TestCase):
 
 
 class LockTests(BaseTest):
-
     def test_context_manager_async_with(self):
         with self.assertWarns(DeprecationWarning):
             primitives = [
@@ -77,11 +74,13 @@ class LockTests(BaseTest):
         async def test(lock):
             await asyncio.sleep(0.01)
             self.assertFalse(lock.locked())
-            with self.assertRaisesRegex(
-                TypeError, "can't be used in 'await' expression"
+            with (
+                self.assertRaisesRegex(
+                    TypeError, "can't be used in 'await' expression"
+                ),
+                await lock,
             ):
-                with await lock:
-                    pass
+                pass
 
         for primitive in primitives:
             self.loop.run_until_complete(test(primitive))
@@ -89,7 +88,6 @@ class LockTests(BaseTest):
 
 
 class StreamReaderTests(BaseTest):
-
     def test_readline(self):
         DATA = b"line1\nline2\nline3"
 
@@ -108,7 +106,6 @@ class StreamReaderTests(BaseTest):
 
 
 class CoroutineTests(BaseTest):
-
     def test_iscoroutine(self):
         async def foo():
             pass
@@ -216,7 +213,6 @@ class CoroutineTests(BaseTest):
 
         self.loop.set_debug(True)
         with self.assertRaises(RuntimeError, msg="coroutine is being awaited already"):
-
             self.loop.run_until_complete(runner())
 
 

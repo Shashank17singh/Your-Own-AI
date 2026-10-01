@@ -284,8 +284,7 @@ else:
 
 
 def test_main(verbose=None):
-    from test import support
-    from test import test_genexps
+    from test import support, test_genexps
 
     support.run_doctest(test_genexps, verbose)
 

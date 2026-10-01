@@ -1,7 +1,6 @@
 import unittest
 
 # also work on POSIX
-
 from ctypes import *
 from ctypes import wintypes
 

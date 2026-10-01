@@ -1,11 +1,11 @@
 import asyncio
-import time
 import threading
+import time
 import unittest
 
 from test.support import socket_helper
-from test.test_asyncio import utils as test_utils
 from test.test_asyncio import functional as func_tests
+from test.test_asyncio import utils as test_utils
 
 
 def tearDownModule():
@@ -13,7 +13,6 @@ def tearDownModule():
 
 
 class BaseStartServer(func_tests.FunctionalTestCaseMixin):
-
     def new_loop(self):
         raise NotImplementedError
 
@@ -72,7 +71,6 @@ class BaseStartServer(func_tests.FunctionalTestCaseMixin):
 
 
 class SelectorStartServerTests(BaseStartServer, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.SelectorEventLoop()
 
@@ -130,7 +128,6 @@ class SelectorStartServerTests(BaseStartServer, unittest.TestCase):
 
 @unittest.skipUnless(hasattr(asyncio, "ProactorEventLoop"), "Windows only")
 class ProactorStartServerTests(BaseStartServer, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.ProactorEventLoop()
 

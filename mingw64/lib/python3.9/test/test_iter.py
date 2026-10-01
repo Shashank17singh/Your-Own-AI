@@ -1,11 +1,19 @@
 # Test iterators.
 
+import collections.abc
+import pickle
 import sys
 import unittest
-from test.support import run_unittest, TESTFN, unlink, cpython_only
-from test.support import check_free_after_iterating, ALWAYS_EQ, NEVER_EQ
-import pickle
-import collections.abc
+
+from test.support import (
+    ALWAYS_EQ,
+    NEVER_EQ,
+    TESTFN,
+    check_free_after_iterating,
+    cpython_only,
+    run_unittest,
+    unlink,
+)
 
 # Test result of triple loop (too big to inline)
 TRIPLETS = [
@@ -120,7 +128,6 @@ class BadIterableClass:
 
 
 class TestCase(unittest.TestCase):
-
     # Helper to check that an iterator returns a given sequence
     def check_iterator(self, it, seq, pickle=True):
         if pickle:
@@ -265,7 +272,7 @@ class TestCase(unittest.TestCase):
 
     # Test a new_style class with __iter__ but no next() method
     def test_new_style_iter_class(self):
-        class IterClass(object):
+        class IterClass:
             def __iter__(self):
                 return self
 
@@ -382,8 +389,7 @@ class TestCase(unittest.TestCase):
     def test_iter_file(self):
         f = open(TESTFN, "w")
         try:
-            for i in range(5):
-                f.write("%d\n" % i)
+            f.writelines("%d\n" % i for i in range(5))
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -411,8 +417,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            for i in range(5):
-                f.write("%d\n" % i)
+            f.writelines("%d\n" % i for i in range(5))
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -443,8 +448,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            for i in range(5):
-                f.write("%d\n" % i)
+            f.writelines("%d\n" % i for i in range(5))
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -557,8 +561,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            for i in range(10):
-                f.write("xy" * i + "\n")  # line i has len 2*i+1
+            f.writelines("xy" * i + "\n" for i in range(10))  # line i has len 2*i+1
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -602,7 +605,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            f.write("a\n" "bbb\n" "cc\n")
+            f.write("a\nbbb\ncc\n")
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -722,7 +725,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            f.write("a\n" "b\n" "c\n")
+            f.write("a\nb\nc\n")
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -760,7 +763,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            f.write("a\n" "b\n" "c\n" "b\n")
+            f.write("a\nb\nc\nb\n")
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -796,7 +799,7 @@ class TestCase(unittest.TestCase):
 
         f = open(TESTFN, "w")
         try:
-            f.write("a\n" "b\n" "c\n" "d\n" "e\n")
+            f.write("a\nb\nc\nd\ne\n")
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -905,8 +908,7 @@ class TestCase(unittest.TestCase):
         f = open(TESTFN, "w")
         lines = ("a\n", "bb\n", "ccc\n")
         try:
-            for line in lines:
-                f.write(line)
+            f.writelines(lines)
         finally:
             f.close()
         f = open(TESTFN, "r")
@@ -925,7 +927,7 @@ class TestCase(unittest.TestCase):
 
     @cpython_only
     def test_ref_counting_behavior(self):
-        class C(object):
+        class C:
             count = 0
 
             def __new__(cls):
@@ -1028,7 +1030,7 @@ class TestCase(unittest.TestCase):
 
     def test_3720(self):
         # Avoid a crash, when an iterator deletes its next() method.
-        class BadIterator(object):
+        class BadIterator:
             def __iter__(self):
                 return self
 

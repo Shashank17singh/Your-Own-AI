@@ -1,6 +1,7 @@
-import cppcheckdata
-import sys
 import re
+import sys
+
+import cppcheckdata
 
 DEBUG = "-debug" in sys.argv
 VERIFY = "-verify" in sys.argv

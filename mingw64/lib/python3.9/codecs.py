@@ -18,50 +18,50 @@ except ImportError as why:
     raise SystemError("Failed to load the builtin codecs: %s" % why)
 
 __all__ = [
-    "register",
-    "lookup",
-    "open",
-    "EncodedFile",
     "BOM",
-    "BOM_BE",
-    "BOM_LE",
     "BOM32_BE",
     "BOM32_LE",
     "BOM64_BE",
     "BOM64_LE",
+    "BOM_BE",
+    "BOM_LE",
     "BOM_UTF8",
     "BOM_UTF16",
-    "BOM_UTF16_LE",
     "BOM_UTF16_BE",
+    "BOM_UTF16_LE",
     "BOM_UTF32",
-    "BOM_UTF32_LE",
     "BOM_UTF32_BE",
-    "CodecInfo",
+    "BOM_UTF32_LE",
     "Codec",
-    "IncrementalEncoder",
+    "CodecInfo",
+    "EncodedFile",
     "IncrementalDecoder",
+    "IncrementalEncoder",
     "StreamReader",
-    "StreamWriter",
     "StreamReaderWriter",
     "StreamRecoder",
-    "getencoder",
+    "StreamWriter",
+    "backslashreplace_errors",
+    "decode",
+    "encode",
     "getdecoder",
-    "getincrementalencoder",
+    "getencoder",
     "getincrementaldecoder",
+    "getincrementalencoder",
     "getreader",
     "getwriter",
-    "encode",
-    "decode",
-    "iterencode",
-    "iterdecode",
-    "strict_errors",
     "ignore_errors",
-    "replace_errors",
-    "xmlcharrefreplace_errors",
-    "backslashreplace_errors",
-    "namereplace_errors",
-    "register_error",
+    "iterdecode",
+    "iterencode",
+    "lookup",
     "lookup_error",
+    "namereplace_errors",
+    "open",
+    "register",
+    "register_error",
+    "replace_errors",
+    "strict_errors",
+    "xmlcharrefreplace_errors",
 ]
 
 ### Constants
@@ -88,7 +88,6 @@ BOM_UTF32_LE = b"\xff\xfe\x00\x00"
 BOM_UTF32_BE = b"\x00\x00\xfe\xff"
 
 if sys.byteorder == "little":
-
     # UTF-16, native endianness
     BOM = BOM_UTF16 = BOM_UTF16_LE
 
@@ -96,7 +95,6 @@ if sys.byteorder == "little":
     BOM_UTF32 = BOM_UTF32_LE
 
 else:
-
     # UTF-16, native endianness
     BOM = BOM_UTF16 = BOM_UTF16_BE
 
@@ -134,7 +132,7 @@ class CodecInfo(tuple):
         incrementaldecoder=None,
         name=None,
         *,
-        _is_text_encoding=None
+        _is_text_encoding=None,
     ):
         self = tuple.__new__(cls, (encode, decode, streamreader, streamwriter))
         self.name = name
@@ -222,7 +220,7 @@ class Codec:
         raise NotImplementedError
 
 
-class IncrementalEncoder(object):
+class IncrementalEncoder:
     """
     An IncrementalEncoder encodes an input in multiple steps. The input can
     be passed piece by piece to the encode() method. The IncrementalEncoder
@@ -300,7 +298,7 @@ class BufferedIncrementalEncoder(IncrementalEncoder):
         self.buffer = state or ""
 
 
-class IncrementalDecoder(object):
+class IncrementalDecoder:
     """
     An IncrementalDecoder decodes an input in multiple steps. The input can
     be passed piece by piece to the decode() method. The IncrementalDecoder
@@ -398,7 +396,6 @@ class BufferedIncrementalDecoder(IncrementalDecoder):
 
 
 class StreamWriter(Codec):
-
     def __init__(self, stream, errors="strict"):
         """Creates a StreamWriter instance.
 
@@ -443,7 +440,6 @@ class StreamWriter(Codec):
         stream to recover state.
 
         """
-        pass
 
     def seek(self, offset, whence=0):
         self.stream.seek(offset, whence)
@@ -465,7 +461,6 @@ class StreamWriter(Codec):
 
 
 class StreamReader(Codec):
-
     charbuffertype = str
 
     def __init__(self, stream, errors="strict"):
@@ -1157,12 +1152,11 @@ except LookupError:
 # package
 _false = 0
 if _false:
-    import encodings
+    pass
 
 ### Tests
 
 if __name__ == "__main__":
-
     # Make stdout translate Latin-1 output into UTF-8 output
     sys.stdout = EncodedFile(sys.stdout, "latin-1", "utf-8")
 

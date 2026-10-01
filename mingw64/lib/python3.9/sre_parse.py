@@ -112,7 +112,7 @@ class State:
                 raise source.error("cannot refer to an open group")
             if gid >= self.lookbehindgroups:
                 raise source.error(
-                    "cannot refer to group defined in the same " "lookbehind subpattern"
+                    "cannot refer to group defined in the same lookbehind subpattern"
                 )
 
 
@@ -373,7 +373,7 @@ def _class_escape(source, escape):
             c = int(escape[1:], 8)
             if c > 0o377:
                 raise source.error(
-                    "octal escape value %s outside of " "range 0-0o377" % escape,
+                    "octal escape value %s outside of range 0-0o377" % escape,
                     len(escape),
                 )
             return LITERAL, c
@@ -451,8 +451,7 @@ def _escape(source, escape, state):
                     c = int(escape[1:], 8)
                     if c > 0o377:
                         raise source.error(
-                            "octal escape value %s outside of "
-                            "range 0-0o377" % escape,
+                            "octal escape value %s outside of range 0-0o377" % escape,
                             len(escape),
                         )
                     return LITERAL, c
@@ -549,7 +548,6 @@ def _parse(source, state, verbose, nested, first=False):
     _ord = ord
 
     while True:
-
         this = source.next
         if this is None:
             break  # end of pattern
@@ -1113,8 +1111,7 @@ def parse_template(source, state):
                         c = int(this[1:], 8)
                         if c > 0o377:
                             raise s.error(
-                                "octal escape value %s outside of "
-                                "range 0-0o377" % this,
+                                "octal escape value %s outside of range 0-0o377" % this,
                                 len(this),
                             )
                         lappend(chr(c))

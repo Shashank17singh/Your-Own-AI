@@ -1,14 +1,15 @@
 import io
 import sys
 import textwrap
-from test import support
-from test.support import captured_stdout
 import traceback
 import unittest
 from unittest.util import strclass
 
+from test import support
+from test.support import captured_stdout
 
-class MockTraceback(object):
+
+class MockTraceback:
     class TracebackException:
         def __init__(self, *args, **kwargs):
             self.capture_locals = kwargs.get("capture_locals", False)
@@ -242,24 +243,22 @@ class Test_TestResult(unittest.TestCase):
                 )
 
     def testGetNestedSubTestDescriptionWithoutDocstring(self):
-        with self.subTest(foo=1):
-            with self.subTest(baz=2, bar=3):
-                result = unittest.TextTestResult(None, True, 1)
-                self.assertEqual(
-                    result.getDescription(self._subtest),
-                    "testGetNestedSubTestDescriptionWithoutDocstring "
-                    "(" + __name__ + ".Test_TestResult) (baz=2, bar=3, foo=1)",
-                )
+        with self.subTest(foo=1), self.subTest(baz=2, bar=3):
+            result = unittest.TextTestResult(None, True, 1)
+            self.assertEqual(
+                result.getDescription(self._subtest),
+                "testGetNestedSubTestDescriptionWithoutDocstring "
+                "(" + __name__ + ".Test_TestResult) (baz=2, bar=3, foo=1)",
+            )
 
     def testGetDuplicatedNestedSubTestDescriptionWithoutDocstring(self):
-        with self.subTest(foo=1, bar=2):
-            with self.subTest(baz=3, bar=4):
-                result = unittest.TextTestResult(None, True, 1)
-                self.assertEqual(
-                    result.getDescription(self._subtest),
-                    "testGetDuplicatedNestedSubTestDescriptionWithoutDocstring "
-                    "(" + __name__ + ".Test_TestResult) (baz=3, bar=4, foo=1)",
-                )
+        with self.subTest(foo=1, bar=2), self.subTest(baz=3, bar=4):
+            result = unittest.TextTestResult(None, True, 1)
+            self.assertEqual(
+                result.getDescription(self._subtest),
+                "testGetDuplicatedNestedSubTestDescriptionWithoutDocstring "
+                "(" + __name__ + ".Test_TestResult) (baz=3, bar=4, foo=1)",
+            )
 
     @unittest.skipIf(
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
@@ -330,8 +329,8 @@ class Test_TestResult(unittest.TestCase):
             )
 
     def testStackFrameTrimming(self):
-        class Frame(object):
-            class tb_frame(object):
+        class Frame:
+            class tb_frame:
                 f_globals = {}
 
         result = unittest.TestResult()
@@ -884,7 +883,7 @@ class TestOutputBuffering(unittest.TestCase):
             def test_foo(self):
                 pass
 
-        class Module(object):
+        class Module:
             @staticmethod
             def setUpModule():
                 print("set up module")
@@ -913,7 +912,7 @@ class TestOutputBuffering(unittest.TestCase):
             def test_foo(self):
                 pass
 
-        class Module(object):
+        class Module:
             @staticmethod
             def tearDownModule():
                 print("tear down module")
@@ -942,7 +941,7 @@ class TestOutputBuffering(unittest.TestCase):
             def test_foo(self):
                 pass
 
-        class Module(object):
+        class Module:
             @staticmethod
             def setUpModule():
                 print("set up module")
@@ -973,7 +972,7 @@ class TestOutputBuffering(unittest.TestCase):
             def test_foo(self):
                 pass
 
-        class Module(object):
+        class Module:
             @staticmethod
             def setUpModule():
                 print("set up module")
@@ -1013,7 +1012,7 @@ class TestOutputBuffering(unittest.TestCase):
             def test_foo(self):
                 pass
 
-        class Module(object):
+        class Module:
             @staticmethod
             def setUpModule():
                 print("set up module")

@@ -3,12 +3,13 @@ import contextlib
 import copy
 import gc
 import pickle
-from random import randrange, shuffle
 import struct
 import sys
 import unittest
 import weakref
 from collections.abc import MutableMapping
+from random import randrange, shuffle
+
 from test import mapping_tests, support
 
 py_coll = support.import_fresh_module("collections", blocked=["_collections"])
@@ -26,7 +27,6 @@ def replaced_module(name, replacement):
 
 
 class OrderedDictTests:
-
     def test_init(self):
         OrderedDict = self.OrderedDict
         with self.assertRaises(TypeError):
@@ -462,7 +462,20 @@ class OrderedDictTests:
     def test_views(self):
         OrderedDict = self.OrderedDict
         # See http://bugs.python.org/issue24286
-        s = "the quick brown fox jumped over a lazy dog yesterday before dawn".split()
+        s = [
+            "the",
+            "quick",
+            "brown",
+            "fox",
+            "jumped",
+            "over",
+            "a",
+            "lazy",
+            "dog",
+            "yesterday",
+            "before",
+            "dawn",
+        ]
         od = OrderedDict.fromkeys(s)
         self.assertEqual(od.keys(), dict(od).keys())
         self.assertEqual(od.items(), dict(od).items())
@@ -744,7 +757,6 @@ class OrderedDictTests:
 
 
 class PurePythonOrderedDictTests(OrderedDictTests, unittest.TestCase):
-
     module = py_coll
     OrderedDict = py_coll.OrderedDict
 
@@ -772,7 +784,6 @@ del method
 
 @unittest.skipUnless(c_coll, "requires the C version of the collections module")
 class CPythonOrderedDictTests(OrderedDictTests, unittest.TestCase):
-
     module = c_coll
     OrderedDict = c_coll.OrderedDict
     check_sizeof = support.check_sizeof
@@ -865,7 +876,6 @@ class CPythonOrderedDictTests(OrderedDictTests, unittest.TestCase):
 
 
 class PurePythonOrderedDictSubclassTests(PurePythonOrderedDictTests):
-
     module = py_coll
 
     class OrderedDict(py_coll.OrderedDict):
@@ -873,7 +883,6 @@ class PurePythonOrderedDictSubclassTests(PurePythonOrderedDictTests):
 
 
 class CPythonOrderedDictSubclassTests(CPythonOrderedDictTests):
-
     module = c_coll
 
     class OrderedDict(c_coll.OrderedDict):
@@ -881,7 +890,6 @@ class CPythonOrderedDictSubclassTests(CPythonOrderedDictTests):
 
 
 class PurePythonGeneralMappingTests(mapping_tests.BasicTestMappingProtocol):
-
     @classmethod
     def setUpClass(cls):
         cls.type2test = py_coll.OrderedDict
@@ -893,7 +901,6 @@ class PurePythonGeneralMappingTests(mapping_tests.BasicTestMappingProtocol):
 
 @unittest.skipUnless(c_coll, "requires the C version of the collections module")
 class CPythonGeneralMappingTests(mapping_tests.BasicTestMappingProtocol):
-
     @classmethod
     def setUpClass(cls):
         cls.type2test = c_coll.OrderedDict
@@ -904,7 +911,6 @@ class CPythonGeneralMappingTests(mapping_tests.BasicTestMappingProtocol):
 
 
 class PurePythonSubclassMappingTests(mapping_tests.BasicTestMappingProtocol):
-
     @classmethod
     def setUpClass(cls):
         class MyOrderedDict(py_coll.OrderedDict):
@@ -919,7 +925,6 @@ class PurePythonSubclassMappingTests(mapping_tests.BasicTestMappingProtocol):
 
 @unittest.skipUnless(c_coll, "requires the C version of the collections module")
 class CPythonSubclassMappingTests(mapping_tests.BasicTestMappingProtocol):
-
     @classmethod
     def setUpClass(cls):
         class MyOrderedDict(c_coll.OrderedDict):

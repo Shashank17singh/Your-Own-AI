@@ -3,15 +3,14 @@
 import os
 import re
 import unittest
-from distutils import debug
-from distutils.log import WARN
+from distutils import debug, filelist
 from distutils.errors import DistutilsTemplateError
-from distutils.filelist import glob_to_re, translate_pattern, FileList
-from distutils import filelist
+from distutils.filelist import FileList, glob_to_re, translate_pattern
+from distutils.log import WARN
+from distutils.tests import support
 
 import test.support
 from test.support import captured_stdout, run_unittest
-from distutils.tests import support
 
 MANIFEST_IN = """\
 include ok
@@ -35,7 +34,6 @@ def make_local_path(s):
 
 
 class FileListTestCase(support.LoggingSilencer, unittest.TestCase):
-
     def assertNoWarnings(self):
         self.assertEqual(self.get_logs(WARN), [])
         self.clear_logs()

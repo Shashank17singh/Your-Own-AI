@@ -17,7 +17,6 @@ At large scale, the structure of the module is following:
 * Wrapper submodules for re and io related types.
 """
 
-from abc import abstractmethod, ABCMeta
 import collections
 import collections.abc
 import contextlib
@@ -26,11 +25,12 @@ import operator
 import re as stdlib_re  # Avoid confusion with the re we export.
 import sys
 import types
+from abc import ABCMeta, abstractmethod
 from types import (
-    WrapperDescriptorType,
-    MethodWrapperType,
-    MethodDescriptorType,
     GenericAlias,
+    MethodDescriptorType,
+    MethodWrapperType,
+    WrapperDescriptorType,
 )
 
 # Please keep __all__ alphabetized within each category.
@@ -330,7 +330,7 @@ class _Immutable:
 # Internal indicator of special typing constructs.
 # See __doc__ instance attribute for specific docs.
 class _SpecialForm(_Final, _root=True):
-    __slots__ = ("_name", "__doc__", "_getitem")
+    __slots__ = ("__doc__", "_getitem", "_name")
 
     def __init__(self, getitem):
         self._getitem = getitem
@@ -535,9 +535,9 @@ class ForwardRef(_Final, _root=True):
         "__forward_arg__",
         "__forward_code__",
         "__forward_evaluated__",
-        "__forward_value__",
         "__forward_is_argument__",
         "__forward_module__",
+        "__forward_value__",
     )
 
     def __init__(self, arg, is_argument=True, module=None):
@@ -641,12 +641,12 @@ class TypeVar(_Final, _Immutable, _root=True):
     """
 
     __slots__ = (
-        "__name__",
         "__bound__",
         "__constraints__",
-        "__covariant__",
         "__contravariant__",
+        "__covariant__",
         "__dict__",
+        "__name__",
     )
 
     def __init__(
@@ -752,7 +752,7 @@ class _BaseGenericAlias(_Final, _root=True):
 
     def __subclasscheck__(self, cls):
         raise TypeError(
-            "Subscripted generics cannot be used with" " class and instance checks"
+            "Subscripted generics cannot be used with class and instance checks"
         )
 
 
@@ -897,7 +897,7 @@ class _CallableGenericAlias(_GenericAlias, _root=True):
             return super().__repr__()
         return (
             f"typing.Callable"
-            f'[[{", ".join([_type_repr(a) for a in self.__args__[:-1]])}], '
+            f"[[{', '.join([_type_repr(a) for a in self.__args__[:-1]])}], "
             f"{_type_repr(self.__args__[-1])}]"
         )
 
@@ -916,7 +916,7 @@ class _CallableType(_SpecialGenericAlias, _root=True):
 
     def __getitem__(self, params):
         if not isinstance(params, tuple) or len(params) != 2:
-            raise TypeError("Callable must be used as " "Callable[[arg, ...], result].")
+            raise TypeError("Callable must be used as Callable[[arg, ...], result].")
         args, result = params
         # This relaxes what args can be on purpose to allow things like
         # PEP 612 ParamSpec.  Responsibility for whether a user is using
@@ -984,7 +984,6 @@ def _value_and_type_iter(parameters):
 
 
 class _LiteralGenericAlias(_GenericAlias, _root=True):
-
     def __eq__(self, other):
         if not isinstance(other, _LiteralGenericAlias):
             return NotImplemented
@@ -1186,7 +1185,8 @@ class _ProtocolMeta(ABCMeta):
             return True
         if cls._is_protocol:
             if all(
-                hasattr(instance, attr) and
+                hasattr(instance, attr)
+                and
                 # All *methods* can be blocked by setting them to None.
                 (
                     not callable(getattr(cls, attr, None))
@@ -1257,7 +1257,7 @@ class Protocol(Generic, metaclass=_ProtocolMeta):
                 if _allow_reckless_class_cheks():
                     return NotImplemented
                 raise TypeError(
-                    "Protocols with non-method members" " don't support issubclass()"
+                    "Protocols with non-method members don't support issubclass()"
                 )
             if not isinstance(other, type):
                 # Same error message as for issubclass(1, int).
@@ -1311,7 +1311,7 @@ class Protocol(Generic, metaclass=_ProtocolMeta):
                 and base._is_protocol
             ):
                 raise TypeError(
-                    "Protocols can only inherit from other" " protocols, got %r" % base
+                    "Protocols can only inherit from other protocols, got %r" % base
                 )
         cls.__init__ = _no_init
 
@@ -1407,7 +1407,7 @@ class Annotated:
         return _AnnotatedAlias(origin, metadata)
 
     def __init_subclass__(cls, *args, **kwargs):
-        raise TypeError("Cannot subclass {}.Annotated".format(cls.__module__))
+        raise TypeError(f"Cannot subclass {cls.__module__}.Annotated")
 
 
 def runtime_checkable(cls):
@@ -1430,8 +1430,7 @@ def runtime_checkable(cls):
     """
     if not issubclass(cls, Generic) or not cls._is_protocol:
         raise TypeError(
-            "@runtime_checkable can be only applied to protocol classes,"
-            " got %r" % cls
+            "@runtime_checkable can be only applied to protocol classes, got %r" % cls
         )
     cls._is_runtime_protocol = True
     return cls
@@ -1554,9 +1553,7 @@ def get_type_hints(obj, globalns=None, localns=None, include_extras=False):
         if isinstance(obj, _allowed_types):
             return {}
         else:
-            raise TypeError(
-                "{!r} is not a module, class, method, " "or function.".format(obj)
-            )
+            raise TypeError(f"{obj!r} is not a module, class, method, or function.")
     defaults = _get_defaults(obj)
     hints = dict(hints)
     for name, value in hints.items():
@@ -1953,7 +1950,6 @@ _special = frozenset({"__module__", "__name__", "__annotations__"})
 
 
 class NamedTupleMeta(type):
-
     def __new__(cls, typename, bases, ns):
         assert bases[0] is _NamedTuple
         types = ns.get("__annotations__", {})
@@ -2011,8 +2007,7 @@ def NamedTuple(typename, fields=None, /, **kwargs):
         fields = kwargs.items()
     elif kwargs:
         raise TypeError(
-            "Either list of fields or keywords"
-            " can be provided to NamedTuple, not both"
+            "Either list of fields or keywords can be provided to NamedTuple, not both"
         )
     try:
         module = sys._getframe(1).f_globals.get("__name__", "__main__")
@@ -2135,7 +2130,7 @@ def TypedDict(typename, fields=None, /, *, total=True, **kwargs):
         fields = kwargs
     elif kwargs:
         raise TypeError(
-            "TypedDict takes either a dict or keyword arguments," " but not both"
+            "TypedDict takes either a dict or keyword arguments, but not both"
         )
 
     ns = {"__annotations__": dict(fields)}

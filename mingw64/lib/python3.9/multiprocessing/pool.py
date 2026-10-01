@@ -25,8 +25,7 @@ import warnings
 
 # If threading is available then ThreadPool should be provided.  Therefore
 # we avoid top-level imports which are liable to fail on some systems.
-from . import util
-from . import get_context, TimeoutError
+from . import TimeoutError, get_context, util
 from .connection import wait
 
 #
@@ -94,7 +93,7 @@ class MaybeEncodingError(Exception):
     def __init__(self, exc, value):
         self.exc = repr(exc)
         self.value = repr(value)
-        super(MaybeEncodingError, self).__init__(self.exc, self.value)
+        super().__init__(self.exc, self.value)
 
     def __str__(self):
         return "Error sending result: '%s'. Reason: '%s'" % (self.value, self.exc)
@@ -112,7 +111,7 @@ def worker(
     wrap_exception=False,
 ):
     if (maxtasks is not None) and not (isinstance(maxtasks, int) and maxtasks >= 1):
-        raise AssertionError("Maxtasks {!r} is not valid".format(maxtasks))
+        raise AssertionError(f"Maxtasks {maxtasks!r} is not valid")
     put = outqueue.put
     get = inqueue.get
     if hasattr(inqueue, "_writer"):
@@ -188,7 +187,7 @@ class _PoolCache(dict):
             self.notifier.put(None)
 
 
-class Pool(object):
+class Pool:
     """
     Class which supports an async version of applying functions to arguments.
     """
@@ -499,7 +498,7 @@ class Pool(object):
             return result
         else:
             if chunksize < 1:
-                raise ValueError("Chunksize must be 1+, not {0:n}".format(chunksize))
+                raise ValueError(f"Chunksize must be 1+, not {chunksize:n}")
             task_batches = Pool._get_tasks(func, iterable, chunksize)
             result = IMapIterator(self)
             self._taskqueue.put(
@@ -526,7 +525,7 @@ class Pool(object):
             return result
         else:
             if chunksize < 1:
-                raise ValueError("Chunksize must be 1+, not {0!r}".format(chunksize))
+                raise ValueError(f"Chunksize must be 1+, not {chunksize!r}")
             task_batches = Pool._get_tasks(func, iterable, chunksize)
             result = IMapUnorderedIterator(self)
             self._taskqueue.put(
@@ -863,8 +862,7 @@ class Pool(object):
 #
 
 
-class ApplyResult(object):
-
+class ApplyResult:
     def __init__(self, pool, callback, error_callback):
         self._pool = pool
         self._event = threading.Event()
@@ -879,7 +877,7 @@ class ApplyResult(object):
 
     def successful(self):
         if not self.ready():
-            raise ValueError("{0!r} not ready".format(self))
+            raise ValueError(f"{self!r} not ready")
         return self._success
 
     def wait(self, timeout=None):
@@ -915,7 +913,6 @@ AsyncResult = ApplyResult  # create alias -- see #17805
 
 
 class MapResult(ApplyResult):
-
     def __init__(self, pool, chunksize, length, callback, error_callback):
         ApplyResult.__init__(self, pool, callback, error_callback=error_callback)
         self._success = True
@@ -958,8 +955,7 @@ class MapResult(ApplyResult):
 #
 
 
-class IMapIterator(object):
-
+class IMapIterator:
     def __init__(self, pool):
         self._pool = pool
         self._cond = threading.Condition(threading.Lock())
@@ -1030,7 +1026,6 @@ class IMapIterator(object):
 
 
 class IMapUnorderedIterator(IMapIterator):
-
     def _set(self, i, obj):
         with self._cond:
             self._items.append(obj)
@@ -1039,11 +1034,6 @@ class IMapUnorderedIterator(IMapIterator):
             if self._index == self._length:
                 del self._cache[self._job]
                 self._pool = None
-
-
-#
-#
-#
 
 
 class ThreadPool(Pool):

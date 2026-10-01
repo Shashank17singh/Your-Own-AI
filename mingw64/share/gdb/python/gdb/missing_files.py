@@ -4,6 +4,7 @@ missing_debug.py and missing_objfile.py modules.
 """
 
 import sys
+
 import gdb
 
 if sys.version_info >= (3, 7):
@@ -53,7 +54,7 @@ def _validate_name(name):
             raise ValueError("invalid character '%s' in handler name: %s" % (ch, name))
 
 
-class MissingFileHandler(object):
+class MissingFileHandler:
     """Base class for missing file handlers written in Python.
     A missing file handler has a single method __call__ along with the
     read/write attribute enabled, and a read-only attribute name.  The
@@ -131,10 +132,10 @@ def register_handler(handler_type, locus, handler, replace=False):
             )
     else:
         raise TypeError("locus should be gdb.Progspace or None")
-    name = getattr(handler, "name")
+    name = handler.name
     _validate_name(name)
-    getattr(handler, "enabled")
-    call_method = getattr(handler, "__call__")
+    handler.enabled
+    call_method = handler.__call__
     if not callable(call_method):
         raise AttributeError(
             "'%s' object's '__call__' attribute is not callable"

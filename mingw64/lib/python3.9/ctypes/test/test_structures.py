@@ -1,10 +1,11 @@
+import _ctypes_test
 import platform
 import sys
 import unittest
 from ctypes import *
 from ctypes.test import need_symbol
 from struct import calcsize
-import _ctypes_test
+
 from test import support
 
 # The following definition is meant to be used from time to time to assist
@@ -325,9 +326,7 @@ class StructureTestCase(unittest.TestCase):
 
         cls, msg = self.get_except(Person, b"Someone", (1, 2))
         self.assertEqual(cls, RuntimeError)
-        self.assertEqual(
-            msg, "(Phone) <class 'TypeError'>: " "expected bytes, int found"
-        )
+        self.assertEqual(msg, "(Phone) <class 'TypeError'>: expected bytes, int found")
 
         cls, msg = self.get_except(Person, b"Someone", (b"a", b"b", b"c"))
         self.assertEqual(cls, RuntimeError)
@@ -339,7 +338,7 @@ class StructureTestCase(unittest.TestCase):
             class S(Structure):
                 _fields_ = [("x" * length, c_int)]
 
-        for length in [10**i for i in range(0, 8)]:
+        for length in [10**i for i in range(8)]:
             try:
                 create_class(length)
             except MemoryError:
@@ -629,7 +628,7 @@ class StructureTestCase(unittest.TestCase):
             result = func(test4)
         self.assertEqual(
             ctx.exception.args[0],
-            "item 1 in _argtypes_ passes " "a union by value, which is unsupported.",
+            "item 1 in _argtypes_ passes a union by value, which is unsupported.",
         )
         test5 = Test5()
         with self.assertRaises(TypeError) as ctx:
@@ -639,7 +638,7 @@ class StructureTestCase(unittest.TestCase):
             result = func(test5)
         self.assertEqual(
             ctx.exception.args[0],
-            "item 1 in _argtypes_ passes " "a union by value, which is unsupported.",
+            "item 1 in _argtypes_ passes a union by value, which is unsupported.",
         )
 
         # passing by reference should be OK
@@ -758,12 +757,11 @@ class StructureTestCase(unittest.TestCase):
             result = func(test8)
         self.assertEqual(
             ctx.exception.args[0],
-            "item 1 in _argtypes_ passes " "a union by value, which is unsupported.",
+            "item 1 in _argtypes_ passes a union by value, which is unsupported.",
         )
 
 
 class PointerMemberTestCase(unittest.TestCase):
-
     def test(self):
         # a Structure with a POINTER field
         class S(Structure):

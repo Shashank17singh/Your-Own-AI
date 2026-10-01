@@ -8,14 +8,13 @@ import os
 import select
 import signal
 import socket
+import socketserver
 import tempfile
 import threading
 import unittest
-import socketserver
 
 import test.support
-from test.support import reap_children, reap_threads, verbose
-from test.support import socket_helper
+from test.support import reap_children, reap_threads, socket_helper, verbose
 
 test.support.requires("network")
 
@@ -500,7 +499,6 @@ class SocketWriterTest(unittest.TestCase):
 
 
 class MiscTestCase(unittest.TestCase):
-
     def test_all(self):
         # objects defined in the module should be in __all__
         expected = []

@@ -83,7 +83,7 @@ active; it will never call dnd_commit().
 
 import tkinter
 
-__all__ = ["dnd_start", "DndHandler"]
+__all__ = ["DndHandler", "dnd_start"]
 
 
 def dnd_start(source, event):

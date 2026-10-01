@@ -6,7 +6,6 @@ import unittest
 
 
 class DictSetTest(unittest.TestCase):
-
     def test_constructors_not_callable(self):
         kt = type({}.keys())
         self.assertRaises(TypeError, kt, {})

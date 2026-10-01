@@ -2,7 +2,7 @@
 should be based on this code."""
 
 from . import handler
-from ._exceptions import SAXNotSupportedException, SAXNotRecognizedException
+from ._exceptions import SAXNotRecognizedException, SAXNotSupportedException
 
 
 class XMLReader:
@@ -166,11 +166,11 @@ class Locator:
 
     def getPublicId(self):
         "Return the public identifier for the current event."
-        return None
+        return
 
     def getSystemId(self):
         "Return the system identifier for the current event."
-        return None
+        return
 
 
 class InputSource:

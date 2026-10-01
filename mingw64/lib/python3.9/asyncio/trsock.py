@@ -48,13 +48,13 @@ class TransportSocket:
                 laddr = self.getsockname()
                 if laddr:
                     s = f"{s}, laddr={laddr}"
-            except socket.error:
+            except OSError:
                 pass
             try:
                 raddr = self.getpeername()
                 if raddr:
                     s = f"{s}, raddr={raddr}"
-            except socket.error:
+            except OSError:
                 pass
 
         return f"{s}>"

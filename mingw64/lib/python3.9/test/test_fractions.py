@@ -1,21 +1,22 @@
 """Tests for Lib/fractions.py."""
 
-from decimal import Decimal
-from test.support import requires_IEEE_754
+import fractions
+import functools
 import math
 import numbers
 import operator
-import fractions
-import functools
 import sys
 import unittest
 from copy import copy, deepcopy
+from decimal import Decimal
 from pickle import dumps, loads
+
+from test.support import requires_IEEE_754
 
 F = fractions.Fraction
 
 
-class DummyFloat(object):
+class DummyFloat:
     """Dummy float class for testing comparisons with Fractions"""
 
     def __init__(self, value):
@@ -57,7 +58,7 @@ class DummyFloat(object):
     __rsub__ = __sub__
 
 
-class DummyRational(object):
+class DummyRational:
     """Test comparison of Fraction with a naive rational implementation."""
 
     def __init__(self, num, den):
@@ -98,7 +99,6 @@ def _components(r):
 
 
 class FractionTest(unittest.TestCase):
-
     def assertTypedEquals(self, expected, actual):
         """Asserts that both the types and values are the same."""
         self.assertEqual(type(expected), type(actual))

@@ -2,12 +2,11 @@
 Dialog for building Tkinter accelerator key bindings
 """
 
-from tkinter import Toplevel, Listbox, StringVar, TclError
-from tkinter.ttk import Frame, Button, Checkbutton, Entry, Label, Scrollbar
-from tkinter import messagebox
-from tkinter.simpledialog import _setup_dialog
 import string
 import sys
+from tkinter import Listbox, StringVar, TclError, Toplevel, messagebox
+from tkinter.simpledialog import _setup_dialog
+from tkinter.ttk import Button, Checkbutton, Entry, Frame, Label, Scrollbar
 
 FUNCTION_KEYS = (
     "F1",
@@ -93,7 +92,6 @@ def translate_key(key, modifiers):
 
 
 class GetKeysDialog(Toplevel):
-
     # Dialog title for invalid key sequence
     keyerror_title = "Key Sequence Error"
 
@@ -381,9 +379,7 @@ class GetKeysDialog(Toplevel):
         elif (modifiers == ["Shift"]) and (
             final_key not in FUNCTION_KEYS + MOVE_KEYS + ("Tab", "Space")
         ):
-            msg = (
-                "The shift modifier by itself may not be used with" " this key symbol."
-            )
+            msg = "The shift modifier by itself may not be used with this key symbol."
             self.showerror(title=title, parent=self, message=msg)
         elif keys in key_sequences:
             msg = "This key combination is already in use."
@@ -400,9 +396,7 @@ class GetKeysDialog(Toplevel):
             self.showerror(
                 title=self.keyerror_title,
                 parent=self,
-                message=(
-                    f"The entered key sequence is not accepted.\n\n" f"Error: {err}"
-                ),
+                message=(f"The entered key sequence is not accepted.\n\nError: {err}"),
             )
             return False
         else:

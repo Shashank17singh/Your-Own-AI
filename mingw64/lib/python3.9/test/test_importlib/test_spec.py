@@ -6,14 +6,14 @@ util = test_util.import_importlib("importlib.util")
 
 import os.path
 import pathlib
-from test.support import CleanImport
-import unittest
 import sys
+import unittest
 import warnings
+
+from test.support import CleanImport
 
 
 class TestLoader:
-
     def __init__(self, path=None, is_package=None):
         self.path = path
         self.package = is_package
@@ -39,7 +39,6 @@ class TestLoader:
 
 
 class NewLoader(TestLoader):
-
     EGGS = 1
 
     def exec_module(self, module):
@@ -47,7 +46,6 @@ class NewLoader(TestLoader):
 
 
 class LegacyLoader(TestLoader):
-
     HAM = -1
 
     with warnings.catch_warnings():
@@ -62,7 +60,6 @@ class LegacyLoader(TestLoader):
 
 
 class ModuleSpecTests:
-
     def setUp(self):
         self.name = "spam"
         self.path = "spam.py"
@@ -230,7 +227,6 @@ Frozen_ModuleSpecTests, Source_ModuleSpecTests = test_util.test_both(
 
 
 class ModuleSpecMethodsTests:
-
     @property
     def bootstrap(self):
         return self.init._bootstrap
@@ -405,7 +401,6 @@ Frozen_ModuleSpecMethodsTests, Source_ModuleSpecMethodsTests = test_util.test_bo
 
 
 class ModuleReprTests:
-
     @property
     def bootstrap(self):
         return self.init._bootstrap
@@ -417,7 +412,7 @@ class ModuleReprTests:
     def test_module___loader___module_repr(self):
         class Loader:
             def module_repr(self, module):
-                return "<delicious {}>".format(module.__name__)
+                return f"<delicious {module.__name__}>"
 
         self.module.__loader__ = Loader()
         modrepr = self.bootstrap._module_repr(self.module)
@@ -496,7 +491,6 @@ Frozen_ModuleReprTests, Source_ModuleReprTests = test_util.test_both(
 
 
 class FactoryTests:
-
     def setUp(self):
         self.name = "spam"
         self.path = os.path.abspath("spam.py")

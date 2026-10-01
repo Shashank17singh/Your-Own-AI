@@ -3,6 +3,7 @@ import re
 import sys
 import warnings
 from inspect import isabstract
+
 from test import support
 
 try:
@@ -29,11 +30,11 @@ def dash_R(ns, test_name, test_func):
         False if the test didn't leak references; True if we detected refleaks.
     """
     # This code is hackish and inelegant, but it seems to do the job.
-    import copyreg
     import collections.abc
+    import copyreg
 
     if not hasattr(sys, "gettotalrefcount"):
-        raise Exception("Tracking reference leaks requires a debug build " "of Python")
+        raise Exception("Tracking reference leaks requires a debug build of Python")
 
     # Avoid false positives due to various caches
     # filling slowly with random data:
@@ -158,8 +159,8 @@ def dash_R(ns, test_name, test_func):
 
 
 def dash_R_cleanup(fs, ps, pic, zdc, abcs):
-    import copyreg
     import collections.abc
+    import copyreg
 
     # Restore some original values.
     warnings.filters[:] = fs

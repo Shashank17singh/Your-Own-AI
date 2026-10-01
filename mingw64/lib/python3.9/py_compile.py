@@ -12,7 +12,7 @@ import os.path
 import sys
 import traceback
 
-__all__ = ["compile", "main", "PyCompileError", "PycInvalidationMode"]
+__all__ = ["PyCompileError", "PycInvalidationMode", "compile", "main"]
 
 
 class PyCompileError(Exception):

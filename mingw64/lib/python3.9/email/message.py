@@ -4,19 +4,18 @@
 
 """Basic message object for the email package object model."""
 
-__all__ = ["Message", "EmailMessage"]
+__all__ = ["EmailMessage", "Message"]
 
+import quopri
 import re
 import uu
-import quopri
-from io import BytesIO, StringIO
+from email import charset as _charset
 
 # Intrapackage imports
-from email import utils
-from email import errors
-from email._policybase import Policy, compat32
-from email import charset as _charset
+from email import errors, utils
 from email._encoded_words import decode_b
+from email._policybase import compat32
+from io import BytesIO, StringIO
 
 Charset = _charset.Charset
 
@@ -37,7 +36,7 @@ def _splitparam(param):
         return a.strip(), None
     return a.strip(), b.strip()
 
-
+
 def _formatparam(param, value=None, quote=True):
     """Convenience function to format and return a key=value pair.
 
@@ -103,7 +102,7 @@ def _unquotevalue(value):
     else:
         return utils.unquote(value)
 
-
+
 class Message:
     """Basic message object.
 
@@ -208,7 +207,7 @@ class Message:
                 self._payload.append(payload)
             except AttributeError:
                 raise TypeError(
-                    "Attach is not valid on a message with a" " non-multipart payload"
+                    "Attach is not valid on a message with a non-multipart payload"
                 )
 
     def get_payload(self, i=None, decode=False):
@@ -408,8 +407,8 @@ class Message:
                     found += 1
                     if found >= max_count:
                         raise ValueError(
-                            "There may be at most {} {} headers "
-                            "in a message".format(max_count, name)
+                            f"There may be at most {max_count} {name} headers "
+                            "in a message"
                         )
         self._headers.append(self.policy.header_store_parse(name, val))
 
@@ -950,7 +949,6 @@ class Message:
 
 
 class MIMEPart(Message):
-
     def __init__(self, policy=None):
         if policy is None:
             from email.policy import default
@@ -1118,9 +1116,7 @@ class MIMEPart(Message):
             existing_subtype = self.get_content_subtype()
             disallowed_subtypes = disallowed_subtypes + (subtype,)
             if existing_subtype in disallowed_subtypes:
-                raise ValueError(
-                    "Cannot convert {} to {}".format(existing_subtype, subtype)
-                )
+                raise ValueError(f"Cannot convert {existing_subtype} to {subtype}")
         keep_headers = []
         part_headers = []
         for name, value in self._headers:
@@ -1183,7 +1179,6 @@ class MIMEPart(Message):
 
 
 class EmailMessage(MIMEPart):
-
     def set_content(self, *args, **kw):
         super().set_content(*args, **kw)
         if "MIME-Version" not in self:

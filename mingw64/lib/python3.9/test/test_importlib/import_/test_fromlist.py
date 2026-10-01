@@ -1,8 +1,9 @@
 """Test that the semantics relating to the 'fromlist' argument are correct."""
 
-from .. import util
-import warnings
 import unittest
+import warnings
+
+from .. import util
 
 
 class ReturnValue:
@@ -85,15 +86,17 @@ class HandlingFromlist:
         # to import a module which doesn't exist, that should let the
         # ModuleNotFoundError propagate.
         def module_code():
-            import i_do_not_exist
+            pass
 
-        with util.mock_modules(
-            "pkg.__init__", "pkg.mod", module_code={"pkg.mod": module_code}
-        ) as importer:
-            with util.import_state(meta_path=[importer]):
-                with self.assertRaises(ModuleNotFoundError) as exc:
-                    self.__import__("pkg", fromlist=["mod"])
-                self.assertEqual("i_do_not_exist", exc.exception.name)
+        with (
+            util.mock_modules(
+                "pkg.__init__", "pkg.mod", module_code={"pkg.mod": module_code}
+            ) as importer,
+            util.import_state(meta_path=[importer]),
+        ):
+            with self.assertRaises(ModuleNotFoundError) as exc:
+                self.__import__("pkg", fromlist=["mod"])
+            self.assertEqual("i_do_not_exist", exc.exception.name)
 
     def test_empty_string(self):
         with util.mock_modules("pkg.__init__", "pkg.mod") as importer:
@@ -121,15 +124,14 @@ class HandlingFromlist:
     def test_star_with_others(self):
         # [using * with others]
         context = util.mock_modules("pkg.__init__", "pkg.module1", "pkg.module2")
-        with context as mock:
-            with util.import_state(meta_path=[mock]):
-                mock["pkg"].__all__ = ["module1"]
-                module = self.__import__("pkg", fromlist=["module2", "*"])
-                self.assertEqual(module.__name__, "pkg")
-                self.assertTrue(hasattr(module, "module1"))
-                self.assertTrue(hasattr(module, "module2"))
-                self.assertEqual(module.module1.__name__, "pkg.module1")
-                self.assertEqual(module.module2.__name__, "pkg.module2")
+        with context as mock, util.import_state(meta_path=[mock]):
+            mock["pkg"].__all__ = ["module1"]
+            module = self.__import__("pkg", fromlist=["module2", "*"])
+            self.assertEqual(module.__name__, "pkg")
+            self.assertTrue(hasattr(module, "module1"))
+            self.assertTrue(hasattr(module, "module2"))
+            self.assertEqual(module.module1.__name__, "pkg.module1")
+            self.assertEqual(module.module2.__name__, "pkg.module2")
 
     def test_nonexistent_in_all(self):
         with util.mock_modules("pkg.__init__") as importer:

@@ -19,14 +19,16 @@ try:
 except ImportError:  # pragma: no cover
     ssl = None
 
-from . import base_events
-from . import constants
-from . import events
-from . import futures
-from . import protocols
-from . import sslproto
-from . import transports
-from . import trsock
+from . import (
+    base_events,
+    constants,
+    events,
+    futures,
+    protocols,
+    sslproto,
+    transports,
+    trsock,
+)
 from .log import logger
 
 
@@ -156,7 +158,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
         except OSError:
             if self._debug:
                 logger.debug(
-                    "Fail to write a null byte into the " "self-pipe socket",
+                    "Fail to write a null byte into the self-pipe socket",
                     exc_info=True,
                 )
 
@@ -203,7 +205,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
                 conn.setblocking(False)
             except (BlockingIOError, InterruptedError, ConnectionAbortedError):
                 # Early exit because the socket accept buffer is empty.
-                return None
+                return
             except OSError as exc:
                 # There's nowhere to send the error, so just log it.
                 if exc.errno in (
@@ -313,7 +315,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
         else:
             if not transport.is_closing():
                 raise RuntimeError(
-                    f"File descriptor {fd!r} is used by transport " f"{transport!r}"
+                    f"File descriptor {fd!r} is used by transport {transport!r}"
                 )
 
     def _add_reader(self, fd, callback, *args):
@@ -676,7 +678,6 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
 
 
 class _SelectorTransport(transports._FlowControlMixin, transports.Transport):
-
     max_size = 256 * 1024  # Buffer size passed to recv().
 
     _buffer_factory = bytearray  # Constructs initial value for self._buffer.
@@ -696,7 +697,7 @@ class _SelectorTransport(transports._FlowControlMixin, transports.Transport):
         if "peername" not in self._extra:
             try:
                 self._extra["peername"] = sock.getpeername()
-            except socket.error:
+            except OSError:
                 self._extra["peername"] = None
         self._sock = sock
         self._sock_fd = sock.fileno()
@@ -822,7 +823,6 @@ class _SelectorTransport(transports._FlowControlMixin, transports.Transport):
 
 
 class _SelectorSocketTransport(_SelectorTransport):
-
     _start_tls_compatible = True
     _sendfile_compatible = constants._SendfileMode.TRY_NATIVE
 
@@ -1058,7 +1058,6 @@ class _SelectorSocketTransport(_SelectorTransport):
 
 
 class _SelectorDatagramTransport(_SelectorTransport):
-
     _buffer_factory = collections.deque
 
     def __init__(self, loop, sock, protocol, address=None, waiter=None, extra=None):

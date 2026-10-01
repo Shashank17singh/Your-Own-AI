@@ -1,5 +1,3 @@
-from collections.abc import Sequence, Iterable
-from functools import total_ordering
 import fnmatch
 import linecache
 import os.path
@@ -8,6 +6,8 @@ import pickle
 # Import types and functions implemented in C
 from _tracemalloc import *
 from _tracemalloc import _get_object_traceback, _get_traces
+from collections.abc import Iterable, Sequence
+from functools import total_ordering
 
 
 def _format_size(size, sign):
@@ -32,7 +32,7 @@ class Statistic:
     Statistic difference on memory allocations between two Snapshot instance.
     """
 
-    __slots__ = ("traceback", "size", "count")
+    __slots__ = ("count", "size", "traceback")
 
     def __init__(self, traceback, size, count):
         self.traceback = traceback
@@ -79,7 +79,7 @@ class StatisticDiff:
     Snapshot instance.
     """
 
-    __slots__ = ("traceback", "size", "size_diff", "count", "count_diff")
+    __slots__ = ("count", "count_diff", "size", "size_diff", "traceback")
 
     def __init__(self, traceback, size, size_diff, count, count_diff):
         self.traceback = traceback
@@ -510,7 +510,7 @@ class Snapshot:
             raise ValueError("unknown key_type: %r" % (key_type,))
         if cumulative and key_type not in ("lineno", "filename"):
             raise ValueError(
-                "cumulative mode cannot by used " "with key type %r" % key_type
+                "cumulative mode cannot by used with key type %r" % key_type
             )
 
         stats = {}

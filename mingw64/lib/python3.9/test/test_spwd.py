@@ -1,5 +1,6 @@
 import os
 import unittest
+
 from test import support
 
 spwd = support.import_module("spwd")
@@ -9,7 +10,6 @@ spwd = support.import_module("spwd")
     hasattr(os, "geteuid") and os.geteuid() == 0, "root privileges required"
 )
 class TestSpwdRoot(unittest.TestCase):
-
     def test_getspall(self):
         entries = spwd.getspall()
         self.assertIsInstance(entries, list)
@@ -61,7 +61,6 @@ class TestSpwdRoot(unittest.TestCase):
     hasattr(os, "geteuid") and os.geteuid() != 0, "non-root user required"
 )
 class TestSpwdNonRoot(unittest.TestCase):
-
     def test_getspnam_exception(self):
         name = "bin"
         try:

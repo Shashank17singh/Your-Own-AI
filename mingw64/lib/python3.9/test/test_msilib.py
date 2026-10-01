@@ -2,6 +2,7 @@
 
 import os
 import unittest
+
 from test.support import TESTFN, import_module, unlink
 
 msilib = import_module("msilib")
@@ -22,7 +23,6 @@ def init_database():
 
 
 class MsiDatabaseTestCase(unittest.TestCase):
-
     def test_view_fetch_returns_none(self):
         db, db_path = init_database()
         properties = []

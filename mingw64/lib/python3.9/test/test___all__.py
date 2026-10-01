@@ -1,7 +1,8 @@
-import unittest
-from test import support
 import os
 import sys
+import unittest
+
+from test import support
 
 
 class NoAll(RuntimeError):
@@ -13,7 +14,6 @@ class FailedImport(RuntimeError):
 
 
 class AllTest(unittest.TestCase):
-
     def check_all(self, modname):
         names = {}
         with support.check_warnings(
@@ -32,30 +32,28 @@ class AllTest(unittest.TestCase):
         if not hasattr(sys.modules[modname], "__all__"):
             raise NoAll(modname)
         names = {}
-        with self.subTest(module=modname):
-            with support.check_warnings(
+        with (
+            self.subTest(module=modname),
+            support.check_warnings(
                 ("", DeprecationWarning), ("", ResourceWarning), quiet=True
-            ):
-                try:
-                    exec("from %s import *" % modname, names)
-                except Exception as e:
-                    # Include the module name in the exception string
-                    self.fail(
-                        "__all__ failure in {}: {}: {}".format(
-                            modname, e.__class__.__name__, e
-                        )
-                    )
-                if "__builtins__" in names:
-                    del names["__builtins__"]
-                if "__annotations__" in names:
-                    del names["__annotations__"]
-                if "__warningregistry__" in names:
-                    del names["__warningregistry__"]
-                keys = set(names)
-                all_list = sys.modules[modname].__all__
-                all_set = set(all_list)
-                self.assertCountEqual(all_set, all_list, "in module {}".format(modname))
-                self.assertEqual(keys, all_set, "in module {}".format(modname))
+            ),
+        ):
+            try:
+                exec("from %s import *" % modname, names)
+            except Exception as e:
+                # Include the module name in the exception string
+                self.fail(f"__all__ failure in {modname}: {e.__class__.__name__}: {e}")
+            if "__builtins__" in names:
+                del names["__builtins__"]
+            if "__annotations__" in names:
+                del names["__annotations__"]
+            if "__warningregistry__" in names:
+                del names["__warningregistry__"]
+            keys = set(names)
+            all_list = sys.modules[modname].__all__
+            all_set = set(all_list)
+            self.assertCountEqual(all_set, all_list, f"in module {modname}")
+            self.assertEqual(keys, all_set, f"in module {modname}")
 
     def walk_modules(self, basedir, modpath):
         for fn in sorted(os.listdir(basedir)):
@@ -83,7 +81,7 @@ class AllTest(unittest.TestCase):
         if not sys.platform.startswith("java"):
             # In case _socket fails to build, make this test fail more gracefully
             # than an AttributeError somewhere deep in CGIHTTPServer.
-            import _socket
+            pass
 
         ignored = []
         failed_imports = []

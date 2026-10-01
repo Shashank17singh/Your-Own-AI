@@ -573,10 +573,10 @@ def localcontext(ctx=None):
 # numbers.py for more detail.
 
 
-class Decimal(object):
+class Decimal:
     """Floating point class for decimal arithmetic."""
 
-    __slots__ = ("_exp", "_int", "_sign", "_is_special")
+    __slots__ = ("_exp", "_int", "_is_special", "_sign")
     # Generally, the value of the Decimal instance is given by
     #  (-1)**_sign * _int * 10**_exp
     # Special values are signified by _is_special == True
@@ -731,7 +731,7 @@ class Decimal(object):
                 context = getcontext()
             context._raise_error(
                 FloatOperation,
-                "strict semantics for mixing floats and Decimals are " "enabled",
+                "strict semantics for mixing floats and Decimals are enabled",
             )
             value = Decimal.from_float(value)
             self._exp = value._exp
@@ -2078,12 +2078,12 @@ class Decimal(object):
         if not (self._isinteger() and other._isinteger() and modulo._isinteger()):
             return context._raise_error(
                 InvalidOperation,
-                "pow() 3rd argument not allowed " "unless all arguments are integers",
+                "pow() 3rd argument not allowed unless all arguments are integers",
             )
         if other < 0:
             return context._raise_error(
                 InvalidOperation,
-                "pow() 2nd argument cannot be " "negative when 3rd argument specified",
+                "pow() 2nd argument cannot be negative when 3rd argument specified",
             )
         if not modulo:
             return context._raise_error(
@@ -3941,7 +3941,7 @@ _numbers.Number.register(Decimal)
 ##### Context class #######################################################
 
 
-class _ContextManager(object):
+class _ContextManager:
     """Context manager class to support localcontext().
 
     Sets a copy of the supplied context in __enter__() and restores
@@ -3960,7 +3960,7 @@ class _ContextManager(object):
         setcontext(self.saved_context)
 
 
-class Context(object):
+class Context:
     """Contains the context for a Decimal instance.
 
     Contains:
@@ -4062,9 +4062,7 @@ class Context(object):
             return self._set_integer_check(name, value, "-inf", 0)
         elif name == "Emax":
             return self._set_integer_check(name, value, 0, "inf")
-        elif name == "capitals":
-            return self._set_integer_check(name, value, 0, 1)
-        elif name == "clamp":
+        elif name == "capitals" or name == "clamp":
             return self._set_integer_check(name, value, 0, 1)
         elif name == "rounding":
             if not value in _rounding_modes:
@@ -4237,7 +4235,7 @@ class Context(object):
         if isinstance(num, str) and (num != num.strip() or "_" in num):
             return self._raise_error(
                 ConversionSyntax,
-                "trailing or leading whitespace and " "underscores are not permitted.",
+                "trailing or leading whitespace and underscores are not permitted.",
             )
 
         d = Decimal(num, context=self)
@@ -5751,8 +5749,8 @@ class Context(object):
     to_integral = to_integral_value
 
 
-class _WorkRep(object):
-    __slots__ = ("sign", "int", "exp")
+class _WorkRep:
+    __slots__ = ("exp", "int", "sign")
     # sign: 0 or 1
     # int:  int
     # exp:  None, int, or string
@@ -5995,7 +5993,7 @@ def _dlog(c, e, p):
     return _div_nearest(f_log_ten + log_d, 100)
 
 
-class _Log10Memoize(object):
+class _Log10Memoize:
     """Class to compute, store, and allow retrieval of, digits of the
     constant log(10) = 2.302585....  This constant is needed by
     Decimal.ln, Decimal.log10, Decimal.exp and Decimal.__pow__."""
@@ -6385,12 +6383,11 @@ def _parse_format_specifier(format_spec, _localeconv=None):
     if format_dict["zeropad"]:
         if fill is not None:
             raise ValueError(
-                "Fill character conflicts with '0'"
-                " in format specifier: " + format_spec
+                "Fill character conflicts with '0' in format specifier: " + format_spec
             )
         if align is not None:
             raise ValueError(
-                "Alignment conflicts with '0' in " "format specifier: " + format_spec
+                "Alignment conflicts with '0' in format specifier: " + format_spec
             )
     format_dict["fill"] = fill or " "
     # PEP 3101 originally specified that the default alignment should
@@ -6564,7 +6561,7 @@ def _format_number(is_negative, intpart, fracpart, exp, spec):
 
     if exp != 0 or spec["type"] in "eE":
         echar = {"E": "E", "e": "e", "G": "E", "g": "e"}[spec["type"]]
-        fracpart += "{0}{1:+}".format(echar, exp)
+        fracpart += f"{echar}{exp:+}"
     if spec["type"] == "%":
         fracpart += "%"
 

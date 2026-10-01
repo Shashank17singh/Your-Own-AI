@@ -3,14 +3,16 @@
 Contains CCompiler, an abstract base class that defines the interface
 for the Distutils compiler abstraction model."""
 
-import sys, os, re
-from distutils.errors import *
-from distutils.spawn import spawn
-from distutils.file_util import move_file
-from distutils.dir_util import mkpath
-from distutils.dep_util import newer_group
-from distutils.util import split_quoted, execute, get_platform
+import os
+import re
+import sys
 from distutils import log
+from distutils.dep_util import newer_group
+from distutils.dir_util import mkpath
+from distutils.errors import *
+from distutils.file_util import move_file
+from distutils.spawn import spawn
+from distutils.util import execute, get_platform, split_quoted
 
 
 class CCompiler:
@@ -456,7 +458,7 @@ class CCompiler:
             )
         else:
             raise TypeError(
-                "'runtime_library_dirs' (if supplied) " "must be a list of strings"
+                "'runtime_library_dirs' (if supplied) must be a list of strings"
             )
 
         return (libraries, library_dirs, runtime_library_dirs)
@@ -515,7 +517,6 @@ class CCompiler:
 
         Raises PreprocessError on failure.
         """
-        pass
 
     def compile(
         self,
@@ -597,7 +598,6 @@ class CCompiler:
         """Compile 'src' to product 'obj'."""
         # A concrete compiler class that does not override compile()
         # should implement _compile().
-        pass
 
     def create_static_lib(
         self, objects, output_libname, output_dir=None, debug=0, target_lang=None
@@ -624,7 +624,6 @@ class CCompiler:
 
         Raises LibError on failure.
         """
-        pass
 
     # values for target_desc parameter in link()
     SHARED_OBJECT = "shared_object"
@@ -838,12 +837,15 @@ class CCompiler:
         try:
             for incl in includes:
                 f.write("""#include "%s"\n""" % incl)
-            f.write("""\
+            f.write(
+                """\
 int main (int argc, char **argv) {
     %s();
     return 0;
 }
-""" % funcname)
+"""
+                % funcname
+            )
         finally:
             f.close()
         try:
@@ -932,7 +934,11 @@ int main (int argc, char **argv) {
         return os.path.join(output_dir, basename + (self.exe_extension or ""))
 
     def library_filename(
-        self, libname, lib_type="static", strip_dir=0, output_dir=""  # or 'shared'
+        self,
+        libname,
+        lib_type="static",
+        strip_dir=0,
+        output_dir="",  # or 'shared'
     ):
         assert output_dir is not None
         if lib_type not in ("static", "shared", "dylib", "xcode_stub"):
@@ -1047,7 +1053,7 @@ def show_compilers():
     from distutils.fancy_getopt import FancyGetopt
 
     compilers = []
-    for compiler in compiler_class.keys():
+    for compiler in compiler_class:
         compilers.append(("compiler=" + compiler, None, compiler_class[compiler][2]))
     compilers.sort()
     pretty_printer = FancyGetopt(compilers)
@@ -1178,7 +1184,7 @@ def gen_lib_options(compiler, library_dirs, runtime_library_dirs, libraries):
                 lib_opts.append(lib_file)
             else:
                 compiler.warn(
-                    "no library file corresponding to " "'%s' found (skipping)" % lib
+                    "no library file corresponding to '%s' found (skipping)" % lib
                 )
         else:
             lib_opts.append(compiler.library_option(lib))

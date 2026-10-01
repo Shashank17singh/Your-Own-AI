@@ -4,16 +4,15 @@ Miscellaneous utility functions -- anything that doesn't fit into
 one of the other *util.py modules.
 """
 
+import importlib.util
 import os
 import re
-import importlib.util
 import string
 import sys
-from distutils.errors import DistutilsPlatformError
-from distutils.dep_util import newer
-from distutils.spawn import spawn
 from distutils import log
-from distutils.errors import DistutilsByteCompileError
+from distutils.dep_util import newer
+from distutils.errors import DistutilsByteCompileError, DistutilsPlatformError
+from distutils.spawn import spawn
 
 
 def get_host_platform():
@@ -106,7 +105,8 @@ def get_host_platform():
         if m:
             release = m.group()
     elif osname[:6] == "darwin":
-        import _osx_support, distutils.sysconfig
+        import _osx_support
+        import distutils.sysconfig
 
         osname, release, machine = _osx_support.get_platform_osx(
             distutils.sysconfig.get_config_vars(), osname, release, machine
@@ -481,12 +481,15 @@ files = [
                 #    prefix = os.path.abspath(prefix)
 
                 script.write(",\n".join(map(repr, py_files)) + "]\n")
-                script.write("""
+                script.write(
+                    """
 byte_compile(files, optimize=%r, force=%r,
              prefix=%r, base_dir=%r,
              verbose=%r, dry_run=0,
              direct=1)
-""" % (optimize, force, prefix, base_dir, verbose))
+"""
+                    % (optimize, force, prefix, base_dir, verbose)
+                )
 
         cmd = [sys.executable]
         cmd.extend(subprocess._optim_args_from_interpreter_flags())

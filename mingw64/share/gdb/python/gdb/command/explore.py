@@ -3,7 +3,7 @@
 import gdb
 
 
-class Explorer(object):
+class Explorer:
     """Internal class which invokes other explorers."""
 
     type_code_to_explorer_map = {}
@@ -28,9 +28,9 @@ class Explorer(object):
                 c = expr[i]
                 if (
                     c == "_"
-                    or ("a" <= c and c <= "z")
-                    or ("A" <= c and c <= "Z")
-                    or ("0" <= c and c <= "9")
+                    or ("a" <= c <= "z")
+                    or ("A" <= c <= "Z")
+                    or ("0" <= c <= "9")
                 ):
                     pass
                 else:
@@ -159,7 +159,7 @@ class Explorer(object):
         input("\nPress enter to return to enclosing type: ")
 
 
-class ScalarExplorer(object):
+class ScalarExplorer:
     """Internal class used to explore scalar values."""
 
     @staticmethod
@@ -197,7 +197,7 @@ class ScalarExplorer(object):
         return False
 
 
-class PointerExplorer(object):
+class PointerExplorer:
     """Internal class used to explore pointer values."""
 
     @staticmethod
@@ -209,18 +209,14 @@ class PointerExplorer(object):
             "'%s' is a pointer to a value of type '%s'"
             % (expr, str(value.type.target()))
         )
-        option = input(
-            "Continue exploring it as a pointer to a single " "value [y/n]: "
-        )
+        option = input("Continue exploring it as a pointer to a single value [y/n]: ")
         if option == "y":
             deref_value = None
             try:
                 deref_value = value.dereference()
                 str(deref_value)
             except gdb.MemoryError:
-                print(
-                    "'%s' a pointer pointing to an invalid memory " "location." % expr
-                )
+                print("'%s' a pointer pointing to an invalid memory location." % expr)
                 if is_child:
                     Explorer.return_to_parent_value_prompt()
                 return False
@@ -228,7 +224,7 @@ class PointerExplorer(object):
                 "*%s" % Explorer.guard_expr(expr), deref_value, is_child
             )
             return False
-        option = input("Continue exploring it as a pointer to an " "array [y/n]: ")
+        option = input("Continue exploring it as a pointer to an array [y/n]: ")
         if option == "y":
             while True:
                 index = 0
@@ -265,7 +261,7 @@ class PointerExplorer(object):
         return False
 
 
-class ReferenceExplorer(object):
+class ReferenceExplorer:
     """Internal class used to explore reference (TYPE_CODE_REF) values."""
 
     @staticmethod
@@ -287,7 +283,7 @@ class ReferenceExplorer(object):
         return False
 
 
-class ArrayExplorer(object):
+class ArrayExplorer:
     """Internal class used to explore arrays."""
 
     @staticmethod
@@ -333,7 +329,7 @@ class ArrayExplorer(object):
         return False
 
 
-class CompoundExplorer(object):
+class CompoundExplorer:
     """Internal class used to explore struct, classes and unions."""
 
     @staticmethod
@@ -341,8 +337,7 @@ class CompoundExplorer(object):
         """Internal function which prints the fields of a struct/class/union."""
         max_field_name_length = 0
         for pair in print_list:
-            if max_field_name_length < len(pair[0]):
-                max_field_name_length = len(pair[0])
+            max_field_name_length = max(max_field_name_length, len(pair[0]))
         for pair in print_list:
             print("  %*s = %s" % (max_field_name_length, pair[0], pair[1]))
 
@@ -392,7 +387,7 @@ class CompoundExplorer(object):
                 field_value = value[field.name]
             literal_value = ""
             if type_code == gdb.TYPE_CODE_UNION:
-                literal_value = "<Enter %d to explore this field of type " "'%s'>" % (
+                literal_value = "<Enter %d to explore this field of type '%s'>" % (
                     current_choice,
                     str(field.type),
                 )
@@ -408,7 +403,7 @@ class CompoundExplorer(object):
                         field_desc = "base class"
                     else:
                         field_desc = "field"
-                    literal_value = "<Enter %d to explore this %s of type " "'%s'>" % (
+                    literal_value = "<Enter %d to explore this %s of type '%s'>" % (
                         current_choice,
                         field_desc,
                         str(field.type),
@@ -421,7 +416,7 @@ class CompoundExplorer(object):
             current_choice = current_choice + 1
             print_list.append((field.name, literal_value))
         CompoundExplorer._print_fields(print_list)
-        print("")
+        print()
         if has_explorable_fields:
             choice = input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
@@ -467,7 +462,7 @@ class CompoundExplorer(object):
                 "with the following fields:\n" % (name, type_desc, str(datatype))
             )
         else:
-            print("'%s' is a %s with the following " "fields:\n" % (name, type_desc))
+            print("'%s' is a %s with the following fields:\n" % (name, type_desc))
         current_choice = 0
         choice_to_compound_field_map = {}
         print_list = []
@@ -491,7 +486,7 @@ class CompoundExplorer(object):
             )
             current_choice = current_choice + 1
         CompoundExplorer._print_fields(print_list)
-        print("")
+        print()
         if len(choice_to_compound_field_map) > 0:
             choice = input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
@@ -520,7 +515,7 @@ class CompoundExplorer(object):
         return False
 
 
-class TypedefExplorer(object):
+class TypedefExplorer:
     """Internal class used to explore values whose type is a typedef."""
 
     @staticmethod
@@ -553,7 +548,7 @@ class TypedefExplorer(object):
         return False
 
 
-class ExploreUtils(object):
+class ExploreUtils:
     """Internal class which provides utilities for the main command classes."""
 
     @staticmethod
@@ -616,9 +611,7 @@ class ExploreCommand(gdb.Command):
     choice, if any) to return to the enclosing type or value."""
 
     def __init__(self):
-        super(ExploreCommand, self).__init__(
-            name="explore", command_class=gdb.COMMAND_DATA, prefix=True
-        )
+        super().__init__(name="explore", command_class=gdb.COMMAND_DATA, prefix=True)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore", arg_str) is False:
@@ -632,10 +625,8 @@ class ExploreCommand(gdb.Command):
             Explorer.explore_type(arg_str, datatype, False)
             return
         raise gdb.GdbError(
-            (
-                "'%s' neither evaluates to a value nor is a type "
-                "in the current context." % arg_str
-            )
+            "'%s' neither evaluates to a value nor is a type "
+            "in the current context." % arg_str
         )
 
 
@@ -647,9 +638,7 @@ class ExploreValueCommand(gdb.Command):
     choice, if any) to return to the enclosing value."""
 
     def __init__(self):
-        super(ExploreValueCommand, self).__init__(
-            name="explore value", command_class=gdb.COMMAND_DATA
-        )
+        super().__init__(name="explore value", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore value", arg_str) is False:
@@ -657,10 +646,7 @@ class ExploreValueCommand(gdb.Command):
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is None:
             raise gdb.GdbError(
-                (
-                    " '%s' does not evaluate to a value in the current "
-                    "context." % arg_str
-                )
+                " '%s' does not evaluate to a value in the current context." % arg_str
             )
             return
         Explorer.explore_expr(arg_str, value, False)
@@ -674,9 +660,7 @@ class ExploreTypeCommand(gdb.Command):
     choice, if any) to return to the enclosing type."""
 
     def __init__(self):
-        super(ExploreTypeCommand, self).__init__(
-            name="explore type", command_class=gdb.COMMAND_DATA
-        )
+        super().__init__(name="explore type", command_class=gdb.COMMAND_DATA)
 
     def invoke(self, arg_str, from_tty):
         if ExploreUtils.check_args("explore type", arg_str) is False:
@@ -691,7 +675,7 @@ class ExploreTypeCommand(gdb.Command):
             Explorer.explore_type(str(value.type), value.type, False)
             return
         raise gdb.GdbError(
-            ("'%s' is not a type or value in the current " "context." % arg_str)
+            "'%s' is not a type or value in the current context." % arg_str
         )
 
 

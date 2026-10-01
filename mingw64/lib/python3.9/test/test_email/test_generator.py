@@ -1,17 +1,16 @@
 import io
 import textwrap
 import unittest
-from email import message_from_string, message_from_bytes
-from email.message import EmailMessage
-from email.generator import Generator, BytesGenerator
+from email import message_from_bytes, message_from_string, policy
+from email.generator import BytesGenerator, Generator
 from email.headerregistry import Address
-from email import policy
+from email.message import EmailMessage
+
 from test.test_email import TestEmailBase, parameterize
 
 
 @parameterize
 class TestGeneratorBase:
-
     policy = policy.default
 
     def msgmaker(self, msg, policy=None):
@@ -177,13 +176,17 @@ class TestGeneratorBase:
     def test_rfc2231_wrapping(self):
         # This is pretty much just to make sure we don't have an infinite
         # loop; I don't expect anyone to hit this in the field.
-        msg = self.msgmaker(self.typ(textwrap.dedent("""\
+        msg = self.msgmaker(
+            self.typ(
+                textwrap.dedent("""\
             To: nobody
             Content-Disposition: attachment;
              filename="afilenamelongenoghtowraphere"
 
             None
-            """)))
+            """)
+            )
+        )
         expected = textwrap.dedent("""\
             To: nobody
             Content-Disposition: attachment;
@@ -201,13 +204,17 @@ class TestGeneratorBase:
         # This is just to make sure we don't have an infinite loop; I don't
         # expect anyone to hit this in the field, so I'm not bothering to make
         # the result optimal (the encoding isn't needed).
-        msg = self.msgmaker(self.typ(textwrap.dedent("""\
+        msg = self.msgmaker(
+            self.typ(
+                textwrap.dedent("""\
             To: nobody
             Content-Disposition: attachment;
              filename="afilenamelongenoghtowraphere"
 
             None
-            """)))
+            """)
+            )
+        )
         expected = textwrap.dedent("""\
             To: nobody
             Content-Disposition:
@@ -223,7 +230,6 @@ class TestGeneratorBase:
 
 
 class TestGenerator(TestGeneratorBase, TestEmailBase):
-
     msgfunc = staticmethod(message_from_string)
     genclass = Generator
     ioclass = io.StringIO
@@ -231,16 +237,13 @@ class TestGenerator(TestGeneratorBase, TestEmailBase):
 
 
 class TestBytesGenerator(TestGeneratorBase, TestEmailBase):
-
     msgfunc = staticmethod(message_from_bytes)
     genclass = BytesGenerator
     ioclass = io.BytesIO
     typ = lambda self, x: x.encode("ascii")
 
     def test_cte_type_7bit_handles_unknown_8bit(self):
-        source = ("Subject: Maintenant je vous présente mon " "collègue\n\n").encode(
-            "utf-8"
-        )
+        source = ("Subject: Maintenant je vous présente mon collègue\n\n").encode()
         expected = (
             "Subject: Maintenant je vous =?unknown-8bit?q?"
             "pr=C3=A9sente_mon_coll=C3=A8gue?=\n\n"
@@ -284,7 +287,8 @@ class TestBytesGenerator(TestGeneratorBase, TestEmailBase):
         msg["To"] = "Dinsdale"
         msg["Subject"] = "Nudge nudge, wink, wink \u1f609"
         msg.set_content("oh là là, know what I mean, know what I mean?")
-        expected = textwrap.dedent("""\
+        expected = (
+            textwrap.dedent("""\
             From: Páolo <főo@bar.com>
             To: Dinsdale
             Subject: Nudge nudge, wink, wink \u1f609
@@ -293,7 +297,10 @@ class TestBytesGenerator(TestGeneratorBase, TestEmailBase):
             MIME-Version: 1.0
 
             oh là là, know what I mean, know what I mean?
-            """).encode("utf-8").replace(b"\n", b"\r\n")
+            """)
+            .encode("utf-8")
+            .replace(b"\n", b"\r\n")
+        )
         s = io.BytesIO()
         g = BytesGenerator(s, policy=policy.SMTPUTF8)
         g.flatten(msg)
@@ -305,7 +312,8 @@ class TestBytesGenerator(TestGeneratorBase, TestEmailBase):
         msg["To"] = Address(addr_spec="bar@foo.com", display_name="Dinsdale")
         msg["Subject"] = "Nudge nudge, wink, wink"
         msg.set_content("oh boy, know what I mean, know what I mean?")
-        expected = textwrap.dedent("""\
+        expected = (
+            textwrap.dedent("""\
             From: =?utf-8?q?P=C3=A1olo?= <foo@bar.com>
             To: Dinsdale <bar@foo.com>
             Subject: Nudge nudge, wink, wink
@@ -314,7 +322,10 @@ class TestBytesGenerator(TestGeneratorBase, TestEmailBase):
             MIME-Version: 1.0
 
             oh boy, know what I mean, know what I mean?
-            """).encode().replace(b"\n", b"\r\n")
+            """)
+            .encode()
+            .replace(b"\n", b"\r\n")
+        )
         s = io.BytesIO()
         g = BytesGenerator(s, policy=policy.SMTP)
         g.flatten(msg)

@@ -1,15 +1,13 @@
 import importlib
-from importlib import abc
-from importlib import util
 import sys
 import types
 import unittest
+from importlib import abc, util
 
 from . import util as test_util
 
 
 class CollectInit:
-
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -19,7 +17,6 @@ class CollectInit:
 
 
 class LazyLoaderFactoryTests(unittest.TestCase):
-
     def test_init(self):
         factory = util.LazyLoader.factory(CollectInit)
         # E.g. what importlib.machinery.FileFinder instantiates loaders with
@@ -36,11 +33,10 @@ class LazyLoaderFactoryTests(unittest.TestCase):
 
 
 class TestingImporter(abc.MetaPathFinder, abc.Loader):
-
     module_name = "lazy_loader_test"
     mutated_name = "changed"
     loaded = None
-    source_code = "attr = 42; __name__ = {!r}".format(mutated_name)
+    source_code = f"attr = 42; __name__ = {mutated_name!r}"
 
     def find_spec(self, name, path, target=None):
         if name != self.module_name:
@@ -53,7 +49,6 @@ class TestingImporter(abc.MetaPathFinder, abc.Loader):
 
 
 class LazyLoaderTests(unittest.TestCase):
-
     def test_init(self):
         with self.assertRaises(TypeError):
             # Classes that don't define exec_module() trigger TypeError.

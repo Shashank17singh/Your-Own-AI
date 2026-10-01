@@ -1,32 +1,30 @@
-import unittest
-from test import support
-from test.support import socket_helper
-from test import test_urllib
-
-import os
-import io
-import socket
 import array
+import http.client
+import io
+import os
+import socket
+import subprocess
 import sys
 import tempfile
-import subprocess
-
+import unittest
+import urllib.error
 import urllib.request
+from urllib.parse import urlparse
 
 # The proxy bypass method imported below has logic specific to the OSX
 # proxy config data structure but is testable on all platforms.
 from urllib.request import (
-    Request,
-    OpenerDirector,
+    AbstractDigestAuthHandler,
     HTTPBasicAuthHandler,
     HTTPPasswordMgrWithPriorAuth,
+    OpenerDirector,
+    Request,
     _parse_proxy,
     _proxy_bypass_macosx_sysconf,
-    AbstractDigestAuthHandler,
 )
-from urllib.parse import urlparse
-import urllib.error
-import http.client
+
+from test import support, test_urllib
+from test.support import socket_helper
 
 # XXX
 # Request
@@ -35,7 +33,6 @@ import http.client
 
 
 class TrivialTests(unittest.TestCase):
-
     def test___all__(self):
         # Verify which names are exposed
         for module in "request", "response", "parse", "error", "robotparser":
@@ -92,7 +89,6 @@ class TrivialTests(unittest.TestCase):
 
 
 class RequestHdrsTests(unittest.TestCase):
-
     def test_request_headers_dict(self):
         """
         The Request.headers dictionary is not a documented interface.  It
@@ -476,7 +472,8 @@ class MockHTTPHandler(urllib.request.BaseHandler):
         self.requests = []
 
     def http_open(self, req):
-        import email, copy
+        import copy
+        import email
 
         self.requests.append(copy.deepcopy(req))
         if self._count == 0:
@@ -534,9 +531,8 @@ class MockPasswordManager:
 
 
 class OpenerDirectorTests(unittest.TestCase):
-
     def test_add_non_handler(self):
-        class NonHandler(object):
+        class NonHandler:
             pass
 
         self.assertRaises(TypeError, OpenerDirector().add_handler, NonHandler())
@@ -695,7 +691,6 @@ def sanepathname2url(path):
 
 
 class HandlerTests(unittest.TestCase):
-
     def test_ftp(self):
         class MockFTPWrapper:
             def __init__(self, data):
@@ -1337,6 +1332,7 @@ class HandlerTests(unittest.TestCase):
     def test_cookie_redirect(self):
         # cookies shouldn't leak into redirected requests
         from http.cookiejar import CookieJar
+
         from test.test_http_cookiejar import interact_netscape
 
         cj = CookieJar()
@@ -1389,7 +1385,7 @@ class HandlerTests(unittest.TestCase):
                 self.last_buf = self.connection.buf
                 # Set up a normal response for the next request
                 self.connection = test_urllib.fakehttp(
-                    b"HTTP/1.1 200 OK\r\n" b"Content-Length: 3\r\n" b"\r\n" b"123"
+                    b"HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n123"
                 )
                 return result
 
@@ -1404,9 +1400,7 @@ class HandlerTests(unittest.TestCase):
         for [location, result] in tests:
             with self.subTest(repr(location)):
                 handler.connection = test_urllib.fakehttp(
-                    b"HTTP/1.1 302 Redirect\r\n"
-                    b"Location: " + location + b"\r\n"
-                    b"\r\n"
+                    b"HTTP/1.1 302 Redirect\r\nLocation: " + location + b"\r\n\r\n"
                 )
                 response = opener.open("http://example.com/")
                 expected = b"GET " + result + b" "
@@ -1811,7 +1805,7 @@ class HandlerTests(unittest.TestCase):
             ("Transfer-Encoding: chunked", b"4\r\ndata\r\n0\r\n\r\n"),
             ("Content-Length: 4", b"data"),
         ):
-            header = "HTTP/1.1 200 OK\r\n{}\r\n\r\n".format(transfer)
+            header = f"HTTP/1.1 200 OK\r\n{transfer}\r\n\r\n"
             conn = test_urllib.fakehttp(header.encode() + data)
             handler = urllib.request.AbstractHTTPHandler()
             req = Request("http://dummy/")
@@ -1819,7 +1813,7 @@ class HandlerTests(unittest.TestCase):
             with handler.do_open(conn, req) as resp:
                 resp.read()
             self.assertTrue(
-                conn.fakesock.closed, "Connection not closed with {!r}".format(transfer)
+                conn.fakesock.closed, f"Connection not closed with {transfer!r}"
             )
 
     def test_invalid_closed(self):
@@ -1834,7 +1828,6 @@ class HandlerTests(unittest.TestCase):
 
 
 class MiscTests(unittest.TestCase):
-
     def opener_has_handler(self, opener, handler_class):
         self.assertTrue(any(h.__class__ == handler_class for h in opener.handlers))
 
@@ -1975,7 +1968,7 @@ class MiscTests(unittest.TestCase):
         for tc, expected in parse_proxy_test_cases:
             self.assertEqual(_parse_proxy(tc), expected)
 
-        self.assertRaises(ValueError, _parse_proxy, "file:/ftp.example.com"),
+        (self.assertRaises(ValueError, _parse_proxy, "file:/ftp.example.com"),)
 
     def test_unsupported_algorithm(self):
         handler = AbstractDigestAuthHandler()

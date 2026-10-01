@@ -1,8 +1,7 @@
 import unittest
-
 from importlib import resources
-from . import data01
-from . import util
+
+from . import data01, util
 
 
 class CommonBinaryTests(util.CommonResourceTests, unittest.TestCase):

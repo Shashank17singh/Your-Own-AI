@@ -7,7 +7,6 @@
 #
 
 import array
-from binascii import unhexlify
 import hashlib
 import importlib
 import itertools
@@ -17,9 +16,11 @@ import sysconfig
 import threading
 import unittest
 import warnings
+from binascii import unhexlify
+from http.client import HTTPException
+
 from test import support
 from test.support import _4G, bigmemtest, import_fresh_module
-from http.client import HTTPException
 
 # Were we compiled --with-pydebug or with #define Py_DEBUG?
 COMPILED_WITH_PYDEBUG = hasattr(sys, "gettotalrefcount")
@@ -81,7 +82,7 @@ def read_vectors(hash_name):
     try:
         testdata = support.open_urlresource(url)
     except (OSError, HTTPException):
-        raise unittest.SkipTest("Could not retrieve {}".format(url))
+        raise unittest.SkipTest(f"Could not retrieve {url}")
     with testdata:
         for line in testdata:
             line = line.strip()
@@ -204,7 +205,7 @@ class HashLibTestCase(unittest.TestCase):
             add_builtin_constructor("shake_128")
             add_builtin_constructor("shake_256")
 
-        super(HashLibTestCase, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def hash_constructors(self):
@@ -671,7 +672,7 @@ class HashLibTestCase(unittest.TestCase):
         self.assertRaises(ValueError, constructor, key=key)
         self.assertEqual(constructor().hexdigest(), constructor(key=b"").hexdigest())
 
-        for i in range(0, 256):
+        for i in range(256):
             constructor(fanout=i)
         self.assertRaises(ValueError, constructor, fanout=-1)
         self.assertRaises(ValueError, constructor, fanout=256)
@@ -682,12 +683,12 @@ class HashLibTestCase(unittest.TestCase):
         self.assertRaises(ValueError, constructor, depth=0)
         self.assertRaises(ValueError, constructor, depth=256)
 
-        for i in range(0, 256):
+        for i in range(256):
             constructor(node_depth=i)
         self.assertRaises(ValueError, constructor, node_depth=-1)
         self.assertRaises(ValueError, constructor, node_depth=256)
 
-        for i in range(0, digest_size + 1):
+        for i in range(digest_size + 1):
             constructor(inner_size=i)
         self.assertRaises(ValueError, constructor, inner_size=-1)
         self.assertRaises(ValueError, constructor, inner_size=digest_size + 1)
@@ -1013,7 +1014,6 @@ class HashLibTestCase(unittest.TestCase):
 
 
 class KDFTests(unittest.TestCase):
-
     pbkdf2_test_vectors = [
         (b"password", b"salt", 1, None),
         (b"password", b"salt", 2, None),
@@ -1070,7 +1070,7 @@ class KDFTests(unittest.TestCase):
             (bytes.fromhex("4b007901b765489abead49d926f721d065a429c1"), None),
             # (bytes.fromhex('eefe3d61cd4da4e4e9945b3d6ba2158c2634e984'), None),
             (
-                bytes.fromhex("3d2eec4fe41c849b80c8d83662c0e44a8b291a964c" "f2f07038"),
+                bytes.fromhex("3d2eec4fe41c849b80c8d83662c0e44a8b291a964cf2f07038"),
                 25,
             ),
             (bytes.fromhex("56fa6aa75548099dcc37d7f03425e0c3"), None),
@@ -1078,22 +1078,19 @@ class KDFTests(unittest.TestCase):
         "sha256": [
             (
                 bytes.fromhex(
-                    "120fb6cffcf8b32c43e7225256c4f837"
-                    "a86548c92ccc35480805987cb70be17b"
+                    "120fb6cffcf8b32c43e7225256c4f837a86548c92ccc35480805987cb70be17b"
                 ),
                 None,
             ),
             (
                 bytes.fromhex(
-                    "ae4d0c95af6b46d32d0adff928f06dd0"
-                    "2a303f8ef3c251dfd6e2d85a95474c43"
+                    "ae4d0c95af6b46d32d0adff928f06dd02a303f8ef3c251dfd6e2d85a95474c43"
                 ),
                 None,
             ),
             (
                 bytes.fromhex(
-                    "c5e478d59288c841aa530db6845c4c8d"
-                    "962893a001ce4e11a4963873aa98134a"
+                    "c5e478d59288c841aa530db6845c4c8d962893a001ce4e11a4963873aa98134a"
                 ),
                 None,
             ),

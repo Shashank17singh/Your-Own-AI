@@ -1,5 +1,4 @@
-from .. import abc
-from .. import util
+from .. import abc, util
 
 machinery = util.import_importlib("importlib.machinery")
 
@@ -9,9 +8,10 @@ import py_compile
 import stat
 import sys
 import tempfile
-from test.support import make_legacy_pyc
 import unittest
 import warnings
+
+from test.support import make_legacy_pyc
 
 
 class FinderTests(abc.FinderTests):
@@ -114,7 +114,7 @@ class FinderTests(abc.FinderTests):
     # [package over modules]
     def test_package_over_module(self):
         name = "_temp"
-        loader = self.run_test(name, {"{0}.__init__".format(name), name})
+        loader = self.run_test(name, {f"{name}.__init__", name})
         self.assertIn("__init__", loader.get_filename(name))
 
     def test_failure(self):
@@ -193,7 +193,6 @@ class FinderTests(abc.FinderTests):
 
 
 class FinderTestsPEP451(FinderTests):
-
     NOT_FOUND = None
 
     def _find(self, finder, name, loader_only=False):
@@ -207,7 +206,6 @@ Frozen_FinderTestsPEP451, Source_FinderTestsPEP451 = util.test_both(
 
 
 class FinderTestsPEP420(FinderTests):
-
     NOT_FOUND = (None, [])
 
     def _find(self, finder, name, loader_only=False):
@@ -223,7 +221,6 @@ Frozen_FinderTestsPEP420, Source_FinderTestsPEP420 = util.test_both(
 
 
 class FinderTestsPEP302(FinderTests):
-
     NOT_FOUND = None
 
     def _find(self, finder, name, loader_only=False):

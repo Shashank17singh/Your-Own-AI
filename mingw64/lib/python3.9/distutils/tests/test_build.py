@@ -1,17 +1,16 @@
 """Tests for distutils.command.build."""
 
-import unittest
 import os
 import sys
-from test.support import run_unittest
-
+import unittest
 from distutils.command.build import build
 from distutils.tests import support
 from sysconfig import get_platform
 
+from test.support import run_unittest
+
 
 class BuildTestCase(support.TempdirManager, support.LoggingSilencer, unittest.TestCase):
-
     def test_finalize_options(self):
         pkg_dir, dist = self.create_dist()
         cmd = build(dist)

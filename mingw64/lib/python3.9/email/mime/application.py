@@ -20,7 +20,7 @@ class MIMEApplication(MIMENonMultipart):
         _encoder=encoders.encode_base64,
         *,
         policy=None,
-        **_params
+        **_params,
     ):
         """Create an application/* type MIME document.
 

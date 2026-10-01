@@ -10,13 +10,13 @@ also includes default encodings for all supported locale names.
 
 """
 
-import sys
+import _collections_abc
 import encodings
 import encodings.aliases
-import re
-import _collections_abc
-from builtins import str as _builtin_str
 import functools
+import re
+import sys
+from builtins import str as _builtin_str
 
 # Try importing the _locale module.
 #
@@ -25,29 +25,29 @@ import functools
 # Yuck:  LC_MESSAGES is non-standard:  can't tell whether it exists before
 # trying the import.  So __all__ is also fiddled at the end of the file.
 __all__ = [
-    "getlocale",
-    "getdefaultlocale",
-    "getpreferredencoding",
-    "Error",
-    "setlocale",
-    "resetlocale",
-    "localeconv",
-    "strcoll",
-    "strxfrm",
-    "str",
-    "atof",
-    "atoi",
-    "format",
-    "format_string",
-    "currency",
-    "normalize",
-    "LC_CTYPE",
+    "CHAR_MAX",
+    "LC_ALL",
     "LC_COLLATE",
-    "LC_TIME",
+    "LC_CTYPE",
     "LC_MONETARY",
     "LC_NUMERIC",
-    "LC_ALL",
-    "CHAR_MAX",
+    "LC_TIME",
+    "Error",
+    "atof",
+    "atoi",
+    "currency",
+    "format",
+    "format_string",
+    "getdefaultlocale",
+    "getlocale",
+    "getpreferredencoding",
+    "localeconv",
+    "normalize",
+    "resetlocale",
+    "setlocale",
+    "str",
+    "strcoll",
+    "strxfrm",
 ]
 
 
@@ -66,11 +66,9 @@ def _strxfrm(s):
 
 
 try:
-
     from _locale import *
 
 except ImportError:
-
     # Locale emulation
 
     CHAR_MAX = 127
@@ -272,7 +270,7 @@ def format_string(f, val, grouping=False, monetary=False):
                         val[i],
                         grouping,
                         monetary,
-                        *val[i + 1 : i + 1 + starcount]
+                        *val[i + 1 : i + 1 + starcount],
                     )
                 )
                 i += 1 + starcount
@@ -295,10 +293,7 @@ def format(percent, value, grouping=False, monetary=False, *additional):
     match = _percent_re.match(percent)
     if not match or len(match.group()) != len(percent):
         raise ValueError(
-            (
-                "format() must be given exactly one %%char "
-                "format specifier, %s not valid"
-            )
+            ("format() must be given exactly one %%char format specifier, %s not valid")
             % repr(percent)
         )
     return _format(percent, value, grouping, monetary, *additional)
@@ -312,7 +307,7 @@ def currency(val, symbol=True, grouping=False, international=False):
     # check for illegal values
     digits = conv[international and "int_frac_digits" or "frac_digits"]
     if digits == 127:
-        raise ValueError("Currency formatting is not possible using " "the 'C' locale.")
+        raise ValueError("Currency formatting is not possible using the 'C' locale.")
 
     s = _format("%%.%if" % digits, abs(val), grouping, monetary=True)
     # '<' and '>' are markers if the sign must be inserted between symbol and value

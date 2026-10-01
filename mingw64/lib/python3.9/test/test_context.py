@@ -84,7 +84,7 @@ class ContextTest(unittest.TestCase):
             contextvars.Context(1, a=1)
         with self.assertRaisesRegex(TypeError, "any arguments"):
             contextvars.Context(a=1)
-        contextvars.Context(**{})
+        contextvars.Context()
 
     def test_context_typerrors_1(self):
         ctx = contextvars.Context()
@@ -432,7 +432,6 @@ class EqError(Exception):
 
 @unittest.skipIf(hamt is None, '_testcapi lacks "hamt()" function')
 class HamtTest(unittest.TestCase):
-
     def test_hashkey_helper_1(self):
         k1 = HashKey(10, "aaa")
         k2 = HashKey(10, "bbb")
@@ -1031,9 +1030,8 @@ class HamtTest(unittest.TestCase):
         self.assertTrue(A in h)
         self.assertFalse(B in h)
 
-        with self.assertRaises(EqError):
-            with HaskKeyCrasher(error_on_eq=True):
-                AA in h
+        with self.assertRaises(EqError), HaskKeyCrasher(error_on_eq=True):
+            AA in h
 
         with self.assertRaises(HashingError):
             with HaskKeyCrasher(error_on_hash=True):
@@ -1054,9 +1052,8 @@ class HamtTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             h[B]
 
-        with self.assertRaises(EqError):
-            with HaskKeyCrasher(error_on_eq=True):
-                h[AA]
+        with self.assertRaises(EqError), HaskKeyCrasher(error_on_eq=True):
+            h[AA]
 
         with self.assertRaises(HashingError):
             with HaskKeyCrasher(error_on_hash=True):

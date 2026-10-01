@@ -4,11 +4,12 @@ Either on demand or after a user-selected delay after a key character,
 pop up a list of candidates.
 """
 
-import __main__
 import keyword
 import os
 import string
 import sys
+
+import __main__
 
 # Two types of completions; defined here for autocomplete_w import below.
 ATTRS, FILES = 0, 1
@@ -32,7 +33,6 @@ TRIGGERS = f".{SEPS}"
 
 
 class AutoComplete:
-
     def __init__(self, editwin=None):
         self.editwin = editwin
         if editwin is not None:  # not in subprocess or no-gui test

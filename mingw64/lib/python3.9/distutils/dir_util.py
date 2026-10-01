@@ -2,10 +2,10 @@
 
 Utility functions for manipulating directories and directory trees."""
 
-import os
 import errno
-from distutils.errors import DistutilsFileError, DistutilsInternalError
+import os
 from distutils import log
+from distutils.errors import DistutilsFileError, DistutilsInternalError
 
 # cache for by mkpath() -- in addition to cheapening redundant calls,
 # eliminates redundant "creating /foo/bar/baz" messages in dry-run mode
@@ -223,8 +223,7 @@ def remove_tree(directory, verbose=1, dry_run=0):
             cmd[0](cmd[1])
             # remove dir from cache if it's already there
             abspath = os.path.abspath(cmd[1])
-            if abspath in _path_created:
-                del _path_created[abspath]
+            _path_created.pop(abspath, None)
         except OSError as exc:
             log.warn("error removing %s: %s", directory, exc)
 

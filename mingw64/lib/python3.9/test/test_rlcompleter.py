@@ -1,7 +1,7 @@
-import unittest
-from unittest.mock import patch
 import builtins
 import rlcompleter
+import unittest
+from unittest.mock import patch
 
 
 class CompleteMe:
@@ -55,7 +55,7 @@ class TestRlcompleter(unittest.TestCase):
         # test with builtins namespace
         self.assertEqual(
             self.stdcompleter.attr_matches("str.s"),
-            ["str.{}(".format(x) for x in dir(str) if x.startswith("s")],
+            [f"str.{x}(" for x in dir(str) if x.startswith("s")],
         )
         self.assertEqual(self.stdcompleter.attr_matches("tuple.foospamegg"), [])
         expected = sorted(
@@ -90,7 +90,7 @@ class TestRlcompleter(unittest.TestCase):
             )
             self.assertEqual(
                 self.completer.attr_matches("egg.s"),
-                ["egg.{}(".format(x) for x in dir(str) if x.startswith("s")],
+                [f"egg.{x}(" for x in dir(str) if x.startswith("s")],
             )
 
     def test_excessive_getattr(self):

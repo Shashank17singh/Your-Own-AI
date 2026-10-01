@@ -1,9 +1,9 @@
 # It's intended that this script be run by hand.  It runs speed tests on
 # hashlib functions; it does not test for correctness.
 
+import hashlib
 import sys
 import time
-import hashlib
 
 
 def creatorFunc():

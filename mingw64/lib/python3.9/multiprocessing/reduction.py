@@ -7,7 +7,6 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-from abc import ABCMeta
 import copyreg
 import functools
 import io
@@ -15,10 +14,11 @@ import os
 import pickle
 import socket
 import sys
+from abc import ABCMeta
 
 from . import context
 
-__all__ = ["send_handle", "recv_handle", "ForkingPickler", "register", "dump"]
+__all__ = ["ForkingPickler", "dump", "recv_handle", "register", "send_handle"]
 
 
 HAVE_SEND_HANDLE = sys.platform == "win32" or (
@@ -118,7 +118,7 @@ if sys.platform == "win32":
         """Receive a handle over a local connection."""
         return conn.recv().detach()
 
-    class DupHandle(object):
+    class DupHandle:
         """Picklable wrapper for a handle."""
 
         def __init__(self, handle, access, pid=None):
@@ -158,7 +158,7 @@ if sys.platform == "win32":
 
 else:
     # Unix
-    __all__ += ["DupFd", "sendfds", "recvfds"]
+    __all__ += ["DupFd", "recvfds", "sendfds"]
     import array
 
     # On MacOSX we should acknowledge receipt of fds -- see Issue14669
@@ -190,9 +190,7 @@ else:
                     raise ValueError
                 a.frombytes(cmsg_data)
                 if len(a) % 256 != msg[0]:
-                    raise AssertionError(
-                        "Len is {0:n} but msg[0] is {1!r}".format(len(a), msg[0])
-                    )
+                    raise AssertionError(f"Len is {len(a):n} but msg[0] is {msg[0]!r}")
                 return list(a)
         except (ValueError, IndexError):
             pass

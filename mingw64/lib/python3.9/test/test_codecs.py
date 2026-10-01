@@ -1,10 +1,10 @@
 import codecs
 import contextlib
+import encodings
 import io
 import locale
 import sys
 import unittest
-import encodings
 from unittest import mock
 
 from test import support
@@ -33,7 +33,7 @@ def coding_checker(self, coder):
 # On small versions of Windows like Windows IoT or Windows Nano Server not all codepages are present
 def is_code_page_present(cp):
     from ctypes import POINTER, WINFUNCTYPE, WinDLL
-    from ctypes.wintypes import BOOL, UINT, BYTE, WCHAR, UINT, DWORD
+    from ctypes.wintypes import BOOL, BYTE, DWORD, UINT, WCHAR
 
     MAX_LEADBYTES = 12  # 5 ranges, 2 bytes ea., 0 term.
     MAX_DEFAULTCHAR = 2  # single or double byte
@@ -55,7 +55,7 @@ def is_code_page_present(cp):
     return GetCPInfoEx(cp, 0, info)
 
 
-class Queue(object):
+class Queue:
     """
     queue: write bytes at one end, read bytes from the other end
     """
@@ -956,10 +956,7 @@ class UTF7Test(ReadTest, unittest.TestCase):
     def test_ascii(self):
         # Set D (directly encoded characters)
         set_d = (
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            "abcdefghijklmnopqrstuvwxyz"
-            "0123456789"
-            "'(),-./:?"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'(),-./:?"
         )
         self.assertEqual(set_d.encode(self.encoding), set_d.encode("ascii"))
         self.assertEqual(set_d.encode("ascii").decode(self.encoding), set_d)
@@ -1094,7 +1091,6 @@ class UTF7Test(ReadTest, unittest.TestCase):
 
 
 class UTF16ExTest(unittest.TestCase):
-
     def test_errors(self):
         self.assertRaises(
             UnicodeDecodeError, codecs.utf_16_ex_decode, b"\xff", "strict", 0, True
@@ -1105,7 +1101,6 @@ class UTF16ExTest(unittest.TestCase):
 
 
 class ReadBufferTest(unittest.TestCase):
-
     def test_array(self):
         import array
 
@@ -1317,7 +1312,7 @@ punycode_testcases = [
         "\uc138\uacc4\uc758\ubaa8\ub4e0\uc0ac\ub78c\ub4e4\uc774"
         "\ud55c\uad6d\uc5b4\ub97c\uc774\ud574\ud55c\ub2e4\uba74"
         "\uc5bc\ub9c8\ub098\uc88b\uc744\uae4c",
-        b"989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5j" b"psd879ccm6fea98c",
+        b"989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c",
     ),
     # (I) Russian (Cyrillic):
     (
@@ -1376,7 +1371,7 @@ punycode_testcases = [
     ("\u305d\u306e\u30b9\u30d4\u30fc\u30c9\u3067", b"d9juau41awczczp"),
     # (S) -> $1.00 <-
     (
-        "\u002d\u003e\u0020\u0024\u0031\u002e\u0030\u0030\u0020" "\u003c\u002d",
+        "\u002d\u003e\u0020\u0024\u0031\u002e\u0030\u0030\u0020\u003c\u002d",
         b"-> $1.00 <--",
     ),
 ]
@@ -1528,7 +1523,7 @@ nameprep_tests = [
     # 3.45 Larger test (expanding).
     # Original test case reads \xc3\x9f
     (
-        b"X\xc3\x9f\xe3\x8c\x96\xc4\xb0\xe2\x84\xa1\xe2\x92\x9f\xe3\x8c" b"\x80",
+        b"X\xc3\x9f\xe3\x8c\x96\xc4\xb0\xe2\x84\xa1\xe2\x92\x9f\xe3\x8c\x80",
         b"xss\xe3\x82\xad\xe3\x83\xad\xe3\x83\xa1\xe3\x83\xbc\xe3"
         b"\x83\x88\xe3\x83\xabi\xcc\x87tel\x28d\x29\xe3\x82"
         b"\xa2\xe3\x83\x91\xe3\x83\xbc\xe3\x83\x88",
@@ -1663,7 +1658,6 @@ class IDNACodecTest(unittest.TestCase):
 
 
 class CodecsModuleTest(unittest.TestCase):
-
     def test_decode(self):
         self.assertEqual(codecs.decode(b"\xe4\xf6\xfc", "latin-1"), "\xe4\xf6\xfc")
         self.assertRaises(TypeError, codecs.decode)
@@ -1803,7 +1797,6 @@ class CodecsModuleTest(unittest.TestCase):
 
 
 class StreamReaderTest(unittest.TestCase):
-
     def setUp(self):
         self.reader = codecs.getreader("utf-8")
         self.stream = io.BytesIO(b"\xed\x95\x9c\n\xea\xb8\x80")
@@ -1814,7 +1807,6 @@ class StreamReaderTest(unittest.TestCase):
 
 
 class EncodedFileTest(unittest.TestCase):
-
     def test_basic(self):
         f = io.BytesIO(b"\xed\x95\x9c\n\xea\xb8\x80")
         ef = codecs.EncodedFile(f, "utf-16-le", "utf-8")
@@ -2581,7 +2573,6 @@ class RawUnicodeEscapeTest(unittest.TestCase):
 
 
 class EscapeEncodeTest(unittest.TestCase):
-
     def test_escape_encode(self):
         tests = [
             (b"", (b"", 0)),
@@ -2601,7 +2592,6 @@ class EscapeEncodeTest(unittest.TestCase):
 
 
 class SurrogateEscapeTest(unittest.TestCase):
-
     def test_utf8(self):
         # Bad byte
         self.assertEqual(
@@ -2728,7 +2718,6 @@ else:
 
 
 class TransformCodecTest(unittest.TestCase):
-
     def test_basics(self):
         binput = bytes(range(256))
         for encoding in bytes_transform_encodings:
@@ -2893,7 +2882,6 @@ except ImportError:
 
 
 class ExceptionChainingTest(unittest.TestCase):
-
     def setUp(self):
         # There's no way to unregister a codec search function, so we just
         # ensure we render this one fairly harmless after the test
@@ -2930,9 +2918,7 @@ class ExceptionChainingTest(unittest.TestCase):
 
     @contextlib.contextmanager
     def assertWrapped(self, operation, exc_type, msg):
-        full_msg = r"{} with {!r} codec failed \({}: {}\)".format(
-            operation, self.codec_name, exc_type.__name__, msg
-        )
+        full_msg = rf"{operation} with {self.codec_name!r} codec failed \({exc_type.__name__}: {msg}\)"
         with self.assertRaisesRegex(exc_type, full_msg) as caught:
             yield caught
         self.assertIsInstance(caught.exception.__cause__, exc_type)
@@ -3009,7 +2995,7 @@ class ExceptionChainingTest(unittest.TestCase):
         msg = "This should NOT be wrapped"
         exc = RuntimeError(msg)
         exc.attr = 1
-        self.check_not_wrapped(exc, "^{}$".format(msg))
+        self.check_not_wrapped(exc, f"^{msg}$")
 
     def test_non_str_arg_is_not_wrapped(self):
         self.check_not_wrapped(RuntimeError(1), "1")
@@ -3020,7 +3006,7 @@ class ExceptionChainingTest(unittest.TestCase):
 
     # http://bugs.python.org/issue19609
     def test_codec_lookup_failure_not_wrapped(self):
-        msg = "^unknown encoding: {}$".format(self.codec_name)
+        msg = f"^unknown encoding: {self.codec_name}$"
         # The initial codec lookup should not be wrapped
         with self.assertRaisesRegex(LookupError, msg):
             "str input".encode(self.codec_name)
@@ -3325,9 +3311,7 @@ class CodePageTest(unittest.TestCase):
         self.assertEqual(decoded[0][:10], "0123456701")
         self.assertEqual(
             decoded[0][-20:],
-            "6701234567"
-            "\udc85\udc86\udcea\udceb\udcec"
-            "\udcef\udcfc\udcfd\udcfe\udcff",
+            "6701234567\udc85\udc86\udcea\udceb\udcec\udcef\udcfc\udcfd\udcfe\udcff",
         )
 
     @support.bigmemtest(size=2**31, memuse=6, dry_run=False)

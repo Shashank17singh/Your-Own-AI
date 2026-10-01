@@ -1,13 +1,13 @@
 "Test calltip_w, coverage 18%."
 
-from idlelib import calltip_w
 import unittest
+from idlelib import calltip_w
+from tkinter import Text, Tk
+
 from test.support import requires
-from tkinter import Tk, Text
 
 
 class CallTipWindowTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

@@ -8,23 +8,16 @@ import sys
 import threading
 import warnings
 
-from . import connection
-from . import process
+from . import connection, process, resource_tracker, spawn, util
 from .context import reduction
-from . import resource_tracker
-from . import spawn
-from . import util
 
 __all__ = [
+    "connect_to_new_process",
     "ensure_running",
     "get_inherited_fds",
-    "connect_to_new_process",
     "set_forkserver_preload",
 ]
 
-#
-#
-#
 
 MAXFDS_TO_SEND = 256
 SIGNED_STRUCT = struct.Struct("q")  # large enough for pid_t
@@ -34,8 +27,7 @@ SIGNED_STRUCT = struct.Struct("q")  # large enough for pid_t
 #
 
 
-class ForkServer(object):
-
+class ForkServer:
     def __init__(self):
         self._forkserver_address = None
         self._forkserver_alive_fd = None
@@ -171,11 +163,6 @@ class ForkServer(object):
                 self._forkserver_pid = pid
 
 
-#
-#
-#
-
-
 def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
     """Run forkserver."""
     if preload:
@@ -215,9 +202,10 @@ def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
     # map child pids to client fds
     pid_to_fd = {}
 
-    with socket.socket(
-        socket.AF_UNIX, fileno=listener_fd
-    ) as listener, selectors.DefaultSelector() as selector:
+    with (
+        socket.socket(socket.AF_UNIX, fileno=listener_fd) as listener,
+        selectors.DefaultSelector() as selector,
+    ):
         _forkserver._forkserver_address = listener.getsockname()
 
         selector.register(listener, selectors.EVENT_READ)
@@ -261,8 +249,7 @@ def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
                         else:
                             # This shouldn't happen really
                             warnings.warn(
-                                "forkserver: waitpid returned "
-                                "unexpected pid %d" % pid
+                                "forkserver: waitpid returned unexpected pid %d" % pid
                             )
 
                 if listener in rfds:
@@ -271,9 +258,7 @@ def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
                         # Receive fds from client
                         fds = reduction.recvfds(s, MAXFDS_TO_SEND + 1)
                         if len(fds) > MAXFDS_TO_SEND:
-                            raise RuntimeError(
-                                "Too many ({0:n}) fds to send".format(len(fds))
-                            )
+                            raise RuntimeError(f"Too many ({len(fds):n}) fds to send")
                         child_r, child_w, *fds = fds
                         s.close()
                         pid = os.fork()
@@ -355,10 +340,6 @@ def write_signed(fd, n):
             raise RuntimeError("should not get here")
         msg = msg[nbytes:]
 
-
-#
-#
-#
 
 _forkserver = ForkServer()
 ensure_running = _forkserver.ensure_running

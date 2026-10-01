@@ -1,4 +1,3 @@
-from typing import Optional
 from .frames import select_frame
 from .server import capability, import_column, import_line, request
 from .startup import exec_mi_and_log
@@ -9,10 +8,10 @@ from .startup import exec_mi_and_log
 @capability("completionTriggerCharacters", [" ", "."])
 def completions(
     *,
-    frameId: Optional[int] = None,
+    frameId: int | None = None,
     text: str,
     column: int,
-    line: Optional[int] = None,
+    line: int | None = None,
     **extra,
 ):
     if frameId is not None:

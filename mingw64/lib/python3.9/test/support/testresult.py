@@ -6,9 +6,7 @@ import sys
 import time
 import traceback
 import unittest
-
 import xml.etree.ElementTree as ET
-
 from datetime import datetime
 
 

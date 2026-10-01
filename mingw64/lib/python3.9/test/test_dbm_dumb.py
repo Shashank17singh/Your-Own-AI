@@ -3,14 +3,14 @@ Original by Roger E. Masse
 """
 
 import contextlib
-import io
+import dbm.dumb as dumbdbm
 import operator
 import os
 import stat
 import unittest
-import dbm.dumb as dumbdbm
-from test import support
 from functools import partial
+
+from test import support
 
 _fname = support.TESTFN
 
@@ -142,13 +142,13 @@ class DumbDBMTestCase(unittest.TestCase):
             f[b"2"] = b"hello2"
 
         # Mangle the file by changing the line separator to Windows or Unix
-        with io.open(_fname + ".dir", "rb") as file:
+        with open(_fname + ".dir", "rb") as file:
             data = file.read()
         if os.linesep == "\n":
             data = data.replace(b"\n", b"\r\n")
         else:
             data = data.replace(b"\r\n", b"\n")
-        with io.open(_fname + ".dir", "wb") as file:
+        with open(_fname + ".dir", "wb") as file:
             file.write(data)
 
         f = dumbdbm.open(_fname)
@@ -242,9 +242,8 @@ class DumbDBMTestCase(unittest.TestCase):
         with open(_fname + ".dir", "w") as stream:
             stream.write("str(print('Hacked!')), 0\n")
         with support.captured_stdout() as stdout:
-            with self.assertRaises(ValueError):
-                with dumbdbm.open(_fname) as f:
-                    pass
+            with self.assertRaises(ValueError), dumbdbm.open(_fname) as f:
+                pass
             self.assertEqual(stdout.getvalue(), "")
 
     def test_missing_data(self):
@@ -268,7 +267,7 @@ class DumbDBMTestCase(unittest.TestCase):
     def test_invalid_flag(self):
         for flag in ("x", "rf", None):
             with self.assertRaisesRegex(
-                ValueError, "Flag must be one of " "'r', 'w', 'c', or 'n'"
+                ValueError, "Flag must be one of 'r', 'w', 'c', or 'n'"
             ):
                 dumbdbm.open(_fname, flag)
 

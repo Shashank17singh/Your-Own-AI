@@ -1,8 +1,8 @@
 import math
-import unittest
 import os
+import unittest
 from asyncio import iscoroutinefunction
-from unittest.mock import AsyncMock, Mock, MagicMock, _magics
+from unittest.mock import AsyncMock, MagicMock, Mock, _magics
 
 
 class TestMockingMagicMethods(unittest.TestCase):
@@ -229,7 +229,7 @@ class TestMockingMagicMethods(unittest.TestCase):
         mock = MagicMock()
         mock.__iter__.return_value = iter([1, 2, 3])
         self.assertEqual(list(mock), [1, 2, 3])
-        getattr(mock, "__bool__").return_value = False
+        mock.__bool__.return_value = False
         self.assertFalse(hasattr(mock, "__nonzero__"))
         self.assertFalse(bool(mock))
         for entry in _magics:
@@ -297,7 +297,7 @@ class TestMockingMagicMethods(unittest.TestCase):
         mock.__fspath__.assert_called_once()
 
     def test_magic_methods_and_spec(self):
-        class Iterable(object):
+        class Iterable:
             def __iter__(self):
                 pass
 
@@ -306,7 +306,7 @@ class TestMockingMagicMethods(unittest.TestCase):
         mock.__iter__ = Mock(return_value=iter([]))
         self.assertEqual(list(mock), [])
 
-        class NonIterable(object):
+        class NonIterable:
             pass
 
         mock = Mock(spec=NonIterable)
@@ -321,7 +321,7 @@ class TestMockingMagicMethods(unittest.TestCase):
         self.assertRaises(AttributeError, set_int)
 
     def test_magic_methods_and_spec_set(self):
-        class Iterable(object):
+        class Iterable:
             def __iter__(self):
                 pass
 
@@ -330,7 +330,7 @@ class TestMockingMagicMethods(unittest.TestCase):
         mock.__iter__ = Mock(return_value=iter([]))
         self.assertEqual(list(mock), [])
 
-        class NonIterable(object):
+        class NonIterable:
             pass
 
         mock = Mock(spec_set=NonIterable)

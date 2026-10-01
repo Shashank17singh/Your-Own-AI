@@ -1,18 +1,19 @@
 """Test program for the fcntl C module."""
 
-import platform
 import os
+import platform
 import struct
 import sys
 import unittest
 from multiprocessing import Process
+
 from test.support import (
-    verbose,
     TESTFN,
-    unlink,
-    run_unittest,
-    import_module,
     cpython_only,
+    import_module,
+    run_unittest,
+    unlink,
+    verbose,
 )
 
 # Skip test if no fcntl module.
@@ -79,7 +80,6 @@ def try_lockf_on_other_process(fname, cmd):
 
 
 class TestFcntl(unittest.TestCase):
-
     def setUp(self):
         self.f = None
 

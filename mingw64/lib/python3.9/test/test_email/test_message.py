@@ -1,7 +1,8 @@
-import unittest
 import textwrap
-from email import policy, message_from_string
+import unittest
+from email import message_from_string, policy
 from email.message import EmailMessage, MIMEPart
+
 from test.test_email import TestEmailBase, parameterize
 
 
@@ -11,7 +12,6 @@ def first(iterable):
 
 
 class Test(TestEmailBase):
-
     policy = policy.default
 
     def test_error_on_setitem_if_max_count_exceeded(self):
@@ -40,7 +40,6 @@ class Test(TestEmailBase):
 
 @parameterize
 class TestEmailMessageBase:
-
     policy = policy.default
 
     # The first argument is a triple (related, html, plain) of indices into the
@@ -593,7 +592,7 @@ class TestEmailMessageBase:
             ("From", "bar@foo.com"),
         ]
         if subtype != "no_content":
-            ("content-shadow", "Logrus"),
+            (("content-shadow", "Logrus"),)
         msg_headers.append(("X-Random-Header", "Corwin"))
         if subtype == "text":
             payload = ""
@@ -813,9 +812,7 @@ class TestEmailMessage(TestEmailMessageBase, TestEmailBase):
         # word.
 
         m = EmailMessage()
-        m["Subject"] = (
-            "Hello Wörld! Hello Wörld! " "Hello Wörld! Hello Wörld!Hello Wörld!"
-        )
+        m["Subject"] = "Hello Wörld! Hello Wörld! Hello Wörld! Hello Wörld!Hello Wörld!"
         self.assertEqual(
             bytes(m),
             b"Subject: Hello =?utf-8?q?W=C3=B6rld!_Hello_W"
@@ -833,7 +830,7 @@ class TestEmailMessage(TestEmailMessageBase, TestEmailBase):
 
         m = EmailMessage()
         m["Subject"] = (
-            "Hello Wörld! Hello Wörld! " "Hello Wörlds123! Hello Wörld!Hello Wörld!"
+            "Hello Wörld! Hello Wörld! Hello Wörlds123! Hello Wörld!Hello Wörld!"
         )
         self.assertEqual(
             bytes(m),
@@ -852,7 +849,7 @@ class TestEmailMessage(TestEmailMessageBase, TestEmailBase):
 
         m = EmailMessage()
         m["Subject"] = (
-            "Hello-Wörld!-Hello-Wörld!-Hello-Wörlds123! " "Hello Wörld!Hello Wörld!"
+            "Hello-Wörld!-Hello-Wörld!-Hello-Wörlds123! Hello Wörld!Hello Wörld!"
         )
         self.assertEqual(
             bytes(m),
@@ -871,7 +868,7 @@ class TestEmailMessage(TestEmailMessageBase, TestEmailBase):
 
         m = EmailMessage()
         m["Subject"] = (
-            "Hello-Wörld!-Hello-Wörld!-Hello-Wörlds123!-Hello" " Wörld!Hello Wörld!"
+            "Hello-Wörld!-Hello-Wörld!-Hello-Wörlds123!-Hello Wörld!Hello Wörld!"
         )
         self.assertEqual(
             bytes(m),

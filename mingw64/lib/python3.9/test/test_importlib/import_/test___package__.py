@@ -7,6 +7,7 @@ of using the typical __path__/__name__ test).
 
 import unittest
 import warnings
+
 from .. import util
 
 
@@ -149,7 +150,7 @@ class Setting__package__:
             with util.import_state(meta_path=[mock]):
                 del mock["pkg.mod"].__package__
                 pkg = self.__import__("pkg.mod")
-                module = getattr(pkg, "mod")
+                module = pkg.mod
                 self.assertEqual(module.__package__, "pkg")
 
 

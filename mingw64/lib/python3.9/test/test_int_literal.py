@@ -7,7 +7,6 @@ import unittest
 
 
 class TestHexOctBin(unittest.TestCase):
-
     def test_hex_baseline(self):
         # A few upper/lowercase tests
         self.assertEqual(0x0, 0x0)

@@ -1,9 +1,10 @@
-import webbrowser
-import unittest
 import os
-import sys
 import subprocess
+import sys
+import unittest
+import webbrowser
 from unittest import mock
+
 from test import support
 
 URL = "http://www.example.com"
@@ -11,7 +12,6 @@ CMD_NAME = "test"
 
 
 class PopenMock(mock.MagicMock):
-
     def poll(self):
         return 0
 
@@ -20,7 +20,6 @@ class PopenMock(mock.MagicMock):
 
 
 class CommandTestMixin:
-
     def _test(self, meth, *, args=[URL], kw={}, options, arguments):
         """Given a web browser instance method name along with arguments and
         keywords for same (which defaults to the single argument URL), creates
@@ -46,7 +45,6 @@ class CommandTestMixin:
 
 
 class GenericBrowserCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.GenericBrowser
 
     def test_open(self):
@@ -54,7 +52,6 @@ class GenericBrowserCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class BackgroundBrowserCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.BackgroundBrowser
 
     def test_open(self):
@@ -62,7 +59,6 @@ class BackgroundBrowserCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class ChromeCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Chrome
 
     def test_open(self):
@@ -79,7 +75,6 @@ class ChromeCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class MozillaCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Mozilla
 
     def test_open(self):
@@ -96,39 +91,35 @@ class MozillaCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class NetscapeCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Netscape
 
     def test_open(self):
-        self._test(
-            "open", options=["-raise", "-remote"], arguments=["openURL({})".format(URL)]
-        )
+        self._test("open", options=["-raise", "-remote"], arguments=[f"openURL({URL})"])
 
     def test_open_with_autoraise_false(self):
         self._test(
             "open",
             kw=dict(autoraise=False),
             options=["-noraise", "-remote"],
-            arguments=["openURL({})".format(URL)],
+            arguments=[f"openURL({URL})"],
         )
 
     def test_open_new(self):
         self._test(
             "open_new",
             options=["-raise", "-remote"],
-            arguments=["openURL({},new-window)".format(URL)],
+            arguments=[f"openURL({URL},new-window)"],
         )
 
     def test_open_new_tab(self):
         self._test(
             "open_new_tab",
             options=["-raise", "-remote"],
-            arguments=["openURL({},new-tab)".format(URL)],
+            arguments=[f"openURL({URL},new-tab)"],
         )
 
 
 class GaleonCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Galeon
 
     def test_open(self):
@@ -150,7 +141,6 @@ class GaleonCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class OperaCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Opera
 
     def test_open(self):
@@ -167,32 +157,30 @@ class OperaCommandTest(CommandTestMixin, unittest.TestCase):
 
 
 class ELinksCommandTest(CommandTestMixin, unittest.TestCase):
-
     browser_class = webbrowser.Elinks
 
     def test_open(self):
-        self._test("open", options=["-remote"], arguments=["openURL({})".format(URL)])
+        self._test("open", options=["-remote"], arguments=[f"openURL({URL})"])
 
     def test_open_with_autoraise_false(self):
-        self._test("open", options=["-remote"], arguments=["openURL({})".format(URL)])
+        self._test("open", options=["-remote"], arguments=[f"openURL({URL})"])
 
     def test_open_new(self):
         self._test(
             "open_new",
             options=["-remote"],
-            arguments=["openURL({},new-window)".format(URL)],
+            arguments=[f"openURL({URL},new-window)"],
         )
 
     def test_open_new_tab(self):
         self._test(
             "open_new_tab",
             options=["-remote"],
-            arguments=["openURL({},new-tab)".format(URL)],
+            arguments=[f"openURL({URL},new-tab)"],
         )
 
 
 class BrowserRegistrationTest(unittest.TestCase):
-
     def setUp(self):
         # Ensure we don't alter the real registered browser details
         self._saved_tryorder = webbrowser._tryorder

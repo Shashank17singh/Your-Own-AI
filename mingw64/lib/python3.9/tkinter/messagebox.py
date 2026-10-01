@@ -1,14 +1,14 @@
 from tkinter.commondialog import Dialog
 
 __all__ = [
-    "showinfo",
-    "showwarning",
-    "showerror",
-    "askquestion",
     "askokcancel",
+    "askquestion",
+    "askretrycancel",
     "askyesno",
     "askyesnocancel",
-    "askretrycancel",
+    "showerror",
+    "showinfo",
+    "showwarning",
 ]
 ERROR = "error"
 INFO = "info"

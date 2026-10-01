@@ -5,20 +5,20 @@ the latter should be modernized).
 """
 
 import array
-import os
-import re
-import sys
 import copy
 import functools
+import os
 import pickle
+import re
+import sys
 import tempfile
 import textwrap
 import unittest
 
-import test.support
-import test.string_tests
 import test.list_tests
-from test.support import bigaddrspacetest, MAX_Py_ssize_t
+import test.string_tests
+import test.support
+from test.support import MAX_Py_ssize_t, bigaddrspacetest
 from test.support.script_helper import assert_python_failure
 
 if sys.flags.bytes_warning:
@@ -46,7 +46,6 @@ class Indexable:
 
 
 class BaseBytesTest:
-
     def test_basics(self):
         b = self.type2test()
         self.assertEqual(type(b), self.type2test)
@@ -260,8 +259,8 @@ class BaseBytesTest:
         self.assertEqual(self.type2test(b"\0\0\0a\0\0\0b\0\0\0c") == "abc", False)
         self.assertEqual(self.type2test(b"a\0b\0c\0") == "abc", False)
         self.assertEqual(self.type2test(b"a\0\0\0b\0\0\0c\0\0\0") == "abc", False)
-        self.assertEqual(self.type2test() == str(), False)
-        self.assertEqual(self.type2test() != str(), True)
+        self.assertEqual(self.type2test() == "", False)
+        self.assertEqual(self.type2test() != "", True)
 
     def test_reversed(self):
         input = list(map(ord, "Hello"))
@@ -394,8 +393,8 @@ class BaseBytesTest:
         b1 = self.type2test(b"abc")
         b2 = self.type2test(b"def")
         self.assertEqual(b1 + b2, b"abcdef")
-        self.assertEqual(b1 + bytes(b"def"), b"abcdef")
-        self.assertEqual(bytes(b"def") + b1, b"defabc")
+        self.assertEqual(b1 + b"def", b"abcdef")
+        self.assertEqual(b"def" + b1, b"defabc")
         self.assertRaises(TypeError, lambda: b1 + "def")
         self.assertRaises(TypeError, lambda: "abc" + b2)
 
@@ -418,7 +417,7 @@ class BaseBytesTest:
     def test_contains(self):
         b = self.type2test(b"abc")
         self.assertIn(ord("a"), b)
-        self.assertIn(int(ord("a")), b)
+        self.assertIn(ord("a"), b)
         self.assertNotIn(200, b)
         self.assertRaises(ValueError, lambda: 300 in b)
         self.assertRaises(ValueError, lambda: -1 in b)
@@ -1046,8 +1045,17 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
     def test_from_format(self):
         ctypes = test.support.import_module("ctypes")
         _testcapi = test.support.import_module("_testcapi")
-        from ctypes import pythonapi, py_object
-        from ctypes import c_int, c_uint, c_long, c_ulong, c_size_t, c_ssize_t, c_char_p
+        from ctypes import (
+            c_char_p,
+            c_int,
+            c_long,
+            c_size_t,
+            c_ssize_t,
+            c_uint,
+            c_ulong,
+            py_object,
+            pythonapi,
+        )
 
         PyBytes_FromFormat = pythonapi.PyBytes_FromFormat
         PyBytes_FromFormat.argtypes = (c_char_p,)
@@ -1085,7 +1093,7 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
 
         if os.name == "nt":
             # Windows (MSCRT)
-            ptr_format = "0x%0{}x".format(2 * sizeof_ptr)
+            ptr_format = f"0x%0{2 * sizeof_ptr}x"
 
             def ptr_formatter(ptr):
                 return ptr_format % ptr
@@ -1115,10 +1123,12 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
             (b"%zu", c_size_t, size_max, str),
             (b"%p", c_char_p, size_max, ptr_formatter),
         ):
-            self.assertEqual(
-                PyBytes_FromFormat(formatstr, ctypes_type(value)),
-                py_formatter(value).encode("ascii"),
-            ),
+            (
+                self.assertEqual(
+                    PyBytes_FromFormat(formatstr, ctypes_type(value)),
+                    py_formatter(value).encode("ascii"),
+                ),
+            )
 
         # width and precision (width is currently ignored)
         self.assertEqual(PyBytes_FromFormat(b"%5s", b"a"), b"a")
@@ -1169,7 +1179,7 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
         class BytesSubclassBlocked(bytes):
             __bytes__ = None
 
-        self.assertEqual(bytes(b"ab"), b"ab")
+        self.assertEqual(b"ab", b"ab")
         self.assertRaises(TypeError, bytes, BytesSubclassBlocked(b"ab"))
 
         class BufferBlocked(bytearray):
@@ -1723,33 +1733,33 @@ class AssortedBytesTest(unittest.TestCase):
                 format(b, "s")
 
     def test_compare_bytes_to_bytearray(self):
-        self.assertEqual(b"abc" == bytes(b"abc"), True)
-        self.assertEqual(b"ab" != bytes(b"abc"), True)
-        self.assertEqual(b"ab" <= bytes(b"abc"), True)
-        self.assertEqual(b"ab" < bytes(b"abc"), True)
-        self.assertEqual(b"abc" >= bytes(b"ab"), True)
-        self.assertEqual(b"abc" > bytes(b"ab"), True)
+        self.assertEqual(b"abc" == b"abc", True)
+        self.assertEqual(b"ab" != b"abc", True)
+        self.assertEqual(b"ab" <= b"abc", True)
+        self.assertEqual(b"ab" < b"abc", True)
+        self.assertEqual(b"abc" >= b"ab", True)
+        self.assertEqual(b"abc" > b"ab", True)
 
-        self.assertEqual(b"abc" != bytes(b"abc"), False)
-        self.assertEqual(b"ab" == bytes(b"abc"), False)
-        self.assertEqual(b"ab" > bytes(b"abc"), False)
-        self.assertEqual(b"ab" >= bytes(b"abc"), False)
-        self.assertEqual(b"abc" < bytes(b"ab"), False)
-        self.assertEqual(b"abc" <= bytes(b"ab"), False)
+        self.assertEqual(b"abc" != b"abc", False)
+        self.assertEqual(b"ab" == b"abc", False)
+        self.assertEqual(b"ab" > b"abc", False)
+        self.assertEqual(b"ab" >= b"abc", False)
+        self.assertEqual(b"abc" < b"ab", False)
+        self.assertEqual(b"abc" <= b"ab", False)
 
-        self.assertEqual(bytes(b"abc") == b"abc", True)
-        self.assertEqual(bytes(b"ab") != b"abc", True)
-        self.assertEqual(bytes(b"ab") <= b"abc", True)
-        self.assertEqual(bytes(b"ab") < b"abc", True)
-        self.assertEqual(bytes(b"abc") >= b"ab", True)
-        self.assertEqual(bytes(b"abc") > b"ab", True)
+        self.assertEqual(b"abc" == b"abc", True)
+        self.assertEqual(b"ab" != b"abc", True)
+        self.assertEqual(b"ab" <= b"abc", True)
+        self.assertEqual(b"ab" < b"abc", True)
+        self.assertEqual(b"abc" >= b"ab", True)
+        self.assertEqual(b"abc" > b"ab", True)
 
-        self.assertEqual(bytes(b"abc") != b"abc", False)
-        self.assertEqual(bytes(b"ab") == b"abc", False)
-        self.assertEqual(bytes(b"ab") > b"abc", False)
-        self.assertEqual(bytes(b"ab") >= b"abc", False)
-        self.assertEqual(bytes(b"abc") < b"ab", False)
-        self.assertEqual(bytes(b"abc") <= b"ab", False)
+        self.assertEqual(b"abc" != b"abc", False)
+        self.assertEqual(b"ab" == b"abc", False)
+        self.assertEqual(b"ab" > b"abc", False)
+        self.assertEqual(b"ab" >= b"abc", False)
+        self.assertEqual(b"abc" < b"ab", False)
+        self.assertEqual(b"abc" <= b"ab", False)
 
     @test.support.requires_docstrings
     def test_doc(self):
@@ -1759,7 +1769,7 @@ class AssortedBytesTest(unittest.TestCase):
         self.assertTrue(bytes.__doc__.startswith("bytes("), bytes.__doc__)
 
     def test_from_bytearray(self):
-        sample = bytes(b"Hello world\n\x80\x81\xfe\xff")
+        sample = b"Hello world\n\x80\x81\xfe\xff"
         buf = memoryview(sample)
         b = bytearray(buf)
         self.assertEqual(b, bytearray(sample))
@@ -1894,7 +1904,6 @@ class BytesAsStringTest(FixedStringTest, unittest.TestCase):
 
 
 class SubclassTest:
-
     def test_basic(self):
         self.assertTrue(issubclass(self.type2test, self.basetype))
         self.assertIsInstance(self.type2test(), self.basetype)

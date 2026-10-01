@@ -69,7 +69,7 @@ def main():
         action="store_const",
         dest="indent",
         const="\t",
-        help="separate items with newlines and use " "tabs for indentation",
+        help="separate items with newlines and use tabs for indentation",
     )
     group.add_argument(
         "--no-indent",

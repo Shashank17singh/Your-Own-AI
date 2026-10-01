@@ -3,14 +3,14 @@ import tkinter
 
 __version__ = "0.9"
 __all__ = [
-    "NORMAL",
-    "ROMAN",
     "BOLD",
     "ITALIC",
-    "nametofont",
+    "NORMAL",
+    "ROMAN",
     "Font",
     "families",
     "names",
+    "nametofont",
 ]
 NORMAL = "normal"
 ROMAN = "roman"

@@ -1,6 +1,7 @@
-import unittest
-from test import support
 import operator
+import unittest
+
+from test import support
 
 maxsize = support.MAX_Py_ssize_t
 
@@ -199,7 +200,6 @@ class ListTestCase(SeqTestCase, unittest.TestCase):
 
 
 class NewSeq:
-
     def __init__(self, iterable):
         self._list = list(iterable)
 
@@ -242,7 +242,6 @@ class NewSeqTestCase(SeqTestCase, unittest.TestCase):
 
 
 class RangeTestCase(unittest.TestCase):
-
     def test_range(self):
         n = newstyle()
         n.ind = 5
@@ -251,7 +250,6 @@ class RangeTestCase(unittest.TestCase):
 
 
 class OverflowTestCase(unittest.TestCase):
-
     def setUp(self):
         self.pos = 2**100
         self.neg = -self.pos

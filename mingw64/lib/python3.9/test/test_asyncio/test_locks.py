@@ -1,10 +1,10 @@
 """Tests for lock.py"""
 
+import asyncio
+import re
 import unittest
 from unittest import mock
-import re
 
-import asyncio
 from test.test_asyncio import utils as test_utils
 
 STR_RGX_REPR = (
@@ -21,7 +21,6 @@ def tearDownModule():
 
 
 class LockTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -299,7 +298,6 @@ class LockTests(test_utils.TestCase):
 
 
 class EventTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -431,7 +429,6 @@ class EventTests(test_utils.TestCase):
 
 
 class ConditionTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -790,7 +787,6 @@ class ConditionTests(test_utils.TestCase):
 
 
 class SemaphoreTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()

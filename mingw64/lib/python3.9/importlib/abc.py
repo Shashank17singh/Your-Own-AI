@@ -1,8 +1,6 @@
 """Abstract base classes related to import."""
 
-from . import _bootstrap
-from . import _bootstrap_external
-from . import machinery
+from . import _bootstrap, _bootstrap_external, machinery
 
 try:
     import _frozen_importlib
@@ -155,7 +153,7 @@ class Loader(metaclass=abc.ABCMeta):
         that the spec should create the new module.
         """
         # By default, defer to default semantics for the new module.
-        return None
+        return
 
     # We don't define exec_module() here since that would break
     # hasattr checks we do to support backward compatibility.

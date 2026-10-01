@@ -4,15 +4,16 @@ Half the class creates dialog, half works with user customizations.
 """
 
 from idlelib import configdialog
+
 from test.support import requires
 
 requires("gui")
 import unittest
-from unittest import mock
-from idlelib.idle_test.mock_idle import Func
-from tkinter import Tk, StringVar, IntVar, BooleanVar, DISABLED, NORMAL
 from idlelib import config
-from idlelib.configdialog import idleConf, changes, tracers
+from idlelib.configdialog import changes, idleConf, tracers
+from idlelib.idle_test.mock_idle import Func
+from tkinter import DISABLED, NORMAL, BooleanVar, IntVar, StringVar, Tk
+from unittest import mock
 
 # Tests should not depend on fortuitous user configurations.
 # They must not affect actual user .cfg files.
@@ -53,7 +54,6 @@ def tearDownModule():
 
 
 class ConfigDialogTest(unittest.TestCase):
-
     def test_deactivate_current_config(self):
         pass
 
@@ -62,7 +62,6 @@ class ConfigDialogTest(unittest.TestCase):
 
 
 class ButtonTest(unittest.TestCase):
-
     def test_click_ok(self):
         d = dialog
         apply = d.apply = mock.Mock()
@@ -1506,7 +1505,6 @@ class HelpSourceTest(unittest.TestCase):
 
 
 class VarTraceTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.tracers = configdialog.VarTrace()

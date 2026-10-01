@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # There are tests here with unicode string literals and
 # identifiers. There's a code in ast.c that was added because of a
 # failure with a non-ascii-only expression.  So, I have tests for
@@ -8,11 +7,12 @@
 # Unicode identifiers in tests is allowed by PEP 3131.
 
 import ast
+import decimal
 import os
 import re
 import types
-import decimal
 import unittest
+
 from test.support import temp_cwd, use_old_parser
 from test.support.script_helper import assert_python_failure
 
@@ -414,12 +414,12 @@ x = (
 
     def test_docstring(self):
         def f():
-            f"""Not a docstring"""
+            """Not a docstring"""
 
         self.assertIsNone(f.__doc__)
 
         def g():
-            """Not a docstring""" f""
+            """Not a docstring""" ""
 
         self.assertIsNone(g.__doc__)
 
@@ -447,9 +447,9 @@ x = (
         )
 
     def test_literal(self):
-        self.assertEqual(f"", "")
-        self.assertEqual(f"a", "a")
-        self.assertEqual(f" ", " ")
+        self.assertEqual("", "")
+        self.assertEqual("a", "a")
+        self.assertEqual(" ", " ")
 
     def test_unterminated_string(self):
         self.assertAllRaise(
@@ -507,22 +507,22 @@ x = (
         self.assertRaises(SyntaxError, eval, "f'{" + "(" * 500 + "}'")
 
     def test_double_braces(self):
-        self.assertEqual(f"{{", "{")
-        self.assertEqual(f"a{{", "a{")
-        self.assertEqual(f"{{b", "{b")
-        self.assertEqual(f"a{{b", "a{b")
-        self.assertEqual(f"}}", "}")
-        self.assertEqual(f"a}}", "a}")
-        self.assertEqual(f"}}b", "}b")
-        self.assertEqual(f"a}}b", "a}b")
-        self.assertEqual(f"{{}}", "{}")
-        self.assertEqual(f"a{{}}", "a{}")
-        self.assertEqual(f"{{b}}", "{b}")
-        self.assertEqual(f"{{}}c", "{}c")
-        self.assertEqual(f"a{{b}}", "a{b}")
-        self.assertEqual(f"a{{}}c", "a{}c")
-        self.assertEqual(f"{{b}}c", "{b}c")
-        self.assertEqual(f"a{{b}}c", "a{b}c")
+        self.assertEqual("{", "{")
+        self.assertEqual("a{", "a{")
+        self.assertEqual("{b", "{b")
+        self.assertEqual("a{b", "a{b")
+        self.assertEqual("}", "}")
+        self.assertEqual("a}", "a}")
+        self.assertEqual("}b", "}b")
+        self.assertEqual("a}b", "a}b")
+        self.assertEqual("{}", "{}")
+        self.assertEqual("a{}", "a{}")
+        self.assertEqual("{b}", "{b}")
+        self.assertEqual("{}c", "{}c")
+        self.assertEqual("a{b}", "a{b}")
+        self.assertEqual("a{}c", "a{}c")
+        self.assertEqual("{b}c", "{b}c")
+        self.assertEqual("a{b}c", "a{b}c")
 
         self.assertEqual(f"{{{10}", "{10")
         self.assertEqual(f"}}{10}", "}10")
@@ -532,10 +532,10 @@ x = (
         self.assertEqual(f"{10}{{", "10{")
         self.assertEqual(f"{10}}}", "10}")
         self.assertEqual(f"{10}}}{{", "10}{")
-        self.assertEqual(f"{10}}}a{{" "}", "10}a{}")
+        self.assertEqual(f"{10}}}a{{}}", "10}a{}")
 
         # Inside of strings, don't interpret doubled brackets.
-        self.assertEqual(f'{"{{}}"}', "{{}}")
+        self.assertEqual(f"{'{{}}'}", "{{}}")
 
         self.assertAllRaise(
             TypeError,
@@ -547,30 +547,30 @@ x = (
 
     def test_compile_time_concat(self):
         x = "def"
-        self.assertEqual("abc" f"## {x}ghi", "abc## defghi")
-        self.assertEqual("abc" f"{x}" "ghi", "abcdefghi")
-        self.assertEqual("abc" f"{x}" "gh" f"i{x:4}", "abcdefghidef ")
-        self.assertEqual("{x}" f"{x}", "{x}def")
-        self.assertEqual("{x" f"{x}", "{xdef")
-        self.assertEqual("{x}" f"{x}", "{x}def")
-        self.assertEqual("{{x}}" f"{x}", "{{x}}def")
-        self.assertEqual("{{x" f"{x}", "{{xdef")
-        self.assertEqual("x}}" f"{x}", "x}}def")
-        self.assertEqual(f"{x}" "x}}", "defx}}")
-        self.assertEqual(f"{x}" "", "def")
-        self.assertEqual("" f"{x}" "", "def")
-        self.assertEqual("" f"{x}", "def")
-        self.assertEqual(f"{x}" "2", "def2")
-        self.assertEqual("1" f"{x}" "2", "1def2")
-        self.assertEqual("1" f"{x}", "1def")
-        self.assertEqual(f"{x}" f"-{x}", "def-def")
-        self.assertEqual("" f"", "")
-        self.assertEqual("" f"" "", "")
-        self.assertEqual("" f"" "" f"", "")
-        self.assertEqual(f"", "")
-        self.assertEqual(f"" "", "")
-        self.assertEqual(f"" "" f"", "")
-        self.assertEqual(f"" "" f"" "", "")
+        self.assertEqual(f"abc## {x}ghi", "abc## defghi")
+        self.assertEqual(f"abc{x}ghi", "abcdefghi")
+        self.assertEqual(f"abc{x}ghi{x:4}", "abcdefghidef ")
+        self.assertEqual(f"{{x}}{x}", "{x}def")
+        self.assertEqual(f"{{x{x}", "{xdef")
+        self.assertEqual(f"{{x}}{x}", "{x}def")
+        self.assertEqual(f"{{{{x}}}}{x}", "{{x}}def")
+        self.assertEqual(f"{{{{x{x}", "{{xdef")
+        self.assertEqual(f"x}}}}{x}", "x}}def")
+        self.assertEqual(f"{x}x}}}}", "defx}}")
+        self.assertEqual(f"{x}", "def")
+        self.assertEqual(f"{x}", "def")
+        self.assertEqual(f"{x}", "def")
+        self.assertEqual(f"{x}2", "def2")
+        self.assertEqual(f"1{x}2", "1def2")
+        self.assertEqual(f"1{x}", "1def")
+        self.assertEqual(f"{x}-{x}", "def-def")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
+        self.assertEqual("", "")
 
         self.assertAllRaise(
             SyntaxError,
@@ -583,8 +583,8 @@ x = (
     def test_comments(self):
         # These aren't comments, since they're in strings.
         d = {"#": "hash"}
-        self.assertEqual(f'{"#"}', "#")
-        self.assertEqual(f'{d["#"]}', "hash")
+        self.assertEqual(f"{'#'}", "#")
+        self.assertEqual(f"{d['#']}", "hash")
 
         self.assertAllRaise(
             SyntaxError,
@@ -642,13 +642,13 @@ x = (
             f"result: {value:{1}{0:0}.{precision:1}}", "result:      12.35"
         )
         self.assertEqual(
-            f"result: {value:{ 1}{ 0:0}.{ precision:1}}", "result:      12.35"
+            f"result: {value:{1}{0:0}.{precision:1}}", "result:      12.35"
         )
         self.assertEqual(f"{10:#{1}0x}", "       0xa")
-        self.assertEqual(f'{10:{"#"}1{0}{"x"}}', "       0xa")
-        self.assertEqual(f'{-10:-{"#"}1{0}x}', "      -0xa")
-        self.assertEqual(f'{-10:{"-"}#{1}0{"x"}}', "      -0xa")
-        self.assertEqual(f"{10:#{3 != {4:5} and width}x}", "       0xa")
+        self.assertEqual(f"{10:{'#'}1{0}{'x'}}", "       0xa")
+        self.assertEqual(f"{-10:-{'#'}1{0}x}", "      -0xa")
+        self.assertEqual(f"{-10:{'-'}#{1}0{'x'}}", "      -0xa")
+        self.assertEqual(f"{10:#{3 != {4: 5} and width}x}", "       0xa")
 
         self.assertAllRaise(
             SyntaxError,
@@ -703,7 +703,7 @@ x = (
             "f-string: empty expression not allowed",
             [
                 "f'{}'",
-                "f'{ }'" "f' {} '",
+                "f'{ }'f' {} '",
                 "f'{!r}'",
                 "f'{ !r}'",
                 "f'{10:{ }}'",
@@ -741,7 +741,7 @@ x = (
         )
 
     def test_parens_in_expressions(self):
-        self.assertEqual(f"{3,}", "(3,)")
+        self.assertEqual(f"{(3,)}", "(3,)")
 
         # Add these because when an expression is evaluated, parens
         #  are added around it. But we shouldn't go from an invalid
@@ -774,59 +774,59 @@ x = (
         )
 
     def test_backslashes_in_string_part(self):
-        self.assertEqual(f"\t", "\t")
+        self.assertEqual("\t", "\t")
         self.assertEqual(r"\t", "\\t")
-        self.assertEqual(rf"\t", "\\t")
+        self.assertEqual(r"\t", "\\t")
         self.assertEqual(f"{2}\t", "2\t")
         self.assertEqual(f"{2}\t{3}", "2\t3")
         self.assertEqual(f"\t{3}", "\t3")
 
-        self.assertEqual(f"\u0394", "\u0394")
+        self.assertEqual("\u0394", "\u0394")
         self.assertEqual(r"\u0394", "\\u0394")
-        self.assertEqual(rf"\u0394", "\\u0394")
+        self.assertEqual(r"\u0394", "\\u0394")
         self.assertEqual(f"{2}\u0394", "2\u0394")
         self.assertEqual(f"{2}\u0394{3}", "2\u03943")
         self.assertEqual(f"\u0394{3}", "\u03943")
 
-        self.assertEqual(f"\U00000394", "\u0394")
+        self.assertEqual("\U00000394", "\u0394")
         self.assertEqual(r"\U00000394", "\\U00000394")
-        self.assertEqual(rf"\U00000394", "\\U00000394")
+        self.assertEqual(r"\U00000394", "\\U00000394")
         self.assertEqual(f"{2}\U00000394", "2\u0394")
         self.assertEqual(f"{2}\U00000394{3}", "2\u03943")
         self.assertEqual(f"\U00000394{3}", "\u03943")
 
-        self.assertEqual(f"\N{GREEK CAPITAL LETTER DELTA}", "\u0394")
+        self.assertEqual("\N{GREEK CAPITAL LETTER DELTA}", "\u0394")
         self.assertEqual(f"{2}\N{GREEK CAPITAL LETTER DELTA}", "2\u0394")
         self.assertEqual(f"{2}\N{GREEK CAPITAL LETTER DELTA}{3}", "2\u03943")
         self.assertEqual(f"\N{GREEK CAPITAL LETTER DELTA}{3}", "\u03943")
-        self.assertEqual(f"2\N{GREEK CAPITAL LETTER DELTA}", "2\u0394")
-        self.assertEqual(f"2\N{GREEK CAPITAL LETTER DELTA}3", "2\u03943")
-        self.assertEqual(f"\N{GREEK CAPITAL LETTER DELTA}3", "\u03943")
+        self.assertEqual("2\N{GREEK CAPITAL LETTER DELTA}", "2\u0394")
+        self.assertEqual("2\N{GREEK CAPITAL LETTER DELTA}3", "2\u03943")
+        self.assertEqual("\N{GREEK CAPITAL LETTER DELTA}3", "\u03943")
 
-        self.assertEqual(f"\x20", " ")
+        self.assertEqual("\x20", " ")
         self.assertEqual(r"\x20", "\\x20")
-        self.assertEqual(rf"\x20", "\\x20")
+        self.assertEqual(r"\x20", "\\x20")
         self.assertEqual(f"{2}\x20", "2 ")
         self.assertEqual(f"{2}\x20{3}", "2 3")
         self.assertEqual(f"\x20{3}", " 3")
 
-        self.assertEqual(f"2\x20", "2 ")
-        self.assertEqual(f"2\x203", "2 3")
-        self.assertEqual(f"\x203", " 3")
+        self.assertEqual("2\x20", "2 ")
+        self.assertEqual("2\x203", "2 3")
+        self.assertEqual("\x203", " 3")
 
         with self.assertWarns(DeprecationWarning):  # invalid escape sequence
             value = eval(r"f'\{6*7}'")
         self.assertEqual(value, "\\42")
-        self.assertEqual(f"\\{6*7}", "\\42")
-        self.assertEqual(rf"\{6*7}", "\\42")
+        self.assertEqual(f"\\{6 * 7}", "\\42")
+        self.assertEqual(rf"\{6 * 7}", "\\42")
 
         AMPERSAND = "spam"
         # Get the right unicode character (&), or pick up local variable
         # depending on the number of backslashes.
-        self.assertEqual(f"\N{AMPERSAND}", "&")
+        self.assertEqual("\N{AMPERSAND}", "&")
         self.assertEqual(f"\\N{AMPERSAND}", "\\Nspam")
         self.assertEqual(rf"\N{AMPERSAND}", "\\Nspam")
-        self.assertEqual(f"\\\N{AMPERSAND}", "\\&")
+        self.assertEqual("\\\N{AMPERSAND}", "\\&")
 
     def test_misformed_unicode_character_name(self):
         # These test are needed because unicode names are parsed
@@ -867,24 +867,23 @@ x = (
         Only literal curly braces begin an expression.
         """
         # \x7b is '{'.
-        self.assertEqual(f"\x7b1+1}}", "{1+1}")
-        self.assertEqual(f"\x7b1+1", "{1+1")
-        self.assertEqual(f"\u007b1+1", "{1+1")
-        self.assertEqual(f"\N{LEFT CURLY BRACKET}1+1\N{RIGHT CURLY BRACKET}", "{1+1}")
+        self.assertEqual("\x7b1+1}", "{1+1}")
+        self.assertEqual("\x7b1+1", "{1+1")
+        self.assertEqual("\u007b1+1", "{1+1")
+        self.assertEqual("\N{LEFT CURLY BRACKET}1+1\N{RIGHT CURLY BRACKET}", "{1+1}")
 
     def test_newlines_in_expressions(self):
         self.assertEqual(f"{0}", "0")
         self.assertEqual(
-            rf"""{3+
-4}""",
+            rf"""{3 + 4}""",
             "7",
         )
 
     def test_lambda(self):
         x = 5
-        self.assertEqual(f'{(lambda y:x*y)("8")!r}', "'88888'")
-        self.assertEqual(f'{(lambda y:x*y)("8")!r:10}', "'88888'   ")
-        self.assertEqual(f'{(lambda y:x*y)("8"):10}', "88888     ")
+        self.assertEqual(f"{(lambda y: x * y)('8')!r}", "'88888'")
+        self.assertEqual(f"{(lambda y: x * y)('8')!r:10}", "'88888'   ")
+        self.assertEqual(f"{(lambda y: x * y)('8'):10}", "88888     ")
 
         # lambda doesn't work without parens, because the colon
         #  makes the parser think it's a format_spec
@@ -901,7 +900,7 @@ x = (
         # Not terribly useful, but make sure the yield turns
         #  a function into a generator
         def fn(y):
-            f"y:{yield y*2}"
+            f"y:{yield y * 2}"
             f"{yield}"
 
         g = fn(4)
@@ -958,7 +957,7 @@ x = (
         y = 2
 
         def f(x, width):
-            return f"x={x*y:{width}}"
+            return f"x={x * y:{width}}"
 
         self.assertEqual(f("foo", 10), "x=foofoo    ")
         x = "bar"
@@ -1023,8 +1022,8 @@ x = (
 
     def test_nested_fstrings(self):
         y = 5
-        self.assertEqual(f'{f"{0}"*3}', "000")
-        self.assertEqual(f'{f"{y}"*3}', "555")
+        self.assertEqual(f"{f'{0}' * 3}", "000")
+        self.assertEqual(f"{f'{y}' * 3}", "555")
 
     def test_invalid_string_prefixes(self):
         single_quote_cases = [
@@ -1060,29 +1059,29 @@ x = (
         )
 
     def test_leading_trailing_spaces(self):
-        self.assertEqual(f"{ 3}", "3")
-        self.assertEqual(f"{  3}", "3")
-        self.assertEqual(f"{3 }", "3")
-        self.assertEqual(f"{3  }", "3")
+        self.assertEqual(f"{3}", "3")
+        self.assertEqual(f"{3}", "3")
+        self.assertEqual(f"{3}", "3")
+        self.assertEqual(f"{3}", "3")
 
-        self.assertEqual(f"expr={ {x: y for x, y in [(1, 2), ]}}", "expr={1: 2}")
-        self.assertEqual(f"expr={ {x: y for x, y in [(1, 2), ]} }", "expr={1: 2}")
+        self.assertEqual(f"expr={ {x: y for x, y in [(1, 2)]} }", "expr={1: 2}")
+        self.assertEqual(f"expr={ {x: y for x, y in [(1, 2)]} }", "expr={1: 2}")
 
     def test_not_equal(self):
         # There's a special test for this because there's a special
         #  case in the f-string parser to look for != as not ending an
         #  expression. Normally it would, while looking for !s or !r.
 
-        self.assertEqual(f"{3!=4}", "True")
-        self.assertEqual(f"{3!=4:}", "True")
-        self.assertEqual(f"{3!=4!s}", "True")
-        self.assertEqual(f"{3!=4!s:.3}", "Tru")
+        self.assertEqual(f"{3 != 4}", "True")
+        self.assertEqual(f"{3 != 4:}", "True")
+        self.assertEqual(f"{3 != 4!s}", "True")
+        self.assertEqual(f"{3 != 4!s:.3}", "Tru")
 
     def test_equal_equal(self):
         # Because an expression ending in = has special meaning,
         # there's a special test for ==. Make sure it works.
 
-        self.assertEqual(f"{0==1}", "False")
+        self.assertEqual(f"{0 == 1}", "False")
 
     def test_conversions(self):
         self.assertEqual(f"{3.14:10.10}", "      3.14")
@@ -1090,12 +1089,12 @@ x = (
         self.assertEqual(f"{3.14!r:10.10}", "3.14      ")
         self.assertEqual(f"{3.14!a:10.10}", "3.14      ")
 
-        self.assertEqual(f'{"a"}', "a")
-        self.assertEqual(f'{"a"!r}', "'a'")
-        self.assertEqual(f'{"a"!a}', "'a'")
+        self.assertEqual(f"{'a'}", "a")
+        self.assertEqual(f"{'a'!r}", "'a'")
+        self.assertEqual(f"{'a'!a}", "'a'")
 
         # Not a conversion.
-        self.assertEqual(f'{"a!r"}', "a!r")
+        self.assertEqual(f"{'a!r'}", "a!r")
 
         # Not a conversion, but show that ! is allowed in a format spec.
         self.assertEqual(f"{3.14:!<10.10}", "3.14!!!!!!")
@@ -1185,10 +1184,10 @@ x = (
         )
 
         # But these are just normal strings.
-        self.assertEqual(f'{"{"}', "{")
-        self.assertEqual(f'{"}"}', "}")
-        self.assertEqual(f'{3:{"}"}>10}', "}}}}}}}}}3")
-        self.assertEqual(f'{2:{"{"}>10}', "{{{{{{{{{2")
+        self.assertEqual(f"{'{'}", "{")
+        self.assertEqual(f"{'}'}", "}")
+        self.assertEqual(f"{3:{'}'}>10}", "}}}}}}}}}3")
+        self.assertEqual(f"{2:{'{'}>10}", "{{{{{{{{{2")
 
     def test_if_conditional(self):
         # There's special logic in compile.c to test if the
@@ -1205,7 +1204,7 @@ x = (
 
         def test_concat_empty(x, expected):
             flag = 0
-            if "" f"{x}":
+            if f"{x}":
                 flag = 1
             else:
                 flag = 2
@@ -1213,7 +1212,7 @@ x = (
 
         def test_concat_non_empty(x, expected):
             flag = 0
-            if " " f"{x}":
+            if f" {x}":
                 flag = 1
             else:
                 flag = 2
@@ -1242,10 +1241,10 @@ x = (
         }
         a = 0
         self.assertEqual(f"{d[0]}", "integer")
-        self.assertEqual(f'{d["a"]}', "string")
+        self.assertEqual(f"{d['a']}", "string")
         self.assertEqual(f"{d[a]}", "integer")
-        self.assertEqual("{d[a]}".format(d=d), "string")
-        self.assertEqual("{d[0]}".format(d=d), "integer")
+        self.assertEqual(f"{d['a']}", "string")
+        self.assertEqual(f"{d[0]}", "integer")
 
     def test_errors(self):
         # see issue 26287
@@ -1291,7 +1290,7 @@ x = (
         self.assertEqual(f"""{d["'"]}""", "squote")
         self.assertEqual(f"""{d['"']}""", "dquote")
 
-        self.assertEqual(f'{d["foo"]}', "bar")
+        self.assertEqual(f"{d['foo']}", "bar")
         self.assertEqual(f"{d['foo']}", "bar")
 
     def test_backslash_char(self):
@@ -1327,7 +1326,7 @@ x = (
         self.assertEqual(f'{"Σ"=}', "\"Σ\"='Σ'")
 
         # Make sure nested fstrings still work.
-        self.assertEqual(f'{f"{3.1415=:.1f}":*^20}', "*****3.1415=3.1*****")
+        self.assertEqual(f"{f'{3.1415=:.1f}':*^20}", "*****3.1415=3.1*****")
 
         # Make sure text before and after an expression with = works
         # correctly.
@@ -1345,15 +1344,15 @@ x = (
         # Since = is handled specially, make sure all existing uses of
         # it still work.
 
-        self.assertEqual(f"{0==1}", "False")
-        self.assertEqual(f"{0!=1}", "True")
-        self.assertEqual(f"{0<=1}", "True")
-        self.assertEqual(f"{0>=1}", "False")
-        self.assertEqual(f'{(x:="5")}', "5")
+        self.assertEqual(f"{0 == 1}", "False")
+        self.assertEqual(f"{0 != 1}", "True")
+        self.assertEqual(f"{0 <= 1}", "True")
+        self.assertEqual(f"{0 >= 1}", "False")
+        self.assertEqual(f"{(x := '5')}", "5")
         self.assertEqual(x, "5")
-        self.assertEqual(f"{(x:=5)}", "5")
+        self.assertEqual(f"{(x := 5)}", "5")
         self.assertEqual(x, 5)
-        self.assertEqual(f'{"="}', "=")
+        self.assertEqual(f"{'='}", "=")
 
         x = 20
         # This isn't an assignment expression, it's 'x', with a format
@@ -1369,7 +1368,7 @@ x = (
             return oldx
 
         x = 0
-        self.assertEqual(f'{f(a="3=")}', "0")
+        self.assertEqual(f"{f(a='3=')}", "0")
         self.assertEqual(x, "3=")
         self.assertEqual(f"{f(a=4)}", "3=")
         self.assertEqual(x, 4)
@@ -1416,7 +1415,7 @@ x = (
         self.assertEqual(f"{x:=10}", "        20")
 
         # This is an assignment expression, which requires parens.
-        self.assertEqual(f"{(x:=10)}", "10")
+        self.assertEqual(f"{(x := 10)}", "10")
         self.assertEqual(x, 10)
 
     def test_invalid_syntax_error_message(self):

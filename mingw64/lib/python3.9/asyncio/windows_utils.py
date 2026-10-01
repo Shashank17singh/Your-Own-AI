@@ -13,7 +13,7 @@ import subprocess
 import tempfile
 import warnings
 
-__all__ = "pipe", "Popen", "PIPE", "PipeHandle"
+__all__ = "PIPE", "PipeHandle", "Popen", "pipe"
 
 
 # Constants/globals
@@ -31,9 +31,7 @@ _mmap_counter = itertools.count()
 def pipe(*, duplex=False, overlapped=(True, True), bufsize=BUFSIZE):
     """Like os.pipe() but with overlapped support and using handles not fds."""
     address = tempfile.mktemp(
-        prefix=r"\\.\pipe\python-pipe-{:d}-{:d}-".format(
-            os.getpid(), next(_mmap_counter)
-        )
+        prefix=rf"\\.\pipe\python-pipe-{os.getpid():d}-{next(_mmap_counter):d}-"
     )
 
     if duplex:

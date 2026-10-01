@@ -1,11 +1,11 @@
 """Debugger basics"""
 
 import fnmatch
-import sys
 import os
-from inspect import CO_GENERATOR, CO_COROUTINE, CO_ASYNC_GENERATOR
+import sys
+from inspect import CO_ASYNC_GENERATOR, CO_COROUTINE, CO_GENERATOR
 
-__all__ = ["BdbQuit", "Bdb", "Breakpoint"]
+__all__ = ["Bdb", "BdbQuit", "Breakpoint"]
 
 GENERATOR_AND_COROUTINE_FLAGS = CO_GENERATOR | CO_COROUTINE | CO_ASYNC_GENERATOR
 
@@ -266,19 +266,15 @@ class Bdb:
 
     def user_call(self, frame, argument_list):
         """Called if we might stop in a function."""
-        pass
 
     def user_line(self, frame):
         """Called when we stop or break at a line."""
-        pass
 
     def user_return(self, frame, return_value):
         """Called when a return trap is set here."""
-        pass
 
     def user_exception(self, frame, exc_info):
         """Called when we stop on an exception."""
-        pass
 
     def _set_stopinfo(self, stopframe, returnframe, stoplineno=0):
         """Set the attributes for stopping.
@@ -552,7 +548,8 @@ class Bdb:
         line of code (if it exists).
 
         """
-        import linecache, reprlib
+        import linecache
+        import reprlib
 
         frame, lineno = frame_lineno
         filename = self.canonic(frame.f_code.co_filename)

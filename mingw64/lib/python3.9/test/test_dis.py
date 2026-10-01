@@ -1,14 +1,15 @@
 # Minimal tests for dis module
 
-from test.support import captured_stdout
-from test.support.bytecode_helper import BytecodeTestCase
-import unittest
-import sys
+import contextlib
 import dis
 import io
 import re
+import sys
 import types
-import contextlib
+import unittest
+
+from test.support import captured_stdout
+from test.support.bytecode_helper import BytecodeTestCase
 
 
 def get_tb():
@@ -153,7 +154,6 @@ dis_bug708901 = """\
 
 def bug1333982(x=[]):
     assert 0, [s for s in x] + 1
-    pass
 
 
 dis_bug1333982 = """\
@@ -497,7 +497,6 @@ Disassembly of <code object <listcomp> at 0x..., file "%s", line %d>:
 
 
 class DisTests(unittest.TestCase):
-
     maxDiff = None
 
     def get_disassembly(self, func, lasti=-1, wrapper=True, **kwargs):
@@ -595,17 +594,24 @@ class DisTests(unittest.TestCase):
             return namespace["foo"]
 
         def expected(count, w):
-            s = ["""\
+            s = [
+                """\
            %*d LOAD_FAST                0 (x)
            %*d LOAD_CONST               1 (1)
            %*d BINARY_ADD
            %*d STORE_FAST               0 (x)
-""" % (w, 8 * i, w, 8 * i + 2, w, 8 * i + 4, w, 8 * i + 6) for i in range(count)]
-            s += ["""\
+"""
+                % (w, 8 * i, w, 8 * i + 2, w, 8 * i + 4, w, 8 * i + 6)
+                for i in range(count)
+            ]
+            s += [
+                """\
 
   3        %*d LOAD_FAST                0 (x)
            %*d RETURN_VALUE
-""" % (w, 8 * count, w, 8 * count + 2)]
+"""
+                % (w, 8 * count, w, 8 * count + 2)
+            ]
             s[0] = "  2" + s[0][3:]
             return "".join(s)
 
@@ -703,7 +709,6 @@ class DisTests(unittest.TestCase):
 
 
 class DisWithFileTests(DisTests):
-
     # Run the tests again, using the file arg instead of print
     def get_disassembly(self, func, lasti=-1, wrapper=True, **kwargs):
         output = io.StringIO()
@@ -2594,7 +2599,6 @@ expected_opinfo_simple = [
 
 
 class InstructionTests(BytecodeTestCase):
-
     def __init__(self, *args):
         super().__init__(*args)
         self.maxDiff = None
@@ -2631,7 +2635,6 @@ class InstructionTests(BytecodeTestCase):
 # get_instructions has its own tests above, so can rely on it to validate
 # the object oriented API
 class BytecodeTests(unittest.TestCase):
-
     def test_instantiation(self):
         # Test with function, method, code string and code object
         for obj in [_f, _C(1).__init__, "a=1", _f.__code__]:

@@ -9,7 +9,9 @@
           "const": 1,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV1" }
       },
@@ -21,7 +23,9 @@
           "const": 2,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV1" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV2" },
@@ -35,7 +39,9 @@
           "const": 3,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV3" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV3" },
@@ -49,7 +55,9 @@
           "const": 4,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV3" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -64,7 +72,9 @@
           "const": 5,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV3" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -79,7 +89,9 @@
           "const": 6,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV3" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -96,7 +108,9 @@
           "const": 7,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV7" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -114,7 +128,9 @@
           "const": 8,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV7" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -132,7 +148,9 @@
           "const": 9,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV1" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV1"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV7" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV4" },
@@ -151,7 +169,9 @@
           "const": 10,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV10" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV10"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV10" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV10" },
@@ -170,7 +190,9 @@
           "const": 11,
           "description": "A required integer representing the version of the JSON schema."
         },
-        "cmakeMinimumRequired": { "$ref": "#/definitions/cmakeMinimumRequiredV10" },
+        "cmakeMinimumRequired": {
+          "$ref": "#/definitions/cmakeMinimumRequiredV10"
+        },
         "vendor": { "$ref": "#/definitions/vendor" },
         "configurePresets": { "$ref": "#/definitions/configurePresetsV10" },
         "buildPresets": { "$ref": "#/definitions/buildPresetsV10" },
@@ -182,9 +204,7 @@
       "additionalProperties": false
     }
   ],
-  "required": [
-    "version"
-  ],
+  "required": ["version"],
   "definitions": {
     "$schema": {
       "type": "string",
@@ -287,9 +307,7 @@
     "cmakeMinimumRequiredV1": {
       "type": "object",
       "description": "An optional object representing the minimum version of CMake needed to build this project. Available in version 1 and higher.",
-      "allOf": [
-        { "$ref": "#/definitions/cmakeMinimumRequiredObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/cmakeMinimumRequiredObject" }],
       "unevaluatedProperties": false
     },
     "vendor": {
@@ -310,10 +328,7 @@
         "strategy": {
           "type": "string",
           "description": "An optional string telling CMake how to handle the field. Valid values are: \"set\" Set the respective value. This will result in an error for generators that do not support the respective field. \"external\" Do not set the value, even if the generator supports it. This is useful if, for example, a preset uses the Ninja generator, and an IDE knows how to set up the Visual C++ environment from the architecture and toolset fields. In that case, CMake will ignore the field, but the IDE can use them to set up the environment before invoking CMake.",
-          "enum": [
-            "set",
-            "external"
-          ]
+          "enum": ["set", "external"]
         }
       }
     },
@@ -357,10 +372,7 @@
         "strategy": {
           "type": "string",
           "description": "An optional string telling CMake how to handle the field. Valid values are: \"set\" Set the respective value. This will result in an error for generators that do not support the respective field. \"external\" Do not set the value, even if the generator supports it. This is useful if, for example, a preset uses the Ninja generator, and an IDE knows how to set up the Visual C++ environment from the architecture and toolset fields. In that case, CMake will ignore the field, but the IDE can use them to set up the environment before invoking CMake.",
-          "enum": [
-            "set",
-            "external"
-          ]
+          "enum": ["set", "external"]
         }
       }
     },
@@ -408,31 +420,39 @@
         "type": {
           "type": "string",
           "description": "An optional string representing the type of the variable. It should be BOOL, FILEPATH, PATH, STRING, or INTERNAL.",
-          "enum": [
-            "BOOL", "FILEPATH", "PATH", "STRING", "INTERNAL"
-          ]
+          "enum": ["BOOL", "FILEPATH", "PATH", "STRING", "INTERNAL"]
         },
         "value": {
           "anyOf": [
-            { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean" },
-            { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString" }
+            {
+              "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean"
+            },
+            {
+              "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString"
+            }
           ]
         }
       },
-      "required": [
-        "value"
-      ]
+      "required": ["value"]
     },
     "configurePresetsCacheVariablesAdditionalPropertiesV10": {
       "anyOf": [
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsNull" },
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean" },
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString" },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsNull"
+        },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean"
+        },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString"
+        },
         {
           "type": "object",
           "description": "An optional object representing the cache variables for generators that support it. Available in version 10 and higher.",
           "allOf": [
-            { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsObject" },
+            {
+              "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsObject"
+            },
             { "$ref": "#/definitions/commentAsProperty" }
           ],
           "unevaluatedProperties": false
@@ -441,14 +461,22 @@
     },
     "configurePresetsCacheVariablesAdditionalPropertiesV1": {
       "anyOf": [
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsNull" },
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean" },
-        { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString" },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsNull"
+        },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsBoolean"
+        },
+        {
+          "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsString"
+        },
         {
           "type": "object",
           "description": "An optional object representing the cache variables for generators that support it. Available in version 1 and higher.",
           "allOf": [
-            { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsObject" }
+            {
+              "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesAsObject"
+            }
           ],
           "unevaluatedProperties": false
         }
@@ -466,9 +494,7 @@
     "configurePresetsTraceV7": {
       "type": "object",
       "description": "An optional object specifying trace options.",
-      "allOf": [
-        { "$ref": "#/definitions/configurePresetsTraceObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/configurePresetsTraceObject" }],
       "unevaluatedProperties": false
     },
     "configurePresetsTraceObject": {
@@ -476,16 +502,12 @@
         "mode": {
           "type": "string",
           "description": "An optional string that specifies the trace mode.",
-          "enum": [
-            "on", "off", "expand"
-          ]
+          "enum": ["on", "off", "expand"]
         },
         "format": {
           "type": "string",
           "description": "An optional string that specifies the trace output format.",
-          "enum": [
-            "human", "json-v1"
-          ]
+          "enum": ["human", "json-v1"]
         },
         "source": {
           "anyOf": [
@@ -523,9 +545,7 @@
     "configurePresetsDebugV1": {
       "type": "object",
       "description": "An optional object specifying debug options.",
-      "allOf": [
-        { "$ref": "#/definitions/configurePresetsDebugObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/configurePresetsDebugObject" }],
       "unevaluatedProperties": false
     },
     "configurePresetsErrorsV10": {
@@ -540,9 +560,7 @@
     "configurePresetsErrorsV1": {
       "type": "object",
       "description": "An optional object specifying errors.",
-      "allOf": [
-        { "$ref": "#/definitions/configurePresetsErrorsObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/configurePresetsErrorsObject" }],
       "unevaluatedProperties": false
     },
     "configurePresetsWarningsV10": {
@@ -557,9 +575,7 @@
     "configurePresetsWarningsV1": {
       "type": "object",
       "description": "An optional object specifying warnings.",
-      "allOf": [
-        { "$ref": "#/definitions/configurePresetsWarningsObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/configurePresetsWarningsObject" }],
       "unevaluatedProperties": false
     },
     "configurePresetsDebugObject": {
@@ -637,7 +653,9 @@
     "configurePresetsItemsV1": {
       "allOf": [
         { "$ref": "#/definitions/commonPropertiesAll" },
-        { "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty" },
+        {
+          "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty"
+        },
         {
           "properties": {
             "hidden": {
@@ -669,14 +687,14 @@
           }
         }
       ],
-      "required": [
-        "name"
-      ]
+      "required": ["name"]
     },
     "configurePresetsAdditionalPropertiesV10": {
       "properties": {
         "toolset": { "$ref": "#/definitions/configurePresetsToolsetV10" },
-        "architecture": { "$ref": "#/definitions/configurePresetsArchitectureV10" },
+        "architecture": {
+          "$ref": "#/definitions/configurePresetsArchitectureV10"
+        },
         "cacheVariables": {
           "type": "object",
           "description": "An optional map of cache variables. The key is the variable name (which must not be an empty string). Cache variables are inherited through the inherits field, and the preset's variables will be the union of its own cacheVariables and the cacheVariables from all its parents. If multiple presets in this union define the same variable, the standard rules of inherits are applied.",
@@ -684,7 +702,9 @@
           "propertyNames": {
             "pattern": "^.+$"
           },
-          "additionalProperties": { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesV10" }
+          "additionalProperties": {
+            "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesV10"
+          }
         },
         "binaryDir": {
           "type": "string",
@@ -732,7 +752,9 @@
     "configurePresetsAdditionalPropertiesV1": {
       "properties": {
         "toolset": { "$ref": "#/definitions/configurePresetsToolsetV1" },
-        "architecture": { "$ref": "#/definitions/configurePresetsArchitectureV1" },
+        "architecture": {
+          "$ref": "#/definitions/configurePresetsArchitectureV1"
+        },
         "cacheVariables": {
           "type": "object",
           "description": "An optional map of cache variables. The key is the variable name (which must not be an empty string). Cache variables are inherited through the inherits field, and the preset's variables will be the union of its own cacheVariables and the cacheVariables from all its parents. If multiple presets in this union define the same variable, the standard rules of inherits are applied.",
@@ -740,7 +762,9 @@
           "propertyNames": {
             "pattern": "^.+$"
           },
-          "additionalProperties": { "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesV1" }
+          "additionalProperties": {
+            "$ref": "#/definitions/configurePresetsCacheVariablesAdditionalPropertiesV1"
+          }
         },
         "binaryDir": {
           "type": "string",
@@ -817,16 +841,16 @@
         "resolvePackageReferences": {
           "type": "string",
           "description": "An optional string specifying the package resolve behavior. Valid values are \"on\" (packages are resolved prior to the build), \"off\" (packages are not resolved prior to the build), and \"only\" (packages are resolved, but no build will be performed).",
-          "enum": [
-            "on", "off", "only"
-          ]
+          "enum": ["on", "off", "only"]
         }
       }
     },
     "buildPresetsItemsV2": {
       "allOf": [
         { "$ref": "#/definitions/commonPropertiesAll" },
-        { "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty" },
+        {
+          "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty"
+        },
         {
           "properties": {
             "hidden": {
@@ -904,9 +928,7 @@
           }
         }
       ],
-      "required": [
-        "name"
-      ]
+      "required": ["name"]
     },
     "buildPresetsAdditionalPropertiesV10": {
       "properties": {
@@ -966,9 +988,7 @@
       "items": {
         "type": "object",
         "description": "A build preset object.",
-        "allOf": [
-          { "$ref": "#/definitions/buildPresetsItemsV2" }
-        ],
+        "allOf": [{ "$ref": "#/definitions/buildPresetsItemsV2" }],
         "unevaluatedProperties": false
       }
     },
@@ -1004,9 +1024,7 @@
     "testPresetsExecutionRepeatV2": {
       "type": "object",
       "description": "An optional object specifying how to repeat tests. Equivalent to passing --repeat on the command line.",
-      "allOf": [
-        { "$ref": "#/definitions/testPresetsExecutionRepeatObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/testPresetsExecutionRepeatObject" }],
       "unevaluatedProperties": false
     },
     "testPresetsExecutionRepeatObject": {
@@ -1014,18 +1032,14 @@
         "mode": {
           "type": "string",
           "description": "A required string. Must be one of the following values: \"until-fail\", \"until-pass\", or \"after-timeout\".",
-          "enum": [
-            "until-fail", "until-pass", "after-timeout"
-          ]
+          "enum": ["until-fail", "until-pass", "after-timeout"]
         },
         "count": {
           "type": "integer",
           "description": "A required integer."
         }
       },
-      "required": [
-        "mode", "count"
-      ]
+      "required": ["mode", "count"]
     },
     "testPresetsFilterIncludeIndexAsStringV2": {
       "type": "string",
@@ -1099,7 +1113,9 @@
         { "$ref": "#/definitions/commentAsProperty" },
         {
           "properties": {
-            "index": { "$ref": "#/definitions/testPresetsFilterIncludeIndexV10" }
+            "index": {
+              "$ref": "#/definitions/testPresetsFilterIncludeIndexV10"
+            }
           }
         }
       ]
@@ -1157,28 +1173,30 @@
         { "$ref": "#/definitions/testPresetsFilterExcludeObject" },
         {
           "properties": {
-            "fixtures": { "$ref": "#/definitions/testPresetsFilterExcludeFixturesV2" }
+            "fixtures": {
+              "$ref": "#/definitions/testPresetsFilterExcludeFixturesV2"
+            }
           }
         }
       ]
     },
     "testPresetsFilterExcludeFixturesV2": {
-        "type": "object",
-        "description": "An optional object specifying which fixtures to exclude from adding tests.",
-        "properties": {
-          "any": {
-            "type": "string",
-            "description": "An optional string specifying a regex for text fixtures to exclude from adding any tests. Equivalent to --fixture-exclude-any on the command line."
-          },
-          "setup": {
-            "type": "string",
-            "description": "An optional string specifying a regex for text fixtures to exclude from adding setup tests. Equivalent to --fixture-exclude-setup on the command line."
-          },
-          "cleanup": {
-            "type": "string",
-            "description": "An optional string specifying a regex for text fixtures to exclude from adding cleanup tests. Equivalent to --fixture-exclude-cleanup on the command line."
-          }
+      "type": "object",
+      "description": "An optional object specifying which fixtures to exclude from adding tests.",
+      "properties": {
+        "any": {
+          "type": "string",
+          "description": "An optional string specifying a regex for text fixtures to exclude from adding any tests. Equivalent to --fixture-exclude-any on the command line."
+        },
+        "setup": {
+          "type": "string",
+          "description": "An optional string specifying a regex for text fixtures to exclude from adding setup tests. Equivalent to --fixture-exclude-setup on the command line."
+        },
+        "cleanup": {
+          "type": "string",
+          "description": "An optional string specifying a regex for text fixtures to exclude from adding cleanup tests. Equivalent to --fixture-exclude-cleanup on the command line."
         }
+      }
     },
     "testPresetsFilterExcludeObject": {
       "properties": {
@@ -1257,9 +1275,7 @@
         "showOnly": {
           "type": "string",
           "description": "An optional string. Equivalent to passing --show-only on the command line. Value must be \"human\" or \"json-v1\".",
-          "enum": [
-            "human", "json-v1"
-          ]
+          "enum": ["human", "json-v1"]
         },
         "interactiveDebugging": {
           "type": "boolean",
@@ -1276,9 +1292,7 @@
         "noTestsAction": {
           "type": "string",
           "description": "An optional string specifying the behavior if no tests are found. Must be one of the following values: \"default\" (equivalent to not passing any value on the command line), \"error\" (equivalent to passing --no-tests=error on the command line), or \"ignore\" (equivalent to passing --no-tests-ignore on the command line).",
-          "enum": [
-            "default", "error", "ignore"
-          ]
+          "enum": ["default", "error", "ignore"]
         }
       }
     },
@@ -1289,9 +1303,7 @@
     "testPresetsTestOutputTruncation": {
       "type": "string",
       "description": "An optional string specifying the test output truncation mode. Equivalent to passing --test-output-truncation on the command line. Must be one of the following values: \"tail\", \"middle\", or \"head\".",
-      "enum": [
-        "tail", "middle", "head"
-      ]
+      "enum": ["tail", "middle", "head"]
     },
     "testPresetsOutputV10": {
       "type": "object",
@@ -1300,8 +1312,12 @@
         { "$ref": "#/definitions/testPresetsOutputObject" },
         {
           "properties": {
-            "outputJUnitFile": { "$ref": "#/definitions/testPresetsOutputJUnitFile" },
-            "testOutputTruncation": { "$ref": "#/definitions/testPresetsTestOutputTruncation" },
+            "outputJUnitFile": {
+              "$ref": "#/definitions/testPresetsOutputJUnitFile"
+            },
+            "testOutputTruncation": {
+              "$ref": "#/definitions/testPresetsTestOutputTruncation"
+            },
             "$comment": { "$ref": "#/definitions/$comment" }
           }
         }
@@ -1315,8 +1331,12 @@
         { "$ref": "#/definitions/testPresetsOutputObject" },
         {
           "properties": {
-            "outputJUnitFile": { "$ref": "#/definitions/testPresetsOutputJUnitFile" },
-            "testOutputTruncation": { "$ref": "#/definitions/testPresetsTestOutputTruncation" }
+            "outputJUnitFile": {
+              "$ref": "#/definitions/testPresetsOutputJUnitFile"
+            },
+            "testOutputTruncation": {
+              "$ref": "#/definitions/testPresetsTestOutputTruncation"
+            }
           }
         }
       ],
@@ -1329,7 +1349,9 @@
         { "$ref": "#/definitions/testPresetsOutputObject" },
         {
           "properties": {
-            "testOutputTruncation": { "$ref": "#/definitions/testPresetsTestOutputTruncation" }
+            "testOutputTruncation": {
+              "$ref": "#/definitions/testPresetsTestOutputTruncation"
+            }
           }
         }
       ],
@@ -1338,9 +1360,7 @@
     "testPresetsOutputV2": {
       "type": "object",
       "description": "An optional object specifying output options.",
-      "allOf": [
-        { "$ref": "#/definitions/testPresetsOutputObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/testPresetsOutputObject" }],
       "unevaluatedProperties": false
     },
     "testPresetsOutputObject": {
@@ -1352,9 +1372,7 @@
         "verbosity": {
           "type": "string",
           "description": "An optional string specifying verbosity level. Valid values are \"default\" (equivalent to passing no verbosity flags on the command line), \"verbose\" (equivalent to passing --verbose on the command line), and \"extra\" (equivalent to passing --extra-verbose on the command line).",
-          "enum": [
-            "default", "verbose", "extra"
-          ]
+          "enum": ["default", "verbose", "extra"]
         },
         "debug": {
           "type": "boolean",
@@ -1483,7 +1501,9 @@
     "testPresetsItemsV2": {
       "allOf": [
         { "$ref": "#/definitions/commonPropertiesAll" },
-        { "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty" },
+        {
+          "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty"
+        },
         {
           "properties": {
             "hidden": {
@@ -1532,9 +1552,7 @@
           }
         }
       ],
-      "required": [
-        "name"
-      ]
+      "required": ["name"]
     },
     "testPresetsV11": {
       "type": "array",
@@ -1628,9 +1646,7 @@
     "packagePresetsOutputV6": {
       "type": "object",
       "description": "An optional object specifying output options.",
-      "allOf": [
-        { "$ref": "#/definitions/packagePresetsOutputObject" }
-      ],
+      "allOf": [{ "$ref": "#/definitions/packagePresetsOutputObject" }],
       "unevaluatedProperties": false
     },
     "packagePresetsOutputObject": {
@@ -1661,7 +1677,9 @@
     "packagePresetsItemsV6": {
       "allOf": [
         { "$ref": "#/definitions/commonPropertiesAll" },
-        { "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty" },
+        {
+          "$ref": "#/definitions/configureBuildTestPackagePresetsEnvironmentProperty"
+        },
         {
           "properties": {
             "hidden": {
@@ -1742,9 +1760,7 @@
           }
         }
       ],
-      "required": [
-        "name"
-      ]
+      "required": ["name"]
     },
     "packagePresetsV10": {
       "type": "array",
@@ -1789,9 +1805,7 @@
       "description": "A required array of objects describing the steps of the workflow. The first step must be a configure preset, and all subsequent steps must be non-configure presets whose configurePreset field matches the starting configure preset.",
       "items": {
         "type": "object",
-        "allOf": [
-          { "$ref": "#/definitions/workflowPresetsStepsObject" }
-        ],
+        "allOf": [{ "$ref": "#/definitions/workflowPresetsStepsObject" }],
         "unevaluatedProperties": false
       }
     },
@@ -1808,10 +1822,7 @@
           "minLength": 1
         }
       },
-      "required": [
-        "type",
-        "name"
-      ]
+      "required": ["type", "name"]
     },
     "workflowPresetsAdditionalPropertiesV10": {
       "properties": {
@@ -1834,10 +1845,7 @@
           { "$ref": "#/definitions/commonPropertiesAll" },
           { "$ref": "#/definitions/workflowPresetsAdditionalPropertiesV10" }
         ],
-        "required": [
-          "name",
-          "steps"
-        ],
+        "required": ["name", "steps"],
         "unevaluatedProperties": false
       }
     },
@@ -1851,10 +1859,7 @@
           { "$ref": "#/definitions/commonPropertiesAll" },
           { "$ref": "#/definitions/workflowPresetsAdditionalPropertiesV6" }
         ],
-        "required": [
-          "name",
-          "steps"
-        ],
+        "required": ["name", "steps"],
         "unevaluatedProperties": false
       }
     },
@@ -1875,10 +1880,7 @@
           "description": "A required boolean which provides a constant value for the condition's evaluation."
         }
       },
-      "required": [
-        "type",
-        "value"
-      ]
+      "required": ["type", "value"]
     },
     "conditionAsObjectEqualsV3": {
       "type": "object",
@@ -1886,7 +1888,7 @@
         "type": {
           "type": "string",
           "description": "A required string specifying the type of the condition.",
-          "enum": [ "equals", "notEquals" ]
+          "enum": ["equals", "notEquals"]
         },
         "lhs": {
           "type": "string",
@@ -1897,11 +1899,7 @@
           "description": "Second string to compare. This field supports macro expansion."
         }
       },
-      "required": [
-        "type",
-        "lhs",
-        "rhs"
-      ]
+      "required": ["type", "lhs", "rhs"]
     },
     "conditionAsObjectInListV3": {
       "type": "object",
@@ -1909,7 +1907,7 @@
         "type": {
           "type": "string",
           "description": "A required string specifying the type of the condition.",
-          "enum": [ "inList", "notInList" ]
+          "enum": ["inList", "notInList"]
         },
         "string": {
           "type": "string",
@@ -1923,11 +1921,7 @@
           }
         }
       },
-      "required": [
-        "type",
-        "string",
-        "list"
-      ]
+      "required": ["type", "string", "list"]
     },
     "conditionAsObjectMatchesV3": {
       "type": "object",
@@ -1935,7 +1929,7 @@
         "type": {
           "type": "string",
           "description": "A required string specifying the type of the condition.",
-          "enum": [ "matches", "notMatches" ]
+          "enum": ["matches", "notMatches"]
         },
         "string": {
           "type": "string",
@@ -1946,11 +1940,7 @@
           "description": "A required regular expression to search for. This field supports macro expansion."
         }
       },
-      "required": [
-        "type",
-        "string",
-        "regex"
-      ]
+      "required": ["type", "string", "regex"]
     },
     "conditionAsObjectAggregationV3": {
       "type": "object",
@@ -1958,7 +1948,7 @@
         "type": {
           "type": "string",
           "description": "A required string specifying the type of the condition.",
-          "enum": [ "anyOf", "allOf" ]
+          "enum": ["anyOf", "allOf"]
         },
         "conditions": {
           "type": "array",
@@ -1970,10 +1960,7 @@
           }
         }
       },
-      "required": [
-        "type",
-        "conditions"
-      ]
+      "required": ["type", "conditions"]
     },
     "conditionAsObjectNotV3": {
       "type": "object",
@@ -1985,10 +1972,7 @@
         },
         "condition": { "$ref": "#/definitions/conditionV3" }
       },
-      "required": [
-        "type",
-        "condition"
-      ]
+      "required": ["type", "condition"]
     },
     "conditionV10": {
       "anyOf": [
@@ -2061,44 +2045,32 @@
         { "$ref": "#/definitions/conditionAsBooleanV3" },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectConstV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectConstV3" }],
           "unevaluatedProperties": false
         },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectEqualsV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectEqualsV3" }],
           "unevaluatedProperties": false
         },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectInListV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectInListV3" }],
           "unevaluatedProperties": false
         },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectMatchesV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectMatchesV3" }],
           "unevaluatedProperties": false
         },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectAggregationV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectAggregationV3" }],
           "unevaluatedProperties": false
         },
         {
           "type": "object",
-          "allOf": [
-            { "$ref": "#/definitions/conditionAsObjectNotV3" }
-          ],
+          "allOf": [{ "$ref": "#/definitions/conditionAsObjectNotV3" }],
           "unevaluatedProperties": false
         }
       ]

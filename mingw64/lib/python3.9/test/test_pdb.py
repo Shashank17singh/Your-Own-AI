@@ -1,25 +1,24 @@
 # A test suite for pdb; not very comprehensive at the moment.
 
+import codecs
 import doctest
+import linecache
 import os
 import pdb
-import sys
-import types
-import codecs
-import unittest
 import subprocess
+import sys
 import textwrap
-import linecache
-
+import types
+import unittest
+from bdb import Breakpoint
 from contextlib import ExitStack
 from io import StringIO
+from unittest.mock import patch
+
 from test import support
 
 # This little helper class is essential for testing pdb under doctest.
 from test.test_doctest import _FakeInput
-from unittest.mock import patch
-
-from bdb import Breakpoint
 
 
 def reset_Breakpoint():
@@ -28,7 +27,7 @@ def reset_Breakpoint():
     Breakpoint.bpbynumber = [None]
 
 
-class PdbTestInput(object):
+class PdbTestInput:
     """Context manager that makes testing Pdb in doctests easier."""
 
     def __init__(self, input):
@@ -1393,7 +1392,8 @@ def quux():
 
     def test_find_function_found_with_bom(self):
         self._assert_find_function(
-            codecs.BOM_UTF8 + """\
+            codecs.BOM_UTF8
+            + """\
 def bœr():
     pass
 """.encode(),
@@ -1460,7 +1460,8 @@ def bœr():
         # inside signal.signal.
 
         with open(support.TESTFN, "wb") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 import threading
                 import pdb
 
@@ -1470,7 +1471,8 @@ def bœr():
                     y = 1
 
                 t = threading.Thread(target=start_pdb)
-                t.start()""").encode("ascii"))
+                t.start()""").encode("ascii")
+            )
         cmd = [sys.executable, "-u", support.TESTFN]
         proc = subprocess.Popen(
             cmd,
@@ -1486,7 +1488,8 @@ def bœr():
     def test_issue36250(self):
 
         with open(support.TESTFN, "wb") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 import threading
                 import pdb
 
@@ -1500,7 +1503,8 @@ def bœr():
                 t.start()
                 pdb.Pdb(readrc=False).set_trace()
                 evt.set()
-                t.join()""").encode("ascii"))
+                t.join()""").encode("ascii")
+            )
         cmd = [sys.executable, "-u", support.TESTFN]
         proc = subprocess.Popen(
             cmd,
@@ -1522,8 +1526,8 @@ def bœr():
         self.assertIn(
             expected,
             stdout,
-            "\n\nExpected:\n{}\nGot:\n{}\n"
-            "Fail to handle a syntax error in the debuggee.".format(expected, stdout),
+            f"\n\nExpected:\n{expected}\nGot:\n{stdout}\n"
+            "Fail to handle a syntax error in the debuggee.",
         )
 
     def test_issue26053(self):
@@ -1691,21 +1695,27 @@ def bœr():
         self.addCleanup(support.rmtree, self.module_name)
         os.mkdir(self.module_name)
         with open(init_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 top_var = "VAR from top"
-            """))
+            """)
+            )
         with open(main_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 from . import top_var
                 from .module import var
                 from . import module
                 pass # We'll stop here and print the vars
-            """))
+            """)
+            )
         with open(module_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 var = "VAR from module"
                 var2 = "second var"
-            """))
+            """)
+            )
         commands = """
             b 5
             c
@@ -1731,18 +1741,24 @@ def bœr():
         self.addCleanup(support.rmtree, self.module_name)
         os.mkdir(self.module_name)
         with open(init_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 top_var = "VAR from top"
-            """))
+            """)
+            )
         with open(main_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 from . import module
                 pass # We'll stop here and print the vars
-            """))
+            """)
+            )
         with open(module_file, "w") as f:
-            f.write(textwrap.dedent("""
+            f.write(
+                textwrap.dedent("""
                 var = "VAR from module"
-            """))
+            """)
+            )
         commands = """
             b 3
             c

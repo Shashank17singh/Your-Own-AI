@@ -38,13 +38,13 @@ are recognized and imported modules are scanned as well, this
 shouldn't happen often.
 """
 
+import importlib.util
 import io
 import sys
-import importlib.util
 import tokenize
-from token import NAME, DEDENT, OP
+from token import DEDENT, NAME, OP
 
-__all__ = ["readmodule", "readmodule_ex", "Class", "Function"]
+__all__ = ["Class", "Function", "readmodule", "readmodule_ex"]
 
 _modules = {}  # Initialize cache of modules we've seen.
 
@@ -157,7 +157,7 @@ def _readmodule(module, path, inpackage=None):
         if inpackage is not None:
             package = "%s.%s" % (inpackage, package)
         if not "__path__" in parent:
-            raise ImportError("No package named {}".format(package))
+            raise ImportError(f"No package named {package}")
         return _readmodule(submodule, parent["__path__"], package)
 
     # Search the path for the module.

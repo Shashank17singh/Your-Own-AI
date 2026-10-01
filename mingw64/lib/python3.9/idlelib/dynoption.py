@@ -4,8 +4,7 @@ and setting of highlightthickness
 """
 
 import copy
-
-from tkinter import OptionMenu, _setit, StringVar, Button
+from tkinter import Button, OptionMenu, StringVar, _setit
 
 
 class DynOptionMenu(OptionMenu):

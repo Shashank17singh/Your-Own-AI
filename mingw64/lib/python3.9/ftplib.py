@@ -36,17 +36,17 @@ python ftplib.py -d localhost -l -p -l
 # Modified by Giampaolo Rodola' to add TLS support.
 #
 
-import sys
 import socket
+import sys
 from socket import _GLOBAL_DEFAULT_TIMEOUT
 
 __all__ = [
     "FTP",
-    "error_reply",
-    "error_temp",
+    "all_errors",
     "error_perm",
     "error_proto",
-    "all_errors",
+    "error_reply",
+    "error_temp",
 ]
 
 # Magic number from <socket.h>
@@ -135,7 +135,7 @@ class FTP:
         timeout=_GLOBAL_DEFAULT_TIMEOUT,
         source_address=None,
         *,
-        encoding="utf-8"
+        encoding="utf-8",
     ):
         """Initialization method (called by class instantiation).
         Initialize host to localhost, port to standard ftp port.
@@ -490,9 +490,10 @@ class FTP:
         if callback is None:
             callback = print_line
         resp = self.sendcmd("TYPE A")
-        with self.transfercmd(cmd) as conn, conn.makefile(
-            "r", encoding=self.encoding
-        ) as fp:
+        with (
+            self.transfercmd(cmd) as conn,
+            conn.makefile("r", encoding=self.encoding) as fp,
+        ):
             while 1:
                 line = fp.readline(self.maxline + 1)
                 if len(line) > self.maxline:
@@ -594,7 +595,7 @@ class FTP:
         LIST command.  (This *should* only be used for a pathname.)"""
         cmd = "LIST"
         func = None
-        if args[-1:] and type(args[-1]) != type(""):
+        if args[-1:] and type(args[-1]) != str:
             args, func = args[:-1], args[-1]
         for arg in args:
             if arg:
@@ -762,22 +763,19 @@ else:
             timeout=_GLOBAL_DEFAULT_TIMEOUT,
             source_address=None,
             *,
-            encoding="utf-8"
+            encoding="utf-8",
         ):
             if context is not None and keyfile is not None:
-                raise ValueError(
-                    "context and keyfile arguments are mutually " "exclusive"
-                )
+                raise ValueError("context and keyfile arguments are mutually exclusive")
             if context is not None and certfile is not None:
                 raise ValueError(
-                    "context and certfile arguments are mutually " "exclusive"
+                    "context and certfile arguments are mutually exclusive"
                 )
             if keyfile is not None or certfile is not None:
                 import warnings
 
                 warnings.warn(
-                    "keyfile and certfile are deprecated, use a "
-                    "custom context instead",
+                    "keyfile and certfile are deprecated, use a custom context instead",
                     DeprecationWarning,
                     2,
                 )
@@ -1008,7 +1006,7 @@ def test():
         netrcobj = netrc.netrc(rcfile)
     except OSError:
         if rcfile is not None:
-            sys.stderr.write("Could not open account file" " -- using anonymous login.")
+            sys.stderr.write("Could not open account file -- using anonymous login.")
     else:
         try:
             userid, acct, passwd = netrcobj.authenticators(host)

@@ -7,8 +7,9 @@ tests of their own.
 import os
 import sys
 import unittest
+
 from test import support
-from test.test_tools import scriptsdir, import_tool, skip_if_missing
+from test.test_tools import import_tool, scriptsdir, skip_if_missing
 
 skip_if_missing()
 

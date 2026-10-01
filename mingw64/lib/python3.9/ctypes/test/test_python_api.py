@@ -1,15 +1,15 @@
-from ctypes import *
-import unittest, sys
-from test import support
+import sys
+import unittest
 
 ################################################################
 # This section should be moved into ctypes\__init__.py, when it's ready.
-
 from _ctypes import PyObj_FromPtr
+from ctypes import *
 
 ################################################################
-
 from sys import getrefcount as grc
+
+from test import support
 
 if sys.version_info > (2, 4):
     c_py_ssize_t = c_size_t
@@ -18,7 +18,6 @@ else:
 
 
 class PythonAPITestCase(unittest.TestCase):
-
     def test_PyBytes_FromStringAndSize(self):
         PyBytes_FromStringAndSize = pythonapi.PyBytes_FromStringAndSize
 

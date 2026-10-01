@@ -2,18 +2,16 @@
 
 import os
 import unittest
-
 from distutils.command.install_scripts import install_scripts
 from distutils.core import Distribution
-
 from distutils.tests import support
+
 from test.support import run_unittest
 
 
 class InstallScriptsTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
-
     def test_default_settings(self):
         dist = Distribution()
         dist.command_obj["build"] = support.DummyCommand(build_scripts="/foo/bar")
@@ -49,18 +47,14 @@ class InstallScriptsTestCase(
 
         write_script(
             "script1.py",
-            (
-                "#! /usr/bin/env python2.3\n"
-                "# bogus script w/ Python sh-bang\n"
-                "pass\n"
-            ),
+            ("#! /usr/bin/env python2.3\n# bogus script w/ Python sh-bang\npass\n"),
         )
         write_script(
             "script2.py",
-            ("#!/usr/bin/python\n" "# bogus script w/ Python sh-bang\n" "pass\n"),
+            ("#!/usr/bin/python\n# bogus script w/ Python sh-bang\npass\n"),
         )
         write_script(
-            "shell.sh", ("#!/bin/sh\n" "# bogus shell script w/ sh-bang\n" "exit 0\n")
+            "shell.sh", ("#!/bin/sh\n# bogus shell script w/ sh-bang\nexit 0\n")
         )
 
         target = self.mkdtemp()

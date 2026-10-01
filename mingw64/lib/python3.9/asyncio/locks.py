@@ -1,12 +1,11 @@
 """Synchronization primitives."""
 
-__all__ = ("Lock", "Event", "Condition", "Semaphore", "BoundedSemaphore")
+__all__ = ("BoundedSemaphore", "Condition", "Event", "Lock", "Semaphore")
 
 import collections
 import warnings
 
-from . import events
-from . import exceptions
+from . import events, exceptions
 
 
 class _ContextManagerMixin:
@@ -14,7 +13,6 @@ class _ContextManagerMixin:
         await self.acquire()
         # We have no use for the "as ..."  clause in the with
         # statement for locks.
-        return None
 
     async def __aexit__(self, exc_type, exc, tb):
         self.release()

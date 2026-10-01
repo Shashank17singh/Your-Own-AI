@@ -5,13 +5,14 @@ several text methods not defined on idlelib.idle_test.mock_tk.Text.
 """
 
 from idlelib.parenmatch import ParenMatch
+
 from test.support import requires
 
 requires("gui")
 
 import unittest
+from tkinter import Text, Tk
 from unittest.mock import Mock
-from tkinter import Tk, Text
 
 
 class DummyEditwin:
@@ -23,7 +24,6 @@ class DummyEditwin:
 
 
 class ParenMatchTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = Tk()

@@ -15,7 +15,7 @@ import io
 import xml.dom
 from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, domreg
 from xml.dom.minicompat import *
-from xml.dom.xmlbuilder import DOMImplementationLS, DocumentLS
+from xml.dom.xmlbuilder import DocumentLS, DOMImplementationLS
 
 _nodeTypes_with_children = (
     xml.dom.Node.ELEMENT_NODE,
@@ -333,12 +333,12 @@ class DocumentFragment(Node):
 
 class Attr(Node):
     __slots__ = (
-        "_name",
-        "_value",
-        "namespaceURI",
-        "_prefix",
-        "childNodes",
         "_localName",
+        "_name",
+        "_prefix",
+        "_value",
+        "childNodes",
+        "namespaceURI",
         "ownerDocument",
         "ownerElement",
     )
@@ -457,7 +457,7 @@ defproperty(Attr, "localName", doc="Namespace-local name of this attribute.")
 defproperty(Attr, "schemaType", doc="Schema type for this attribute.")
 
 
-class NamedNodeMap(object):
+class NamedNodeMap:
     """The attribute list is a transient interface to the underlying
     dictionaries.  Mutations here will change the underlying element's
     dictionary.
@@ -624,8 +624,8 @@ defproperty(NamedNodeMap, "length", doc="Number of nodes in the NamedNodeMap.")
 AttributeList = NamedNodeMap
 
 
-class TypeInfo(object):
-    __slots__ = "namespace", "name"
+class TypeInfo:
+    __slots__ = "name", "namespace"
 
     def __init__(self, namespace, name):
         self.namespace = namespace
@@ -653,18 +653,18 @@ _no_type = TypeInfo(None, None)
 
 class Element(Node):
     __slots__ = (
-        "ownerDocument",
-        "parentNode",
-        "tagName",
-        "nodeName",
-        "prefix",
-        "namespaceURI",
-        "_localName",
-        "childNodes",
         "_attrs",
         "_attrsNS",
+        "_localName",
+        "childNodes",
+        "namespaceURI",
         "nextSibling",
+        "nodeName",
+        "ownerDocument",
+        "parentNode",
+        "prefix",
         "previousSibling",
+        "tagName",
     )
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
@@ -961,7 +961,7 @@ class Childless:
 
 class ProcessingInstruction(Childless, Node):
     nodeType = Node.PROCESSING_INSTRUCTION_NODE
-    __slots__ = ("target", "data")
+    __slots__ = ("data", "target")
 
     def __init__(self, target, data):
         self.target = target
@@ -990,10 +990,10 @@ class ProcessingInstruction(Childless, Node):
 class CharacterData(Childless, Node):
     __slots__ = (
         "_data",
+        "nextSibling",
         "ownerDocument",
         "parentNode",
         "previousSibling",
-        "nextSibling",
     )
 
     def __init__(self):
@@ -1155,8 +1155,7 @@ class Text(CharacterData):
 defproperty(
     Text,
     "isWhitespaceInElementContent",
-    doc="True iff this text node contains only whitespace"
-    " and is in element content.",
+    doc="True iff this text node contains only whitespace and is in element content.",
 )
 defproperty(Text, "wholeText", doc="The text of all logically-adjacent text nodes.")
 
@@ -1204,7 +1203,7 @@ class CDATASection(Text):
         writer.write("<![CDATA[%s]]>" % self.data)
 
 
-class ReadOnlySequentialNamedNodeMap(object):
+class ReadOnlySequentialNamedNodeMap:
     __slots__ = ("_seq",)
 
     def __init__(self, seq=()):
@@ -1451,7 +1450,7 @@ class DOMImplementation(DOMImplementationLS):
         return Document()
 
 
-class ElementInfo(object):
+class ElementInfo:
     """Object that represents content-model information for an element.
     This implementation is not expected to be used in practice; DOM
     builders should provide implementations which do the right thing
@@ -1502,7 +1501,7 @@ def _clear_id_cache(node):
 
 
 class Document(Node, DocumentLS):
-    __slots__ = ("_elem_info", "doctype", "_id_search_stack", "childNodes", "_id_cache")
+    __slots__ = ("_elem_info", "_id_cache", "_id_search_stack", "childNodes", "doctype")
     _child_node_types = (
         Node.ELEMENT_NODE,
         Node.PROCESSING_INSTRUCTION_NODE,

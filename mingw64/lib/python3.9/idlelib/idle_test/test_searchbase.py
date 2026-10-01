@@ -4,12 +4,13 @@
 # testing skipping of suite when self.needwrapbutton is false.
 
 import unittest
-from test.support import requires
+from idlelib import searchbase as sdb
+from idlelib import searchengine as se
+from idlelib.idle_test.mock_idle import Func
 from tkinter import Text, Tk, Toplevel
 from tkinter.ttk import Frame
-from idlelib import searchengine as se
-from idlelib import searchbase as sdb
-from idlelib.idle_test.mock_idle import Func
+
+from test.support import requires
 
 ## from idlelib.idle_test.mock_tk import Var
 
@@ -26,7 +27,6 @@ from idlelib.idle_test.mock_idle import Func
 
 
 class SearchDialogBaseTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

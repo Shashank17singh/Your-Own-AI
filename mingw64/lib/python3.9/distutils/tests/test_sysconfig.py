@@ -7,23 +7,23 @@ import subprocess
 import sys
 import textwrap
 import unittest
-
 from distutils import sysconfig
 from distutils.ccompiler import get_default_compiler
 from distutils.tests import support
-from test.support import TESTFN, run_unittest, check_warnings, swap_item
+
+from test.support import TESTFN, check_warnings, run_unittest, swap_item
 
 
 class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
     def setUp(self):
-        super(SysconfigTestCase, self).setUp()
+        super().setUp()
         self.makefile = None
 
     def tearDown(self):
         if self.makefile is not None:
             os.unlink(self.makefile)
         self.cleanup_testfn()
-        super(SysconfigTestCase, self).tearDown()
+        super().tearDown()
 
     def cleanup_testfn(self):
         if os.path.isfile(TESTFN):
@@ -130,13 +130,13 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
         )
         self.assertEqual(
             comp.exes["compiler_so"],
-            ("env_cc --sc-cflags " "--env-cflags " "--env-cppflags --sc-ccshared"),
+            ("env_cc --sc-cflags --env-cflags --env-cppflags --sc-ccshared"),
         )
         self.assertEqual(comp.exes["compiler_cxx"], "env_cxx --env-cxx-flags")
         self.assertEqual(comp.exes["linker_exe"], "env_cc")
         self.assertEqual(
             comp.exes["linker_so"],
-            ("env_ldshared --env-ldflags --env-cflags" " --env-cppflags"),
+            ("env_ldshared --env-ldflags --env-cflags --env-cppflags"),
         )
         self.assertEqual(comp.shared_lib_extension, "sc_shutil_suffix")
 
@@ -259,13 +259,15 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
         # instance can be called without an explicit call to
         # get_config_vars().
         with open(TESTFN, "w") as f:
-            f.writelines(textwrap.dedent("""\
+            f.writelines(
+                textwrap.dedent("""\
                 from distutils.core import Distribution
                 config = Distribution().get_command_obj('config')
                 # try_compile may pass or it may fail if no compiler
                 # is found but it should not raise an exception.
                 rc = config.try_compile('int x;')
-                """))
+                """)
+            )
         p = subprocess.Popen(
             [str(sys.executable), TESTFN],
             stdout=subprocess.PIPE,

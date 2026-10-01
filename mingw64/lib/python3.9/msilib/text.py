@@ -1,4 +1,4 @@
-import msilib, os
+import os
 
 dirname = os.path.dirname(__file__)
 

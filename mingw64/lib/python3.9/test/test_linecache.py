@@ -1,10 +1,11 @@
 """Tests for the linecache module"""
 
 import linecache
-import unittest
 import os.path
 import tempfile
 import tokenize
+import unittest
+
 from test import support
 
 FILENAME = linecache.__file__
@@ -12,7 +13,7 @@ NONEXISTENT_FILENAME = FILENAME + ".missing"
 INVALID_NAME = "!@$)(!@#_1"
 EMPTY = ""
 TEST_PATH = os.path.dirname(__file__)
-MODULES = "linecache abc".split()
+MODULES = ["linecache", "abc"]
 MODULE_PATH = os.path.dirname(FILENAME)
 
 SOURCE_1 = """
@@ -37,7 +38,6 @@ def f():
 
 
 class TempFile:
-
     def setUp(self):
         super().setUp()
         with tempfile.NamedTemporaryFile(delete=False) as fp:
@@ -98,7 +98,6 @@ class BadUnicode(GetLineTestsBadData, unittest.TestCase):
 
 
 class LineCacheTests(unittest.TestCase):
-
     def test_getline(self):
         getline = linecache.getline
 

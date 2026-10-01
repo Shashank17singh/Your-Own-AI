@@ -19,8 +19,8 @@ Load an existing list of tests from a file using -i option:
 
 import argparse
 import datetime
-import os.path
 import math
+import os.path
 import random
 import subprocess
 import sys
@@ -58,7 +58,7 @@ def list_cases(args):
     cmd = python_cmd()
     cmd.extend(["-m", "test", "--list-cases"])
     cmd.extend(args.test_args)
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
     exitcode = proc.returncode
     if exitcode:
         cmd = format_shell_args(cmd)
@@ -98,14 +98,14 @@ def parse_args():
         "--max-tests",
         type=int,
         default=1,
-        help="Maximum number of tests to stop the bisection " "(default: 1)",
+        help="Maximum number of tests to stop the bisection (default: 1)",
     )
     parser.add_argument(
         "-N",
         "--max-iter",
         type=int,
         default=100,
-        help="Maximum number of bisection iterations " "(default: 100)",
+        help="Maximum number of bisection iterations (default: 100)",
     )
     # FIXME: document that following arguments are test arguments
 

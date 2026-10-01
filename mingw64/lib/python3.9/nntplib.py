@@ -63,10 +63,10 @@ are strings, not numbers, since they are rarely used for calculations.
 # - support HDR
 
 # Imports
-import re
-import socket
 import collections
 import datetime
+import re
+import socket
 import sys
 
 try:
@@ -81,12 +81,12 @@ from socket import _GLOBAL_DEFAULT_TIMEOUT
 
 __all__ = [
     "NNTP",
+    "NNTPDataError",
     "NNTPError",
-    "NNTPReplyError",
-    "NNTPTemporaryError",
     "NNTPPermanentError",
     "NNTPProtocolError",
-    "NNTPDataError",
+    "NNTPReplyError",
+    "NNTPTemporaryError",
     "decode_header",
 ]
 
@@ -112,31 +112,21 @@ class NNTPError(Exception):
 class NNTPReplyError(NNTPError):
     """Unexpected [123]xx reply"""
 
-    pass
-
 
 class NNTPTemporaryError(NNTPError):
     """4xx errors"""
-
-    pass
 
 
 class NNTPPermanentError(NNTPError):
     """5xx errors"""
 
-    pass
-
 
 class NNTPProtocolError(NNTPError):
     """Response does not begin with [1-5]"""
 
-    pass
-
 
 class NNTPDataError(NNTPError):
     """Error in response data"""
-
-    pass
 
 
 # Standard port used by NNTP servers
@@ -294,13 +284,13 @@ def _unparse_datetime(dt, legacy=False):
     if not isinstance(dt, datetime.datetime):
         time_str = "000000"
     else:
-        time_str = "{0.hour:02d}{0.minute:02d}{0.second:02d}".format(dt)
+        time_str = f"{dt.hour:02d}{dt.minute:02d}{dt.second:02d}"
     y = dt.year
     if legacy:
         y = y % 100
-        date_str = "{0:02d}{1.month:02d}{1.day:02d}".format(y, dt)
+        date_str = f"{y:02d}{dt.month:02d}{dt.day:02d}"
     else:
-        date_str = "{0:04d}{1.month:02d}{1.day:02d}".format(y, dt)
+        date_str = f"{y:04d}{dt.month:02d}{dt.day:02d}"
     return date_str, time_str
 
 
@@ -639,10 +629,10 @@ class NNTP:
         if not isinstance(date, (datetime.date, datetime.date)):
             raise TypeError(
                 "the date parameter must be a date or datetime object, "
-                "not '{:40}'".format(date.__class__.__name__)
+                f"not '{date.__class__.__name__:40}'"
             )
         date_str, time_str = _unparse_datetime(date, self.nntp_version < 2)
-        cmd = "NEWGROUPS {0} {1}".format(date_str, time_str)
+        cmd = f"NEWGROUPS {date_str} {time_str}"
         resp, lines = self._longcmdstring(cmd, file)
         return resp, self._grouplist(lines)
 
@@ -657,10 +647,10 @@ class NNTP:
         if not isinstance(date, (datetime.date, datetime.date)):
             raise TypeError(
                 "the date parameter must be a date or datetime object, "
-                "not '{:40}'".format(date.__class__.__name__)
+                f"not '{date.__class__.__name__:40}'"
             )
         date_str, time_str = _unparse_datetime(date, self.nntp_version < 2)
-        cmd = "NEWNEWS {0} {1} {2}".format(group, date_str, time_str)
+        cmd = f"NEWNEWS {group} {date_str} {time_str}"
         return self._longcmdstring(cmd, file)
 
     def list(self, group_pattern=None, *, file=None):
@@ -779,7 +769,7 @@ class NNTP:
         - message_id: the message id
         """
         if message_spec:
-            return self._statcmd("STAT {0}".format(message_spec))
+            return self._statcmd(f"STAT {message_spec}")
         else:
             return self._statcmd("STAT")
 
@@ -806,7 +796,7 @@ class NNTP:
         - ArticleInfo: (article number, message id, list of header lines)
         """
         if message_spec is not None:
-            cmd = "HEAD {0}".format(message_spec)
+            cmd = f"HEAD {message_spec}"
         else:
             cmd = "HEAD"
         return self._artcmd(cmd, file)
@@ -820,7 +810,7 @@ class NNTP:
         - ArticleInfo: (article number, message id, list of body lines)
         """
         if message_spec is not None:
-            cmd = "BODY {0}".format(message_spec)
+            cmd = f"BODY {message_spec}"
         else:
             cmd = "BODY"
         return self._artcmd(cmd, file)
@@ -834,7 +824,7 @@ class NNTP:
         - ArticleInfo: (article number, message id, list of article lines)
         """
         if message_spec is not None:
-            cmd = "ARTICLE {0}".format(message_spec)
+            cmd = f"ARTICLE {message_spec}"
         else:
             cmd = "ARTICLE"
         return self._artcmd(cmd, file)
@@ -855,7 +845,7 @@ class NNTP:
         - list: list of (nr, value) strings
         """
         pat = re.compile("^([0-9]+) ?(.*)\n?")
-        resp, lines = self._longcmdstring("XHDR {0} {1}".format(hdr, str), file)
+        resp, lines = self._longcmdstring(f"XHDR {hdr} {str}", file)
 
         def remove_number(line):
             m = pat.match(line)
@@ -872,7 +862,7 @@ class NNTP:
         - resp: server response if successful
         - list: list of dicts containing the response fields
         """
-        resp, lines = self._longcmdstring("XOVER {0}-{1}".format(start, end), file)
+        resp, lines = self._longcmdstring(f"XOVER {start}-{end}", file)
         fmt = self._getoverviewfmt()
         return resp, _parse_overview(lines, fmt)
 
@@ -955,7 +945,7 @@ class NNTP:
         Returns:
         - resp: server response if successful
         Note that if the server refuses the article an exception is raised."""
-        return self._post("IHAVE {0}".format(message_id), data)
+        return self._post(f"IHAVE {message_id}", data)
 
     def _close(self):
         try:
@@ -1057,7 +1047,6 @@ class NNTP:
 if _have_ssl:
 
     class NNTP_SSL(NNTP):
-
         def __init__(
             self,
             host,
@@ -1092,8 +1081,10 @@ if _have_ssl:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="""\
-        nntplib built-in demo - display the latest articles in a newsgroup""")
+    parser = argparse.ArgumentParser(
+        description="""\
+        nntplib built-in demo - display the latest articles in a newsgroup"""
+    )
     parser.add_argument(
         "-g",
         "--group",
@@ -1152,10 +1143,6 @@ if __name__ == "__main__":
         author = decode_header(over["from"]).split("<", 1)[0]
         subject = decode_header(over["subject"])
         lines = int(over[":lines"])
-        print(
-            "{:7} {:20} {:42} ({})".format(
-                artnum, cut(author, 20), cut(subject, 42), lines
-            )
-        )
+        print(f"{artnum:7} {cut(author, 20):20} {cut(subject, 42):42} ({lines})")
 
     s.quit()

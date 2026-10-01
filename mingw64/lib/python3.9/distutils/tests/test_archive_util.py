@@ -1,24 +1,23 @@
-# -*- coding: utf-8 -*-
 """Tests for distutils.archive_util."""
 
-import unittest
 import os
 import sys
 import tarfile
-from os.path import splitdrive
+import unittest
 import warnings
-
 from distutils import archive_util
 from distutils.archive_util import (
+    ARCHIVE_FORMATS,
     check_archive_formats,
+    make_archive,
     make_tarball,
     make_zipfile,
-    make_archive,
-    ARCHIVE_FORMATS,
 )
 from distutils.spawn import find_executable, spawn
 from distutils.tests import support
-from test.support import check_warnings, run_unittest, patch, change_cwd
+from os.path import splitdrive
+
+from test.support import change_cwd, check_warnings, patch, run_unittest
 
 try:
     import grp
@@ -69,7 +68,6 @@ def can_fs_encode(filename):
 class ArchiveUtilTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
-
     @unittest.skipUnless(ZLIB_SUPPORT, "Need zlib support to run")
     def test_make_tarball(self, name="archive"):
         # creating something to tar

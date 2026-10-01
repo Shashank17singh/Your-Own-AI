@@ -23,29 +23,30 @@ from contextlib import ExitStack
 from functools import partial
 from inspect import CO_COROUTINE
 from itertools import product
+from operator import neg
 from textwrap import dedent
 from types import AsyncGeneratorType, FunctionType
-from operator import neg
-from test import support
-from test.support import (
-    EnvironmentVarGuard,
-    TESTFN,
-    check_warnings,
-    swap_attr,
-    unlink,
-    maybe_get_event_loop_policy,
-)
-from test.support.script_helper import assert_python_ok
 from unittest.mock import MagicMock, patch
 
+from test import support
+from test.support import (
+    TESTFN,
+    EnvironmentVarGuard,
+    check_warnings,
+    maybe_get_event_loop_policy,
+    swap_attr,
+    unlink,
+)
+from test.support.script_helper import assert_python_ok
+
 try:
-    import pty, signal
+    import pty
+    import signal
 except ImportError:
     pty = signal = None
 
 
 class Squares:
-
     def __init__(self, max):
         self.max = max
         self.sofar = []
@@ -64,7 +65,6 @@ class Squares:
 
 
 class StrSquares:
-
     def __init__(self, max):
         self.max = max
         self.sofar = []
@@ -212,7 +212,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertRaises(TypeError, abs)
         self.assertRaises(TypeError, abs, None)
 
-        class AbsClass(object):
+        class AbsClass:
             def __abs__(self):
                 return -5
 
@@ -320,7 +320,7 @@ class BuiltinTest(unittest.TestCase):
         del c.__call__
         self.assertFalse(callable(c))
 
-        class C2(object):
+        class C2:
             def __call__(self):
                 pass
 
@@ -387,7 +387,7 @@ class BuiltinTest(unittest.TestCase):
         )
         compile('print("\xe5")\n', "", "exec")
         self.assertRaises(ValueError, compile, chr(0), "f", "exec")
-        self.assertRaises(ValueError, compile, str("a = 1"), "f", "bad")
+        self.assertRaises(ValueError, compile, "a = 1", "f", "bad")
 
         # test the optimize argument
 
@@ -580,7 +580,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertNotIn("__mro__", dir(str))
 
         # dir(obj)
-        class Foo(object):
+        class Foo:
             def __init__(self):
                 self.x = 7
                 self.y = 8
@@ -590,7 +590,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertIn("y", dir(f))
 
         # dir(obj_no__dict__)
-        class Foo(object):
+        class Foo:
             __slots__ = []
 
         f = Foo()
@@ -598,7 +598,7 @@ class BuiltinTest(unittest.TestCase):
 
         # dir(obj_no__class__with__dict__)
         # (an ugly trick to cause getattr(f, "__class__") to fail)
-        class Foo(object):
+        class Foo:
             __slots__ = ["__class__", "__dict__"]
 
             def __init__(self):
@@ -609,7 +609,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertIn("bar", dir(f))
 
         # dir(obj_using __dir__)
-        class Foo(object):
+        class Foo:
             def __dir__(self):
                 return ["kan", "ga", "roo"]
 
@@ -617,7 +617,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertTrue(dir(f) == ["ga", "kan", "roo"])
 
         # dir(obj__dir__tuple)
-        class Foo(object):
+        class Foo:
             def __dir__(self):
                 return ("b", "c", "a")
 
@@ -626,7 +626,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertTrue(res == ["a", "b", "c"])
 
         # dir(obj__dir__not_sequence)
-        class Foo(object):
+        class Foo:
             def __dir__(self):
                 return 7
 
@@ -712,8 +712,6 @@ class BuiltinTest(unittest.TestCase):
         class A:
             "Non-mapping"
 
-            pass
-
         m = A()
         self.assertRaises(TypeError, eval, "a", g, m)
 
@@ -769,13 +767,11 @@ class BuiltinTest(unittest.TestCase):
     def test_exec(self):
         g = {}
         exec("z = 1", g)
-        if "__builtins__" in g:
-            del g["__builtins__"]
+        g.pop("__builtins__", None)
         self.assertEqual(g, {"z": 1})
 
         exec("z = 1+1", g)
-        if "__builtins__" in g:
-            del g["__builtins__"]
+        g.pop("__builtins__", None)
         self.assertEqual(g, {"z": 2})
         g = {}
         l = {}
@@ -785,8 +781,7 @@ class BuiltinTest(unittest.TestCase):
             exec("global a; a = 1; b = 2", g, l)
         if "__builtins__" in g:
             del g["__builtins__"]
-        if "__builtins__" in l:
-            del l["__builtins__"]
+        l.pop("__builtins__", None)
         self.assertEqual((g, l), ({"a": 1}, {"b": 2}))
 
     def test_exec_globals(self):
@@ -859,7 +854,7 @@ class BuiltinTest(unittest.TestCase):
         filter(identity, Squares(5))
         self.assertRaises(TypeError, filter)
 
-        class BadSeq(object):
+        class BadSeq:
             def __getitem__(self, index):
                 if index < 4:
                     return 42
@@ -884,7 +879,7 @@ class BuiltinTest(unittest.TestCase):
             self.check_iter_pickle(f1, list(f2), proto)
 
     def test_getattr(self):
-        self.assertTrue(getattr(sys, "stdout") is sys.stdout)
+        self.assertTrue(sys.stdout is sys.stdout)
         self.assertRaises(TypeError, getattr, sys, 1)
         self.assertRaises(TypeError, getattr, sys, 1, "foo")
         self.assertRaises(TypeError, getattr)
@@ -1051,7 +1046,7 @@ class BuiltinTest(unittest.TestCase):
 
         self.assertRaises(ValueError, len, HugeNegativeLen())
 
-        class NoLenMethod(object):
+        class NoLenMethod:
             pass
 
         self.assertRaises(TypeError, len, NoLenMethod())
@@ -1244,7 +1239,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertRaises(StopIteration, next, it)
         self.assertEqual(next(it, 42), 42)
 
-        class Iter(object):
+        class Iter:
             def __iter__(self):
                 return self
 
@@ -1257,7 +1252,6 @@ class BuiltinTest(unittest.TestCase):
 
         def gen():
             yield 1
-            return
 
         it = gen()
         self.assertEqual(next(it), 1)
@@ -1507,13 +1501,13 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(round(-6.5), -6)
 
         # Check behavior on ints
-        self.assertEqual(round(0), 0)
-        self.assertEqual(round(8), 8)
-        self.assertEqual(round(-8), -8)
-        self.assertEqual(type(round(0)), int)
+        self.assertEqual(0, 0)
+        self.assertEqual(8, 8)
+        self.assertEqual(-8, -8)
+        self.assertEqual(int, int)
         self.assertEqual(type(round(-8, -1)), int)
-        self.assertEqual(type(round(-8, 0)), int)
-        self.assertEqual(type(round(-8, 1)), int)
+        self.assertEqual(type(-8), int)
+        self.assertEqual(type(-8), int)
 
         # test new kwargs
         self.assertEqual(round(number=-8.0, ndigits=-1), -10.0)
@@ -1552,7 +1546,7 @@ class BuiltinTest(unittest.TestCase):
 
     @unittest.skipIf(
         linux_alpha and system_round_bug,
-        "test will fail;  failure is probably due to a " "buggy system round function",
+        "test will fail;  failure is probably due to a buggy system round function",
     )
     def test_round_large(self):
         # Issue #1869: integral floats should remain unchanged
@@ -1574,7 +1568,7 @@ class BuiltinTest(unittest.TestCase):
             self.assertEqual(type(round(x, None)), type(round(x)))
 
     def test_setattr(self):
-        setattr(sys, "spam", 1)
+        sys.spam = 1
         self.assertEqual(sys.spam, 1)
         self.assertRaises(TypeError, setattr, sys, 1, "spam")
         self.assertRaises(TypeError, setattr)
@@ -1633,8 +1627,8 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(empty, [])
 
     def test_type(self):
-        self.assertEqual(type(""), type("123"))
-        self.assertNotEqual(type(""), type(()))
+        self.assertEqual(str, str)
+        self.assertNotEqual(str, type(()))
 
     # We don't want self in vars(), so these are static methods
 
@@ -1649,7 +1643,7 @@ class BuiltinTest(unittest.TestCase):
         b = 2
         return vars()
 
-    class C_get_vars(object):
+    class C_get_vars:
         def getDict(self):
             return {"a": 2}
 
@@ -1754,7 +1748,7 @@ class BuiltinTest(unittest.TestCase):
         # Returns some classes to use for various tests.  There's
         #  an old-style version, and a new-style version
         def classes_new():
-            class A(object):
+            class A:
                 def __init__(self, x):
                     self.x = x
 
@@ -1764,7 +1758,7 @@ class BuiltinTest(unittest.TestCase):
             class DerivedFromA(A):
                 pass
 
-            class Simple(object):
+            class Simple:
                 pass
 
             class DerivedFromSimple(Simple):
@@ -1839,7 +1833,7 @@ class BuiltinTest(unittest.TestCase):
         class B:
             pass
 
-        class C(object):
+        class C:
             pass
 
         for cls in [object, B, C]:
@@ -2038,7 +2032,7 @@ class PtyTests(unittest.TestCase):
         except (OSError, AttributeError) as e:
             os.close(r)
             os.close(w)
-            self.skipTest("pty.fork() raised {}".format(e))
+            self.skipTest(f"pty.fork() raised {e}")
             raise
 
         if pid == 0:
@@ -2158,7 +2152,6 @@ class PtyTests(unittest.TestCase):
 
 
 class TestSorted(unittest.TestCase):
-
     def test_basic(self):
         data = list(range(100))
         copy = data[:]
@@ -2196,12 +2189,11 @@ class TestSorted(unittest.TestCase):
             self.assertEqual(sorted(s), sorted(T(s)))
 
     def test_baddecorator(self):
-        data = "The quick Brown fox Jumped over The lazy Dog".split()
+        data = ["The", "quick", "Brown", "fox", "Jumped", "over", "The", "lazy", "Dog"]
         self.assertRaises(TypeError, sorted, data, None, lambda x, y: 0)
 
 
 class ShutdownTest(unittest.TestCase):
-
     def test_cleanup(self):
         # Issue #19255: builtins are still available at shutdown
         code = """if 1:

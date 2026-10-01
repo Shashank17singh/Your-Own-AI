@@ -2,8 +2,7 @@ import inspect
 import types
 import unittest
 
-from test.support import import_module
-from test.support import gc_collect
+from test.support import gc_collect, import_module
 
 asyncio = import_module("asyncio")
 
@@ -47,7 +46,6 @@ def to_list(gen):
 
 
 class AsyncGenSyntaxTest(unittest.TestCase):
-
     def test_async_gen_syntax_01(self):
         code = """async def foo():
             await abc
@@ -96,7 +94,6 @@ class AsyncGenSyntaxTest(unittest.TestCase):
 
 
 class AsyncGenTest(unittest.TestCase):
-
     def compare_generators(self, sync_gen, async_gen):
         def sync_iterate(g):
             res = []
@@ -364,7 +361,6 @@ class AsyncGenTest(unittest.TestCase):
 
 
 class AsyncGenAsyncioTest(unittest.TestCase):
-
     def setUp(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(None)

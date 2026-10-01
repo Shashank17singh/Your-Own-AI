@@ -14,19 +14,19 @@ import struct
 import subprocess
 import sys
 import tempfile
-from test.support import (
-    captured_stdout,
-    captured_stderr,
-    requires_zlib,
-    can_symlink,
-    EnvironmentVarGuard,
-    rmtree,
-    import_module,
-    skip_if_broken_multiprocessing_synchronize,
-)
 import unittest
 import venv
 from unittest.mock import patch
+
+from test.support import (
+    EnvironmentVarGuard,
+    can_symlink,
+    captured_stderr,
+    captured_stdout,
+    requires_zlib,
+    rmtree,
+    skip_if_broken_multiprocessing_synchronize,
+)
 
 try:
     import ctypes
@@ -81,9 +81,8 @@ class BaseTest(unittest.TestCase):
         rmtree(self.env_dir)
 
     def run_with_capture(self, func, *args, **kwargs):
-        with captured_stdout() as output:
-            with captured_stderr() as error:
-                func(*args, **kwargs)
+        with captured_stdout() as output, captured_stderr() as error:
+            func(*args, **kwargs)
         return output.getvalue(), error.getvalue()
 
     def get_env_file(self, *args):
@@ -386,7 +385,7 @@ class BasicTest(BaseTest):
                 "pool.terminate()",
             ]
         )
-        self.assertEqual(out.strip(), "python".encode())
+        self.assertEqual(out.strip(), b"python")
 
     @unittest.skipIf(os.name == "nt", "not relevant on Windows")
     def test_deactivate_with_strict_bash_opts(self):
@@ -399,10 +398,10 @@ class BasicTest(BaseTest):
         activate = os.path.join(self.env_dir, self.bindir, "activate")
         test_script = os.path.join(self.env_dir, "test_strict.sh")
         with open(test_script, "w") as f:
-            f.write("set -euo pipefail\n" f"source {activate}\n" "deactivate\n")
+            f.write(f"set -euo pipefail\nsource {activate}\ndeactivate\n")
         out, err = check_output([bash, test_script])
-        self.assertEqual(out, "".encode())
-        self.assertEqual(err, "".encode())
+        self.assertEqual(out, b"")
+        self.assertEqual(err, b"")
 
     @unittest.skipUnless(sys.platform == "darwin", "only relevant on macOS")
     def test_macos_env(self):
@@ -414,7 +413,7 @@ class BasicTest(BaseTest):
         out, err = check_output(
             [envpy, "-c", 'import os; print("__PYVENV_LAUNCHER__" in os.environ)']
         )
-        self.assertEqual(out.strip(), "False".encode())
+        self.assertEqual(out.strip(), b"False")
 
 
 @requireVenvCreate
@@ -509,7 +508,7 @@ class EnsurePipTest(BaseTest):
         err = err.decode("latin-1")  # Force to text, prevent decoding errors
         self.assertEqual(err, "")
         out = out.decode("latin-1")  # Force to text, prevent decoding errors
-        expected_version = "pip {}".format(ensurepip.version())
+        expected_version = f"pip {ensurepip.version()}"
         self.assertEqual(out[: len(expected_version)], expected_version)
         env_dir = os.fsencode(self.env_dir).decode("latin-1")
         self.assertIn(env_dir, out)

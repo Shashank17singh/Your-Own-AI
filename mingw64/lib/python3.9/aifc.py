@@ -134,8 +134,8 @@ changed by calling aiff() or aifc() before the first writeframes or
 writeframesraw.
 """
 
-import struct
 import builtins
+import struct
 import warnings
 
 __all__ = ["Error", "open"]
@@ -440,7 +440,7 @@ class Aifc_read:
         for marker in self._markers:
             if id == marker[0]:
                 return marker
-        raise Error("marker {0!r} does not exist".format(id))
+        raise Error(f"marker {id!r} does not exist")
 
     def setpos(self, pos):
         if pos < 0 or pos > self._nframes:
@@ -745,7 +745,7 @@ class Aifc_write:
         for marker in self._markers:
             if id == marker[0]:
                 return marker
-        raise Error("marker {0!r} does not exist".format(id))
+        raise Error(f"marker {id!r} does not exist")
 
     def getmarkers(self):
         if len(self._markers) == 0:

@@ -2,9 +2,10 @@
 Tests common to tuple, list and UserList.UserList
 """
 
-import unittest
-import sys
 import pickle
+import sys
+import unittest
+
 from test import support
 from test.support import ALWAYS_EQ, NEVER_EQ
 

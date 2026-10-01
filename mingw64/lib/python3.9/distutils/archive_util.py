@@ -4,8 +4,8 @@ Utility functions for creating archive files (tarballs, zip files,
 that sort of thing)."""
 
 import os
-from warnings import warn
 import sys
+from warnings import warn
 
 try:
     import zipfile
@@ -13,10 +13,10 @@ except ImportError:
     zipfile = None
 
 
+from distutils import log
+from distutils.dir_util import mkpath
 from distutils.errors import DistutilsExecError
 from distutils.spawn import spawn
-from distutils.dir_util import mkpath
-from distutils import log
 
 try:
     from pwd import getpwnam
@@ -83,7 +83,7 @@ def make_tarball(
     compress_ext = {"gzip": ".gz", "bzip2": ".bz2", "xz": ".xz", "compress": ".Z"}
 
     # flags for compression program, each element of list will be an argument
-    if compress is not None and compress not in compress_ext.keys():
+    if compress is not None and compress not in compress_ext:
         raise ValueError(
             "bad value for 'compress': must be None, 'gzip', 'bzip2', "
             "'xz' or 'compress'"

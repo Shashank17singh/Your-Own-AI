@@ -7,15 +7,15 @@ Written by Marc-Andre Lemburg (mal@lemburg.com).
 """
 
 import hashlib
-from http.client import HTTPException
 import sys
 import unicodedata
 import unittest
+from http.client import HTTPException
+
 from test.support import open_urlresource, requires_resource, script_helper
 
 
 class UnicodeMethodsTest(unittest.TestCase):
-
     # update this, if the database changes
     expectedchecksum = "fbdf8106a3c7c242086b0a9efa03ad4d30d5b85d"
 
@@ -65,7 +65,6 @@ class UnicodeDatabaseTest(unittest.TestCase):
 
 
 class UnicodeFunctionsTest(UnicodeDatabaseTest):
-
     # Update this if the database changes. Make sure to do a full rebuild
     # (e.g. 'make distclean && make') to get the correct checksum.
     expectedchecksum = "d1e37a2854df60ac607b47b51189b9bf1b54bfdb"
@@ -226,7 +225,6 @@ class UnicodeFunctionsTest(UnicodeDatabaseTest):
 
 
 class UnicodeMiscTest(UnicodeDatabaseTest):
-
     def test_failed_import_during_compiling(self):
         # Issue 4367
         # Decoding \N escapes requires the unicodedata module. If it can't be

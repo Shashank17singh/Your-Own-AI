@@ -1,14 +1,14 @@
-import unittest
-from test.test_email import TestEmailBase, parameterize
 import textwrap
+import unittest
 from email import policy
-from email.message import EmailMessage
 from email.contentmanager import ContentManager, raw_data_manager
+from email.message import EmailMessage
+
+from test.test_email import TestEmailBase, parameterize
 
 
 @parameterize
 class TestContentManager(TestEmailBase):
-
     policy = policy.default
     message = EmailMessage
 
@@ -199,84 +199,102 @@ class TestRawDataManager(TestEmailBase):
     message = EmailMessage
 
     def test_get_text_plain(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain
 
             Basic text.
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m), "Basic text.\n")
 
     def test_get_text_html(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/html
 
             <p>Basic text.</p>
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m), "<p>Basic text.</p>\n")
 
     def test_get_text_plain_latin1(self):
-        m = self._bytes_msg(textwrap.dedent("""\
+        m = self._bytes_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset=latin1
 
             Basìc tëxt.
-            """).encode("latin1"))
+            """).encode("latin1")
+        )
         self.assertEqual(raw_data_manager.get_content(m), "Basìc tëxt.\n")
 
     def test_get_text_plain_latin1_quoted_printable(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset="latin-1"
             Content-Transfer-Encoding: quoted-printable
 
             Bas=ECc t=EBxt.
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m), "Basìc tëxt.\n")
 
     def test_get_text_plain_utf8_base64(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset="utf8"
             Content-Transfer-Encoding: base64
 
             QmFzw6xjIHTDq3h0Lgo=
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m), "Basìc tëxt.\n")
 
     def test_get_text_plain_bad_utf8_quoted_printable(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset="utf8"
             Content-Transfer-Encoding: quoted-printable
 
             Bas=c3=acc t=c3=abxt=fd.
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m), "Basìc tëxt�.\n")
 
     def test_get_text_plain_bad_utf8_quoted_printable_ignore_errors(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset="utf8"
             Content-Transfer-Encoding: quoted-printable
 
             Bas=c3=acc t=c3=abxt=fd.
-            """))
+            """)
+        )
         self.assertEqual(
             raw_data_manager.get_content(m, errors="ignore"), "Basìc tëxt.\n"
         )
 
     def test_get_text_plain_utf8_base64_recoverable_bad_CTE_data(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset="utf8"
             Content-Transfer-Encoding: base64
 
             QmFzw6xjIHTDq3h0Lgo\xff=
-            """))
+            """)
+        )
         self.assertEqual(
             raw_data_manager.get_content(m, errors="ignore"), "Basìc tëxt.\n"
         )
 
     def test_get_text_invalid_keyword(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: text/plain
 
             Basic text.
-            """))
+            """)
+        )
         with self.assertRaises(TypeError):
             raw_data_manager.get_content(m, foo="ignore")
 
@@ -287,28 +305,32 @@ class TestRawDataManager(TestEmailBase):
 
             Ym9ndXMgZGF0YQ==
             """)
-        for maintype in "audio image video application".split():
+        for maintype in ["audio", "image", "video", "application"]:
             with self.subTest(maintype=maintype):
                 m = self._str_msg(template.format(maintype + "/foo"))
                 self.assertEqual(raw_data_manager.get_content(m), b"bogus data")
 
     def test_get_non_text_invalid_keyword(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: image/jpg
             Content-Transfer-Encoding: base64
 
             Ym9ndXMgZGF0YQ==
-            """))
+            """)
+        )
         with self.assertRaises(TypeError):
             raw_data_manager.get_content(m, errors="ignore")
 
     def test_get_raises_on_multipart(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: multipart/mixed; boundary="==="
 
             --===
             --===--
-            """))
+            """)
+        )
         with self.assertRaises(KeyError):
             raw_data_manager.get_content(m)
 
@@ -322,7 +344,7 @@ class TestRawDataManager(TestEmailBase):
 
             an example message
             """)
-        for subtype in "rfc822 external-body".split():
+        for subtype in ["rfc822", "external-body"]:
             with self.subTest(subtype=subtype):
                 m = self._str_msg(template.format(subtype))
                 sub_msg = raw_data_manager.get_content(m)
@@ -334,7 +356,8 @@ class TestRawDataManager(TestEmailBase):
                 self.assertEqual(sub_msg["from"].addresses[0].username, "bar")
 
     def test_get_message_non_rfc822_or_external_body_yields_bytes(self):
-        m = self._str_msg(textwrap.dedent("""\
+        m = self._str_msg(
+            textwrap.dedent("""\
             Content-Type: message/partial
 
             To: foo@example.com
@@ -342,7 +365,8 @@ class TestRawDataManager(TestEmailBase):
             Subject: example
 
             The real body is in another message.
-            """))
+            """)
+        )
         self.assertEqual(raw_data_manager.get_content(m)[:10], b"To: foo@ex")
 
     def test_set_text_plain(self):
@@ -648,9 +672,7 @@ class TestRawDataManager(TestEmailBase):
         content["To"] = "police@monty.org"
         content["From"] = "victim@monty.org"
         content["Subject"] = "Help"
-        content.set_content(
-            "j'ai un problème de python. il est sorti de son" " vivarium."
-        )
+        content.set_content("j'ai un problème de python. il est sorti de son vivarium.")
         raw_data_manager.set_content(m, content)
         self.assertEqual(
             bytes(m),
@@ -698,8 +720,8 @@ class TestRawDataManager(TestEmailBase):
     def test_set_message_invalid_cte_raises(self):
         m = self._make_message()
         content = self._make_message()
-        for cte in "quoted-printable base64".split():
-            for subtype in "rfc822 external-body".split():
+        for cte in ["quoted-printable", "base64"]:
+            for subtype in ["rfc822", "external-body"]:
                 with self.subTest(cte=cte, subtype=subtype):
                     with self.assertRaises(ValueError) as ar:
                         m.set_content(content, subtype, cte=cte)
@@ -707,7 +729,7 @@ class TestRawDataManager(TestEmailBase):
                     self.assertIn(cte, exc)
                     self.assertIn(subtype, exc)
         subtype = "external-body"
-        for cte in "8bit binary".split():
+        for cte in ["8bit", "binary"]:
             with self.subTest(cte=cte, subtype=subtype):
                 with self.assertRaises(ValueError) as ar:
                     m.set_content(content, subtype, cte=cte)
@@ -772,7 +794,8 @@ class TestRawDataManager(TestEmailBase):
             Content-Transfer-Encoding: binary
             MIME-Version: 1.0
 
-            """).encode("ascii") +
+            """).encode("ascii")
+            +
             # XXX: the second \n ought to be a \r, but generator gets it wrong.
             # THIS MEANS WE DON'T ACTUALLY SUPPORT THE 'binary' CTE.
             b"b\xffgus\tcon\nt\nent zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"

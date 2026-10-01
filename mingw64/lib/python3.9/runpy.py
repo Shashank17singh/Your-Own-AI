@@ -10,14 +10,13 @@ importers when locating support scripts as well as when importing modules.
 # Written by Nick Coghlan <ncoghlan at gmail.com>
 #    to implement PEP 338 (Executing Modules as Scripts)
 
-
-import sys
 import importlib.machinery  # importlib first so we can test #15386 via -m
 import importlib.util
 import io
-import types
 import os
-from pkgutil import read_code, get_importer
+import sys
+import types
+from pkgutil import get_importer, read_code
 
 __all__ = [
     "run_module",
@@ -25,7 +24,7 @@ __all__ = [
 ]
 
 
-class _TempModule(object):
+class _TempModule:
     """Temporarily replace a module in sys.modules with an empty namespace"""
 
     def __init__(self, mod_name):
@@ -50,7 +49,7 @@ class _TempModule(object):
         self._saved_module = []
 
 
-class _ModifiedArgv0(object):
+class _ModifiedArgv0:
     def __init__(self, value):
         self.value = value
         self._saved_value = self._sentinel = object()
@@ -145,10 +144,10 @@ def _get_module_details(mod_name, error=ImportError):
             from warnings import warn
 
             msg = (
-                "{mod_name!r} found in sys.modules after import of "
-                "package {pkg_name!r}, but prior to execution of "
-                "{mod_name!r}; this may result in unpredictable "
-                "behaviour".format(mod_name=mod_name, pkg_name=pkg_name)
+                f"{mod_name!r} found in sys.modules after import of "
+                f"package {pkg_name!r}, but prior to execution of "
+                f"{mod_name!r}; this may result in unpredictable "
+                "behaviour"
             )
             warn(RuntimeWarning(msg))
 
@@ -294,7 +293,7 @@ def run_path(path_name, init_globals=None, run_name=None):
     if type(importer).__module__ == "imp":
         if type(importer).__name__ == "NullImporter":
             is_NullImporter = True
-    if isinstance(importer, type(None)) or is_NullImporter:
+    if (importer is None) or is_NullImporter:
         # Not a valid sys.path entry, so run the code directly
         # execfile() doesn't help as we want to allow compiled files
         code, fname = _get_code_from_file(run_name, path_name)

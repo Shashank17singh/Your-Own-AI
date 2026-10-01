@@ -5,35 +5,35 @@ default, these calendars have Monday as the first day of the week, and
 Sunday as the last (the European convention). Use setfirstweekday() to
 set the first day of the week (0=Monday, 6=Sunday)."""
 
-import sys
 import datetime
 import locale as _locale
+import sys
 from itertools import repeat
 
 __all__ = [
+    "Calendar",
+    "HTMLCalendar",
     "IllegalMonthError",
     "IllegalWeekdayError",
-    "setfirstweekday",
+    "LocaleHTMLCalendar",
+    "LocaleTextCalendar",
+    "TextCalendar",
+    "calendar",
+    "day_abbr",
+    "day_name",
     "firstweekday",
     "isleap",
     "leapdays",
-    "weekday",
-    "monthrange",
-    "monthcalendar",
-    "prmonth",
     "month",
-    "prcal",
-    "calendar",
-    "timegm",
-    "month_name",
     "month_abbr",
-    "day_name",
-    "day_abbr",
-    "Calendar",
-    "TextCalendar",
-    "HTMLCalendar",
-    "LocaleTextCalendar",
-    "LocaleHTMLCalendar",
+    "month_name",
+    "monthcalendar",
+    "monthrange",
+    "prcal",
+    "prmonth",
+    "setfirstweekday",
+    "timegm",
+    "weekday",
     "weekheader",
 ]
 
@@ -72,7 +72,6 @@ mdays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
 class _localized_month:
-
     _months = [datetime.date(2001, i + 1, 1).strftime for i in range(12)]
     _months.insert(0, lambda x: "")
 
@@ -91,7 +90,6 @@ class _localized_month:
 
 
 class _localized_day:
-
     # January 1, 2001, was a Monday.
     _days = [datetime.date(2001, 1, i + 1).strftime for i in range(7)]
 
@@ -169,7 +167,7 @@ def _nextmonth(year, month):
         return year, month + 1
 
 
-class Calendar(object):
+class Calendar:
     """
     Base calendar class. This class doesn't do any formatting. It simply
     provides data to subclasses.

@@ -8,30 +8,25 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["BaseManager", "SyncManager", "BaseProxy", "Token"]
+__all__ = ["BaseManager", "BaseProxy", "SyncManager", "Token"]
 
 #
 # Imports
 #
 
+import array
+import os
+import queue
+import signal
 import sys
 import threading
-import signal
-import array
-import queue
 import time
 import types
-import os
 from os import getpid
-
 from traceback import format_exc
 
-from . import connection
-from .context import reduction, get_spawning_popen, ProcessError
-from . import pool
-from . import process
-from . import util
-from . import get_context
+from . import connection, get_context, pool, process, util
+from .context import ProcessError, get_spawning_popen, reduction
 
 try:
     from . import shared_memory
@@ -66,12 +61,12 @@ if view_types[0] is not list:  # only needed in Py3.0
 #
 
 
-class Token(object):
+class Token:
     """
     Type to uniquely identify a shared object
     """
 
-    __slots__ = ("typeid", "address", "id")
+    __slots__ = ("address", "id", "typeid")
 
     def __init__(self, typeid, address, id):
         self.typeid, self.address, self.id = (typeid, address, id)
@@ -113,16 +108,14 @@ def convert_to_error(kind, result):
     elif kind in ("#TRACEBACK", "#UNSERIALIZABLE"):
         if not isinstance(result, str):
             raise TypeError(
-                "Result {0!r} (kind '{1}') type is {2}, not str".format(
-                    result, kind, type(result)
-                )
+                f"Result {result!r} (kind '{kind}') type is {type(result)}, not str"
             )
         if kind == "#UNSERIALIZABLE":
             return RemoteError("Unserializable message: %s\n" % result)
         else:
             return RemoteError(result)
     else:
-        return ValueError("Unrecognized message type {!r}".format(kind))
+        return ValueError(f"Unrecognized message type {kind!r}")
 
 
 class RemoteError(Exception):
@@ -159,7 +152,7 @@ def public_methods(obj):
 #
 
 
-class Server(object):
+class Server:
     """
     Server class which runs in a process controlled by a manager object
     """
@@ -178,9 +171,7 @@ class Server(object):
 
     def __init__(self, registry, address, authkey, serializer):
         if not isinstance(authkey, bytes):
-            raise TypeError(
-                "Authkey {0!r} is type {1!s}, not bytes".format(authkey, type(authkey))
-            )
+            raise TypeError(f"Authkey {authkey!r} is type {type(authkey)!s}, not bytes")
         self.registry = registry
         self.authkey = process.AuthenticationString(authkey)
         Listener, Client = listener_client[serializer]
@@ -273,7 +264,6 @@ class Server(object):
         id_to_obj = self.id_to_obj
 
         while not self.stop_event.is_set():
-
             try:
                 methodname = obj = None
                 request = recv()
@@ -423,9 +413,7 @@ class Server(object):
             if method_to_typeid is not None:
                 if not isinstance(method_to_typeid, dict):
                     raise TypeError(
-                        "Method_to_typeid {0!r}: type {1!s}, not dict".format(
-                            method_to_typeid, type(method_to_typeid)
-                        )
+                        f"Method_to_typeid {method_to_typeid!r}: type {type(method_to_typeid)!s}, not dict"
                     )
                 exposed = list(exposed) + list(method_to_typeid)
 
@@ -479,9 +467,7 @@ class Server(object):
         with self.mutex:
             if self.id_to_refcount[ident] <= 0:
                 raise AssertionError(
-                    "Id {0!s} ({1!r}) has refcount {2:n}, not 1+".format(
-                        ident, self.id_to_obj[ident], self.id_to_refcount[ident]
-                    )
+                    f"Id {ident!s} ({self.id_to_obj[ident]!r}) has refcount {self.id_to_refcount[ident]:n}, not 1+"
                 )
             self.id_to_refcount[ident] -= 1
             if self.id_to_refcount[ident] == 0:
@@ -504,7 +490,7 @@ class Server(object):
 #
 
 
-class State(object):
+class State:
     __slots__ = ["value"]
     INITIAL = 0
     STARTED = 1
@@ -525,7 +511,7 @@ listener_client = {
 #
 
 
-class BaseManager(object):
+class BaseManager:
     """
     Base class for managers
     """
@@ -554,7 +540,7 @@ class BaseManager(object):
             elif self._state.value == State.SHUTDOWN:
                 raise ProcessError("Manager has shut down")
             else:
-                raise ProcessError("Unknown state {!r}".format(self._state.value))
+                raise ProcessError(f"Unknown state {self._state.value!r}")
         return Server(self._registry, self._address, self._authkey, self._serializer)
 
     def connect(self):
@@ -576,7 +562,7 @@ class BaseManager(object):
             elif self._state.value == State.SHUTDOWN:
                 raise ProcessError("Manager has shut down")
             else:
-                raise ProcessError("Unknown state {!r}".format(self._state.value))
+                raise ProcessError(f"Unknown state {self._state.value!r}")
 
         if initializer is not None and not callable(initializer):
             raise TypeError("initializer must be a callable")
@@ -702,7 +688,7 @@ class BaseManager(object):
             elif self._state.value == State.SHUTDOWN:
                 raise ProcessError("Manager has shut down")
             else:
-                raise ProcessError("Unknown state {!r}".format(self._state.value))
+                raise ProcessError(f"Unknown state {self._state.value!r}")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -814,7 +800,7 @@ class ProcessLocalSet(set):
 #
 
 
-class BaseProxy(object):
+class BaseProxy:
     """
     A base for proxies of shared objects
     """
@@ -1054,7 +1040,8 @@ def MakeProxyType(name, exposed, _cache={}):
     for meth in exposed:
         exec(
             """def %s(self, /, *args, **kwds):
-        return self._callmethod(%r, args, kwds)""" % (meth, meth),
+        return self._callmethod(%r, args, kwds)"""
+            % (meth, meth),
             dic,
         )
 
@@ -1108,7 +1095,7 @@ def AutoProxy(
 #
 
 
-class Namespace(object):
+class Namespace:
     def __init__(self, /, **kwds):
         self.__dict__.update(kwds)
 
@@ -1122,7 +1109,7 @@ class Namespace(object):
         return "%s(%s)" % (self.__class__.__name__, ", ".join(temp))
 
 
-class Value(object):
+class Value:
     def __init__(self, typecode, value, lock=True):
         self._typecode = typecode
         self._value = value
@@ -1470,7 +1457,6 @@ if HAS_SHMEM:
             self.__init__(*state)
 
     class SharedMemoryServer(Server):
-
         public = Server.public + ["track_segment", "release_segment", "list_segments"]
 
         def __init__(self, *args, **kwargs):
@@ -1540,7 +1526,6 @@ if HAS_SHMEM:
 
         def __del__(self):
             util.debug(f"{self.__class__.__name__}.__del__ by pid {getpid()}")
-            pass
 
         def get_server(self):
             "Better than monkeypatching for now; merge into Server ultimately"
@@ -1550,7 +1535,7 @@ if HAS_SHMEM:
                 elif self._state.value == State.SHUTDOWN:
                     raise ProcessError("SharedMemoryManager has shut down")
                 else:
-                    raise ProcessError("Unknown state {!r}".format(self._state.value))
+                    raise ProcessError(f"Unknown state {self._state.value!r}")
             return self._Server(
                 self._registry, self._address, self._authkey, self._serializer
             )

@@ -6,7 +6,7 @@ but no doctest examples.
 """
 
 
-class Foo(object):
+class Foo:
     """A docstring with no doctest examples."""
 
     def __init__(self):

@@ -35,51 +35,51 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 __all__ = [
-    "TestResult",
-    "TestCase",
-    "IsolatedAsyncioTestCase",
-    "TestSuite",
-    "TextTestRunner",
-    "TestLoader",
     "FunctionTestCase",
-    "main",
-    "defaultTestLoader",
+    "IsolatedAsyncioTestCase",
     "SkipTest",
+    "TestCase",
+    "TestLoader",
+    "TestResult",
+    "TestSuite",
+    "TextTestResult",
+    "TextTestRunner",
+    "addModuleCleanup",
+    "defaultTestLoader",
+    "expectedFailure",
+    "installHandler",
+    "main",
+    "registerResult",
+    "removeHandler",
+    "removeResult",
     "skip",
     "skipIf",
     "skipUnless",
-    "expectedFailure",
-    "TextTestResult",
-    "installHandler",
-    "registerResult",
-    "removeResult",
-    "removeHandler",
-    "addModuleCleanup",
 ]
-__all__.extend(["getTestCaseNames", "makeSuite", "findTestCases"])
+__all__.extend(["findTestCases", "getTestCaseNames", "makeSuite"])
 __unittest = True
-from .result import TestResult
 from .case import (
-    addModuleCleanup,
-    TestCase,
     FunctionTestCase,
     SkipTest,
+    TestCase,
+    addModuleCleanup,
+    expectedFailure,
     skip,
     skipIf,
     skipUnless,
-    expectedFailure,
 )
-from .suite import BaseTestSuite, TestSuite
 from .loader import (
     TestLoader,
     defaultTestLoader,
-    makeSuite,
-    getTestCaseNames,
     findTestCases,
+    getTestCaseNames,
+    makeSuite,
 )
 from .main import TestProgram, main
-from .runner import TextTestRunner, TextTestResult
-from .signals import installHandler, registerResult, removeResult, removeHandler
+from .result import TestResult
+from .runner import TextTestResult, TextTestRunner
+from .signals import installHandler, registerResult, removeHandler, removeResult
+from .suite import BaseTestSuite, TestSuite
 
 _TextTestResult = TextTestResult
 

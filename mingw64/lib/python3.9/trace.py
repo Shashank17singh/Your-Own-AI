@@ -48,21 +48,20 @@ Sample use, programmatically
   r.write_results(show_missing=True, coverdir="/tmp")
 """
 
-__all__ = ["Trace", "CoverageResults"]
+__all__ = ["CoverageResults", "Trace"]
 
+import dis
+import gc
+import inspect
 import linecache
 import os
+import pickle
 import sys
 import sysconfig
+import threading
 import token
 import tokenize
-import inspect
-import gc
-import dis
-import pickle
 from time import monotonic as _time
-
-import threading
 
 PRAGMA_NOCOVER = "#pragma NO COVER"
 
@@ -224,10 +223,8 @@ class CoverageResults:
             calls = self.calledfuncs
             for filename, modulename, funcname in sorted(calls):
                 print(
-                    (
-                        "filename: %s, modulename: %s, funcname: %s"
-                        % (filename, modulename, funcname)
-                    )
+                    "filename: %s, modulename: %s, funcname: %s"
+                    % (filename, modulename, funcname)
                 )
 
         if self.callers:
@@ -310,10 +307,7 @@ class CoverageResults:
             outfile = open(path, "w", encoding=encoding)
         except OSError as err:
             print(
-                (
-                    "trace: Could not open %r for writing: %s "
-                    "- skipping" % (path, err)
-                ),
+                ("trace: Could not open %r for writing: %s - skipping" % (path, err)),
                 file=sys.stderr,
             )
             return 0, 0
@@ -574,10 +568,8 @@ class Trace:
                     if not ignore_it:
                         if self.trace:
                             print(
-                                (
-                                    " --- modulename: %s, funcname: %s"
-                                    % (modulename, code.co_name)
-                                )
+                                " --- modulename: %s, funcname: %s"
+                                % (modulename, code.co_name)
                             )
                         return self.localtrace
             else:
@@ -706,7 +698,7 @@ def main():
         "-m",
         "--missing",
         action="store_true",
-        help="Annotate executable lines that were not executed with " '">>>>>> "',
+        help='Annotate executable lines that were not executed with ">>>>>> "',
     )
     grp.add_argument(
         "-s",

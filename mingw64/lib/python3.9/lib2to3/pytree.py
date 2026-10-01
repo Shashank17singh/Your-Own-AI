@@ -33,7 +33,7 @@ def type_repr(type_num):
     return _type_reprs.setdefault(type_num, type_num)
 
 
-class Base(object):
+class Base:
     """
     Abstract base class for Node and Leaf.
 
@@ -416,7 +416,7 @@ def convert(gr, raw_node):
         return Leaf(type, value, context=context)
 
 
-class BasePattern(object):
+class BasePattern:
     """
     A pattern is a tree matching pattern.
 
@@ -502,7 +502,6 @@ class BasePattern(object):
 
 
 class LeafPattern(BasePattern):
-
     def __init__(self, type=None, content=None, name=None):
         """
         Initializer.  Takes optional type, content, and name.
@@ -546,7 +545,6 @@ class LeafPattern(BasePattern):
 
 
 class NodePattern(BasePattern):
-
     wildcards = False
 
     def __init__(self, type=None, content=None, name=None):
@@ -803,7 +801,6 @@ class WildcardPattern(BasePattern):
 
 
 class NegatedPattern(BasePattern):
-
     def __init__(self, content=None):
         """
         Initializer.

@@ -7,11 +7,11 @@ import select
 import socket
 import tempfile
 import threading
+
 from test import support
 
 
 class FunctionalTestCaseMixin:
-
     def new_loop(self):
         return asyncio.new_event_loop()
 
@@ -50,7 +50,7 @@ class FunctionalTestCaseMixin:
         addr=None,
         timeout=support.LOOPBACK_TIMEOUT,
         backlog=1,
-        max_clients=10
+        max_clients=10,
     ):
 
         if addr is None:
@@ -118,7 +118,6 @@ class FunctionalTestCaseMixin:
 
 
 class TestSocketWrapper:
-
     def __init__(self, sock):
         self.__sock = sock
 
@@ -154,11 +153,10 @@ class TestSocketWrapper:
         return getattr(self.__sock, name)
 
     def __repr__(self):
-        return "<{} {!r}>".format(type(self).__name__, self.__sock)
+        return f"<{type(self).__name__} {self.__sock!r}>"
 
 
 class SocketThread(threading.Thread):
-
     def stop(self):
         self._active = False
         self.join()
@@ -172,7 +170,6 @@ class SocketThread(threading.Thread):
 
 
 class TestThreadedClient(SocketThread):
-
     def __init__(self, test, sock, prog, timeout):
         threading.Thread.__init__(self, None, None, "test-client")
         self.daemon = True
@@ -191,7 +188,6 @@ class TestThreadedClient(SocketThread):
 
 
 class TestThreadedServer(SocketThread):
-
     def __init__(self, test, sock, prog, timeout, max_clients):
         threading.Thread.__init__(self, None, None, "test-server")
         self.daemon = True
@@ -244,7 +240,7 @@ class TestThreadedServer(SocketThread):
                     conn, addr = self._sock.accept()
                 except BlockingIOError:
                     continue
-                except socket.timeout:
+                except TimeoutError:
                     if not self._active:
                         return
                     else:

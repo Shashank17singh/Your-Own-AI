@@ -1,12 +1,13 @@
 # Testing the line trace facility.
 
-from test import support
-import unittest
-import sys
+import asyncio
 import difflib
 import gc
+import sys
+import unittest
 from functools import wraps
-import asyncio
+
+from test import support
 
 
 class tracecontext:
@@ -100,7 +101,6 @@ def arigo_example2():
         x = 1
     else:
         pass
-    return None
 
 
 arigo_example2.events = [
@@ -270,7 +270,7 @@ ireturn_example.events = [
 
 # Tight loop with while(1) example (SF #765624)
 def tightloop_example():
-    items = range(0, 3)
+    items = range(3)
     try:
         i = 0
         while 1:
@@ -382,7 +382,6 @@ class Tracer:
 
 
 class TraceTestCase(unittest.TestCase):
-
     # Disable gc collection when tracing, otherwise the
     # deallocators may be traced as well.
     def setUp(self):
@@ -570,7 +569,7 @@ class TraceTestCase(unittest.TestCase):
             try:
                 try:
                     raise Exception
-                except Exception as e:
+                except Exception:
                     raise
                     x = "Something"
                     y = "Something"
@@ -704,8 +703,7 @@ class TraceTestCase(unittest.TestCase):
             a = 2
             async for i in async_gen():
                 a = 4
-            else:
-                a = 6
+            a = 6
 
         def run(tracer):
             x = async_test()
@@ -1147,7 +1145,6 @@ class JumpTestCase(unittest.TestCase):
                 output.append(8)
             finally:
                 output.append(10)
-            pass
         output.append(12)
 
     @jump_test(3, 4, [1], (ValueError, "unreachable"))
@@ -1538,7 +1535,7 @@ class JumpTestCase(unittest.TestCase):
         except ZeroDivisionError:
             output.append(4)
             output.append(5)
-        except FloatingPointError as e:
+        except FloatingPointError:
             output.append(7)
         output.append(8)
 
@@ -1693,7 +1690,8 @@ class JumpTestCase(unittest.TestCase):
             '''                       # line 1005
             x += 1                    # line 1006
             output.append(x)          # line 1007
-            return""" % ("\n" * 1000,),
+            return"""
+            % ("\n" * 1000,),
             d,
         )
         f = d["f"]
@@ -1729,7 +1727,7 @@ output.append(4)
         3,
         [1],
         event="call",
-        error=(ValueError, "can't jump from" " the 'call' trace event of a new frame"),
+        error=(ValueError, "can't jump from the 'call' trace event of a new frame"),
     )
     def test_no_jump_from_call(output):
         output.append(1)
@@ -1749,7 +1747,6 @@ output.append(4)
     )
     def test_no_jump_from_return_event(output):
         output.append(1)
-        return
 
     @jump_test(
         2,

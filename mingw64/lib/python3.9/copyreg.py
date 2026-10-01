@@ -5,11 +5,11 @@ C, not for instances of user-defined classes.
 """
 
 __all__ = [
-    "pickle",
-    "constructor",
     "add_extension",
-    "remove_extension",
     "clear_extension_cache",
+    "constructor",
+    "pickle",
+    "remove_extension",
 ]
 
 dispatch_table = {}
@@ -213,8 +213,7 @@ def remove_extension(module, name, code):
         raise ValueError("key %s is not registered with code %s" % (key, code))
     del _extension_registry[key]
     del _inverted_registry[code]
-    if code in _extension_cache:
-        del _extension_cache[code]
+    _extension_cache.pop(code, None)
 
 
 def clear_extension_cache():

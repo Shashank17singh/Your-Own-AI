@@ -9,7 +9,6 @@ import types
 
 # Because sys.path gets essentially blanked, need to have unicodedata already
 # imported for the parser to use.
-import unicodedata
 import unittest
 import warnings
 
@@ -30,7 +29,7 @@ class EncodingTest:
 
     variable = "\u00fc"
     character = "\u00c9"
-    source_line = "{0} = '{1}'\n".format(variable, character)
+    source_line = f"{variable} = '{character}'\n"
     module_name = "_temp"
 
     def run_test(self, source):
@@ -43,7 +42,7 @@ class EncodingTest:
             return self.load(loader)
 
     def create_source(self, encoding):
-        encoding_line = "# coding={0}".format(encoding)
+        encoding_line = f"# coding={encoding}"
         assert CODING_RE.match(encoding_line)
         source_lines = [encoding_line.encode("utf-8")]
         source_lines.append(self.source_line.encode(encoding))
@@ -54,7 +53,7 @@ class EncodingTest:
         # Python works.
         encoding_line = "# coding=koi8-r"
         assert CODING_RE.match(encoding_line)
-        source = "{0}\na=42\n".format(encoding_line).encode("koi8-r")
+        source = f"{encoding_line}\na=42\n".encode("koi8-r")
         self.run_test(source)
 
     # [default encoding]
@@ -89,7 +88,6 @@ class EncodingTest:
 
 
 class EncodingTestPEP451(EncodingTest):
-
     def load(self, loader):
         module = types.ModuleType(self.module_name)
         module.__spec__ = importlib.util.spec_from_loader(self.module_name, loader)
@@ -103,7 +101,6 @@ Frozen_EncodingTestPEP451, Source_EncodingTestPEP451 = util.test_both(
 
 
 class EncodingTestPEP302(EncodingTest):
-
     def load(self, loader):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
@@ -143,7 +140,6 @@ class LineEndingTest:
 
 
 class LineEndingTestPEP451(LineEndingTest):
-
     def load(self, loader, module_name):
         module = types.ModuleType(module_name)
         module.__spec__ = importlib.util.spec_from_loader(module_name, loader)
@@ -157,7 +153,6 @@ Frozen_LineEndingTestPEP451, Source_LineEndingTestPEP451 = util.test_both(
 
 
 class LineEndingTestPEP302(LineEndingTest):
-
     def load(self, loader, module_name):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)

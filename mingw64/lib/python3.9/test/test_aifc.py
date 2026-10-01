@@ -1,12 +1,13 @@
-from test.support import check_no_resource_warning, findfile, TESTFN, unlink
-import unittest
-from unittest import mock
-from test import audiotests
-from audioop import byteswap
-import io
-import sys
-import struct
 import aifc
+import io
+import struct
+import sys
+import unittest
+from audioop import byteswap
+from unittest import mock
+
+from test import audiotests
+from test.support import TESTFN, check_no_resource_warning, findfile, unlink
 
 
 class AifcTest(audiotests.AudioWriteTests, audiotests.AudioTestsWithSourceFile):
@@ -216,7 +217,6 @@ class AifcMiscTest(unittest.TestCase):
 
 
 class AIFCLowLevelTest(unittest.TestCase):
-
     def test_read_written(self):
         def read_written(self, what):
             f = io.BytesIO()
@@ -269,9 +269,7 @@ class AIFCLowLevelTest(unittest.TestCase):
         b = b"FORM" + struct.pack(">L", 4) + b"AIFC"
         b += b"COMM" + struct.pack(">LhlhhLL", 38, 1, 0, 8, 0x4000 | 12, 11025 << 18, 0)
         b += b"NONE" + struct.pack("B", 14) + b"not compressed" + b"\x00"
-        with self.assertRaisesRegex(
-            aifc.Error, "COMM chunk and/or SSND chunk" " missing"
-        ):
+        with self.assertRaisesRegex(aifc.Error, "COMM chunk and/or SSND chunk missing"):
             aifc.open(io.BytesIO(b))
 
     def test_read_wrong_compression_type(self):
@@ -311,7 +309,7 @@ class AIFCLowLevelTest(unittest.TestCase):
             f = aifc.open(io.BytesIO(b))
         self.assertEqual(
             str(cm.warning),
-            "Warning: MARK chunk contains " "only 0 markers instead of 1",
+            "Warning: MARK chunk contains only 0 markers instead of 1",
         )
         self.assertEqual(f.getmarkers(), None)
 

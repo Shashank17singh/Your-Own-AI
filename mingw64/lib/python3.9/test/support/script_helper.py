@@ -3,14 +3,14 @@
 
 import collections
 import importlib
-import sys
 import os
 import os.path
-import subprocess
 import py_compile
+import subprocess
+import sys
 import zipfile
-
 from importlib.util import source_from_cache
+
 from test.support import make_legacy_pyc
 
 # Cached result of the expensive test performed in the function below.

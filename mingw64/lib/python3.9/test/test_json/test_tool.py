@@ -1,9 +1,10 @@
 import errno
 import os
+import subprocess
 import sys
 import textwrap
 import unittest
-import subprocess
+
 from test import support
 from test.support.script_helper import assert_python_ok
 

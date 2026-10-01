@@ -1,10 +1,11 @@
 "Test hyperparser, coverage 98%."
 
-from idlelib.hyperparser import HyperParser
 import unittest
-from test.support import requires
-from tkinter import Tk, Text
 from idlelib.editor import EditorWindow
+from idlelib.hyperparser import HyperParser
+from tkinter import Text, Tk
+
+from test.support import requires
 
 
 class DummyEditwin:
@@ -209,9 +210,7 @@ class HyperParserTest(unittest.TestCase):
             elif result == 0:
                 return False
             else:
-                err_msg = "Unexpected result: {} (expected 0 or {}".format(
-                    result, len(candidate)
-                )
+                err_msg = f"Unexpected result: {result} (expected 0 or {len(candidate)}"
                 raise Exception(err_msg)
 
         # invalid first character which is valid elsewhere in an identifier

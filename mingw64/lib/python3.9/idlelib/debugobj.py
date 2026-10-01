@@ -8,9 +8,8 @@
 
 # XXX TO DO:
 # - for classes/modules, add "open source" to object browser
+from idlelib.tree import ScrolledCanvas, TreeItem, TreeNode
 from reprlib import Repr
-
-from idlelib.tree import TreeItem, TreeNode, ScrolledCanvas
 
 myrepr = Repr()
 myrepr.maxstring = 100
@@ -46,7 +45,7 @@ class ObjectTreeItem(TreeItem):
             self.object = value
 
     def IsExpandable(self):
-        return not not dir(self.object)
+        return bool(dir(self.object))
 
     def GetSubList(self):
         keys = dir(self.object)

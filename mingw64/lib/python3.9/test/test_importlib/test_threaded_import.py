@@ -6,24 +6,25 @@
 # randrange, and then Python hangs.
 
 import _imp as imp
-import os
 import importlib
-import sys
-import time
+import os
 import shutil
+import sys
 import threading
+import time
 import unittest
 from unittest import mock
+
 from test.support import (
-    verbose,
-    run_unittest,
     TESTFN,
-    reap_threads,
     forget,
-    unlink,
+    reap_threads,
     rmtree,
-    start_threads,
+    run_unittest,
     script_helper,
+    start_threads,
+    unlink,
+    verbose,
 )
 
 
@@ -32,11 +33,9 @@ def task(N, done, done_tasks, errors):
         # We don't use modulefinder but still import it in order to stress
         # importing of different modules from several threads.
         if len(done_tasks) % 2:
-            import modulefinder
             import random
         else:
             import random
-            import modulefinder
         # This will fail if random is not completely initialized
         x = random.randrange(1, 3)
     except Exception as e:
@@ -106,7 +105,6 @@ class FlushingFinder:
 
 
 class ThreadedImportTests(unittest.TestCase):
-
     def setUp(self):
         self.old_random = sys.modules.pop("random", None)
 

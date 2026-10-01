@@ -1,42 +1,41 @@
 """Tests for http/cookiejar.py."""
 
 import os
+import pathlib
 import re
-import test.support
 import time
 import unittest
 import urllib.request
-import pathlib
-
 from http.cookiejar import (
-    time2isoz,
-    http2time,
-    iso2time,
-    time2netscape,
-    parse_ns_headers,
-    join_header_words,
-    split_header_words,
+    DEFAULT_HTTP_PORT,
     Cookie,
     CookieJar,
     DefaultCookiePolicy,
+    LoadError,
     LWPCookieJar,
     MozillaCookieJar,
-    LoadError,
-    lwp_cookie_str,
-    DEFAULT_HTTP_PORT,
-    escape_path,
-    reach,
-    is_HDN,
     domain_match,
-    user_domain_match,
+    escape_path,
+    http2time,
+    is_HDN,
+    iso2time,
+    join_header_words,
+    lwp_cookie_str,
+    parse_ns_headers,
+    reach,
+    request_host,
     request_path,
     request_port,
-    request_host,
+    split_header_words,
+    time2isoz,
+    time2netscape,
+    user_domain_match,
 )
+
+import test.support
 
 
 class DateTimeTests(unittest.TestCase):
-
     def test_time2isoz(self):
         base = 1019227000
         day = 24 * 3600
@@ -214,7 +213,6 @@ class DateTimeTests(unittest.TestCase):
 
 
 class HeaderTests(unittest.TestCase):
-
     def test_parse_ns_headers(self):
         # quotes should be stripped
         expected = [[("foo", "bar"), ("expires", 2209069412), ("version", "0")]]
@@ -278,7 +276,8 @@ class HeaderTests(unittest.TestCase):
             try:
                 result = split_header_words([arg])
             except:
-                import traceback, io
+                import io
+                import traceback
 
                 f = io.StringIO()
                 traceback.print_exc(None, f)
@@ -290,7 +289,8 @@ class HeaderTests(unittest.TestCase):
 When parsing: '%s'
 Expected:     '%s'
 Got:          '%s'
-""" % (arg, expect, result),
+"""
+                % (arg, expect, result),
             )
 
     def test_roundtrip(self):
@@ -324,7 +324,8 @@ When parsing: '%s'
 Expected:     '%s'
 Got:          '%s'
 Input was:    '%s'
-""" % (arg, expect, res, input),
+"""
+                % (arg, expect, res, input),
             )
 
 
@@ -383,10 +384,9 @@ class FileCookieJarTests(unittest.TestCase):
             pass
 
         for type_ in (int, float, A):
-            with self.subTest(filename=type_):
-                with self.assertRaises(TypeError):
-                    instance = type_()
-                    c = LWPCookieJar(filename=instance)
+            with self.subTest(filename=type_), self.assertRaises(TypeError):
+                instance = type_()
+                c = LWPCookieJar(filename=instance)
 
     def test_lwp_valueless_cookie(self):
         # cookies with no value should be saved and loaded consistently
@@ -597,7 +597,7 @@ class CookieTests(unittest.TestCase):
         interact_netscape(
             c,
             "http://www.acme.com:80/",
-            "spam=eggs; " 'expires="Foo Bar 25 33:22:11 3022"',
+            'spam=eggs; expires="Foo Bar 25 33:22:11 3022"',
         )
         interact_netscape(c, "http://www.acme.com/", "fortytwo=")
         interact_netscape(c, "http://www.acme.com/", "=unladenswallow")
@@ -678,10 +678,10 @@ class CookieTests(unittest.TestCase):
         interact_netscape(c, "http://www.acme.com/", 'bar="bar"; expires=%s' % future)
         self.assertEqual(len(c), 3)
         interact_netscape(
-            c, "http://www.acme.com/", 'eggs="bar"; ' "expires=%s; max-age=0" % future
+            c, "http://www.acme.com/", 'eggs="bar"; expires=%s; max-age=0' % future
         )
         interact_netscape(
-            c, "http://www.acme.com/", 'bar="bar"; ' "max-age=0; expires=%s" % future
+            c, "http://www.acme.com/", 'bar="bar"; max-age=0; expires=%s' % future
         )
         h = interact_netscape(c, "http://www.acme.com/")
         self.assertEqual(len(c), 1)
@@ -798,7 +798,7 @@ class CookieTests(unittest.TestCase):
         self.assertEqual(request_path(req), "/rheum/rhaponticum;foo=bar;sing=song")
         # without parameters
         req = urllib.request.Request(
-            "http://www.example.com/rheum/rhaponticum?" "apples=pears&spam=eggs#ni"
+            "http://www.example.com/rheum/rhaponticum?apples=pears&spam=eggs#ni"
         )
         self.assertEqual(request_path(req), "/rheum/rhaponticum")
         # missing final slash
@@ -1296,7 +1296,7 @@ class CookieTests(unittest.TestCase):
         self.assertIn(
             '$Port="80,8080"',
             h,
-            "port with multiple values not returned with multiple " "values",
+            "port with multiple values not returned with multiple values",
         )
 
     def test_no_return_comment(self):
@@ -1616,7 +1616,7 @@ class LWPCookieTests(unittest.TestCase):
         cookie = interact_2965(
             c,
             "http://www.acme.com/acme/pickitem",
-            'Part_Number="Rocket_Launcher_0001"; ' 'Version="1"; Path="/acme"',
+            'Part_Number="Rocket_Launcher_0001"; Version="1"; Path="/acme"',
         )
         self.assertRegex(
             cookie, r'^\$Version="?1"?; Customer="?WILE_E_COYOTE"?; \$Path="/acme"$'
@@ -1778,7 +1778,7 @@ class LWPCookieTests(unittest.TestCase):
         cookie = interact_2965(
             c,
             "http://www.sol.no",
-            'blah=rhubarb; domain=".sol.no"; path="/foo"; ' "version=1",
+            'blah=rhubarb; domain=".sol.no"; path="/foo"; version=1',
         )
         self.assertEqual(len(c), 2)
 
@@ -1786,7 +1786,7 @@ class LWPCookieTests(unittest.TestCase):
         cookie = interact_2965(
             c,
             "http://www.sol.no/foo/bar",
-            'bing=bong; domain=".sol.no"; path="/foo"; ' "version=1",
+            'bing=bong; domain=".sol.no"; path="/foo"; version=1',
         )
         self.assertEqual(len(c), 3)
 
@@ -1794,7 +1794,7 @@ class LWPCookieTests(unittest.TestCase):
         cookie = interact_2965(
             c,
             "http://www.sol.no",
-            'whiz=ffft; domain=".sol.no"; port="90,100"; ' "version=1",
+            'whiz=ffft; domain=".sol.no"; port="90,100"; version=1',
         )
         self.assertEqual(len(c), 3)
 
@@ -1812,7 +1812,7 @@ class LWPCookieTests(unittest.TestCase):
         cookie = interact_2965(
             c,
             "http://www.sol.no",
-            'foo9=bar; version=1; domain=".sol.no"; port; ' "max-age=100;",
+            'foo9=bar; version=1; domain=".sol.no"; port; max-age=100;',
         )
         self.assertEqual(len(c), 5)
 
@@ -1851,7 +1851,7 @@ class LWPCookieTests(unittest.TestCase):
         c = CookieJar(DefaultCookiePolicy(rfc2965=True))
         interact_2965(
             c,
-            "http://www.acme.com/foo%2f%25/" "%3c%3c%0Anew%C3%A5/%C3%A5",
+            "http://www.acme.com/foo%2f%25/%3c%3c%0Anew%C3%A5/%C3%A5",
             "foo  =   bar; version    =   1",
         )
 
@@ -1860,7 +1860,7 @@ class LWPCookieTests(unittest.TestCase):
             "http://www.acme.com/foo%2f%25/<<%0anew\345/\346\370\345",
             'bar=baz; path="/foo/"; version=1',
         )
-        version_re = re.compile(r"^\$version=\"?1\"?", re.I)
+        version_re = re.compile(r"^\$version=\"?1\"?", re.IGNORECASE)
         self.assertIn("foo=bar", cookie)
         self.assertRegex(cookie, version_re)
 
@@ -2010,9 +2010,7 @@ class LWPCookieTests(unittest.TestCase):
             "Set-Cookie: p2=perm;Path=/;expires=Fri, "
             "02-Feb-%d 23:24:20 GMT" % year_plus_one
         )
-        headers.append(
-            "Set-Cookie: s2=session;Path=/scripts;" "Domain=.perlmeister.com"
-        )
+        headers.append("Set-Cookie: s2=session;Path=/scripts;Domain=.perlmeister.com")
         headers.append('Set-Cookie2: s3=session;Version=1;Discard;Path="/"')
         res = FakeResponse(headers, "http://www.perlmeister.com/scripts")
 

@@ -16,7 +16,8 @@ def url2pathname(url):
     #   ///C:/foo/bar/spam.foo
     # become
     #   C:\foo\bar\spam.foo
-    import string, urllib.parse
+    import string
+    import urllib.parse
 
     # Windows itself uses ":" even in URLs.
     url = url.replace(":", "|")

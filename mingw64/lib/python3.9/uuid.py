@@ -46,7 +46,6 @@ Typical usage:
 
 import os
 import sys
-
 from enum import Enum
 
 __author__ = "Ka-Ping Yee <ping@zesty.ca>"
@@ -136,7 +135,7 @@ class UUID:
                     uuid_generate_time_safe(3).
     """
 
-    __slots__ = ("int", "is_safe", "__weakref__")
+    __slots__ = ("__weakref__", "int", "is_safe")
 
     def __init__(
         self,
@@ -147,7 +146,7 @@ class UUID:
         int=None,
         version=None,
         *,
-        is_safe=SafeUUID.unknown
+        is_safe=SafeUUID.unknown,
     ):
         r"""Create a UUID from either a string of 32 hexadecimal digits,
         a string of 16 bytes as the 'bytes' argument, a string of 16 bytes
@@ -398,7 +397,10 @@ class UUID:
 
 
 def _get_command_stdout(command, *args):
-    import io, os, shutil, subprocess
+    import io
+    import os
+    import shutil
+    import subprocess
 
     try:
         path_dirs = os.environ.get("PATH", os.defpath).split(os.pathsep)
@@ -568,7 +570,8 @@ def _ip_getnode():
 
 def _arp_getnode():
     """Get the hardware address on Unix by running arp."""
-    import os, socket
+    import os
+    import socket
 
     try:
         ip_addr = socket.gethostbyname(socket.gethostname())
@@ -720,7 +723,7 @@ def getnode():
             continue
         if (_node is not None) and (0 <= _node < (1 << 48)):
             return _node
-    assert False, "_random_getnode() returned invalid value: {}".format(_node)
+    assert False, f"_random_getnode() returned invalid value: {_node}"
 
 
 _last_timestamp = None

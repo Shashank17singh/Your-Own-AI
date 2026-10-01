@@ -20,9 +20,9 @@ soon as the shortest argument is exhausted.
 """
 
 # Local imports
-from ..pgen2 import token
 from .. import fixer_base
-from ..fixer_util import Name, ArgList, Call, ListComp, in_special_context
+from ..fixer_util import ArgList, Call, ListComp, Name, in_special_context
+from ..pgen2 import token
 from ..pygram import python_symbols as syms
 from ..pytree import Node
 

@@ -51,7 +51,6 @@ class G(A):
 
 
 class TestSuper(unittest.TestCase):
-
     def tearDown(self):
         # This fixes the damage that test_various___class___pathologies does.
         nonlocal __class__
@@ -198,7 +197,6 @@ class TestSuper(unittest.TestCase):
             def __new__(cls, name, bases, namespace):
                 nonlocal test_namespace
                 test_namespace = namespace
-                return None
 
         class A(metaclass=Meta):
             @staticmethod
@@ -358,7 +356,7 @@ class TestSuper(unittest.TestCase):
         # is not endorsed.
         sp = super(float, 1.0)
         for i in range(1000):
-            super.__init__(sp, int, i)
+            super().__init__(sp, int, i)
 
 
 if __name__ == "__main__":

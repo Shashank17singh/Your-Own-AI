@@ -114,12 +114,12 @@ __copyright__ = """
 __version__ = "1.0.8"
 
 import collections
-import os
-import re
-import sys
-import subprocess
 import functools
 import itertools
+import os
+import re
+import subprocess
+import sys
 
 ### Globals & Constants
 
@@ -296,7 +296,7 @@ def _syscmd_ver(
                 text=True,
                 shell=True,
             )
-        except (OSError, subprocess.CalledProcessError) as why:
+        except (OSError, subprocess.CalledProcessError):
             # print('Command %s failed: %s' % (cmd, why))
             continue
         else:
@@ -386,7 +386,7 @@ def win32_ver(release="", version="", csd="", ptype=""):
         major, minor, build = map(int, _syscmd_ver()[2].split("."))
     except ValueError:
         major, minor, build = winver.platform_version or winver[:3]
-    version = "{0}.{1}.{2}".format(major, minor, build)
+    version = f"{major}.{minor}.{build}"
 
     release = (
         _WIN32_CLIENT_RELEASES.get((major, minor))
@@ -399,7 +399,7 @@ def win32_ver(release="", version="", csd="", ptype=""):
     # valid if the versions match.
     if winver[:2] == (major, minor):
         try:
-            csd = "SP{}".format(winver.service_pack_major)
+            csd = f"SP{winver.service_pack_major}"
         except AttributeError:
             if csd[:13] == "Service Pack ":
                 csd = "SP" + csd[13:]

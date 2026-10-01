@@ -117,7 +117,6 @@ class ClearTest(unittest.TestCase):
 
 
 class FrameAttrsTest(unittest.TestCase):
-
     def make_frames(self):
         def outer():
             x = 5

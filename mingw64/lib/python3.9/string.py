@@ -15,6 +15,8 @@ printable -- a string containing all ASCII characters considered printable
 """
 
 __all__ = [
+    "Formatter",
+    "Template",
     "ascii_letters",
     "ascii_lowercase",
     "ascii_uppercase",
@@ -25,8 +27,6 @@ __all__ = [
     "printable",
     "punctuation",
     "whitespace",
-    "Formatter",
-    "Template",
 ]
 
 import _string
@@ -193,7 +193,6 @@ class Formatter:
         for literal_text, field_name, format_spec, conversion in self.parse(
             format_string
         ):
-
             # output the literal text
             if literal_text:
                 result.append(literal_text)
@@ -269,7 +268,7 @@ class Formatter:
             return repr(value)
         elif conversion == "a":
             return ascii(value)
-        raise ValueError("Unknown conversion specifier {0!s}".format(conversion))
+        raise ValueError(f"Unknown conversion specifier {conversion!s}")
 
     # returns an iterable that contains tuples of the form:
     # (literal_text, field_name, format_spec, conversion)

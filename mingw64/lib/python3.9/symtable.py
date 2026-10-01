@@ -1,27 +1,24 @@
 """Interface to the compiler's internal symbol tables"""
 
 import _symtable
+import weakref
 from _symtable import (
-    USE,
-    DEF_GLOBAL,
-    DEF_NONLOCAL,
-    DEF_LOCAL,
-    DEF_PARAM,
-    DEF_IMPORT,
-    DEF_BOUND,
-    DEF_ANNOT,
-    SCOPE_OFF,
-    SCOPE_MASK,
-    FREE,
-    LOCAL,
-    GLOBAL_IMPLICIT,
-    GLOBAL_EXPLICIT,
     CELL,
+    DEF_ANNOT,
+    DEF_BOUND,
+    DEF_IMPORT,
+    DEF_LOCAL,
+    DEF_NONLOCAL,
+    DEF_PARAM,
+    FREE,
+    GLOBAL_EXPLICIT,
+    GLOBAL_IMPLICIT,
+    LOCAL,
+    SCOPE_MASK,
+    SCOPE_OFF,
 )
 
-import weakref
-
-__all__ = ["symtable", "SymbolTable", "Class", "Function", "Symbol"]
+__all__ = ["Class", "Function", "Symbol", "SymbolTable", "symtable"]
 
 
 def symtable(code, filename, compile_type):
@@ -52,7 +49,6 @@ _newSymbolTable = SymbolTableFactory()
 
 
 class SymbolTable:
-
     def __init__(self, raw_table, filename):
         self._table = raw_table
         self._filename = filename
@@ -65,11 +61,9 @@ class SymbolTable:
             kind = "%s " % self.__class__.__name__
 
         if self._table.name == "top":
-            return "<{0}SymbolTable for module {1}>".format(kind, self._filename)
+            return f"<{kind}SymbolTable for module {self._filename}>"
         else:
-            return "<{0}SymbolTable for {1} in {2}>".format(
-                kind, self._table.name, self._filename
-            )
+            return f"<{kind}SymbolTable for {self._table.name} in {self._filename}>"
 
     def get_type(self):
         if self._table.type == _symtable.TYPE_MODULE:
@@ -78,9 +72,7 @@ class SymbolTable:
             return "function"
         if self._table.type == _symtable.TYPE_CLASS:
             return "class"
-        assert self._table.type in (1, 2, 3), "unexpected type: {0}".format(
-            self._table.type
-        )
+        assert self._table.type in (1, 2, 3), f"unexpected type: {self._table.type}"
 
     def get_id(self):
         return self._table.id
@@ -129,7 +121,6 @@ class SymbolTable:
 
 
 class Function(SymbolTable):
-
     # Default values for instance variables
     __params = None
     __locals = None
@@ -176,7 +167,6 @@ class Function(SymbolTable):
 
 
 class Class(SymbolTable):
-
     __methods = None
 
     def get_methods(self):
@@ -189,7 +179,6 @@ class Class(SymbolTable):
 
 
 class Symbol:
-
     def __init__(self, name, flags, namespaces=None, *, module_scope=False):
         self.__name = name
         self.__flags = flags
@@ -198,7 +187,7 @@ class Symbol:
         self.__module_scope = module_scope
 
     def __repr__(self):
-        return "<symbol {0!r}>".format(self.__name)
+        return f"<symbol {self.__name!r}>"
 
     def get_name(self):
         return self.__name
@@ -269,7 +258,8 @@ class Symbol:
 
 
 if __name__ == "__main__":
-    import os, sys
+    import os
+    import sys
 
     with open(sys.argv[0]) as f:
         src = f.read()

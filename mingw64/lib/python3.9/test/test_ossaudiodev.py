@@ -6,11 +6,11 @@ from test.support import findfile
 
 ossaudiodev = support.import_module("ossaudiodev")
 
-import errno
-import sys
-import sunau
-import time
 import audioop
+import errno
+import sunau
+import sys
+import time
 import unittest
 
 # Arggh, AFMT_S16_NE not defined on all platforms -- seems to be a
@@ -42,7 +42,6 @@ def read_sound_file(path):
 
 
 class OSSAudioDevTests(unittest.TestCase):
-
     def play_sound_file(self, data, rate, ssize, nchannels):
         try:
             dsp = ossaudiodev.open("w")
@@ -153,7 +152,7 @@ class OSSAudioDevTests(unittest.TestCase):
 
             try:
                 result = dsp.setparameters(fmt, channels, rate, True)
-            except ossaudiodev.OSSAudioError as err:
+            except ossaudiodev.OSSAudioError:
                 pass
             else:
                 self.fail("expected OSSAudioError")

@@ -14,10 +14,10 @@ module."""
 # cut 'n paste.  Sigh.
 
 import os
+from distutils import log
 from distutils.core import Command
 from distutils.errors import *
 from distutils.sysconfig import customize_compiler
-from distutils import log
 
 
 def show_compilers():
@@ -27,7 +27,6 @@ def show_compilers():
 
 
 class build_clib(Command):
-
     description = "build C/C++ libraries used by Python extensions"
 
     user_options = [

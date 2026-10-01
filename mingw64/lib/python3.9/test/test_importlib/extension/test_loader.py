@@ -1,15 +1,13 @@
-from .. import abc
-from .. import util
+from .. import abc, util
 
 machinery = util.import_importlib("importlib.machinery")
 
+import importlib
+import importlib.util
 import os.path
 import sys
 import types
 import unittest
-import importlib.util
-import importlib
-from test.support.script_helper import assert_python_failure
 
 
 class LoaderTests(abc.LoaderTests):
@@ -155,9 +153,8 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
         module = self.load_module()
         with self.subTest("PyState_FindModule"):
             self.assertEqual(module.call_state_registration_func(0), None)
-        with self.subTest("PyState_AddModule"):
-            with self.assertRaises(SystemError):
-                module.call_state_registration_func(1)
+        with self.subTest("PyState_AddModule"), self.assertRaises(SystemError):
+            module.call_state_registration_func(1)
         with self.subTest("PyState_RemoveModule"):
             with self.assertRaises(SystemError):
                 module.call_state_registration_func(2)

@@ -676,22 +676,14 @@
     "switch": "Yc",
     "comment": "Create",
     "value": "Create",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "PrecompiledHeader",
     "switch": "Yu",
     "comment": "Use",
     "value": "Use",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "PrecompiledHeader",
@@ -929,11 +921,7 @@
     "switch": "MP",
     "comment": "Multi-processor Compilation",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "IntrinsicFunctions",
@@ -1255,49 +1243,35 @@
     "switch": "scanDependencies",
     "comment": "Generate Module Dependencies File",
     "value": "true",
-    "flags": [
-      "Continue"
-    ]
+    "flags": ["Continue"]
   },
   {
     "name": "GenerateModuleDependencies",
     "switch": "sourceDependencies:directives",
     "comment": "Generate Module Dependencies File",
     "value": "true",
-    "flags": [
-      "Continue"
-    ]
+    "flags": ["Continue"]
   },
   {
     "name": "GenerateXMLDocumentationFiles",
     "switch": "doc",
     "comment": "Generate XML Documentation Files",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "GenerateSourceDependencies",
     "switch": "sourceDependencies",
     "comment": "Generate Source Dependencies File",
     "value": "true",
-    "flags": [
-      "Continue"
-    ]
+    "flags": ["Continue"]
   },
   {
     "name": "BrowseInformation",
     "switch": "FR",
     "comment": "Enable Browse Information",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "TreatAngleIncludeAsExternal",
@@ -1360,160 +1334,112 @@
     "switch": "I",
     "comment": "Additional Include Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalUsingDirectories",
     "switch": "AI",
     "comment": "Additional #using Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalBMIDirectories",
     "switch": "ifcSearchDir",
     "comment": "Additional BMI Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalModuleDependencies",
     "switch": "reference",
     "comment": "Additional Module Dependencies",
     "value": "",
-    "flags": [
-      "UserFollowing",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserFollowing", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalHeaderUnitDependencies",
     "switch": "headerUnit",
     "comment": "Additional Header Unit Dependencies",
     "value": "",
-    "flags": [
-      "UserFollowing",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserFollowing", "SemicolonAppendable"]
   },
   {
     "name": "PreprocessorDefinitions",
     "switch": "D",
     "comment": "Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "UndefinePreprocessorDefinitions",
     "switch": "U",
     "comment": "Undefine Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "StdIfcDirectory",
     "switch": "stdIfcDir",
     "comment": "",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ExternalDirectoriesEnv",
     "switch": "external:env:",
     "comment": "External Directories Environment Variables",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "DisableSpecificWarnings",
     "switch": "wd",
     "comment": "Disable Specific Warnings",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ForcedIncludeFiles",
     "switch": "FI",
     "comment": "Forced Include File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "UserRequired", "SemicolonAppendable"]
   },
   {
     "name": "ForcedIncludeFiles",
     "switch": "FI",
     "comment": "Forced Include File",
     "value": "",
-    "flags": [
-      "UserFollowing",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserFollowing", "SemicolonAppendable"]
   },
   {
     "name": "ForcedUsingFiles",
     "switch": "FU",
     "comment": "Forced #using File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "PREfastAdditionalPlugins",
     "switch": "analyze:plugin",
     "comment": "Additional Code Analysis Native plugins",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "TreatSpecificWarningsAsErrors",
     "switch": "we",
     "comment": "Treat Specific Warnings As Errors",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "DynamicDebuggingSuffix",
     "switch": "dynamicdeopt:suffix",
     "comment": "",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "UseDynamicDebugging",
@@ -1527,175 +1453,132 @@
     "switch": "Wv:",
     "comment": "Warning Version",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PreprocessOutputPath",
     "switch": "Fi",
     "comment": "Preprocess Output Path",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PrecompiledHeaderFile",
     "switch": "Yu",
     "comment": "Precompiled Header File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "PrecompiledHeaderFile",
     "switch": "Yc",
     "comment": "Precompiled Header File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "PrecompiledHeaderOutputFile",
     "switch": "Fp",
     "comment": "Precompiled Header Output File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "AssemblerListingLocation",
     "switch": "Fa",
     "comment": "ASM List Location",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ModuleOutputFile",
     "switch": "ifcOutput",
     "comment": "Module Output File Name",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "ModuleDependenciesFile",
     "switch": "scanDependencies",
     "comment": "Module Dependencies File Name",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "ModuleDependenciesFile",
     "switch": "sourceDependencies:directives",
     "comment": "Module Dependencies File Name",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "ObjectFileName",
     "switch": "Fo",
     "comment": "Object File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ProgramDataBaseFileName",
     "switch": "Fd",
     "comment": "Program Database File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "XMLDocumentationFileName",
     "switch": "doc",
     "comment": "XML Documentation File Name",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "SourceDependenciesFile",
     "switch": "sourceDependencies",
     "comment": "Source Dependencies File Name",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "BrowseInformationFile",
     "switch": "FR",
     "comment": "Browse Information File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "PREfastLog",
     "switch": "analyze:log",
     "comment": "Code Analysis Log",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "PREfastProjectDirectory",
     "switch": "analyze:projectdirectory",
     "comment": "Code Analysis Project Directory",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PREfastRulesetDirectories",
     "switch": "analyze:rulesetdirectory",
     "comment": "Code Analysis Ruleset Directories",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PREfastRulesetFile",
     "switch": "analyze:ruleset",
     "comment": "Code Analysis Ruleset File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ProcessorNumber",
     "switch": "MP",
     "comment": "Number of processors",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   }
 ]

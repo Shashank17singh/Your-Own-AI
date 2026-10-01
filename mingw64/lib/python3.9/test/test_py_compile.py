@@ -55,7 +55,6 @@ class SourceDateEpochTestMeta(type(unittest.TestCase)):
 
 
 class PyCompileTestsBase:
-
     def setUp(self):
         self.directory = tempfile.mkdtemp(dir=os.getcwd())
         self.source_path = os.path.join(self.directory, "_test.py")
@@ -169,9 +168,7 @@ class PyCompileTestsBase:
         penultimate_tail = os.path.basename(head)
         self.assertEqual(
             os.path.join(penultimate_tail, tail),
-            os.path.join(
-                "__pycache__", "foo.bar.{}.pyc".format(sys.implementation.cache_tag)
-            ),
+            os.path.join("__pycache__", f"foo.bar.{sys.implementation.cache_tag}.pyc"),
         )
         with open(weird_path, "w") as file:
             file.write("x = 123\n")
@@ -228,7 +225,6 @@ class PyCompileTestsWithoutSourceEpoch(
 
 
 class PyCompileCLITestCase(unittest.TestCase):
-
     def setUp(self):
         self.directory = tempfile.mkdtemp()
         self.source_path = os.path.join(self.directory, "_test.py")

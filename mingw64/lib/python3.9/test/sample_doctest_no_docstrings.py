@@ -4,8 +4,7 @@
 # docstrings.
 
 
-class Foo(object):
-
+class Foo:
     # A class with no docstring.
 
     def __init__(self):

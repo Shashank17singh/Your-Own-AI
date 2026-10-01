@@ -6,8 +6,7 @@ import sys
 import threading
 import weakref
 
-from test import support
-from test import lock_tests
+from test import lock_tests, support
 
 
 class ModuleLockAsRLockTests:
@@ -39,7 +38,6 @@ Frozen_ModuleLockAsRLockTests, Source_ModuleLockAsRLockTests = test_util.test_bo
 
 
 class DeadlockAvoidanceTests:
-
     def setUp(self):
         try:
             self.old_switchinterval = sys.getswitchinterval()
@@ -112,7 +110,6 @@ Frozen_DeadlockAvoidanceTests, Source_DeadlockAvoidanceTests = test_util.test_bo
 
 
 class LifetimeTests:
-
     @property
     def bootstrap(self):
         return self.init._bootstrap

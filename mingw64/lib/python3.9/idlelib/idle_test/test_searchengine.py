@@ -1,14 +1,13 @@
 "Test searchengine, coverage 99%."
 
-from idlelib import searchengine as se
+import re
 import unittest
+from idlelib import searchengine as se
+from idlelib.idle_test.mock_tk import Mbox, Var
+from idlelib.idle_test.mock_tk import Text as mockText
 
 # from test.support import requires
-from tkinter import BooleanVar, StringVar, TclError  # ,Tk, Text
-from tkinter import messagebox
-from idlelib.idle_test.mock_tk import Var, Mbox
-from idlelib.idle_test.mock_tk import Text as mockText
-import re
+from tkinter import BooleanVar, StringVar, TclError, messagebox  # ,Tk, Text
 
 # With mock replacements, the module does not use any gui widgets.
 # The use of tk.Text is avoided (for now, until mock Text is improved)
@@ -219,7 +218,7 @@ class SearchTest(unittest.TestCase):
         ##        cls.root = Tk()
         ##        cls.text = Text(master=cls.root)
         cls.text = mockText()
-        test_text = "First line\n" "Line with target\n" "Last line\n"
+        test_text = "First line\nLine with target\nLast line\n"
         cls.text.insert("1.0", test_text)
         cls.pat = re.compile("target")
 
@@ -289,7 +288,7 @@ class ForwardBackwardTest(unittest.TestCase):
         cls.text = mockText()
         # search_backward calls index('end-1c')
         cls.text.index = lambda index: "4.0"
-        test_text = "First line\n" "Line with target\n" "Last line\n"
+        test_text = "First line\nLine with target\nLast line\n"
         cls.text.insert("1.0", test_text)
         cls.pat = re.compile("target")
         cls.res = (2, (10, 16))  # line, slice indexes of 'target'

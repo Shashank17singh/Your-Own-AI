@@ -1,7 +1,7 @@
 from io import StringIO
-from test.test_json import PyTest, CTest
 
-from test.support import bigmemtest, _1G
+from test.support import _1G, bigmemtest
+from test.test_json import CTest, PyTest
 
 
 class TestDump:
@@ -69,7 +69,6 @@ class TestPyDump(TestDump, PyTest):
 
 
 class TestCDump(TestDump, CTest):
-
     # The size requirement here is hopefully over-estimated (actual
     # memory consumption depending on implementation details, and also
     # system memory management, since this may allocate a lot of

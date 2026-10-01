@@ -9,39 +9,37 @@ https://www.python.org/dev/peps/pep-0205/
 # they are called this instead of "ref" to avoid name collisions with
 # the module-global ref() function imported from _weakref.
 
+import _collections_abc  # Import after _weakref to avoid circular import.
+import itertools
+import sys
 from _weakref import (
-    getweakrefcount,
-    getweakrefs,
-    ref,
-    proxy,
     CallableProxyType,
     ProxyType,
     ReferenceType,
     _remove_dead_weakref,
+    getweakrefcount,
+    getweakrefs,
+    proxy,
+    ref,
 )
-
 from _weakrefset import WeakSet, _IterationGuard
-
-import _collections_abc  # Import after _weakref to avoid circular import.
-import sys
-import itertools
 
 ProxyTypes = (ProxyType, CallableProxyType)
 
 __all__ = [
-    "ref",
-    "proxy",
+    "CallableProxyType",
+    "ProxyType",
+    "ProxyTypes",
+    "ReferenceType",
+    "WeakKeyDictionary",
+    "WeakMethod",
+    "WeakSet",
+    "WeakValueDictionary",
+    "finalize",
     "getweakrefcount",
     "getweakrefs",
-    "WeakKeyDictionary",
-    "ReferenceType",
-    "ProxyType",
-    "CallableProxyType",
-    "ProxyTypes",
-    "WeakValueDictionary",
-    "WeakSet",
-    "WeakMethod",
-    "finalize",
+    "proxy",
+    "ref",
 ]
 
 
@@ -55,7 +53,7 @@ class WeakMethod(ref):
     a bound method, working around the lifetime problem of bound methods.
     """
 
-    __slots__ = "_func_ref", "_meth_type", "_alive", "__weakref__"
+    __slots__ = "__weakref__", "_alive", "_func_ref", "_meth_type"
 
     def __new__(cls, meth, callback=None):
         try:
@@ -63,7 +61,7 @@ class WeakMethod(ref):
             func = meth.__func__
         except AttributeError:
             raise TypeError(
-                "argument should be a bound method, not {}".format(type(meth))
+                f"argument should be a bound method, not {type(meth)}"
             ) from None
 
         def _cb(arg):
@@ -586,7 +584,7 @@ class finalize:
     _registered_with_atexit = False
 
     class _Info:
-        __slots__ = ("weakref", "func", "args", "kwargs", "atexit", "index")
+        __slots__ = ("args", "atexit", "func", "index", "kwargs", "weakref")
 
     def __init__(self, obj, func, /, *args, **kwargs):
         if not self._registered_with_atexit:

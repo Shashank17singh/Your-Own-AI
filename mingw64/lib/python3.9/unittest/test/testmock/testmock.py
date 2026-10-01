@@ -2,27 +2,28 @@ import copy
 import re
 import sys
 import tempfile
-from test.support import ALWAYS_EQ
 import unittest
-from unittest.test.testmock.support import is_instance
 from unittest import mock
 from unittest.mock import (
-    call,
     DEFAULT,
-    patch,
-    sentinel,
+    AsyncMock,
     MagicMock,
     Mock,
-    NonCallableMock,
     NonCallableMagicMock,
-    AsyncMock,
+    NonCallableMock,
     _Call,
     _CallList,
+    call,
     create_autospec,
+    patch,
+    sentinel,
 )
+from unittest.test.testmock.support import is_instance
+
+from test.support import ALWAYS_EQ
 
 
-class Iter(object):
+class Iter:
     def __init__(self):
         self.thing = iter(["this", "is", "an", "iter"])
 
@@ -35,7 +36,7 @@ class Iter(object):
     __next__ = next
 
 
-class Something(object):
+class Something:
     def meth(self, a, b, c, d=None):
         pass
 
@@ -117,7 +118,7 @@ class MockTest(unittest.TestCase):
             )
 
     def test_repr_with_spec(self):
-        class X(object):
+        class X:
             pass
 
         mock = Mock(spec=X)
@@ -493,7 +494,7 @@ class MockTest(unittest.TestCase):
                 )
 
     def test_from_spec(self):
-        class Something(object):
+        class Something:
             x = 3
             __something__ = None
 
@@ -527,7 +528,7 @@ class MockTest(unittest.TestCase):
         real.assert_called_with(1, 2, fish=3)
 
     def test_wraps_prevents_automatic_creation_of_mocks(self):
-        class Real(object):
+        class Real:
             pass
 
         real = Real()
@@ -542,7 +543,7 @@ class MockTest(unittest.TestCase):
         self.assertFalse(real.called)
 
     def test_wraps_attributes(self):
-        class Real(object):
+        class Real:
             attribute = Mock()
 
         real = Real()
@@ -555,7 +556,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual(result, Real.attribute.frog())
 
     def test_customize_wrapped_object_with_side_effect_iterable_with_default(self):
-        class Real(object):
+        class Real:
             def method(self):
                 return sentinel.ORIGINAL_VALUE
 
@@ -567,7 +568,7 @@ class MockTest(unittest.TestCase):
         self.assertRaises(StopIteration, mock.method)
 
     def test_customize_wrapped_object_with_side_effect_iterable(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -579,7 +580,7 @@ class MockTest(unittest.TestCase):
         self.assertRaises(StopIteration, mock.method)
 
     def test_customize_wrapped_object_with_side_effect_exception(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -589,7 +590,7 @@ class MockTest(unittest.TestCase):
         self.assertRaises(RuntimeError, mock.method)
 
     def test_customize_wrapped_object_with_side_effect_function(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -602,7 +603,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual(mock.method(), sentinel.VALUE)
 
     def test_customize_wrapped_object_with_return_value(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -612,7 +613,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual(mock.method(), sentinel.VALUE)
 
     def test_customize_wrapped_object_with_return_value_and_side_effect(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -625,7 +626,7 @@ class MockTest(unittest.TestCase):
         self.assertRaises(StopIteration, mock.method)
 
     def test_customize_wrapped_object_with_return_value_and_side_effect2(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -636,7 +637,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual(mock.method(), sentinel.VALUE)
 
     def test_customize_wrapped_object_with_return_value_and_side_effect_default(self):
-        class Real(object):
+        class Real:
             def method(self):
                 pass
 
@@ -722,7 +723,7 @@ class MockTest(unittest.TestCase):
         self.assertRaises(AttributeError, getattr, mock, "foo")
 
     def test_spec_class(self):
-        class X(object):
+        class X:
             pass
 
         mock = Mock(spec=X)
@@ -752,7 +753,7 @@ class MockTest(unittest.TestCase):
         self.assertIsInstance(mock, X)
 
     def test_setting_attribute_with_spec_set(self):
-        class X(object):
+        class X:
             y = 3
 
         mock = Mock(spec=X)
@@ -1090,7 +1091,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual([mock(), mock(), mock()], ["g", "h", "i"])
         self.assertRaises(StopIteration, mock)
 
-        class Foo(object):
+        class Foo:
             pass
 
         mock = MagicMock(side_effect=Foo)
@@ -1289,9 +1290,7 @@ class MockTest(unittest.TestCase):
         with self.assertRaisesRegex(
             AssertionError,
             "^{}$".format(
-                re.escape(
-                    "Calls not found.\n" "Expected: [call()]\n" "Actual: [call(1)]"
-                )
+                re.escape("Calls not found.\nExpected: [call()]\nActual: [call(1)]")
             ),
         ) as cm:
             mock.assert_has_calls([call()])
@@ -1477,13 +1476,13 @@ class MockTest(unittest.TestCase):
         self.assertEqual(m.f.side_effect, None)
 
     def test_mock_add_spec(self):
-        class _One(object):
+        class _One:
             one = 1
 
-        class _Two(object):
+        class _Two:
             two = 2
 
-        class Anything(object):
+        class Anything:
             one = two = three = "four"
 
         klasses = [Mock, MagicMock, NonCallableMock, NonCallableMagicMock]
@@ -1558,7 +1557,7 @@ class MockTest(unittest.TestCase):
             self.assertEqual(mock.mock_calls, [call(), call()()])
 
     def test_manager_mock(self):
-        class Foo(object):
+        class Foo:
             one = "one"
             two = "two"
 
@@ -1829,10 +1828,10 @@ class MockTest(unittest.TestCase):
             self.addCleanup(sys.settrace, sys.gettrace())
             sys.settrace(trace)
             from unittest.mock import (
-                Mock,
                 MagicMock,
-                NonCallableMock,
+                Mock,
                 NonCallableMagicMock,
+                NonCallableMock,
             )
 
             mocks = [Mock, MagicMock, NonCallableMock, NonCallableMagicMock, AsyncMock]

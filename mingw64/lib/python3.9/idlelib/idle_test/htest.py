@@ -65,10 +65,9 @@ autocomplete_w.AutoCompleteWindow
 outwin.OutputWindow (indirectly being tested with grep test)
 """
 
-import idlelib.pyshell  # Set Windows DPI awareness before Tk().
-from importlib import import_module
 import textwrap
 import tkinter as tk
+from importlib import import_module
 from tkinter.ttk import Scrollbar
 
 tk.NoDefaultRoot()
@@ -151,7 +150,7 @@ _dyn_option_menu_spec = {
 _editor_window_spec = {
     "file": "editor",
     "kwds": {},
-    "msg": "Test editor functions of interest.\n" "Best to close editor first.",
+    "msg": "Test editor functions of interest.\nBest to close editor first.",
 }
 
 GetKeysDialog_spec = {
@@ -347,7 +346,7 @@ _tooltip_spec = {
 _tree_widget_spec = {
     "file": "tree",
     "kwds": {},
-    "msg": "The canvas is scrollable.\n" "Click on folders upto to the lowest level.",
+    "msg": "The canvas is scrollable.\nClick on folders upto to the lowest level.",
 }
 
 _undo_delegator_spec = {
@@ -366,13 +365,13 @@ ViewWindow_spec = {
         "contents": "The quick brown fox jumps over the lazy dog.\n" * 35,
         "_htest": True,
     },
-    "msg": "Test for read-only property of text.\n" "Select text, scroll window, close",
+    "msg": "Test for read-only property of text.\nSelect text, scroll window, close",
 }
 
 _widget_redirector_spec = {
     "file": "redirector",
     "kwds": {},
-    "msg": "Every text insert should be printed to the console " "or the IDLE shell.",
+    "msg": "Every text insert should be printed to the console or the IDLE shell.",
 }
 
 

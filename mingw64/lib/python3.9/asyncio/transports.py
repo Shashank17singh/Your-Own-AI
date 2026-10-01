@@ -2,11 +2,11 @@
 
 __all__ = (
     "BaseTransport",
-    "ReadTransport",
-    "WriteTransport",
-    "Transport",
     "DatagramTransport",
+    "ReadTransport",
     "SubprocessTransport",
+    "Transport",
+    "WriteTransport",
 )
 
 
@@ -193,7 +193,6 @@ class DatagramTransport(BaseTransport):
 
 
 class SubprocessTransport(BaseTransport):
-
     __slots__ = ()
 
     def get_pid(self):
@@ -263,7 +262,7 @@ class _FlowControlMixin(Transport):
     resume_writing() may be called.
     """
 
-    __slots__ = ("_loop", "_protocol_paused", "_high_water", "_low_water")
+    __slots__ = ("_high_water", "_loop", "_low_water", "_protocol_paused")
 
     def __init__(self, extra=None, loop=None):
         super().__init__(extra)

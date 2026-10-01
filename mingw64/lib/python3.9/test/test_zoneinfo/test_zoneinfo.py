@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import base64
 import contextlib
 import dataclasses
@@ -15,9 +16,11 @@ import tempfile
 import unittest
 from datetime import date, datetime, time, timedelta, timezone
 from functools import cached_property
+
+from test.support import import_module
+
 from . import _support as test_support
 from ._support import OS_ENV_LOCK, TZPATH_TEST_LOCK, ZoneInfoTestBase
-from test.support import import_module
 
 lzma = import_module("lzma")
 py_zoneinfo, c_zoneinfo = test_support.get_modules()
@@ -230,9 +233,8 @@ class ZoneInfoTest(TzPathUserMixin, ZoneInfoTestBase):
             ("2019-01-01", TypeError),
         ]
         for val, exc_type in bad_values:
-            with self.subTest(val=val):
-                with self.assertRaises(exc_type):
-                    zone.fromutc(val)
+            with self.subTest(val=val), self.assertRaises(exc_type):
+                zone.fromutc(val)
 
     def test_utc(self):
         zi = self.klass("UTC")
@@ -1583,9 +1585,9 @@ class ZoneInfoData:
         )
         file_size += header_end
         out = b"TZif" + b"\x00" + contents[5:file_size]
-        assert (
-            contents[file_size : (file_size + 4)] == b"TZif"
-        ), "Version 2 file not truncated at Version 2 header"
+        assert contents[file_size : (file_size + 4)] == b"TZif", (
+            "Version 2 file not truncated at Version 2 header"
+        )
         return out
 
 

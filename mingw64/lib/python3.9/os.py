@@ -23,9 +23,8 @@ and opendir), and leave all pathname manipulation to os.path
 
 #'
 import abc
-import sys
 import stat as st
-
+import sys
 from _collections_abc import _check_methods
 
 GenericAlias = type(list[int])
@@ -34,25 +33,25 @@ _names = sys.builtin_module_names
 
 # Note:  more names are added to __all__ later.
 __all__ = [
-    "altsep",
-    "curdir",
-    "pardir",
-    "sep",
-    "pathsep",
-    "linesep",
-    "defpath",
-    "name",
-    "path",
-    "devnull",
-    "SEEK_SET",
     "SEEK_CUR",
     "SEEK_END",
-    "fsencode",
-    "fsdecode",
-    "get_exec_path",
-    "fdopen",
-    "popen",
+    "SEEK_SET",
+    "altsep",
+    "curdir",
+    "defpath",
+    "devnull",
     "extsep",
+    "fdopen",
+    "fsdecode",
+    "fsencode",
+    "get_exec_path",
+    "linesep",
+    "name",
+    "pardir",
+    "path",
+    "pathsep",
+    "popen",
+    "sep",
 ]
 
 
@@ -103,9 +102,8 @@ elif "nt" in _names:
         __all__.append("_exit")
     except ImportError:
         pass
-    import ntpath as path
-
     import nt
+    import ntpath as path
 
     __all__.extend(_get_exports_list(nt))
     del nt
@@ -119,7 +117,7 @@ else:
     raise ImportError("no os specific module found")
 
 sys.modules["os.path"] = path
-from os.path import curdir, pardir, sep, pathsep, defpath, extsep, altsep, devnull
+from os.path import altsep, curdir, defpath, devnull, extsep, pardir, pathsep, sep
 
 del _names
 
@@ -711,7 +709,7 @@ def get_exec_path(env=None):
 
 
 # Change environ to automatically call putenv() and unsetenv()
-from _collections_abc import MutableMapping, Mapping
+from _collections_abc import Mapping, MutableMapping
 
 
 class _Environ(MutableMapping):
@@ -758,7 +756,7 @@ class _Environ(MutableMapping):
         return "environ({{{}}})".format(
             ", ".join(
                 (
-                    "{!r}: {!r}".format(self.decodekey(key), self.decodevalue(value))
+                    f"{self.decodekey(key)!r}: {self.decodevalue(value)!r}"
                     for key, value in self._data.items()
                 )
             )
@@ -896,11 +894,10 @@ del _fscodec
 
 # Supply spawn*() (probably only for Unix)
 if _exists("fork") and not _exists("spawnv") and _exists("execv"):
-
     P_WAIT = 0
     P_NOWAIT = P_NOWAITO = 1
 
-    __all__.extend(["P_WAIT", "P_NOWAIT", "P_NOWAITO"])
+    __all__.extend(["P_NOWAIT", "P_NOWAITO", "P_WAIT"])
 
     # XXX Should we support P_DETACH?  I suppose it could fork()**2
     # and close the std I/O streams.  Also, P_OVERLAY is the same
@@ -1039,7 +1036,8 @@ def popen(cmd, mode="r", buffering=-1):
         raise ValueError("invalid mode %r" % mode)
     if buffering == 0 or buffering is None:
         raise ValueError("popen() does not support unbuffered streams")
-    import subprocess, io
+    import io
+    import subprocess
 
     if mode == "r":
         proc = subprocess.Popen(
@@ -1086,9 +1084,8 @@ class _wrap_close:
 def fdopen(fd, *args, **kwargs):
     if not isinstance(fd, int):
         raise TypeError("invalid fd type (%s, expected integer)" % type(fd))
-    import io
 
-    return io.open(fd, *args, **kwargs)
+    return open(fd, *args, **kwargs)
 
 
 # For testing purposes, make sure the function is available when the C
@@ -1114,15 +1111,14 @@ def _fspath(path):
             raise
         else:
             raise TypeError(
-                "expected str, bytes or os.PathLike object, "
-                "not " + path_type.__name__
+                "expected str, bytes or os.PathLike object, not " + path_type.__name__
             )
     if isinstance(path_repr, (str, bytes)):
         return path_repr
     else:
         raise TypeError(
-            "expected {}.__fspath__() to return str or bytes, "
-            "not {}".format(path_type.__name__, type(path_repr).__name__)
+            f"expected {path_type.__name__}.__fspath__() to return str or bytes, "
+            f"not {type(path_repr).__name__}"
         )
 
 
@@ -1170,7 +1166,7 @@ if name == "nt":
 
         def __repr__(self):
             if self.path:
-                return "<AddedDllDirectory({!r})>".format(self.path)
+                return f"<AddedDllDirectory({self.path!r})>"
             return "<AddedDllDirectory()>"
 
     def add_dll_directory(path):

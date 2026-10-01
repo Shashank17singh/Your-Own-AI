@@ -5,18 +5,17 @@
 """A parser of RFC 2822 and MIME email messages."""
 
 __all__ = [
-    "Parser",
-    "HeaderParser",
-    "BytesParser",
-    "BytesHeaderParser",
-    "FeedParser",
     "BytesFeedParser",
+    "BytesHeaderParser",
+    "BytesParser",
+    "FeedParser",
+    "HeaderParser",
+    "Parser",
 ]
 
-from io import StringIO, TextIOWrapper
-
-from email.feedparser import FeedParser, BytesFeedParser
 from email._policybase import compat32
+from email.feedparser import BytesFeedParser, FeedParser
+from io import StringIO, TextIOWrapper
 
 
 class Parser:
@@ -72,7 +71,7 @@ class Parser:
         """
         return self.parse(StringIO(text), headersonly=headersonly)
 
-
+
 class HeaderParser(Parser):
     def parse(self, fp, headersonly=True):
         return Parser.parse(self, fp, True)
@@ -80,9 +79,8 @@ class HeaderParser(Parser):
     def parsestr(self, text, headersonly=True):
         return Parser.parsestr(self, text, True)
 
-
-class BytesParser:
 
+class BytesParser:
     def __init__(self, *args, **kw):
         """Parser of binary RFC 2822 and MIME email messages.
 

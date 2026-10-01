@@ -2,18 +2,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for CMake file API query.json files",
   "type": "object",
-  "required": [
-    "requests"
-  ],
+  "required": ["requests"],
   "properties": {
     "requests": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "kind",
-          "version"
-        ],
+        "required": ["kind", "version"],
         "properties": {
           "kind": {
             "type": "string",
@@ -63,9 +58,7 @@
     },
     "versionObject": {
       "type": "object",
-      "required": [
-        "major"
-      ],
+      "required": ["major"],
       "properties": {
         "major": {
           "type": "integer",

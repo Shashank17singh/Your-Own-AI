@@ -6,18 +6,18 @@ support.import_module("_multiprocessing")
 
 import importlib
 import importlib.machinery
-import unittest
-import sys
 import os
 import os.path
 import py_compile
+import sys
+import unittest
 
 from test.support.script_helper import (
+    assert_python_ok,
     make_pkg,
     make_script,
     make_zip_pkg,
     make_zip_script,
-    assert_python_ok,
 )
 
 if support.PGO:

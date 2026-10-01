@@ -403,22 +403,14 @@
     "switch": "Yc",
     "comment": "Create",
     "value": "Create",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "PrecompiledHeader",
     "switch": "Yu",
     "comment": "Use",
     "value": "Use",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "PrecompiledHeader",
@@ -593,11 +585,7 @@
     "switch": "MP",
     "comment": "Multi-processor Compilation",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "IntrinsicFunctions",
@@ -863,22 +851,14 @@
     "switch": "doc",
     "comment": "Generate XML Documentation Files",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "BrowseInformation",
     "switch": "FR",
     "comment": "Enable Browse Information",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "ShowIncludes",
@@ -920,214 +900,154 @@
     "switch": "I",
     "comment": "Additional Include Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalUsingDirectories",
     "switch": "AI",
     "comment": "Additional #using Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "PreprocessorDefinitions",
     "switch": "D",
     "comment": "Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "UndefinePreprocessorDefinitions",
     "switch": "U",
     "comment": "Undefine Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "DisableSpecificWarnings",
     "switch": "wd",
     "comment": "Disable Specific Warnings",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ForcedIncludeFiles",
     "switch": "FI",
     "comment": "Forced Include File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "UserRequired", "SemicolonAppendable"]
   },
   {
     "name": "ForcedIncludeFiles",
     "switch": "FI",
     "comment": "Forced Include File",
     "value": "",
-    "flags": [
-      "UserFollowing",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserFollowing", "SemicolonAppendable"]
   },
   {
     "name": "ForcedUsingFiles",
     "switch": "FU",
     "comment": "Forced #using File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "PREfastLog",
     "switch": "analyze:log",
     "comment": "Code Analysis Log",
     "value": "",
-    "flags": [
-      "UserFollowing"
-    ]
+    "flags": ["UserFollowing"]
   },
   {
     "name": "PREfastAdditionalPlugins",
     "switch": "analyze:plugin",
     "comment": "Additional Code Analysis Native plugins",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "TreatSpecificWarningsAsErrors",
     "switch": "we",
     "comment": "Treat Specific Warnings As Errors",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "WarningVersion",
     "switch": "Wv:",
     "comment": "Warning Version",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PreprocessOutputPath",
     "switch": "Fi",
     "comment": "Preprocess Output Path",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "PrecompiledHeaderFile",
     "switch": "Yu",
     "comment": "Precompiled Header File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "PrecompiledHeaderFile",
     "switch": "Yc",
     "comment": "Precompiled Header File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "PrecompiledHeaderOutputFile",
     "switch": "Fp",
     "comment": "Precompiled Header Output File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "AssemblerListingLocation",
     "switch": "Fa",
     "comment": "ASM List Location",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ObjectFileName",
     "switch": "Fo",
     "comment": "Object File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ProgramDataBaseFileName",
     "switch": "Fd",
     "comment": "Program Database File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "XMLDocumentationFileName",
     "switch": "doc",
     "comment": "XML Documentation File Name",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "BrowseInformationFile",
     "switch": "FR",
     "comment": "Browse Information File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "ProcessorNumber",
     "switch": "MP",
     "comment": "Number of processors",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "CppLanguageStandard",

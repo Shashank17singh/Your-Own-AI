@@ -1,12 +1,12 @@
 """Unittests for heapq."""
 
+import doctest
 import random
 import unittest
-import doctest
+from operator import itemgetter
+from unittest import TestCase, skipUnless
 
 from test import support
-from unittest import TestCase, skipUnless
-from operator import itemgetter
 
 py_heapq = support.import_fresh_module("heapq", blocked=["_heapq"])
 c_heapq = support.import_fresh_module("heapq", fresh=["_heapq"])
@@ -56,7 +56,6 @@ def load_tests(loader, tests, ignore):
 
 
 class TestHeap:
-
     def test_push_pop(self):
         # 1) Push 256 random numbers and pop them off, verifying all's OK.
         heap = []
@@ -433,7 +432,6 @@ class SideEffectLT:
 
 
 class TestErrorHandling:
-
     def test_non_sequence(self):
         for f in (self.module.heapify, self.module.heappop):
             self.assertRaises((TypeError, AttributeError), f, 10)

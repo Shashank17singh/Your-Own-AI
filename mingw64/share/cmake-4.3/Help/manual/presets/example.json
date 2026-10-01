@@ -6,10 +6,7 @@
     "patch": 0
   },
   "$comment": "An example CMakePresets.json file",
-  "include": [
-    "otherThings.json",
-    "moreThings.json"
-  ],
+  "include": ["otherThings.json", "moreThings.json"],
   "configurePresets": [
     {
       "$comment": [
@@ -68,17 +65,15 @@
     {
       "name": "default",
       "configurePreset": "default",
-      "output": {"outputOnFailure": true},
-      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error", "stopOnFailure": true }
     }
   ],
   "packagePresets": [
     {
       "name": "default",
       "configurePreset": "default",
-      "generators": [
-        "TGZ"
-      ]
+      "generators": ["TGZ"]
     }
   ],
   "workflowPresets": [

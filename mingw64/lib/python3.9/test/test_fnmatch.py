@@ -1,14 +1,12 @@
 """Test cases for the fnmatch module."""
 
-import unittest
 import os
+import unittest
 import warnings
-
-from fnmatch import fnmatch, fnmatchcase, translate, filter
+from fnmatch import filter, fnmatch, fnmatchcase, translate
 
 
 class FnmatchTestCase(unittest.TestCase):
-
     def check_match(self, filename, pattern, should_match=True, fn=fnmatch):
         if should_match:
             self.assertTrue(
@@ -107,7 +105,6 @@ class FnmatchTestCase(unittest.TestCase):
 
 
 class TranslateTestCase(unittest.TestCase):
-
     def test_translate(self):
         import re
 
@@ -151,7 +148,6 @@ class TranslateTestCase(unittest.TestCase):
 
 
 class FilterTestCase(unittest.TestCase):
-
     def test_filter(self):
         self.assertEqual(
             filter(["Python", "Ruby", "Perl", "Tcl"], "P*"), ["Python", "Perl"]

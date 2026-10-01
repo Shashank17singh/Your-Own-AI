@@ -10,28 +10,29 @@ import sysconfig
 import tempfile
 import time
 import unittest
+
+from test import support
 from test.libregrtest.cmdline import _parse_args
+from test.libregrtest.pgo import setup_pgo_tests
 from test.libregrtest.runtest import (
-    findtests,
-    runtest,
-    get_abs_module,
-    is_failed,
-    STDTESTS,
     NOTTESTS,
     PROGRESS_MIN_TIME,
-    Passed,
-    Failed,
-    EnvChanged,
-    Skipped,
-    ResourceDenied,
-    Interrupted,
+    STDTESTS,
     ChildError,
     DidNotRun,
+    EnvChanged,
+    Failed,
+    Interrupted,
+    Passed,
+    ResourceDenied,
+    Skipped,
+    findtests,
+    get_abs_module,
+    is_failed,
+    runtest,
 )
 from test.libregrtest.setup import setup_tests
-from test.libregrtest.pgo import setup_pgo_tests
-from test.libregrtest.utils import removepy, count, format_duration, printlist
-from test import support
+from test.libregrtest.utils import count, format_duration, printlist, removepy
 
 # bpo-38203: Maximum delay in seconds to exit Python (call Py_Finalize()).
 # Used to protect against threading._shutdown() hang.
@@ -566,7 +567,7 @@ class Regrtest:
             self.test_count_width = 3
         else:
             self.tests = iter(self.selected)
-            self.test_count = "/{}".format(len(self.selected))
+            self.test_count = f"/{len(self.selected)}"
             self.test_count_width = len(self.test_count) - 1
 
         if self.ns.use_mp:
@@ -619,8 +620,7 @@ class Regrtest:
 
         xmlpath = os.path.join(support.SAVEDCWD, self.ns.xmlpath)
         with open(xmlpath, "wb") as f:
-            for s in ET.tostringlist(root):
-                f.write(s)
+            f.writelines(ET.tostringlist(root))
 
     def set_temp_dir(self):
         if self.ns.tempdir:
@@ -652,9 +652,9 @@ class Regrtest:
         # testing (see the -j option).
         pid = os.getpid()
         if self.worker_test_name is not None:
-            test_cwd = "test_python_worker_{}".format(pid)
+            test_cwd = f"test_python_worker_{pid}"
         else:
-            test_cwd = "test_python_{}".format(pid)
+            test_cwd = f"test_python_{pid}"
         test_cwd += support.FS_NONASCII
         test_cwd = os.path.join(self.tmp_dir, test_cwd)
         return test_cwd

@@ -27,8 +27,9 @@ tested for existence, and add interfaces to other dbm-like
 implementations.
 """
 
-__all__ = ["open", "whichdb", "error"]
+__all__ = ["error", "open", "whichdb"]
 
+import builtins
 import io
 import os
 import struct
@@ -84,15 +85,13 @@ def open(file, flag="r", mode=0o666):
             mod = _defaultmod
         else:
             raise error[0](
-                "db file doesn't exist; " "use 'c' or 'n' flag to create a new db"
+                "db file doesn't exist; use 'c' or 'n' flag to create a new db"
             )
     elif result == "":
         # db type cannot be determined
         raise error[0]("db type could not be determined")
     elif result not in _modules:
-        raise error[0](
-            "db type is {0}, but the module is not " "available".format(result)
-        )
+        raise error[0](f"db type is {result}, but the module is not available")
     else:
         mod = _modules[result]
     return mod.open(file, flag, mode)
@@ -113,16 +112,16 @@ def whichdb(filename):
 
     # Check for ndbm first -- this has a .pag and a .dir file
     try:
-        f = io.open(filename + ".pag", "rb")
+        f = builtins.open(filename + ".pag", "rb")
         f.close()
-        f = io.open(filename + ".dir", "rb")
+        f = builtins.open(filename + ".dir", "rb")
         f.close()
         return "dbm.ndbm"
     except OSError:
         # some dbm emulations based on Berkeley DB generate a .db file
         # some do not, but they should be caught by the bsd checks
         try:
-            f = io.open(filename + ".db", "rb")
+            f = builtins.open(filename + ".db", "rb")
             f.close()
             # guarantee we can actually open the file using dbm
             # kind of overkill, but since we are dealing with emulations
@@ -142,7 +141,7 @@ def whichdb(filename):
         # dumbdbm files with no keys are empty
         if size == 0:
             return "dbm.dumb"
-        f = io.open(filename + ".dir", "rb")
+        f = builtins.open(filename + ".dir", "rb")
         try:
             if f.read(1) in (b"'", b'"'):
                 return "dbm.dumb"
@@ -153,7 +152,7 @@ def whichdb(filename):
 
     # See if the file exists, return None if not
     try:
-        f = io.open(filename, "rb")
+        f = builtins.open(filename, "rb")
     except OSError:
         return None
 

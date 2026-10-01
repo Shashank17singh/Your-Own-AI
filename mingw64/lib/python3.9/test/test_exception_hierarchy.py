@@ -1,9 +1,9 @@
 import builtins
+import errno
 import os
 import select
 import socket
 import unittest
-import errno
 from errno import EEXIST
 
 
@@ -38,7 +38,6 @@ class SubOSErrorWithStandaloneInit(OSError):
 
 
 class HierarchyTest(unittest.TestCase):
-
     def test_builtin_errors(self):
         self.assertEqual(OSError.__name__, "OSError")
         self.assertIs(IOError, OSError)
@@ -125,7 +124,6 @@ class HierarchyTest(unittest.TestCase):
 
 
 class AttributesTest(unittest.TestCase):
-
     def test_windows_error(self):
         if os.name == "nt":
             self.assertIn("winerror", dir(OSError))
@@ -169,7 +167,6 @@ class AttributesTest(unittest.TestCase):
 
 
 class ExplicitSubclassingTest(unittest.TestCase):
-
     def test_errno_mapping(self):
         # When constructing an OSError subclass, errno mapping isn't done
         e = SubOSError(EEXIST, "Bad file descriptor")

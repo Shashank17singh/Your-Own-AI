@@ -38,7 +38,6 @@ class FinderTests(metaclass=abc.ABCMeta):
 
 
 class LoaderTests(metaclass=abc.ABCMeta):
-
     @abc.abstractmethod
     def test_module(self):
         """A module should load without issue.
@@ -53,7 +52,6 @@ class LoaderTests(metaclass=abc.ABCMeta):
             * No __path__
 
         """
-        pass
 
     @abc.abstractmethod
     def test_package(self):
@@ -70,23 +68,19 @@ class LoaderTests(metaclass=abc.ABCMeta):
             * __loader__
 
         """
-        pass
 
     @abc.abstractmethod
     def test_lacking_parent(self):
         """A loader should not be dependent on it's parent package being
         imported."""
-        pass
 
     @abc.abstractmethod
     def test_state_after_failure(self):
         """If a module is already in sys.modules and a reload fails
         (e.g. a SyntaxError), the module should be in the state it was before
         the reload began."""
-        pass
 
     @abc.abstractmethod
     def test_unloadable(self):
         """Test ImportError is raised when the loader is asked to load a module
         it can't."""
-        pass

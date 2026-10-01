@@ -21,41 +21,42 @@ and convert it to and from XML.
 """
 
 __all__ = [
+    "PI",
+    "VERSION",
+    "XML",
+    "XMLID",
+    "C14NWriterTarget",
     "Comment",
-    "dump",
     "Element",
     "ElementTree",
+    "ParseError",
+    "ProcessingInstruction",
+    "QName",
+    "SubElement",
+    "TreeBuilder",
+    "XMLParser",
+    "XMLPullParser",
+    "canonicalize",
+    "dump",
     "fromstring",
     "fromstringlist",
     "indent",
     "iselement",
     "iterparse",
     "parse",
-    "ParseError",
-    "PI",
-    "ProcessingInstruction",
-    "QName",
-    "SubElement",
+    "register_namespace",
     "tostring",
     "tostringlist",
-    "TreeBuilder",
-    "VERSION",
-    "XML",
-    "XMLID",
-    "XMLParser",
-    "XMLPullParser",
-    "register_namespace",
-    "canonicalize",
-    "C14NWriterTarget",
 ]
 VERSION = "1.3.0"
-import sys
-import re
-import warnings
-import io
 import collections
 import collections.abc
 import contextlib
+import io
+import re
+import sys
+import warnings
+
 from . import ElementPath
 
 
@@ -66,8 +67,6 @@ class ParseError(SyntaxError):
         'code'     - the specific exception code
         'position' - the line and column of the error
     """
-
-    pass
 
 
 def iselement(element):
@@ -678,8 +677,7 @@ def _namespaces(elem, default_namespace=None):
             else:
                 if default_namespace:
                     raise ValueError(
-                        "cannot use non-qualified names with "
-                        "default_namespace option"
+                        "cannot use non-qualified names with default_namespace option"
                     )
                 qnames[qname] = qname
         except TypeError:

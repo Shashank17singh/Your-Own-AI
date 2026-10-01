@@ -8,26 +8,25 @@ import sys
 import tokenize
 import traceback
 import webbrowser
-
+from idlelib import (
+    configdialog,
+    grep,
+    help,
+    help_about,
+    macosx,
+    pyparse,
+    query,
+    replace,
+    search,
+    window,
+)
+from idlelib.config import idleConf
+from idlelib.multicall import MultiCallCreator
+from idlelib.tree import wheel_event
 from tkinter import *
+from tkinter import messagebox, simpledialog
 from tkinter.font import Font
 from tkinter.ttk import Scrollbar
-from tkinter import simpledialog
-from tkinter import messagebox
-
-from idlelib.config import idleConf
-from idlelib import configdialog
-from idlelib import grep
-from idlelib import help
-from idlelib import help_about
-from idlelib import macosx
-from idlelib.multicall import MultiCallCreator
-from idlelib import pyparse
-from idlelib import query
-from idlelib import replace
-from idlelib import search
-from idlelib.tree import wheel_event
-from idlelib import window
 
 # The default tab setting for a Text widget, in average-width characters.
 TK_TABWIDTH_DEFAULT = 8
@@ -48,20 +47,20 @@ def _sphinx_version():
 
 
 class EditorWindow:
-    from idlelib.percolator import Percolator
-    from idlelib.colorizer import ColorDelegator, color_config
-    from idlelib.undo import UndoDelegator
-    from idlelib.iomenu import IOBinding, encoding
     from idlelib import mainmenu
-    from idlelib.statusbar import MultiStatusBar
     from idlelib.autocomplete import AutoComplete
     from idlelib.autoexpand import AutoExpand
     from idlelib.calltip import Calltip
     from idlelib.codecontext import CodeContext
-    from idlelib.sidebar import LineNumbers
+    from idlelib.colorizer import ColorDelegator, color_config
     from idlelib.format import FormatParagraph, FormatRegion, Indents, Rstrip
+    from idlelib.iomenu import IOBinding, encoding
     from idlelib.parenmatch import ParenMatch
+    from idlelib.percolator import Percolator
+    from idlelib.sidebar import LineNumbers
     from idlelib.squeezer import Squeezer
+    from idlelib.statusbar import MultiStatusBar
+    from idlelib.undo import UndoDelegator
     from idlelib.zoomheight import ZoomHeight
 
     filesystemencoding = sys.getfilesystemencoding()  # for file names
@@ -703,7 +702,7 @@ class EditorWindow:
     def goto_line_event(self, event):
         text = self.text
         lineno = query.Goto(
-            text, "Go To Line", "Enter a positive integer\n" "('big' = end of file):"
+            text, "Go To Line", "Enter a positive integer\n('big' = end of file):"
         ).result
         if lineno is not None:
             text.tag_remove("sel", "1.0", "end")
@@ -727,7 +726,7 @@ class EditorWindow:
         file_path = query.ModuleName(
             self.text,
             "Open Module",
-            "Enter the name of a Python module\n" "to search on sys.path and open:",
+            "Enter the name of a Python module\nto search on sys.path and open:",
             name,
         ).result
         if file_path is not None:
@@ -903,7 +902,7 @@ class EditorWindow:
                 # Skip empty menus
                 continue
             end += 1
-            for index in range(0, end):
+            for index in range(end):
                 if menu.type(index) == "command":
                     accel = menu.entrycget(index, "accelerator")
                     if accel:
@@ -1600,7 +1599,6 @@ def get_line_indent(line, tabwidth):
 
 
 class IndentSearcher:
-
     # .run() chews over the Text widget, looking for a block opener
     # and the stmt following it.  Returns a pair,
     #     (line containing block opener, line containing stmt)

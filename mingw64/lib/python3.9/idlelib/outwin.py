@@ -1,10 +1,8 @@
 """Editor window that can serve as an output file."""
 
 import re
-
-from tkinter import messagebox
-
 from idlelib.editor import EditorWindow
+from tkinter import messagebox
 
 file_line_pats = [
     # order of patterns matters
@@ -119,7 +117,6 @@ class OutputWindow(EditorWindow):
 
     def flush(self):
         "No flushing needed as write() directly writes to widget."
-        pass
 
     def showerror(self, *args, **kwargs):
         messagebox.showerror(*args, **kwargs)
@@ -154,7 +151,6 @@ class OutputWindow(EditorWindow):
 
 # These classes are currently not used but might come in handy
 class OnDemandOutputWindow:
-
     tagdefs = {
         # XXX Should use IdlePrefs.ColorPrefs
         "stdout": {"foreground": "blue"},

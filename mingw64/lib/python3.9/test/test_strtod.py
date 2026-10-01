@@ -2,14 +2,15 @@
 # introduced in Python 2.7 and 3.1.
 
 import random
-import unittest
 import re
 import sys
+import unittest
+
 import test.support
 
 if getattr(sys, "float_repr_style", "") != "short":
     raise unittest.SkipTest(
-        "correctly-rounded string->float conversions " "not available on this system"
+        "correctly-rounded string->float conversions not available on this system"
     )
 
 # Correctly rounded str -> float in pure Python, for comparison.
@@ -110,8 +111,8 @@ class StrtodTests(unittest.TestCase):
         self.assertEqual(
             expected,
             got,
-            "Incorrectly rounded str->float conversion for {}: "
-            "expected {}, got {}".format(s, expected, got),
+            f"Incorrectly rounded str->float conversion for {s}: "
+            f"expected {expected}, got {got}",
         )
 
     def test_short_halfway_cases(self):
@@ -138,10 +139,10 @@ class StrtodTests(unittest.TestCase):
                 # until n * 2**p2 has more than 20 significant digits.
                 digits, exponent = n, e
                 while digits < 10**20:
-                    s = "{}e{}".format(digits, exponent)
+                    s = f"{digits}e{exponent}"
                     self.check_strtod(s)
                     # Same again, but with extra trailing zeros.
-                    s = "{}e{}".format(digits * 10**40, exponent - 40)
+                    s = f"{digits * 10**40}e{exponent - 40}"
                     self.check_strtod(s)
                     digits *= 2
 
@@ -149,10 +150,10 @@ class StrtodTests(unittest.TestCase):
                 # >= 0, with n * 5**p5 < 10**20.
                 digits, exponent = n, e
                 while digits < 10**20:
-                    s = "{}e{}".format(digits, exponent)
+                    s = f"{digits}e{exponent}"
                     self.check_strtod(s)
                     # Same again, but with extra trailing zeros.
-                    s = "{}e{}".format(digits * 10**40, exponent - 40)
+                    s = f"{digits * 10**40}e{exponent - 40}"
                     self.check_strtod(s)
                     digits *= 5
                     exponent -= 1
@@ -180,7 +181,7 @@ class StrtodTests(unittest.TestCase):
                 # m * 2**e = (m * 5**-e) * 10**e
                 digits = m * 5**-e
                 exponent = e
-            s = "{}e{}".format(digits, exponent)
+            s = f"{digits}e{exponent}"
             self.check_strtod(s)
 
     def test_boundaries(self):
@@ -197,7 +198,7 @@ class StrtodTests(unittest.TestCase):
             for j in range(1000):
                 digits = n + random.randrange(-3 * u, 3 * u)
                 exponent = e
-                s = "{}e{}".format(digits, exponent)
+                s = f"{digits}e{exponent}"
                 self.check_strtod(s)
                 n *= 10
                 u *= 10
@@ -211,7 +212,7 @@ class StrtodTests(unittest.TestCase):
             base = 10**-exponent // 2**1075
             for j in range(TEST_SIZE):
                 digits = base + random.randrange(-1000, 1000)
-                s = "{}e{}".format(digits, exponent)
+                s = f"{digits}e{exponent}"
                 self.check_strtod(s)
 
     def test_bigcomp(self):
@@ -220,7 +221,7 @@ class StrtodTests(unittest.TestCase):
             for i in range(10 * TEST_SIZE):
                 digits = random.randrange(dig10)
                 exponent = random.randrange(-400, 400)
-                s = "{}e{}".format(digits, exponent)
+                s = f"{digits}e{exponent}"
                 self.check_strtod(s)
 
     def test_parsing(self):

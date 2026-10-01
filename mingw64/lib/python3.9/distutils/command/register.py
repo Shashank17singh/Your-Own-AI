@@ -7,16 +7,15 @@ Implements the Distutils 'register' command (register with the repository).
 
 import getpass
 import io
-import urllib.parse, urllib.request
-from warnings import warn
-
+import urllib.parse
+import urllib.request
+from distutils import log
 from distutils.core import PyPIRCCommand
 from distutils.errors import *
-from distutils import log
+from warnings import warn
 
 
 class register(PyPIRCCommand):
-
     description = "register the distribution with the Python package index"
     user_options = PyPIRCCommand.user_options + [
         ("list-classifiers", None, "list the valid Trove classifiers"),
@@ -65,8 +64,11 @@ class register(PyPIRCCommand):
 
     def check_metadata(self):
         """Deprecated API."""
-        warn("distutils.command.register.check_metadata is deprecated, \
-              use the check command instead", PendingDeprecationWarning)
+        warn(
+            "distutils.command.register.check_metadata is deprecated, \
+              use the check command instead",
+            PendingDeprecationWarning,
+        )
         check = self.distribution.get_command_obj("check")
         check.ensure_finalized()
         check.strict = self.strict
@@ -140,7 +142,7 @@ class register(PyPIRCCommand):
             username = password = ""
 
         # get the user's login info
-        choices = "1 2 3 4".split()
+        choices = ["1", "2", "3", "4"]
         while choice not in choices:
             self.announce(
                 """\
@@ -221,7 +223,7 @@ Your selection [default 1]: """,
                 log.info("Server response (%s): %s", code, result)
             else:
                 log.info("You will receive an email shortly.")
-                log.info(("Follow the instructions in it to " "complete registration."))
+                log.info("Follow the instructions in it to complete registration.")
         elif choice == "3":
             data = {":action": "password_reset"}
             data["email"] = ""

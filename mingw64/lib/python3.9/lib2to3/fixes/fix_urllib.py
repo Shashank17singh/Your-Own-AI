@@ -6,16 +6,16 @@ complex nature of the fixing for urllib, it has its own fixer.
 # Author: Nick Edds
 
 # Local imports
-from lib2to3.fixes.fix_imports import alternates, FixImports
 from lib2to3.fixer_util import (
-    Name,
     Comma,
     FromImport,
+    Name,
     Newline,
-    find_indentation,
     Node,
+    find_indentation,
     syms,
 )
+from lib2to3.fixes.fix_imports import FixImports, alternates
 
 MAPPING = {
     "urllib": [
@@ -106,18 +106,23 @@ def build_pattern():
                        ( member=%s | import_as_name< member=%s 'as' any > |
                          import_as_names< members=any*  >) >
                   """ % (old_module, members, members)
-            yield """import_from< 'from' module_star=%r 'import' star='*' >
-                  """ % old_module
-            yield """import_name< 'import'
+            yield (
+                """import_from< 'from' module_star=%r 'import' star='*' >
+                  """
+                % old_module
+            )
+            yield (
+                """import_name< 'import'
                                   dotted_as_name< module_as=%r 'as' any > >
-                  """ % old_module
+                  """
+                % old_module
+            )
             # bare_with_attr has a special significance for FixImports.match().
             yield """power< bare_with_attr=%r trailer< '.' member=%s > any* >
                   """ % (old_module, members)
 
 
 class FixUrllib(FixImports):
-
     def build_pattern(self):
         return "|".join(build_pattern())
 

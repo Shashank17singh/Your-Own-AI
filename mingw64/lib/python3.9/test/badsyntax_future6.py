@@ -1,7 +1,6 @@
 """This is a test"""
 
 "this isn't a doc string"
-from __future__ import nested_scopes
 
 
 def f(x):

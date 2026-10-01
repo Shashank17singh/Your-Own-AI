@@ -4,30 +4,25 @@ Glossary:
     * errored    : Whitespace related problems present in file.
 """
 
-from unittest import TestCase, mock
-from unittest import mock
 import errno
 import os
 import tabnanny
-import tokenize
 import tempfile
 import textwrap
+import tokenize
+from unittest import TestCase, mock
+
 from test.support import (
     captured_stderr,
     captured_stdout,
-    script_helper,
     findfile,
+    script_helper,
     unlink,
 )
 
 SOURCE_CODES = {
     "incomplete_expression": (
-        "fruits = [\n"
-        '    "Apple",\n'
-        '    "Orange",\n'
-        '    "Banana",\n'
-        "\n"
-        "print(fruits)\n"
+        'fruits = [\n    "Apple",\n    "Orange",\n    "Banana",\n\nprint(fruits)\n'
     ),
     "wrong_indented": (
         "if True:\n"
@@ -51,10 +46,7 @@ SOURCE_CODES = {
         '    print("else called")\n'
     ),
     "tab_space_errored_1": (
-        "def my_func():\n"
-        '\t  print("hello world")\n'
-        "\t  if True:\n"
-        '\t\tprint("If called")'
+        'def my_func():\n\t  print("hello world")\n\t  if True:\n\t\tprint("If called")'
     ),
     "tab_space_errored_2": (
         "def my_func():\n"

@@ -122,9 +122,9 @@ This module also defines an exception 'error'.
 """
 
 import enum
+import functools
 import sre_compile
 import sre_parse
-import functools
 
 try:
     import _locale
@@ -134,35 +134,35 @@ except ImportError:
 
 # public symbols
 __all__ = [
-    "match",
-    "fullmatch",
-    "search",
-    "sub",
-    "subn",
-    "split",
-    "findall",
-    "finditer",
-    "compile",
-    "purge",
-    "template",
-    "escape",
-    "error",
-    "Pattern",
-    "Match",
+    "ASCII",
+    "DOTALL",
+    "IGNORECASE",
+    "LOCALE",
+    "MULTILINE",
+    "UNICODE",
+    "VERBOSE",
     "A",
     "I",
     "L",
     "M",
+    "Match",
+    "Pattern",
     "S",
-    "X",
     "U",
-    "ASCII",
-    "IGNORECASE",
-    "LOCALE",
-    "MULTILINE",
-    "DOTALL",
-    "VERBOSE",
-    "UNICODE",
+    "X",
+    "compile",
+    "error",
+    "escape",
+    "findall",
+    "finditer",
+    "fullmatch",
+    "match",
+    "purge",
+    "search",
+    "split",
+    "sub",
+    "subn",
+    "template",
 ]
 
 __version__ = "2.2.1"

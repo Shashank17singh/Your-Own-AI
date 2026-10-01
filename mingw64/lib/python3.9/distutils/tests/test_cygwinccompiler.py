@@ -1,23 +1,23 @@
 """Tests for distutils.cygwinccompiler."""
 
-import unittest
-import sys
 import os
-from io import BytesIO
-from test.support import run_unittest
-
+import sys
+import unittest
 from distutils import cygwinccompiler
 from distutils.cygwinccompiler import (
-    check_config_h,
-    CONFIG_H_OK,
     CONFIG_H_NOTOK,
+    CONFIG_H_OK,
     CONFIG_H_UNCERTAIN,
+    check_config_h,
     get_msvcr,
 )
 from distutils.tests import support
+from io import BytesIO
+
+from test.support import run_unittest
 
 
-class FakePopen(object):
+class FakePopen:
     test_class = None
 
     def __init__(self, cmd, shell, stdout):
@@ -31,9 +31,8 @@ class FakePopen(object):
 
 
 class CygwinCCompilerTestCase(support.TempdirManager, unittest.TestCase):
-
     def setUp(self):
-        super(CygwinCCompilerTestCase, self).setUp()
+        super().setUp()
         self.version = sys.version
         self.python_h = os.path.join(self.mkdtemp(), "python.h")
         from distutils import sysconfig
@@ -54,7 +53,7 @@ class CygwinCCompilerTestCase(support.TempdirManager, unittest.TestCase):
         sysconfig.get_config_h_filename = self.old_get_config_h_filename
         cygwinccompiler.find_executable = self.old_find_executable
         cygwinccompiler.Popen = self.old_popen
-        super(CygwinCCompilerTestCase, self).tearDown()
+        super().tearDown()
 
     def _get_config_h_filename(self):
         return self.python_h
@@ -100,31 +99,31 @@ class CygwinCCompilerTestCase(support.TempdirManager, unittest.TestCase):
 
         # MSVC 7.0
         sys.version = (
-            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) " "[MSC v.1300 32 bits (Intel)]"
+            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) [MSC v.1300 32 bits (Intel)]"
         )
         self.assertEqual(get_msvcr(), ["msvcr70"])
 
         # MSVC 7.1
         sys.version = (
-            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) " "[MSC v.1310 32 bits (Intel)]"
+            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) [MSC v.1310 32 bits (Intel)]"
         )
         self.assertEqual(get_msvcr(), ["msvcr71"])
 
         # VS2005 / MSVC 8.0
         sys.version = (
-            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) " "[MSC v.1400 32 bits (Intel)]"
+            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) [MSC v.1400 32 bits (Intel)]"
         )
         self.assertEqual(get_msvcr(), ["msvcr80"])
 
         # VS2008 / MSVC 9.0
         sys.version = (
-            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) " "[MSC v.1500 32 bits (Intel)]"
+            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) [MSC v.1500 32 bits (Intel)]"
         )
         self.assertEqual(get_msvcr(), ["msvcr90"])
 
         # unknown
         sys.version = (
-            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) " "[MSC v.1999 32 bits (Intel)]"
+            "2.5.1 (r251:54863, Apr 18 2007, 08:51:08) [MSC v.1999 32 bits (Intel)]"
         )
         self.assertRaises(ValueError, get_msvcr)
 

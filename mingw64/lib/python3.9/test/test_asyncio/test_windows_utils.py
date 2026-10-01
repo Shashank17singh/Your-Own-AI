@@ -9,9 +9,9 @@ if sys.platform != "win32":
 
 import _overlapped
 import _winapi
-
 import asyncio
 from asyncio import windows_utils
+
 from test import support
 
 
@@ -20,7 +20,6 @@ def tearDownModule():
 
 
 class PipeTests(unittest.TestCase):
-
     def test_pipe_overlapped(self):
         h1, h2 = windows_utils.pipe(overlapped=(True, True))
         try:
@@ -79,7 +78,6 @@ class PipeTests(unittest.TestCase):
 
 
 class PopenTests(unittest.TestCase):
-
     def test_popen(self):
         command = r"""if 1:
             import sys

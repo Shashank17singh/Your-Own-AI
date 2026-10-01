@@ -1,17 +1,16 @@
 import os
-
-from . import abc as resources_abc
-from . import _common
-from ._common import as_file
+from collections.abc import Iterable
 from contextlib import contextmanager, suppress
 from importlib import import_module
 from importlib.abc import ResourceLoader
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
 from types import ModuleType
-from typing import ContextManager, Iterable, Optional, Union
-from typing import cast
-from typing.io import BinaryIO, TextIO
+from typing import BinaryIO, ContextManager, TextIO, Union, cast
+
+from . import _common
+from . import abc as resources_abc
+from ._common import as_file
 
 __all__ = [
     "Package",
@@ -47,7 +46,7 @@ def _get_package(package) -> ModuleType:
     """
     module = _resolve(package)
     if module.__spec__.submodule_search_locations is None:
-        raise TypeError("{!r} is not a package".format(package))
+        raise TypeError(f"{package!r} is not a package")
     return module
 
 
@@ -58,11 +57,11 @@ def _normalize_path(path) -> str:
     """
     parent, file_name = os.path.split(path)
     if parent:
-        raise ValueError("{!r} must be only a file name".format(path))
+        raise ValueError(f"{path!r} must be only a file name")
     return file_name
 
 
-def _get_resource_reader(package: ModuleType) -> Optional[resources_abc.ResourceReader]:
+def _get_resource_reader(package: ModuleType) -> resources_abc.ResourceReader | None:
     # Return the package's loader if it's a ResourceReader.  We can't use
     # a issubclass() check here because apparently abc.'s __subclasscheck__()
     # hook wants to create a weak reference to the object, but
@@ -106,7 +105,7 @@ def open_binary(package: Package, resource: Resource) -> BinaryIO:
                 data = loader.get_data(full_path)
         if data is None:
             package_name = package.__spec__.name
-            message = "{!r} resource not found in {!r}".format(resource, package_name)
+            message = f"{resource!r} resource not found in {package_name!r}"
             raise FileNotFoundError(message)
         return BytesIO(data)
 

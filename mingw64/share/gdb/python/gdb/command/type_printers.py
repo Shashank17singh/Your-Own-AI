@@ -1,4 +1,5 @@
 import copy
+
 import gdb
 
 """GDB commands for working with type-printers."""
@@ -9,7 +10,7 @@ class InfoTypePrinter(gdb.Command):
     Usage: info type-printers"""
 
     def __init__(self):
-        super(InfoTypePrinter, self).__init__("info type-printers", gdb.COMMAND_DATA)
+        super().__init__("info type-printers", gdb.COMMAND_DATA)
 
     def list_type_printers(self, type_printers):
         """Print a list of type printers."""
@@ -40,7 +41,7 @@ class InfoTypePrinter(gdb.Command):
 
 class _EnableOrDisableCommand(gdb.Command):
     def __init__(self, setting, name):
-        super(_EnableOrDisableCommand, self).__init__(name, gdb.COMMAND_DATA)
+        super().__init__(name, gdb.COMMAND_DATA)
         self.setting = setting
 
     def set_some(self, name, printers):
@@ -85,7 +86,7 @@ class EnableTypePrinter(_EnableOrDisableCommand):
     NAME is the name of the type-printer."""
 
     def __init__(self):
-        super(EnableTypePrinter, self).__init__(True, "enable type-printer")
+        super().__init__(True, "enable type-printer")
 
 
 class DisableTypePrinter(_EnableOrDisableCommand):
@@ -94,7 +95,7 @@ class DisableTypePrinter(_EnableOrDisableCommand):
     NAME is the name of the type-printer."""
 
     def __init__(self):
-        super(DisableTypePrinter, self).__init__(False, "disable type-printer")
+        super().__init__(False, "disable type-printer")
 
 
 InfoTypePrinter()

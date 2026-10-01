@@ -1,8 +1,9 @@
-import cppcheckdata
-import sys
+import json
 import os
 import re
-import json
+import sys
+
+import cppcheckdata
 
 
 class DataStruct:
@@ -316,7 +317,7 @@ def check_variable_naming(conf, cfg, debugprint):
             print("Sign: " + str(var.nameToken.valueType.sign))
             print("variable type: " + varType)
             print("\n")
-            print("\t-- {} {}".format(varType, str(var.nameToken.str)))
+            print(f"\t-- {varType} {var.nameToken.str!s}")
         if conf.skip_one_char_variables and len(var.nameToken.str) == 1:
             continue
         if varType in conf.variable_prefixes:
@@ -368,7 +369,7 @@ def check_function_naming(conf, cfg, debugprint):
             prev = prev.previous
             retval = prev.str + retval
         if debugprint:
-            print("\t:: {} {}".format(retval, token.function.name))
+            print(f"\t:: {retval} {token.function.name}")
         if retval and retval in conf.function_prefixes:
             if not token.function.name.startswith(conf.function_prefixes[retval]):
                 reportNamingError(

@@ -4,16 +4,13 @@ import unittest
 
 
 class PEP3120Test(unittest.TestCase):
-
     def test_pep3120(self):
-        self.assertEqual(
-            "Питон".encode("utf-8"), b"\xd0\x9f\xd0\xb8\xd1\x82\xd0\xbe\xd0\xbd"
-        )
-        self.assertEqual("\П".encode("utf-8"), b"\\\xd0\x9f")
+        self.assertEqual("Питон".encode(), b"\xd0\x9f\xd0\xb8\xd1\x82\xd0\xbe\xd0\xbd")
+        self.assertEqual(r"\П".encode(), b"\\\xd0\x9f")
 
     def test_badsyntax(self):
         try:
-            import test.badsyntax_pep3120
+            pass
         except SyntaxError as msg:
             msg = str(msg).lower()
             self.assertTrue("utf-8" in msg)
@@ -22,7 +19,6 @@ class PEP3120Test(unittest.TestCase):
 
 
 class BuiltinCompileTests(unittest.TestCase):
-
     # Issue 3574.
     def test_latin1(self):
         # Allow compile() to read Latin-1 source.

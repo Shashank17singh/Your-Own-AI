@@ -1,9 +1,9 @@
+import contextlib
+import functools
 import os
 import pathlib
-import zipfile
 import tempfile
-import functools
-import contextlib
+import zipfile
 
 
 def from_package(package):

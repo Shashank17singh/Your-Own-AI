@@ -1,7 +1,7 @@
-from ctypes import *
 import array
 import gc
 import unittest
+from ctypes import *
 
 
 class X(Structure):
@@ -138,7 +138,7 @@ class Test(unittest.TestCase):
             (c_int * 1).from_buffer_copy(a, 16 * sizeof(c_int))
 
     def test_abstract(self):
-        from ctypes import _Pointer, _SimpleCData, _CFuncPtr
+        from ctypes import _CFuncPtr, _Pointer, _SimpleCData
 
         self.assertRaises(TypeError, Array.from_buffer, bytearray(10))
         self.assertRaises(TypeError, Structure.from_buffer, bytearray(10))

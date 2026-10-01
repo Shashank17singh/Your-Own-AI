@@ -1,4 +1,5 @@
 import gdb
+
 from .server import capability, export_line, request
 from .sources import make_source
 
@@ -40,7 +41,7 @@ def disassemble(
     offset: int = 0,
     instructionOffset: int = 0,
     instructionCount: int,
-    **extra
+    **extra,
 ):
     pc = int(memoryReference, 0) + offset
     inf = gdb.selected_inferior()

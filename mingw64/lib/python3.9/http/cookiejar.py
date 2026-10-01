@@ -36,14 +36,15 @@ __all__ = [
     "MozillaCookieJar",
 ]
 
-import os
 import copy
 import datetime
-import re
-import time
-import urllib.parse, urllib.request
-import threading as _threading
 import http.client  # only for the default HTTP port
+import os
+import re
+import threading as _threading
+import time
+import urllib.parse
+import urllib.request
 from calendar import timegm
 
 debug = False  # set to True to enable debugging via the logging module
@@ -63,8 +64,7 @@ def _debug(*args):
 
 DEFAULT_HTTP_PORT = str(http.client.HTTP_PORT)
 MISSING_FILENAME_TEXT = (
-    "a filename was not supplied (nor was the CookieJar "
-    "instance initialised with one)"
+    "a filename was not supplied (nor was the CookieJar instance initialised with one)"
 )
 
 
@@ -72,7 +72,9 @@ def _warn_unhandled_exception():
     # There are a few catch-all except: statements in this module, for
     # catching input that's bad in unexpected ways.  Warn if any
     # exceptions are caught there.
-    import io, warnings, traceback
+    import io
+    import traceback
+    import warnings
 
     f = io.StringIO()
     traceback.print_exc(None, f)
@@ -260,7 +262,9 @@ STRICT_DATE_RE = re.compile(
     r"(\d\d\d\d) (\d\d):(\d\d):(\d\d) GMT$",
     re.ASCII,
 )
-WEEKDAY_RE = re.compile(r"^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[a-z]*,?\s*", re.I | re.ASCII)
+WEEKDAY_RE = re.compile(
+    r"^(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat)[a-z]*,?\s*", re.IGNORECASE | re.ASCII
+)
 LOOSE_HTTP_DATE_RE = re.compile(
     r"""^
     (\d\d?)            # day
@@ -282,7 +286,7 @@ LOOSE_HTTP_DATE_RE = re.compile(
        \(\w+\)         # ASCII representation of timezone in parens.
        \s*
     )?$""",
-    re.X | re.ASCII,
+    re.VERBOSE | re.ASCII,
 )
 
 
@@ -360,7 +364,7 @@ ISO_DATE_RE = re.compile(
        |Z|z)             # timezone  (Z is "zero meridian", i.e. GMT)
       \s*
    )?$""",
-    re.X | re.ASCII,
+    re.VERBOSE | re.ASCII,
 )
 
 
@@ -531,10 +535,8 @@ def join_header_words(lists):
 
 
 def strip_quotes(text):
-    if text.startswith('"'):
-        text = text[1:]
-    if text.endswith('"'):
-        text = text[:-1]
+    text = text.removeprefix('"')
+    text = text.removesuffix('"')
     return text
 
 
@@ -1116,14 +1118,10 @@ class DefaultCookiePolicy(CookiePolicy):
     def set_ok_verifiability(self, cookie, request):
         if request.unverifiable and is_third_party(request):
             if cookie.version > 0 and self.strict_rfc2965_unverifiable:
-                _debug(
-                    "   third-party RFC 2965 cookie during " "unverifiable transaction"
-                )
+                _debug("   third-party RFC 2965 cookie during unverifiable transaction")
                 return False
             elif cookie.version == 0 and self.strict_ns_unverifiable:
-                _debug(
-                    "   third-party Netscape cookie during " "unverifiable transaction"
-                )
+                _debug("   third-party Netscape cookie during unverifiable transaction")
                 return False
         return True
 
@@ -1146,7 +1144,7 @@ class DefaultCookiePolicy(CookiePolicy):
                 cookie.version > 0 or (cookie.version == 0 and self.strict_ns_set_path)
             ) and not self.path_return_ok(cookie.path, request):
                 _debug(
-                    "   path attribute %s is not a prefix of request " "path %s",
+                    "   path attribute %s is not a prefix of request path %s",
                     cookie.path,
                     req_path,
                 )
@@ -1224,7 +1222,7 @@ class DefaultCookiePolicy(CookiePolicy):
             if cookie.version > 0 or (self.strict_ns_domain & self.DomainRFC2965Match):
                 if not domain_match(erhn, domain):
                     _debug(
-                        "   effective request-host %s does not domain-match " "%s",
+                        "   effective request-host %s does not domain-match %s",
                         erhn,
                         domain,
                     )
@@ -1290,14 +1288,10 @@ class DefaultCookiePolicy(CookiePolicy):
     def return_ok_verifiability(self, cookie, request):
         if request.unverifiable and is_third_party(request):
             if cookie.version > 0 and self.strict_rfc2965_unverifiable:
-                _debug(
-                    "   third-party RFC 2965 cookie during unverifiable " "transaction"
-                )
+                _debug("   third-party RFC 2965 cookie during unverifiable transaction")
                 return False
             elif cookie.version == 0 and self.strict_ns_unverifiable:
-                _debug(
-                    "   third-party Netscape cookie during unverifiable " "transaction"
-                )
+                _debug("   third-party Netscape cookie during unverifiable transaction")
                 return False
         return True
 
@@ -1362,7 +1356,7 @@ class DefaultCookiePolicy(CookiePolicy):
             return False
         if cookie.version == 0 and not ("." + erhn).endswith(dotdomain):
             _debug(
-                "   request-host %s does not match Netscape cookie domain " "%s",
+                "   request-host %s does not match Netscape cookie domain %s",
                 req_host,
                 domain,
             )
@@ -1399,10 +1393,10 @@ class DefaultCookiePolicy(CookiePolicy):
         _debug("- checking cookie path=%s", path)
         req_path = request_path(request)
         pathlen = len(path)
-        if req_path == path:
-            return True
-        elif req_path.startswith(path) and (
-            path.endswith("/") or req_path[pathlen : pathlen + 1] == "/"
+        if (
+            req_path == path
+            or req_path.startswith(path)
+            and (path.endswith("/") or req_path[pathlen : pathlen + 1] == "/")
         ):
             return True
 
@@ -1558,7 +1552,6 @@ class CookieJar:
         _debug("add_cookie_header")
         self._cookies_lock.acquire()
         try:
-
             self._policy._now = self._now = int(time.time())
 
             cookies = self._cookies_for_request(request)
@@ -2046,7 +2039,6 @@ class FileCookieJar(CookieJar):
 
         self._cookies_lock.acquire()
         try:
-
             old_state = copy.deepcopy(self._cookies)
             self._cookies = {}
             try:
@@ -2140,7 +2132,7 @@ class LWPCookieJar(FileCookieJar):
     def _really_load(self, f, filename, ignore_discard, ignore_expires):
         magic = f.readline()
         if not self.magic_re.search(magic):
-            msg = "%r does not look like a Set-Cookie3 (LWP) format " "file" % filename
+            msg = "%r does not look like a Set-Cookie3 (LWP) format file" % filename
             raise LoadError(msg)
 
         now = time.time()
@@ -2284,8 +2276,7 @@ class MozillaCookieJar(FileCookieJar):
                     break
 
                 # last field may be absent, so keep any trailing tab
-                if line.endswith("\n"):
-                    line = line[:-1]
+                line = line.removesuffix("\n")
 
                 # skip comments and blank lines XXX what is $ for?
                 if line.strip().startswith(("#", "$")) or line.strip() == "":

@@ -1,19 +1,18 @@
 import binascii
 import functools
-import hmac
 import hashlib
+import hmac
 import unittest
 import unittest.mock
 import warnings
+from _operator import _compare_digest as operator_compare_digest
 
 from test.support import hashlib_helper
 
-from _operator import _compare_digest as operator_compare_digest
-
 try:
     from _hashlib import HMAC as C_HMAC
-    from _hashlib import hmac_new as c_hmac_new
     from _hashlib import compare_digest as openssl_compare_digest
+    from _hashlib import hmac_new as c_hmac_new
 except ImportError:
     C_HMAC = None
     c_hmac_new = None
@@ -31,7 +30,6 @@ def ignore_warning(func):
 
 
 class TestVectorsTestCase(unittest.TestCase):
-
     def asssert_hmac(
         self, key, data, digest, hashfunc, hashname, digest_size, block_size
     ):
@@ -288,7 +286,7 @@ class TestVectorsTestCase(unittest.TestCase):
         # 4.7.  Test Case 6
         hmactest(
             key=b"\xaa" * 131,
-            data=b"Test Using Larger Than Block-Siz" b"e Key - Hash Key First",
+            data=b"Test Using Larger Than Block-Size Key - Hash Key First",
             hexdigests={
                 hashlib.sha224: "95e9a0db962095adaebe9b2d6f0dbce2"
                 "d499f112f2d2b7273fa6870e",
@@ -345,7 +343,7 @@ class TestVectorsTestCase(unittest.TestCase):
 
     @hashlib_helper.requires_hashdigest("sha256")
     def test_legacy_block_size_warnings(self):
-        class MockCrazyHash(object):
+        class MockCrazyHash:
             """Ain't no block_size attribute here."""
 
             def __init__(self, *args):
@@ -382,7 +380,6 @@ class TestVectorsTestCase(unittest.TestCase):
 
 
 class ConstructorTestCase(unittest.TestCase):
-
     expected = "6c845b47f52b3b47f6590c502db7825aad757bf4fadc8fa972f7cd2e76a5bdeb"
 
     @hashlib_helper.requires_hashdigest("sha256")
@@ -450,7 +447,6 @@ class ConstructorTestCase(unittest.TestCase):
 
 
 class SanityTestCase(unittest.TestCase):
-
     @hashlib_helper.requires_hashdigest("sha256")
     def test_exercise_all_methods(self):
         # Exercising all methods once.
@@ -466,7 +462,6 @@ class SanityTestCase(unittest.TestCase):
 
 
 class CopyTestCase(unittest.TestCase):
-
     @hashlib_helper.requires_hashdigest("sha256")
     def test_attributes(self):
         # Testing if attributes are of same type.
@@ -540,7 +535,6 @@ class CopyTestCase(unittest.TestCase):
 
 
 class CompareDigestTestCase(unittest.TestCase):
-
     def test_hmac_compare_digest(self):
         self._test_compare_digest(hmac.compare_digest)
         if openssl_compare_digest is not None:

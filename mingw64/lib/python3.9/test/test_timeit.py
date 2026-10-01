@@ -1,11 +1,10 @@
+import io
+import sys
 import timeit
 import unittest
-import sys
-import io
 from textwrap import dedent
 
-from test.support import captured_stdout
-from test.support import captured_stderr
+from test.support import captured_stderr, captured_stdout
 
 # timeit's default number of iterations.
 DEFAULT_NUMBER = 1000000
@@ -45,7 +44,6 @@ class FakeTimer:
 
 
 class TestTimeit(unittest.TestCase):
-
     def tearDown(self):
         try:
             del timeit._fake_timer
@@ -389,7 +387,7 @@ class TestTimeit(unittest.TestCase):
 
     def test_autorange_with_callback(self):
         def callback(a, b):
-            print("{} {:.3f}".format(a, b))
+            print(f"{a} {b:.3f}")
 
         with captured_stdout() as s:
             num_loops, time_taken = self.autorange(callback=callback)

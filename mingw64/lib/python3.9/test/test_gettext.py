@@ -1,7 +1,7 @@
-import os
 import base64
 import contextlib
 import gettext
+import os
 import unittest
 
 from test import support

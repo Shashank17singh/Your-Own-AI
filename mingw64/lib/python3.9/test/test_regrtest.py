@@ -15,10 +15,9 @@ import sys
 import sysconfig
 import tempfile
 import textwrap
-import time
 import unittest
-from test import libregrtest
-from test import support
+
+from test import libregrtest, support
 from test.libregrtest import utils
 
 Py_DEBUG = hasattr(sys, "gettotalrefcount")
@@ -533,19 +532,16 @@ class BaseTestCase(unittest.TestCase):
         if "stderr" not in kw:
             kw["stderr"] = subprocess.STDOUT
         proc = subprocess.run(
-            args, universal_newlines=True, input=input, stdout=subprocess.PIPE, **kw
+            args, text=True, input=input, stdout=subprocess.PIPE, **kw
         )
         if proc.returncode != exitcode:
-            msg = (
-                "Command %s failed with exit code %s\n"
-                "\n"
-                "stdout:\n"
-                "---\n"
-                "%s\n"
-                "---\n" % (str(args), proc.returncode, proc.stdout)
+            msg = "Command %s failed with exit code %s\n\nstdout:\n---\n%s\n---\n" % (
+                str(args),
+                proc.returncode,
+                proc.stdout,
             )
             if proc.stderr:
-                msg += "\n" "stderr:\n" "---\n" "%s" "---\n" % proc.stderr
+                msg += "\nstderr:\n---\n%s---\n" % proc.stderr
             self.fail(msg)
         return proc
 
@@ -578,7 +574,7 @@ class CheckActualTests(BaseTestCase):
             rough_number_of_tests_found,
             rough_counted_test_py_files * 9 // 10,
             msg="Unexpectedly low number of tests found in:\n"
-            f'{", ".join(output.splitlines())}',
+            f"{', '.join(output.splitlines())}",
         )
 
 
@@ -734,13 +730,16 @@ class ArgsTestCase(BaseTestCase):
         # test -u command line option
         tests = {}
         for resource in ("audio", "network"):
-            code = textwrap.dedent("""
+            code = textwrap.dedent(
+                """
                         from test import support; support.requires(%r)
                         import unittest
                         class PassingTest(unittest.TestCase):
                             def test_pass(self):
                                 pass
-                    """ % resource)
+                    """
+                % resource
+            )
 
             tests[resource] = self.create_test(resource, code)
         test_names = sorted(tests.values())
@@ -838,7 +837,7 @@ class ArgsTestCase(BaseTestCase):
         tests = [self.create_test() for index in range(3)]
         output = self.run_tests("--slowest", *tests)
         self.check_executed_tests(output, tests)
-        regex = "10 slowest tests:\n" "(?:- %s: .*\n){%s}" % (
+        regex = "10 slowest tests:\n(?:- %s: .*\n){%s}" % (
             self.TESTNAME_REGEX,
             len(tests),
         )

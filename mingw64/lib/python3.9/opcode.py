@@ -4,19 +4,19 @@ operate on bytecodes (e.g. peephole optimizers).
 """
 
 __all__ = [
-    "cmp_op",
-    "hasconst",
-    "hasname",
-    "hasjrel",
-    "hasjabs",
-    "haslocal",
-    "hascompare",
-    "hasfree",
-    "opname",
-    "opmap",
-    "HAVE_ARGUMENT",
     "EXTENDED_ARG",
+    "HAVE_ARGUMENT",
+    "cmp_op",
+    "hascompare",
+    "hasconst",
+    "hasfree",
+    "hasjabs",
+    "hasjrel",
+    "haslocal",
+    "hasname",
     "hasnargs",
+    "opmap",
+    "opname",
 ]
 
 # It's a chicken-and-egg I'm afraid:

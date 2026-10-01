@@ -1,13 +1,13 @@
-import unittest
 import tkinter
 from tkinter.test.support import (
     AbstractTkTest,
-    tcl_version,
-    requires_tcl,
     get_tk_patchlevel,
     pixels_conv,
+    requires_tcl,
     tcl_obj_eq,
+    tcl_version,
 )
+
 import test.support
 
 noconv = False
@@ -136,7 +136,7 @@ class AbstractWidgetTest(AbstractTkTest):
             "white",
             "black",
             "grey",
-            **kwargs
+            **kwargs,
         )
         self.checkInvalidParam(widget, name, "spam", errmsg='unknown color name "spam"')
 
@@ -198,8 +198,7 @@ class AbstractWidgetTest(AbstractTkTest):
             widget, name, "flat", "groove", "raised", "ridge", "solid", "sunken"
         )
         errmsg = (
-            'bad relief "spam": must be '
-            "flat, groove, raised, ridge, solid, or sunken"
+            'bad relief "spam": must be flat, groove, raised, ridge, solid, or sunken'
         )
         if tcl_version < (8, 6):
             errmsg = None
@@ -422,13 +421,13 @@ class StandardOptionsTests:
             "left",
             "right",
             "center",
-            errmsg='bad justification "{}": must be ' "left, right, or center",
+            errmsg='bad justification "{}": must be left, right, or center',
         )
         self.checkInvalidParam(
             widget,
             "justify",
             "",
-            errmsg='ambiguous justification "": must be ' "left, right, or center",
+            errmsg='ambiguous justification "": must be left, right, or center',
         )
 
     def test_configure_orient(self):

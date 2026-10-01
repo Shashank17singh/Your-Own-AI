@@ -1,21 +1,20 @@
 """Support code for distutils test cases."""
 
 import os
-import sys
 import shutil
+import sys
+import sysconfig
 import tempfile
 import unittest
-import sysconfig
 from copy import deepcopy
+from distutils import log
+from distutils.core import Distribution
+from distutils.log import DEBUG, ERROR, FATAL, INFO, WARN
+
 import test.support
 
-from distutils import log
-from distutils.log import DEBUG, INFO, WARN, ERROR, FATAL
-from distutils.core import Distribution
 
-
-class LoggingSilencer(object):
-
+class LoggingSilencer:
     def setUp(self):
         super().setUp()
         self.threshold = log.set_threshold(log.FATAL)
@@ -45,7 +44,7 @@ class LoggingSilencer(object):
         self.logs = []
 
 
-class TempdirManager(object):
+class TempdirManager:
     """Mix-in class that handles temporary directories for test cases.
 
     This is intended to be used with unittest.TestCase.
@@ -117,10 +116,9 @@ class DummyCommand:
         pass
 
 
-class EnvironGuard(object):
-
+class EnvironGuard:
     def setUp(self):
-        super(EnvironGuard, self).setUp()
+        super().setUp()
         self.old_environ = deepcopy(os.environ)
 
     def tearDown(self):
@@ -132,7 +130,7 @@ class EnvironGuard(object):
             if key not in self.old_environ:
                 del os.environ[key]
 
-        super(EnvironGuard, self).tearDown()
+        super().tearDown()
 
 
 def copy_xxmodule_c(directory):
@@ -150,7 +148,7 @@ def copy_xxmodule_c(directory):
     filename = _get_xxmodule_path()
     if filename is None:
         raise unittest.SkipTest(
-            "cannot find xxmodule.c (test must run in " "the python build dir)"
+            "cannot find xxmodule.c (test must run in the python build dir)"
         )
     shutil.copy(filename, directory)
 

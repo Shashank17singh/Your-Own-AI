@@ -24,14 +24,12 @@ CAVEATS:
 # Author: Collin Winter
 
 # Local imports
-from .. import pytree
+from .. import fixer_base, pytree
+from ..fixer_util import ArgList, Attr, Call, Name, is_tuple
 from ..pgen2 import token
-from .. import fixer_base
-from ..fixer_util import Name, Call, Attr, ArgList, is_tuple
 
 
 class FixRaise(fixer_base.BaseFix):
-
     BM_compatible = True
     PATTERN = """
     raise_stmt< 'raise' exc=any [',' val=any [',' tb=any]] >

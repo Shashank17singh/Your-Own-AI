@@ -3,8 +3,8 @@ dyld emulation
 """
 
 import os
-from ctypes.macholib.framework import framework_info
 from ctypes.macholib.dylib import dylib_info
+from ctypes.macholib.framework import framework_info
 from itertools import *
 
 try:
@@ -17,9 +17,9 @@ except ImportError:
 
 __all__ = [
     "dyld_find",
+    "dylib_info",
     "framework_find",
     "framework_info",
-    "dylib_info",
 ]
 
 # These are the defaults as per man dyld(1)
@@ -148,7 +148,6 @@ def dyld_find(name, executable_path=None, env=None):
         ),
         env,
     ):
-
         if os.path.isfile(path):
             return path
         try:

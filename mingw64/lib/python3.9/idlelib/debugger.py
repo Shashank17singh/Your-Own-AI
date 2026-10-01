@@ -1,16 +1,13 @@
 import bdb
 import os
-
-from tkinter import *
-from tkinter.ttk import Frame, Scrollbar
-
 from idlelib import macosx
 from idlelib.scrolledlist import ScrolledList
 from idlelib.window import ListedToplevel
+from tkinter import *
+from tkinter.ttk import Frame, Scrollbar
 
 
 class Idb(bdb.Bdb):
-
     def __init__(self, gui):
         self.gui = gui  # An instance of Debugger or proxy of remote.
         bdb.Bdb.__init__(self)
@@ -56,7 +53,6 @@ class Idb(bdb.Bdb):
 
 
 class Debugger:
-
     vstack = vsource = vlocals = vglobals = None
 
     def __init__(self, pyshell, idb=None):
@@ -136,11 +132,9 @@ class Debugger:
         self.top.wm_iconname("Debug")
         top.wm_protocol("WM_DELETE_WINDOW", self.close)
         self.top.bind("<Escape>", self.close)
-        #
         self.bframe = bframe = Frame(top)
         self.bframe.pack(anchor="w")
         self.buttons = bl = []
-        #
         self.bcont = b = Button(bframe, text="Go", command=self.cont)
         bl.append(b)
         self.bstep = b = Button(bframe, text="Step", command=self.step)
@@ -151,14 +145,11 @@ class Debugger:
         bl.append(b)
         self.bret = b = Button(bframe, text="Quit", command=self.quit)
         bl.append(b)
-        #
         for b in bl:
             b.configure(state="disabled")
             b.pack(side="left")
-        #
         self.cframe = cframe = Frame(bframe)
         self.cframe.pack(side="left")
-        #
         if not self.vstack:
             self.__class__.vstack = BooleanVar(top)
             self.vstack.set(1)
@@ -185,20 +176,17 @@ class Debugger:
             cframe, text="Globals", command=self.show_globals, variable=self.vglobals
         )
         self.bglobals.grid(row=1, column=1)
-        #
         self.status = Label(top, anchor="w")
         self.status.pack(anchor="w")
         self.error = Label(top, anchor="w")
         self.error.pack(anchor="w", fill="x")
         self.errorbg = self.error.cget("background")
-        #
         self.fstack = Frame(top, height=1)
         self.fstack.pack(expand=1, fill="both")
         self.flocals = Frame(top)
         self.flocals.pack(expand=1, fill="both")
         self.fglobals = Frame(top, height=1)
         self.fglobals.pack(expand=1, fill="both")
-        #
         if self.vstack.get():
             self.show_stack()
         if self.vlocals.get():
@@ -209,7 +197,6 @@ class Debugger:
     def interaction(self, message, frame, info=None):
         self.frame = frame
         self.status.configure(text=message)
-        #
         if info:
             type, value, tb = info
             try:
@@ -227,20 +214,15 @@ class Debugger:
             tb = None
             bg = self.errorbg
         self.error.configure(text=m1, background=bg)
-        #
         sv = self.stackviewer
         if sv:
             stack, i = self.idb.get_stack(self.frame, tb)
             sv.load_stack(stack, i)
-        #
         self.show_variables(1)
-        #
         if self.vsource.get():
             self.sync_source_line()
-        #
         for b in self.buttons:
             b.configure(state="normal")
-        #
         self.top.wakeup()
         # Nested main loop: Tkinter's main loop is not reentrant, so use
         # Tcl's vwait facility, which reenters the event loop until an
@@ -248,7 +230,6 @@ class Debugger:
         self.nesting_level += 1
         self.root.tk.call("vwait", "::idledebugwait")
         self.nesting_level -= 1
-        #
         for b in self.buttons:
             b.configure(state="disabled")
         self.status.configure(text="")
@@ -379,7 +360,6 @@ class Debugger:
 
 
 class StackViewer(ScrolledList):
-
     def __init__(self, master, flist, gui):
         if macosx.isAquaTk():
             # At least on with the stock AquaTk version on OSX 10.4 you'll
@@ -460,7 +440,6 @@ class StackViewer(ScrolledList):
 
 
 class NamespaceViewer:
-
     def __init__(self, master, title, dict=None):
         width = 0
         height = 40

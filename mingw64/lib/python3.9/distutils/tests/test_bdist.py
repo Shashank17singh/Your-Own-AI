@@ -2,15 +2,14 @@
 
 import os
 import unittest
-from test.support import run_unittest
 import warnings
-
 from distutils.command.bdist import bdist
 from distutils.tests import support
 
+from test.support import run_unittest
+
 
 class BuildTestCase(support.TempdirManager, unittest.TestCase):
-
     def test_formats(self):
         # let's create a command and make sure
         # we can set the format

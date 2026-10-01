@@ -4,16 +4,16 @@ The API of this package is currently provisional. Refer to the
 documentation for details.
 """
 
-__all__ = ["SharedMemory", "ShareableList"]
+__all__ = ["ShareableList", "SharedMemory"]
 
 
-from functools import partial
+import errno
 import mmap
 import os
-import errno
-import struct
 import secrets
+import struct
 import types
+from functools import partial
 
 if os.name == "nt":
     import _winapi
@@ -83,7 +83,6 @@ class SharedMemory:
             raise ValueError("'name' can only be None if create=True")
 
         if _USE_POSIX:
-
             # POSIX Shared Memory
 
             if name is None:
@@ -116,7 +115,6 @@ class SharedMemory:
             register(self._name, "shared_memory")
 
         else:
-
             # Windows Named Shared Memory
 
             if create:
@@ -497,7 +495,6 @@ class ShareableList:
         for position, entry in enumerate(self):
             if value == entry:
                 return position
-        else:
-            raise ValueError(f"{value!r} not in this container")
+        raise ValueError(f"{value!r} not in this container")
 
     __class_getitem__ = classmethod(types.GenericAlias)

@@ -7,34 +7,32 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-import os
-import itertools
-import sys
-import weakref
 import atexit
+import itertools
+import os
+import sys
 import threading  # we want threading to install it's
+import weakref
 
 # cleanup function before multiprocessing does
-from subprocess import _args_from_interpreter_flags
-
 from . import process
 
 __all__ = [
-    "sub_debug",
-    "debug",
-    "info",
-    "sub_warning",
-    "get_logger",
-    "log_to_stderr",
-    "get_temp_dir",
-    "register_after_fork",
-    "is_exiting",
-    "Finalize",
-    "ForkAwareThreadLock",
-    "ForkAwareLocal",
-    "close_all_fds_except",
     "SUBDEBUG",
     "SUBWARNING",
+    "Finalize",
+    "ForkAwareLocal",
+    "ForkAwareThreadLock",
+    "close_all_fds_except",
+    "debug",
+    "get_logger",
+    "get_temp_dir",
+    "info",
+    "is_exiting",
+    "log_to_stderr",
+    "register_after_fork",
+    "sub_debug",
+    "sub_warning",
 ]
 
 #
@@ -84,7 +82,6 @@ def get_logger():
     logging._acquireLock()
     try:
         if not _logger:
-
             _logger = logging.getLogger(LOGGER_NAME)
             _logger.propagate = 0
 
@@ -163,7 +160,8 @@ def get_temp_dir():
     # get name of a temp directory which will be automatically cleaned up
     tempdir = process.current_process()._config.get("tempdir")
     if tempdir is None:
-        import shutil, tempfile
+        import shutil
+        import tempfile
 
         tempdir = tempfile.mkdtemp(prefix="pymp-")
         info("created temp directory %s", tempdir)
@@ -206,7 +204,7 @@ _finalizer_registry = {}
 _finalizer_counter = itertools.count()
 
 
-class Finalize(object):
+class Finalize:
     """
     Class which supports object finalization using weakrefs
     """
@@ -214,9 +212,7 @@ class Finalize(object):
     def __init__(self, obj, callback, args=(), kwargs=None, exitpriority=None):
         if (exitpriority is not None) and not isinstance(exitpriority, int):
             raise TypeError(
-                "Exitpriority ({0!r}) must be None or int, not {1!s}".format(
-                    exitpriority, type(exitpriority)
-                )
+                f"Exitpriority ({exitpriority!r}) must be None or int, not {type(exitpriority)!s}"
             )
 
         if obj is not None:
@@ -417,7 +413,7 @@ atexit.register(_exit_function)
 #
 
 
-class ForkAwareThreadLock(object):
+class ForkAwareThreadLock:
     def __init__(self):
         self._lock = threading.Lock()
         self.acquire = self._lock.acquire

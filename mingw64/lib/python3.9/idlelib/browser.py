@@ -12,10 +12,9 @@ XXX TO DO:
 import os
 import pyclbr
 import sys
-
-from idlelib.config import idleConf
 from idlelib import pyshell
-from idlelib.tree import TreeNode, TreeItem, ScrolledCanvas
+from idlelib.config import idleConf
+from idlelib.tree import ScrolledCanvas, TreeItem, TreeNode
 from idlelib.window import ListedToplevel
 
 file_open = None  # Method...Item and Class...Item use this.
@@ -42,7 +41,7 @@ def transform_children(child_dict, modname=None):
                 # If obj.name != key, it has already been suffixed.
                 supers = []
                 for sup in obj.super:
-                    if type(sup) is type(""):
+                    if type(sup) is str:
                         sname = sup
                     else:
                         sname = sup.name

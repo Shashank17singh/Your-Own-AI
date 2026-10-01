@@ -32,9 +32,9 @@ To do:
 """
 
 # Imported modules
-import sys
-import socket
 import selectors
+import socket
+import sys
 from time import monotonic as _time
 
 __all__ = ["Telnet"]
@@ -486,7 +486,6 @@ class Telnet:
         except EOFError:  # raised by self.rawq_getchar()
             self.iacseq = b""  # Reset on EOF
             self.sb = 0
-            pass
         self.cookedq = self.cookedq + buf[0]
         self.sbdataq = self.sbdataq + buf[1]
 

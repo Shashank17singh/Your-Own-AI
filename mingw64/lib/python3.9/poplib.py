@@ -428,19 +428,16 @@ if HAVE_SSL:
             context=None,
         ):
             if context is not None and keyfile is not None:
-                raise ValueError(
-                    "context and keyfile arguments are mutually " "exclusive"
-                )
+                raise ValueError("context and keyfile arguments are mutually exclusive")
             if context is not None and certfile is not None:
                 raise ValueError(
-                    "context and certfile arguments are mutually " "exclusive"
+                    "context and certfile arguments are mutually exclusive"
                 )
             if keyfile is not None or certfile is not None:
                 import warnings
 
                 warnings.warn(
-                    "keyfile and certfile are deprecated, use a "
-                    "custom context instead",
+                    "keyfile and certfile are deprecated, use a custom context instead",
                     DeprecationWarning,
                     2,
                 )

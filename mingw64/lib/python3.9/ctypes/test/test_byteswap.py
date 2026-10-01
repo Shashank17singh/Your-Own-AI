@@ -1,6 +1,9 @@
-import sys, unittest, struct, math, ctypes
+import ctypes
+import math
+import struct
+import sys
+import unittest
 from binascii import hexlify
-
 from ctypes import *
 
 

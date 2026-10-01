@@ -15,10 +15,10 @@ pathsep = ";"
 defpath = ".;C:\\bin"
 devnull = "nul"
 
-import os
-import sys
-import stat
 import genericpath
+import os
+import stat
+import sys
 from genericpath import *
 
 if sys.platform == "win32" and "MSYSTEM" in os.environ:
@@ -31,44 +31,44 @@ bsep = str.encode(sep)
 baltsep = str.encode(altsep)
 
 __all__ = [
-    "normcase",
-    "isabs",
-    "join",
-    "splitdrive",
-    "split",
-    "splitext",
+    "abspath",
+    "altsep",
     "basename",
-    "dirname",
+    "commonpath",
     "commonprefix",
-    "getsize",
-    "getmtime",
-    "getatime",
-    "getctime",
-    "islink",
+    "curdir",
+    "defpath",
+    "devnull",
+    "dirname",
     "exists",
-    "lexists",
-    "isdir",
-    "isfile",
-    "ismount",
     "expanduser",
     "expandvars",
-    "normpath",
-    "abspath",
-    "curdir",
-    "pardir",
-    "sep",
-    "pathsep",
-    "defpath",
-    "altsep",
     "extsep",
-    "devnull",
+    "getatime",
+    "getctime",
+    "getmtime",
+    "getsize",
+    "isabs",
+    "isdir",
+    "isfile",
+    "islink",
+    "ismount",
+    "join",
+    "lexists",
+    "normcase",
+    "normpath",
+    "pardir",
+    "pathsep",
     "realpath",
-    "supports_unicode_filenames",
     "relpath",
     "samefile",
     "sameopenfile",
     "samestat",
-    "commonpath",
+    "sep",
+    "split",
+    "splitdrive",
+    "splitext",
+    "supports_unicode_filenames",
 ]
 
 
@@ -608,7 +608,8 @@ else:  # use native Windows method on Windows
 
 
 try:
-    from nt import _getfinalpathname, readlink as _nt_readlink
+    from nt import _getfinalpathname
+    from nt import readlink as _nt_readlink
 except ImportError:
     # realpath is a no-op on systems without _getfinalpathname support.
     realpath = abspath

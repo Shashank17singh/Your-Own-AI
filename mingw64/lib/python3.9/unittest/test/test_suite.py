@@ -1,11 +1,11 @@
-import unittest
 import gc
 import sys
+import unittest
 import weakref
 from unittest.test.support import LoggingResult, TestEquality
 
 
-class Test(object):
+class Test:
     class Foo(unittest.TestCase):
         def test_1(self):
             pass
@@ -293,7 +293,7 @@ class Test_TestSuite(unittest.TestCase, TestEquality):
             def testFail(self):
                 fail
 
-        class Module(object):
+        class Module:
             wasSetUp = False
             wasTornDown = False
 

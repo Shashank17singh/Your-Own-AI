@@ -3,10 +3,9 @@
 Implements the Distutils 'install_lib' command
 (install all Python modules)."""
 
-import os
 import importlib.util
+import os
 import sys
-
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
 
@@ -15,7 +14,6 @@ PYTHON_SOURCE_EXTENSION = ".py"
 
 
 class install_lib(Command):
-
     description = "install all Python modules (extensions and pure Python)"
 
     # The byte-compilation options are a tad confusing.  Here are the

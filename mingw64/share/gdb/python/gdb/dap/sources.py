@@ -1,4 +1,5 @@
 import os
+
 from .server import capability, request
 from .startup import DAPException, exec_mi_and_log, in_gdb_thread
 

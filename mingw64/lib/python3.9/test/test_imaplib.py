@@ -1,26 +1,25 @@
-from test import support
-from test.support import socket_helper
-
-from contextlib import contextmanager
+import calendar
 import imaplib
 import os.path
-import socketserver
-import time
-import calendar
-import threading
 import socket
-
-from test.support import (
-    reap_threads,
-    verbose,
-    run_with_tz,
-    run_with_locale,
-    cpython_only,
-)
-from test.support import hashlib_helper
+import socketserver
+import threading
+import time
 import unittest
+from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
 from unittest import mock
-from datetime import datetime, timezone, timedelta
+
+from test import support
+from test.support import (
+    cpython_only,
+    hashlib_helper,
+    reap_threads,
+    run_with_locale,
+    run_with_tz,
+    socket_helper,
+    verbose,
+)
 
 try:
     import ssl
@@ -32,7 +31,6 @@ CAFILE = os.path.join(os.path.dirname(__file__) or os.curdir, "pycacert.pem")
 
 
 class TestImaplib(unittest.TestCase):
-
     def test_Internaldate2tuple(self):
         t0 = calendar.timegm((2000, 1, 1, 0, 0, 0, -1, -1, -1))
         tt = imaplib.Internaldate2tuple(
@@ -94,7 +92,7 @@ class TestImaplib(unittest.TestCase):
             try:
                 s.connect(("", imaplib.IMAP4_PORT))
                 self.skipTest("Cannot run the test with local IMAP server running.")
-            except socket.error:
+            except OSError:
                 pass
 
         # This is the exception that should be raised.
@@ -107,7 +105,6 @@ class TestImaplib(unittest.TestCase):
 if ssl:
 
     class SecureTCPServer(socketserver.TCPServer):
-
         def get_request(self):
             newsocket, fromaddr = self.socket.accept()
             context = ssl.SSLContext()
@@ -369,7 +366,7 @@ class NewIMAPTestsMixin:
         class MyServer(SimpleIMAPHandler):
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_tagged(
-                    tag, "NO", "unrecognized authentication type {}".format(args[0])
+                    tag, "NO", f"unrecognized authentication type {args[0]}"
                 )
 
         client, _ = self._setup(MyServer)
@@ -422,10 +419,10 @@ class NewIMAPTestsMixin:
 
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline(
-                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2Uucm" "VzdG9uLm1jaS5uZXQ="
+                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2UucmVzdG9uLm1jaS5uZXQ="
                 )
                 r = yield
-                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYT" b"FjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
+                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYTFjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
                     self._send_tagged(tag, "OK", "CRAM-MD5 successful")
                 else:
                     self._send_tagged(tag, "NO", "No access")
@@ -442,10 +439,10 @@ class NewIMAPTestsMixin:
 
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline(
-                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2Uucm" "VzdG9uLm1jaS5uZXQ="
+                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2UucmVzdG9uLm1jaS5uZXQ="
                 )
                 r = yield
-                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYT" b"FjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
+                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYTFjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
                     self._send_tagged(tag, "OK", "CRAM-MD5 successful")
                 else:
                     self._send_tagged(tag, "NO", "No access")
@@ -589,7 +586,7 @@ class NewIMAPSSLTests(NewIMAPTestsMixin, unittest.TestCase):
 
         with self.assertRaisesRegex(
             ssl.CertificateError,
-            "IP address mismatch, certificate is not valid for " "'127.0.0.1'",
+            "IP address mismatch, certificate is not valid for '127.0.0.1'",
         ):
             _, server = self._setup(SimpleIMAPHandler)
             client = self.imap_class(*server.server_address, ssl_context=ssl_context)
@@ -694,7 +691,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
         # support them.  See issue #21815.
 
         class BracketFlagHandler(SimpleIMAPHandler):
-
             def handle(self):
                 self.flags = ["Answered", "Flagged", "Deleted", "Seen", "Draft"]
                 super().handle()
@@ -749,7 +745,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_line_termination(self):
 
         class BadNewlineHandler(SimpleIMAPHandler):
-
             def cmd_CAPABILITY(self, tag, args):
                 self._send(b"* CAPABILITY IMAP4rev1 AUTH\n")
                 self._send_tagged(tag, "OK", "CAPABILITY completed")
@@ -797,7 +792,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
                 typ, data = client.login("user", "pass")
                 self.assertEqual(typ, "OK")
                 client.enable("UTF8=ACCEPT")
-                pass
 
     @reap_threads
     def test_enable_UTF8_True_append(self):
@@ -840,10 +834,9 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_bad_auth_name(self):
 
         class MyServer(SimpleIMAPHandler):
-
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_tagged(
-                    tag, "NO", "unrecognized authentication " "type {}".format(args[0])
+                    tag, "NO", f"unrecognized authentication type {args[0]}"
                 )
 
         with self.reaped_pair(MyServer) as (server, client):
@@ -854,7 +847,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_invalid_authentication(self):
 
         class MyServer(SimpleIMAPHandler):
-
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline("+")
                 self.response = yield
@@ -868,7 +860,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_valid_authentication(self):
 
         class MyServer(SimpleIMAPHandler):
-
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline("+")
                 self.server.response = yield
@@ -889,15 +880,14 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_login_cram_md5(self):
 
         class AuthHandler(SimpleIMAPHandler):
-
             capabilities = "LOGINDISABLED AUTH=CRAM-MD5"
 
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline(
-                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2Uucm" "VzdG9uLm1jaS5uZXQ="
+                    "+ PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2UucmVzdG9uLm1jaS5uZXQ="
                 )
                 r = yield
-                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYT" b"FjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
+                if r == b"dGltIGYxY2E2YmU0NjRiOWVmYTFjY2E2ZmZkNmNmMmQ5ZjMy\r\n":
                     self._send_tagged(tag, "OK", "CRAM-MD5 successful")
                 else:
                     self._send_tagged(tag, "NO", "No access")
@@ -916,7 +906,6 @@ class ThreadedNetworkedTests(unittest.TestCase):
     def test_aborted_authentication(self):
 
         class MyServer(SimpleIMAPHandler):
-
             def cmd_AUTHENTICATE(self, tag, args):
                 self._send_textline("+")
                 self.response = yield
@@ -978,15 +967,15 @@ class ThreadedNetworkedTestsSSL(ThreadedNetworkedTests):
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ssl_context.load_verify_locations(CAFILE)
 
-        with self.assertRaisesRegex(
-            ssl.CertificateError,
-            "IP address mismatch, certificate is not valid for " "'127.0.0.1'",
+        with (
+            self.assertRaisesRegex(
+                ssl.CertificateError,
+                "IP address mismatch, certificate is not valid for '127.0.0.1'",
+            ),
+            self.reaped_server(SimpleIMAPHandler) as server,
         ):
-            with self.reaped_server(SimpleIMAPHandler) as server:
-                client = self.imap_class(
-                    *server.server_address, ssl_context=ssl_context
-                )
-                client.shutdown()
+            client = self.imap_class(*server.server_address, ssl_context=ssl_context)
+            client.shutdown()
 
         with self.reaped_server(SimpleIMAPHandler) as server:
             client = self.imap_class(
@@ -1037,7 +1026,6 @@ class RemoteIMAPTest(unittest.TestCase):
 )
 @unittest.skip("cyrus.andrew.cmu.edu blocks connections")
 class RemoteIMAP_STARTTLSTest(RemoteIMAPTest):
-
     def setUp(self):
         super().setUp()
         with socket_helper.transient_internet(self.host):

@@ -10,14 +10,14 @@ The appearance of the widgets is checked by the Query and
 HelpSource htests.  These are run by running query.py.
 """
 
-from idlelib import query
-import unittest
-from test.support import requires
-from tkinter import Tk, END
-
 import sys
-from unittest import mock
+import unittest
+from idlelib import query
 from idlelib.idle_test.mock_tk import Var
+from tkinter import END, Tk
+from unittest import mock
+
+from test.support import requires
 
 # NON-GUI TESTS
 
@@ -327,7 +327,7 @@ class CustomRunEntryokTest(unittest.TestCase):
 
     def test_entry_ok_customrun(self):
         dialog = self.Dummy_CustomRun()
-        for restart in {True, False}:
+        for restart in (True, False):
             dialog.restartvar.set(restart)
             for cli_args, result in ((None, None), (["my arg"], (["my arg"], restart))):
                 with self.subTest(restart=restart, cli_args=cli_args):
@@ -339,7 +339,6 @@ class CustomRunEntryokTest(unittest.TestCase):
 
 
 class QueryGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -382,7 +381,6 @@ class QueryGuiTest(unittest.TestCase):
 
 
 class SectionnameGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -400,7 +398,6 @@ class SectionnameGuiTest(unittest.TestCase):
 
 
 class ModulenameGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -417,7 +414,6 @@ class ModulenameGuiTest(unittest.TestCase):
 
 
 class GotoGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -433,7 +429,6 @@ class GotoGuiTest(unittest.TestCase):
 
 
 class HelpsourceGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -454,7 +449,6 @@ class HelpsourceGuiTest(unittest.TestCase):
 
 
 class CustomRunGuiTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

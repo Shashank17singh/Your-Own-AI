@@ -228,84 +228,62 @@
     "switch": "LIBPATH:",
     "comment": "Additional Library Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "IgnoreSpecificDefaultLibraries",
     "switch": "NODEFAULTLIB:",
     "comment": "Ignore Specific Default Libraries",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ExportNamedFunctions",
     "switch": "EXPORT:",
     "comment": "Export Named Functions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "RemoveObjects",
     "switch": "REMOVE:",
     "comment": "Remove Objects",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "OutputFile",
     "switch": "OUT:",
     "comment": "Output File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ModuleDefinitionFile",
     "switch": "DEF:",
     "comment": "Module Definition File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ForceSymbolReferences",
     "switch": "INCLUDE:",
     "comment": "Force Symbol References",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "DisplayLibrary",
     "switch": "LIST:",
     "comment": "Display Library to standard output",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "Name",
     "switch": "NAME:",
     "comment": "Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   }
 ]

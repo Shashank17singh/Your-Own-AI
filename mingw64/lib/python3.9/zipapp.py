@@ -166,13 +166,13 @@ def main(args=None):
         "--output",
         "-o",
         default=None,
-        help="The name of the output archive. " "Required if SOURCE is an archive.",
+        help="The name of the output archive. Required if SOURCE is an archive.",
     )
     parser.add_argument(
         "--python",
         "-p",
         default=None,
-        help="The name of the Python interpreter to use " "(default: no shebang line).",
+        help="The name of the Python interpreter to use (default: no shebang line).",
     )
     parser.add_argument(
         "--main",

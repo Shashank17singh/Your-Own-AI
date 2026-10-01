@@ -4,7 +4,7 @@
 Compatible with the 'profile' module.
 """
 
-__all__ = ["run", "runctx", "Profile"]
+__all__ = ["Profile", "run", "runctx"]
 
 import _lsprof
 import profile as _pyprofile
@@ -139,9 +139,9 @@ def label(code):
 
 def main():
     import os
-    import sys
-    import runpy
     import pstats
+    import runpy
+    import sys
     from optparse import OptionParser
 
     usage = (

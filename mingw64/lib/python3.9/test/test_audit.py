@@ -3,6 +3,7 @@
 import subprocess
 import sys
 import unittest
+
 from test import support
 
 if not hasattr(sys, "addaudithook") or not hasattr(sys, "audit"):

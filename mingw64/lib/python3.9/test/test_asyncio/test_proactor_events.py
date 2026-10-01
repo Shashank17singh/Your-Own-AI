@@ -1,17 +1,19 @@
 """Tests for proactor_events.py"""
 
+import asyncio
 import io
 import socket
-import unittest
 import sys
+import unittest
+from asyncio.proactor_events import (
+    BaseProactorEventLoop,
+    _ProactorDatagramTransport,
+    _ProactorDuplexPipeTransport,
+    _ProactorSocketTransport,
+    _ProactorWritePipeTransport,
+)
 from unittest import mock
 
-import asyncio
-from asyncio.proactor_events import BaseProactorEventLoop
-from asyncio.proactor_events import _ProactorSocketTransport
-from asyncio.proactor_events import _ProactorWritePipeTransport
-from asyncio.proactor_events import _ProactorDuplexPipeTransport
-from asyncio.proactor_events import _ProactorDatagramTransport
 from test import support
 from test.support import socket_helper
 from test.test_asyncio import utils as test_utils
@@ -31,7 +33,6 @@ def close_transport(transport):
 
 
 class ProactorSocketTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -467,7 +468,6 @@ class ProactorSocketTransportTests(test_utils.TestCase):
 
 
 class ProactorDatagramTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -668,7 +668,6 @@ class ProactorDatagramTransportTests(test_utils.TestCase):
 
 
 class BaseProactorEventLoopTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
 
@@ -677,12 +676,14 @@ class BaseProactorEventLoopTests(test_utils.TestCase):
 
         self.ssock, self.csock = mock.Mock(), mock.Mock()
 
-        with mock.patch(
-            "asyncio.proactor_events.socket.socketpair",
-            return_value=(self.ssock, self.csock),
+        with (
+            mock.patch(
+                "asyncio.proactor_events.socket.socketpair",
+                return_value=(self.ssock, self.csock),
+            ),
+            mock.patch("signal.set_wakeup_fd"),
         ):
-            with mock.patch("signal.set_wakeup_fd"):
-                self.loop = BaseProactorEventLoop(self.proactor)
+            self.loop = BaseProactorEventLoop(self.proactor)
         self.set_event_loop(self.loop)
 
     @mock.patch("asyncio.proactor_events.socket.socketpair")
@@ -892,7 +893,6 @@ class ProactorEventLoopUnixSockSendfileTests(test_utils.TestCase):
     DATA = b"12345abcde" * 16 * 1024  # 160 KiB
 
     class MyProto(asyncio.Protocol):
-
         def __init__(self, loop):
             self.started = False
             self.closed = False

@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 # This is a package that contains a number of modules that are used to
 # test import from the source files that have different encodings.
 # This file (the __init__ module of the package), is encoded in utf-8

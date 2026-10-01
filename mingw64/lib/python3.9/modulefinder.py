@@ -3,9 +3,9 @@
 import dis
 import importlib._bootstrap_external
 import importlib.machinery
+import io
 import marshal
 import os
-import io
 import sys
 
 LOAD_CONST = dis.opmap["LOAD_CONST"]
@@ -64,7 +64,7 @@ def _find_module(name, path=None):
     spec = importlib.machinery.PathFinder.find_spec(name, path)
 
     if spec is None:
-        raise ImportError("No module named {name!r}".format(name=name), name=name)
+        raise ImportError(f"No module named {name!r}", name=name)
 
     # Some special cases:
 
@@ -98,7 +98,6 @@ def _find_module(name, path=None):
 
 
 class Module:
-
     def __init__(self, name, file=None, path=None):
         self.__name__ = name
         self.__file__ = file
@@ -123,7 +122,6 @@ class Module:
 
 
 class ModuleFinder:
-
     def __init__(self, path=None, debug=0, excludes=None, replace_paths=None):
         if path is None:
             path = sys.path

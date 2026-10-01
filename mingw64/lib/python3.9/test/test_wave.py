@@ -1,11 +1,11 @@
-import unittest
-from test import audiotests
-from test import support
-from audioop import byteswap
 import io
 import struct
 import sys
+import unittest
 import wave
+from audioop import byteswap
+
+from test import audiotests, support
 
 
 class WaveTest(audiotests.AudioWriteTests, audiotests.AudioTestsWithSourceFile):
@@ -111,7 +111,6 @@ class MiscTestCase(unittest.TestCase):
 
 
 class WaveLowLevelTest(unittest.TestCase):
-
     def test_read_no_chunks(self):
         b = b"SPAM"
         with self.assertRaises(EOFError):

@@ -1,24 +1,24 @@
 """Utilities for with-statement contexts.  See PEP 343."""
 
+import _collections_abc
 import abc
 import sys
-import _collections_abc
 from collections import deque
 from functools import wraps
-from types import MethodType, GenericAlias
+from types import GenericAlias, MethodType
 
 __all__ = [
-    "asynccontextmanager",
-    "contextmanager",
-    "closing",
-    "nullcontext",
-    "AbstractContextManager",
     "AbstractAsyncContextManager",
+    "AbstractContextManager",
     "AsyncExitStack",
     "ContextDecorator",
     "ExitStack",
-    "redirect_stdout",
+    "asynccontextmanager",
+    "closing",
+    "contextmanager",
+    "nullcontext",
     "redirect_stderr",
+    "redirect_stdout",
     "suppress",
 ]
 
@@ -35,7 +35,7 @@ class AbstractContextManager(abc.ABC):
     @abc.abstractmethod
     def __exit__(self, exc_type, exc_value, traceback):
         """Raise any exception triggered within the runtime context."""
-        return None
+        return
 
     @classmethod
     def __subclasshook__(cls, C):
@@ -56,7 +56,7 @@ class AbstractAsyncContextManager(abc.ABC):
     @abc.abstractmethod
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Raise any exception triggered within the runtime context."""
-        return None
+        return
 
     @classmethod
     def __subclasshook__(cls, C):
@@ -65,7 +65,7 @@ class AbstractAsyncContextManager(abc.ABC):
         return NotImplemented
 
 
-class ContextDecorator(object):
+class ContextDecorator:
     "A base class or mixin that enables context managers to work as decorators."
 
     def _recreate_cm(self):
@@ -337,7 +337,6 @@ class closing(AbstractContextManager):
 
 
 class _RedirectStream(AbstractContextManager):
-
     _stream = None
 
     def __init__(self, new_target):

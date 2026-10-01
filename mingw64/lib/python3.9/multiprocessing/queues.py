@@ -7,35 +7,30 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["Queue", "SimpleQueue", "JoinableQueue"]
+__all__ = ["JoinableQueue", "Queue", "SimpleQueue"]
 
-import sys
-import os
-import threading
 import collections
+import errno
+import os
+import sys
+import threading
 import time
 import types
 import weakref
-import errno
-
 from queue import Empty, Full
 
-import _multiprocessing
-
-from . import connection
-from . import context
+from . import connection, context
 
 _ForkingPickler = context.reduction.ForkingPickler
 
-from .util import debug, info, Finalize, register_after_fork, is_exiting
+from .util import Finalize, debug, info, is_exiting, register_after_fork
 
 #
 # Queue type using a pipe, buffer and thread
 #
 
 
-class Queue(object):
-
+class Queue:
     def __init__(self, maxsize=0, *, ctx):
         if maxsize <= 0:
             # Can raise ImportError (see issues #3770 and #23400)
@@ -167,7 +162,7 @@ class Queue(object):
 
     def join_thread(self):
         debug("Queue.join_thread()")
-        assert self._closed, "Queue {0!r} not closed".format(self)
+        assert self._closed, f"Queue {self!r} not closed"
         if self._jointhread:
             self._jointhread()
 
@@ -320,7 +315,6 @@ _sentinel = object()
 
 
 class JoinableQueue(Queue):
-
     def __init__(self, maxsize=0, *, ctx):
         Queue.__init__(self, maxsize, ctx=ctx)
         self._unfinished_tasks = ctx.Semaphore(0)
@@ -364,8 +358,7 @@ class JoinableQueue(Queue):
 #
 
 
-class SimpleQueue(object):
-
+class SimpleQueue:
     def __init__(self, *, ctx):
         self._reader, self._writer = connection.Pipe(duplex=False)
         self._rlock = ctx.Lock()

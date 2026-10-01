@@ -23,7 +23,6 @@ hexbin(inputfilename, outputfilename)
 #
 import binascii
 import contextlib
-import io
 import os
 import struct
 import warnings
@@ -31,7 +30,7 @@ import warnings
 warnings.warn("the binhex module is deprecated", DeprecationWarning, stacklevel=2)
 
 
-__all__ = ["binhex", "hexbin", "Error"]
+__all__ = ["Error", "binhex", "hexbin"]
 
 
 class Error(Exception):
@@ -60,7 +59,7 @@ class FInfo:
 
 def getfileinfo(name):
     finfo = FInfo()
-    with io.open(name, "rb") as fp:
+    with open(name, "rb") as fp:
         # Quick check for textfile
         data = fp.read(512)
         if 0 not in data:
@@ -167,7 +166,7 @@ class BinHex:
         close_on_error = False
         if isinstance(ofp, str):
             ofname = ofp
-            ofp = io.open(ofname, "wb")
+            ofp = open(ofname, "wb")
             close_on_error = True
         try:
             ofp.write(b"(This file must be converted with BinHex 4.0)\r\r:")
@@ -261,7 +260,7 @@ def binhex(inp, out):
     finfo = getfileinfo(inp)
     ofp = BinHex(finfo, out)
 
-    with io.open(inp, "rb") as ifp:
+    with open(inp, "rb") as ifp:
         # XXXX Do textfile translation on non-mac systems
         while True:
             d = ifp.read(128000)
@@ -365,9 +364,7 @@ class _Rledecoderengine:
         mark = len(self.pre_buffer)
         if self.pre_buffer[-3:] == RUNCHAR + b"\0" + RUNCHAR:
             mark = mark - 3
-        elif self.pre_buffer[-1:] == RUNCHAR:
-            mark = mark - 2
-        elif self.pre_buffer[-2:] == RUNCHAR + b"\0":
+        elif self.pre_buffer[-1:] == RUNCHAR or self.pre_buffer[-2:] == RUNCHAR + b"\0":
             mark = mark - 2
         elif self.pre_buffer[-2:-1] == RUNCHAR:
             pass  # Decode all
@@ -387,7 +384,7 @@ class _Rledecoderengine:
 class HexBin:
     def __init__(self, ifp):
         if isinstance(ifp, str):
-            ifp = io.open(ifp, "rb")
+            ifp = open(ifp, "rb")
         #
         # Find initial colon.
         #
@@ -495,7 +492,7 @@ def hexbin(inp, out):
     if not out:
         out = ifp.FName
 
-    with io.open(out, "wb") as ofp:
+    with open(out, "wb") as ofp:
         # XXXX Do translation on non-mac systems
         while True:
             d = ifp.read(128000)

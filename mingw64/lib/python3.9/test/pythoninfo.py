@@ -2,7 +2,6 @@
 Collect various information about Python to help debugging test failures.
 """
 
-from __future__ import print_function
 import errno
 import re
 import sys

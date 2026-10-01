@@ -1,10 +1,11 @@
-import unittest
 import re
 import tkinter
+import unittest
 from tkinter import TclError
-from test.support import requires
-from tkinter.test.support import pixels_conv, tcl_version, requires_tcl
+from tkinter.test.support import pixels_conv, requires_tcl, tcl_version
 from tkinter.test.widget_tests import AbstractWidgetTest
+
+from test.support import requires
 
 requires("gui")
 
@@ -303,7 +304,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         t, f, f2 = self.create2()
         self.assertEqual(f2.winfo_manager(), "")
         with self.assertRaisesRegex(
-            TclError, "can't place %s relative to " "itself" % re.escape(str(f2))
+            TclError, "can't place %s relative to itself" % re.escape(str(f2))
         ):
             f2.place_configure(in_=f2)
         if tcl_version >= (8, 5):
@@ -362,7 +363,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         self.root.update()
         self.assertEqual(f2.winfo_x(), 200)
         with self.assertRaisesRegex(
-            TclError, "expected floating-point number " 'but got "spam"'
+            TclError, 'expected floating-point number but got "spam"'
         ):
             f2.place_configure(in_=f, relx="spam")
 
@@ -381,7 +382,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         self.root.update()
         self.assertEqual(f2.winfo_y(), 120)
         with self.assertRaisesRegex(
-            TclError, "expected floating-point number " 'but got "spam"'
+            TclError, 'expected floating-point number but got "spam"'
         ):
             f2.place_configure(in_=f, rely="spam")
 
@@ -426,7 +427,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         self.root.update()
         self.assertEqual(f2.winfo_width(), 30)
         with self.assertRaisesRegex(
-            TclError, "expected floating-point number " 'but got "abcd"'
+            TclError, 'expected floating-point number but got "abcd"'
         ):
             f2.place_configure(relwidth="abcd")
 
@@ -439,7 +440,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         self.root.update()
         self.assertEqual(f2.winfo_height(), 60)
         with self.assertRaisesRegex(
-            TclError, "expected floating-point number " 'but got "abcd"'
+            TclError, 'expected floating-point number but got "abcd"'
         ):
             f2.place_configure(relheight="abcd")
 
@@ -533,7 +534,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_column(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad column value "-1": ' "must be a non-negative integer"
+            TclError, 'bad column value "-1": must be a non-negative integer'
         ):
             b.grid_configure(column=-1)
         b.grid_configure(column=2)
@@ -542,7 +543,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_columnspan(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad columnspan value "0": ' "must be a positive integer"
+            TclError, 'bad columnspan value "0": must be a positive integer'
         ):
             b.grid_configure(columnspan=0)
         b.grid_configure(columnspan=2)
@@ -562,7 +563,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_ipadx(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad ipadx value "-1": ' "must be positive screen distance"
+            TclError, 'bad ipadx value "-1": must be positive screen distance'
         ):
             b.grid_configure(ipadx=-1)
         b.grid_configure(ipadx=1)
@@ -575,7 +576,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_ipady(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad ipady value "-1": ' "must be positive screen distance"
+            TclError, 'bad ipady value "-1": must be positive screen distance'
         ):
             b.grid_configure(ipady=-1)
         b.grid_configure(ipady=1)
@@ -588,7 +589,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_padx(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad pad value "-1": ' "must be positive screen distance"
+            TclError, 'bad pad value "-1": must be positive screen distance'
         ):
             b.grid_configure(padx=-1)
         b.grid_configure(padx=1)
@@ -603,7 +604,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_pady(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad pad value "-1": ' "must be positive screen distance"
+            TclError, 'bad pad value "-1": must be positive screen distance'
         ):
             b.grid_configure(pady=-1)
         b.grid_configure(pady=1)
@@ -618,7 +619,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_row(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad (row|grid) value "-1": ' "must be a non-negative integer"
+            TclError, 'bad (row|grid) value "-1": must be a non-negative integer'
         ):
             b.grid_configure(row=-1)
         b.grid_configure(row=2)
@@ -627,7 +628,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
     def test_grid_configure_rownspan(self):
         b = tkinter.Button(self.root)
         with self.assertRaisesRegex(
-            TclError, 'bad rowspan value "0": ' "must be a positive integer"
+            TclError, 'bad rowspan value "0": must be a positive integer'
         ):
             b.grid_configure(rowspan=0)
         b.grid_configure(rowspan=2)
@@ -680,7 +681,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
         with self.assertRaisesRegex(TclError, 'expected integer but got "bad"'):
             self.root.grid_columnconfigure(0, weight="bad")
         with self.assertRaisesRegex(
-            TclError, 'invalid arg "-weight": ' "should be non-negative"
+            TclError, 'invalid arg "-weight": should be non-negative'
         ):
             self.root.grid_columnconfigure(0, weight=-3)
         self.root.grid_columnconfigure(0, weight=3)
@@ -691,7 +692,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
         with self.assertRaisesRegex(TclError, 'bad screen distance "foo"'):
             self.root.grid_columnconfigure(0, pad="foo")
         with self.assertRaisesRegex(
-            TclError, 'invalid arg "-pad": ' "should be non-negative"
+            TclError, 'invalid arg "-pad": should be non-negative'
         ):
             self.root.grid_columnconfigure(0, pad=-3)
         self.root.grid_columnconfigure(0, pad=3)
@@ -741,7 +742,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
         with self.assertRaisesRegex(TclError, 'expected integer but got "bad"'):
             self.root.grid_rowconfigure(0, weight="bad")
         with self.assertRaisesRegex(
-            TclError, 'invalid arg "-weight": ' "should be non-negative"
+            TclError, 'invalid arg "-weight": should be non-negative'
         ):
             self.root.grid_rowconfigure(0, weight=-3)
         self.root.grid_rowconfigure(0, weight=3)
@@ -752,7 +753,7 @@ class GridTest(AbstractWidgetTest, unittest.TestCase):
         with self.assertRaisesRegex(TclError, 'bad screen distance "foo"'):
             self.root.grid_rowconfigure(0, pad="foo")
         with self.assertRaisesRegex(
-            TclError, 'invalid arg "-pad": ' "should be non-negative"
+            TclError, 'invalid arg "-pad": should be non-negative'
         ):
             self.root.grid_rowconfigure(0, pad=-3)
         self.root.grid_rowconfigure(0, pad=3)

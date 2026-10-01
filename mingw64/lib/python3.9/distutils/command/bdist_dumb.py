@@ -5,16 +5,15 @@ distribution -- i.e., just an archive to be unpacked under $prefix or
 $exec_prefix)."""
 
 import os
+from distutils import log
 from distutils.core import Command
-from distutils.util import get_platform
-from distutils.dir_util import remove_tree, ensure_relative
+from distutils.dir_util import ensure_relative, remove_tree
 from distutils.errors import *
 from distutils.sysconfig import get_python_version
-from distutils import log
+from distutils.util import get_platform
 
 
 class bdist_dumb(Command):
-
     description = 'create a "dumb" built distribution'
 
     user_options = [
@@ -28,7 +27,7 @@ class bdist_dumb(Command):
         (
             "format=",
             "f",
-            "archive format to create (tar, gztar, bztar, xztar, " "ztar, zip)",
+            "archive format to create (tar, gztar, bztar, xztar, ztar, zip)",
         ),
         (
             "keep-temp",
@@ -41,17 +40,17 @@ class bdist_dumb(Command):
         (
             "relative",
             None,
-            "build the archive using relative paths " "(default: false)",
+            "build the archive using relative paths (default: false)",
         ),
         (
             "owner=",
             "u",
-            "Owner name used when creating a tar file" " [default: current user]",
+            "Owner name used when creating a tar file [default: current user]",
         ),
         (
             "group=",
             "g",
-            "Group name used when creating a tar file" " [default: current group]",
+            "Group name used when creating a tar file [default: current group]",
         ),
     ]
 

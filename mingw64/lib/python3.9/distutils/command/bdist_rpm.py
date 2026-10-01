@@ -3,17 +3,18 @@
 Implements the Distutils 'bdist_rpm' command (create RPM source and binary
 distributions)."""
 
-import subprocess, sys, os
+import os
+import subprocess
+import sys
+from distutils import log
 from distutils.core import Command
 from distutils.debug import DEBUG
-from distutils.file_util import write_file
 from distutils.errors import *
+from distutils.file_util import write_file
 from distutils.sysconfig import get_python_version
-from distutils import log
 
 
 class bdist_rpm(Command):
-
     description = "create an RPM distribution"
 
     user_options = [
@@ -27,7 +28,7 @@ class bdist_rpm(Command):
         (
             "dist-dir=",
             "d",
-            "directory to put final RPM files in " "(and .spec files if --spec-only)",
+            "directory to put final RPM files in (and .spec files if --spec-only)",
         ),
         (
             "python=",
@@ -68,7 +69,7 @@ class bdist_rpm(Command):
         (
             "packager=",
             None,
-            'RPM packager (eg. "Jane Doe <jane@example.net>") ' "[default: vendor]",
+            'RPM packager (eg. "Jane Doe <jane@example.net>") [default: vendor]',
         ),
         ("doc-files=", None, "list of documentation files (space or comma-separated)"),
         ("changelog=", None, "RPM changelog"),
@@ -207,7 +208,7 @@ class bdist_rpm(Command):
 
         if os.name != "posix":
             raise DistutilsPlatformError(
-                "don't know how to create RPM " "distributions on platform %s" % os.name
+                "don't know how to create RPM distributions on platform %s" % os.name
             )
         if self.binary_only and self.source_only:
             raise DistutilsOptionError(
@@ -525,7 +526,7 @@ class bdist_rpm(Command):
         # are just text that we drop in as-is.  Hmmm.
 
         install_cmd = (
-            "%s install -O1 --root=$RPM_BUILD_ROOT " "--record=INSTALLED_FILES"
+            "%s install -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES"
         ) % def_setup_call
 
         script_options = [

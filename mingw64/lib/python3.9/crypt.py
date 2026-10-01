@@ -12,8 +12,8 @@ except ModuleNotFoundError:
 
 import errno
 import string as _string
-from random import SystemRandom as _SystemRandom
 from collections import namedtuple as _namedtuple
+from random import SystemRandom as _SystemRandom
 
 _saltchars = _string.ascii_letters + _string.digits + "./"
 _sr = _SystemRandom()
@@ -24,7 +24,7 @@ class _Method(_namedtuple("_Method", "name ident salt_chars total_size")):
     legacy 2-character crypt method."""
 
     def __repr__(self):
-        return "<crypt.METHOD_{}>".format(self.name)
+        return f"<crypt.METHOD_{self.name}>"
 
 
 def mksalt(method=None, *, rounds=None):
@@ -37,8 +37,7 @@ def mksalt(method=None, *, rounds=None):
         method = methods[0]
     if rounds is not None and not isinstance(rounds, int):
         raise TypeError(
-            f"{rounds.__class__.__name__} object cannot be "
-            f"interpreted as an integer"
+            f"{rounds.__class__.__name__} object cannot be interpreted as an integer"
         )
     if not method.ident:  # traditional
         s = ""

@@ -1,27 +1,28 @@
 import unittest
+
 from test import support
 
 # Skip this test if the _testcapi module isn't available.
 support.import_module("_testcapi")
 from _testcapi import (
-    _test_structmembersType,
     CHAR_MAX,
     CHAR_MIN,
-    UCHAR_MAX,
-    SHRT_MAX,
-    SHRT_MIN,
-    USHRT_MAX,
     INT_MAX,
     INT_MIN,
-    UINT_MAX,
-    LONG_MAX,
-    LONG_MIN,
-    ULONG_MAX,
     LLONG_MAX,
     LLONG_MIN,
-    ULLONG_MAX,
+    LONG_MAX,
+    LONG_MIN,
     PY_SSIZE_T_MAX,
     PY_SSIZE_T_MIN,
+    SHRT_MAX,
+    SHRT_MIN,
+    UCHAR_MAX,
+    UINT_MAX,
+    ULLONG_MAX,
+    ULONG_MAX,
+    USHRT_MAX,
+    _test_structmembersType,
 )
 
 ts = _test_structmembersType(
@@ -42,7 +43,6 @@ ts = _test_structmembersType(
 
 
 class ReadWriteTests(unittest.TestCase):
-
     def test_bool(self):
         ts.T_BOOL = True
         self.assertEqual(ts.T_BOOL, True)
@@ -133,7 +133,6 @@ class ReadWriteTests(unittest.TestCase):
 
 
 class TestWarnings(unittest.TestCase):
-
     def test_byte_max(self):
         with support.check_warnings(("", RuntimeWarning)):
             ts.T_BYTE = CHAR_MAX + 1

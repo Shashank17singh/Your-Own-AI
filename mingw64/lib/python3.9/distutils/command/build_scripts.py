@@ -2,21 +2,20 @@
 
 Implements the Distutils 'build_scripts' command."""
 
-import os, re
-from stat import ST_MODE
-from distutils import sysconfig
+import os
+import re
+import tokenize
+from distutils import log, sysconfig
 from distutils.core import Command
 from distutils.dep_util import newer
-from distutils.util import convert_path, Mixin2to3
-from distutils import log
-import tokenize
+from distutils.util import Mixin2to3, convert_path
+from stat import ST_MODE
 
 # check if Python is called on the first line with this expression
 first_line_re = re.compile(b"^#!.*python[0-9.]*([ \t].*)?$")
 
 
 class build_scripts(Command):
-
     description = '"build" scripts (copy and fixup #! line)'
 
     user_options = [
@@ -118,8 +117,7 @@ class build_scripts(Command):
                         shebang.decode("utf-8")
                     except UnicodeDecodeError:
                         raise ValueError(
-                            "The shebang ({!r}) is not decodable "
-                            "from utf-8".format(shebang)
+                            f"The shebang ({shebang!r}) is not decodable from utf-8"
                         )
                     # If the script is encoded to a custom encoding (use a
                     # #coding:xxx cookie), the shebang has to be decodable from
@@ -128,8 +126,8 @@ class build_scripts(Command):
                         shebang.decode(encoding)
                     except UnicodeDecodeError:
                         raise ValueError(
-                            "The shebang ({!r}) is not decodable "
-                            "from the script encoding ({})".format(shebang, encoding)
+                            f"The shebang ({shebang!r}) is not decodable "
+                            f"from the script encoding ({encoding})"
                         )
                     with open(outfile, "wb") as outf:
                         outf.write(shebang)
@@ -159,7 +157,6 @@ class build_scripts(Command):
 
 
 class build_scripts_2to3(build_scripts, Mixin2to3):
-
     def copy_scripts(self):
         outfiles, updated_files = build_scripts.copy_scripts(self)
         if not self.dry_run:

@@ -1,9 +1,8 @@
-from tkinter import Toplevel, TclError
 import sys
+from tkinter import TclError, Toplevel
 
 
 class WindowList:
-
     def __init__(self):
         self.dict = {}
         self.callbacks = []
@@ -59,7 +58,6 @@ unregister_callback = registry.unregister_callback
 
 
 class ListedToplevel(Toplevel):
-
     def __init__(self, master, **kw):
         Toplevel.__init__(self, master, kw)
         registry.add(self)

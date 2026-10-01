@@ -1,8 +1,9 @@
-import unittest
-from test import support
-from test.support import socket_helper
 import smtplib
 import socket
+import unittest
+
+from test import support
+from test.support import socket_helper
 
 ssl = support.import_module("ssl")
 

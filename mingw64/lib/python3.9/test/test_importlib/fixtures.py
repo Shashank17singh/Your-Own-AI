@@ -1,10 +1,10 @@
+import contextlib
 import os
-import sys
-import shutil
 import pathlib
+import shutil
+import sys
 import tempfile
 import textwrap
-import contextlib
 import unittest
 
 
@@ -28,10 +28,9 @@ def save_cwd():
 
 @contextlib.contextmanager
 def tempdir_as_cwd():
-    with tempdir() as tmp:
-        with save_cwd():
-            os.chdir(str(tmp))
-            yield tmp
+    with tempdir() as tmp, save_cwd():
+        os.chdir(str(tmp))
+        yield tmp
 
 
 @contextlib.contextmanager
@@ -51,7 +50,7 @@ class Fixtures:
 
 class SiteDir(Fixtures):
     def setUp(self):
-        super(SiteDir, self).setUp()
+        super().setUp()
         self.site_dir = self.fixtures.enter_context(tempdir())
 
 
@@ -66,7 +65,7 @@ class OnSysPath(Fixtures):
             sys.path.remove(str(dir))
 
     def setUp(self):
-        super(OnSysPath, self).setUp()
+        super().setUp()
         self.fixtures.enter_context(self.add_sys_path(self.site_dir))
 
 
@@ -94,13 +93,13 @@ class DistInfoPkg(OnSysPath, SiteDir):
     }
 
     def setUp(self):
-        super(DistInfoPkg, self).setUp()
+        super().setUp()
         build_files(DistInfoPkg.files, self.site_dir)
 
 
 class DistInfoPkgOffPath(SiteDir):
     def setUp(self):
-        super(DistInfoPkgOffPath, self).setUp()
+        super().setUp()
         build_files(DistInfoPkg.files, self.site_dir)
 
 
@@ -137,7 +136,7 @@ class EggInfoPkg(OnSysPath, SiteDir):
     }
 
     def setUp(self):
-        super(EggInfoPkg, self).setUp()
+        super().setUp()
         build_files(EggInfoPkg.files, prefix=self.site_dir)
 
 
@@ -158,7 +157,7 @@ class EggInfoFile(OnSysPath, SiteDir):
     }
 
     def setUp(self):
-        super(EggInfoFile, self).setUp()
+        super().setUp()
         build_files(EggInfoFile.files, prefix=self.site_dir)
 
 

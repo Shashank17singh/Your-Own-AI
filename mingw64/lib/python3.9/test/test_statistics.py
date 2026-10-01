@@ -12,16 +12,15 @@ import doctest
 import math
 import pickle
 import random
-import sys
-import unittest
-from test import support
-
-from decimal import Decimal
-from fractions import Fraction
-from test import support
 
 # Module to be tested.
 import statistics
+import sys
+import unittest
+from decimal import Decimal
+from fractions import Fraction
+
+from test import support
 
 # === Helper functions and class ===
 
@@ -173,8 +172,6 @@ class _DoNothing:
 
     """
 
-    pass
-
 
 # We prefer this for testing numeric values that may not be exactly equal,
 # and avoid using TestCase.assertAlmostEqual, because it sucks :-)
@@ -261,7 +258,7 @@ class NumericTestCase(unittest.TestCase):
     def _check_approx_num(self, first, second, tol, rel, msg, idx=None):
         if approx_equal(first, second, tol, rel):
             # Test passes. Return early, we are done.
-            return None
+            return
         # Otherwise we failed.
         standardMsg = self._make_std_err_msg(first, second, tol, rel, idx)
         msg = self._formatMessage(msg, standardMsg)
@@ -395,7 +392,7 @@ class ApproxEqualExactTest(unittest.TestCase):
     def test_exactly_equal_decimals(self):
         # Test that equal Decimal values are exactly equal.
         D = Decimal
-        for d in map(D, "8.2 31.274 912.04 16.745 1.2047".split()):
+        for d in map(D, ["8.2", "31.274", "912.04", "16.745", "1.2047"]):
             self.do_exactly_equal_test(d, 0, 0)
 
     def test_exactly_equal_absolute(self):
@@ -455,7 +452,7 @@ class ApproxEqualUnequalTest(unittest.TestCase):
 
     def test_exactly_unequal_decimals(self):
         # Test that unequal Decimals are unequal with zero error tolerance.
-        for d in map(Decimal, "3.1415 298.12 3.47 18.996 0.00245".split()):
+        for d in map(Decimal, ["3.1415", "298.12", "3.47", "18.996", "0.00245"]):
             self.do_exactly_unequal_test(d)
 
 
@@ -496,7 +493,7 @@ class ApproxEqualInexactTest(unittest.TestCase):
     def test_approx_equal_absolute_decimals(self):
         # Test approximate equality of Decimals with an absolute error.
         delta = Decimal("0.01")
-        for d in map(Decimal, "1.0 3.5 36.08 61.79 7912.3648".split()):
+        for d in map(Decimal, ["1.0", "3.5", "36.08", "61.79", "7912.3648"]):
             self.do_approx_equal_abs_test(d, delta)
             self.do_approx_equal_abs_test(-d, delta)
 
@@ -539,7 +536,7 @@ class ApproxEqualInexactTest(unittest.TestCase):
 
     def test_approx_equal_relative_decimals(self):
         # Test approximate equality of Decimals with a relative error.
-        for d in map(Decimal, "0.02 1.0 5.7 13.67 94.138 91027.9321".split()):
+        for d in map(Decimal, ["0.02", "1.0", "5.7", "13.67", "94.138", "91027.9321"]):
             self.do_approx_equal_rel_test(d, Decimal("0.001"))
             self.do_approx_equal_rel_test(-d, Decimal("0.05"))
 
@@ -1083,9 +1080,8 @@ class FindLteqTest(unittest.TestCase):
 
     def test_invalid_input_values(self):
         for a, x in [([], 1), ([1, 2], 3), ([1, 3], 2)]:
-            with self.subTest(a=a, x=x):
-                with self.assertRaises(ValueError):
-                    statistics._find_lteq(a, x)
+            with self.subTest(a=a, x=x), self.assertRaises(ValueError):
+                statistics._find_lteq(a, x)
 
     def test_locate_successfully(self):
         for a, x, expected_i in [
@@ -1595,9 +1591,8 @@ class TestHarmonicMean(NumericTestCase, AverageMixin, UnivariateTypeMixin):
             [1, "2", 3, "4", 5],  # mixed strings and valid integers
             [2.3, 3.4, 4.5, "5.6"],  # only one string and valid floats
         ]:
-            with self.subTest(data=data):
-                with self.assertRaises(TypeError):
-                    self.func(data)
+            with self.subTest(data=data), self.assertRaises(TypeError):
+                self.func(data)
 
     def test_ints(self):
         # Test harmonic mean with ints.
@@ -1918,7 +1913,7 @@ class TestMode(NumericTestCase, AverageMixin, UnivariateTypeMixin):
         # Test mode with nominal data.
         data = "abcbdb"
         self.assertEqual(self.func(data), "b")
-        data = "fe fi fo fum fi fi".split()
+        data = ["fe", "fi", "fo", "fum", "fi", "fi"]
         self.assertEqual(self.func(data), "fi")
 
     def test_discrete_data(self):
@@ -1958,7 +1953,6 @@ class TestMode(NumericTestCase, AverageMixin, UnivariateTypeMixin):
 
 
 class TestMultiMode(unittest.TestCase):
-
     def test_basics(self):
         multimode = statistics.multimode
         self.assertEqual(multimode("aabbbbbbbbcc"), ["b"])
@@ -1967,7 +1961,6 @@ class TestMultiMode(unittest.TestCase):
 
 
 class TestFMean(unittest.TestCase):
-
     def test_basics(self):
         fmean = statistics.fmean
         D = Decimal
@@ -2199,7 +2192,6 @@ class TestStdev(VarianceStdevMixin, NumericTestCase):
 
 
 class TestGeometricMean(unittest.TestCase):
-
     def test_basics(self):
         geometric_mean = statistics.geometric_mean
         self.assertAlmostEqual(geometric_mean([54, 24, 36]), 36.0)
@@ -2288,7 +2280,6 @@ class TestGeometricMean(unittest.TestCase):
 
 
 class TestQuantiles(unittest.TestCase):
-
     def test_specific_cases(self):
         # Match results computed by hand and cross-checked
         # against the PERCENTILE.EXC function in MS Excel.
@@ -2449,7 +2440,7 @@ class TestQuantiles(unittest.TestCase):
             [10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0],
         )
         self.assertEqual(
-            quantiles(range(0, 101), n=10, method="inclusive"),
+            quantiles(range(101), n=10, method="inclusive"),
             [10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0],
         )
         # Whenever n is smaller than the number of data points, running
@@ -2522,7 +2513,6 @@ class TestQuantiles(unittest.TestCase):
 
 
 class TestNormalDist:
-
     # General note on precision: The pdf(), cdf(), and overlap() methods
     # depend on functions in the math libraries that do not make
     # explicit accuracy guarantees.  Accordingly, some of the accuracy

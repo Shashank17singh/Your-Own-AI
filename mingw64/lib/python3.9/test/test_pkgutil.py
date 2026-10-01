@@ -1,15 +1,16 @@
-from pathlib import Path
-from test.support import run_unittest, unload, check_warnings, CleanImport
-import unittest
-import sys
 import importlib
-from importlib.util import spec_from_file_location
-import pkgutil
 import os
 import os.path
-import tempfile
+import pkgutil
 import shutil
+import sys
+import tempfile
+import unittest
 import zipfile
+from importlib.util import spec_from_file_location
+from pathlib import Path
+
+from test.support import CleanImport, check_warnings, run_unittest, unload
 
 # Note: pkgutil.walk_packages is currently tested in test_runpy. This is
 # a hack to get a major issue resolved for 3.3b2. Longer term, it should
@@ -19,7 +20,6 @@ import zipfile
 
 
 class PkgutilTests(unittest.TestCase):
-
     def setUp(self):
         self.dirname = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.dirname)
@@ -323,14 +323,12 @@ class PkgutilTests(unittest.TestCase):
                 self.assertEqual(o, expected)
 
         for s, exc in failure_cases:
-            with self.subTest(s=s):
-                with self.assertRaises(exc):
-                    pkgutil.resolve_name(s)
+            with self.subTest(s=s), self.assertRaises(exc):
+                pkgutil.resolve_name(s)
 
 
 class PkgutilPEP302Tests(unittest.TestCase):
-
-    class MyTestLoader(object):
+    class MyTestLoader:
         def create_module(self, spec):
             return None
 
@@ -341,7 +339,7 @@ class PkgutilPEP302Tests(unittest.TestCase):
         def get_data(self, path):
             return "Hello, world!"
 
-    class MyTestImporter(object):
+    class MyTestImporter:
         def find_spec(self, fullname, path=None, target=None):
             loader = PkgutilPEP302Tests.MyTestLoader()
             return spec_from_file_location(
@@ -393,7 +391,7 @@ class ExtendPathTests(unittest.TestCase):
     def create_submodule(self, dirname, pkgname, submodule_name, value):
         module_name = os.path.join(dirname, pkgname, submodule_name + ".py")
         with open(module_name, "w") as fl:
-            print("value={}".format(value), file=fl)
+            print(f"value={value}", file=fl)
 
     def test_simple(self):
         pkgname = "foo"
@@ -435,7 +433,7 @@ class ExtendPathTests(unittest.TestCase):
         modname = "eggs"
         dirname = self.create_init(pkgname)
         pathitem = os.path.join(dirname, pkgname)
-        fullname = "{}.{}".format(pkgname, modname)
+        fullname = f"{pkgname}.{modname}"
         sys.modules.pop(fullname, None)
         sys.modules.pop(pkgname, None)
         try:
@@ -509,7 +507,6 @@ class ExtendPathTests(unittest.TestCase):
 
 
 class NestedNamespacePackageTest(unittest.TestCase):
-
     def setUp(self):
         self.basedir = tempfile.mkdtemp()
         self.old_path = sys.path[:]
@@ -527,7 +524,7 @@ class NestedNamespacePackageTest(unittest.TestCase):
 
     def test_nested(self):
         pkgutil_boilerplate = (
-            "import pkgutil; " "__path__ = pkgutil.extend_path(__path__, __name__)"
+            "import pkgutil; __path__ = pkgutil.extend_path(__path__, __name__)"
         )
         self.create_module("a.pkg.__init__", pkgutil_boilerplate)
         self.create_module("b.pkg.__init__", pkgutil_boilerplate)
@@ -659,8 +656,8 @@ def test_main():
         ImportlibMigrationTests,
     )
     # this is necessary if test is run repeated (like when finding leaks)
-    import zipimport
     import importlib
+    import zipimport
 
     zipimport._zip_directory_cache.clear()
     importlib.invalidate_caches()

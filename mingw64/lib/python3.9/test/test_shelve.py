@@ -1,8 +1,9 @@
-import unittest
-import shelve
 import glob
-from test import support
+import shelve
+import unittest
 from collections.abc import MutableMapping
+
+from test import support
 from test.test_dbm import dbm_iterator
 
 
@@ -42,7 +43,6 @@ class byteskeydict(MutableMapping):
 
 
 class TestCase(unittest.TestCase):
-
     fn = "shelftemp.db"
 
     def tearDown(self):

@@ -3,12 +3,12 @@
 
 """Fraction, infinite-precision, real numbers."""
 
-from decimal import Decimal
 import math
 import numbers
 import operator
 import re
 import sys
+from decimal import Decimal
 
 __all__ = ["Fraction"]
 
@@ -59,7 +59,7 @@ class Fraction(numbers.Rational):
 
     """
 
-    __slots__ = ("_numerator", "_denominator")
+    __slots__ = ("_denominator", "_numerator")
 
     # We're immutable, so use __new__ not __init__
     def __new__(cls, numerator=0, denominator=None, *, _normalize=True):
@@ -93,7 +93,7 @@ class Fraction(numbers.Rational):
         Fraction(147, 100)
 
         """
-        self = super(Fraction, cls).__new__(cls)
+        self = super().__new__(cls)
 
         if denominator is None:
             if type(numerator) is int:
@@ -138,7 +138,7 @@ class Fraction(numbers.Rational):
                     numerator = -numerator
 
             else:
-                raise TypeError("argument should be a string " "or a Rational instance")
+                raise TypeError("argument should be a string or a Rational instance")
 
         elif type(numerator) is int is type(denominator):
             pass  # *very* normal case
@@ -151,7 +151,7 @@ class Fraction(numbers.Rational):
                 denominator.numerator * numerator.denominator,
             )
         else:
-            raise TypeError("both arguments should be " "Rational instances")
+            raise TypeError("both arguments should be Rational instances")
 
         if denominator == 0:
             raise ZeroDivisionError("Fraction(%s, 0)" % numerator)

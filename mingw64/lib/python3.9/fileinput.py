@@ -72,22 +72,23 @@ XXX Possible additions:
 
 """
 
-import sys, os
+import os
+import sys
 from types import GenericAlias
 
 __all__ = [
-    "input",
-    "close",
-    "nextfile",
-    "filename",
-    "lineno",
-    "filelineno",
-    "fileno",
-    "isfirstline",
-    "isstdin",
     "FileInput",
+    "close",
+    "filelineno",
+    "filename",
+    "fileno",
     "hook_compressed",
     "hook_encoded",
+    "input",
+    "isfirstline",
+    "isstdin",
+    "lineno",
+    "nextfile",
 ]
 
 _state = None
@@ -234,7 +235,7 @@ class FileInput:
         # restrict mode argument to reading modes
         if mode not in ("r", "rU", "U", "rb"):
             raise ValueError(
-                "FileInput opening mode must be one of " "'r', 'rU', 'U' and 'rb'"
+                "FileInput opening mode must be one of 'r', 'rU', 'U' and 'rb'"
             )
         if "U" in mode:
             import warnings

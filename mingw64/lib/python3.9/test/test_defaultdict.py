@@ -1,11 +1,10 @@
 """Unit tests for collections.defaultdict."""
 
-import os
 import copy
+import os
 import pickle
 import tempfile
 import unittest
-
 from collections import defaultdict
 
 
@@ -14,7 +13,6 @@ def foobar():
 
 
 class TestDefaultDict(unittest.TestCase):
-
     def test_basic(self):
         d1 = defaultdict()
         self.assertEqual(d1.default_factory, None)

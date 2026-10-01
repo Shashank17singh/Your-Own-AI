@@ -36,11 +36,9 @@ def _format_callbacks(cb):
     if size == 1:
         cb = format_cb(cb[0][0])
     elif size == 2:
-        cb = "{}, {}".format(format_cb(cb[0][0]), format_cb(cb[1][0]))
+        cb = f"{format_cb(cb[0][0])}, {format_cb(cb[1][0])}"
     elif size > 2:
-        cb = "{}, <{} more>, {}".format(
-            format_cb(cb[0][0]), size - 2, format_cb(cb[-1][0])
-        )
+        cb = f"{format_cb(cb[0][0])}, <{size - 2} more>, {format_cb(cb[-1][0])}"
     return f"cb=[{cb}]"
 
 

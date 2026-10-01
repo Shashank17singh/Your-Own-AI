@@ -4,12 +4,13 @@ Provides the FileList class, used for poking about the filesystem
 and building lists of files.
 """
 
-import os, re
 import fnmatch
 import functools
-from distutils.util import convert_path
-from distutils.errors import DistutilsTemplateError, DistutilsInternalError
+import os
+import re
 from distutils import log
+from distutils.errors import DistutilsInternalError, DistutilsTemplateError
+from distutils.util import convert_path
 
 
 class FileList:
@@ -125,10 +126,7 @@ class FileList:
             for pattern in patterns:
                 if not self.exclude_pattern(pattern, anchor=1):
                     log.warn(
-                        (
-                            "warning: no previously-included files "
-                            "found matching '%s'"
-                        ),
+                        ("warning: no previously-included files found matching '%s'"),
                         pattern,
                     )
 
@@ -161,10 +159,7 @@ class FileList:
             for pattern in patterns:
                 if not self.include_pattern(pattern, prefix=dir):
                     log.warn(
-                        (
-                            "warning: no files found matching '%s' "
-                            "under directory '%s'"
-                        ),
+                        ("warning: no files found matching '%s' under directory '%s'"),
                         pattern,
                         dir,
                     )
@@ -191,7 +186,7 @@ class FileList:
             self.debug_print("prune " + dir_pattern)
             if not self.exclude_pattern(None, prefix=dir_pattern):
                 log.warn(
-                    ("no previously-included directories found " "matching '%s'"),
+                    ("no previously-included directories found matching '%s'"),
                     dir_pattern,
                 )
         else:

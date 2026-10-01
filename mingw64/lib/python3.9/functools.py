@@ -10,28 +10,28 @@
 # See C source code for _functools credits/copyright
 
 __all__ = [
-    "update_wrapper",
-    "wraps",
     "WRAPPER_ASSIGNMENTS",
     "WRAPPER_UPDATES",
-    "total_ordering",
     "cache",
+    "cached_property",
     "cmp_to_key",
     "lru_cache",
-    "reduce",
     "partial",
     "partialmethod",
+    "reduce",
     "singledispatch",
     "singledispatchmethod",
-    "cached_property",
+    "total_ordering",
+    "update_wrapper",
+    "wraps",
 ]
 
+from _thread import RLock
 from abc import get_cache_token
 from collections import namedtuple
 
 # import types, weakref  # Deferred to single_dispatch()
 from reprlib import recursive_repr
-from _thread import RLock
 from types import GenericAlias
 
 ################################################################################
@@ -247,7 +247,7 @@ def total_ordering(cls):
 def cmp_to_key(mycmp):
     """Convert a cmp= function into a key= function"""
 
-    class K(object):
+    class K:
         __slots__ = ["obj"]
 
         def __init__(self, obj):
@@ -333,7 +333,7 @@ class partial:
     and keywords.
     """
 
-    __slots__ = "func", "args", "keywords", "__dict__", "__weakref__"
+    __slots__ = "__dict__", "__weakref__", "args", "func", "keywords"
 
     def __new__(cls, func, /, *args, **keywords):
         if not callable(func):
@@ -407,7 +407,7 @@ except ImportError:
 
 
 # Descriptor version
-class partialmethod(object):
+class partialmethod:
     """Method descriptor with partial application of the given arguments
     and keywords.
 
@@ -417,7 +417,7 @@ class partialmethod(object):
 
     def __init__(self, func, /, *args, **keywords):
         if not callable(func) and not hasattr(func, "__get__"):
-            raise TypeError("{!r} is not callable or a descriptor".format(func))
+            raise TypeError(f"{func!r} is not callable or a descriptor")
 
         # func could be a descriptor like classmethod which isn't callable,
         # so we can't inherit from partial (it verifies func is callable)
@@ -435,7 +435,7 @@ class partialmethod(object):
 
     def __repr__(self):
         args = ", ".join(map(repr, self.args))
-        keywords = ", ".join("{}={!r}".format(k, v) for k, v in self.keywords.items())
+        keywords = ", ".join(f"{k}={v!r}" for k, v in self.keywords.items())
         format_string = "{module}.{cls}({func}, {args}, {keywords})"
         return format_string.format(
             module=self.__class__.__module__,
@@ -578,8 +578,7 @@ def lru_cache(maxsize=128, typed=False):
 
     if isinstance(maxsize, int):
         # Negative maxsize is treated as 0
-        if maxsize < 0:
-            maxsize = 0
+        maxsize = max(maxsize, 0)
     elif callable(maxsize) and isinstance(typed, bool):
         # The user_function was passed in directly via the maxsize argument
         user_function, maxsize = maxsize, 128
@@ -880,7 +879,7 @@ def _find_impl(cls, registry):
                 and match not in cls.__mro__
                 and not issubclass(match, t)
             ):
-                raise RuntimeError("Ambiguous dispatch: {} or {}".format(match, t))
+                raise RuntimeError(f"Ambiguous dispatch: {match} or {t}")
             break
         if t in registry:
             match = t
@@ -899,7 +898,8 @@ def singledispatch(func):
     # There are many programs that use functools without singledispatch, so we
     # trade-off making singledispatch marginally slower for the benefit of
     # making start-up of such applications slightly faster.
-    import types, weakref
+    import types
+    import weakref
 
     registry = {}
     dispatch_cache = weakref.WeakKeyDictionary()
@@ -953,7 +953,7 @@ def singledispatch(func):
             argname, cls = next(iter(get_type_hints(func).items()))
             if not isinstance(cls, type):
                 raise TypeError(
-                    f"Invalid annotation for {argname!r}. " f"{cls!r} is not a class."
+                    f"Invalid annotation for {argname!r}. {cls!r} is not a class."
                 )
         registry[cls] = func
         if cache_token is None and hasattr(cls, "__abstractmethods__"):
@@ -963,7 +963,7 @@ def singledispatch(func):
 
     def wrapper(*args, **kw):
         if not args:
-            raise TypeError(f"{funcname} requires at least " "1 positional argument")
+            raise TypeError(f"{funcname} requires at least 1 positional argument")
 
         return dispatch(args[0].__class__)(*args, **kw)
 

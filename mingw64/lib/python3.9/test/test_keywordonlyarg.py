@@ -115,9 +115,7 @@ class KeywordOnlyArgTestCase(unittest.TestCase):
 
         self.assertEqual(1 + 2, keywordonly_and_kwarg_sum(k1=1, k2=2))
         self.assertEqual(1 + 2 + 3, keywordonly_and_kwarg_sum(k1=1, k2=2, k3=3))
-        self.assertEqual(
-            1 + 2 + 3 + 4, keywordonly_and_kwarg_sum(k1=1, k2=2, **{"a": 3, "b": 4})
-        )
+        self.assertEqual(1 + 2 + 3 + 4, keywordonly_and_kwarg_sum(k1=1, k2=2, a=3, b=4))
 
         self.assertEqual(1 + 2, mixedargs_sum(1, k1=2))
         self.assertEqual(1 + 2 + 3, mixedargs_sum(1, 2, k1=3))
@@ -132,7 +130,7 @@ class KeywordOnlyArgTestCase(unittest.TestCase):
             1 + 2 + 3 + 4 + 5 + 6, mixedargs_sum2(1, 2, 3, k1=4, k2=5, k3=6)
         )
         self.assertEqual(
-            1 + 2 + 3 + 4 + 5 + 6, mixedargs_sum2(1, 2, 3, k1=4, **{"k2": 5, "k3": 6})
+            1 + 2 + 3 + 4 + 5 + 6, mixedargs_sum2(1, 2, 3, k1=4, k2=5, k3=6)
         )
 
         self.assertEqual(1, Foo(k1=1).sum())

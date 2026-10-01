@@ -4,12 +4,12 @@ This module allows high-level and efficient I/O multiplexing, built upon the
 `select` module primitives.
 """
 
-from abc import ABCMeta, abstractmethod
-from collections import namedtuple
-from collections.abc import Mapping
 import math
 import select
 import sys
+from abc import ABCMeta, abstractmethod
+from collections import namedtuple
+from collections.abc import Mapping
 
 # generic events, that must be mapped to implementation-specific ones
 EVENT_READ = 1 << 0
@@ -34,9 +34,9 @@ def _fileobj_to_fd(fileobj):
         try:
             fd = int(fileobj.fileno())
         except (AttributeError, TypeError, ValueError):
-            raise ValueError("Invalid file object: " "{!r}".format(fileobj)) from None
+            raise ValueError(f"Invalid file object: {fileobj!r}") from None
     if fd < 0:
-        raise ValueError("Invalid file descriptor: {}".format(fd))
+        raise ValueError(f"Invalid file descriptor: {fd}")
     return fd
 
 
@@ -69,7 +69,7 @@ class _SelectorMapping(Mapping):
             fd = self._selector._fileobj_lookup(fileobj)
             return self._selector._fd_to_key[fd]
         except KeyError:
-            raise KeyError("{!r} is not registered".format(fileobj)) from None
+            raise KeyError(f"{fileobj!r} is not registered") from None
 
     def __iter__(self):
         return iter(self._selector._fd_to_key)
@@ -173,7 +173,6 @@ class BaseSelector(metaclass=ABCMeta):
 
         This must be called to make sure that any underlying resource is freed.
         """
-        pass
 
     def get_key(self, fileobj):
         """Return the key associated to a registered file object.
@@ -187,7 +186,7 @@ class BaseSelector(metaclass=ABCMeta):
         try:
             return mapping[fileobj]
         except KeyError:
-            raise KeyError("{!r} is not registered".format(fileobj)) from None
+            raise KeyError(f"{fileobj!r} is not registered") from None
 
     @abstractmethod
     def get_map(self):
@@ -231,12 +230,12 @@ class _BaseSelectorImpl(BaseSelector):
 
     def register(self, fileobj, events, data=None):
         if (not events) or (events & ~(EVENT_READ | EVENT_WRITE)):
-            raise ValueError("Invalid events: {!r}".format(events))
+            raise ValueError(f"Invalid events: {events!r}")
 
         key = SelectorKey(fileobj, self._fileobj_lookup(fileobj), events, data)
 
         if key.fd in self._fd_to_key:
-            raise KeyError("{!r} (FD {}) is already registered".format(fileobj, key.fd))
+            raise KeyError(f"{fileobj!r} (FD {key.fd}) is already registered")
 
         self._fd_to_key[key.fd] = key
         return key
@@ -245,14 +244,14 @@ class _BaseSelectorImpl(BaseSelector):
         try:
             key = self._fd_to_key.pop(self._fileobj_lookup(fileobj))
         except KeyError:
-            raise KeyError("{!r} is not registered".format(fileobj)) from None
+            raise KeyError(f"{fileobj!r} is not registered") from None
         return key
 
     def modify(self, fileobj, events, data=None):
         try:
             key = self._fd_to_key[self._fileobj_lookup(fileobj)]
         except KeyError:
-            raise KeyError("{!r} is not registered".format(fileobj)) from None
+            raise KeyError(f"{fileobj!r} is not registered") from None
         if events != key.events:
             self.unregister(fileobj)
             key = self.register(fileobj, events, data)

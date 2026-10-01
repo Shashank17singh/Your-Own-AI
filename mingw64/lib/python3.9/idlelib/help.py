@@ -26,14 +26,12 @@ show_idlehelp - Create HelpWindow.  Called in EditorWindow.help_dialog.
 """
 
 from html.parser import HTMLParser
+from idlelib.config import idleConf
 from os.path import abspath, dirname, isfile, join
 from platform import python_version
-
-from tkinter import Toplevel, Text, Menu
-from tkinter.ttk import Frame, Menubutton, Scrollbar, Style
+from tkinter import Menu, Text, Toplevel
 from tkinter import font as tkfont
-
-from idlelib.config import idleConf
+from tkinter.ttk import Frame, Menubutton, Scrollbar, Style
 
 ## About IDLE ##
 
@@ -90,9 +88,7 @@ class HelpParser(HTMLParser):
             s = "\n\n" if lastline and not lastline.isspace() else "\n"
         elif tag == "span" and class_ == "pre":
             self.chartags = "pre"
-        elif tag == "span" and class_ == "versionmodified":
-            self.chartags = "em"
-        elif tag == "em":
+        elif tag == "span" and class_ == "versionmodified" or tag == "em":
             self.chartags = "em"
         elif tag in ["ul", "ol"]:
             if class_.find("simple") != -1:
@@ -295,8 +291,7 @@ def copy_strip():
     )
     dst = join(abspath(dirname(__file__)), "help.html")
     with open(src, "rb") as inn, open(dst, "wb") as out:
-        for line in inn:
-            out.write(line.rstrip() + b"\n")
+        out.writelines(line.rstrip() + b"\n" for line in inn)
     print(f"{src} copied to {dst}")
 
 

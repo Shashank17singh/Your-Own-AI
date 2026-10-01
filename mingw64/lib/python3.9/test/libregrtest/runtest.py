@@ -12,8 +12,8 @@ import traceback
 import unittest
 
 from test import support
-from test.libregrtest.refleak import dash_R, clear_caches
 from test.libregrtest.cmdline import Namespace
+from test.libregrtest.refleak import clear_caches, dash_R
 from test.libregrtest.save_env import saved_test_environment
 from test.libregrtest.utils import format_duration, print_warning
 
@@ -289,9 +289,7 @@ def _runtest_inner2(ns: Namespace, test_name: str) -> bool:
 
     if gc.garbage:
         support.environment_altered = True
-        print_warning(
-            f"{test_name} created {len(gc.garbage)} " f"uncollectable object(s)."
-        )
+        print_warning(f"{test_name} created {len(gc.garbage)} uncollectable object(s).")
 
         # move the uncollectable objects somewhere,
         # so we don't see them again
@@ -384,7 +382,7 @@ def cleanup_test_droppings(test_name: str, verbose: int) -> None:
             kind, nuker = "file", os.unlink
         else:
             raise RuntimeError(
-                f"os.path says {name!r} exists but is neither " f"directory nor file"
+                f"os.path says {name!r} exists but is neither directory nor file"
             )
 
         if verbose:

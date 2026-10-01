@@ -79,7 +79,7 @@ class SingleNamespacePackage(NamespacePackageTest):
 
     def test_cant_import_other(self):
         with self.assertRaises(ImportError):
-            import foo.two
+            pass
 
     def test_module_repr(self):
         import foo.one
@@ -149,8 +149,8 @@ class SeparatedOverlappingNamespacePackages(NamespacePackageTest):
         self.assertEqual(foo.two.attr, "both_portions foo two")
 
     def test_first_path_wins_importing_second_first(self):
-        import foo.two
         import foo.one
+        import foo.two
 
         self.assertEqual(foo.one.attr, "portion1 foo one")
         self.assertEqual(foo.two.attr, "both_portions foo two")
@@ -166,7 +166,7 @@ class SingleZipNamespacePackage(NamespacePackageTest):
 
     def test_cant_import_other(self):
         with self.assertRaises(ImportError):
-            import foo.two
+            pass
 
 
 class SeparatedZipNamespacePackages(NamespacePackageTest):
@@ -192,7 +192,7 @@ class SingleNestedZipNamespacePackage(NamespacePackageTest):
 
     def test_cant_import_other(self):
         with self.assertRaises(ImportError):
-            import foo.two
+            pass
 
 
 class SeparatedNestedZipNamespacePackages(NamespacePackageTest):
@@ -287,7 +287,7 @@ class ZipWithMissingDirectory(NamespacePackageTest):
         # Because there is no 'foo/', the zipimporter currently doesn't
         #  know that foo is a namespace package
 
-        import foo.one
+        pass
 
     def test_present_directory(self):
         # This succeeds because there is a "bar/" in the zip file

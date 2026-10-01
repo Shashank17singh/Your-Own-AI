@@ -2,10 +2,11 @@
 
 import sys
 from textwrap import dedent
-from typing import TypeVar, Generic, Optional
+from typing import Generic, Optional, TypeVar
 
 if sys.version_info[:2] >= (3, 6):
-    exec(dedent("""
+    exec(
+        dedent("""
     default_a: Optional['A'] = None
     default_b: Optional['B'] = None
 
@@ -23,7 +24,8 @@ if sys.version_info[:2] >= (3, 6):
         my_inner_a1: 'B.A'
         my_inner_a2: A
         my_outer_a: 'A'  # unless somebody calls get_type_hints with localns=B.__dict__
-    """))
+    """)
+    )
 else:  # This should stay in sync with the syntax above.
     __annotations__ = dict(
         default_a=Optional["A"],

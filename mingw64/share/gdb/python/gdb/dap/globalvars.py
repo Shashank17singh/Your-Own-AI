@@ -1,4 +1,5 @@
 import gdb
+
 from .sources import make_source
 from .startup import in_gdb_thread
 from .varref import BaseReference

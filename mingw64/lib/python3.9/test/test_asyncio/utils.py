@@ -16,10 +16,8 @@ import threading
 import time
 import unittest
 import weakref
-
-from unittest import mock
-
 from http.server import HTTPServer
+from unittest import mock
 from wsgiref.simple_server import WSGIRequestHandler, WSGIServer
 
 try:
@@ -27,12 +25,9 @@ try:
 except ImportError:  # pragma: no cover
     ssl = None
 
-from asyncio import base_events
-from asyncio import events
-from asyncio import format_helpers
-from asyncio import futures
-from asyncio import tasks
+from asyncio import base_events, events, format_helpers, futures, tasks
 from asyncio.log import logger
+
 from test import support
 
 
@@ -134,7 +129,6 @@ def run_once(loop):
 
 
 class SilentWSGIRequestHandler(WSGIRequestHandler):
-
     def get_stderr(self):
         return io.StringIO()
 
@@ -143,7 +137,6 @@ class SilentWSGIRequestHandler(WSGIRequestHandler):
 
 
 class SilentWSGIServer(WSGIServer):
-
     request_timeout = support.LOOPBACK_TIMEOUT
 
     def get_request(self):
@@ -156,7 +149,6 @@ class SilentWSGIServer(WSGIServer):
 
 
 class SSLWSGIServerMixin:
-
     def finish_request(self, request, client_address):
         # The relative location of our test directory (which
         # contains the ssl key and certificate files) differs
@@ -217,14 +209,12 @@ def _run_test_server(*, address, use_ssl=False, server_cls, server_ssl_cls):
 if hasattr(socket, "AF_UNIX"):
 
     class UnixHTTPServer(socketserver.UnixStreamServer, HTTPServer):
-
         def server_bind(self):
             socketserver.UnixStreamServer.server_bind(self)
             self.server_name = "127.0.0.1"
             self.server_port = 80
 
     class UnixWSGIServer(UnixHTTPServer, WSGIServer):
-
         request_timeout = support.LOOPBACK_TIMEOUT
 
         def server_bind(self):
@@ -243,7 +233,6 @@ if hasattr(socket, "AF_UNIX"):
             return request, ("127.0.0.1", "")
 
     class SilentUnixWSGIServer(UnixWSGIServer):
-
         def handle_error(self, request, client_address):
             pass
 
@@ -297,7 +286,6 @@ def make_test_protocol(base):
 
 
 class TestSelector(selectors.BaseSelector):
-
     def __init__(self):
         self.keys = {}
 
@@ -416,12 +404,10 @@ class TestLoop(base_events.BaseEventLoop):
             return False
 
     def assert_writer(self, fd, callback, *args):
-        assert fd in self.writers, "fd {} is not registered".format(fd)
+        assert fd in self.writers, f"fd {fd} is not registered"
         handle = self.writers[fd]
-        assert handle._callback == callback, "{!r} != {!r}".format(
-            handle._callback, callback
-        )
-        assert handle._args == args, "{!r} != {!r}".format(handle._args, args)
+        assert handle._callback == callback, f"{handle._callback!r} != {callback!r}"
+        assert handle._args == args, f"{handle._args!r} != {args!r}"
 
     def _ensure_fd_no_transport(self, fd):
         if not isinstance(fd, int):
@@ -429,14 +415,14 @@ class TestLoop(base_events.BaseEventLoop):
                 fd = int(fd.fileno())
             except (AttributeError, TypeError, ValueError):
                 # This code matches selectors._fileobj_to_fd function.
-                raise ValueError("Invalid file object: " "{!r}".format(fd)) from None
+                raise ValueError(f"Invalid file object: {fd!r}") from None
         try:
             transport = self._transports[fd]
         except KeyError:
             pass
         else:
             raise RuntimeError(
-                "File descriptor {!r} is used by transport {!r}".format(fd, transport)
+                f"File descriptor {fd!r} is used by transport {transport!r}"
             )
 
     def add_reader(self, fd, callback, *args):
@@ -496,7 +482,7 @@ class MockPattern(str):
     """
 
     def __eq__(self, other):
-        return bool(re.search(str(self), other, re.S))
+        return bool(re.search(str(self), other, re.DOTALL))
 
 
 class MockInstanceOf:

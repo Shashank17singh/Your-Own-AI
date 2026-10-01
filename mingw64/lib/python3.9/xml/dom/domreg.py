@@ -56,7 +56,7 @@ def getDOMImplementation(name=None, features=()):
         dom = creator()
         if _good_enough(dom, features):
             return dom
-    for creator in well_known_implementations.keys():
+    for creator in well_known_implementations:
         try:
             dom = getDOMImplementation(name=creator)
         except Exception:  # typically ImportError, or AttributeError

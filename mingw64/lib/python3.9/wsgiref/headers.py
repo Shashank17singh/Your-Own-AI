@@ -40,9 +40,7 @@ class Headers:
         """Convert/check value type."""
         if type(value) is str:
             return value
-        raise AssertionError(
-            "Header names/values must be" " of type str (got {0})".format(repr(value))
-        )
+        raise AssertionError(f"Header names/values must be of type str (got {value!r})")
 
     def __len__(self):
         """Return the total number of headers, including duplicates."""

@@ -35,7 +35,7 @@ __all__ = [
 
 
 from base64 import b64encode
-from binascii import b2a_base64, a2b_base64
+from binascii import a2b_base64, b2a_base64
 
 CRLF = "\r\n"
 NL = "\n"
@@ -44,7 +44,7 @@ EMPTYSTRING = ""
 # See also Charset.py
 MISC_LEN = 7
 
-
+
 # Helpers
 def header_length(bytearray):
     """Return the length of s when it is encoded with base64."""
@@ -55,7 +55,7 @@ def header_length(bytearray):
         n += 4
     return n
 
-
+
 def header_encode(header_bytes, charset="iso-8859-1"):
     """Encode a single header line with Base64 encoding in a given charset.
 
@@ -69,7 +69,7 @@ def header_encode(header_bytes, charset="iso-8859-1"):
     encoded = b64encode(header_bytes).decode("ascii")
     return "=?%s?b?%s?=" % (charset, encoded)
 
-
+
 def body_encode(s, maxlinelen=76, eol=NL):
     r"""Encode a string with base64.
 
@@ -94,7 +94,7 @@ def body_encode(s, maxlinelen=76, eol=NL):
         encvec.append(enc)
     return EMPTYSTRING.join(encvec)
 
-
+
 def decode(string):
     """Decode a raw base64 string, returning a bytes object.
 
@@ -103,7 +103,7 @@ def decode(string):
     level email.header class for that functionality.
     """
     if not string:
-        return bytes()
+        return b""
     elif isinstance(string, str):
         return a2b_base64(string.encode("raw-unicode-escape"))
     else:

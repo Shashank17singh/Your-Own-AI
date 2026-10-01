@@ -19,13 +19,13 @@ def warnfun():
 
 class TestWarnings(unittest.TestCase):
     def test_assert(self):
-        self.assertEquals(2 + 2, 4)
-        self.assertEquals(2 * 2, 4)
-        self.assertEquals(2**2, 4)
+        self.assertEqual(2 + 2, 4)
+        self.assertEqual(2 * 2, 4)
+        self.assertEqual(2**2, 4)
 
     def test_fail(self):
-        self.failUnless(1)
-        self.failUnless(True)
+        self.assertTrue(1)
+        self.assertTrue(True)
 
     def test_other_unittest(self):
         self.assertAlmostEqual(2 + 2, 4)

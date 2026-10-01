@@ -7,6 +7,7 @@ import warnings
 import zipfile
 from os.path import join
 from textwrap import dedent
+
 from test.support import captured_stdout, check_warnings, run_unittest
 
 try:
@@ -24,14 +25,14 @@ try:
 except ImportError:
     UID_GID_SUPPORT = False
 
+from distutils.archive_util import ARCHIVE_FORMATS
 from distutils.command.sdist import sdist, show_formats
 from distutils.core import Distribution
-from distutils.tests.test_config import BasePyPIRCCommandTestCase
 from distutils.errors import DistutilsOptionError
-from distutils.spawn import find_executable
-from distutils.log import WARN
 from distutils.filelist import FileList
-from distutils.archive_util import ARCHIVE_FORMATS
+from distutils.log import WARN
+from distutils.spawn import find_executable
+from distutils.tests.test_config import BasePyPIRCCommandTestCase
 
 SETUP_PY = """
 from distutils.core import setup
@@ -57,11 +58,10 @@ somecode%(sep)sdoc.txt
 
 
 class SDistTestCase(BasePyPIRCCommandTestCase):
-
     def setUp(self):
         # PyPIRCCommandTestCase creates a temp dir already
         # and put it in self.tmp_dir
-        super(SDistTestCase, self).setUp()
+        super().setUp()
         # setting up an environment
         self.old_path = os.getcwd()
         os.mkdir(join(self.tmp_dir, "somecode"))
@@ -75,7 +75,7 @@ class SDistTestCase(BasePyPIRCCommandTestCase):
     def tearDown(self):
         # back to normal
         os.chdir(self.old_path)
-        super(SDistTestCase, self).tearDown()
+        super().tearDown()
 
     def get_cmd(self, metadata=None):
         """Returns a cmd"""

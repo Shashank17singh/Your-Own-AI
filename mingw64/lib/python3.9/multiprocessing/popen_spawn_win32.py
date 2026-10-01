@@ -1,18 +1,14 @@
-import os
+import _winapi
 import msvcrt
+import os
 import signal
 import sys
-import _winapi
 
-from .context import reduction, get_spawning_popen, set_spawning_popen
-from . import spawn
-from . import util
+from . import spawn, util
+from .context import get_spawning_popen, reduction, set_spawning_popen
 
 __all__ = ["Popen"]
 
-#
-#
-#
 
 TERMINATE = 0x10000
 WINEXE = sys.platform == "win32" and getattr(sys, "frozen", False)
@@ -37,7 +33,7 @@ def _close_handles(*handles):
 #
 
 
-class Popen(object):
+class Popen:
     """
     Start a subprocess to run the code of a process object
     """

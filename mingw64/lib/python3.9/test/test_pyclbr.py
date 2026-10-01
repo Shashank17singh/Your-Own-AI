@@ -3,11 +3,13 @@ Test cases for pyclbr.py
 Nick Mathewson
 """
 
+import pyclbr
 import sys
 from textwrap import dedent
-from types import FunctionType, MethodType, BuiltinFunctionType
-import pyclbr
-from unittest import TestCase, main as unittest_main
+from types import BuiltinFunctionType, FunctionType, MethodType
+from unittest import TestCase
+from unittest import main as unittest_main
+
 from test.test_importlib import util as test_importlib_util
 
 StaticMethodType = type(staticmethod(lambda: None))
@@ -22,7 +24,6 @@ ClassMethodType = type(classmethod(lambda c: None))
 
 
 class PyclbrTest(TestCase):
-
     def assertListEq(self, l1, l2, ignore):
         """succeed iff {l1} - {ignore} == {l2} - {ignore}"""
         missing = (set(l1) ^ set(l2)) - set(ignore)
@@ -246,7 +247,6 @@ class PyclbrTest(TestCase):
 
 
 class ReadmoduleTests(TestCase):
-
     def setUp(self):
         self._modules = pyclbr._modules.copy()
 

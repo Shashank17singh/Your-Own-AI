@@ -1,6 +1,6 @@
-import unittest
 import builtins
 import os
+import unittest
 from platform import system as platform_system
 
 
@@ -152,7 +152,7 @@ class UsageTests(unittest.TestCase):
         try:
             try:
                 raise Exception
-            except (object_,):
+            except object_:
                 pass
         except TypeError:
             return
@@ -167,7 +167,7 @@ class UsageTests(unittest.TestCase):
         # BaseException; the ability was not possible until BaseException's
         # introduction so no need to support new-style objects that do not
         # inherit from it.
-        class NewStyleClass(object):
+        class NewStyleClass:
             pass
 
         self.raise_fails(NewStyleClass)
@@ -180,7 +180,7 @@ class UsageTests(unittest.TestCase):
     def test_catch_non_BaseException(self):
         # Trying to catch an object that does not inherit from BaseException
         # is not allowed.
-        class NonBaseException(object):
+        class NonBaseException:
             pass
 
         self.catch_fails(NonBaseException)

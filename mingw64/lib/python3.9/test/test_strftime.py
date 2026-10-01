@@ -3,11 +3,12 @@ Unittest for time.strftime
 """
 
 import calendar
-import sys
 import re
-from test import support
+import sys
 import time
 import unittest
+
+from test import support
 
 
 # helper functions
@@ -31,7 +32,6 @@ def escapestr(text, ampm):
 
 
 class StrftimeTest(unittest.TestCase):
-
     def _update_variables(self, now):
         # we must update the local variables on every cycle
         self.gmt = time.gmtime(now)
@@ -67,7 +67,7 @@ class StrftimeTest(unittest.TestCase):
 
             java.util.Locale.setDefault(java.util.Locale.US)
         except ImportError:
-            from locale import setlocale, LC_TIME
+            from locale import LC_TIME, setlocale
 
             saved_locale = setlocale(LC_TIME)
             setlocale(LC_TIME, "C")

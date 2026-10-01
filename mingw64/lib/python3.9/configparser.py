@@ -138,8 +138,6 @@ ConfigParser -- responsible for parsing a list of
         between keys and values are surrounded by spaces.
 """
 
-from collections.abc import MutableMapping
-from collections import ChainMap as _ChainMap
 import functools
 import io
 import itertools
@@ -147,29 +145,31 @@ import os
 import re
 import sys
 import warnings
+from collections import ChainMap as _ChainMap
+from collections.abc import MutableMapping
 
 __all__ = [
-    "NoSectionError",
-    "DuplicateOptionError",
-    "DuplicateSectionError",
-    "NoOptionError",
-    "InterpolationError",
-    "InterpolationDepthError",
-    "InterpolationMissingOptionError",
-    "InterpolationSyntaxError",
-    "ParsingError",
-    "MissingSectionHeaderError",
-    "ConfigParser",
-    "SafeConfigParser",
-    "RawConfigParser",
-    "Interpolation",
-    "BasicInterpolation",
-    "ExtendedInterpolation",
-    "LegacyInterpolation",
-    "SectionProxy",
-    "ConverterMapping",
     "DEFAULTSECT",
     "MAX_INTERPOLATION_DEPTH",
+    "BasicInterpolation",
+    "ConfigParser",
+    "ConverterMapping",
+    "DuplicateOptionError",
+    "DuplicateSectionError",
+    "ExtendedInterpolation",
+    "Interpolation",
+    "InterpolationDepthError",
+    "InterpolationError",
+    "InterpolationMissingOptionError",
+    "InterpolationSyntaxError",
+    "LegacyInterpolation",
+    "MissingSectionHeaderError",
+    "NoOptionError",
+    "NoSectionError",
+    "ParsingError",
+    "RawConfigParser",
+    "SafeConfigParser",
+    "SectionProxy",
 ]
 
 _default_dict = dict
@@ -214,7 +214,7 @@ class DuplicateSectionError(Error):
         if source is not None:
             message = ["While reading from ", repr(source)]
             if lineno is not None:
-                message.append(" [line {0:2d}]".format(lineno))
+                message.append(f" [line {lineno:2d}]")
             message.append(": section ")
             message.extend(msg)
             msg = message
@@ -239,7 +239,7 @@ class DuplicateOptionError(Error):
         if source is not None:
             message = ["While reading from ", repr(source)]
             if lineno is not None:
-                message.append(" [line {0:2d}]".format(lineno))
+                message.append(f" [line {lineno:2d}]")
             message.append(": option ")
             message.extend(msg)
             msg = message
@@ -278,9 +278,9 @@ class InterpolationMissingOptionError(InterpolationError):
 
     def __init__(self, option, section, rawval, reference):
         msg = (
-            "Bad value substitution: option {!r} in section {!r} contains "
-            "an interpolation key {!r} which is not a valid option name. "
-            "Raw value: {!r}".format(option, section, reference, rawval)
+            f"Bad value substitution: option {option!r} in section {section!r} contains "
+            f"an interpolation key {reference!r} which is not a valid option name. "
+            f"Raw value: {rawval!r}"
         )
         InterpolationError.__init__(self, option, section, msg)
         self.reference = reference
@@ -300,10 +300,9 @@ class InterpolationDepthError(InterpolationError):
 
     def __init__(self, option, section, rawval):
         msg = (
-            "Recursion limit exceeded in value substitution: option {!r} "
-            "in section {!r} contains an interpolation key which "
-            "cannot be substituted in {} steps. Raw value: {!r}"
-            "".format(option, section, MAX_INTERPOLATION_DEPTH, rawval)
+            f"Recursion limit exceeded in value substitution: option {option!r} "
+            f"in section {section!r} contains an interpolation key which "
+            f"cannot be substituted in {MAX_INTERPOLATION_DEPTH} steps. Raw value: {rawval!r}"
         )
         InterpolationError.__init__(self, option, section, msg)
         self.args = (option, section, rawval)
@@ -317,7 +316,7 @@ class ParsingError(Error):
         # `filename' kept for compatibility.
         if filename and source:
             raise ValueError(
-                "Cannot specify both `filename' and `source'. " "Use `source'."
+                "Cannot specify both `filename' and `source'. Use `source'."
             )
         elif not filename and not source:
             raise ValueError("Required argument `source' not given.")
@@ -467,7 +466,7 @@ class BasicInterpolation(Interpolation):
                 raise InterpolationSyntaxError(
                     option,
                     section,
-                    "'%%' must be followed by '%%' or '(', " "found: %r" % (rest,),
+                    "'%%' must be followed by '%%' or '(', found: %r" % (rest,),
                 )
 
 
@@ -553,7 +552,7 @@ class ExtendedInterpolation(Interpolation):
                 raise InterpolationSyntaxError(
                     option,
                     section,
-                    "'$' must be followed by '$' or '{', " "found: %r" % (rest,),
+                    "'$' must be followed by '$' or '{', found: %r" % (rest,),
                 )
 
 
@@ -657,7 +656,7 @@ class RawConfigParser(MutableMapping):
         empty_lines_in_values=True,
         default_section=DEFAULTSECT,
         interpolation=_UNSET,
-        converters=_UNSET
+        converters=_UNSET,
     ):
 
         self._dict = dict_type
@@ -890,7 +889,7 @@ class RawConfigParser(MutableMapping):
             raw=raw,
             vars=vars,
             fallback=fallback,
-            **kwargs
+            **kwargs,
         )
 
     def items(self, section=_UNSET, raw=False, vars=None):
@@ -976,7 +975,7 @@ class RawConfigParser(MutableMapping):
         preserved when writing the configuration back.
         """
         if space_around_delimiters:
-            d = " {} ".format(self._delimiters[0])
+            d = f" {self._delimiters[0]} "
         else:
             d = self._delimiters[0]
         if self._defaults:
@@ -986,14 +985,14 @@ class RawConfigParser(MutableMapping):
 
     def _write_section(self, fp, section_name, section_items, delimiter):
         """Write a single section to the specified `fp'."""
-        fp.write("[{}]\n".format(section_name))
+        fp.write(f"[{section_name}]\n")
         for key, value in section_items:
             value = self._interpolation.before_write(self, section_name, key, value)
             if value is not None or not self._allow_no_value:
                 value = delimiter + str(value).replace("\n", "\n\t")
             else:
                 value = ""
-            fp.write("{}{}\n".format(key, value))
+            fp.write(f"{key}{value}\n")
         fp.write("\n")
 
     def remove_option(self, section, option):
@@ -1310,7 +1309,7 @@ class SectionProxy(MutableMapping):
             setattr(self, key, getter)
 
     def __repr__(self):
-        return "<Section: {}>".format(self._name)
+        return f"<Section: {self._name}>"
 
     def __getitem__(self, key):
         if not self._parser.has_option(self._name, key):
@@ -1395,9 +1394,7 @@ class ConverterMapping(MutableMapping):
         try:
             k = "get" + key
         except TypeError:
-            raise ValueError(
-                "Incompatible key: {} (type: {})" "".format(key, type(key))
-            )
+            raise ValueError(f"Incompatible key: {key} (type: {type(key)})")
         if k == "get":
             raise ValueError('Incompatible key: cannot use "" as a name')
         self._data[key] = value

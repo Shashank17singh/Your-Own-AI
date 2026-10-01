@@ -3,14 +3,14 @@
 # Author: Collin Winter
 
 # Python imports
-import unittest
 import os
 import os.path
-from textwrap import dedent
+import unittest
 
 # Local imports
 from lib2to3 import pytree, refactor
 from lib2to3.pgen2 import driver as pgen2_driver
+from textwrap import dedent
 
 test_dir = os.path.dirname(__file__)
 proj_dir = os.path.normpath(os.path.join(test_dir, ".."))

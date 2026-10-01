@@ -93,6 +93,7 @@ __all__ = [
 ]
 
 import __future__
+
 import difflib
 import inspect
 import linecache
@@ -102,8 +103,8 @@ import re
 import sys
 import traceback
 import unittest
-from io import StringIO
 from collections import namedtuple
+from io import StringIO
 
 TestResults = namedtuple("TestResults", "failed attempted")
 
@@ -553,9 +554,9 @@ class DocTest:
         Create a new DocTest containing the given examples.  The
         DocTest's globals are initialized with a copy of `globs`.
         """
-        assert not isinstance(
-            examples, str
-        ), "DocTest no longer accepts str; use DocTestParser instead"
+        assert not isinstance(examples, str), (
+            "DocTest no longer accepts str; use DocTestParser instead"
+        )
         self.examples = examples
         self.docstring = docstring
         self.globs = globs.copy()
@@ -1015,9 +1016,7 @@ class DocTestFinder:
             else:
                 return True  # [XX] no easy way to tell otherwise
             return module.__name__ == obj_mod
-        elif inspect.isclass(object):
-            return module.__name__ == object.__module__
-        elif hasattr(object, "__module__"):
+        elif inspect.isclass(object) or hasattr(object, "__module__"):
             return module.__name__ == object.__module__
         elif isinstance(object, property):
             return True  # [XX] no way not be sure.
@@ -1368,7 +1367,6 @@ class DocTestRunner:
 
         # Process each example.
         for examplenum, example in enumerate(test.examples):
-
             # If REPORT_ONLY_FIRST_FAILURE is set, then suppress
             # reporting after the first failure.
             quiet = self.optionflags & REPORT_ONLY_FIRST_FAILURE and failures > 0
@@ -2147,7 +2145,7 @@ def testfile(
     global master
 
     if package and not module_relative:
-        raise ValueError("Package may only be specified for module-" "relative paths.")
+        raise ValueError("Package may only be specified for module-relative paths.")
 
     # Relativize the path
     text, filename = _load_testfile(
@@ -2257,7 +2255,6 @@ def set_unittest_reportflags(flags):
 
 
 class DocTestCase(unittest.TestCase):
-
     def __init__(self, test, optionflags=0, setUp=None, tearDown=None, checker=None):
 
         unittest.TestCase.__init__(self)
@@ -2312,7 +2309,7 @@ class DocTestCase(unittest.TestCase):
         else:
             lineno = "%s" % test.lineno
         lname = ".".join(test.name.split(".")[-1:])
-        return "Failed doctest test for %s\n" '  File "%s", line %s, in %s\n\n%s' % (
+        return 'Failed doctest test for %s\n  File "%s", line %s, in %s\n\n%s' % (
             test.name,
             test.filename,
             lineno,
@@ -2441,7 +2438,6 @@ class SkipDocTestCase(DocTestCase):
 
 
 class _DocTestSuite(unittest.TestSuite):
-
     def _removeTestAtIndex(self, index):
         pass
 
@@ -2511,7 +2507,6 @@ def DocTestSuite(module=None, globs=None, extraglobs=None, test_finder=None, **o
 
 
 class DocFileCase(DocTestCase):
-
     def id(self):
         return "_".join(self._dt_test.name.split("."))
 
@@ -2533,7 +2528,7 @@ def DocFileTest(
     globs=None,
     parser=DocTestParser(),
     encoding=None,
-    **options
+    **options,
 ):
     if globs is None:
         globs = {}
@@ -2541,7 +2536,7 @@ def DocFileTest(
         globs = globs.copy()
 
     if package and not module_relative:
-        raise ValueError("Package may only be specified for module-" "relative paths.")
+        raise ValueError("Package may only be specified for module-relative paths.")
 
     # Relativize the path.
     doc, path = _load_testfile(path, package, module_relative, encoding or "utf-8")

@@ -1,4 +1,5 @@
 import unittest
+
 from test import support
 
 
@@ -189,7 +190,7 @@ class TestMROEntry(unittest.TestCase):
 
         c = C()
         with self.assertRaisesRegex(
-            TypeError, "MRO entry resolution; " "use types.new_class()"
+            TypeError, "MRO entry resolution; use types.new_class()"
         ):
             type("Bad", (c,), {})
 
@@ -201,7 +202,6 @@ class TestClassGetitem(unittest.TestCase):
         class C:
             def __class_getitem__(*args, **kwargs):
                 getitem_args.extend([args, kwargs])
-                return None
 
         C[int, str]
         self.assertEqual(getitem_args[0], (C, (int, str)))
@@ -342,7 +342,6 @@ class TestClassGetitem(unittest.TestCase):
 
 @support.cpython_only
 class CAPITest(unittest.TestCase):
-
     def test_c_class(self):
         from _testcapi import Generic, GenericAlias
 

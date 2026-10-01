@@ -1,30 +1,30 @@
 """Utilities to support packages."""
 
-from collections import namedtuple
-from functools import singledispatch as simplegeneric
 import importlib
-import importlib.util
 import importlib.machinery
+import importlib.util
 import os
 import os.path
 import re
 import sys
-from types import ModuleType
 import warnings
+from collections import namedtuple
+from functools import singledispatch as simplegeneric
+from types import ModuleType
 
 __all__ = [
-    "get_importer",
-    "iter_importers",
-    "get_loader",
-    "find_loader",
-    "walk_packages",
-    "iter_modules",
-    "get_data",
     "ImpImporter",
     "ImpLoader",
-    "read_code",
-    "extend_path",
     "ModuleInfo",
+    "extend_path",
+    "find_loader",
+    "get_data",
+    "get_importer",
+    "get_loader",
+    "iter_importers",
+    "iter_modules",
+    "read_code",
+    "walk_packages",
 ]
 
 
@@ -129,7 +129,7 @@ def iter_modules(path=None, prefix=""):
     if path is None:
         importers = iter_importers()
     elif isinstance(path, str):
-        raise ValueError("path must be None or list of paths to look for " "modules in")
+        raise ValueError("path must be None or list of paths to look for modules in")
     else:
         importers = map(get_importer, path)
 
@@ -458,7 +458,7 @@ def iter_importers(fullname=""):
     If no module name is specified, all top level finders are produced.
     """
     if fullname.startswith("."):
-        msg = "Relative module name {!r} not supported".format(fullname)
+        msg = f"Relative module name {fullname!r} not supported"
         raise ImportError(msg)
     if "." in fullname:
         # Get the containing package's __path__
@@ -506,7 +506,7 @@ def find_loader(fullname):
     and only returns the loader rather than the full spec
     """
     if fullname.startswith("."):
-        msg = "Relative module name {!r} not supported".format(fullname)
+        msg = f"Relative module name {fullname!r} not supported"
         raise ImportError(msg)
     try:
         spec = importlib.util.find_spec(fullname)
@@ -656,7 +656,7 @@ def get_data(package, resource):
 
 _DOTTED_WORDS = r"(?!\d)(\w+)(\.(?!\d)(\w+))*"
 _NAME_PATTERN = re.compile(
-    f"^(?P<pkg>{_DOTTED_WORDS})(?P<cln>:(?P<obj>{_DOTTED_WORDS})?)?$", re.U
+    f"^(?P<pkg>{_DOTTED_WORDS})(?P<cln>:(?P<obj>{_DOTTED_WORDS})?)?$", re.UNICODE
 )
 del _DOTTED_WORDS
 

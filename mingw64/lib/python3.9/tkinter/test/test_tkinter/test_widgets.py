@@ -1,25 +1,25 @@
-import unittest
-import tkinter
-from tkinter import TclError
 import os
-from test.support import requires
+import tkinter
+import unittest
+from tkinter import TclError
 from tkinter.test.support import (
-    tcl_version,
-    requires_tcl,
-    get_tk_patchlevel,
-    widget_eq,
     AbstractDefaultRootTest,
+    get_tk_patchlevel,
+    requires_tcl,
+    tcl_version,
+    widget_eq,
 )
 from tkinter.test.widget_tests import (
+    AbstractWidgetTest,
+    IntegerSizeTests,
+    PixelSizeTests,
+    StandardOptionsTests,
     add_standard_options,
     noconv,
     pixels_round,
-    AbstractWidgetTest,
-    StandardOptionsTests,
-    IntegerSizeTests,
-    PixelSizeTests,
-    setUpModule,
 )
+
+from test.support import requires
 
 requires("gui")
 
@@ -1177,7 +1177,7 @@ class ListboxTest(AbstractWidgetTest, unittest.TestCase):
         widget = self.create()
         with self.assertRaisesRegex(TclError, 'item number "0" out of range'):
             widget.itemconfigure(0)
-        colors = "red orange yellow green blue white violet".split()
+        colors = ["red", "orange", "yellow", "green", "blue", "white", "violet"]
         widget.insert("end", *colors)
         for i, color in enumerate(colors):
             widget.itemconfigure(i, background=color)
@@ -1609,7 +1609,7 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
             p,
             b,
             "stretch",
-            'bad stretch "badValue": must be ' "always, first, last, middle, or never",
+            'bad stretch "badValue": must be always, first, last, middle, or never',
         )
 
     def test_paneconfigure_width(self):

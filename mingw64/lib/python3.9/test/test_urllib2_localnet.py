@@ -1,12 +1,12 @@
 import base64
-import os
 import email
-import urllib.parse
-import urllib.request
+import hashlib
 import http.server
+import os
 import threading
 import unittest
-import hashlib
+import urllib.parse
+import urllib.request
 
 from test import support
 from test.support import hashlib_helper
@@ -135,7 +135,7 @@ class DigestAuthHandler:
         final_dict["HA1"] = HA1
         final_dict["HA2"] = HA2
         response_str = (
-            "%(HA1)s:%(nonce)s:%(nc)s:" "%(cnonce)s:%(qop)s:%(HA2)s" % final_dict
+            "%(HA1)s:%(nonce)s:%(nc)s:%(cnonce)s:%(qop)s:%(HA2)s" % final_dict
         )
         response = hashlib.md5(response_str.encode("ascii")).hexdigest()
 
@@ -289,7 +289,7 @@ class BasicAuthTests(unittest.TestCase):
     REALM = "Test"
 
     def setUp(self):
-        super(BasicAuthTests, self).setUp()
+        super().setUp()
 
         # With Basic Authentication
         def http_server_with_basic_auth_handler(*args, **kwargs):
@@ -306,7 +306,7 @@ class BasicAuthTests(unittest.TestCase):
         self.server = None
 
     def tearDown(self):
-        super(BasicAuthTests, self).tearDown()
+        super().tearDown()
 
     def test_basic_auth_success(self):
         ah = urllib.request.HTTPBasicAuthHandler()
@@ -335,7 +335,7 @@ class ProxyAuthTests(unittest.TestCase):
     REALM = "TestRealm"
 
     def setUp(self):
-        super(ProxyAuthTests, self).setUp()
+        super().setUp()
 
         # Ignore proxy bypass settings in the environment.
         def restore_environ(old_environ):
@@ -408,7 +408,6 @@ class ProxyAuthTests(unittest.TestCase):
 def GetRequestHandler(responses):
 
     class FakeHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
-
         server_version = "TestHTTP/"
         requests = []
         headers_received = []
@@ -457,7 +456,7 @@ class TestUrlopen(unittest.TestCase):
     """
 
     def setUp(self):
-        super(TestUrlopen, self).setUp()
+        super().setUp()
 
         # clear _opener global variable
         self.addCleanup(urllib.request.urlcleanup)
@@ -527,7 +526,7 @@ class TestUrlopen(unittest.TestCase):
 
     def test_chunked(self):
         expected_response = b"hello world"
-        chunked_start = b"a\r\n" b"hello worl\r\n" b"1\r\n" b"d\r\n" b"0\r\n"
+        chunked_start = b"a\r\nhello worl\r\n1\r\nd\r\n0\r\n"
         response = [(200, [("Transfer-Encoding", "chunked")], chunked_start)]
         handler = self.start_server(response)
         data = self.urlopen("http://localhost:%s/" % handler.port)
@@ -636,7 +635,7 @@ class TestUrlopen(unittest.TestCase):
             for attr in ("read", "close", "info", "geturl"):
                 self.assertTrue(
                     hasattr(open_url, attr),
-                    "object returned from " "urlopen lacks the %s attribute" % attr,
+                    "object returned from urlopen lacks the %s attribute" % attr,
                 )
             self.assertTrue(open_url.read(), "calling 'read' failed")
 
@@ -648,7 +647,7 @@ class TestUrlopen(unittest.TestCase):
         self.assertIsInstance(
             info_obj,
             email.message.Message,
-            "object returned by 'info' is not an " "instance of email.message.Message",
+            "object returned by 'info' is not an instance of email.message.Message",
         )
         self.assertEqual(info_obj.get_content_subtype(), "plain")
 

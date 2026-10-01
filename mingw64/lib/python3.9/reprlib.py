@@ -1,10 +1,10 @@
 """Redo the builtin repr() (representation) but with limits on most sizes."""
 
-__all__ = ["Repr", "repr", "recursive_repr"]
+__all__ = ["Repr", "recursive_repr", "repr"]
 
 import builtins
-from itertools import islice
 from _thread import get_ident
+from itertools import islice
 
 
 def recursive_repr(fillvalue="..."):
@@ -25,10 +25,10 @@ def recursive_repr(fillvalue="..."):
             return result
 
         # Can't use functools.wraps() here because of bootstrap issues
-        wrapper.__module__ = getattr(user_function, "__module__")
-        wrapper.__doc__ = getattr(user_function, "__doc__")
-        wrapper.__name__ = getattr(user_function, "__name__")
-        wrapper.__qualname__ = getattr(user_function, "__qualname__")
+        wrapper.__module__ = user_function.__module__
+        wrapper.__doc__ = user_function.__doc__
+        wrapper.__name__ = user_function.__name__
+        wrapper.__qualname__ = user_function.__qualname__
         wrapper.__annotations__ = getattr(user_function, "__annotations__", {})
         return wrapper
 
@@ -36,7 +36,6 @@ def recursive_repr(fillvalue="..."):
 
 
 class Repr:
-
     def __init__(self):
         self.maxlevel = 6
         self.maxtuple = 6

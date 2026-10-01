@@ -2,6 +2,7 @@
 
 import collections
 import itertools
+
 import gdb
 from gdb.FrameDecorator import DAPFrameDecorator, FrameDecorator
 from gdb.FrameIterator import FrameIterator

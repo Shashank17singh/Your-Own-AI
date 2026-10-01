@@ -1,17 +1,17 @@
+import os
+import pickle
+import random
+import time
 import unittest
 import unittest.mock
-import random
-import os
-import time
-import pickle
 import warnings
-import test.support
-
-from functools import partial
-from math import log, exp, pi, fsum, sin, factorial
-from test import support
-from fractions import Fraction
 from collections import Counter
+from fractions import Fraction
+from functools import partial
+from math import exp, factorial, fsum, log, pi, sin
+
+import test.support
+from test import support
 
 
 class TestBasicOps:
@@ -41,7 +41,7 @@ class TestBasicOps:
 
     def test_seedargs(self):
         # Seed value with a negative hash.
-        class MySeed(object):
+        class MySeed:
             def __hash__(self):
                 return -1729
 
@@ -158,7 +158,7 @@ class TestBasicOps:
         # SF bug #801342 -- population can be any iterable defining __len__()
         self.gen.sample(range(20), 2)
         self.gen.sample(range(20), 2)
-        self.gen.sample(str("abcdefghijklmnopqrst"), 2)
+        self.gen.sample("abcdefghijklmnopqrst", 2)
         self.gen.sample(tuple("abcdefghijklmnopqrst"), 2)
 
     def test_sample_on_dicts(self):
@@ -1114,9 +1114,9 @@ class TestDistributions(unittest.TestCase):
                     self.assertTrue(
                         0 <= sample <= random.TWOPI,
                         msg=(
-                            "vonmisesvariate({}, {}) produced a result {} out"
+                            f"vonmisesvariate({mu}, {kappa}) produced a result {sample} out"
                             " of range [0, 2*pi]"
-                        ).format(mu, kappa, sample),
+                        ),
                     )
 
     def test_von_mises_large_kappa(self):

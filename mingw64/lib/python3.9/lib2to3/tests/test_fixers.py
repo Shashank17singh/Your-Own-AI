@@ -3,15 +3,14 @@
 # Python imports
 import os
 from itertools import chain
-from operator import itemgetter
 
 # Local imports
-from lib2to3 import pygram, fixer_util
+from lib2to3 import fixer_util, pygram
 from lib2to3.tests import support
+from operator import itemgetter
 
 
 class FixerTestCase(support.TestCase):
-
     # Other test cases can subclass this class and replace "fixer_pkg" with
     # their own.
     def setUp(self, fix_list=None, fixer_pkg="lib2to3", options=None):
@@ -533,7 +532,7 @@ class Test_print(FixerTestCase):
         self.check(b, a)
 
     def test_with_future_print_function(self):
-        s = "from __future__ import print_function\n" "print('Hai!', end=' ')"
+        s = "from __future__ import print_function\nprint('Hai!', end=' ')"
         self.unchanged(s)
 
         b = "print 'Hello, world!'"
@@ -1580,9 +1579,8 @@ class Test_xrange(FixerTestCase):
 
 
 class Test_xrange_with_reduce(FixerTestCase):
-
     def setUp(self):
-        super(Test_xrange_with_reduce, self).setUp(["xrange", "reduce"])
+        super().setUp(["xrange", "reduce"])
 
     def test_double_transform(self):
         b = """reduce(x, xrange(5))"""
@@ -1710,7 +1708,6 @@ class Test_xreadlines(FixerTestCase):
 
 
 class ImportsFixerTests:
-
     def test_import_module(self):
         for old, new in self.modules.items():
             b = "import %s" % old
@@ -1834,9 +1831,8 @@ class Test_imports2(FixerTestCase, ImportsFixerTests):
 
 
 class Test_imports_fixer_order(FixerTestCase, ImportsFixerTests):
-
     def setUp(self):
-        super(Test_imports_fixer_order, self).setUp(["imports", "imports2"])
+        super().setUp(["imports", "imports2"])
         from ..fixes.fix_imports2 import MAPPING as mapping2
 
         self.modules = mapping2.copy()
@@ -3069,7 +3065,7 @@ class Test_map(FixerTestCase):
 
     def check(self, b, a):
         self.unchanged("from future_builtins import map; " + b, a)
-        super(Test_map, self).check(b, a)
+        super().check(b, a)
 
     def test_prefix_preservation(self):
         b = """x =    map(   f,    'abc'   )"""
@@ -3100,9 +3096,7 @@ class Test_map(FixerTestCase):
 
     def test_None_with_multiple_arguments(self):
         s = """x = map(None, a, b, c)"""
-        self.warns_unchanged(
-            s, "cannot convert map(None, ...) with " "multiple arguments"
-        )
+        self.warns_unchanged(s, "cannot convert map(None, ...) with multiple arguments")
 
     def test_map_basic(self):
         b = """x = map(f, 'abc')"""
@@ -3195,7 +3189,7 @@ class Test_zip(FixerTestCase):
 
     def check(self, b, a):
         self.unchanged("from future_builtins import zip; " + b, a)
-        super(Test_zip, self).check(b, a)
+        super().check(b, a)
 
     def test_zip_basic(self):
         b = """x = zip()"""
@@ -3847,7 +3841,7 @@ class Test_import(FixerTestCase):
     fixer = "import"
 
     def setUp(self):
-        super(Test_import, self).setUp()
+        super().setUp()
         # Need to replace fix_import's exists method
         # so we can check that it's doing the right thing
         self.files_checked = []
@@ -3869,9 +3863,9 @@ class Test_import(FixerTestCase):
 
     def check_both(self, b, a):
         self.always_exists = True
-        super(Test_import, self).check(b, a)
+        super().check(b, a)
         self.always_exists = False
-        super(Test_import, self).unchanged(b)
+        super().unchanged(b)
 
     def test_files_checked(self):
         def p(path):
@@ -4011,7 +4005,6 @@ class Test_import(FixerTestCase):
 
 
 class Test_set_literal(FixerTestCase):
-
     fixer = "set_literal"
 
     def test_basic(self):
@@ -4231,7 +4224,6 @@ class Test_paren(FixerTestCase):
 
 
 class Test_metaclass(FixerTestCase):
-
     fixer = "metaclass"
 
     def test_unchanged(self):
@@ -4395,7 +4387,6 @@ class Test_metaclass(FixerTestCase):
 
 
 class Test_getcwdu(FixerTestCase):
-
     fixer = "getcwdu"
 
     def test_basic(self):
@@ -4456,7 +4447,6 @@ class Test_getcwdu(FixerTestCase):
 
 
 class Test_operator(FixerTestCase):
-
     fixer = "operator"
 
     def test_operator_isCallable(self):
@@ -4555,7 +4545,6 @@ class Test_operator(FixerTestCase):
 
 
 class Test_exitfunc(FixerTestCase):
-
     fixer = "exitfunc"
 
     def test_simple(self):
@@ -4644,7 +4633,6 @@ class Test_exitfunc(FixerTestCase):
 
 
 class Test_asserts(FixerTestCase):
-
     fixer = "asserts"
 
     def test_deprecated_names(self):

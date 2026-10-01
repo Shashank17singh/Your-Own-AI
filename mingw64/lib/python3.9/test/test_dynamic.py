@@ -3,7 +3,7 @@
 import builtins
 import unittest
 
-from test.support import swap_item, swap_attr
+from test.support import swap_attr, swap_item
 
 
 class RebindBuiltinsTests(unittest.TestCase):
@@ -22,7 +22,6 @@ class RebindBuiltinsTests(unittest.TestCase):
         Returns:
             Nothing. Work will be performed on func in-place.
         """
-        pass
 
     def test_globals_shadow_builtins(self):
         # Modify globals() to shadow an entry in builtins.

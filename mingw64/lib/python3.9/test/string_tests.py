@@ -2,9 +2,13 @@
 Common tests shared by test_unicode, test_userstring and test_bytes.
 """
 
-import unittest, string, sys, struct
-from test import support
+import string
+import struct
+import sys
+import unittest
 from collections import UserList
+
+from test import support
 
 
 class Sequence:
@@ -1322,7 +1326,7 @@ class MixinStrUnicodeUserStringTest:
         self.checkraises(TypeError, " ", "join")
         self.checkraises(TypeError, " ", "join", None)
         self.checkraises(TypeError, " ", "join", 7)
-        self.checkraises(TypeError, " ", "join", [1, 2, bytes()])
+        self.checkraises(TypeError, " ", "join", [1, 2, b""])
         try:
 
             def f():
@@ -1385,14 +1389,14 @@ class MixinStrUnicodeUserStringTest:
         self.checkraises(OverflowError, "%*s", "__mod__", (sys.maxsize + 1, ""))
         self.checkraises(OverflowError, "%.*f", "__mod__", (sys.maxsize + 1, 1.0 / 7))
 
-        class X(object):
+        class X:
             pass
 
         self.checkraises(TypeError, "abc", "__mod__", X())
 
     @support.cpython_only
     def test_formatting_c_limits(self):
-        from _testcapi import PY_SSIZE_T_MAX, INT_MAX, UINT_MAX
+        from _testcapi import INT_MAX, PY_SSIZE_T_MAX, UINT_MAX
 
         SIZE_MAX = (1 << (PY_SSIZE_T_MAX.bit_length() + 1)) - 1
         self.checkraises(OverflowError, "%*s", "__mod__", (PY_SSIZE_T_MAX + 1, ""))

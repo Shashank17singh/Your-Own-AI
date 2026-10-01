@@ -1,19 +1,17 @@
+import cgitb
+import sys
+import unittest
+
 from test.support import temp_dir
 from test.support.script_helper import assert_python_failure
-import unittest
-import sys
-import cgitb
 
 
 class TestCgitb(unittest.TestCase):
-
     def test_fonts(self):
         text = "Hello Robbie!"
-        self.assertEqual(cgitb.small(text), "<small>{}</small>".format(text))
-        self.assertEqual(cgitb.strong(text), "<strong>{}</strong>".format(text))
-        self.assertEqual(
-            cgitb.grey(text), '<font color="#909090">{}</font>'.format(text)
-        )
+        self.assertEqual(cgitb.small(text), f"<small>{text}</small>")
+        self.assertEqual(cgitb.strong(text), f"<strong>{text}</strong>")
+        self.assertEqual(cgitb.grey(text), f'<font color="#909090">{text}</font>')
 
     def test_blanks(self):
         self.assertEqual(cgitb.small(""), "")

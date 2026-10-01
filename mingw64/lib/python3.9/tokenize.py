@@ -26,13 +26,13 @@ __credits__ = (
     "Skip Montanaro, Raymond Hettinger, Trent Nelson, "
     "Michael Foord"
 )
-from builtins import open as _builtin_open
-from codecs import lookup, BOM_UTF8
 import collections
-from io import TextIOWrapper
 import itertools as _itertools
 import re
 import sys
+from builtins import open as _builtin_open
+from codecs import BOM_UTF8, lookup
+from io import TextIOWrapper
 from token import *
 from token import EXACT_TOKEN_TYPES
 
@@ -190,7 +190,6 @@ class StopTokenizing(Exception):
 
 
 class Untokenizer:
-
     def __init__(self):
         self.tokens = []
         self.prev_row = 1
@@ -201,9 +200,7 @@ class Untokenizer:
         row, col = start
         if row < self.prev_row or row == self.prev_row and col < self.prev_col:
             raise ValueError(
-                "start ({},{}) precedes previous end ({},{})".format(
-                    row, col, self.prev_row, self.prev_col
-                )
+                f"start ({row},{col}) precedes previous end ({self.prev_row},{self.prev_col})"
             )
         row_offset = row - self.prev_row
         if row_offset:
@@ -367,7 +364,7 @@ def detect_encoding(readline):
         except UnicodeDecodeError:
             msg = "invalid or missing encoding declaration"
             if filename is not None:
-                msg = "{} for {!r}".format(msg, filename)
+                msg = f"{msg} for {filename!r}"
             raise SyntaxError(msg)
 
         match = cookie_re.match(line_string)
@@ -381,7 +378,7 @@ def detect_encoding(readline):
             if filename is None:
                 msg = "unknown encoding: " + encoding
             else:
-                msg = "unknown encoding for {!r}: {}".format(filename, encoding)
+                msg = f"unknown encoding for {filename!r}: {encoding}"
             raise SyntaxError(msg)
 
         if bom_found:
@@ -390,7 +387,7 @@ def detect_encoding(readline):
                 if filename is None:
                     msg = "encoding problem: utf-8"
                 else:
-                    msg = "encoding problem for {!r}: utf-8".format(filename)
+                    msg = f"encoding problem for {filename!r}: utf-8"
                 raise SyntaxError(msg)
             encoding += "-sig"
         return encoding

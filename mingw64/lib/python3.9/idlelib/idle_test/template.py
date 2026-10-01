@@ -1,13 +1,12 @@
 "Test , coverage %."
 
-from idlelib import zzdummy
 import unittest
-from test.support import requires
 from tkinter import Tk
+
+from test.support import requires
 
 
 class Test(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

@@ -1,5 +1,6 @@
-from collections import deque
 import unittest
+from collections import deque
+
 from test.support import NEVER_EQ
 
 
@@ -86,7 +87,7 @@ class TestContains(unittest.TestCase):
 
     def test_block_fallback(self):
         # blocking fallback with __contains__ = None
-        class ByContains(object):
+        class ByContains:
             def __contains__(self, other):
                 return False
 

@@ -3,13 +3,13 @@ StringIO -- for unicode strings
 BytesIO -- for bytes
 """
 
-import unittest
-from test import support
-
-import io
 import _pyio as pyio
+import io
 import pickle
 import sys
+import unittest
+
+from test import support
 
 
 class IntLike:
@@ -23,7 +23,6 @@ class IntLike:
 
 
 class MemorySeekTestMixin:
-
     def testInit(self):
         buf = self.buftype("1234567890")
         bytesIo = self.ioclass(buf)
@@ -68,7 +67,6 @@ class MemorySeekTestMixin:
 
 
 class MemoryTestMixin:
-
     def test_detach(self):
         buf = self.ioclass()
         self.assertRaises(self.UnsupportedOperation, buf.detach)
@@ -555,7 +553,6 @@ class PyBytesIOTest(MemoryTestMixin, MemorySeekTestMixin, unittest.TestCase):
 
 
 class TextIOTestMixin:
-
     def test_newlines_property(self):
         memio = self.ioclass(newline=None)
 

@@ -10,7 +10,6 @@ from test.support import script_helper
 
 @unittest.skipUnless(os.name == "posix", "only supported on Unix")
 class EINTRTests(unittest.TestCase):
-
     @unittest.skipUnless(hasattr(signal, "setitimer"), "requires setitimer()")
     def test_all(self):
         # Run the tester in a sub-process, to make sure there is only one
@@ -26,7 +25,7 @@ class EINTRTests(unittest.TestCase):
             args = [sys.executable, "-E", "-X", "faulthandler", *args]
             proc = subprocess.run(args)
             print(
-                f"--- eintr_tester.py completed: " f"exit code {proc.returncode} ---",
+                f"--- eintr_tester.py completed: exit code {proc.returncode} ---",
                 flush=True,
             )
             if proc.returncode:

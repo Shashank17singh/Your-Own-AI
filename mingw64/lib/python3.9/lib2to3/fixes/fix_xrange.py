@@ -4,9 +4,8 @@
 """Fixer that changes xrange(...) into range(...)."""
 
 # Local imports
-from .. import fixer_base
-from ..fixer_util import Name, Call, consuming_calls
-from .. import patcomp
+from .. import fixer_base, patcomp
+from ..fixer_util import Call, Name, consuming_calls
 
 
 class FixXrange(fixer_base.BaseFix):
@@ -18,7 +17,7 @@ class FixXrange(fixer_base.BaseFix):
               """
 
     def start_tree(self, tree, filename):
-        super(FixXrange, self).start_tree(tree, filename)
+        super().start_tree(tree, filename)
         self.transformed_xranges = set()
 
     def finish_tree(self, tree, filename):

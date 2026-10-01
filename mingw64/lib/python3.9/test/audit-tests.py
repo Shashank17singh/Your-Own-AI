@@ -89,22 +89,21 @@ def test_basic():
 def test_block_add_hook():
     # Raising an exception should prevent a new hook from being added,
     # but will not propagate out.
-    with TestHook(raise_on_events="sys.addaudithook") as hook1:
-        with TestHook() as hook2:
-            sys.audit("test_event")
-            assertIn("test_event", hook1.seen_events)
-            assertNotIn("test_event", hook2.seen_events)
+    with TestHook(raise_on_events="sys.addaudithook") as hook1, TestHook() as hook2:
+        sys.audit("test_event")
+        assertIn("test_event", hook1.seen_events)
+        assertNotIn("test_event", hook2.seen_events)
 
 
 def test_block_add_hook_baseexception():
     # Raising BaseException will propagate out when adding a hook
-    with assertRaises(BaseException):
-        with TestHook(
-            raise_on_events="sys.addaudithook", exc_type=BaseException
-        ) as hook1:
-            # Adding this next hook should raise BaseException
-            with TestHook() as hook2:
-                pass
+    with (
+        assertRaises(BaseException),
+        TestHook(raise_on_events="sys.addaudithook", exc_type=BaseException) as hook1,
+    ):
+        # Adding this next hook should raise BaseException
+        with TestHook() as hook2:
+            pass
 
 
 def test_marshal():
@@ -279,7 +278,7 @@ def test_excepthook():
     def hook(event, args):
         if event == "sys.excepthook":
             if not isinstance(args[2], args[1]):
-                raise TypeError(f"Expected isinstance({args[2]!r}, " f"{args[1]!r})")
+                raise TypeError(f"Expected isinstance({args[2]!r}, {args[1]!r})")
             if args[0] != excepthook:
                 raise ValueError(f"Expected {args[0]} == {excepthook}")
             print(event, repr(args[2]))
@@ -307,7 +306,7 @@ def test_unraisablehook():
 
 
 def test_winreg():
-    from winreg import OpenKey, EnumKey, CloseKey, HKEY_LOCAL_MACHINE
+    from winreg import HKEY_LOCAL_MACHINE, CloseKey, EnumKey, OpenKey
 
     def hook(event, args):
         if not event.startswith("winreg."):

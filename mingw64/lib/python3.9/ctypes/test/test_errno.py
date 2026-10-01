@@ -1,6 +1,7 @@
-import unittest, os, errno
+import errno
+import os
 import threading
-
+import unittest
 from ctypes import *
 from ctypes.util import find_library
 

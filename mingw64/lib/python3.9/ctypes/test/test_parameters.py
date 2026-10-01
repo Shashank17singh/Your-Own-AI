@@ -1,12 +1,11 @@
 import unittest
 from ctypes.test import need_symbol
+
 import test.support
 
 
 class SimpleTypesTestCase(unittest.TestCase):
-
     def setUp(self):
-        import ctypes
 
         try:
             from _ctypes import set_conversion_mode
@@ -24,7 +23,7 @@ class SimpleTypesTestCase(unittest.TestCase):
             set_conversion_mode(*self.prev_conv_mode)
 
     def test_subclasses(self):
-        from ctypes import c_void_p, c_char_p
+        from ctypes import c_char_p, c_void_p
 
         # ctypes 0.9.5 and before did overwrite from_param in SimpleType_new
         class CVOIDP(c_void_p):
@@ -86,7 +85,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         self.assertEqual(type(pa), c_wchar_p)
 
     def test_int_pointers(self):
-        from ctypes import c_short, c_uint, c_int, c_long, POINTER, pointer
+        from ctypes import POINTER, c_int, c_long, c_short, c_uint, pointer
 
         LPINT = POINTER(c_int)
 
@@ -106,7 +105,7 @@ class SimpleTypesTestCase(unittest.TestCase):
     def test_byref_pointer(self):
         # The from_param class method of POINTER(typ) classes accepts what is
         # returned by byref(obj), it type(obj) == typ
-        from ctypes import c_short, c_uint, c_int, c_long, POINTER, byref
+        from ctypes import POINTER, byref, c_int, c_long, c_short, c_uint
 
         LPINT = POINTER(c_int)
 
@@ -119,7 +118,7 @@ class SimpleTypesTestCase(unittest.TestCase):
 
     def test_byref_pointerpointer(self):
         # See above
-        from ctypes import c_short, c_uint, c_int, c_long, pointer, POINTER, byref
+        from ctypes import POINTER, byref, c_int, c_long, c_short, c_uint, pointer
 
         LPLPINT = POINTER(POINTER(c_int))
         LPLPINT.from_param(byref(pointer(c_int(42))))
@@ -130,7 +129,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         self.assertRaises(TypeError, LPLPINT.from_param, byref(pointer(c_uint(22))))
 
     def test_array_pointers(self):
-        from ctypes import c_short, c_uint, c_int, c_long, POINTER
+        from ctypes import POINTER, c_int, c_long, c_short, c_uint
 
         INTARRAY = c_int * 3
         ia = INTARRAY()
@@ -147,14 +146,14 @@ class SimpleTypesTestCase(unittest.TestCase):
 
     def test_noctypes_argtype(self):
         import _ctypes_test
-        from ctypes import CDLL, c_void_p, ArgumentError
+        from ctypes import CDLL, ArgumentError, c_void_p
 
         func = CDLL(_ctypes_test.__file__)._testfunc_p_p
         func.restype = c_void_p
         # TypeError: has no from_param method
         self.assertRaises(TypeError, setattr, func, "argtypes", (object,))
 
-        class Adapter(object):
+        class Adapter:
             def from_param(cls, obj):
                 return None
 
@@ -162,7 +161,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         self.assertEqual(func(None), None)
         self.assertEqual(func(object()), None)
 
-        class Adapter(object):
+        class Adapter:
             def from_param(cls, obj):
                 return obj
 
@@ -171,7 +170,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         self.assertRaises(ArgumentError, func, object())
         self.assertEqual(func(c_void_p(42)), 42)
 
-        class Adapter(object):
+        class Adapter:
             def from_param(cls, obj):
                 raise ValueError(obj)
 
@@ -180,7 +179,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         self.assertRaises(ArgumentError, func, 99)
 
     def test_abstract(self):
-        from ctypes import Array, Structure, Union, _Pointer, _SimpleCData, _CFuncPtr
+        from ctypes import Array, Structure, Union, _CFuncPtr, _Pointer, _SimpleCData
 
         self.assertRaises(TypeError, Array.from_param, 42)
         self.assertRaises(TypeError, Structure.from_param, 42)
@@ -214,24 +213,24 @@ class SimpleTypesTestCase(unittest.TestCase):
     def test_parameter_repr(self):
         from ctypes import (
             c_bool,
-            c_char,
-            c_wchar,
             c_byte,
-            c_ubyte,
-            c_short,
-            c_ushort,
-            c_int,
-            c_uint,
-            c_long,
-            c_ulong,
-            c_longlong,
-            c_ulonglong,
-            c_float,
-            c_double,
-            c_longdouble,
+            c_char,
             c_char_p,
-            c_wchar_p,
+            c_double,
+            c_float,
+            c_int,
+            c_long,
+            c_longdouble,
+            c_longlong,
+            c_short,
+            c_ubyte,
+            c_uint,
+            c_ulong,
+            c_ulonglong,
+            c_ushort,
             c_void_p,
+            c_wchar,
+            c_wchar_p,
         )
 
         self.assertRegex(

@@ -7,17 +7,17 @@ from test.support.script_helper import assert_python_ok
 posix = support.import_module("posix")
 
 import errno
-import sys
-import signal
-import time
 import os
 import platform
 import pwd
+import signal
 import stat
+import sys
 import tempfile
+import textwrap
+import time
 import unittest
 import warnings
-import textwrap
 
 _DUMMY_SYMLINK = os.path.join(tempfile.gettempdir(), support.TESTFN + "-dummy-symlink")
 
@@ -41,7 +41,6 @@ requires_sched = unittest.skipUnless(_supports_sched(), "requires POSIX schedule
 
 
 class PosixTester(unittest.TestCase):
-
     def setUp(self):
         # create empty file
         fp = open(support.TESTFN, "w+")
@@ -777,9 +776,7 @@ class PosixTester(unittest.TestCase):
         elif platform.system() in ("HP-UX", "SunOS"):
             # HP-UX and Solaris can allow a non-root user to chown() to root
             # (issue #5113)
-            raise unittest.SkipTest(
-                "Skipping because of non-standard chown() " "behavior"
-            )
+            raise unittest.SkipTest("Skipping because of non-standard chown() behavior")
         else:
             # non-root cannot chown to root, raises OSError
             self.assertRaises(OSError, chown_func, first_param, 0, 0)
@@ -1535,7 +1532,7 @@ class PosixTester(unittest.TestCase):
                 try:
                     function("doesnotexistfilename", dst)
                 except OSError as e:
-                    self.assertIn("'doesnotexistfilename' -> '{}'".format(dst), str(e))
+                    self.assertIn(f"'doesnotexistfilename' -> '{dst}'", str(e))
                     break
             else:
                 self.fail("No valid path_error2() test for os." + name)
@@ -1589,7 +1586,6 @@ class PosixTester(unittest.TestCase):
 
 
 class PosixGroupsTester(unittest.TestCase):
-
     def setUp(self):
         if posix.getuid() != 0:
             raise unittest.SkipTest("not enough privileges")
@@ -2016,7 +2012,8 @@ class TestPosixSpawnP(unittest.TestCase, _PosixSpawnMixin):
             path = temp_dir  # PATH is not set
 
         spawn_args = (program, "-I", "-S", "-c", "pass")
-        code = textwrap.dedent("""
+        code = textwrap.dedent(
+            """
             import os
             from test import support
 
@@ -2024,7 +2021,9 @@ class TestPosixSpawnP(unittest.TestCase, _PosixSpawnMixin):
             pid = os.posix_spawnp(args[0], args, os.environ)
 
             support.wait_process(pid, exitcode=0)
-        """ % (spawn_args,))
+        """
+            % (spawn_args,)
+        )
 
         # Use a subprocess to test os.posix_spawnp() with a modified PATH
         # environment variable: posix_spawnp() uses the current environment
@@ -2041,8 +2040,8 @@ class TestPosixWeaklinking(unittest.TestCase):
     #
     # See the section on Weak Linking in Mac/README.txt for more information.
     def setUp(self):
-        import sysconfig
         import platform
+        import sysconfig
 
         config_vars = sysconfig.get_config_vars()
         self.available = {

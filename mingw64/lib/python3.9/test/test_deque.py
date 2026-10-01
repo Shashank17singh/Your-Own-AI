@@ -1,12 +1,13 @@
-from collections import deque
-import unittest
-from test import support, seq_tests
-import gc
-import weakref
 import copy
+import gc
 import pickle
 import random
 import struct
+import unittest
+import weakref
+from collections import deque
+
+from test import seq_tests, support
 
 BIG = 100000
 
@@ -32,7 +33,6 @@ class MutateCmp:
 
 
 class TestBasic(unittest.TestCase):
-
     def test_basics(self):
         d = deque(range(-5125, -5000))
         d.__init__(range(200))
@@ -275,7 +275,6 @@ class TestBasic(unittest.TestCase):
 
     def test_index(self):
         for n in 1, 2, 30, 40, 200:
-
             d = deque(range(n))
             for i in range(n):
                 self.assertEqual(d.index(i), i)
@@ -602,7 +601,6 @@ class TestBasic(unittest.TestCase):
             self.assertEqual(list(reversed(list(d))), list(range(BIG - size, BIG)))
 
     def test_big_queue_popleft(self):
-        pass
         d = deque()
         append, pop = d.append, d.popleft
         for i in range(BIG):
@@ -766,7 +764,7 @@ class TestBasic(unittest.TestCase):
 
     def test_container_iterator(self):
         # Bug #3680: tp_traverse was not implemented for deque iterator objects
-        class C(object):
+        class C:
             pass
 
         for i in range(2):
@@ -798,7 +796,6 @@ class TestBasic(unittest.TestCase):
 
 
 class TestVariousIteratorArgs(unittest.TestCase):
-
     def test_constructor(self):
         for s in ("123", "", range(1000), ("do", 1.2), range(2000, 2200, 5)):
             for g in (
@@ -837,7 +834,6 @@ class DequeWithBadIter(deque):
 
 
 class TestSubclass(unittest.TestCase):
-
     def test_basics(self):
         d = Deque(range(25))
         d.__init__(range(200))

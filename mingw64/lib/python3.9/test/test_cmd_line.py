@@ -8,13 +8,14 @@ import sys
 import tempfile
 import textwrap
 import unittest
+
 from test import support
 from test.support.script_helper import (
-    spawn_python,
-    kill_python,
-    assert_python_ok,
     assert_python_failure,
+    assert_python_ok,
     interpreter_requires_environment,
+    kill_python,
+    spawn_python,
 )
 
 # Debug build?
@@ -281,7 +282,7 @@ class CmdLineTest(unittest.TestCase):
         proc = subprocess.run(
             args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True
         )
-        self.assertEqual(proc.stdout, "False False False\n" "False False True\n")
+        self.assertEqual(proc.stdout, "False False False\nFalse False True\n")
 
     def test_unbuffered_output(self):
         # Test expected operation of the '-u' switch
@@ -431,12 +432,12 @@ class CmdLineTest(unittest.TestCase):
         sys.platform == "vxworks", "test needs preexec support in subprocess.Popen"
     )
     def _test_no_stdio(self, streams):
-        code = """if 1:
+        code = f"""if 1:
             import os, sys
             for i, s in enumerate({streams}):
                 if getattr(sys, s) is not None:
                     os._exit(i + 1)
-            os._exit(42)""".format(streams=streams)
+            os._exit(42)"""
 
         def preexec():
             if "stdin" in streams:
@@ -491,8 +492,7 @@ class CmdLineTest(unittest.TestCase):
         self.assertGreater(
             len(hashes),
             1,
-            msg="3 runs produced an identical random hash "
-            ' for "spam": {}'.format(hashes),
+            msg=f'3 runs produced an identical random hash  for "spam": {hashes}',
         )
 
         # Verify that sys.flags contains hash_randomization
@@ -583,7 +583,9 @@ class CmdLineTest(unittest.TestCase):
             )
             dont_write_bytecode = int(bool(value))
             code = (
-                "import sys; " "sys.stderr.write(str(sys.flags)); " f"""sys.exit(not (
+                "import sys; "
+                "sys.stderr.write(str(sys.flags)); "
+                f"""sys.exit(not (
                     sys.flags.debug == sys.flags.optimize ==
                     sys.flags.verbose ==
                     {expected}
@@ -615,9 +617,8 @@ class CmdLineTest(unittest.TestCase):
                 args[:0] = ["-X", "pycache_prefix"]
             elif opt is not None:
                 args[:0] = ["-X", f"pycache_prefix={opt}"]
-            with self.subTest(envval=envval, opt=opt):
-                with support.temp_cwd():
-                    assert_python_ok(*args, **env)
+            with self.subTest(envval=envval, opt=opt), support.temp_cwd():
+                assert_python_ok(*args, **env)
 
     def run_xdev(self, *args, check_exitcode=True, xdev=True):
         env = dict(os.environ)
@@ -633,7 +634,7 @@ class CmdLineTest(unittest.TestCase):
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            universal_newlines=True,
+            text=True,
             env=env,
         )
         if check_exitcode:
@@ -723,16 +724,14 @@ class CmdLineTest(unittest.TestCase):
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            universal_newlines=True,
+            text=True,
             env=env,
         )
         self.assertEqual(proc.returncode, 0, proc)
         return proc.stdout.rstrip()
 
     def test_warnings_filter_precedence(self):
-        expected_filters = (
-            "error::BytesWarning " "once::UserWarning " "always::UserWarning"
-        )
+        expected_filters = "error::BytesWarning once::UserWarning always::UserWarning"
         if not Py_DEBUG:
             expected_filters += (
                 " "
@@ -764,7 +763,7 @@ class CmdLineTest(unittest.TestCase):
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            universal_newlines=True,
+            text=True,
             env=env,
         )
         self.assertEqual(proc.stdout.rstrip(), name)
@@ -805,16 +804,12 @@ class CmdLineTest(unittest.TestCase):
         env.pop("PYTHONDEVMODE", None)
         args = (sys.executable, "-c", code)
 
-        proc = subprocess.run(
-            args, stdout=subprocess.PIPE, universal_newlines=True, env=env
-        )
+        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)
         self.assertEqual(proc.stdout.rstrip(), "False")
         self.assertEqual(proc.returncode, 0, proc)
 
         env["PYTHONDEVMODE"] = "1"
-        proc = subprocess.run(
-            args, stdout=subprocess.PIPE, universal_newlines=True, env=env
-        )
+        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)
         self.assertEqual(proc.stdout.rstrip(), "True")
         self.assertEqual(proc.returncode, 0, proc)
 
@@ -843,22 +838,19 @@ class CmdLineTest(unittest.TestCase):
     "Cannot run -I tests when PYTHON env vars are required.",
 )
 class IgnoreEnvironmentTest(unittest.TestCase):
-
     def run_ignoring_vars(self, predicate, **env_vars):
         # Runs a subprocess with -E set, even though we're passing
         # specific environment variables
         # Logical inversion to match predicate check to a zero return
         # code indicating success
         code = (
-            "import sys; sys.stderr.write(str(sys.flags)); sys.exit(not ({}))".format(
-                predicate
-            )
+            f"import sys; sys.stderr.write(str(sys.flags)); sys.exit(not ({predicate}))"
         )
         return assert_python_ok("-E", "-c", code, **env_vars)
 
     def test_ignore_PYTHONPATH(self):
         path = "should_be_ignored"
-        self.run_ignoring_vars("'{}' not in sys.path".format(path), PYTHONPATH=path)
+        self.run_ignoring_vars(f"'{path}' not in sys.path", PYTHONPATH=path)
 
     def test_ignore_PYTHONHASHSEED(self):
         self.run_ignoring_vars("sys.flags.hash_randomization == 1", PYTHONHASHSEED="0")

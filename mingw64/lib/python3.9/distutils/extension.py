@@ -102,7 +102,7 @@ class Extension:
         depends=None,
         language=None,
         optional=None,
-        **kw  # To catch unknown keywords
+        **kw,  # To catch unknown keywords
     ):
         if not isinstance(name, str):
             raise AssertionError("'name' must be a string")
@@ -144,8 +144,7 @@ class Extension:
 
 def read_setup_file(filename):
     """Reads a Setup file and returns Extension instances."""
-    from distutils.sysconfig import parse_makefile, expand_makefile_vars, _variable_rx
-
+    from distutils.sysconfig import _variable_rx, expand_makefile_vars, parse_makefile
     from distutils.text_file import TextFile
     from distutils.util import split_quoted
 

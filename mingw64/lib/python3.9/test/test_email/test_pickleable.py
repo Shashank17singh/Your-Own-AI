@@ -1,17 +1,17 @@
-import unittest
-import textwrap
 import copy
-import pickle
 import email
 import email.message
+import pickle
+import textwrap
+import unittest
 from email import policy
 from email.headerregistry import HeaderRegistry
+
 from test.test_email import TestEmailBase, parameterize
 
 
 @parameterize
 class TestPickleCopyHeader(TestEmailBase):
-
     header_factory = HeaderRegistry()
 
     unstructured = header_factory("subject", "this is a test")
@@ -38,7 +38,6 @@ class TestPickleCopyHeader(TestEmailBase):
 
 @parameterize
 class TestPickleCopyMessage(TestEmailBase):
-
     # Message objects are a sequence, so we have to make them a one-tuple in
     # msg_params so they get passed to the parameterized test method as a
     # single argument instead of as a list of headers.

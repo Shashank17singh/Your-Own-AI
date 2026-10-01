@@ -63,7 +63,7 @@ class FunctionPropertiesTest(FuncAttrsTest):
         self.assertIn(
             "known_attr",
             dir(self.fi.a),
-            "set attribute on function " "implementations, should show up in next dir",
+            "set attribute on function implementations, should show up in next dir",
         )
 
     def test_duplicate_function_equality(self):
@@ -218,7 +218,7 @@ class FunctionPropertiesTest(FuncAttrsTest):
             pass
         else:
             self.fail(
-                "__code__ with different numbers of free vars should " "not be possible"
+                "__code__ with different numbers of free vars should not be possible"
             )
         try:
             e.__code__ = d.__code__
@@ -226,7 +226,7 @@ class FunctionPropertiesTest(FuncAttrsTest):
             pass
         else:
             self.fail(
-                "__code__ with different numbers of free vars should " "not be possible"
+                "__code__ with different numbers of free vars should not be possible"
             )
 
     def test_blank_func_defaults(self):
@@ -256,13 +256,11 @@ class FunctionPropertiesTest(FuncAttrsTest):
             pass
         else:
             self.fail(
-                "__defaults__ does not update; deleting it does not "
-                "remove requirement"
+                "__defaults__ does not update; deleting it does not remove requirement"
             )
 
 
 class InstancemethodAttrTest(FuncAttrsTest):
-
     def test___class__(self):
         self.assertEqual(self.fi.a.__self__.__class__, self.F)
         self.cannot_set_attr(self.fi.a, "__class__", self.F, TypeError)
@@ -317,7 +315,7 @@ class ArbitraryFunctionAttrTest(FuncAttrsTest):
             except AttributeError:
                 pass
             else:
-                self.fail("using unknown attributes should raise " "AttributeError")
+                self.fail("using unknown attributes should raise AttributeError")
 
 
 class FunctionDictsTest(FuncAttrsTest):

@@ -1,32 +1,31 @@
 """Tests for distutils.command.config."""
 
-import unittest
 import os
 import sys
-from test.support import run_unittest, missing_compiler_executable
-
-from distutils.command.config import dump_file, config
-from distutils.tests import support
+import unittest
 from distutils import log
+from distutils.command.config import config, dump_file
+from distutils.tests import support
+
+from test.support import missing_compiler_executable, run_unittest
 
 
 class ConfigTestCase(
     support.LoggingSilencer, support.TempdirManager, unittest.TestCase
 ):
-
     def _info(self, msg, *args):
         for line in msg.splitlines():
             self._logs.append(line)
 
     def setUp(self):
-        super(ConfigTestCase, self).setUp()
+        super().setUp()
         self._logs = []
         self.old_log = log.info
         log.info = self._info
 
     def tearDown(self):
         log.info = self.old_log
-        super(ConfigTestCase, self).tearDown()
+        super().tearDown()
 
     def test_dump_file(self):
         this_file = os.path.splitext(__file__)[0] + ".py"

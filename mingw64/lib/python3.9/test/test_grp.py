@@ -1,13 +1,13 @@
 """Test script for the grp module."""
 
 import unittest
+
 from test import support
 
 grp = support.import_module("grp")
 
 
 class GroupDatabaseTestCase(unittest.TestCase):
-
     def check_value(self, value):
         # check that a grp tuple has the entries and
         # attributes promised by the docs

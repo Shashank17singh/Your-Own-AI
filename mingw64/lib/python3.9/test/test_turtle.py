@@ -1,5 +1,6 @@
 import pickle
 import unittest
+
 from test import support
 
 turtle = support.import_module("turtle")
@@ -48,7 +49,6 @@ visible = False
 
 
 class TurtleConfigTest(unittest.TestCase):
-
     def get_cfg_file(self, cfg_str):
         self.addCleanup(support.unlink, support.TESTFN)
         with open(support.TESTFN, "w") as f:
@@ -122,18 +122,14 @@ class TurtleConfigTest(unittest.TestCase):
 
 
 class VectorComparisonMixin:
-
     def assertVectorsAlmostEqual(self, vec1, vec2):
         if len(vec1) != len(vec2):
             self.fail("Tuples are not of equal size")
         for idx, (i, j) in enumerate(zip(vec1, vec2)):
-            self.assertAlmostEqual(
-                i, j, msg="values at index {} do not match".format(idx)
-            )
+            self.assertAlmostEqual(i, j, msg=f"values at index {idx} do not match")
 
 
 class Multiplier:
-
     def __mul__(self, other):
         return f"M*{other}"
 
@@ -142,7 +138,6 @@ class Multiplier:
 
 
 class TestVec2D(VectorComparisonMixin, unittest.TestCase):
-
     def test_constructor(self):
         vec = Vec2D(0.5, 2)
         self.assertEqual(vec[0], 0.5)
@@ -181,7 +176,6 @@ class TestVec2D(VectorComparisonMixin, unittest.TestCase):
     def _assert_arithmetic_cases(self, test_cases, lambda_operator):
         for test_case in test_cases:
             with self.subTest(case=test_case):
-
                 (first, second), expected = test_case
 
                 op1 = Vec2D(*first)
@@ -260,7 +254,6 @@ class TestVec2D(VectorComparisonMixin, unittest.TestCase):
 
 
 class TestTNavigator(VectorComparisonMixin, unittest.TestCase):
-
     def setUp(self):
         self.nav = turtle.TNavigator()
 
@@ -421,7 +414,6 @@ class TestTNavigator(VectorComparisonMixin, unittest.TestCase):
 
 
 class TestTPen(unittest.TestCase):
-
     def test_pendown_and_penup(self):
 
         tpen = turtle.TPen()

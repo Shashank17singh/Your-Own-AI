@@ -2,11 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for the CMake cache object kind",
   "type": "object",
-  "required": [
-    "kind",
-    "version",
-    "entries"
-  ],
+  "required": ["kind", "version", "entries"],
   "properties": {
     "kind": {
       "type": "string",
@@ -14,10 +10,7 @@
     },
     "version": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -35,12 +28,7 @@
       "description": "Array of CMake cache entries",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "value",
-          "type",
-          "properties"
-        ],
+        "required": ["name", "value", "type", "properties"],
         "properties": {
           "name": {
             "type": "string",
@@ -59,10 +47,7 @@
             "description": "Associated properties for the cache entry",
             "items": {
               "type": "object",
-              "required": [
-                "name",
-                "value"
-              ],
+              "required": ["name", "value"],
               "properties": {
                 "name": {
                   "type": "string"

@@ -5,19 +5,18 @@ parameter and docstring information when you type an opening parenthesis, and
 which disappear when you type a closing parenthesis.
 """
 
-import __main__
 import inspect
 import re
 import sys
 import textwrap
 import types
-
 from idlelib import calltip_w
 from idlelib.hyperparser import HyperParser
 
+import __main__
+
 
 class Calltip:
-
     def __init__(self, editwin=None):
         if editwin is None:  # subprocess and test
             self.editwin = None
@@ -187,7 +186,9 @@ def get_argspec(ob):
     lines = (
         textwrap.wrap(argspec, _MAX_COLS, subsequent_indent=_INDENT)
         if len(argspec) > _MAX_COLS
-        else [argspec] if argspec else []
+        else [argspec]
+        if argspec
+        else []
     )
 
     # Augment lines from docstring, if any, and join to get argspec.

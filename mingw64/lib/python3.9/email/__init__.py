@@ -14,17 +14,17 @@ __all__ = [
     "header",
     "iterators",
     "message",
-    "message_from_file",
     "message_from_binary_file",
-    "message_from_string",
     "message_from_bytes",
+    "message_from_file",
+    "message_from_string",
     "mime",
     "parser",
     "quoprimime",
     "utils",
 ]
 
-
+
 # Some convenience routines.  Don't import Parser and Message as side-effects
 # of importing email since those cascadingly import most of the rest of the
 # email package.

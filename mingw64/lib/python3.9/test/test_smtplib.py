@@ -1,29 +1,33 @@
 import asyncore
 import base64
 import email.mime.text
-from email.message import EmailMessage
-from email.base64mime import body_encode as encode_base64
 import email.utils
+import errno
 import hashlib
 import hmac
-import socket
-import smtpd
-import smtplib
 import io
 import re
-import sys
-import time
 import select
-import errno
+import smtpd
+import smtplib
+import socket
+import sys
 import textwrap
 import threading
-
+import time
 import unittest
-from test import support, mock_socket
-from test.support import hashlib_helper
-from test.support import socket_helper
-from test.support import threading_setup, threading_cleanup, join_thread
+from email.base64mime import body_encode as encode_base64
+from email.message import EmailMessage
 from unittest.mock import Mock
+
+from test import mock_socket, support
+from test.support import (
+    hashlib_helper,
+    join_thread,
+    socket_helper,
+    threading_cleanup,
+    threading_setup,
+)
 
 HOST = socket_helper.HOST
 
@@ -41,7 +45,7 @@ def server(evt, buf, serv):
     evt.set()
     try:
         conn, addr = serv.accept()
-    except socket.timeout:
+    except TimeoutError:
         pass
     else:
         n = 500
@@ -60,7 +64,6 @@ def server(evt, buf, serv):
 
 
 class GeneralTests:
-
     def setUp(self):
         smtplib.socket = mock_socket
         self.port = 25
@@ -157,12 +160,10 @@ class GeneralTests:
 
 
 class SMTPGeneralTests(GeneralTests, unittest.TestCase):
-
     client = smtplib.SMTP
 
 
 class LMTPGeneralTests(GeneralTests, unittest.TestCase):
-
     client = smtplib.LMTP
 
     @unittest.skipUnless(hasattr(socket, "AF_UNIX"), "test requires Unix domain socket")
@@ -205,7 +206,7 @@ def debugging_server(serv, serv_evt, client_evt):
 
             n -= 1
 
-    except socket.timeout:
+    except TimeoutError:
         pass
     finally:
         if not client_evt.is_set():
@@ -227,7 +228,6 @@ MSG_END = "------------ END MESSAGE ------------\n"
 
 # Test behavior of smtpd.DebuggingServer
 class DebuggingServerTests(unittest.TestCase):
-
     maxDiff = None
 
     def setUp(self):
@@ -608,7 +608,7 @@ class DebuggingServerTests(unittest.TestCase):
         # make sure the Bcc header is still in the message.
         self.assertEqual(
             m["Bcc"],
-            'John Root <root@localhost>, "Dinsdale" ' "<warped@silly.walks.com>",
+            'John Root <root@localhost>, "Dinsdale" <warped@silly.walks.com>',
         )
 
         self.client_evt.set()
@@ -631,7 +631,7 @@ class DebuggingServerTests(unittest.TestCase):
             "root@localhost",
             "warped@silly.walks.com",
         ):
-            to_addr = re.compile(r"^recips: .*'{}'.*$".format(addr), re.MULTILINE)
+            to_addr = re.compile(rf"^recips: .*'{addr}'.*$", re.MULTILINE)
             self.assertRegex(debugout, to_addr)
 
     def testSendMessageWithSomeAddresses(self):
@@ -663,7 +663,7 @@ class DebuggingServerTests(unittest.TestCase):
         sender = re.compile("^sender: foo@bar.com$", re.MULTILINE)
         self.assertRegex(debugout, sender)
         for addr in ("John", "Dinsdale"):
-            to_addr = re.compile(r"^recips: .*'{}'.*$".format(addr), re.MULTILINE)
+            to_addr = re.compile(rf"^recips: .*'{addr}'.*$", re.MULTILINE)
             self.assertRegex(debugout, to_addr)
 
     def testSendMessageWithSpecifiedAddresses(self):
@@ -695,7 +695,7 @@ class DebuggingServerTests(unittest.TestCase):
         sender = re.compile("^sender: joe@example.com$", re.MULTILINE)
         self.assertRegex(debugout, sender)
         for addr in ("John", "Dinsdale"):
-            to_addr = re.compile(r"^recips: .*'{}'.*$".format(addr), re.MULTILINE)
+            to_addr = re.compile(rf"^recips: .*'{addr}'.*$", re.MULTILINE)
             self.assertNotRegex(debugout, to_addr)
         recip = re.compile(r"^recips: .*'foo@example.net'.*$", re.MULTILINE)
         self.assertRegex(debugout, recip)
@@ -732,7 +732,7 @@ class DebuggingServerTests(unittest.TestCase):
         )
         self.assertRegex(debugout, sender)
         for addr in ("John", "Dinsdale"):
-            to_addr = re.compile(r"^recips: .*'{}'.*$".format(addr), re.MULTILINE)
+            to_addr = re.compile(rf"^recips: .*'{addr}'.*$", re.MULTILINE)
             self.assertRegex(debugout, to_addr)
 
     def testSendMessageResent(self):
@@ -772,7 +772,7 @@ class DebuggingServerTests(unittest.TestCase):
         sender = re.compile("^sender: holy@grail.net$", re.MULTILINE)
         self.assertRegex(debugout, sender)
         for addr in ("my_mom@great.cooker.com", "Jeff", "doe@losthope.net"):
-            to_addr = re.compile(r"^recips: .*'{}'.*$".format(addr), re.MULTILINE)
+            to_addr = re.compile(rf"^recips: .*'{addr}'.*$", re.MULTILINE)
             self.assertRegex(debugout, to_addr)
 
     def testSendMessageMultipleResentRaises(self):
@@ -801,7 +801,6 @@ class DebuggingServerTests(unittest.TestCase):
 
 
 class NonConnectingTests(unittest.TestCase):
-
     def testNotConnected(self):
         # Test various operations on an unconnected SMTP object that
         # should raise exceptions (at present the attempt in SMTP.send
@@ -825,7 +824,6 @@ class NonConnectingTests(unittest.TestCase):
 
 
 class DefaultArgumentsTests(unittest.TestCase):
-
     def setUp(self):
         self.msg = EmailMessage()
         self.msg["From"] = "Páolo <főo@bar.com>"
@@ -856,7 +854,6 @@ class DefaultArgumentsTests(unittest.TestCase):
 
 # test response of client to a non-successful HELO message
 class BadHELOServerTests(unittest.TestCase):
-
     def setUp(self):
         smtplib.socket = mock_socket
         mock_socket.reply_with(b"199 no hello for you!")
@@ -915,9 +912,7 @@ sim_users = {
 }
 
 sim_auth = ("Mr.A@somewhere.com", "somepassword")
-sim_cram_md5_challenge = (
-    "PENCeUxFREJoU0NnbmhNWitOMjNGNn" "dAZWx3b29kLmlubm9zb2Z0LmNvbT4="
-)
+sim_cram_md5_challenge = "PENCeUxFREJoU0NnbmhNWitOMjNGNndAZWx3b29kLmlubm9zb2Z0LmNvbT4="
 sim_lists = {
     "list-1": ["Mr.A@somewhere.com", "Mrs.C@somewhereesle.com"],
     "list-2": [
@@ -932,7 +927,6 @@ class ResponseException(Exception):
 
 
 class SimSMTPChannel(smtpd.SMTPChannel):
-
     quit_response = None
     mail_response = None
     rcpt_response = None
@@ -944,8 +938,8 @@ class SimSMTPChannel(smtpd.SMTPChannel):
     authenticated_user = None
 
     def __init__(self, extra_features, *args, **kw):
-        self._extrafeatures = "".join(["250-{0}\r\n".format(x) for x in extra_features])
-        super(SimSMTPChannel, self).__init__(*args, **kw)
+        self._extrafeatures = "".join([f"250-{x}\r\n" for x in extra_features])
+        super().__init__(*args, **kw)
 
     # AUTH related stuff.  It would be nice if support for this were in smtpd.
     def found_terminator(self):
@@ -981,7 +975,7 @@ class SimSMTPChannel(smtpd.SMTPChannel):
         except AttributeError:
             self.push(
                 "504 Command parameter not implemented: unsupported "
-                " authentication mechanism {!r}".format(auth_object_name)
+                f" authentication mechanism {auth_object_name!r}"
             )
             return
         self.smtp_state = self.AUTH
@@ -1007,8 +1001,8 @@ class SimSMTPChannel(smtpd.SMTPChannel):
                 *_, user, password = logpass.split("\0")
             except ValueError as e:
                 self.push(
-                    "535 Splitting response {!r} into user and password"
-                    " failed: {}".format(logpass, e)
+                    f"535 Splitting response {logpass!r} into user and password"
+                    f" failed: {e}"
                 )
                 return
             self._authenticated(user, password == sim_auth[1])
@@ -1033,15 +1027,15 @@ class SimSMTPChannel(smtpd.SMTPChannel):
 
     def _auth_cram_md5(self, arg=None):
         if arg is None:
-            self.push("334 {}".format(sim_cram_md5_challenge))
+            self.push(f"334 {sim_cram_md5_challenge}")
         else:
             logpass = self._decode_base64(arg)
             try:
                 user, hashed_pass = logpass.split()
             except ValueError as e:
                 self.push(
-                    "535 Splitting response {!r} into user and password "
-                    "failed: {}".format(logpass, e)
+                    f"535 Splitting response {logpass!r} into user and password "
+                    f"failed: {e}"
                 )
                 return False
             valid_hashed_pass = hmac.HMAC(
@@ -1088,7 +1082,7 @@ class SimSMTPChannel(smtpd.SMTPChannel):
 
     def smtp_QUIT(self, arg):
         if self.quit_response is None:
-            super(SimSMTPChannel, self).smtp_QUIT(arg)
+            super().smtp_QUIT(arg)
         else:
             self.push(self.quit_response)
             self.close_when_done()
@@ -1123,7 +1117,6 @@ class SimSMTPChannel(smtpd.SMTPChannel):
 
 
 class SimSMTPServer(smtpd.SMTPServer):
-
     channel_class = SimSMTPChannel
 
     def __init__(self, *args, **kw):
@@ -1150,7 +1143,6 @@ class SimSMTPServer(smtpd.SMTPServer):
 # Test various SMTP & ESMTP commands/behaviors that require a simulated server
 # (i.e., something with more features than DebuggingServer)
 class SMTPSimTests(unittest.TestCase):
-
     def setUp(self):
         self.thread_key = threading_setup()
         self.real_getfqdn = socket.getfqdn
@@ -1365,7 +1357,7 @@ class SMTPSimTests(unittest.TestCase):
         else:
             supported.add("CRAM-MD5")
         for mechanism in supported:
-            self.serv.add_feature("AUTH {}".format(mechanism))
+            self.serv.add_feature(f"AUTH {mechanism}")
         for mechanism in supported:
             with self.subTest(mechanism=mechanism):
                 smtp = smtplib.SMTP(
@@ -1559,7 +1551,6 @@ class SMTPSimTests(unittest.TestCase):
 
 
 class SimSMTPUTF8Server(SimSMTPServer):
-
     def __init__(self, *args, **kw):
         # The base SMTP server turns these on automatically, but our test
         # server is set up to munge the EHLO response, so we need to provide
@@ -1589,7 +1580,6 @@ class SimSMTPUTF8Server(SimSMTPServer):
 
 
 class SMTPUTF8SimTests(unittest.TestCase):
-
     maxDiff = None
 
     def setUp(self):
@@ -1636,7 +1626,7 @@ class SMTPUTF8SimTests(unittest.TestCase):
         self.assertTrue(smtp.has_extn("smtputf8"))
 
     def test_send_unicode_with_SMTPUTF8_via_sendmail(self):
-        m = "¡a test message containing unicode!".encode("utf-8")
+        m = "¡a test message containing unicode!".encode()
         smtp = smtplib.SMTP(
             HOST,
             self.port,
@@ -1653,7 +1643,7 @@ class SMTPUTF8SimTests(unittest.TestCase):
         self.assertEqual(self.serv.last_rcpt_options, [])
 
     def test_send_unicode_with_SMTPUTF8_via_low_level_API(self):
-        m = "¡a test message containing unicode!".encode("utf-8")
+        m = "¡a test message containing unicode!".encode()
         smtp = smtplib.SMTP(
             HOST,
             self.port,

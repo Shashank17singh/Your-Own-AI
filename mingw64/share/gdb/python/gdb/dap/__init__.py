@@ -1,19 +1,22 @@
 import os
-from . import startup
-from . import breakpoint  # noqa: F401
-from . import bt  # noqa: F401
-from . import completions  # noqa: F401
-from . import disassemble  # noqa: F401
-from . import evaluate  # noqa: F401
-from . import launch  # noqa: F401
-from . import locations  # noqa: F401
-from . import memory  # noqa: F401
-from . import modules  # noqa: F401
-from . import next  # noqa: F401
-from . import pause  # noqa: F401
-from . import scopes  # noqa: F401
-from . import sources  # noqa: F401
-from . import threads  # noqa: F401
+
+from . import (
+    breakpoint,  # noqa: F401
+    bt,  # noqa: F401
+    completions,  # noqa: F401
+    disassemble,  # noqa: F401
+    evaluate,  # noqa: F401
+    launch,  # noqa: F401
+    locations,  # noqa: F401
+    memory,  # noqa: F401
+    modules,  # noqa: F401
+    next,  # noqa: F401
+    pause,  # noqa: F401
+    scopes,  # noqa: F401
+    sources,  # noqa: F401
+    startup,
+    threads,  # noqa: F401
+)
 from .server import Server
 
 

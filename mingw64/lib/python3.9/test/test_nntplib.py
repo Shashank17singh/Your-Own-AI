@@ -1,19 +1,19 @@
-import io
-import socket
-import datetime
-import textwrap
-import unittest
-import functools
 import contextlib
+import datetime
+import functools
+import io
 import nntplib
 import os.path
 import re
+import socket
+import textwrap
 import threading
+import unittest
+from nntplib import NNTP, GroupInfo
+from unittest.mock import patch
 
 from test import support
 from test.support import socket_helper
-from nntplib import NNTP, GroupInfo
-from unittest.mock import patch
 
 try:
     import ssl
@@ -40,7 +40,6 @@ else:
 
 
 class NetworkedNNTPTestsMixin:
-
     def test_welcome(self):
         welcome = self.server.getwelcome()
         self.assertEqual(str, type(welcome))
@@ -145,7 +144,7 @@ class NetworkedNNTPTestsMixin:
 
     @unittest.skipIf(
         True,
-        "temporarily skipped until a permanent solution" " is found for issue #28971",
+        "temporarily skipped until a permanent solution is found for issue #28971",
     )
     def test_over(self):
         resp, count, first, last, name = self.server.group(self.GROUP_NAME)
@@ -304,7 +303,7 @@ class NetworkedNNTPTestsMixin:
             # matches "[SSL: DH_KEY_TOO_SMALL] dh key too small"
             if re.search(r"(?i)KEY.TOO.SMALL", ssl_err.reason):
                 raise unittest.SkipTest(
-                    f"Got {ssl_err} connecting " f"to {self.NNTP_HOST!r}"
+                    f"Got {ssl_err} connecting to {self.NNTP_HOST!r}"
                 )
             raise
 
@@ -338,12 +337,12 @@ class NetworkedNNTPTests(NetworkedNNTPTestsMixin, unittest.TestCase):
                 # matches "[SSL: DH_KEY_TOO_SMALL] dh key too small"
                 if re.search(r"(?i)KEY.TOO.SMALL", ssl_err.reason):
                     raise unittest.SkipTest(
-                        f"{cls} got {ssl_err} connecting " f"to {cls.NNTP_HOST!r}"
+                        f"{cls} got {ssl_err} connecting to {cls.NNTP_HOST!r}"
                     )
                 raise
             except EOF_ERRORS:
                 raise unittest.SkipTest(
-                    f"{cls} got EOF error on connecting " f"to {cls.NNTP_HOST!r}"
+                    f"{cls} got EOF error on connecting to {cls.NNTP_HOST!r}"
                 )
 
     @classmethod
@@ -354,7 +353,6 @@ class NetworkedNNTPTests(NetworkedNNTPTestsMixin, unittest.TestCase):
 
 @unittest.skipUnless(ssl, "requires SSL support")
 class NetworkedNNTP_SSLTests(NetworkedNNTPTests):
-
     # Technical limits for this public NNTP server (see http://www.aioe.org):
     # "Only two concurrent connections per IP address are allowed and
     # 400 connections per day are accepted from each IP address."
@@ -433,7 +431,6 @@ def make_mock_file(handler):
 
 
 class NNTPServer(nntplib.NNTP):
-
     def __init__(self, f, host, readermode=None):
         self.file = f
         self.host = host
@@ -508,7 +505,7 @@ class NNTPv1Handler:
             if not line:
                 return
             if not line.endswith("\r\n"):
-                raise ValueError("line doesn't end with \\r\\n: {!r}".format(line))
+                raise ValueError(f"line doesn't end with \\r\\n: {line!r}")
             line = line[:-2]
             cmd, *tokens = line.split()
             # meth = getattr(self.handler, "handle_" + cmd.upper(), None)
@@ -519,7 +516,7 @@ class NNTPv1Handler:
                 try:
                     meth(*tokens)
                 except Exception as e:
-                    raise ValueError("command failed: {!r}".format(line)) from e
+                    raise ValueError(f"command failed: {line!r}") from e
                 else:
                     if self.in_body:
                         self.body_callback = meth, tokens
@@ -556,7 +553,7 @@ class NNTPv1Handler:
         if group == "fr.comp.lang.python":
             self.push_lit("211 486 761 1265 fr.comp.lang.python")
         else:
-            self.push_lit("411 No such group {}".format(group))
+            self.push_lit(f"411 No such group {group}")
 
     def handle_HELP(self):
         self.push_lit("""\
@@ -801,7 +798,7 @@ class NNTPv1Handler:
             self.push_lit("281 Login Successful")
             self._logged_in = True
         else:
-            raise Exception("Unknown cred type {}".format(cred_type))
+            raise Exception(f"Unknown cred type {cred_type}")
 
 
 class NNTPv2Handler(NNTPv1Handler):
@@ -870,7 +867,6 @@ class ModeSwitchingNNTPv2Handler(NNTPv2Handler):
 
 
 class NNTPv1v2TestsMixin:
-
     def setUp(self):
         super().setUp()
 
@@ -997,9 +993,9 @@ class NNTPv1v2TestsMixin:
         dt = datetime.datetime(2010, 9, 13, 8, 20, 4)
         resp, ids = self.server.newnews("comp.lang.python", dt)
         expected = (
-            "230 list of newsarticles (NNTP v{0}) "
+            f"230 list of newsarticles (NNTP v{self.nntp_version}) "
             "created after Mon Sep 13 08:20:04 2010 follows"
-        ).format(self.nntp_version)
+        )
         self.assertEqual(resp, expected)
         self.assertEqual(
             ids,
@@ -1385,7 +1381,6 @@ class SendReaderNNTPv2Tests(MockedNNTPWithReaderModeMixin, unittest.TestCase):
 
 
 class MiscTests(unittest.TestCase):
-
     def test_decode_header(self):
         def gives(a, b):
             self.assertEqual(nntplib.decode_header(a), b)
@@ -1686,8 +1681,9 @@ class MockSocketTests(unittest.TestCase):
 
         socket_closed = False
         files = []
-        with patch("nntplib.socket", mock_socket_module), self.assertRaisesRegex(
-            expected_error_type, expected_error_msg
+        with (
+            patch("nntplib.socket", mock_socket_module),
+            self.assertRaisesRegex(expected_error_type, expected_error_msg),
         ):
             self.nntp_class("dummy", user=login, password=password)
         self.assertTrue(socket_closed)
@@ -1785,10 +1781,7 @@ class LocalServerTests(unittest.TestCase):
                 cmd = reader.readline()
                 if cmd == b"CAPABILITIES\r\n":
                     client.sendall(
-                        b"101 Capability list:\r\n"
-                        b"VERSION 2\r\n"
-                        b"STARTTLS\r\n"
-                        b".\r\n"
+                        b"101 Capability list:\r\nVERSION 2\r\nSTARTTLS\r\n.\r\n"
                     )
                 elif cmd == b"STARTTLS\r\n":
                     reader.close()
@@ -1802,7 +1795,7 @@ class LocalServerTests(unittest.TestCase):
                     client.sendall(b"205 Bye!\r\n")
                     break
                 else:
-                    raise ValueError("Unexpected command {!r}".format(cmd))
+                    raise ValueError(f"Unexpected command {cmd!r}")
 
     @unittest.skipUnless(ssl, "requires SSL support")
     def test_starttls(self):

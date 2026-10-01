@@ -1,11 +1,14 @@
 # Test the windows specific win32reg module.
 # Only win32reg functions not hit here: FlushKey, LoadKey and SaveKey
 
-import os, sys, errno
-import unittest
-from test import support
+import errno
+import os
+import sys
 import threading
+import unittest
 from platform import machine, win32_edition
+
+from test import support
 
 # Do this first so test will be skipped if module doesn't exist
 support.import_module("winreg", required_on=["win"])
@@ -51,7 +54,6 @@ test_data = [
 
 
 class BaseWinregTests(unittest.TestCase):
-
     def setUp(self):
         # Make sure that the test key is absent when the test
         # starts.
@@ -100,7 +102,7 @@ class BaseWinregTests(unittest.TestCase):
         try:
             QueryInfoKey(int_sub_key)
             self.fail(
-                "It appears the CloseKey() function does " "not close the actual key!"
+                "It appears the CloseKey() function does not close the actual key!"
             )
         except OSError:
             pass
@@ -110,7 +112,7 @@ class BaseWinregTests(unittest.TestCase):
         try:
             QueryInfoKey(int_key)
             self.fail(
-                "It appears the key.Close() function " "does not close the actual key!"
+                "It appears the key.Close() function does not close the actual key!"
             )
         except OSError:
             pass
@@ -208,7 +210,6 @@ class BaseWinregTests(unittest.TestCase):
 
 
 class LocalWinregTests(BaseWinregTests):
-
     def test_registry_works(self):
         self._test_all(HKEY_CURRENT_USER)
         self._test_all(HKEY_CURRENT_USER, "日本-subkey")
@@ -396,7 +397,6 @@ class LocalWinregTests(BaseWinregTests):
 
 @unittest.skipUnless(REMOTE_NAME, "Skipping remote registry tests")
 class RemoteWinregTests(BaseWinregTests):
-
     def test_remote_registry_works(self):
         remote_key = ConnectRegistry(REMOTE_NAME, HKEY_CURRENT_USER)
         self._test_all(remote_key)
@@ -404,7 +404,6 @@ class RemoteWinregTests(BaseWinregTests):
 
 @unittest.skipUnless(WIN64_MACHINE, "x64 specific registry tests")
 class Win64WinregTests(BaseWinregTests):
-
     def test_named_arguments(self):
         self._test_named_args(HKEY_CURRENT_USER, test_key_name)
         # Clean up and also exercise the named arguments

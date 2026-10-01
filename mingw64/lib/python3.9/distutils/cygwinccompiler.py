@@ -47,22 +47,20 @@ cygwin in no-cygwin mode).
 # * llvm-mingw with Clang 11 works
 #   (lld supports -shared)
 
-import os
-import sys
 import copy
+import os
 import shlex
-
-from distutils.unixccompiler import UnixCCompiler
-from distutils.file_util import write_file
+import sys
 from distutils.errors import (
-    DistutilsExecError,
     CCompilerError,
     CompileError,
+    DistutilsExecError,
     UnknownFileError,
 )
+from distutils.file_util import write_file
+from distutils.unixccompiler import UnixCCompiler
 from distutils.version import LooseVersion
-from distutils.spawn import find_executable
-from subprocess import Popen, check_output
+from subprocess import check_output
 
 
 def get_msvcr():

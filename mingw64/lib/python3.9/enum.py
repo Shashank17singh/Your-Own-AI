@@ -1,11 +1,11 @@
 import sys
-from types import MappingProxyType, DynamicClassAttribute
+from types import DynamicClassAttribute, MappingProxyType
 
 __all__ = [
-    "EnumMeta",
     "Enum",
-    "IntEnum",
+    "EnumMeta",
     "Flag",
+    "IntEnum",
     "IntFlag",
     "auto",
     "unique",
@@ -130,7 +130,7 @@ class _EnumDict(dict):
                     raise TypeError(
                         "_generate_next_value_ must be defined before members"
                     )
-                setattr(self, "_generate_next_value", value)
+                self._generate_next_value = value
             elif key == "_ignore_":
                 if isinstance(value, str):
                     value = value.replace(",", " ").split()
@@ -765,8 +765,7 @@ class Enum(metaclass=EnumMeta):
                 return last_value + 1
             except TypeError:
                 pass
-        else:
-            return start
+        return start
 
     @classmethod
     def _missing_(cls, value):

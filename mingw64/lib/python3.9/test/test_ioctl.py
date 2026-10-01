@@ -1,7 +1,9 @@
 import array
+import os
+import struct
 import unittest
-from test.support import import_module, get_attribute
-import os, struct
+
+from test.support import get_attribute, import_module
 
 fcntl = import_module("fcntl")
 termios = import_module("termios")
@@ -18,7 +20,7 @@ else:
     rpgrp = struct.unpack("i", r)[0]
     if rpgrp not in (os.getpgrp(), os.getsid(0)):
         raise unittest.SkipTest(
-            "Neither the process group nor the session " "are attached to /dev/tty"
+            "Neither the process group nor the session are attached to /dev/tty"
         )
     del tty, r, rpgrp
 

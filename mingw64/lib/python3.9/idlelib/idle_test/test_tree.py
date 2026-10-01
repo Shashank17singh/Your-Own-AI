@@ -1,15 +1,15 @@
 "Test tree. coverage 56%."
 
-from idlelib import tree
 import unittest
+from idlelib import tree
+
 from test.support import requires
 
 requires("gui")
-from tkinter import Tk, EventType, SCROLL
+from tkinter import SCROLL, EventType, Tk
 
 
 class TreeTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = Tk()
@@ -32,7 +32,6 @@ class TreeTest(unittest.TestCase):
 
 
 class TestScrollEvent(unittest.TestCase):
-
     def test_wheel_event(self):
         # Fake widget class containing `yview` only.
         class _Widget:

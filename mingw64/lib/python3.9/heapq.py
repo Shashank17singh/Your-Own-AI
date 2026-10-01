@@ -125,14 +125,14 @@ From all times, sorting has always been a Great Art! :-)
 """
 
 __all__ = [
-    "heappush",
-    "heappop",
     "heapify",
+    "heappop",
+    "heappush",
+    "heappushpop",
     "heapreplace",
     "merge",
     "nlargest",
     "nsmallest",
-    "heappushpop",
 ]
 
 
@@ -621,7 +621,6 @@ except ImportError:
 
 
 if __name__ == "__main__":
-
     import doctest  # pragma: no cover
 
     print(doctest.testmod())  # pragma: no cover

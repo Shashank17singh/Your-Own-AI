@@ -4,47 +4,46 @@ csv.py - read/write/investigate CSV files
 
 import re
 from _csv import (
+    QUOTE_ALL,
+    QUOTE_MINIMAL,
+    QUOTE_NONE,
+    QUOTE_NONNUMERIC,
     Error,
+    __doc__,
     __version__,
-    writer,
+    field_size_limit,
+    get_dialect,
+    list_dialects,
     reader,
     register_dialect,
     unregister_dialect,
-    get_dialect,
-    list_dialects,
-    field_size_limit,
-    QUOTE_MINIMAL,
-    QUOTE_ALL,
-    QUOTE_NONNUMERIC,
-    QUOTE_NONE,
-    __doc__,
+    writer,
 )
 from _csv import Dialect as _Dialect
-
 from io import StringIO
 
 __all__ = [
-    "QUOTE_MINIMAL",
     "QUOTE_ALL",
-    "QUOTE_NONNUMERIC",
+    "QUOTE_MINIMAL",
     "QUOTE_NONE",
-    "Error",
+    "QUOTE_NONNUMERIC",
     "Dialect",
+    "DictReader",
+    "DictWriter",
+    "Error",
+    "Sniffer",
     "__doc__",
+    "__version__",
     "excel",
     "excel_tab",
     "field_size_limit",
-    "reader",
-    "writer",
-    "register_dialect",
     "get_dialect",
     "list_dialects",
-    "Sniffer",
-    "unregister_dialect",
-    "__version__",
-    "DictReader",
-    "DictWriter",
+    "reader",
+    "register_dialect",
     "unix_dialect",
+    "unregister_dialect",
+    "writer",
 ]
 
 
@@ -127,7 +126,7 @@ class DictReader:
         restval=None,
         dialect="excel",
         *args,
-        **kwds
+        **kwds,
     ):
         self._fieldnames = fieldnames  # list of keys for the dict
         self.restkey = restkey  # key to catch long rows
@@ -185,7 +184,7 @@ class DictWriter:
         extrasaction="raise",
         dialect="excel",
         *args,
-        **kwds
+        **kwds,
     ):
         self.fieldnames = fieldnames  # list of keys for the dict
         self.restval = restval  # for writing short dicts
@@ -380,7 +379,7 @@ class Sniffer:
                     metaFrequency[freq] = metaFrequency.get(freq, 0) + 1
                     charFrequency[char] = metaFrequency
 
-            for char in charFrequency.keys():
+            for char in charFrequency:
                 items = list(charFrequency[char].items())
                 if len(items) == 1 and items[0][0] == 0:
                     continue
@@ -428,7 +427,7 @@ class Sniffer:
         # if there's more than one, fall back to a 'preferred' list
         if len(delims) > 1:
             for d in self.preferred:
-                if d in delims.keys():
+                if d in delims:
                     skipinitialspace = data[0].count(d) == data[0].count("%c " % d)
                     return (d, skipinitialspace)
 
@@ -471,7 +470,6 @@ class Sniffer:
                 continue  # skip rows that have irregular number of columns
 
             for col in list(columnTypes.keys()):
-
                 for thisType in [int, float, complex]:
                     try:
                         thisType(row[col])
@@ -494,7 +492,7 @@ class Sniffer:
         # on whether it's a header
         hasHeader = 0
         for col, colType in columnTypes.items():
-            if type(colType) == type(0):  # it's a length
+            if type(colType) == int:  # it's a length
                 if len(header[col]) != colType:
                     hasHeader += 1
                 else:

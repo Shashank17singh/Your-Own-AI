@@ -4,13 +4,18 @@ pyexpat.__version__ == '2.22'.
 """
 
 version = "0.20"
-from xml.sax._exceptions import *
-from xml.sax.handler import feature_validation, feature_namespaces
-from xml.sax.handler import feature_namespace_prefixes
-from xml.sax.handler import feature_external_ges, feature_external_pes
-from xml.sax.handler import feature_string_interning
-from xml.sax.handler import property_xml_string, property_interning_dict
 import sys
+from xml.sax._exceptions import *
+from xml.sax.handler import (
+    feature_external_ges,
+    feature_external_pes,
+    feature_namespace_prefixes,
+    feature_namespaces,
+    feature_string_interning,
+    feature_validation,
+    property_interning_dict,
+    property_xml_string,
+)
 
 if sys.platform[:4] == "java":
     raise SAXReaderNotAvailable("expat not available in Java", None)
@@ -22,7 +27,7 @@ except ImportError:
 else:
     if not hasattr(expat, "ParserCreate"):
         raise SAXReaderNotAvailable("expat not supported", None)
-from xml.sax import xmlreader, saxutils, handler
+from xml.sax import handler, saxutils, xmlreader
 
 AttributesImpl = xmlreader.AttributesImpl
 AttributesNSImpl = xmlreader.AttributesNSImpl
@@ -168,8 +173,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
                     return self._parser.GetInputContext()
                 else:
                     raise SAXNotRecognizedException(
-                        "This version of expat does not support getting"
-                        " the XML string"
+                        "This version of expat does not support getting the XML string"
                     )
             else:
                 raise SAXNotSupportedException(

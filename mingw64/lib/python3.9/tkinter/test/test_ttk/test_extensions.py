@@ -1,9 +1,10 @@
 import sys
-import unittest
 import tkinter
+import unittest
 from tkinter import ttk
-from test.support import requires, run_unittest, gc_collect
-from tkinter.test.support import AbstractTkTest, AbstractDefaultRootTest
+from tkinter.test.support import AbstractDefaultRootTest, AbstractTkTest
+
+from test.support import gc_collect, requires, run_unittest
 
 requires("gui")
 

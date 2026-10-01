@@ -15,7 +15,7 @@ import stat
 from itertools import filterfalse
 from types import GenericAlias
 
-__all__ = ["clear_cache", "cmp", "dircmp", "cmpfiles", "DEFAULT_IGNORES"]
+__all__ = ["DEFAULT_IGNORES", "clear_cache", "cmp", "cmpfiles", "dircmp"]
 
 _cache = {}
 BUFSIZE = 8 * 1024
@@ -304,8 +304,8 @@ def _filter(flist, skip):
 # Demonstration and testing.
 #
 def demo():
-    import sys
     import getopt
+    import sys
 
     options, args = getopt.getopt(sys.argv[1:], "r")
     if len(args) != 2:

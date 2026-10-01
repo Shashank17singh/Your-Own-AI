@@ -4,7 +4,7 @@ provides the TextFile class, which gives an interface to text files
 that (optionally) takes care of stripping comments, ignoring blank
 lines, and joining lines with backslashes."""
 
-import sys, io
+import sys
 
 
 class TextFile:
@@ -95,7 +95,7 @@ class TextFile:
                 setattr(self, opt, self.default_options[opt])
 
         # sanity check client option hash
-        for opt in options.keys():
+        for opt in options:
             if opt not in self.default_options:
                 raise KeyError("invalid TextFile option '%s'" % opt)
 
@@ -115,7 +115,7 @@ class TextFile:
         """Open a new file named 'filename'.  This overrides both the
         'filename' and 'file' arguments to the constructor."""
         self.filename = filename
-        self.file = io.open(self.filename, "r", errors=self.errors)
+        self.file = open(self.filename, "r", errors=self.errors)
         self.current_line = 0
 
     def close(self):
@@ -180,7 +180,6 @@ class TextFile:
                 line = None
 
             if self.strip_comments and line:
-
                 # Look for the first "#" in the line.  If none, never
                 # mind.  If we find one and it's the first character, or
                 # is not preceded by "\", then it starts a comment --
@@ -221,7 +220,7 @@ class TextFile:
             if self.join_lines and buildup_line:
                 # oops: end of file
                 if line is None:
-                    self.warn("continuation line immediately precedes " "end-of-file")
+                    self.warn("continuation line immediately precedes end-of-file")
                     return buildup_line
 
                 if self.collapse_join:

@@ -1,11 +1,11 @@
 # Copyright (C) 2005 Martin v. Löwis
 # Licensed to PSF under a Contributor Agreement.
-from _msi import *
 import fnmatch
 import os
 import re
 import string
 import sys
+from _msi import *
 
 AMD64 = "AMD64" in sys.version
 # Keep msilib.Win64 around to preserve backwards compatibility.

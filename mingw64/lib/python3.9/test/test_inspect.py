@@ -1,3 +1,4 @@
+import _pickle
 import builtins
 import collections
 import datetime
@@ -7,30 +8,34 @@ import inspect
 import io
 import linecache
 import os
-from os.path import normcase
-import _pickle
 import pickle
 import shutil
 import sys
-import types
 import textwrap
+import types
 import unicodedata
 import unittest
 import unittest.mock
 import warnings
+from os.path import normcase
 
 try:
     from concurrent.futures import ThreadPoolExecutor
 except ImportError:
     ThreadPoolExecutor = None
 
-from test.support import run_unittest, TESTFN, DirsOnSysPath, cpython_only
-from test.support import MISSING_C_DOCSTRINGS, ALWAYS_EQ
-from test.support.script_helper import assert_python_ok, assert_python_failure
 from test import inspect_fodder as mod
 from test import inspect_fodder2 as mod2
 from test import support
-
+from test.support import (
+    ALWAYS_EQ,
+    MISSING_C_DOCSTRINGS,
+    TESTFN,
+    DirsOnSysPath,
+    cpython_only,
+    run_unittest,
+)
+from test.support.script_helper import assert_python_failure, assert_python_ok
 from test.test_import import _ready_to_import
 
 # Functions tested in this suite:
@@ -83,7 +88,15 @@ def unsorted_keyword_only_parameters_fn(
     pass
 
 
-unsorted_keyword_only_parameters = "throw out the baby with_ the_ bathwater".split()
+unsorted_keyword_only_parameters = [
+    "throw",
+    "out",
+    "the",
+    "baby",
+    "with_",
+    "the_",
+    "bathwater",
+]
 
 
 class IsTestBase(unittest.TestCase):
@@ -141,7 +154,6 @@ def gen_coroutine_function_example(self):
 
 
 class TestPredicates(IsTestBase):
-
     def test_excluding_predicates(self):
         global tb
         self.istest(inspect.isbuiltin, "sys.exit")
@@ -267,14 +279,14 @@ class TestPredicates(IsTestBase):
         self.istest(inspect.isclass, "mod.StupidGit")
         self.assertTrue(inspect.isclass(list))
 
-        class CustomGetattr(object):
+        class CustomGetattr:
             def __getattr__(self, attr):
                 return None
 
         self.assertFalse(inspect.isclass(CustomGetattr()))
 
     def test_get_slot_members(self):
-        class C(object):
+        class C:
             __slots__ = ("a", "b")
 
         x = C()
@@ -287,7 +299,6 @@ class TestPredicates(IsTestBase):
         from abc import ABCMeta, abstractmethod
 
         class AbstractClassExample(metaclass=ABCMeta):
-
             @abstractmethod
             def foo(self):
                 pass
@@ -430,7 +441,7 @@ class GetSourceBase(unittest.TestCase):
 class SlotUser:
     "Docstrings for __slots__"
 
-    __slots__ = {"power": "measured in kilowatts", "distance": "measured in kilometers"}
+    __slots__ = {"distance": "measured in kilometers", "power": "measured in kilowatts"}
 
 
 class TestRetrievingSourceCode(GetSourceBase):
@@ -544,7 +555,7 @@ class TestRetrievingSourceCode(GetSourceBase):
         finddoc = inspect._finddoc
         self.assertEqual(finddoc(int), int.__doc__)
         self.assertEqual(finddoc(int.to_bytes), int.to_bytes.__doc__)
-        self.assertEqual(finddoc(int().to_bytes), int.to_bytes.__doc__)
+        self.assertEqual(finddoc((0).to_bytes), int.to_bytes.__doc__)
         self.assertEqual(finddoc(int.from_bytes), int.from_bytes.__doc__)
         self.assertEqual(finddoc(int.real), int.real.__doc__)
 
@@ -892,7 +903,7 @@ class TestNoEOL(GetSourceBase):
         self.assertSourceEqual(self.fodderModule.X, 1, 2)
 
 
-class _BrokenDataDescriptor(object):
+class _BrokenDataDescriptor:
     """
     A broken data descriptor. See bug #1785.
     """
@@ -907,7 +918,7 @@ class _BrokenDataDescriptor(object):
         raise AttributeError("broken data descriptor")
 
 
-class _BrokenMethodDescriptor(object):
+class _BrokenMethodDescriptor:
     """
     A broken method descriptor. See bug #1785.
     """
@@ -927,7 +938,7 @@ def attrs_wo_objs(cls):
 class TestClassesAndFunctions(unittest.TestCase):
     def test_newstyle_mro(self):
         # The same w/ new-class MRO.
-        class A(object):
+        class A:
             pass
 
         class B(A):
@@ -1181,15 +1192,14 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertEqual(l, unsorted_keyword_only_parameters)
 
     def test_getargspec_method(self):
-        class A(object):
+        class A:
             def m(self):
                 pass
 
         self.assertArgSpecEquals(A.m, ["self"])
 
     def test_classify_newstyle(self):
-        class A(object):
-
+        class A:
             def s():
                 pass
 
@@ -1231,7 +1241,6 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertIn(("dd", "data", A), attrs, "missing data descriptor")
 
         class B(A):
-
             def m(self):
                 pass
 
@@ -1246,7 +1255,6 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertIn(("dd", "data", A), attrs, "missing data descriptor")
 
         class C(A):
-
             def m(self):
                 pass
 
@@ -1264,7 +1272,6 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertIn(("dd", "data", A), attrs, "missing data descriptor")
 
         class D(B, C):
-
             def m1(self):
                 pass
 
@@ -1313,7 +1320,7 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertIn(should_find_ga, inspect.classify_class_attrs(VA))
 
     def test_classify_overrides_bool(self):
-        class NoBool(object):
+        class NoBool:
             def __eq__(self, other):
                 return NoBool()
 
@@ -1322,7 +1329,7 @@ class TestClassesAndFunctions(unittest.TestCase):
                     "This object does not specify a boolean value"
                 )
 
-        class HasNB(object):
+        class HasNB:
             dd = NoBool()
 
         should_find_attr = inspect.Attribute("dd", "data", HasNB, HasNB.dd)
@@ -1378,13 +1385,11 @@ class TestClassesAndFunctions(unittest.TestCase):
 
         class Meta3(Meta1, Meta2):
             def __dir__(cls):
-                return list(
-                    sorted(
-                        set(
-                            ["__class__", "__module__", "__name__", "three"]
-                            + Meta1.__dir__(cls)
-                            + Meta2.__dir__(cls)
-                        )
+                return sorted(
+                    set(
+                        ["__class__", "__module__", "__name__", "three"]
+                        + Meta1.__dir__(cls)
+                        + Meta2.__dir__(cls)
                     )
                 )
 
@@ -1418,14 +1423,14 @@ class TestClassesAndFunctions(unittest.TestCase):
         self.assertNotIn("missing", attrs)
 
     def test_getmembers_descriptors(self):
-        class A(object):
+        class A:
             dd = _BrokenDataDescriptor()
             md = _BrokenMethodDescriptor()
 
         def pred_wrapper(pred):
             # A quick'n'dirty way to discard standard attributes of new-style
             # classes.
-            class Empty(object):
+            class Empty:
                 pass
 
             def wrapped(x):
@@ -1494,7 +1499,6 @@ class TestClassesAndFunctions(unittest.TestCase):
 
 
 class TestIsDataDescriptor(unittest.TestCase):
-
     def test_custom_descriptors(self):
         class NonDataDescriptor:
             def __get__(self, value, type=None):
@@ -1548,7 +1552,7 @@ class TestIsDataDescriptor(unittest.TestCase):
         )
 
     def test_functions(self):
-        class Test(object):
+        class Test:
             def instance_method(self):
                 pass
 
@@ -1588,7 +1592,6 @@ _global_ref = object()
 
 
 class TestGetClosureVars(unittest.TestCase):
-
     def test_name_resolution(self):
         # Basic test of the 4 different resolution mechanisms
         def f(nonlocal_ref):
@@ -1725,7 +1728,6 @@ class TestGetClosureVars(unittest.TestCase):
 
 
 class TestGetcallargsFunctions(unittest.TestCase):
-
     def assertEqualCallArgs(self, func, call_params_string, locs=None):
         locs = dict(locs or {}, func=func)
         r1 = eval("func(%s)" % call_params_string, None, locs)
@@ -1833,7 +1835,7 @@ class TestGetcallargsFunctions(unittest.TestCase):
         self.assertEqualCallArgs(f, "2, x=8, *[3, (4,[5,6]), 7], y=9")
         self.assertEqualCallArgs(f, "x=8, *[2, 3, (4,[5,6])], y=9")
         self.assertEqualCallArgs(
-            f, "x=8, *collections.UserList(" '[2, 3, (4,[5,6])]), **{"y":9, "z":10}'
+            f, 'x=8, *collections.UserList([2, 3, (4,[5,6])]), **{"y":9, "z":10}'
         )
         self.assertEqualCallArgs(
             f,
@@ -1849,7 +1851,7 @@ class TestGetcallargsFunctions(unittest.TestCase):
         self.assertEqualCallArgs(f, "x=8, *[2, 3, (4,[5,6])], y=9, z=10")
         self.assertEqualCallArgs(
             f,
-            "x=8, *collections.UserList(" '[2, 3, (4,[5,6])]), q=0, **{"y":9, "z":10}',
+            'x=8, *collections.UserList([2, 3, (4,[5,6])]), q=0, **{"y":9, "z":10}',
         )
         self.assertEqualCallArgs(
             f,
@@ -1920,7 +1922,7 @@ class TestGetcallargsFunctions(unittest.TestCase):
 
         # bpo-33197
         with self.assertRaisesRegex(
-            ValueError, "variadic keyword parameters cannot" " have default values"
+            ValueError, "variadic keyword parameters cannot have default values"
         ):
             inspect.Parameter("foo", kind=inspect.Parameter.VAR_KEYWORD, default=42)
         with self.assertRaisesRegex(
@@ -1933,9 +1935,8 @@ class TestGetcallargsFunctions(unittest.TestCase):
 
 
 class TestGetcallargsMethods(TestGetcallargsFunctions):
-
     def setUp(self):
-        class Foo(object):
+        class Foo:
             pass
 
         self.cls = Foo
@@ -1943,24 +1944,23 @@ class TestGetcallargsMethods(TestGetcallargsFunctions):
 
     def makeCallable(self, signature):
         assert "self" not in signature
-        mk = super(TestGetcallargsMethods, self).makeCallable
+        mk = super().makeCallable
         self.cls.method = mk("self, " + signature)
         return self.inst.method
 
 
 class TestGetcallargsUnboundMethods(TestGetcallargsMethods):
-
     def makeCallable(self, signature):
-        super(TestGetcallargsUnboundMethods, self).makeCallable(signature)
+        super().makeCallable(signature)
         return self.cls.method
 
     def assertEqualCallArgs(self, func, call_params_string, locs=None):
-        return super(TestGetcallargsUnboundMethods, self).assertEqualCallArgs(
+        return super().assertEqualCallArgs(
             *self._getAssertEqualParams(func, call_params_string, locs)
         )
 
     def assertEqualException(self, func, call_params_string, locs=None):
-        return super(TestGetcallargsUnboundMethods, self).assertEqualException(
+        return super().assertEqualException(
             *self._getAssertEqualParams(func, call_params_string, locs)
         )
 
@@ -1971,9 +1971,8 @@ class TestGetcallargsUnboundMethods(TestGetcallargsMethods):
 
 
 class TestGetattrStatic(unittest.TestCase):
-
     def test_basic(self):
-        class Thing(object):
+        class Thing:
             x = object()
 
         thing = Thing()
@@ -1985,7 +1984,7 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(thing, "y", 3), 3)
 
     def test_inherited(self):
-        class Thing(object):
+        class Thing:
             x = object()
 
         class OtherThing(Thing):
@@ -1995,7 +1994,7 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(something, "x"), Thing.x)
 
     def test_instance_attr(self):
-        class Thing(object):
+        class Thing:
             x = 2
 
             def __init__(self, x):
@@ -2007,7 +2006,7 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(thing, "x"), 2)
 
     def test_property(self):
-        class Thing(object):
+        class Thing:
             @property
             def x(self):
                 raise AttributeError("I'm pretending not to exist")
@@ -2016,26 +2015,26 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(thing, "x"), Thing.x)
 
     def test_descriptor_raises_AttributeError(self):
-        class descriptor(object):
+        class descriptor:
             def __get__(*_):
                 raise AttributeError("I'm pretending not to exist")
 
         desc = descriptor()
 
-        class Thing(object):
+        class Thing:
             x = desc
 
         thing = Thing()
         self.assertEqual(inspect.getattr_static(thing, "x"), desc)
 
     def test_classAttribute(self):
-        class Thing(object):
+        class Thing:
             x = object()
 
         self.assertEqual(inspect.getattr_static(Thing, "x"), Thing.x)
 
     def test_classVirtualAttribute(self):
-        class Thing(object):
+        class Thing:
             @types.DynamicClassAttribute
             def x(self):
                 return self._x
@@ -2045,7 +2044,7 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(Thing, "x"), Thing.__dict__["x"])
 
     def test_inherited_classattribute(self):
-        class Thing(object):
+        class Thing:
             x = object()
 
         class OtherThing(Thing):
@@ -2054,7 +2053,7 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(OtherThing, "x"), Thing.x)
 
     def test_slots(self):
-        class Thing(object):
+        class Thing:
             y = "bar"
             __slots__ = ["x"]
 
@@ -2072,7 +2071,7 @@ class TestGetattrStatic(unittest.TestCase):
         class meta(type):
             attr = "foo"
 
-        class Thing(object, metaclass=meta):
+        class Thing(metaclass=meta):
             pass
 
         self.assertEqual(inspect.getattr_static(Thing, "attr"), "foo")
@@ -2080,7 +2079,7 @@ class TestGetattrStatic(unittest.TestCase):
         class sub(meta):
             pass
 
-        class OtherThing(object, metaclass=sub):
+        class OtherThing(metaclass=sub):
             x = 3
 
         self.assertEqual(inspect.getattr_static(OtherThing, "attr"), "foo")
@@ -2102,7 +2101,7 @@ class TestGetattrStatic(unittest.TestCase):
 
     def test_inherited_slots(self):
         # returns descriptor
-        class Thing(object):
+        class Thing:
             __slots__ = ["x"]
 
             def __init__(self):
@@ -2116,11 +2115,11 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(OtherThing(), "x"), Thing.x)
 
     def test_descriptor(self):
-        class descriptor(object):
+        class descriptor:
             def __get__(self, instance, owner):
                 return 3
 
-        class Foo(object):
+        class Foo:
             d = descriptor()
 
         foo = Foo()
@@ -2135,20 +2134,20 @@ class TestGetattrStatic(unittest.TestCase):
         self.assertEqual(inspect.getattr_static(foo, "d"), Foo.__dict__["d"])
 
     def test_metaclass_with_descriptor(self):
-        class descriptor(object):
+        class descriptor:
             def __get__(self, instance, owner):
                 return 3
 
         class meta(type):
             d = descriptor()
 
-        class Thing(object, metaclass=meta):
+        class Thing(metaclass=meta):
             pass
 
         self.assertEqual(inspect.getattr_static(Thing, "d"), meta.__dict__["d"])
 
     def test_class_as_property(self):
-        class Base(object):
+        class Base:
             foo = 3
 
         class Something(Base):
@@ -2170,7 +2169,7 @@ class TestGetattrStatic(unittest.TestCase):
             def __mro__(self):
                 return (object,)
 
-        class Base(object):
+        class Base:
             foo = 3
 
         class Something(Base, metaclass=Meta):
@@ -2205,7 +2204,7 @@ class TestGetattrStatic(unittest.TestCase):
                 test.called = True
                 super().get(key, default)
 
-        class Foo(object):
+        class Foo:
             a = 3
 
         foo = Foo()
@@ -2252,7 +2251,6 @@ class TestGetattrStatic(unittest.TestCase):
 
 
 class TestGetGeneratorState(unittest.TestCase):
-
     def setUp(self):
         def number_generator():
             for number in range(5):
@@ -2299,7 +2297,7 @@ class TestGetGeneratorState(unittest.TestCase):
 
     def test_easy_debugging(self):
         # repr() and str() of a generator state should contain the state name
-        names = "GEN_CREATED GEN_RUNNING GEN_SUSPENDED GEN_CLOSED".split()
+        names = ["GEN_CREATED", "GEN_RUNNING", "GEN_SUSPENDED", "GEN_CLOSED"]
         for name in names:
             state = getattr(inspect, name)
             self.assertIn(name, repr(state))
@@ -2358,7 +2356,6 @@ class TestGetGeneratorState(unittest.TestCase):
 
 
 class TestGetCoroutineState(unittest.TestCase):
-
     def setUp(self):
         @types.coroutine
         def number_coroutine():
@@ -2399,7 +2396,7 @@ class TestGetCoroutineState(unittest.TestCase):
 
     def test_easy_debugging(self):
         # repr() and str() of a coroutine state should contain the state name
-        names = "CORO_CREATED CORO_RUNNING CORO_SUSPENDED CORO_CLOSED".split()
+        names = ["CORO_CREATED", "CORO_RUNNING", "CORO_SUSPENDED", "CORO_CLOSED"]
         for name in names:
             state = getattr(inspect, name)
             self.assertIn(name, repr(state))
@@ -2597,19 +2594,19 @@ class TestSignatureObject(unittest.TestCase):
         )
 
     def test_signature_without_self(self):
-        def test_args_only(*args):  # NOQA
+        def test_args_only(*args):
             pass
 
-        def test_args_kwargs_only(*args, **kwargs):  # NOQA
+        def test_args_kwargs_only(*args, **kwargs):
             pass
 
         class A:
             @classmethod
-            def test_classmethod(*args):  # NOQA
+            def test_classmethod(*args):
                 pass
 
             @staticmethod
-            def test_staticmethod(*args):  # NOQA
+            def test_staticmethod(*args):
                 pass
 
             f1 = functools.partialmethod((test_classmethod), 1)
@@ -3661,7 +3658,7 @@ class TestSignatureObject(unittest.TestCase):
         MISSING_C_DOCSTRINGS, "Signature information for builtins requires docstrings"
     )
     def test_signature_on_builtin_class(self):
-        expected = "(file, protocol=None, fix_imports=True, " "buffer_callback=None)"
+        expected = "(file, protocol=None, fix_imports=True, buffer_callback=None)"
         self.assertEqual(str(inspect.signature(_pickle.Pickler)), expected)
 
         class P(_pickle.Pickler):
@@ -3727,7 +3724,7 @@ class TestSignatureObject(unittest.TestCase):
 
     def test_signature_on_lambdas(self):
         self.assertEqual(
-            self.signature((lambda a=10: a)),
+            self.signature(lambda a=10: a),
             ((("a", 10, ..., "positional_or_keyword"),), ...),
         )
 
@@ -4026,7 +4023,7 @@ class TestParameterObject(unittest.TestCase):
         self.assertEqual(p.kind, inspect.Parameter.POSITIONAL_ONLY)
 
         with self.assertRaisesRegex(
-            ValueError, "value '123' is " "not a valid Parameter.kind"
+            ValueError, "value '123' is not a valid Parameter.kind"
         ):
             inspect.Parameter("foo", default=10, kind="123")
 
@@ -4111,7 +4108,7 @@ class TestParameterObject(unittest.TestCase):
 
         with self.assertRaisesRegex(
             ValueError,
-            "value <class 'inspect._empty'> " "is not a valid Parameter.kind",
+            "value <class 'inspect._empty'> is not a valid Parameter.kind",
         ):
             p2 = p2.replace(kind=p2.empty)
 
@@ -4165,7 +4162,6 @@ class TestSignatureBind(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, "got an unexpected keyword argument 'spam'"
         ):
-
             self.call(test, spam=1)
 
     def test_signature_bind_var(self):
@@ -4287,7 +4283,6 @@ class TestSignatureBind(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, "got an unexpected keyword argument 'spam'"
         ):
-
             self.call(test, bar=2, foo=1, spam=10)
 
         with self.assertRaisesRegex(TypeError, "too many positional arguments"):
@@ -4299,7 +4294,6 @@ class TestSignatureBind(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, "got an unexpected keyword argument 'spam'"
         ):
-
             self.call(test, 1, bar=2, spam="ham")
 
         with self.assertRaisesRegex(TypeError, "missing a required argument: 'bar'"):
@@ -4388,7 +4382,6 @@ class TestSignatureBind(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, "got an unexpected keyword argument 'args'"
         ):
-
             sig.bind(a=0, args=1)
 
         def test(*args, **kwargs):
@@ -4682,7 +4675,6 @@ class NTimesUnwrappable:
 
 
 class TestUnwrap(unittest.TestCase):
-
     def test_unwrap_one(self):
         def func(a, b):
             return a + b
@@ -4805,7 +4797,6 @@ class TestMain(unittest.TestCase):
 
 
 class TestReload(unittest.TestCase):
-
     src_before = textwrap.dedent("""\
 def foo():
     print("Bla")

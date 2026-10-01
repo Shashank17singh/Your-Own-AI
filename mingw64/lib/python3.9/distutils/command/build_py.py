@@ -2,19 +2,17 @@
 
 Implements the Distutils 'build_py' command."""
 
-import os
-import importlib.util
-import sys
 import glob
-
+import importlib.util
+import os
+import sys
+from distutils import log
 from distutils.core import Command
 from distutils.errors import *
-from distutils.util import convert_path, Mixin2to3
-from distutils import log
+from distutils.util import Mixin2to3, convert_path
 
 
 class build_py(Command):
-
     description = '"build" pure Python modules (copy to build directory)'
 
     user_options = [
@@ -168,22 +166,21 @@ class build_py(Command):
                 else:
                     tail.insert(0, pdir)
                     return os.path.join(*tail)
-            else:
-                # Oops, got all the way through 'path' without finding a
-                # match in package_dir.  If package_dir defines a directory
-                # for the root (nameless) package, then fallback on it;
-                # otherwise, we might as well have not consulted
-                # package_dir at all, as we just use the directory implied
-                # by 'tail' (which should be the same as the original value
-                # of 'path' at this point).
-                pdir = self.package_dir.get("")
-                if pdir is not None:
-                    tail.insert(0, pdir)
+            # Oops, got all the way through 'path' without finding a
+            # match in package_dir.  If package_dir defines a directory
+            # for the root (nameless) package, then fallback on it;
+            # otherwise, we might as well have not consulted
+            # package_dir at all, as we just use the directory implied
+            # by 'tail' (which should be the same as the original value
+            # of 'path' at this point).
+            pdir = self.package_dir.get("")
+            if pdir is not None:
+                tail.insert(0, pdir)
 
-                if tail:
-                    return os.path.join(*tail)
-                else:
-                    return ""
+            if tail:
+                return os.path.join(*tail)
+            else:
+                return ""
 
     def check_package(self, package, package_dir):
         # Empty dir name means current directory, which we can probably

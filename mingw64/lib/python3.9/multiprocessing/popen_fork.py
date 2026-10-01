@@ -10,7 +10,7 @@ __all__ = ["Popen"]
 #
 
 
-class Popen(object):
+class Popen:
     method = "fork"
 
     def __init__(self, process_obj):

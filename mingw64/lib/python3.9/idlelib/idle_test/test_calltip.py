@@ -1,12 +1,12 @@
 "Test calltip, coverage 76%"
 
-from idlelib import calltip
-import unittest
-from unittest.mock import Mock
+import re
 import textwrap
 import types
-import re
+import unittest
+from idlelib import calltip
 from idlelib.idle_test.mock_tk import Text
+from unittest.mock import Mock
 
 
 # Test Class TC is used in multiple get_argspec test methods
@@ -95,7 +95,7 @@ class Get_argspecTest(unittest.TestCase):
             __call__ = None
 
         if List.__doc__ is not None:
-            tiptest(List, f"(iterable=(), /)" f"\n{List.__doc__}")
+            tiptest(List, f"(iterable=(), /)\n{List.__doc__}")
         tiptest(
             list.__new__,
             "(*args, **kwargs)\n"
@@ -157,7 +157,6 @@ you\'ll probably have to override _wrap_chunks().""",
 
         def bar(s="a" * 100):
             """Hello Guido"""
-            pass
 
         def baz(s="a" * 100, z="b" * 100):
             pass
@@ -191,14 +190,13 @@ you\'ll probably have to override _wrap_chunks().""",
             pass
 
         f.__doc__ = "a" * 300
-        self.assertEqual(get_spec(f), f"()\n{'a'*(calltip._MAX_COLS-3) + '...'}")
+        self.assertEqual(get_spec(f), f"()\n{'a' * (calltip._MAX_COLS - 3) + '...'}")
 
     def test_multiline_docstring(self):
         # Test fewer lines than max.
         self.assertEqual(
             get_spec(range),
-            "range(stop) -> range object\n"
-            "range(start, stop[, step]) -> range object",
+            "range(stop) -> range object\nrange(start, stop[, step]) -> range object",
         )
 
         # Test max lines
@@ -401,7 +399,6 @@ class WrappedCalltip(calltip.Calltip):
 
 
 class CalltipTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.text = Text()

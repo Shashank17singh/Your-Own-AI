@@ -1,14 +1,14 @@
 "Test , coverage 17%."
 
-from idlelib import iomenu
 import unittest
-from test.support import requires
-from tkinter import Tk
+from idlelib import iomenu
 from idlelib.editor import EditorWindow
+from tkinter import Tk
+
+from test.support import requires
 
 
 class IOBindingTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

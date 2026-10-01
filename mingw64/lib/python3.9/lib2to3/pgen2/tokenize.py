@@ -28,7 +28,8 @@ each time a new token is found."""
 __author__ = "Ka-Ping Yee <ping@lfw.org>"
 __credits__ = "GvR, ESR, Tim Peters, Thomas Wouters, Fred Drake, Skip Montanaro"
 
-import string, re
+import re
+import string
 from codecs import BOM_UTF8, lookup
 from lib2to3.pgen2.token import *
 
@@ -206,7 +207,6 @@ def tokenize_loop(readline, tokeneater):
 
 
 class Untokenizer:
-
     def __init__(self):
         self.tokens = []
         self.prev_row = 1
@@ -595,7 +595,6 @@ def generate_tokens(readline):
 
                     if token in ("def", "for"):
                         if stashed and stashed[0] == NAME and stashed[1] == "async":
-
                             if token == "def":
                                 async_def = True
                                 async_def_indent = indents[-1]

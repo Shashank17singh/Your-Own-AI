@@ -10,4 +10,4 @@ etree -- The ElementTree XML library.  This is a subset of the full
        ElementTree XML release.
 """
 
-__all__ = ["dom", "parsers", "sax", "etree"]
+__all__ = ["dom", "etree", "parsers", "sax"]

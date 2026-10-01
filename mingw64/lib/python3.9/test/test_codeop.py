@@ -3,13 +3,13 @@ Test cases for codeop.py
 Nick Mathewson
 """
 
+import io
 import sys
 import unittest
 import warnings
-from test import support
+from codeop import PyCF_DONT_IMPLY_DEDENT, compile_command
 
-from codeop import compile_command, PyCF_DONT_IMPLY_DEDENT
-import io
+from test import support
 
 if support.is_jython:
 
@@ -21,7 +21,6 @@ if support.is_jython:
 
 
 class CodeopTests(unittest.TestCase):
-
     def assertValid(self, str, symbol="single"):
         """succeed iff str is a valid piece of code"""
         if support.is_jython:

@@ -14,7 +14,7 @@ class addbase(tempfile._TemporaryFileWrapper):
     """Base class for addinfo and addclosehook. Is a good idea for garbage collection."""
 
     def __init__(self, fp):
-        super(addbase, self).__init__(fp, "<urllib response>", delete=False)
+        super().__init__(fp, "<urllib response>", delete=False)
         self.fp = fp
 
     def __repr__(self):
@@ -37,7 +37,7 @@ class addclosehook(addbase):
     """Class to add a close hook to an open file."""
 
     def __init__(self, fp, closehook, *hookargs):
-        super(addclosehook, self).__init__(fp)
+        super().__init__(fp)
         self.closehook = closehook
         self.hookargs = hookargs
 
@@ -50,14 +50,14 @@ class addclosehook(addbase):
                 self.hookargs = None
                 closehook(*hookargs)
         finally:
-            super(addclosehook, self).close()
+            super().close()
 
 
 class addinfo(addbase):
     """class to add an info() method to an open file."""
 
     def __init__(self, fp, headers):
-        super(addinfo, self).__init__(fp)
+        super().__init__(fp)
         self.headers = headers
 
     def info(self):
@@ -68,7 +68,7 @@ class addinfourl(addinfo):
     """class to add info() and geturl() methods to an open file."""
 
     def __init__(self, fp, headers, url, code=None):
-        super(addinfourl, self).__init__(fp, headers)
+        super().__init__(fp, headers)
         self.url = url
         self.code = code
 

@@ -1,12 +1,12 @@
 import pickle
 import pickletools
+import unittest
+
 from test import support
 from test.pickletester import AbstractPickleTests
-import unittest
 
 
 class OptimizedPickleTests(AbstractPickleTests):
-
     def dumps(self, arg, proto=None, **kwargs):
         return pickletools.optimize(pickle.dumps(arg, proto, **kwargs))
 

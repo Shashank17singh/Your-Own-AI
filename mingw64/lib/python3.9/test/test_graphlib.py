@@ -1,7 +1,7 @@
-from itertools import chain
 import graphlib
 import os
 import unittest
+from itertools import chain
 
 from test.support.script_helper import assert_python_ok
 

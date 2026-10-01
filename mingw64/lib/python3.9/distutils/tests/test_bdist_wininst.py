@@ -1,12 +1,12 @@
 """Tests for distutils.command.bdist_wininst."""
 
-import sys
 import platform
+import sys
 import unittest
-from test.support import run_unittest, check_warnings
-
 from distutils.command.bdist_wininst import bdist_wininst
 from distutils.tests import support
+
+from test.support import check_warnings, run_unittest
 
 
 @unittest.skipIf(
@@ -20,7 +20,6 @@ from distutils.tests import support
 class BuildWinInstTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
-
     def test_get_exe_bytes(self):
 
         # issue5731: command was broken on non-windows platforms

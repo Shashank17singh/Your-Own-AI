@@ -2,9 +2,9 @@
 # UserString instances should behave similar to builtin string objects.
 
 import unittest
-from test import string_tests
-
 from collections import UserString
+
+from test import string_tests
 
 
 class UserStringTest(
@@ -12,7 +12,6 @@ class UserStringTest(
     string_tests.MixinStrUnicodeUserStringTest,
     unittest.TestCase,
 ):
-
     type2test = UserString
 
     # Overwrite the three testing methods, because UserString

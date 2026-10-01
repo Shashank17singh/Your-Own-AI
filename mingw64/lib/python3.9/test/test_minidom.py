@@ -1,15 +1,13 @@
 # test for xml.dom.minidom
 
 import copy
-import pickle
 import io
-from test import support
+import pickle
 import unittest
-
 import xml.dom.minidom
+from xml.dom.minidom import Document, Node, getDOMImplementation, parse, parseString
 
-from xml.dom.minidom import parse, Node, Document, parseString
-from xml.dom.minidom import getDOMImplementation
+from test import support
 
 tstfile = support.findfile("test.xml", subdir="xmltestdata")
 sample = (
@@ -772,7 +770,7 @@ class MinidomTest(unittest.TestCase):
         doc2 = doc.cloneNode(0)
         self.confirm(
             doc2 is None,
-            "testCloneDocumentShallow:" " shallow cloning of documents makes no sense!",
+            "testCloneDocumentShallow: shallow cloning of documents makes no sense!",
         )
 
     def testCloneDocumentDeep(self):
@@ -943,14 +941,16 @@ class MinidomTest(unittest.TestCase):
     def check_clone_node_entity(self, clone_document):
         # bpo-35052: Test user data handler in cloneNode() on a document with
         # an entity
-        document = xml.dom.minidom.parseString("""
+        document = xml.dom.minidom.parseString(
+            """
             <?xml version="1.0" ?>
             <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
                 "http://www.w3.org/TR/html4/strict.dtd"
                 [ <!ENTITY smile "☺"> ]
             >
             <doc>Don't let entities make you frown &smile;</doc>
-        """.strip())
+        """.strip()
+        )
 
         class Handler:
             def handle(self, operation, key, data, src, dst):
@@ -1152,7 +1152,6 @@ class MinidomTest(unittest.TestCase):
             "t3"
             # x3
             "</o>"
-            #
             "</doc>"
         )
         root = doc.documentElement
@@ -1290,8 +1289,7 @@ class MinidomTest(unittest.TestCase):
         )
         self.assertEqual(
             doc.toxml("utf-16"),
-            '<?xml version="1.0" encoding="utf-16"?>'
-            "<foo>\u20ac</foo>".encode("utf-16"),
+            '<?xml version="1.0" encoding="utf-16"?><foo>\u20ac</foo>'.encode("utf-16"),
         )
 
         # Verify that character decoding errors raise exceptions instead
@@ -1634,7 +1632,18 @@ class MinidomTest(unittest.TestCase):
         # since each supports a different level of DTD information.
         t = elem.schemaType
         self.confirm(t.name is None and t.namespace == xml.dom.EMPTY_NAMESPACE)
-        names = "id notid text enum ref refs ent ents nm nms".split()
+        names = [
+            "id",
+            "notid",
+            "text",
+            "enum",
+            "ref",
+            "refs",
+            "ent",
+            "ents",
+            "nm",
+            "nms",
+        ]
         for name in names:
             a = elem.getAttributeNode(name)
             t = a.schemaType
@@ -1795,7 +1804,7 @@ class MinidomTest(unittest.TestCase):
         self.assertRaises(ValueError, doc.toxml)
 
     def testEmptyXMLNSValue(self):
-        doc = parseString("<element xmlns=''>\n" "<foo/>\n</element>")
+        doc = parseString("<element xmlns=''>\n<foo/>\n</element>")
         doc2 = parseString(doc.toxml())
         self.confirm(doc2.namespaceURI == xml.dom.EMPTY_NAMESPACE)
 
@@ -1844,8 +1853,7 @@ class MinidomTest(unittest.TestCase):
         doc = parseString(xml_str)
         self.assertEqual(
             doc.toprettyxml(),
-            '<?xml version="1.0" ?>\n'
-            '<curriculum status="public" company="example"/>\n',
+            '<?xml version="1.0" ?>\n<curriculum status="public" company="example"/>\n',
         )
 
     def test_toprettyxml_with_cdata(self):

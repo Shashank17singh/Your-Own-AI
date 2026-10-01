@@ -1,13 +1,13 @@
 "Test window, coverage 47%."
 
-from idlelib import window
 import unittest
-from test.support import requires
+from idlelib import window
 from tkinter import Tk
+
+from test.support import requires
 
 
 class WindowListTest(unittest.TestCase):
-
     def test_init(self):
         wl = window.WindowList()
         self.assertEqual(wl.dict, {})
@@ -17,7 +17,6 @@ class WindowListTest(unittest.TestCase):
 
 
 class ListedToplevelTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         window.registry = set()

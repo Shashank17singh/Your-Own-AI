@@ -4,7 +4,7 @@
 
 # (Dec 1991 version).
 
-__all__ = ["encode", "decode", "encodestring", "decodestring"]
+__all__ = ["decode", "decodestring", "encode", "encodestring"]
 
 ESCAPE = b"="
 MAXLINESIZE = 76
@@ -205,8 +205,8 @@ def unhex(s):
 
 
 def main():
-    import sys
     import getopt
+    import sys
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "td")

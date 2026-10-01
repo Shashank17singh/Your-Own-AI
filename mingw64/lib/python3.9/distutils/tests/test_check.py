@@ -3,11 +3,11 @@
 import os
 import textwrap
 import unittest
-from test.support import run_unittest
-
-from distutils.command.check import check, HAS_DOCUTILS
-from distutils.tests import support
+from distutils.command.check import HAS_DOCUTILS, check
 from distutils.errors import DistutilsSetupError
+from distutils.tests import support
+
+from test.support import run_unittest
 
 try:
     import pygments
@@ -19,7 +19,6 @@ HERE = os.path.dirname(__file__)
 
 
 class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.TestCase):
-
     def _run(self, metadata=None, cwd=None, **options):
         if metadata is None:
             metadata = {}
@@ -59,7 +58,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
 
         # now with the strict mode, we should
         # get an error if there are missing metadata
-        self.assertRaises(DistutilsSetupError, self._run, {}, **{"strict": 1})
+        self.assertRaises(DistutilsSetupError, self._run, {}, strict=1)
 
         # and of course, no error when all metadata are present
         cmd = self._run(metadata, strict=1)
@@ -112,10 +111,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
             "long_description": broken_rest,
         }
         self.assertRaises(
-            DistutilsSetupError,
-            self._run,
-            metadata,
-            **{"strict": 1, "restructuredtext": 1}
+            DistutilsSetupError, self._run, metadata, strict=1, restructuredtext=1
         )
 
         # and non-broken rest, including a non-ASCII character to test #12114
@@ -133,22 +129,26 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
         # Don't fail if there is a `code` or `code-block` directive
 
         example_rst_docs = []
-        example_rst_docs.append(textwrap.dedent("""\
+        example_rst_docs.append(
+            textwrap.dedent("""\
             Here's some code:
 
             .. code:: python
 
                 def foo():
                     pass
-            """))
-        example_rst_docs.append(textwrap.dedent("""\
+            """)
+        )
+        example_rst_docs.append(
+            textwrap.dedent("""\
             Here's some code:
 
             .. code-block:: python
 
                 def foo():
                     pass
-            """))
+            """)
+        )
 
         for rest_with_code in example_rst_docs:
             pkg_info, dist = self.create_dist(long_description=rest_with_code)
@@ -167,7 +167,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
 
         metadata = {"url": "xxx", "author": "xxx"}
         self.assertRaises(
-            DistutilsSetupError, self._run, {}, **{"strict": 1, "restructuredtext": 1}
+            DistutilsSetupError, self._run, {}, strict=1, restructuredtext=1
         )
 
 

@@ -1,26 +1,26 @@
 """Regression tests for what was in Python 2's "urllib" module"""
 
+import email.message
+import http.client
+import io
+import os
+import unittest
+import urllib.error
 import urllib.parse
 import urllib.request
-import urllib.error
-import http.client
-import email.message
-import io
-import unittest
 from unittest.mock import patch
+
 from test import support
-import os
 
 try:
     import ssl
 except ImportError:
     ssl = None
+import collections
 import sys
 import tempfile
-from nturl2path import url2pathname, pathname2url
-
 from base64 import b64encode
-import collections
+from nturl2path import pathname2url, url2pathname
 
 
 def hexescape(char):
@@ -85,7 +85,6 @@ def fakehttp(fakedata, mock_close=False):
                 io.BytesIO.close(self)
 
     class FakeHTTPConnection(http.client.HTTPConnection):
-
         # buffer to store data for verification in urlopen tests.
         buf = None
 
@@ -106,7 +105,7 @@ def fakehttp(fakedata, mock_close=False):
     return FakeHTTPConnection
 
 
-class FakeHTTPMixin(object):
+class FakeHTTPMixin:
     def fakehttp(self, fakedata, mock_close=False):
         fake_http_class = fakehttp(fakedata, mock_close=mock_close)
         self._connection_class = http.client.HTTPConnection
@@ -116,9 +115,9 @@ class FakeHTTPMixin(object):
         http.client.HTTPConnection = self._connection_class
 
 
-class FakeFTPMixin(object):
+class FakeFTPMixin:
     def fakeftp(self):
-        class FakeFtpWrapper(object):
+        class FakeFtpWrapper:
             def __init__(
                 self, user, passwd, host, port, dirs, timeout=None, persistent=True
             ):
@@ -246,7 +245,6 @@ class urlopen_FileTests(unittest.TestCase):
 
 
 class ProxyTests(unittest.TestCase):
-
     def setUp(self):
         # Records changes to env vars
         self.env = support.EnvironmentVarGuard()
@@ -324,7 +322,6 @@ class ProxyTests(unittest.TestCase):
 
 
 class ProxyTests_withOrderedEnv(unittest.TestCase):
-
     def setUp(self):
         # We need to test conditions, where variable order _is_ significant
         self._saved_env = os.environ
@@ -393,7 +390,7 @@ class urlopen_HttpTests(unittest.TestCase, FakeHTTPMixin, FakeFTPMixin):
 
     @unittest.skipUnless(ssl, "ssl module required")
     def test_url_path_with_control_char_rejected(self):
-        for char_no in list(range(0, 0x21)) + [0x7F]:
+        for char_no in list(range(0x21)) + [0x7F]:
             char = chr(char_no)
             schemeless_url = f"//localhost:7777/test{char}/"
             self.fakehttp(b"HTTP/1.1 200 OK\r\n\r\nHello.")
@@ -449,7 +446,7 @@ class urlopen_HttpTests(unittest.TestCase, FakeHTTPMixin, FakeFTPMixin):
 
     @unittest.skipUnless(ssl, "ssl module required")
     def test_url_host_with_control_char_rejected(self):
-        for char_no in list(range(0, 0x21)) + [0x7F]:
+        for char_no in list(range(0x21)) + [0x7F]:
             char = chr(char_no)
             schemeless_url = f"//localhost{char}/test/"
             self.fakehttp(b"HTTP/1.1 200 OK\r\n\r\nHello.")
@@ -612,7 +609,7 @@ Connection: close
         self.fakehttp(b"HTTP/1.0 200 OK\r\n\r\nHello!")
         try:
             userpass = "a b:c d"
-            url = "http://{}@python.org/".format(userpass)
+            url = f"http://{userpass}@python.org/"
             fakehttp_wrapper = http.client.HTTPConnection
             authorization = "Authorization: Basic %s\r\n" % b64encode(
                 userpass.encode("ASCII")
@@ -816,7 +813,7 @@ class urlretrieve_FileTests(unittest.TestCase):
         self.assertIsInstance(
             result[1],
             email.message.Message,
-            "did not get an email.message.Message instance " "as second returned value",
+            "did not get an email.message.Message instance as second returned value",
         )
 
     def test_copy(self):
@@ -827,7 +824,7 @@ class urlretrieve_FileTests(unittest.TestCase):
             self.constructLocalFileUrl(support.TESTFN), second_temp
         )
         self.assertEqual(second_temp, result[0])
-        self.assertTrue(os.path.exists(second_temp), "copy of the file was not " "made")
+        self.assertTrue(os.path.exists(second_temp), "copy of the file was not made")
         FILE = open(second_temp, "rb")
         try:
             text = FILE.read()
@@ -1199,7 +1196,7 @@ class UnquotingTests(unittest.TestCase):
         self.assertEqual(
             result.count("%"),
             1,
-            "using unquote(): not all characters escaped: " "%s" % result,
+            "using unquote(): not all characters escaped: %s" % result,
         )
         self.assertRaises((TypeError, AttributeError), urllib.parse.unquote, None)
         self.assertRaises((TypeError, AttributeError), urllib.parse.unquote, ())
@@ -1761,7 +1758,6 @@ class RequestTests(unittest.TestCase):
 
 
 class URL2PathNameTests(unittest.TestCase):
-
     def test_converting_drive_letter(self):
         self.assertEqual(url2pathname("///C|"), "C:")
         self.assertEqual(url2pathname("///C:"), "C:")
@@ -1785,7 +1781,6 @@ class URL2PathNameTests(unittest.TestCase):
 
 
 class PathName2URLTests(unittest.TestCase):
-
     def test_converting_drive_letter(self):
         self.assertEqual(pathname2url("C:"), "///C:")
         self.assertEqual(pathname2url("C:\\"), "///C:")

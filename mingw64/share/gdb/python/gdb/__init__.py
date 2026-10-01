@@ -5,7 +5,9 @@ import threading
 import traceback
 from contextlib import contextmanager
 from importlib import reload
-from _gdb import *  # noqa: F401,F403
+
+import _gdbevents as events
+from _gdb import *
 from _gdb import (
     STDERR,
     STDOUT,
@@ -16,12 +18,11 @@ from _gdb import (
     selected_inferior,
     write,
 )
-import _gdbevents as events
 
 sys.modules["gdb.events"] = events
 
 
-class _GdbFile(object):
+class _GdbFile:
     encoding = "UTF-8"
     errors = "strict"
 

@@ -1,23 +1,18 @@
-__all__ = ("Queue", "PriorityQueue", "LifoQueue", "QueueFull", "QueueEmpty")
+__all__ = ("LifoQueue", "PriorityQueue", "Queue", "QueueEmpty", "QueueFull")
 
 import collections
 import heapq
 import warnings
 
-from . import events
-from . import locks
+from . import events, locks
 
 
 class QueueEmpty(Exception):
     """Raised when Queue.get_nowait() is called on an empty Queue."""
 
-    pass
-
 
 class QueueFull(Exception):
     """Raised when the Queue.put_nowait() method is called on a full Queue."""
-
-    pass
 
 
 class Queue:

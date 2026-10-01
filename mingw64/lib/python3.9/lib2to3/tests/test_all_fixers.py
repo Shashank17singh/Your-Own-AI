@@ -8,6 +8,7 @@ running time.
 
 # Python imports
 import unittest
+
 import test.support
 
 # Local imports
@@ -16,7 +17,6 @@ from . import support
 
 @test.support.requires_resource("cpu")
 class Test_all(support.TestCase):
-
     def setUp(self):
         self.refactor = support.get_refactorer()
 

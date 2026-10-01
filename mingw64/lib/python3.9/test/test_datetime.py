@@ -1,5 +1,5 @@
-import unittest
 import sys
+import unittest
 
 from test.support import import_fresh_module, run_unittest
 

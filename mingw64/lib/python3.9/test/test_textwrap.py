@@ -9,8 +9,7 @@
 #
 
 import unittest
-
-from textwrap import TextWrapper, wrap, fill, dedent, indent, shorten
+from textwrap import TextWrapper, dedent, fill, indent, shorten, wrap
 
 
 class BaseTestCase(unittest.TestCase):
@@ -40,12 +39,11 @@ class BaseTestCase(unittest.TestCase):
     def check_split(self, text, expect):
         result = self.wrapper._split(text)
         self.assertEqual(
-            result, expect, "\nexpected %r\n" "but got  %r" % (expect, result)
+            result, expect, "\nexpected %r\nbut got  %r" % (expect, result)
         )
 
 
 class WrapTestCase(BaseTestCase):
-
     def setUp(self):
         self.wrapper = TextWrapper(width=45)
 
@@ -176,7 +174,7 @@ What a mess!
     def test_hyphenated(self):
         # Test breaking hyphenated words
 
-        text = "this-is-a-useful-feature-for-" "reformatting-posts-from-tim-peters'ly"
+        text = "this-is-a-useful-feature-for-reformatting-posts-from-tim-peters'ly"
 
         self.check_wrap(
             text,
@@ -194,17 +192,26 @@ What a mess!
             ["this-is-a-useful-feature-for-reformatting-", "posts-from-tim-peters'ly"],
         )
         # The test tests current behavior but is not testing parts of the API.
-        expect = (
-            "this-|is-|a-|useful-|feature-|for-|"
-            "reformatting-|posts-|from-|tim-|peters'ly"
-        ).split("|")
+        expect = [
+            "this-",
+            "is-",
+            "a-",
+            "useful-",
+            "feature-",
+            "for-",
+            "reformatting-",
+            "posts-",
+            "from-",
+            "tim-",
+            "peters'ly",
+        ]
         self.check_wrap(text, 1, expect, break_long_words=False)
         self.check_split(text, expect)
 
         self.check_split("e-mail", ["e-mail"])
         self.check_split("Jelly-O", ["Jelly-O"])
         # The test tests current behavior but is not testing parts of the API.
-        self.check_split("half-a-crown", "half-|a-|crown".split("|"))
+        self.check_split("half-a-crown", ["half-", "a-", "crown"])
 
     def test_hyphenated_numbers(self):
         # Test that hyphenated numbers (eg. dates) are not broken like words.
@@ -386,7 +393,7 @@ What a mess!
         )
 
         # The test tests current behavior but is not testing parts of the API.
-        self.check_split("what-d'you-call-it.", "what-d'you-|call-|it.".split("|"))
+        self.check_split("what-d'you-call-it.", ["what-d'you-", "call-", "it."])
 
     def test_funky_parens(self):
         # Second part of SF bug #596434: long option strings inside
@@ -528,7 +535,7 @@ What a mess!
         )
 
     def test_narrow_non_breaking_space(self):
-        text = "This is a sentence with non-breaking" "\N{NARROW NO-BREAK SPACE}space."
+        text = "This is a sentence with non-breaking\N{NARROW NO-BREAK SPACE}space."
 
         self.check_wrap(
             text,
@@ -749,7 +756,6 @@ How *do* you spell that odd word, anyways?
 
 
 class IndentTestCases(BaseTestCase):
-
     # called before each test method
     def setUp(self):
         self.text = """\
@@ -798,7 +804,6 @@ some (including a hanging indent)."""
 # Despite the similar names, DedentTestCase is *not* the inverse
 # of IndentTestCase!
 class DedentTestCase(unittest.TestCase):
-
     def assertUnchanged(self, text):
         """assert that dedent() has no effect on 'text'"""
         self.assertEqual(text, dedent(text))
@@ -1054,7 +1059,6 @@ class IndentTestCase(unittest.TestCase):
 
 
 class ShortenTestCase(BaseTestCase):
-
     def check_shorten(self, text, width, expect, **kwargs):
         result = shorten(text, width, **kwargs)
         self.check(result, expect)
@@ -1068,7 +1072,7 @@ class ShortenTestCase(BaseTestCase):
         self.check_shorten(
             text,
             len(text) - 1,
-            "Hello there, how are you this fine day? " "I'm glad to [...]",
+            "Hello there, how are you this fine day? I'm glad to [...]",
         )
 
     def test_placeholder(self):
@@ -1081,7 +1085,7 @@ class ShortenTestCase(BaseTestCase):
         self.check_shorten(
             text,
             len(text) - 1,
-            "Hello there, how are you this fine day? " "I'm glad to hear$$",
+            "Hello there, how are you this fine day? I'm glad to hear$$",
             placeholder="$$",
         )
 
@@ -1096,10 +1100,10 @@ class ShortenTestCase(BaseTestCase):
         self.check_shorten(
             text,
             62,
-            "This is a paragraph that already has line " "breaks and tabs too.",
+            "This is a paragraph that already has line breaks and tabs too.",
         )
         self.check_shorten(
-            text, 61, "This is a paragraph that already has line " "breaks and [...]"
+            text, 61, "This is a paragraph that already has line breaks and [...]"
         )
 
         self.check_shorten("hello      world!  ", 12, "hello world!")

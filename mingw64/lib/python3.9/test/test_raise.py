@@ -3,10 +3,11 @@
 
 """Tests for the raise statement."""
 
-from test import support
 import sys
 import types
 import unittest
+
+from test import support
 
 
 def get_tb():
@@ -156,7 +157,6 @@ class TestRaise(unittest.TestCase):
 
 
 class TestCause(unittest.TestCase):
-
     def testCauseSyntax(self):
         try:
             try:
@@ -215,7 +215,6 @@ class TestCause(unittest.TestCase):
 
 
 class TestTraceback(unittest.TestCase):
-
     def test_sets_traceback(self):
         try:
             raise IndexError()
@@ -236,7 +235,6 @@ class TestTraceback(unittest.TestCase):
 
 
 class TestTracebackType(unittest.TestCase):
-
     def raiser(self):
         raise ValueError
 

@@ -3,7 +3,7 @@
 import gdb
 
 
-class Unwinder(object):
+class Unwinder:
     """Base class (or a template) for frame unwinders written in Python.
     An unwinder has a single method __call__ and the attributes
     described below.
@@ -47,7 +47,7 @@ class Unwinder(object):
         raise NotImplementedError("Unwinder __call__.")
 
 
-class FrameId(object):
+class FrameId:
     """A Frame-ID class for use when creating gdb.UnwindInfo objects.
     Attributes (all read-only):
         pc: Program counter value.

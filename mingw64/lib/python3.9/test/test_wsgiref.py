@@ -1,26 +1,24 @@
-from unittest import mock
-from test import support
-from test.support import socket_helper
-from test.test_httpservers import NoLogRequestHandler
-from unittest import TestCase
-from wsgiref.util import setup_testing_defaults
-from wsgiref.headers import Headers
-from wsgiref.handlers import BaseHandler, BaseCGIHandler, SimpleHandler
-from wsgiref import util
-from wsgiref.validate import validator
-from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
-from wsgiref.simple_server import make_server
-from http.client import HTTPConnection
-from io import StringIO, BytesIO, BufferedReader
-from socketserver import BaseServer
-from platform import python_implementation
-
 import os
 import re
 import signal
 import sys
 import threading
 import unittest
+from http.client import HTTPConnection
+from io import BufferedReader, BytesIO, StringIO
+from platform import python_implementation
+from socketserver import BaseServer
+from unittest import TestCase, mock
+from wsgiref import util
+from wsgiref.handlers import BaseCGIHandler, BaseHandler, SimpleHandler
+from wsgiref.headers import Headers
+from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
+from wsgiref.util import setup_testing_defaults
+from wsgiref.validate import validator
+
+from test import support
+from test.support import socket_helper
+from test.test_httpservers import NoLogRequestHandler
 
 
 class MockServer(WSGIServer):
@@ -128,7 +126,6 @@ def compare_generic_iter(make_it, match):
 
 
 class IntegrationTests(TestCase):
-
     def check_hello(self, out, has_length=True):
         pyver = python_implementation() + "/" + sys.version.split()[0]
         self.assertEqual(
@@ -323,7 +320,6 @@ class IntegrationTests(TestCase):
 
 
 class UtilityTests(TestCase):
-
     def checkShift(self, sn_in, pi_in, part, sn_out, pi_out):
         env = {"SCRIPT_NAME": sn_in, "PATH_INFO": pi_in}
         util.setup_testing_defaults(env)
@@ -504,21 +500,34 @@ class UtilityTests(TestCase):
         self.checkFW("xyz" * 50, 120, ["xyz" * 40, "xyz" * 10])
 
     def testHopByHop(self):
-        for hop in (
-            "Connection Keep-Alive Proxy-Authenticate Proxy-Authorization "
-            "TE Trailers Transfer-Encoding Upgrade"
-        ).split():
+        for hop in [
+            "Connection",
+            "Keep-Alive",
+            "Proxy-Authenticate",
+            "Proxy-Authorization",
+            "TE",
+            "Trailers",
+            "Transfer-Encoding",
+            "Upgrade",
+        ]:
             for alt in hop, hop.title(), hop.upper(), hop.lower():
                 self.assertTrue(util.is_hop_by_hop(alt))
 
         # Not comprehensive, just a few random header names
-        for hop in ("Accept Cache-Control Date Pragma Trailer Via Warning").split():
+        for hop in [
+            "Accept",
+            "Cache-Control",
+            "Date",
+            "Pragma",
+            "Trailer",
+            "Via",
+            "Warning",
+        ]:
             for alt in hop, hop.title(), hop.upper(), hop.lower():
                 self.assertFalse(util.is_hop_by_hop(alt))
 
 
 class HeaderTests(TestCase):
-
     def testMappingInterface(self):
         test = [("x", "y")]
         self.assertEqual(len(Headers()), 0)
@@ -565,9 +574,7 @@ class HeaderTests(TestCase):
         h.add_header("Foo", "bar", cheese=None)
         self.assertEqual(h.get_all("foo"), ['bar; baz="spam"', "bar; cheese"])
 
-        self.assertEqual(
-            str(h), 'foo: bar; baz="spam"\r\n' "Foo: bar; cheese\r\n" "\r\n"
-        )
+        self.assertEqual(str(h), 'foo: bar; baz="spam"\r\nFoo: bar; cheese\r\n\r\n')
 
 
 class ErrorHandler(BaseCGIHandler):
@@ -705,16 +712,14 @@ class HandlerTests(TestCase):
         h.run(trivial_app1)
         self.assertEqual(
             h.stdout.getvalue(),
-            ("Status: 200 OK\r\n" "Content-Length: 4\r\n" "\r\n" "http").encode(
-                "iso-8859-1"
-            ),
+            ("Status: 200 OK\r\nContent-Length: 4\r\n\r\nhttp").encode("iso-8859-1"),
         )
 
         h = TestHandler()
         h.run(trivial_app2)
         self.assertEqual(
             h.stdout.getvalue(),
-            ("Status: 200 OK\r\n" "\r\n" "http").encode("iso-8859-1"),
+            ("Status: 200 OK\r\n\r\nhttp").encode("iso-8859-1"),
         )
 
         h = TestHandler()
@@ -731,7 +736,7 @@ class HandlerTests(TestCase):
         h.run(trivial_app4)
         self.assertEqual(
             h.stdout.getvalue(),
-            b"Status: 200 OK\r\n" b"Content-Length: 12345\r\n" b"\r\n",
+            b"Status: 200 OK\r\nContent-Length: 12345\r\n\r\n",
         )
 
     def testBasicErrorOutput(self):
@@ -747,7 +752,7 @@ class HandlerTests(TestCase):
         h.run(non_error_app)
         self.assertEqual(
             h.stdout.getvalue(),
-            ("Status: 200 OK\r\n" "Content-Length: 0\r\n" "\r\n").encode("iso-8859-1"),
+            ("Status: 200 OK\r\nContent-Length: 0\r\n\r\n").encode("iso-8859-1"),
         )
         self.assertEqual(h.stderr.getvalue(), "")
 
@@ -777,7 +782,7 @@ class HandlerTests(TestCase):
         h.run(error_app)
         self.assertEqual(
             h.stdout.getvalue(),
-            ("Status: 200 OK\r\n" "\r\n".encode("iso-8859-1") + MSG),
+            ("Status: 200 OK\r\n\r\n".encode("iso-8859-1") + MSG),
         )
         self.assertIn("AssertionError", h.stderr.getvalue())
 
@@ -794,16 +799,13 @@ class HandlerTests(TestCase):
             r"Content-Length: 0\r\n"
             r"\r\n"
         )
-        shortpat = ("Status: 200 OK\r\n" "Content-Length: 0\r\n" "\r\n").encode(
-            "iso-8859-1"
-        )
+        shortpat = ("Status: 200 OK\r\nContent-Length: 0\r\n\r\n").encode("iso-8859-1")
 
         for ssw in "FooBar/1.0", None:
             sw = ssw and "Server: %s\r\n" % ssw or ""
 
             for version in "1.0", "1.1":
                 for proto in "HTTP/0.9", "HTTP/1.0", "HTTP/1.1":
-
                     h = TestHandler(SERVER_PROTOCOL=proto)
                     h.origin_server = False
                     h.http_version = version
@@ -858,7 +860,7 @@ class HandlerTests(TestCase):
         def error_app(e, s):
             s("200 OK", [])(MSG)
 
-            class CrashyIterable(object):
+            class CrashyIterable:
                 def __iter__(self):
                     while True:
                         yield b"blah"

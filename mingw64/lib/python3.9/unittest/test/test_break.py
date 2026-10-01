@@ -1,10 +1,10 @@
 import gc
 import io
 import os
-import sys
 import signal
-import weakref
+import sys
 import unittest
+import weakref
 
 
 @unittest.skipUnless(hasattr(os, "kill"), "Test requires os.kill")
@@ -158,7 +158,7 @@ class TestBreak(unittest.TestCase):
         result = object()
         default_handler = signal.getsignal(signal.SIGINT)
 
-        class FakeRunner(object):
+        class FakeRunner:
             initArgs = []
             runArgs = []
 

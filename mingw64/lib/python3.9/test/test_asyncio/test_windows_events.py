@@ -2,8 +2,8 @@ import os
 import signal
 import socket
 import sys
-import time
 import threading
+import time
 import unittest
 from unittest import mock
 
@@ -12,9 +12,9 @@ if sys.platform != "win32":
 
 import _overlapped
 import _winapi
-
 import asyncio
 from asyncio import windows_events
+
 from test.test_asyncio import utils as test_utils
 
 
@@ -37,7 +37,6 @@ class UpperProto(asyncio.Protocol):
 
 
 class ProactorLoopCtrlC(test_utils.TestCase):
-
     def test_ctrl_c(self):
 
         def SIGINT_after_delay():
@@ -80,7 +79,6 @@ class ProactorMultithreading(test_utils.TestCase):
 
 
 class ProactorTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.ProactorEventLoop()
@@ -127,11 +125,11 @@ class ProactorTests(test_utils.TestCase):
             clients.append((stream_reader, trans))
 
         for i, (r, w) in enumerate(clients):
-            w.write("lower-{}\n".format(i).encode())
+            w.write(f"lower-{i}\n".encode())
 
         for i, (r, w) in enumerate(clients):
             response = await r.readline()
-            self.assertEqual(response, "LOWER-{}\n".format(i).encode())
+            self.assertEqual(response, f"LOWER-{i}\n".encode())
             w.close()
 
         server.close()
@@ -237,7 +235,6 @@ class ProactorTests(test_utils.TestCase):
 
 
 class WinPolicyTests(test_utils.TestCase):
-
     def test_selector_win_policy(self):
         async def main():
             self.assertIsInstance(asyncio.get_running_loop(), asyncio.SelectorEventLoop)

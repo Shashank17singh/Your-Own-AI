@@ -1,12 +1,12 @@
-import socket
+import contextlib
 import selectors
+import socket
 import telnetlib
 import threading
-import contextlib
+import unittest
 
 from test import support
 from test.support import socket_helper
-import unittest
 
 HOST = socket_helper.HOST
 
@@ -17,14 +17,13 @@ def server(evt, serv):
     try:
         conn, addr = serv.accept()
         conn.close()
-    except socket.timeout:
+    except TimeoutError:
         pass
     finally:
         serv.close()
 
 
 class GeneralTests(unittest.TestCase):
-
     def setUp(self):
         self.evt = threading.Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,7 +89,7 @@ class GeneralTests(unittest.TestCase):
         telnet.sock.close()
 
 
-class SocketStub(object):
+class SocketStub:
     """a socket proxy that re-defines sendall()"""
 
     def __init__(self, reads=()):
@@ -125,11 +124,9 @@ class TelnetAlike(telnetlib.Telnet):
         with support.captured_stdout() as out:
             telnetlib.Telnet.msg(self, msg, *args)
         self._messages += out.getvalue()
-        return
 
 
 class MockSelector(selectors.BaseSelector):
-
     def __init__(self):
         self.keys = {}
 
@@ -171,7 +168,6 @@ def test_socket(reads):
         yield None
     finally:
         socket.create_connection = old_conn
-    return
 
 
 def test_telnet(reads=(), cls=TelnetAlike):
@@ -223,7 +219,6 @@ class ReadTests(ExpectAndReadTestCase):
         telnet = test_telnet(reads)
         data = telnet.read_all()
         self.assertEqual(data, expect)
-        return
 
     def test_read_some(self):
         """
@@ -294,7 +289,7 @@ class ReadTests(ExpectAndReadTestCase):
         self.assertEqual(data, want)
 
 
-class nego_collector(object):
+class nego_collector:
     def __init__(self, sb_getter=None):
         self.seen = b""
         self.sb_getter = sb_getter
@@ -391,7 +386,6 @@ class OptionTests(unittest.TestCase):
             telnet.set_debuglevel(1)
             txt = telnet.read_all()
             self.assertIn(b, telnet._messages)
-        return
 
     def test_debuglevel_write(self):
         telnet = test_telnet()

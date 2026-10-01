@@ -89,8 +89,7 @@ def newer_group(sources, target, missing="error"):
         source_mtime = os.stat(source)[ST_MTIME]
         if source_mtime > target_mtime:
             return 1
-    else:
-        return 0
+    return 0
 
 
 # newer_group ()

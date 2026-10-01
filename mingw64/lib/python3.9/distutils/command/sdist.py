@@ -4,26 +4,22 @@ Implements the Distutils 'sdist' command (create a source distribution)."""
 
 import os
 import sys
+from distutils import archive_util, dir_util, file_util, log
+from distutils.core import Command
+from distutils.errors import DistutilsOptionError, DistutilsTemplateError
+from distutils.filelist import FileList
+from distutils.text_file import TextFile
+from distutils.util import convert_path
 from glob import glob
 from warnings import warn
-
-from distutils.core import Command
-from distutils import dir_util
-from distutils import file_util
-from distutils import archive_util
-from distutils.text_file import TextFile
-from distutils.filelist import FileList
-from distutils import log
-from distutils.util import convert_path
-from distutils.errors import DistutilsTemplateError, DistutilsOptionError
 
 
 def show_formats():
     """Print all possible values for the 'formats' option (used by
     the "--help-formats" command-line option).
     """
-    from distutils.fancy_getopt import FancyGetopt
     from distutils.archive_util import ARCHIVE_FORMATS
+    from distutils.fancy_getopt import FancyGetopt
 
     formats = []
     for format in ARCHIVE_FORMATS.keys():
@@ -33,7 +29,6 @@ def show_formats():
 
 
 class sdist(Command):
-
     description = "create a source distribution (tarball, zip file, etc.)"
 
     def checking_metadata(self):
@@ -63,7 +58,7 @@ class sdist(Command):
         (
             "manifest-only",
             "o",
-            "just regenerate the manifest and then stop " "(implies --force-manifest)",
+            "just regenerate the manifest and then stop (implies --force-manifest)",
         ),
         (
             "force-manifest",
@@ -80,7 +75,7 @@ class sdist(Command):
         (
             "dist-dir=",
             "d",
-            "directory to put the source distribution archive(s) in " "[default: dist]",
+            "directory to put the source distribution archive(s) in [default: dist]",
         ),
         (
             "metadata-check",
@@ -181,8 +176,11 @@ class sdist(Command):
 
     def check_metadata(self):
         """Deprecated API."""
-        warn("distutils.command.sdist.check_metadata is deprecated, \
-              use the check command instead", PendingDeprecationWarning)
+        warn(
+            "distutils.command.sdist.check_metadata is deprecated, \
+              use the check command instead",
+            PendingDeprecationWarning,
+        )
         check = self.distribution.get_command_obj("check")
         check.ensure_finalized()
         check.run()
@@ -409,8 +407,7 @@ class sdist(Command):
         """
         if self._manifest_is_not_generated():
             log.info(
-                "not writing to manually maintained "
-                "manifest file '%s'" % self.manifest
+                "not writing to manually maintained manifest file '%s'" % self.manifest
             )
             return
 

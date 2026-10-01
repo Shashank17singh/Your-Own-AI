@@ -1,5 +1,3 @@
-from __future__ import generator_stop
-
 import unittest
 
 
@@ -29,8 +27,7 @@ class TestPEP479(unittest.TestCase):
             self.assertTrue(exc.__suppress_context__)
         else:
             self.fail(
-                "__cause__, __context__, or __suppress_context__ "
-                "were not properly set"
+                "__cause__, __context__, or __suppress_context__ were not properly set"
             )
 
 

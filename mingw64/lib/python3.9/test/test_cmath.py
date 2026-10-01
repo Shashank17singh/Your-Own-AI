@@ -1,11 +1,13 @@
-from test.support import requires_IEEE_754, cpython_only
-from test.test_math import parse_testfile, test_file
-import test.test_math as test_math
-import unittest
-import cmath, math
-from cmath import phase, polar, rect, pi
+import cmath
+import math
 import platform
 import sys
+import unittest
+from cmath import phase, pi, polar, rect
+
+from test import test_math
+from test.support import cpython_only, requires_IEEE_754
+from test.test_math import parse_testfile, test_file
 
 INF = float("inf")
 NAN = float("nan")
@@ -102,10 +104,7 @@ class CMathTests(unittest.TestCase):
             if math.isnan(x) and math.isnan(y):
                 return
         elif x == y:
-            if x != 0.0:
-                return
-            # both zero; check that signs match
-            elif math.copysign(1.0, x) == math.copysign(1.0, y):
+            if x != 0.0 or math.copysign(1.0, x) == math.copysign(1.0, y):
                 return
             else:
                 msg += ": zeros have different signs"
@@ -135,15 +134,14 @@ class CMathTests(unittest.TestCase):
         if math.isnan(a):
             if math.isnan(b):
                 return
-            self.fail(msg or "{!r} should be nan".format(b))
+            self.fail(msg or f"{b!r} should be nan")
 
         if math.isinf(a):
             if a == b:
                 return
             self.fail(
                 msg
-                or "finite result where infinity expected: "
-                "expected {!r}, got {!r}".format(a, b)
+                or f"finite result where infinity expected: expected {a!r}, got {b!r}"
             )
 
         # if both a and b are zero, check whether they have the same sign
@@ -152,10 +150,7 @@ class CMathTests(unittest.TestCase):
         # occur).
         if not a and not b:
             if math.copysign(1.0, a) != math.copysign(1.0, b):
-                self.fail(
-                    msg
-                    or "zero has wrong sign: expected {!r}, " "got {!r}".format(a, b)
-                )
+                self.fail(msg or f"zero has wrong sign: expected {a!r}, got {b!r}")
 
         # if a-b overflows, or b is infinite, return False.  Again, in
         # theory there are examples where a is within a few ulps of the
@@ -172,7 +167,7 @@ class CMathTests(unittest.TestCase):
             # machine.
             if absolute_error <= max(abs_err, rel_err * abs(a)):
                 return
-        self.fail(msg or "{!r} and {!r} are not sufficiently close".format(a, b))
+        self.fail(msg or f"{a!r} and {b!r} are not sufficiently close")
 
     def test_constants(self):
         e_expected = 2.71828182845904523536
@@ -181,13 +176,13 @@ class CMathTests(unittest.TestCase):
             cmath.pi,
             pi_expected,
             places=9,
-            msg="cmath.pi is {}; should be {}".format(cmath.pi, pi_expected),
+            msg=f"cmath.pi is {cmath.pi}; should be {pi_expected}",
         )
         self.assertAlmostEqual(
             cmath.e,
             e_expected,
             places=9,
-            msg="cmath.e is {}; should be {}".format(cmath.e, e_expected),
+            msg=f"cmath.e is {cmath.e}; should be {e_expected}",
         )
 
     def test_infinity_and_nan_constants(self):
@@ -225,7 +220,7 @@ class CMathTests(unittest.TestCase):
         # end up being passed to the cmath functions
 
         # usual case: new-style class implementing __complex__
-        class MyComplex(object):
+        class MyComplex:
             def __init__(self, value):
                 self.value = value
 
@@ -244,7 +239,7 @@ class CMathTests(unittest.TestCase):
         class SomeException(Exception):
             pass
 
-        class MyComplexException(object):
+        class MyComplexException:
             def __complex__(self):
                 raise SomeException
 
@@ -253,7 +248,7 @@ class CMathTests(unittest.TestCase):
                 raise SomeException
 
         # some classes not providing __float__ or __complex__
-        class NeitherComplexNorFloat(object):
+        class NeitherComplexNorFloat:
             pass
 
         class NeitherComplexNorFloatOS:
@@ -272,7 +267,7 @@ class CMathTests(unittest.TestCase):
 
         # other possible combinations of __float__ and __complex__
         # that should work
-        class FloatAndComplex(object):
+        class FloatAndComplex:
             def __float__(self):
                 return flt_arg
 
@@ -286,7 +281,7 @@ class CMathTests(unittest.TestCase):
             def __complex__(self):
                 return cx_arg
 
-        class JustFloat(object):
+        class JustFloat:
             def __float__(self):
                 return flt_arg
 
@@ -427,7 +422,7 @@ class CMathTests(unittest.TestCase):
                 else:
                     self.fail(
                         "ValueError not raised in test "
-                        "{}: {}(complex({!r}, {!r}))".format(id, fn, ar, ai)
+                        f"{id}: {fn}(complex({ar!r}, {ai!r}))"
                     )
 
             if "overflow" in flags:
@@ -438,7 +433,7 @@ class CMathTests(unittest.TestCase):
                 else:
                     self.fail(
                         "OverflowError not raised in test "
-                        "{}: {}(complex({!r}, {!r}))".format(id, fn, ar, ai)
+                        f"{id}: {fn}(complex({ar!r}, {ai!r}))"
                     )
 
             actual = function(arg)
@@ -458,12 +453,10 @@ class CMathTests(unittest.TestCase):
                 real_abs_err = 5e-323
 
             error_message = (
-                "{}: {}(complex({!r}, {!r}))\n"
-                "Expected: complex({!r}, {!r})\n"
-                "Received: complex({!r}, {!r})\n"
+                f"{id}: {fn}(complex({ar!r}, {ai!r}))\n"
+                f"Expected: complex({expected.real!r}, {expected.imag!r})\n"
+                f"Received: complex({actual.real!r}, {actual.imag!r})\n"
                 "Received value insufficiently close to expected value."
-            ).format(
-                id, fn, ar, ai, expected.real, expected.imag, actual.real, actual.imag
             )
             self.rAssertAlmostEqual(
                 expected.real, actual.real, abs_err=real_abs_err, msg=error_message

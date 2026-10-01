@@ -7,9 +7,6 @@ test_grammar.py files from both Python 2 and Python 3.
 """
 
 # Testing imports
-from . import support
-from .support import driver, driver_no_print_statement
-
 # Python imports
 import difflib
 import importlib
@@ -25,12 +22,14 @@ import unittest
 # Local imports
 from lib2to3.pgen2 import driver as pgen2_driver
 from lib2to3.pgen2 import tokenize
-from ..pgen2.parse import ParseError
 from lib2to3.pygram import python_symbols as syms
+
+from ..pgen2.parse import ParseError
+from . import support
+from .support import driver, driver_no_print_statement
 
 
 class TestDriver(support.TestCase):
-
     def test_formfeed(self):
         s = """print 1\n\x0cprint 2\n"""
         t = driver.parse_string(s)
@@ -89,15 +88,17 @@ class TestPgen2Caching(support.TestCase):
                     """
 from lib2to3.pgen2 import driver as pgen2_driver
 pgen2_driver.load_grammar(%r, save=True, force=True)
-                    """ % (grammar_sub_copy,),
+                    """
+                    % (grammar_sub_copy,),
                 ],
                 env=sub_env,
             )
             self.assertTrue(os.path.exists(pickle_sub_name))
 
-            with open(pickle_name, "rb") as pickle_f_1, open(
-                pickle_sub_name, "rb"
-            ) as pickle_f_2:
+            with (
+                open(pickle_name, "rb") as pickle_f_1,
+                open(pickle_sub_name, "rb") as pickle_f_2,
+            ):
                 self.assertEqual(
                     pickle_f_1.read(),
                     pickle_f_2.read(),
@@ -479,14 +480,11 @@ class TestVarAnnotations(GrammarTest):
 
     def test_3(self):
         self.validate(
-            "def f():\n"
-            "    st: str = 'Hello'\n"
-            "    a.b: int = (1, 2)\n"
-            "    return st\n"
+            "def f():\n    st: str = 'Hello'\n    a.b: int = (1, 2)\n    return st\n"
         )
 
     def test_4(self):
-        self.validate("def fbad():\n" "    x: int\n" "    print(x)\n")
+        self.validate("def fbad():\n    x: int\n    print(x)\n")
 
     def test_5(self):
         self.validate(
@@ -568,7 +566,7 @@ class TestStringLiterals(GrammarTest):
 
     def test_lit(self):
         for pre in self.prefixes:
-            single = "{p}spamspamspam{s}".format(p=pre, s=pre[-1])
+            single = f"{pre}spamspamspam{pre[-1]}"
             self.validate(single)
             triple = "{p}{s}{s}eggs{s}{s}{s}".format(p=pre, s=pre[-1])
             self.validate(triple)
@@ -648,7 +646,6 @@ class TestParserIdempotency(support.TestCase):
 
 
 class TestLiterals(GrammarTest):
-
     def validate(self, s):
         driver.parse_string(support.dedent(s) + "\n\n")
 
@@ -697,7 +694,6 @@ class TestNamedAssignments(GrammarTest):
 
 
 class TestPositionalOnlyArgs(GrammarTest):
-
     def test_one_pos_only_arg(self):
         driver.parse_string("def one_pos_only_arg(a, /): pass\n")
 

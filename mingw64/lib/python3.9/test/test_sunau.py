@@ -1,10 +1,11 @@
-import unittest
-from test import audiotests
-from audioop import byteswap
 import io
 import struct
-import sys
 import sunau
+import sys
+import unittest
+from audioop import byteswap
+
+from test import audiotests
 
 
 class SunauTest(audiotests.AudioWriteTests, audiotests.AudioTestsWithSourceFile):
@@ -119,7 +120,6 @@ class SunauULAWTest(SunauTest, unittest.TestCase):
 
 
 class SunauLowLevelTest(unittest.TestCase):
-
     def test_read_bad_magic_number(self):
         b = b"SPA"
         with self.assertRaises(EOFError):

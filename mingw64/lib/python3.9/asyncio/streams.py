@@ -1,7 +1,7 @@
 __all__ = (
     "StreamReader",
-    "StreamWriter",
     "StreamReaderProtocol",
+    "StreamWriter",
     "open_connection",
     "start_server",
 )
@@ -14,11 +14,7 @@ import weakref
 if hasattr(socket, "AF_UNIX"):
     __all__ += ("open_unix_connection", "start_unix_server")
 
-from . import coroutines
-from . import events
-from . import exceptions
-from . import format_helpers
-from . import protocols
+from . import coroutines, events, exceptions, format_helpers, protocols
 from .log import logger
 from .tasks import sleep
 
@@ -408,7 +404,6 @@ class StreamWriter:
 
 
 class StreamReader:
-
     _source_traceback = None
 
     def __init__(self, limit=_DEFAULT_LIMIT, loop=None):

@@ -12,7 +12,7 @@ try:
 except ImportError:
 
     def with_tp_del(cls):
-        class C(object):
+        class C:
             def __new__(cls, *args, **kwargs):
                 raise TypeError("requires _testcapi.with_tp_del")
 
@@ -101,7 +101,6 @@ class NonGCSimpleBase:
 
 
 class SimpleBase(NonGCSimpleBase):
-
     def __init__(self):
         self.id_ = id(self)
 
@@ -131,7 +130,6 @@ class Simple(SimpleBase):
 
 # Can't inherit from NonGCResurrector, in case importing without_gc fails.
 class SimpleResurrector(SimpleBase):
-
     def side_effect(self):
         """
         Resurrect self by storing self in a class-wide list.
@@ -140,7 +138,6 @@ class SimpleResurrector(SimpleBase):
 
 
 class TestBase:
-
     def setUp(self):
         self.old_garbage = gc.garbage[:]
         gc.garbage[:] = []
@@ -235,7 +232,6 @@ class SimpleFinalizationTest(TestBase, unittest.TestCase):
 
 
 class SelfCycleBase:
-
     def __init__(self):
         super().__init__()
         self.ref = self
@@ -254,7 +250,6 @@ class SelfCycleResurrector(SelfCycleBase, SimpleResurrector):
 
 
 class SuicidalSelfCycle(SelfCycleBase, Simple):
-
     def side_effect(self):
         """
         Explicitly break the reference cycle.
@@ -321,7 +316,6 @@ class SelfCycleFinalizationTest(TestBase, unittest.TestCase):
 
 
 class ChainedBase:
-
     def chain(self, left):
         self.suicided = False
         self.left = left
@@ -354,7 +348,6 @@ class ChainedResurrector(ChainedBase, SimpleResurrector):
 
 
 class SuicidalChained(ChainedBase, Simple):
-
     def side_effect(self):
         """
         Explicitly break the reference cycle.
@@ -444,7 +437,6 @@ class CycleChainFinalizationTest(TestBase, unittest.TestCase):
 
 
 class LegacyBase(SimpleBase):
-
     def __del__(self):
         try:
             # Do not invoke side_effect here, since we are now exercising
@@ -475,7 +467,6 @@ class Legacy(LegacyBase):
 
 @with_tp_del
 class LegacyResurrector(LegacyBase):
-
     def side_effect(self):
         """
         Resurrect self by storing self in a class-wide list.

@@ -1,10 +1,8 @@
 import unittest
-
 import xdrlib
 
 
 class XDRTest(unittest.TestCase):
-
     def test_xdr(self):
         p = xdrlib.Packer()
 
@@ -53,7 +51,6 @@ class XDRTest(unittest.TestCase):
 
 
 class ConversionErrorTest(unittest.TestCase):
-
     def setUp(self):
         self.packer = xdrlib.Packer()
 

@@ -6,16 +6,14 @@
 
 """Unit tests for abc.py."""
 
-import unittest
-
-import abc
 import _py_abc
+import abc
+import unittest
 from inspect import isabstract
 
 
 def test_factory(abc_ABCMeta, abc_get_cache_token):
     class TestLegacyAPI(unittest.TestCase):
-
         def test_abstractproperty_basics(self):
             @abc.abstractproperty
             def foo(self):
@@ -100,7 +98,6 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
             self.assertEqual(D().foo(), 4)
 
     class TestABC(unittest.TestCase):
-
         def test_ABC_helper(self):
             # create an ABC using the helper class and perform basic checks
             class C(abc.ABC):
@@ -316,7 +313,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
 
             # check that the property's __isabstractmethod__ descriptor does the
             # right thing when presented with a value that fails truth testing:
-            class NotBool(object):
+            class NotBool:
                 def __bool__(self):
                     raise ValueError()
 
@@ -396,7 +393,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
             class A(metaclass=abc_ABCMeta):
                 pass
 
-            class B(object):
+            class B:
                 pass
 
             b = B()
@@ -425,7 +422,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
                 pass
 
             @A.register
-            class B(object):
+            class B:
                 pass
 
             b = B()
@@ -498,7 +495,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
 
             self.assertRaises(RuntimeError, A1.register, A)  # cycles not allowed
 
-            class B(object):
+            class B:
                 pass
 
             A1.register(B)  # ok
@@ -601,9 +598,8 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
                 class S(metaclass=abc_ABCMeta):
                     __subclasses__ = func
 
-                with self.subTest(i=i):
-                    with self.assertRaises(TypeError):
-                        issubclass(int, S)
+                with self.subTest(i=i), self.assertRaises(TypeError):
+                    issubclass(int, S)
 
             # Also check that issubclass() propagates exceptions raised by
             # __subclasses__.
@@ -645,7 +641,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
             class A(metaclass=abc_ABCMeta):
                 pass
 
-            class B(object):
+            class B:
                 counter = 0
 
                 def __new__(cls):

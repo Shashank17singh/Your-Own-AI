@@ -2,13 +2,14 @@
 # Copyright 2012-2013 by Larry Hastings.
 # Licensed to the PSF under a contributor agreement.
 
-from test import support, test_tools
-from unittest import TestCase
 import collections
 import inspect
 import os.path
 import sys
 import unittest
+from unittest import TestCase
+
+from test import support, test_tools
 
 test_tools.skip_if_missing("clinic")
 with test_tools.imports_under_tool("clinic"):
@@ -632,9 +633,8 @@ imaginary([[y1, y2,] x1, x2,] ch, [attr1, attr2, attr3, [attr4, attr5,
         )
 
     def parse_function_should_fail(self, s):
-        with support.captured_stdout() as stdout:
-            with self.assertRaises(SystemExit):
-                self.parse_function(s)
+        with support.captured_stdout() as stdout, self.assertRaises(SystemExit):
+            self.parse_function(s)
         return stdout.getvalue()
 
     def test_disallowed_grouping__two_top_groups_on_left(self):
@@ -896,11 +896,8 @@ Not at column 0!
         self.assertEqual(repr(clinic.NULL), "<Null>")
 
         # test that fail fails
-        with support.captured_stdout() as stdout:
-            with self.assertRaises(SystemExit):
-                clinic.fail(
-                    "The igloos are melting!", filename="clown.txt", line_number=69
-                )
+        with support.captured_stdout() as stdout, self.assertRaises(SystemExit):
+            clinic.fail("The igloos are melting!", filename="clown.txt", line_number=69)
         self.assertEqual(
             stdout.getvalue(),
             'Error in file "clown.txt" on line 69:\nThe igloos are melting!\n',

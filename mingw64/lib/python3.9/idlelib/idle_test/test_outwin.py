@@ -1,16 +1,16 @@
 "Test outwin, coverage 76%."
 
-from idlelib import outwin
 import unittest
-from test.support import requires
-from tkinter import Tk, Text
-from idlelib.idle_test.mock_tk import Mbox_func
+from idlelib import outwin
 from idlelib.idle_test.mock_idle import Func
+from idlelib.idle_test.mock_tk import Mbox_func
+from tkinter import Text, Tk
 from unittest import mock
+
+from test.support import requires
 
 
 class OutputWindowTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -118,14 +118,14 @@ class OutputWindowTest(unittest.TestCase):
         eq(showerror.title, "No special line")
 
         # Current file/line number.
-        w.write(f"{str(__file__)}: 42: spam\n")
-        w.write(f"{str(__file__)}: 21: spam")
+        w.write(f"{__file__!s}: 42: spam\n")
+        w.write(f"{__file__!s}: 21: spam")
         self.assertIsNone(w.goto_file_line())
         eq(gfl.args, (str(__file__), 21))
 
         # Previous line has file/line number.
         text.delete("1.0", "end")
-        w.write(f"{str(__file__)}: 42: spam\n")
+        w.write(f"{__file__!s}: 42: spam\n")
         w.write("Not a file line")
         self.assertIsNone(w.goto_file_line())
         eq(gfl.args, (str(__file__), 42))
@@ -134,7 +134,6 @@ class OutputWindowTest(unittest.TestCase):
 
 
 class ModuleFunctionTest(unittest.TestCase):
-
     @classmethod
     def setUp(cls):
         outwin.file_line_progs = None

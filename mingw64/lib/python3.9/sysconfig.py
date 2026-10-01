@@ -334,7 +334,6 @@ def _parse_makefile(filename, vars=None):
                         variables.remove(name)
 
                         if name.startswith("PY_") and name[3:] in renamed_variables:
-
                             name = name[3:]
                             if name not in done:
                                 done[name] = value
@@ -461,9 +460,7 @@ def _generate_posix_vars():
 
     with open(destfile, "w", encoding="utf8") as f:
         f.write("import sys\n")
-        f.write(
-            "# system configuration generated and used by" " the sysconfig module\n"
-        )
+        f.write("# system configuration generated and used by the sysconfig module\n")
         f.write("build_time_vars = ")
         pprint.pprint(vars, stream=f)
         f.write("\n%s" % textwrap.dedent(replacement))

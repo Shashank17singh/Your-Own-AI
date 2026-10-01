@@ -3,11 +3,17 @@ from a string or file.
 This avoids all the overhead of SAX and pulldom to gain performance.
 """
 
-from xml.dom import xmlbuilder, minidom, Node
-from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE
-from xml.parsers import expat
+from xml.dom import (
+    EMPTY_NAMESPACE,
+    EMPTY_PREFIX,
+    XMLNS_NAMESPACE,
+    Node,
+    minidom,
+    xmlbuilder,
+)
 from xml.dom.minidom import _append_child, _set_attribute_node
 from xml.dom.NodeFilter import NodeFilter
+from xml.parsers import expat
 
 TEXT_NODE = Node.TEXT_NODE
 CDATA_SECTION_NODE = Node.CDATA_SECTION_NODE
@@ -30,7 +36,7 @@ _typeinfo_map = {
 }
 
 
-class ElementInfo(object):
+class ElementInfo:
     __slots__ = "_attr_info", "_model", "tagName"
 
     def __init__(self, tagName, model=None):
@@ -408,7 +414,7 @@ class ExpatBuilder:
 _ALLOWED_FILTER_RETURNS = (FILTER_ACCEPT, FILTER_REJECT, FILTER_SKIP)
 
 
-class FilterVisibilityController(object):
+class FilterVisibilityController:
     """Wrapper around a DOMBuilderFilter which implements the checks
     to make the whatToShow filter attribute work."""
 
@@ -464,8 +470,8 @@ class FilterVisibilityController(object):
     }
 
 
-class FilterCrutch(object):
-    __slots__ = "_builder", "_level", "_old_start", "_old_end"
+class FilterCrutch:
+    __slots__ = "_builder", "_level", "_old_end", "_old_start"
 
     def __init__(self, builder):
         self._level = 0
@@ -528,7 +534,8 @@ class Skipper(FilterCrutch):
 _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID = (
     "http://xml.python.org/entities/fragment-builder/internal"
 )
-_FRAGMENT_BUILDER_TEMPLATE = """\
+_FRAGMENT_BUILDER_TEMPLATE = (
+    """\
 <!DOCTYPE wrapper
   %%s [
   <!ENTITY fragment-builder-internal
@@ -536,7 +543,9 @@ _FRAGMENT_BUILDER_TEMPLATE = """\
 %%s
 ]>
 <wrapper %%s
->&fragment-builder-internal;</wrapper>""" % _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID
+>&fragment-builder-internal;</wrapper>"""
+    % _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID
+)
 
 
 class FragmentBuilder(ExpatBuilder):
@@ -737,12 +746,12 @@ class Namespaces:
                     and curNode.prefix == prefix
                 ), "element stack messed up! (namespace)"
             else:
-                assert (
-                    curNode.nodeName == name
-                ), "element stack messed up - bad nodeName"
-                assert (
-                    curNode.namespaceURI == EMPTY_NAMESPACE
-                ), "element stack messed up - bad namespaceURI"
+                assert curNode.nodeName == name, (
+                    "element stack messed up - bad nodeName"
+                )
+                assert curNode.namespaceURI == EMPTY_NAMESPACE, (
+                    "element stack messed up - bad namespaceURI"
+                )
             self.curNode = curNode.parentNode
             self._finish_end_element(curNode)
 
@@ -788,8 +797,6 @@ class FragmentBuilderNS(Namespaces, FragmentBuilder):
 
 class ParseEscape(Exception):
     """Exception raised to short-circuit parsing in InternalSubsetExtractor."""
-
-    pass
 
 
 class InternalSubsetExtractor(ExpatBuilder):

@@ -1,13 +1,13 @@
 "Test multicall, coverage 33%."
 
-from idlelib import multicall
 import unittest
+from idlelib import multicall
+from tkinter import Text, Tk
+
 from test.support import requires
-from tkinter import Tk, Text
 
 
 class MultiCallTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

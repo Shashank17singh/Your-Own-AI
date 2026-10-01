@@ -33,6 +33,7 @@ Paste a document → embed and insert it into the local HNSW index → ask a que
 - Interpretation: deliberate, confident movement; clean terminal typography; electric cyan and violet make the technical flow feel physical rather than abstract.
 
 ## Format: landscape — 1920x1080
+
 ## Duration: 20 seconds
 
 ## Visual identity (from the project)

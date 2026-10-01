@@ -19,13 +19,12 @@ the current message.  Defects are just instances that live on the message
 object's .defects attribute.
 """
 
-__all__ = ["FeedParser", "BytesFeedParser"]
+__all__ = ["BytesFeedParser", "FeedParser"]
 
 import re
-
+from collections import deque
 from email import errors
 from email._policybase import compat32
-from collections import deque
 from io import StringIO
 
 NLCRE = re.compile(r"\r\n|\r|\n")
@@ -40,8 +39,8 @@ NL = "\n"
 
 NeedMoreData = object()
 
-
-class BufferedSubFile(object):
+
+class BufferedSubFile:
     """A file-ish object that can have new data loaded into it.
 
     You can also push and pop line-matching predicates onto a stack.  When the
@@ -131,7 +130,7 @@ class BufferedSubFile(object):
             raise StopIteration
         return line
 
-
+
 class FeedParser:
     """A feed-style parser of email."""
 

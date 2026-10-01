@@ -23,11 +23,17 @@ Copyright (C) 2001-2016 Vinay Sajip. All Rights Reserved.
 To use, simply 'import logging.handlers' and log away!
 """
 
-import logging, socket, os, pickle, struct, time, re
-from stat import ST_DEV, ST_INO, ST_MTIME
-import queue
-import threading
 import copy
+import logging
+import os
+import pickle
+import queue
+import re
+import socket
+import struct
+import threading
+import time
+from stat import ST_DEV, ST_INO, ST_MTIME
 
 #
 # Some constants...
@@ -356,9 +362,7 @@ class TimedRotatingFileHandler(BaseRotatingHandler):
                         dstNow = t[-1]
                         dstAtRollover = time.localtime(newRolloverAt)[-1]
                         if dstNow != dstAtRollover:
-                            if (
-                                not dstNow
-                            ):  # DST kicks in before next rollover, so we need to deduct an hour
+                            if not dstNow:  # DST kicks in before next rollover, so we need to deduct an hour
                                 addend = -3600
                             else:  # DST bows out before next rollover, so we need to add an hour
                                 addend = 3600
@@ -607,8 +611,7 @@ class SocketHandler(logging.Handler):
                     self.retryPeriod = self.retryStart
                 else:
                     self.retryPeriod = self.retryPeriod * self.retryFactor
-                    if self.retryPeriod > self.retryMax:
-                        self.retryPeriod = self.retryMax
+                    self.retryPeriod = min(self.retryPeriod, self.retryMax)
                 self.retryTime = now + self.retryPeriod
 
     def send(self, s):
@@ -1068,9 +1071,9 @@ class SMTPHandler(logging.Handler):
         Format the record and send it to the specified addressees.
         """
         try:
+            import email.utils
             import smtplib
             from email.message import EmailMessage
-            import email.utils
 
             port = self.mailport
             if not port:
@@ -1108,7 +1111,8 @@ class NTEventLogHandler(logging.Handler):
     def __init__(self, appname, dllname=None, logtype="Application"):
         logging.Handler.__init__(self)
         try:
-            import win32evtlogutil, win32evtlog
+            import win32evtlog
+            import win32evtlogutil
 
             self.appname = appname
             self._welu = win32evtlogutil
@@ -1215,7 +1219,7 @@ class HTTPHandler(logging.Handler):
         if method not in ["GET", "POST"]:
             raise ValueError("method must be GET or POST")
         if not secure and context is not None:
-            raise ValueError("context parameter only makes sense " "with secure=True")
+            raise ValueError("context parameter only makes sense with secure=True")
         self.host = host
         self.url = url
         self.method = method
@@ -1499,7 +1503,7 @@ class QueueHandler(logging.Handler):
             self.handleError(record)
 
 
-class QueueListener(object):
+class QueueListener:
     """
     This class implements an internal threaded listener which watches for
     LogRecords being added to a queue, removes them and passes them to a

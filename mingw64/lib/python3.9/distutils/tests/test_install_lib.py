@@ -1,14 +1,14 @@
 """Tests for distutils.command.install_data."""
 
-import sys
-import os
 import importlib.util
+import os
+import sys
 import unittest
-
 from distutils.command.install_lib import install_lib
+from distutils.errors import DistutilsOptionError
 from distutils.extension import Extension
 from distutils.tests import support
-from distutils.errors import DistutilsOptionError
+
 from test.support import run_unittest
 
 
@@ -18,7 +18,6 @@ class InstallLibTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def test_finalize_options(self):
         dist = self.create_dist()[1]
         cmd = install_lib(dist)

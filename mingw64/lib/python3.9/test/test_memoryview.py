@@ -4,15 +4,16 @@ Some tests are in test_bytes. Many tests that require _testbuffer.ndarray
 are in test_buffer.
 """
 
-import unittest
-import test.support
-import sys
-import gc
-import weakref
 import array
-import io
 import copy
+import gc
+import io
 import pickle
+import sys
+import unittest
+import weakref
+
+import test.support
 
 
 class AbstractMemoryTests:
@@ -282,9 +283,8 @@ class AbstractMemoryTests:
             m.shape
         with check:
             m.strides
-        with check:
-            with m:
-                pass
+        with check, m:
+            pass
         # str() and repr() still function
         self.assertIn("released memory", str(m))
         self.assertIn("released memory", repr(m))
@@ -488,7 +488,6 @@ class BaseMemorySliceSliceTests:
 
 
 class BytesMemoryviewTest(unittest.TestCase, BaseMemoryviewTests, BaseBytesMemoryTests):
-
     def test_constructor(self):
         for tp in self._types:
             ob = tp(self._source)
@@ -501,7 +500,6 @@ class BytesMemoryviewTest(unittest.TestCase, BaseMemoryviewTests, BaseBytesMemor
 
 
 class ArrayMemoryviewTest(unittest.TestCase, BaseMemoryviewTests, BaseArrayMemoryTests):
-
     def test_array_assign(self):
         # Issue #4569: segfault when mutating a memoryview with itemsize != 1
         a = array.array("i", range(10))

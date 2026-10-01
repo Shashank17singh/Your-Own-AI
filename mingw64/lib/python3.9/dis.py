@@ -1,10 +1,9 @@
 """Disassembler of Python byte code into mnemonics."""
 
-import sys
-import types
 import collections
 import io
-
+import sys
+import types
 from opcode import *
 from opcode import __all__ as _opcodes_all
 
@@ -447,7 +446,7 @@ def _disassemble_bytes(
     linestarts=None,
     *,
     file=None,
-    line_offset=0
+    line_offset=0,
 ):
     # Omit the line number column entirely if we have no line number info
     show_lineno = linestarts is not None
@@ -584,7 +583,7 @@ class Bytecode:
         )
 
     def __repr__(self):
-        return "{}({!r})".format(self.__class__.__name__, self._original_object)
+        return f"{self.__class__.__name__}({self._original_object!r})"
 
     @classmethod
     def from_traceback(cls, tb):

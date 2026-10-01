@@ -1,5 +1,6 @@
-import unittest
 import __future__
+
+import unittest
 
 GOOD_SERIALS = ("alpha", "beta", "candidate", "final")
 
@@ -7,7 +8,6 @@ features = __future__.all_feature_names
 
 
 class FutureTest(unittest.TestCase):
-
     def test_names(self):
         # Verify that all_feature_names appears correct.
         given_feature_names = features[:]
@@ -61,7 +61,7 @@ class FutureTest(unittest.TestCase):
             # Make sure the compile accepts the flag.
             compile("", "<test>", "exec", value.compiler_flag)
             a(
-                isinstance(getattr(value, "compiler_flag"), int),
+                isinstance(value.compiler_flag, int),
                 ".compiler_flag isn't int",
             )
 

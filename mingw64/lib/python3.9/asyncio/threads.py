@@ -1,7 +1,7 @@
 """High-level support for working with threads in asyncio"""
 
-import functools
 import contextvars
+import functools
 
 from . import events
 

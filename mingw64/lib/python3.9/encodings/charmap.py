@@ -16,7 +16,6 @@ import codecs
 
 
 class Codec(codecs.Codec):
-
     # Note: Binding these as C functions will result in the class not
     # converting them to methods. This is intended.
     encode = codecs.charmap_encode
@@ -42,7 +41,6 @@ class IncrementalDecoder(codecs.IncrementalDecoder):
 
 
 class StreamWriter(Codec, codecs.StreamWriter):
-
     def __init__(self, stream, errors="strict", mapping=None):
         codecs.StreamWriter.__init__(self, stream, errors)
         self.mapping = mapping
@@ -52,7 +50,6 @@ class StreamWriter(Codec, codecs.StreamWriter):
 
 
 class StreamReader(Codec, codecs.StreamReader):
-
     def __init__(self, stream, errors="strict", mapping=None):
         codecs.StreamReader.__init__(self, stream, errors)
         self.mapping = mapping

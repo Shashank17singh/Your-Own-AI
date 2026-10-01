@@ -1,9 +1,9 @@
-from .. import util
-
-from importlib import machinery
 import sys
 import types
 import unittest
+from importlib import machinery
+
+from .. import util
 
 PKG_NAME = "fine"
 SUBMOD_NAME = "fine.bogus"

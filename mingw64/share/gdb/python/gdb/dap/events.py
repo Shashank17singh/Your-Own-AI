@@ -1,4 +1,5 @@
 import gdb
+
 from .modules import is_module, make_module
 from .scopes import set_finish_value
 from .server import send_event

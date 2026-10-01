@@ -1,14 +1,13 @@
 "Test colorizer, coverage 93%."
 
-from idlelib import colorizer
-from test.support import requires
 import unittest
+from functools import partial
+from idlelib import colorizer, config
+from idlelib.percolator import Percolator
+from tkinter import Text, Tk
 from unittest import mock
 
-from functools import partial
-from tkinter import Tk, Text
-from idlelib import config
-from idlelib.percolator import Percolator
+from test.support import requires
 
 usercfg = colorizer.idleConf.userCfg
 testcfg = {
@@ -38,7 +37,6 @@ def tearDownModule():
 
 
 class FunctionTest(unittest.TestCase):
-
     def test_any(self):
         self.assertEqual(colorizer.any("test", ("a", "b", "cd")), "(?P<test>a|b|cd)")
 
@@ -70,7 +68,6 @@ class FunctionTest(unittest.TestCase):
 
 
 class ColorConfigTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -99,7 +96,6 @@ class ColorConfigTest(unittest.TestCase):
 
 
 class ColorDelegatorInstantiationTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -138,7 +134,6 @@ class ColorDelegatorInstantiationTest(unittest.TestCase):
 
 
 class ColorDelegatorTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

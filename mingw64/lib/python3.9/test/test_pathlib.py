@@ -1,12 +1,12 @@
 import collections.abc
+import errno
 import io
 import os
-import sys
-import errno
 import pathlib
 import pickle
 import socket
 import stat
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -15,13 +15,13 @@ from test import support
 from test.support import TESTFN, FakePath
 
 try:
-    import grp, pwd
+    import grp
+    import pwd
 except ImportError:
     grp = pwd = None
 
 
-class _BaseFlavourTest(object):
-
+class _BaseFlavourTest:
     def _check_parse_parts(self, arg, expected):
         f = self.flavour.parse_parts
         sep = self.flavour.sep
@@ -166,8 +166,7 @@ class NTFlavourTest(_BaseFlavourTest, unittest.TestCase):
 #
 
 
-class _BasePurePathTest(object):
-
+class _BasePurePathTest:
     # Keys are canonical paths, values are list of tuples of arguments
     # supposed to produce equal paths.
     equivalences = {
@@ -424,7 +423,7 @@ class _BasePurePathTest(object):
             pcanon = self.cls(canon)
             for t in tuples:
                 p = self.cls(*t)
-                self.assertEqual(p, pcanon, "failed with args {}".format(t))
+                self.assertEqual(p, pcanon, f"failed with args {t}")
                 self.assertEqual(hash(p), hash(pcanon))
                 self.assertEqual(str(p), canon)
                 self.assertEqual(p.as_posix(), posix)
@@ -687,7 +686,7 @@ class _BasePurePathTest(object):
     def test_pickling_common(self):
         P = self.cls
         p = P("/a/b")
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             dumped = pickle.dumps(p, proto)
             pp = pickle.loads(dumped)
             self.assertIs(pp.__class__, p.__class__)
@@ -1365,7 +1364,7 @@ class WindowsPathAsPureTest(PureWindowsPathTest):
             P("c:/").group()
 
 
-class _BasePathTest(object):
+class _BasePathTest:
     """Tests for the FS-accessing functionalities of the Path classes."""
 
     # (BASE)
@@ -2294,7 +2293,7 @@ class _BasePathTest(object):
 
     def test_pickling_common(self):
         p = self.cls(BASE, "fileA")
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             dumped = pickle.dumps(p, proto)
             pp = pickle.loads(dumped)
             self.assertEqual(pp.stat(), p.stat())

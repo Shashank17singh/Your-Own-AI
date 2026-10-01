@@ -1,7 +1,8 @@
 """Test script for the dbm.open function based on testdumbdbm.py"""
 
-import unittest
 import glob
+import unittest
+
 import test.support
 
 # Skip tests if dbm module doesn't exist.
@@ -112,7 +113,7 @@ class AnyDBMTestCase:
     def test_empty_value(self):
         if getattr(dbm._defaultmod, "library", None) == "Berkeley DB":
             self.skipTest(
-                "Berkeley DB doesn't distinguish the empty value " "from the absent one"
+                "Berkeley DB doesn't distinguish the empty value from the absent one"
             )
         f = dbm.open(_fname, "c")
         self.assertEqual(f.keys(), [])
@@ -171,7 +172,7 @@ class WhichDBTestCase(unittest.TestCase):
     @unittest.skipUnless(ndbm, reason="Test requires ndbm")
     def test_whichdb_ndbm(self):
         # Issue 17198: check that ndbm which is referenced in whichdb is defined
-        db_file = "{}_ndbm.db".format(_fname)
+        db_file = f"{_fname}_ndbm.db"
         with open(db_file, "w"):
             self.addCleanup(test.support.unlink, db_file)
         self.assertIsNone(self.dbm.whichdb(db_file[:-3]))

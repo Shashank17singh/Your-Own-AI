@@ -23,31 +23,38 @@ Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.
 To use, simply 'import logging' and log away!
 """
 
-import sys, os, time, io, re, traceback, warnings, weakref, collections.abc
-
-from string import Template
+import collections.abc
+import io
+import os
+import re
+import sys
+import time
+import traceback
+import warnings
+import weakref
 from string import Formatter as StrFormatter
+from string import Template
 
 __all__ = [
     "BASIC_FORMAT",
-    "BufferingFormatter",
     "CRITICAL",
     "DEBUG",
     "ERROR",
     "FATAL",
+    "INFO",
+    "NOTSET",
+    "WARN",
+    "WARNING",
+    "BufferingFormatter",
     "FileHandler",
     "Filter",
     "Formatter",
     "Handler",
-    "INFO",
     "LogRecord",
     "Logger",
     "LoggerAdapter",
-    "NOTSET",
     "NullHandler",
     "StreamHandler",
-    "WARN",
-    "WARNING",
     "addLevelName",
     "basicConfig",
     "captureWarnings",
@@ -58,19 +65,19 @@ __all__ = [
     "exception",
     "fatal",
     "getLevelName",
+    "getLogRecordFactory",
     "getLogger",
     "getLoggerClass",
     "info",
+    "lastResort",
     "log",
     "makeLogRecord",
+    "raiseExceptions",
+    "setLogRecordFactory",
     "setLoggerClass",
     "shutdown",
     "warn",
     "warning",
-    "getLogRecordFactory",
-    "setLogRecordFactory",
-    "lastResort",
-    "raiseExceptions",
 ]
 
 import threading
@@ -314,7 +321,7 @@ else:
 # ---------------------------------------------------------------------------
 
 
-class LogRecord(object):
+class LogRecord:
     """
     A LogRecord instance represents an event being logged.
 
@@ -338,7 +345,7 @@ class LogRecord(object):
         exc_info,
         func=None,
         sinfo=None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize a logging record with interesting information.
@@ -480,13 +487,12 @@ _str_formatter = StrFormatter()
 del StrFormatter
 
 
-class PercentStyle(object):
-
+class PercentStyle:
     default_format = "%(message)s"
     asctime_format = "%(asctime)s"
     asctime_search = "%(asctime)"
     validation_pattern = re.compile(
-        r"%\(\w+\)[#0+ -]*(\*|\d+)?(\.(\*|\d+))?[diouxefgcrsa%]", re.I
+        r"%\(\w+\)[#0+ -]*(\*|\d+)?(\.(\*|\d+))?[diouxefgcrsa%]", re.IGNORECASE
     )
 
     def __init__(self, fmt):
@@ -519,7 +525,8 @@ class StrFormatStyle(PercentStyle):
     asctime_search = "{asctime"
 
     fmt_spec = re.compile(
-        r"^(.?[<>=^])?[+ -]?#?0?(\d+|{\w+})?[,_]?(\.(\d+|{\w+}))?[bcdefgnosx%]?$", re.I
+        r"^(.?[<>=^])?[+ -]?#?0?(\d+|{\w+})?[,_]?(\.(\d+|{\w+}))?[bcdefgnosx%]?$",
+        re.IGNORECASE,
     )
     field_spec = re.compile(r"^(\d+|\w+)(\.\w+|\[[^]]+\])*$")
 
@@ -587,7 +594,7 @@ _STYLES = {
 }
 
 
-class Formatter(object):
+class Formatter:
     """
     Formatter instances are used to convert a LogRecord to text.
 
@@ -767,7 +774,7 @@ class Formatter(object):
 _defaultFormatter = Formatter()
 
 
-class BufferingFormatter(object):
+class BufferingFormatter:
     """
     A formatter suitable for formatting a number of records.
     """
@@ -812,7 +819,7 @@ class BufferingFormatter(object):
 # ---------------------------------------------------------------------------
 
 
-class Filter(object):
+class Filter:
     """
     Filter instances are used to perform arbitrary filtering of LogRecords.
 
@@ -842,16 +849,14 @@ class Filter(object):
         Returns True if the record should be logged, or False otherwise.
         If deemed appropriate, the record may be modified in-place.
         """
-        if self.nlen == 0:
-            return True
-        elif self.name == record.name:
+        if self.nlen == 0 or self.name == record.name:
             return True
         elif record.name.find(self.name, 0, self.nlen) != 0:
             return False
         return record.name[self.nlen] == "."
 
 
-class Filterer(object):
+class Filterer:
     """
     A base class for loggers and handlers which allows them to share
     common code.
@@ -906,9 +911,7 @@ class Filterer(object):
 # ---------------------------------------------------------------------------
 
 _handlers = weakref.WeakValueDictionary()  # map of handler names to handlers
-_handlerList = (
-    []
-)  # added to allow handlers to be removed in reverse of order initialized
+_handlerList = []  # added to allow handlers to be removed in reverse of order initialized
 
 
 def _removeHandlerRef(wr):
@@ -1029,7 +1032,7 @@ class Handler(Filterer):
         This version is intended to be implemented by subclasses and so
         raises a NotImplementedError.
         """
-        raise NotImplementedError("emit must be implemented " "by Handler subclasses")
+        raise NotImplementedError("emit must be implemented by Handler subclasses")
 
     def handle(self, record):
         """
@@ -1062,7 +1065,6 @@ class Handler(Filterer):
         This version does nothing and is intended to be implemented by
         subclasses.
         """
-        pass
 
     def close(self):
         """
@@ -1117,7 +1119,7 @@ class Handler(Filterer):
                 # Issue 18671: output logging message and arguments
                 try:
                     sys.stderr.write(
-                        "Message: %r\n" "Arguments: %s\n" % (record.msg, record.args)
+                        "Message: %r\nArguments: %s\n" % (record.msg, record.args)
                     )
                 except RecursionError:  # See issue 36272
                     raise
@@ -1319,7 +1321,7 @@ lastResort = _defaultLastResort
 # ---------------------------------------------------------------------------
 
 
-class PlaceHolder(object):
+class PlaceHolder:
     """
     PlaceHolder instances are used in the Manager logger hierarchy to take
     the place of nodes for which no loggers have been defined. This class is
@@ -1365,7 +1367,7 @@ def getLoggerClass():
     return _loggerClass
 
 
-class Manager(object):
+class Manager:
     """
     There is [under normal circumstances] just one Manager instance, which
     holds the hierarchy of loggers.
@@ -1572,7 +1574,7 @@ class Logger(Filterer):
 
     def warn(self, msg, *args, **kwargs):
         warnings.warn(
-            "The 'warn' method is deprecated, " "use 'warning' instead",
+            "The 'warn' method is deprecated, use 'warning' instead",
             DeprecationWarning,
             2,
         )
@@ -1804,7 +1806,7 @@ class Logger(Filterer):
                     lastResort.handle(record)
             elif raiseExceptions and not self.manager.emittedNoHandlerWarning:
                 sys.stderr.write(
-                    "No handlers could be found for logger" ' "%s"\n' % self.name
+                    'No handlers could be found for logger "%s"\n' % self.name
                 )
                 self.manager.emittedNoHandlerWarning = True
 
@@ -1895,7 +1897,7 @@ class RootLogger(Logger):
 _loggerClass = Logger
 
 
-class LoggerAdapter(object):
+class LoggerAdapter:
     """
     An adapter for loggers which makes it easier to specify contextual
     information in logging output.
@@ -1951,7 +1953,7 @@ class LoggerAdapter(object):
 
     def warn(self, msg, *args, **kwargs):
         warnings.warn(
-            "The 'warn' method is deprecated, " "use 'warning' instead",
+            "The 'warn' method is deprecated, use 'warning' instead",
             DeprecationWarning,
             2,
         )
@@ -2132,7 +2134,7 @@ def basicConfig(**kwargs):
             if handlers is None:
                 if "stream" in kwargs and "filename" in kwargs:
                     raise ValueError(
-                        "'stream' and 'filename' should not be " "specified together"
+                        "'stream' and 'filename' should not be specified together"
                     )
             else:
                 if "stream" in kwargs or "filename" in kwargs:
@@ -2235,7 +2237,7 @@ def warning(msg, *args, **kwargs):
 
 def warn(msg, *args, **kwargs):
     warnings.warn(
-        "The 'warn' function is deprecated, " "use 'warning' instead",
+        "The 'warn' function is deprecated, use 'warning' instead",
         DeprecationWarning,
         2,
     )

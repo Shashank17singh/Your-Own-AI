@@ -1,23 +1,17 @@
 """Utility code for constructing importers, etc."""
 
-from . import abc
-from ._bootstrap import module_from_spec
-from ._bootstrap import _resolve_name
-from ._bootstrap import spec_from_loader
-from ._bootstrap import _find_spec
-from ._bootstrap_external import MAGIC_NUMBER
-from ._bootstrap_external import _RAW_MAGIC_NUMBER
-from ._bootstrap_external import cache_from_source
-from ._bootstrap_external import decode_source
-from ._bootstrap_external import source_from_cache
-from ._bootstrap_external import spec_from_file_location
-
-from contextlib import contextmanager
 import _imp
 import functools
 import sys
 import types
 import warnings
+from contextlib import contextmanager
+
+from . import abc
+from ._bootstrap import _find_spec, _resolve_name
+from ._bootstrap_external import (
+    _RAW_MAGIC_NUMBER,
+)
 
 
 def source_hash(source_bytes):
@@ -31,8 +25,7 @@ def resolve_name(name, package):
         return name
     elif not package:
         raise ImportError(
-            f"no package specified for {repr(name)} "
-            "(required for relative module names)"
+            f"no package specified for {name!r} (required for relative module names)"
         )
     level = 0
     for character in name:
@@ -66,10 +59,10 @@ def _find_spec_from_path(name, path=None):
         try:
             spec = module.__spec__
         except AttributeError:
-            raise ValueError("{}.__spec__ is not set".format(name)) from None
+            raise ValueError(f"{name}.__spec__ is not set") from None
         else:
             if spec is None:
-                raise ValueError("{}.__spec__ is None".format(name))
+                raise ValueError(f"{name}.__spec__ is None")
             return spec
 
 
@@ -113,10 +106,10 @@ def find_spec(name, package=None):
         try:
             spec = module.__spec__
         except AttributeError:
-            raise ValueError("{}.__spec__ is not set".format(name)) from None
+            raise ValueError(f"{name}.__spec__ is not set") from None
         else:
             if spec is None:
-                raise ValueError("{}.__spec__ is None".format(name))
+                raise ValueError(f"{name}.__spec__ is None")
             return spec
 
 
@@ -256,9 +249,7 @@ class _LazyModule(types.ModuleType):
         for key, value in attrs_now.items():
             # Code that set the attribute may have kept a reference to the
             # assigned object, making identity more important than equality.
-            if key not in attrs_then:
-                attrs_updated[key] = value
-            elif id(attrs_now[key]) != id(attrs_then[key]):
+            if key not in attrs_then or id(value) != id(attrs_then[key]):
                 attrs_updated[key] = value
         self.__spec__.loader.exec_module(self)
         # If exec_module() was used directly there is no guarantee the module

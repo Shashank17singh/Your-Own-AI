@@ -1,26 +1,25 @@
-import sys
 import os
-from io import StringIO
+import sys
 import textwrap
-
-from distutils.core import Distribution
-from distutils.command.build_ext import build_ext
+import unittest
 from distutils import sysconfig
-from distutils.tests.support import (
-    TempdirManager,
-    LoggingSilencer,
-    copy_xxmodule_c,
-    fixup_build_ext,
-)
-from distutils.extension import Extension
+from distutils.command.build_ext import build_ext
+from distutils.core import Distribution
 from distutils.errors import (
     CompileError,
     DistutilsPlatformError,
     DistutilsSetupError,
     UnknownFileError,
 )
+from distutils.extension import Extension
+from distutils.tests.support import (
+    LoggingSilencer,
+    TempdirManager,
+    copy_xxmodule_c,
+    fixup_build_ext,
+)
+from io import StringIO
 
-import unittest
 from test import support
 from test.support.script_helper import assert_python_ok
 
@@ -32,7 +31,7 @@ ALREADY_TESTED = False
 class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
     def setUp(self):
         # Create a simple test environment
-        super(BuildExtTestCase, self).setUp()
+        super().setUp()
         self.tmp_dir = self.mkdtemp()
         import site
 
@@ -56,7 +55,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         from distutils.command import build_ext
 
         build_ext.USER_BASE = self.old_user_base
-        super(BuildExtTestCase, self).tearDown()
+        super().tearDown()
 
     def build_ext(self, *args, **kwargs):
         return build_ext(*args, **kwargs)
@@ -490,7 +489,9 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         deptarget_c = os.path.join(self.tmp_dir, "deptargetmodule.c")
 
         with open(deptarget_c, "w") as fp:
-            fp.write(textwrap.dedent("""\
+            fp.write(
+                textwrap.dedent(
+                    """\
                 #include <AvailabilityMacros.h>
 
                 int dummy;
@@ -500,7 +501,10 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
                 #error "Unexpected target"
                 #endif
 
-            """ % operator))
+            """
+                    % operator
+                )
+            )
 
         # get the deployment target that the interpreter was built with
         target = sysconfig.get_config_var("MACOSX_DEPLOYMENT_TARGET")
@@ -545,7 +549,6 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
 
 
 class ParallelBuildExtTestCase(BuildExtTestCase):
-
     def build_ext(self, *args, **kwargs):
         build_ext = super().build_ext(*args, **kwargs)
         build_ext.parallel = True

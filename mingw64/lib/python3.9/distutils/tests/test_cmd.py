@@ -1,13 +1,13 @@
 """Tests for distutils.cmd."""
 
-import unittest
 import os
-from test.support import captured_stdout, run_unittest
-
+import unittest
+from distutils import debug
 from distutils.cmd import Command
 from distutils.dist import Distribution
 from distutils.errors import DistutilsOptionError
-from distutils import debug
+
+from test.support import captured_stdout, run_unittest
 
 
 class MyCmd(Command):
@@ -16,7 +16,6 @@ class MyCmd(Command):
 
 
 class CommandTestCase(unittest.TestCase):
-
     def setUp(self):
         dist = Distribution()
         self.cmd = MyCmd(dist)

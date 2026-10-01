@@ -2,12 +2,11 @@
 
 import socket
 import tempfile
-import urllib.response
 import unittest
+import urllib.response
 
 
 class TestResponse(unittest.TestCase):
-
     def setUp(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.fp = self.sock.makefile("rb")

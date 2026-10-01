@@ -2,21 +2,16 @@
 
 Implements the Distutils 'install' command."""
 
-import sys
 import os
-
+import sys
 from distutils import log
 from distutils.core import Command
 from distutils.debug import DEBUG
-from distutils.sysconfig import get_config_vars
-from distutils.errors import DistutilsPlatformError
+from distutils.errors import DistutilsOptionError, DistutilsPlatformError
 from distutils.file_util import write_file
-from distutils.util import convert_path, subst_vars, change_root
-from distutils.util import get_platform
-from distutils.errors import DistutilsOptionError
-
-from site import USER_BASE
-from site import USER_SITE
+from distutils.sysconfig import get_config_vars
+from distutils.util import change_root, convert_path, get_platform, subst_vars
+from site import USER_BASE, USER_SITE
 
 HAS_USER_SITE = True
 
@@ -71,7 +66,6 @@ SCHEME_KEYS = ("purelib", "platlib", "headers", "scripts", "data")
 
 
 class install(Command):
-
     description = "install everything from build directory"
 
     user_options = [
@@ -585,7 +579,7 @@ class install(Command):
             # internally, and not to sys.path, so we don't check the platform
             # matches what we are running.
             if self.warn_dir and build_plat != get_platform():
-                raise DistutilsPlatformError("Can't install when " "cross-compiling")
+                raise DistutilsPlatformError("Can't install when cross-compiling")
 
         # Run all sub-commands (at least those that need to be run)
         for cmd_name in self.get_sub_commands():

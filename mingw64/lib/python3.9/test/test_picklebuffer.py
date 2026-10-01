@@ -4,9 +4,9 @@ Pickling tests themselves are in pickletester.py.
 """
 
 import gc
-from pickle import PickleBuffer
-import weakref
 import unittest
+import weakref
+from pickle import PickleBuffer
 
 from test import support
 
@@ -16,19 +16,17 @@ class B(bytes):
 
 
 class PickleBufferTest(unittest.TestCase):
-
     def check_memoryview(self, pb, equiv):
-        with memoryview(pb) as m:
-            with memoryview(equiv) as expected:
-                self.assertEqual(m.nbytes, expected.nbytes)
-                self.assertEqual(m.readonly, expected.readonly)
-                self.assertEqual(m.itemsize, expected.itemsize)
-                self.assertEqual(m.shape, expected.shape)
-                self.assertEqual(m.strides, expected.strides)
-                self.assertEqual(m.c_contiguous, expected.c_contiguous)
-                self.assertEqual(m.f_contiguous, expected.f_contiguous)
-                self.assertEqual(m.format, expected.format)
-                self.assertEqual(m.tobytes(), expected.tobytes())
+        with memoryview(pb) as m, memoryview(equiv) as expected:
+            self.assertEqual(m.nbytes, expected.nbytes)
+            self.assertEqual(m.readonly, expected.readonly)
+            self.assertEqual(m.itemsize, expected.itemsize)
+            self.assertEqual(m.shape, expected.shape)
+            self.assertEqual(m.strides, expected.strides)
+            self.assertEqual(m.c_contiguous, expected.c_contiguous)
+            self.assertEqual(m.f_contiguous, expected.f_contiguous)
+            self.assertEqual(m.format, expected.format)
+            self.assertEqual(m.tobytes(), expected.tobytes())
 
     def test_constructor_failure(self):
         with self.assertRaises(TypeError):

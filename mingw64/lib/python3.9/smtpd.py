@@ -77,24 +77,24 @@ and if remoteport is not given, then 25 is used.
 # - Handle more ESMTP extensions
 # - handle error codes from the backend smtpd
 
-import sys
-import os
+import asynchat
+import asyncore
+import collections
 import errno
 import getopt
-import time
+import os
 import socket
-import asyncore
-import asynchat
-import collections
-from warnings import warn
+import sys
+import time
 from email._header_value_parser import get_addr_spec, get_angle_addr
+from warnings import warn
 
 __all__ = [
+    "DebuggingServer",
+    "MailmanProxy",
+    "PureProxy",
     "SMTPChannel",
     "SMTPServer",
-    "DebuggingServer",
-    "PureProxy",
-    "MailmanProxy",
 ]
 
 program = sys.argv[0]
@@ -155,8 +155,7 @@ class SMTPChannel(asynchat.async_chat):
         self._decode_data = decode_data
         if enable_SMTPUTF8 and decode_data:
             raise ValueError(
-                "decode_data and enable_SMTPUTF8 cannot"
-                " be set to True at the same time"
+                "decode_data and enable_SMTPUTF8 cannot be set to True at the same time"
             )
         if decode_data:
             self._emptystring = ""
@@ -354,8 +353,7 @@ class SMTPChannel(asynchat.async_chat):
     @__fqdn.setter
     def __fqdn(self, value):
         warn(
-            "Setting __fqdn attribute on SMTPChannel is deprecated, "
-            "set 'fqdn' instead",
+            "Setting __fqdn attribute on SMTPChannel is deprecated, set 'fqdn' instead",
             DeprecationWarning,
             2,
         )
@@ -374,8 +372,7 @@ class SMTPChannel(asynchat.async_chat):
     @__peer.setter
     def __peer(self, value):
         warn(
-            "Setting __peer attribute on SMTPChannel is deprecated, "
-            "set 'peer' instead",
+            "Setting __peer attribute on SMTPChannel is deprecated, set 'peer' instead",
             DeprecationWarning,
             2,
         )
@@ -394,8 +391,7 @@ class SMTPChannel(asynchat.async_chat):
     @__conn.setter
     def __conn(self, value):
         warn(
-            "Setting __conn attribute on SMTPChannel is deprecated, "
-            "set 'conn' instead",
+            "Setting __conn attribute on SMTPChannel is deprecated, set 'conn' instead",
             DeprecationWarning,
             2,
         )
@@ -414,8 +410,7 @@ class SMTPChannel(asynchat.async_chat):
     @__addr.setter
     def __addr(self, value):
         warn(
-            "Setting __addr attribute on SMTPChannel is deprecated, "
-            "set 'addr' instead",
+            "Setting __addr attribute on SMTPChannel is deprecated, set 'addr' instead",
             DeprecationWarning,
             2,
         )
@@ -617,8 +612,7 @@ class SMTPChannel(asynchat.async_chat):
                 )
         else:
             self.push(
-                "250 Supported commands: EHLO HELO MAIL RCPT DATA "
-                "RSET NOOP QUIT VRFY"
+                "250 Supported commands: EHLO HELO MAIL RCPT DATA RSET NOOP QUIT VRFY"
             )
 
     def smtp_VRFY(self, arg):
@@ -626,8 +620,7 @@ class SMTPChannel(asynchat.async_chat):
             address, params = self._getaddr(arg)
             if address:
                 self.push(
-                    "252 Cannot VRFY user, but will accept message "
-                    "and attempt delivery"
+                    "252 Cannot VRFY user, but will accept message and attempt delivery"
                 )
             else:
                 self.push("502 Could not VRFY %s" % arg)
@@ -769,8 +762,7 @@ class SMTPServer(asyncore.dispatcher):
         self._decode_data = decode_data
         if enable_SMTPUTF8 and decode_data:
             raise ValueError(
-                "decode_data and enable_SMTPUTF8 cannot"
-                " be set to True at the same time"
+                "decode_data and enable_SMTPUTF8 cannot be set to True at the same time"
             )
         asyncore.dispatcher.__init__(self, map=map)
         try:
@@ -843,7 +835,6 @@ class SMTPServer(asyncore.dispatcher):
 
 
 class DebuggingServer(SMTPServer):
-
     def _print_message_content(self, peer, data):
         inheaders = 1
         lines = data.splitlines()
@@ -874,9 +865,9 @@ class DebuggingServer(SMTPServer):
 
 class PureProxy(SMTPServer):
     def __init__(self, *args, **kwargs):
-        if "enable_SMTPUTF8" in kwargs and kwargs["enable_SMTPUTF8"]:
+        if kwargs.get("enable_SMTPUTF8"):
             raise ValueError("PureProxy does not support SMTPUTF8.")
-        super(PureProxy, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def process_message(self, peer, mailfrom, rcpttos, data):
         lines = data.split("\n")
@@ -921,19 +912,18 @@ class PureProxy(SMTPServer):
 class MailmanProxy(PureProxy):
     def __init__(self, *args, **kwargs):
         warn(
-            "MailmanProxy is deprecated and will be removed " "in future",
+            "MailmanProxy is deprecated and will be removed in future",
             DeprecationWarning,
             2,
         )
-        if "enable_SMTPUTF8" in kwargs and kwargs["enable_SMTPUTF8"]:
+        if kwargs.get("enable_SMTPUTF8"):
             raise ValueError("MailmanProxy does not support SMTPUTF8.")
         super(PureProxy, self).__init__(*args, **kwargs)
 
     def process_message(self, peer, mailfrom, rcpttos, data):
         from io import StringIO
-        from Mailman import Utils
-        from Mailman import Message
-        from Mailman import MailList
+
+        from Mailman import MailList, Message, Utils
 
         # If the message is to a Mailman mailing list, then we'll invoke the
         # Mailman script directly, without going through the real smtpd.

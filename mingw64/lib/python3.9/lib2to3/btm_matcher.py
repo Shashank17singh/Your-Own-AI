@@ -7,15 +7,15 @@ matching. This reduces significantly the number of candidate nodes."""
 
 __author__ = "George Boutsioukis <gboutsioukis@gmail.com>"
 
-import logging
 import itertools
+import logging
 from collections import defaultdict
 
 from . import pytree
 from .btm_utils import reduce_tree
 
 
-class BMNode(object):
+class BMNode:
     """Class for a node of the Aho-Corasick automaton used in matching"""
 
     count = itertools.count()
@@ -27,7 +27,7 @@ class BMNode(object):
         self.content = ""
 
 
-class BottomMatcher(object):
+class BottomMatcher:
     """The main matcher class. After instantiating the patterns should
     be added using the add_fixer method"""
 

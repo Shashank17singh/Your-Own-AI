@@ -6,7 +6,7 @@
 
 import re
 
-__all__ = ["TextWrapper", "wrap", "fill", "dedent", "indent", "shorten"]
+__all__ = ["TextWrapper", "dedent", "fill", "indent", "shorten", "wrap"]
 
 # Hardcode the recognized whitespace characters to the US-ASCII
 # whitespace characters.  The main reason for doing this is that
@@ -94,7 +94,8 @@ class TextWrapper:
             | # em-dash
               (?<=%(wp)s) (?=-{2,}\w)
             )
-        )""" % {"wp": word_punct, "lt": letter, "ws": whitespace, "nws": nowhitespace},
+        )"""
+        % {"wp": word_punct, "lt": letter, "ws": whitespace, "nws": nowhitespace},
         re.VERBOSE,
     )
     del word_punct, letter, nowhitespace
@@ -129,7 +130,7 @@ class TextWrapper:
         tabsize=8,
         *,
         max_lines=None,
-        placeholder=" [...]"
+        placeholder=" [...]",
     ):
         self.width = width
         self.initial_indent = initial_indent
@@ -262,7 +263,6 @@ class TextWrapper:
         chunks.reverse()
 
         while chunks:
-
             # Start the list of chunks that will make up the current line.
             # cur_len is just the length of all the chunks in cur_line.
             cur_line = []

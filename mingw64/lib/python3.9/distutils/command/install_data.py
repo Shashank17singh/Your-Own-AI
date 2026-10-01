@@ -11,15 +11,13 @@ from distutils.util import change_root, convert_path
 
 
 class install_data(Command):
-
     description = "install data files"
 
     user_options = [
         (
             "install-dir=",
             "d",
-            "base directory for installing data files "
-            "(default: installation base dir)",
+            "base directory for installing data files (default: installation base dir)",
         ),
         ("root=", None, "install everything relative to this alternate root directory"),
         ("force", "f", "force installation (overwrite existing files)"),

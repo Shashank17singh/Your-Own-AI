@@ -1,15 +1,14 @@
 import fnmatch
 import functools
-import io
 import ntpath
 import os
 import posixpath
 import re
 import sys
 from _collections_abc import Sequence
-from errno import EINVAL, ENOENT, ENOTDIR, EBADF, ELOOP
+from errno import EBADF, EINVAL, ELOOP, ENOENT, ENOTDIR
 from operator import attrgetter
-from stat import S_ISDIR, S_ISLNK, S_ISREG, S_ISSOCK, S_ISBLK, S_ISCHR, S_ISFIFO
+from stat import S_ISBLK, S_ISCHR, S_ISDIR, S_ISFIFO, S_ISLNK, S_ISREG, S_ISSOCK
 from urllib.parse import quote_from_bytes as urlquote_from_bytes
 
 supports_symlinks = True
@@ -26,11 +25,11 @@ else:
 
 
 __all__ = [
+    "Path",
+    "PosixPath",
     "PurePath",
     "PurePosixPath",
     "PureWindowsPath",
-    "Path",
-    "PosixPath",
     "WindowsPath",
 ]
 
@@ -61,7 +60,7 @@ def _is_wildcard_pattern(pat):
     return "*" in pat or "?" in pat or "[" in pat
 
 
-class _Flavour(object):
+class _Flavour:
     """A flavour implements a particular (platform-specific) set of path
     semantics."""
 
@@ -292,7 +291,7 @@ class _WindowsFlavour(_Flavour):
                 drv, root, parts = self.parse_parts((userhome,))
                 if parts[-1] != os.environ["USERNAME"]:
                     raise RuntimeError(
-                        "Can't determine home directory " "for %r" % username
+                        "Can't determine home directory for %r" % username
                     )
                 parts[-1] = username
                 if drv or root:
@@ -407,9 +406,7 @@ class _PosixFlavour(_Flavour):
             try:
                 return pwd.getpwnam(username).pw_dir
             except KeyError:
-                raise RuntimeError(
-                    "Can't determine home directory " "for %r" % username
-                )
+                raise RuntimeError("Can't determine home directory for %r" % username)
 
 
 _windows_flavour = _WindowsFlavour()
@@ -422,7 +419,6 @@ class _Accessor:
 
 
 class _NormalAccessor(_Accessor):
-
     stat = os.stat
 
     lstat = os.lstat
@@ -549,13 +545,11 @@ class _Selector:
 
 
 class _TerminatingSelector:
-
     def _select_from(self, parent_path, is_dir, exists, scandir):
         yield parent_path
 
 
 class _PreciseSelector(_Selector):
-
     def __init__(self, name, child_parts, flavour):
         self.name = name
         _Selector.__init__(self, child_parts, flavour)
@@ -571,7 +565,6 @@ class _PreciseSelector(_Selector):
 
 
 class _WildcardSelector(_Selector):
-
     def __init__(self, pat, child_parts, flavour):
         self.match = flavour.compile_pattern(pat)
         _Selector.__init__(self, child_parts, flavour)
@@ -602,7 +595,6 @@ class _WildcardSelector(_Selector):
 
 
 class _RecursiveWildcardSelector(_Selector):
-
     def __init__(self, pat, child_parts, flavour):
         _Selector.__init__(self, child_parts, flavour)
 
@@ -652,7 +644,7 @@ class _PathParents(Sequence):
     """This object provides sequence-like access to the logical ancestors
     of a path.  Don't try to construct it yourself."""
 
-    __slots__ = ("_pathcls", "_drv", "_root", "_parts")
+    __slots__ = ("_drv", "_parts", "_pathcls", "_root")
 
     def __init__(self, path):
         # We don't store the instance to avoid reference cycles
@@ -675,10 +667,10 @@ class _PathParents(Sequence):
         )
 
     def __repr__(self):
-        return "<{}.parents>".format(self._pathcls.__name__)
+        return f"<{self._pathcls.__name__}.parents>"
 
 
-class PurePath(object):
+class PurePath:
     """Base class for manipulating paths without I/O.
 
     PurePath represents a filesystem path and offers operations which
@@ -689,13 +681,13 @@ class PurePath(object):
     """
 
     __slots__ = (
-        "_drv",
-        "_root",
-        "_parts",
-        "_str",
-        "_hash",
-        "_pparts",
         "_cached_cparts",
+        "_drv",
+        "_hash",
+        "_parts",
+        "_pparts",
+        "_root",
+        "_str",
     )
 
     def __new__(cls, *args):
@@ -800,7 +792,7 @@ class PurePath(object):
         return os.fsencode(self)
 
     def __repr__(self):
-        return "{}({!r})".format(self.__class__.__name__, self.as_posix())
+        return f"{self.__class__.__name__}({self.as_posix()!r})"
 
     def as_uri(self):
         """Return the path as a 'file' URI."""
@@ -976,10 +968,8 @@ class PurePath(object):
         if (root or drv) if n == 0 else cf(abs_parts[:n]) != cf(to_abs_parts):
             formatted = self._format_parsed_parts(to_drv, to_root, to_parts)
             raise ValueError(
-                "{!r} is not in the subpath of {!r}"
-                " OR one path is relative and the other is absolute.".format(
-                    str(self), str(formatted)
-                )
+                f"{str(self)!r} is not in the subpath of {str(formatted)!r}"
+                " OR one path is relative and the other is absolute."
             )
         return self._from_parsed_parts("", root if n == 1 else "", abs_parts[n:])
 
@@ -1213,7 +1203,7 @@ class Path(PurePath):
         """
         sys.audit("pathlib.Path.glob", self, pattern)
         if not pattern:
-            raise ValueError("Unacceptable pattern: {!r}".format(pattern))
+            raise ValueError(f"Unacceptable pattern: {pattern!r}")
         drv, root, pattern_parts = self._flavour.parse_parts((pattern,))
         if drv or root:
             raise NotImplementedError("Non-relative patterns are unsupported")
@@ -1292,7 +1282,7 @@ class Path(PurePath):
         Open the file pointed by this path and return a file object, as
         the built-in open() function does.
         """
-        return io.open(
+        return open(
             self, mode, buffering, encoding, errors, newline, opener=self._opener
         )
 

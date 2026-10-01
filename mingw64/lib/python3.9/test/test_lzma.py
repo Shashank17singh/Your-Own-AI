@@ -1,22 +1,21 @@
 import _compression
 import array
-from io import BytesIO, UnsupportedOperation, DEFAULT_BUFFER_SIZE
 import os
 import pathlib
 import pickle
 import random
 import sys
-from test import support
 import unittest
+from io import DEFAULT_BUFFER_SIZE, BytesIO, UnsupportedOperation
 
-from test.support import _4G, TESTFN, import_module, bigmemtest, run_unittest, unlink
+from test import support
+from test.support import _4G, TESTFN, bigmemtest, import_module, run_unittest, unlink
 
 lzma = import_module("lzma")
 from lzma import LZMACompressor, LZMADecompressor, LZMAError, LZMAFile
 
 
 class CompressorDecompressorTestCase(unittest.TestCase):
-
     # Test error cases.
 
     def test_simple_bad_args(self):
@@ -379,7 +378,6 @@ class CompressorDecompressorTestCase(unittest.TestCase):
 
 
 class CompressDecompressFunctionTestCase(unittest.TestCase):
-
     # Test error cases:
 
     def test_bad_args(self):
@@ -551,7 +549,6 @@ class TempFile:
 
 
 class FileTestCase(unittest.TestCase):
-
     def test_init(self):
         with LZMAFile(BytesIO(COMPRESSED_XZ)) as f:
             pass
@@ -602,9 +599,8 @@ class FileTestCase(unittest.TestCase):
             unlink(TESTFN)
             with LZMAFile(TESTFN, mode):
                 pass
-            with self.assertRaises(FileExistsError):
-                with LZMAFile(TESTFN, mode):
-                    pass
+            with self.assertRaises(FileExistsError), LZMAFile(TESTFN, mode):
+                pass
 
     def test_init_bad_mode(self):
         with self.assertRaises(ValueError):
@@ -884,20 +880,18 @@ class FileTestCase(unittest.TestCase):
             self.assertEqual(f.read(), INPUT * 5)
 
     def test_read_from_file(self):
-        with TempFile(TESTFN, COMPRESSED_XZ):
-            with LZMAFile(TESTFN) as f:
-                self.assertEqual(f.read(), INPUT)
-                self.assertEqual(f.read(), b"")
+        with TempFile(TESTFN, COMPRESSED_XZ), LZMAFile(TESTFN) as f:
+            self.assertEqual(f.read(), INPUT)
+            self.assertEqual(f.read(), b"")
 
     def test_read_from_file_with_bytes_filename(self):
         try:
             bytes_filename = TESTFN.encode("ascii")
         except UnicodeEncodeError:
             self.skipTest("Temporary file name needs to be ASCII")
-        with TempFile(TESTFN, COMPRESSED_XZ):
-            with LZMAFile(bytes_filename) as f:
-                self.assertEqual(f.read(), INPUT)
-                self.assertEqual(f.read(), b"")
+        with TempFile(TESTFN, COMPRESSED_XZ), LZMAFile(bytes_filename) as f:
+            self.assertEqual(f.read(), INPUT)
+            self.assertEqual(f.read(), b"")
 
     def test_read_incomplete(self):
         with LZMAFile(BytesIO(COMPRESSED_XZ[:128])) as f:
@@ -924,7 +918,7 @@ class FileTestCase(unittest.TestCase):
         with LZMAFile(BytesIO(), "w") as f:
             self.assertRaises(ValueError, f.read)
         with LZMAFile(BytesIO(COMPRESSED_XZ)) as f:
-            self.assertRaises(TypeError, f.read, float())
+            self.assertRaises(TypeError, f.read, 0.0)
 
     def test_read_bad_data(self):
         with LZMAFile(BytesIO(COMPRESSED_BOGUS)) as f:
@@ -1266,7 +1260,6 @@ class FileTestCase(unittest.TestCase):
 
 
 class OpenTestCase(unittest.TestCase):
-
     def test_binary_modes(self):
         with lzma.open(BytesIO(COMPRESSED_XZ), "rb") as f:
             self.assertEqual(f.read(), INPUT)
@@ -1385,7 +1378,6 @@ class OpenTestCase(unittest.TestCase):
 
 
 class MiscellaneousTestCase(unittest.TestCase):
-
     def test_is_check_supported(self):
         # CHECK_NONE and CHECK_CRC32 should always be supported,
         # regardless of the options liblzma was compiled with.

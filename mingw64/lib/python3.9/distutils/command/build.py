@@ -2,7 +2,8 @@
 
 Implements the Distutils 'build' command."""
 
-import sys, os
+import os
+import sys
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
 from distutils.util import get_platform
@@ -15,7 +16,6 @@ def show_compilers():
 
 
 class build(Command):
-
     description = "build everything needed to install"
 
     user_options = [
@@ -33,8 +33,7 @@ class build(Command):
         (
             "plat-name=",
             "p",
-            "platform name to build for, if supported "
-            "(default: %s)" % get_platform(),
+            "platform name to build for, if supported (default: %s)" % get_platform(),
         ),
         ("compiler=", "c", "specify the compiler type"),
         ("parallel=", "j", "number of parallel build jobs"),

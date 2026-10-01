@@ -15,7 +15,7 @@
 
 MAGIC = 20171005
 
-from _sre import MAXREPEAT, MAXGROUPS
+from _sre import MAXREPEAT
 
 # SRE standard exception (access as sre.error)
 # should this really be here?
@@ -56,7 +56,7 @@ class error(Exception):
 
 class _NamedIntConstant(int):
     def __new__(cls, value, name):
-        self = super(_NamedIntConstant, cls).__new__(cls, value)
+        self = super().__new__(cls, value)
         self.name = name
         return self
 

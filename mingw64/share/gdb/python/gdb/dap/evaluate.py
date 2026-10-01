@@ -1,5 +1,5 @@
-from typing import Optional
 import gdb
+
 from .frames import select_frame
 from .server import capability, client_bool_capability, request
 from .startup import DAPException, in_gdb_thread, parse_and_eval
@@ -53,7 +53,7 @@ def _repl(command, frame_id):
 def eval_request(
     *,
     expression: str,
-    frameId: Optional[int] = None,
+    frameId: int | None = None,
     context: str = "variables",
     format=None,
     **args,
@@ -84,7 +84,7 @@ def variables(
 @capability("supportsSetExpression")
 @request("setExpression", defer_events=False)
 def set_expression(
-    *, expression: str, value: str, frameId: Optional[int] = None, format=None, **args
+    *, expression: str, value: str, frameId: int | None = None, format=None, **args
 ):
     with apply_format(format):
         global_context = True

@@ -5,29 +5,30 @@ f'''{sys.executable} -c "__import__('idlelib.run').run.main()"'''
 '.run' is needed because __import__ returns idlelib, not idlelib.run.
 """
 
+import _thread as thread
 import functools
+import idlelib  # testing
 import io
 import linecache
 import queue
 import sys
 import textwrap
-import time
-import traceback
-import _thread as thread
 import threading
-import warnings
-
-import idlelib  # testing
-from idlelib import autocomplete  # AutoComplete, fetch_encodings
-from idlelib import calltip  # Calltip
-from idlelib import debugger_r  # start_debugger
-from idlelib import debugobj_r  # remote_object_tree_item
-from idlelib import iomenu  # encoding
-from idlelib import rpc  # multiple objects
-from idlelib import stackviewer  # StackTreeItem
-import __main__
-
+import time
 import tkinter  # Use tcl and, if startup fails, messagebox.
+import traceback
+import warnings
+from idlelib import (
+    autocomplete,  # AutoComplete, fetch_encodings
+    calltip,  # Calltip
+    debugger_r,  # start_debugger
+    debugobj_r,  # remote_object_tree_item
+    iomenu,  # encoding
+    rpc,  # multiple objects
+    stackviewer,  # StackTreeItem
+)
+
+import __main__
 
 if not hasattr(sys.modules["idlelib.run"], "firstrun"):
     # Undo modifications of tkinter by idlelib imports; see bpo-25507.
@@ -203,7 +204,7 @@ def manage_socket(address):
             socket_error = err
     else:
         print(
-            "IDLE Subprocess: Connection to " "IDLE GUI failed, exiting.",
+            "IDLE Subprocess: Connection to IDLE GUI failed, exiting.",
             file=sys.__stderr__,
         )
         show_socket_error(socket_error, address)
@@ -369,8 +370,7 @@ def install_recursionlimit_wrappers():
             (limit,) = args
         except ValueError:
             raise TypeError(
-                f"setrecursionlimit() takes exactly one "
-                f"argument ({len(args)} given)"
+                f"setrecursionlimit() takes exactly one argument ({len(args)} given)"
             )
         if not limit > 0:
             raise ValueError("recursion limit must be greater or equal than 1")
@@ -417,7 +417,6 @@ def uninstall_recursionlimit_wrappers():
 
 
 class MyRPCServer(rpc.RPCServer):
-
     def handle_error(self, request, client_address):
         """Override RPCServer method for IDLE
 
@@ -437,7 +436,7 @@ class MyRPCServer(rpc.RPCServer):
             erf = sys.__stderr__
             print(
                 textwrap.dedent(f"""
-            {'-'*40}
+            {"-" * 40}
             Unhandled exception in user code execution server!'
             Thread: {threading.current_thread().name}
             IDLE Client Address: {client_address}
@@ -453,7 +452,7 @@ class MyRPCServer(rpc.RPCServer):
             Users should never see this message; it is likely transient.
             If this recurs, report this with a copy of the message
             and an explanation of how to make it repeat.
-            {'-'*40}"""),
+            {"-" * 40}"""),
                 file=erf,
             )
             quitting = True
@@ -464,7 +463,6 @@ class MyRPCServer(rpc.RPCServer):
 
 
 class StdioFile(io.TextIOBase):
-
     def __init__(self, shell, tags, encoding="utf-8", errors="strict"):
         self.shell = shell
         self.tags = tags
@@ -488,7 +486,6 @@ class StdioFile(io.TextIOBase):
 
 
 class StdOutputFile(StdioFile):
-
     def writable(self):
         return True
 
@@ -551,7 +548,6 @@ class StdInputFile(StdioFile):
 
 
 class MyHandler(rpc.RPCHandler):
-
     def handle(self):
         """Override base method"""
         executive = Executive(self)
@@ -598,7 +594,6 @@ class MyHandler(rpc.RPCHandler):
 
 
 class Executive:
-
     def __init__(self, rpchandler):
         self.rpchandler = rpchandler
         if idlelib.testing is False:

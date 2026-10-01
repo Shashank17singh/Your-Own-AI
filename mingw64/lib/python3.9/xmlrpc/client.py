@@ -30,15 +30,15 @@ Exported functions:
 """
 
 import base64
+import errno
+import http.client
 import sys
 import time
+import urllib.parse
 from datetime import datetime
 from decimal import Decimal
-import http.client
-import urllib.parse
-from xml.parsers import expat
-import errno
 from io import BytesIO
+from xml.parsers import expat
 
 try:
     import gzip
@@ -99,8 +99,6 @@ class ProtocolError(Error):
 
 class ResponseError(Error):
     """Indicates a broken response package."""
-
-    pass
 
 
 class Fault(Error):
@@ -743,9 +741,9 @@ def dumps(
     packet encoding.  Unicode strings are automatically converted,
     where necessary.
     """
-    assert isinstance(
-        params, (tuple, Fault)
-    ), "argument must be tuple or Fault instance"
+    assert isinstance(params, (tuple, Fault)), (
+        "argument must be tuple or Fault instance"
+    )
     if isinstance(params, Fault):
         methodresponse = 1
     elif methodresponse and isinstance(params, tuple):
@@ -764,7 +762,7 @@ def dumps(
     if methodname:
         data = (
             xmlheader,
-            "<methodCall>\n" "<methodName>",
+            "<methodCall>\n<methodName>",
             methodname,
             "</methodName>\n",
             data,
@@ -1004,8 +1002,11 @@ class SafeTransport(Transport):
                 "your version of http.client doesn't support HTTPS"
             )
         chost, self._extra_headers, x509 = self.get_host_info(host)
-        self._connection = host, http.client.HTTPSConnection(
-            chost, None, context=self.context, **(x509 or {})
+        self._connection = (
+            host,
+            http.client.HTTPSConnection(
+                chost, None, context=self.context, **(x509 or {})
+            ),
         )
         return self._connection[1]
 
@@ -1037,7 +1038,7 @@ class ServerProxy:
         use_builtin_types=False,
         *,
         headers=(),
-        context=None
+        context=None,
     ):
         p = urllib.parse.urlsplit(uri)
         if p.scheme not in ("http", "https"):
@@ -1057,7 +1058,7 @@ class ServerProxy:
                 use_datetime=use_datetime,
                 use_builtin_types=use_builtin_types,
                 headers=headers,
-                **extra_kwargs
+                **extra_kwargs,
             )
         self.__transport = transport
         self.__encoding = encoding or "utf-8"

@@ -12,20 +12,21 @@ __author__ = "Guido van Rossum <guido@python.org>"
 
 
 # Python imports
+import collections
 import io
+import logging
+import operator
 import os
 import pkgutil
 import sys
-import logging
-import operator
-import collections
 from itertools import chain
 
-# Local imports
-from .pgen2 import driver, tokenize, token
-from .fixer_util import find_root
-from . import pytree, pygram
 from . import btm_matcher as bm
+from . import pygram, pytree
+from .fixer_util import find_root
+
+# Local imports
+from .pgen2 import driver, token, tokenize
 
 
 def get_all_fix_names(fixer_pkg, remove_prefix=True):
@@ -157,8 +158,7 @@ class FixerError(Exception):
     """A fixer could not be loaded."""
 
 
-class RefactoringTool(object):
-
+class RefactoringTool:
     _default_options = {
         "print_function": False,
         "exec_function": False,
@@ -233,8 +233,7 @@ class RefactoringTool(object):
         for fix_mod_path in self.fixers:
             mod = __import__(fix_mod_path, {}, {}, ["*"])
             fix_name = fix_mod_path.rsplit(".", 1)[-1]
-            if fix_name.startswith(self.FILE_PREFIX):
-                fix_name = fix_name[len(self.FILE_PREFIX) :]
+            fix_name = fix_name.removeprefix(self.FILE_PREFIX)
             parts = fix_name.split("_")
             class_name = self.CLASS_PREFIX + "".join([p.title() for p in parts])
             try:
@@ -281,7 +280,6 @@ class RefactoringTool(object):
     def print_output(self, old_text, new_text, filename, equal):
         """Called with the old version, new version, and filename of a
         refactored file."""
-        pass
 
     def refactor(self, items, write=False, doctests_only=False):
         """Refactor a list of files and directories."""
@@ -324,7 +322,7 @@ class RefactoringTool(object):
             encoding = tokenize.detect_encoding(f.readline)[0]
         finally:
             f.close()
-        with io.open(filename, "r", encoding=encoding, newline="") as f:
+        with open(filename, "r", encoding=encoding, newline="") as f:
             return f.read(), encoding
 
     def refactor_file(self, filename, write=False, doctests_only=False):
@@ -421,7 +419,7 @@ class RefactoringTool(object):
 
         while any(match_set.values()):
             for fixer in self.BM.fixers:
-                if fixer in match_set and match_set[fixer]:
+                if match_set.get(fixer):
                     # sort by depth; apply fixers from bottom(of the AST) to top
                     match_set[fixer].sort(key=pytree.Base.depth, reverse=True)
 
@@ -525,7 +523,7 @@ class RefactoringTool(object):
         set.
         """
         try:
-            fp = io.open(filename, "w", encoding=encoding, newline="")
+            fp = open(filename, "w", encoding=encoding, newline="")
         except OSError as err:
             self.log_error("Can't create %s: %s", filename, err)
             return
@@ -691,17 +689,14 @@ class MultiprocessingUnsupported(Exception):
 
 
 class MultiprocessRefactoringTool(RefactoringTool):
-
     def __init__(self, *args, **kwargs):
-        super(MultiprocessRefactoringTool, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.queue = None
         self.output_lock = None
 
     def refactor(self, items, write=False, doctests_only=False, num_processes=1):
         if num_processes == 1:
-            return super(MultiprocessRefactoringTool, self).refactor(
-                items, write, doctests_only
-            )
+            return super().refactor(items, write, doctests_only)
         try:
             import multiprocessing
         except ImportError:
@@ -716,9 +711,7 @@ class MultiprocessRefactoringTool(RefactoringTool):
         try:
             for p in processes:
                 p.start()
-            super(MultiprocessRefactoringTool, self).refactor(
-                items, write, doctests_only
-            )
+            super().refactor(items, write, doctests_only)
         finally:
             self.queue.join()
             for i in range(num_processes):
@@ -733,7 +726,7 @@ class MultiprocessRefactoringTool(RefactoringTool):
         while task is not None:
             args, kwargs = task
             try:
-                super(MultiprocessRefactoringTool, self).refactor_file(*args, **kwargs)
+                super().refactor_file(*args, **kwargs)
             finally:
                 self.queue.task_done()
             task = self.queue.get()
@@ -742,6 +735,4 @@ class MultiprocessRefactoringTool(RefactoringTool):
         if self.queue is not None:
             self.queue.put((args, kwargs))
         else:
-            return super(MultiprocessRefactoringTool, self).refactor_file(
-                *args, **kwargs
-            )
+            return super().refactor_file(*args, **kwargs)

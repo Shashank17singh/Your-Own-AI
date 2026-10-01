@@ -1,18 +1,18 @@
 # Python test set -- part 6, built-in types
 
-from test.support import run_with_locale
 import collections.abc
 import inspect
-import pickle
 import locale
+import pickle
 import sys
 import types
 import unittest.mock
 import weakref
 
+from test.support import run_with_locale
+
 
 class TypesTests(unittest.TestCase):
-
     def test_truth_values(self):
         if None:
             self.fail("None is true instead of false")
@@ -127,9 +127,9 @@ class TypesTests(unittest.TestCase):
         if 0 != 0.0 or 1 != 1.0 or -1 != -1.0:
             self.fail("int/float value not equal")
         # calling built-in types without argument must return 0
-        if int() != 0:
+        if 0 != 0:
             self.fail("int() does not return 0")
-        if float() != 0.0:
+        if 0.0 != 0.0:
             self.fail("float() does not return 0.0")
         if int(1.9) == 1 == int(1.1) and int(-1.1) == -1 == int(-1.9):
             pass
@@ -148,7 +148,7 @@ class TypesTests(unittest.TestCase):
         # test all 2 digit exponents, both with __format__ and with
         #  '%' formatting
         for i in range(-99, 100):
-            test(float("1.5e" + str(i)), "1.500000e{0:+03d}".format(i))
+            test(float("1.5e" + str(i)), f"1.500000e{i:+03d}")
 
         # test some 3 digit exponents
         self.assertEqual((1.5e100).__format__("e"), "1.500000e+100")
@@ -476,7 +476,7 @@ class TypesTests(unittest.TestCase):
         # test locale support for __format__ code 'n' for integers
 
         x = 123456789012345678901234567890
-        for i in range(0, 30):
+        for i in range(30):
             self.assertEqual(
                 locale.format_string("%d", x, grouping=True), format(x, "n")
             )
@@ -907,7 +907,6 @@ class MappingProxyTests(unittest.TestCase):
 
 
 class ClassCreationTests(unittest.TestCase):
-
     class Meta(type):
         def __init__(cls, name, bases, ns, **kw):
             super().__init__(name, bases, ns)
@@ -1315,15 +1314,15 @@ class ClassCreationTests(unittest.TestCase):
         # TypeError: BNotMeta is neither a
         # subclass, nor a superclass of int
         with self.assertRaises(TypeError):
-            X = types.new_class("X", (C, int()))
+            X = types.new_class("X", (C, 0))
         with self.assertRaises(TypeError):
-            X = types.new_class("X", (int(), C))
+            X = types.new_class("X", (0, C))
 
     def test_one_argument_type(self):
         expected_message = "type.__new__() takes exactly 3 arguments (1 given)"
 
         # Only type itself can use the one-argument form (#27157)
-        self.assertIs(type(5), int)
+        self.assertIs(int, int)
 
         class M(type):
             pass
@@ -1341,7 +1340,6 @@ class ClassCreationTests(unittest.TestCase):
 
 
 class SimpleNamespaceTests(unittest.TestCase):
-
     def test_constructor(self):
         ns1 = types.SimpleNamespace()
         ns2 = types.SimpleNamespace(x=1, y=2)
@@ -1425,8 +1423,8 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns2._y = 5
         name = "namespace"
 
-        self.assertEqual(repr(ns1), "{name}(x=1, y=2, w=3)".format(name=name))
-        self.assertEqual(repr(ns2), "{name}(x='spam', _y=5)".format(name=name))
+        self.assertEqual(repr(ns1), f"{name}(x=1, y=2, w=3)")
+        self.assertEqual(repr(ns2), f"{name}(x='spam', _y=5)")
 
     def test_equal(self):
         ns1 = types.SimpleNamespace(x=1)
@@ -1474,8 +1472,8 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns2.spam = ns3
         ns3.spam = ns2
         name = "namespace"
-        repr1 = "{name}(c='cookie', spam={name}(...))".format(name=name)
-        repr2 = "{name}(spam={name}(x=1, spam={name}(...)))".format(name=name)
+        repr1 = f"{name}(c='cookie', spam={name}(...))"
+        repr2 = f"{name}(spam={name}(x=1, spam={name}(...)))"
 
         self.assertEqual(repr(ns1), repr1)
         self.assertEqual(repr(ns2), repr2)
@@ -1505,7 +1503,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns = types.SimpleNamespace(breakfast="spam", lunch="spam")
 
         for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
-            pname = "protocol {}".format(protocol)
+            pname = f"protocol {protocol}"
             try:
                 ns_pickled = pickle.dumps(ns, protocol)
             except TypeError as e:
@@ -1684,7 +1682,7 @@ class CoroutineTests(unittest.TestCase):
         self.assertIs(wrapper.__name__, gen.__name__)
 
         # Test AttributeErrors
-        for name in {
+        for name in (
             "gi_running",
             "gi_frame",
             "gi_code",
@@ -1693,7 +1691,7 @@ class CoroutineTests(unittest.TestCase):
             "cr_frame",
             "cr_code",
             "cr_await",
-        }:
+        ):
             with self.assertRaises(AttributeError):
                 getattr(wrapper, name)
 

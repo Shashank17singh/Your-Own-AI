@@ -1,4 +1,5 @@
 import json
+
 from .startup import LogLevel, log, log_stack, start_thread
 
 
@@ -21,7 +22,7 @@ def read_json(stream):
                 content_length = int(line)
                 continue
             log("IGNORED: <<<%s>>>" % line)
-        data = bytes()
+        data = b""
         while len(data) < content_length:
             new_data = stream.read(content_length - len(data))
             if len(new_data) == 0:

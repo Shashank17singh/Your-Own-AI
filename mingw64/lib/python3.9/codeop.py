@@ -57,11 +57,12 @@ Compile():
 """
 
 import __future__
+
 import warnings
 
 _features = [getattr(__future__, fname) for fname in __future__.all_feature_names]
 
-__all__ = ["compile_command", "Compile", "CommandCompiler"]
+__all__ = ["CommandCompiler", "Compile", "compile_command"]
 
 PyCF_DONT_IMPLY_DEDENT = 0x200  # Matches pythonrun.h
 

@@ -1,7 +1,8 @@
-import os
-import json
 import doctest
+import json
+import os
 import unittest
+
 from test import support
 
 cjson = support.import_fresh_module("json", fresh=["_json"])

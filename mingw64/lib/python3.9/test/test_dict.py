@@ -7,11 +7,11 @@ import string
 import sys
 import unittest
 import weakref
+
 from test import support
 
 
 class DictTest(unittest.TestCase):
-
     def test_invalid_keyword_arguments(self):
         class Custom(dict):
             pass
@@ -35,7 +35,7 @@ class DictTest(unittest.TestCase):
                 ("".join(random.sample(string.ascii_letters, 8)), i) for i in range(n)
             ]
             random.shuffle(items)
-            formatted_items = ("{!r}: {:d}".format(k, v) for k, v in items)
+            formatted_items = (f"{k!r}: {v:d}" for k, v in items)
             dictliteral = "{" + ", ".join(formatted_items) + "}"
             self.assertEqual(eval(dictliteral), dict(items))
 
@@ -138,7 +138,7 @@ class DictTest(unittest.TestCase):
 
         self.assertRaises(TypeError, d.__getitem__)
 
-        class BadEq(object):
+        class BadEq:
             def __eq__(self, other):
                 raise Exc()
 
@@ -152,7 +152,7 @@ class DictTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):
@@ -255,7 +255,7 @@ class DictTest(unittest.TestCase):
 
         self.assertRaises(Exc, d.update, FailingUserDict())
 
-        class badseq(object):
+        class badseq:
             def __iter__(self):
                 return self
 
@@ -306,7 +306,7 @@ class DictTest(unittest.TestCase):
 
         self.assertRaises(Exc, baddict1.fromkeys, [1])
 
-        class BadSeq(object):
+        class BadSeq:
             def __iter__(self):
                 return self
 
@@ -412,7 +412,7 @@ class DictTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):
@@ -428,7 +428,7 @@ class DictTest(unittest.TestCase):
 
     def test_setdefault_atomic(self):
         # Issue #13521: setdefault() calls __hash__ and __eq__ only once.
-        class Hashed(object):
+        class Hashed:
             def __init__(self):
                 self.hash_count = 0
                 self.eq_count = 0
@@ -450,7 +450,7 @@ class DictTest(unittest.TestCase):
         self.assertEqual(hashed1.eq_count + hashed2.eq_count, 1)
 
     def test_setitem_atomic_at_resize(self):
-        class Hashed(object):
+        class Hashed:
             def __init__(self):
                 self.hash_count = 0
                 self.eq_count = 0
@@ -521,7 +521,7 @@ class DictTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):
@@ -608,7 +608,7 @@ class DictTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadRepr(object):
+        class BadRepr:
             def __repr__(self):
                 raise Exc()
 
@@ -628,7 +628,7 @@ class DictTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadCmp(object):
+        class BadCmp:
             def __eq__(self, other):
                 raise Exc()
 
@@ -858,7 +858,7 @@ class DictTest(unittest.TestCase):
         # Another dict resizing bug (SF bug #1456209).
         # This caused Segmentation faults or Illegal instructions.
 
-        class X(object):
+        class X:
             def __hash__(self):
                 return 5
 
@@ -897,7 +897,7 @@ class DictTest(unittest.TestCase):
     def test_container_iterator(self):
         # Bug #3680: tp_traverse was not implemented for dictiter and
         # dictview objects.
-        class C(object):
+        class C:
             pass
 
         views = (dict.items, dict.values, dict.keys)
@@ -944,7 +944,7 @@ class DictTest(unittest.TestCase):
     @support.cpython_only
     def test_track_dynamic(self):
         # Test GC-optimization of dynamically-created dicts
-        class MyObject(object):
+        class MyObject:
             pass
 
         x, y, z, w, o = 1.5, "a", (1, object()), [], MyObject()
@@ -1518,7 +1518,6 @@ class DictTest(unittest.TestCase):
 
 
 class CAPITest(unittest.TestCase):
-
     # Test _PyDict_GetItem_KnownHash()
     @support.cpython_only
     def test_getitem_knownhash(self):

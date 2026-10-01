@@ -2,12 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for the CMake cmakeFiles object kind",
   "type": "object",
-  "required": [
-    "kind",
-    "version",
-    "paths",
-    "inputs"
-  ],
+  "required": ["kind", "version", "paths", "inputs"],
   "oneOf": [
     {
       "$ref": "#/definitions/cmakeFilesV1_0"
@@ -24,10 +19,7 @@
     },
     "versionV1_0": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -42,10 +34,7 @@
     },
     "versionV1_1": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -60,10 +49,7 @@
     },
     "paths": {
       "type": "object",
-      "required": [
-        "build",
-        "source"
-      ],
+      "required": ["build", "source"],
       "properties": {
         "build": {
           "type": "string",
@@ -80,9 +66,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "type": "string",
@@ -109,10 +93,7 @@
       "description": "Optional member present only when the project calls file(GLOB) or file(GLOB_RECURSE) with the CONFIGURE_DEPENDS option",
       "items": {
         "type": "object",
-        "required": [
-          "expression",
-          "paths"
-        ],
+        "required": ["expression", "paths"],
         "properties": {
           "expression": {
             "type": "string",

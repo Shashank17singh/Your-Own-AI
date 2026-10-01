@@ -1,13 +1,13 @@
-import io
 import email
+import io
 import unittest
-from email.message import Message, EmailMessage
+from email.message import EmailMessage, Message
 from email.policy import default
+
 from test.test_email import TestEmailBase
 
 
 class TestCustomMessage(TestEmailBase):
-
     class MyMessage(Message):
         def __init__(self, policy):
             self.check_policy = policy
@@ -32,7 +32,6 @@ class TestCustomMessage(TestEmailBase):
 
 
 class TestParserBase:
-
     def test_only_split_on_cr_lf(self):
         # The unicode line splitter splits on unicode linebreaks, which are
         # more numerous than allowed by the email RFCs; make sure we are only

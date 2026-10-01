@@ -9,18 +9,17 @@ configure-like tasks: "try to compile this C code", or "figure out where
 this header file lives".
 """
 
-import os, re
-
+import os
+import re
+from distutils import log
 from distutils.core import Command
 from distutils.errors import DistutilsExecError
 from distutils.sysconfig import customize_compiler
-from distutils import log
 
 LANG_EXT = {"c": ".c", "c++": ".cxx"}
 
 
 class config(Command):
-
     description = "prepare to build"
 
     user_options = [
@@ -104,8 +103,7 @@ class config(Command):
         filename = "_configtest" + LANG_EXT[lang]
         with open(filename, "w") as file:
             if headers:
-                for header in headers:
-                    file.write("#include <%s>\n" % header)
+                file.writelines("#include <%s>\n" % header for header in headers)
                 file.write("\n")
             file.write(body)
             if body[-1] != "\n":

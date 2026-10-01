@@ -1,10 +1,10 @@
 import collections
 import copyreg
 import dbm
-import io
 import functools
-import os
+import io
 import math
+import os
 import pickle
 import pickletools
 import shutil
@@ -13,29 +13,29 @@ import sys
 import threading
 import unittest
 import weakref
-from textwrap import dedent
 from http.cookies import SimpleCookie
+from textwrap import dedent
 
 try:
     import _testbuffer
 except ImportError:
     _testbuffer = None
 
+from pickle import bytes_types
+
 from test import support
 from test.support import (
-    TestFailed,
-    TESTFN,
-    run_with_locale,
-    no_tracing,
     _2G,
     _4G,
+    TESTFN,
+    TestFailed,
     bigmemtest,
-    reap_threads,
     forget,
+    no_tracing,
+    reap_threads,
+    run_with_locale,
     save_restore_warnings_filters,
 )
-
-from pickle import bytes_types
 
 # bpo-41003: Save/restore warnings filters to leave them unchanged.
 # Ignore filters installed by numpy.
@@ -91,7 +91,7 @@ class UnseekableIO(io.BytesIO):
         raise io.UnsupportedOperation
 
 
-class MinimalIO(object):
+class MinimalIO:
     """
     A file-like object that doesn't support readinto().
     """
@@ -183,7 +183,6 @@ class myint(int):
 
 
 class initarg(C):
-
     def __init__(self, a, b):
         self.a = a
         self.b = b
@@ -196,7 +195,7 @@ class metaclass(type):
     pass
 
 
-class use_metaclass(object, metaclass=metaclass):
+class use_metaclass(metaclass=metaclass):
     pass
 
 
@@ -227,7 +226,7 @@ class ZeroCopyBytes(bytes):
             return type(self)._reconstruct, (bytes(self),)
 
     def __repr__(self):
-        return "{}({!r})".format(self.__class__.__name__, bytes(self))
+        return f"{self.__class__.__name__}({bytes(self)!r})"
 
     __str__ = __repr__
 
@@ -255,7 +254,7 @@ class ZeroCopyBytearray(bytearray):
             return type(self)._reconstruct, (bytes(self),)
 
     def __repr__(self):
-        return "{}({!r})".format(self.__class__.__name__, bytes(self))
+        return f"{self.__class__.__name__}({bytes(self)!r})"
 
     __str__ = __repr__
 
@@ -325,7 +324,7 @@ if _testbuffer is not None:
         def __reduce_ex__(self, protocol):
             if not self.array.contiguous:
                 raise NotImplementedError(
-                    "Reconstructing a non-contiguous " "ndarray does not seem possible"
+                    "Reconstructing a non-contiguous ndarray does not seem possible"
                 )
             ndarray_kwargs = {
                 "shape": self.array.shape,
@@ -873,7 +872,7 @@ class AbstractUnpickleTests(unittest.TestCase):
     def assert_is_copy(self, obj, objcopy, msg=None):
         """Utility method to verify if two objects are copies of each others."""
         if msg is None:
-            msg = "{!r} is not a copy of {!r}".format(obj, objcopy)
+            msg = f"{obj!r} is not a copy of {objcopy!r}"
         self.assertEqual(obj, objcopy, msg=msg)
         self.assertIs(type(obj), type(objcopy), msg=msg)
         if hasattr(obj, "__dict__"):
@@ -927,7 +926,7 @@ class AbstractUnpickleTests(unittest.TestCase):
             21: b    BUILD
             22: .    STOP
             """
-            pickle0 = (b"(i__main__\n" b"X\n" b"p0\n" b"(dp1\nb.").replace(b"X", xname)
+            pickle0 = (b"(i__main__\nX\np0\n(dp1\nb.").replace(b"X", xname)
             self.assert_is_copy(X(*args), self.loads(pickle0))
 
             # Protocol 1 (binary mode pickle)
@@ -942,9 +941,7 @@ class AbstractUnpickleTests(unittest.TestCase):
             21: b    BUILD
             22: .    STOP
             """
-            pickle1 = (b"(c__main__\n" b"X\n" b"q\x00oq\x01}q\x02b.").replace(
-                b"X", xname
-            )
+            pickle1 = (b"(c__main__\nX\nq\x00oq\x01}q\x02b.").replace(b"X", xname)
             self.assert_is_copy(X(*args), self.loads(pickle1))
 
             # Protocol 2 (pickle2 = b'\x80\x02' + pickle1)
@@ -960,7 +957,7 @@ class AbstractUnpickleTests(unittest.TestCase):
             23: b    BUILD
             24: .    STOP
             """
-            pickle2 = (b"\x80\x02(c__main__\n" b"X\n" b"q\x00oq\x01}q\x02b.").replace(
+            pickle2 = (b"\x80\x02(c__main__\nX\nq\x00oq\x01}q\x02b.").replace(
                 b"X", xname
             )
             self.assert_is_copy(X(*args), self.loads(pickle2))
@@ -1980,8 +1977,8 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertIs(type(a), type(b))
 
     def test_structseq(self):
-        import time
         import os
+        import time
 
         t = time.localtime()
         for proto in protocols:
@@ -2422,12 +2419,12 @@ class AbstractPickleTests(unittest.TestCase):
     def test_reduce_bad_iterator(self):
         # Issue4176: crash when 4th and 5th items of __reduce__()
         # are not iterators
-        class C(object):
+        class C:
             def __reduce__(self):
                 # 4th item is not an iterator
                 return list, (), None, [], None
 
-        class D(object):
+        class D:
             def __reduce__(self):
                 # 5th item is not an iterator
                 return dict, (), None, None, []
@@ -2881,18 +2878,18 @@ class AbstractPickleTests(unittest.TestCase):
             pass
 
         # Since the function is local, lookup will fail
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.assertRaises((AttributeError, pickle.PicklingError)):
                 pickletools.dis(self.dumps(f, proto))
         # Same without a __module__ attribute (exercises a different path
         # in _pickle.c).
         del f.__module__
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.assertRaises((AttributeError, pickle.PicklingError)):
                 pickletools.dis(self.dumps(f, proto))
         # Yet a different path.
         f.__name__ = f.__qualname__
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.assertRaises((AttributeError, pickle.PicklingError)):
                 pickletools.dis(self.dumps(f, proto))
 
@@ -2923,7 +2920,7 @@ class AbstractPickleTests(unittest.TestCase):
     def test_in_band_buffers(self):
         # Test in-band buffers (PEP 574)
         for obj in self.buffer_like_objects():
-            for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+            for proto in range(pickle.HIGHEST_PROTOCOL + 1):
                 data = self.dumps(obj, proto)
                 if obj.c_contiguous and proto >= 5:
                     # The raw memory bytes are serialized in physical order
@@ -2958,7 +2955,7 @@ class AbstractPickleTests(unittest.TestCase):
     def test_oob_buffers(self):
         # Test out-of-band buffers (PEP 574)
         for obj in self.buffer_like_objects():
-            for proto in range(0, 5):
+            for proto in range(5):
                 # Need protocol >= 5 for buffer_callback
                 with self.assertRaises(ValueError):
                     self.dumps(obj, proto, buffer_callback=[].append)
@@ -3012,7 +3009,7 @@ class AbstractPickleTests(unittest.TestCase):
     def test_picklebuffer_error(self):
         # PickleBuffer forbidden with protocol < 5
         pb = pickle.PickleBuffer(b"foobar")
-        for proto in range(0, 5):
+        for proto in range(5):
             with self.assertRaises(pickle.PickleError):
                 self.dumps(pb, proto)
 
@@ -3052,7 +3049,7 @@ class AbstractPickleTests(unittest.TestCase):
 
         def check_array(arr):
             # In-band
-            for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+            for proto in range(pickle.HIGHEST_PROTOCOL + 1):
                 data = self.dumps(arr, proto)
                 new = self.loads(data)
                 check_copy(arr, new)
@@ -3087,7 +3084,6 @@ class AbstractPickleTests(unittest.TestCase):
 
 
 class BigmemPickleTests(unittest.TestCase):
-
     # Binary protocols can serialize longs of up to 2 GiB-1
 
     @bigmemtest(size=_2G, memuse=3.6, dry_run=False)
@@ -3224,7 +3220,7 @@ class BigmemPickleTests(unittest.TestCase):
 # Test classes for reduce_ex
 
 
-class REX_one(object):
+class REX_one:
     """No __reduce_ex__ here, but inheriting it from object"""
 
     _reduce_called = 0
@@ -3234,7 +3230,7 @@ class REX_one(object):
         return REX_one, ()
 
 
-class REX_two(object):
+class REX_two:
     """No __reduce__ here, but inheriting it from object"""
 
     _proto = None
@@ -3244,7 +3240,7 @@ class REX_two(object):
         return REX_two, ()
 
 
-class REX_three(object):
+class REX_three:
     _proto = None
 
     def __reduce_ex__(self, proto):
@@ -3255,7 +3251,7 @@ class REX_three(object):
         raise TestFailed("This __reduce__ shouldn't be called")
 
 
-class REX_four(object):
+class REX_four:
     """Calling base class method should succeed"""
 
     _proto = None
@@ -3265,7 +3261,7 @@ class REX_four(object):
         return object.__reduce_ex__(self, proto)
 
 
-class REX_five(object):
+class REX_five:
     """This one used to fail with infinite recursion"""
 
     _reduce_called = 0
@@ -3275,7 +3271,7 @@ class REX_five(object):
         return object.__reduce__(self)
 
 
-class REX_six(object):
+class REX_six:
     """This class is used to check the 4th argument (list iterator) of
     the reduce protocol.
     """
@@ -3293,7 +3289,7 @@ class REX_six(object):
         return type(self), (), None, iter(self.items), None
 
 
-class REX_seven(object):
+class REX_seven:
     """This class is used to check the 5th argument (dict iterator) of
     the reduce protocol.
     """
@@ -3311,7 +3307,7 @@ class REX_seven(object):
         return type(self), (), None, None, iter(self.table.items())
 
 
-class REX_state(object):
+class REX_state:
     """This class is used to check the 3th argument (state) of
     the reduce protocol.
     """
@@ -3424,7 +3420,6 @@ class BadGetattr:
 
 
 class AbstractPickleModuleTests(unittest.TestCase):
-
     def test_dump_closed_file(self):
         f = open(TESTFN, "wb")
         try:
@@ -3498,7 +3493,7 @@ class AbstractPickleModuleTests(unittest.TestCase):
         # to the underlying Pickler and Unpickler, respectively.
         obj = ZeroCopyBytes(b"foo")
 
-        for proto in range(0, 5):
+        for proto in range(5):
             # Need protocol >= 5 for buffer_callback
             with self.assertRaises(ValueError):
                 dumps(obj, protocol=proto, buffer_callback=[].append)
@@ -3533,7 +3528,6 @@ class AbstractPickleModuleTests(unittest.TestCase):
 
 
 class AbstractPersistentPicklerTests(unittest.TestCase):
-
     # This class defines persistent_id() and persistent_load()
     # functions that should be used by the pickler.  All even integers
     # are pickled using persistent ids.
@@ -3573,7 +3567,6 @@ class AbstractPersistentPicklerTests(unittest.TestCase):
 
 
 class AbstractIdentityPersistentPicklerTests(unittest.TestCase):
-
     def persistent_id(self, obj):
         return obj
 
@@ -3602,7 +3595,6 @@ class AbstractIdentityPersistentPicklerTests(unittest.TestCase):
 
 
 class AbstractPicklerUnpicklerObjectTests(unittest.TestCase):
-
     pickler_class = None
     unpickler_class = None
 
@@ -3765,12 +3757,12 @@ class AbstractPicklerUnpicklerObjectTests(unittest.TestCase):
 REDUCE_A = "reduce_A"
 
 
-class AAA(object):
+class AAA:
     def __reduce__(self):
         return str, (REDUCE_A,)
 
 
-class BBB(object):
+class BBB:
     def __init__(self):
         # Add an instance attribute to enable state-saving routines at pickling
         # time.
@@ -3836,7 +3828,7 @@ class AbstractHookTests(unittest.TestCase):
         class MyClass:
             pass
 
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.subTest(proto=proto):
                 bio = io.BytesIO()
                 p = self.pickler_class(bio, proto)
@@ -3864,7 +3856,7 @@ class AbstractHookTests(unittest.TestCase):
         # inside the Pickler object, that could prevent all serialized objects
         # from being garbage-collected without explicity invoking gc.collect.
 
-        for proto in range(0, pickle.HIGHEST_PROTOCOL + 1):
+        for proto in range(pickle.HIGHEST_PROTOCOL + 1):
             with self.subTest(proto=proto):
 
                 def f():
@@ -3885,7 +3877,6 @@ class AbstractHookTests(unittest.TestCase):
 
 
 class AbstractDispatchTableTests(unittest.TestCase):
-
     def test_default_dispatch_table(self):
         # No dispatch_table attribute by default
         f = io.BytesIO()
@@ -4002,14 +3993,14 @@ if __name__ == "__main__":
     x = create_data()
     for i in range(pickle.HIGHEST_PROTOCOL + 1):
         p = pickle.dumps(x, i)
-        print("DATA{0} = (".format(i))
+        print(f"DATA{i} = (")
         for j in range(0, len(p), 20):
             b = bytes(p[j : j + 20])
-            print("    {0!r}".format(b))
+            print(f"    {b!r}")
         print(")")
         print()
-        print("# Disassembly of DATA{0}".format(i))
-        print('DATA{0}_DIS = """\\'.format(i))
+        print(f"# Disassembly of DATA{i}")
+        print(f'DATA{i}_DIS = """\\')
         dis(p)
         print('"""')
         print()

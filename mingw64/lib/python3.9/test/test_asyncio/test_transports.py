@@ -1,14 +1,12 @@
 """Tests for transports.py."""
 
-import unittest
-from unittest import mock
-
 import asyncio
+import unittest
 from asyncio import transports
+from unittest import mock
 
 
 class TransportTests(unittest.TestCase):
-
     def test_ctor_extra_is_none(self):
         transport = asyncio.Transport()
         self.assertEqual(transport._extra, {})
@@ -67,7 +65,6 @@ class TransportTests(unittest.TestCase):
     def test_flowcontrol_mixin_set_write_limits(self):
 
         class MyTransport(transports._FlowControlMixin, transports.Transport):
-
             def get_write_buffer_size(self):
                 return 512
 

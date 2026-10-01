@@ -23,25 +23,29 @@ Misc variables:
 
 """
 
-from types import FunctionType
-from copyreg import dispatch_table
-from copyreg import _extension_registry, _inverted_registry, _extension_cache
-from itertools import islice
-from functools import partial
-import sys
-from sys import maxsize
-from struct import pack, unpack
-import re
-import io
-import codecs
 import _compat_pickle
+import codecs
+import io
+import re
+import sys
+from copyreg import (
+    _extension_cache,
+    _extension_registry,
+    _inverted_registry,
+    dispatch_table,
+)
+from functools import partial
+from itertools import islice
+from struct import pack, unpack
+from sys import maxsize
+from types import FunctionType
 
 __all__ = [
     "PickleError",
-    "PicklingError",
-    "UnpicklingError",
     "Pickler",
+    "PicklingError",
     "Unpickler",
+    "UnpicklingError",
     "dump",
     "dumps",
     "load",
@@ -85,16 +89,12 @@ DEFAULT_PROTOCOL = 4
 class PickleError(Exception):
     """A common base class for the other pickling exceptions."""
 
-    pass
-
 
 class PicklingError(PickleError):
     """This exception is raised when an unpicklable object is passed to the
     dump() method.
 
     """
-
-    pass
 
 
 class UnpicklingError(PickleError):
@@ -106,8 +106,6 @@ class UnpicklingError(PickleError):
     and IndexError.
 
     """
-
-    pass
 
 
 # An instance of _Stop is raised by Unpickler.load_stop() in response to
@@ -217,7 +215,6 @@ __all__.extend([x for x in dir() if re.match("[A-Z][A-Z0-9_]+$", x)])
 
 
 class _Framer:
-
     _FRAME_SIZE_MIN = 4
     _FRAME_SIZE_TARGET = 64 * 1024
 
@@ -280,7 +277,6 @@ class _Framer:
 
 
 class _Unframer:
-
     def __init__(self, file_read, file_readline, file_tell=None):
         self.file_read = file_read
         self.file_readline = file_readline
@@ -340,16 +336,12 @@ class _Unframer:
 def _getattribute(obj, name):
     for subpath in name.split("."):
         if subpath == "<locals>":
-            raise AttributeError(
-                "Can't get local attribute {!r} on {!r}".format(name, obj)
-            )
+            raise AttributeError(f"Can't get local attribute {name!r} on {obj!r}")
         try:
             parent = obj
             obj = getattr(obj, subpath)
         except AttributeError:
-            raise AttributeError(
-                "Can't get attribute {!r} on {!r}".format(name, obj)
-            ) from None
+            raise AttributeError(f"Can't get attribute {name!r} on {obj!r}") from None
     return obj, parent
 
 
@@ -431,7 +423,6 @@ def decode_long(data):
 
 
 class _Pickler:
-
     def __init__(self, file, protocol=None, *, fix_imports=True, buffer_callback=None):
         """This takes a binary file for writing a pickle data stream.
 
@@ -625,7 +616,7 @@ class _Pickler:
         l = len(rv)
         if not (2 <= l <= 6):
             raise PicklingError(
-                "Tuple returned by %s must have " "two to six elements" % reduce
+                "Tuple returned by %s must have two to six elements" % reduce
             )
 
         # Save the reduce() output and finally memoize the object
@@ -672,12 +663,10 @@ class _Pickler:
         if self.proto >= 2 and func_name == "__newobj_ex__":
             cls, args, kwargs = args
             if not hasattr(cls, "__new__"):
-                raise PicklingError(
-                    "args[0] from {} args has no __new__".format(func_name)
-                )
+                raise PicklingError(f"args[0] from {func_name} args has no __new__")
             if obj is not None and cls is not obj.__class__:
                 raise PicklingError(
-                    "args[0] from {} args has the wrong class".format(func_name)
+                    f"args[0] from {func_name} args has the wrong class"
                 )
             if self.proto >= 4:
                 save(cls)
@@ -867,9 +856,7 @@ class _Pickler:
 
         def save_picklebuffer(self, obj):
             if self.proto < 5:
-                raise PicklingError(
-                    "PickleBuffer can only pickled with " "protocol >= 5"
-                )
+                raise PicklingError("PickleBuffer can only pickled with protocol >= 5")
             with obj.raw() as m:
                 if not m.contiguous:
                     raise PicklingError(
@@ -1196,7 +1183,6 @@ class _Pickler:
 
 
 class _Unpickler:
-
     def __init__(
         self, file, *, fix_imports=True, encoding="ASCII", errors="strict", buffers=None
     ):
@@ -1432,7 +1418,7 @@ class _Unpickler:
         (len,) = unpack("<I", self.read(4))
         if len > maxsize:
             raise UnpicklingError(
-                "BINBYTES exceeds system's maximum size " "of %d bytes" % maxsize
+                "BINBYTES exceeds system's maximum size of %d bytes" % maxsize
             )
         self.append(self.read(len))
 
@@ -1447,7 +1433,7 @@ class _Unpickler:
         (len,) = unpack("<I", self.read(4))
         if len > maxsize:
             raise UnpicklingError(
-                "BINUNICODE exceeds system's maximum size " "of %d bytes" % maxsize
+                "BINUNICODE exceeds system's maximum size of %d bytes" % maxsize
             )
         self.append(str(self.read(len), "utf-8", "surrogatepass"))
 
@@ -1457,7 +1443,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BINUNICODE8 exceeds system's maximum size " "of %d bytes" % maxsize
+                "BINUNICODE8 exceeds system's maximum size of %d bytes" % maxsize
             )
         self.append(str(self.read(len), "utf-8", "surrogatepass"))
 
@@ -1467,7 +1453,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BINBYTES8 exceeds system's maximum size " "of %d bytes" % maxsize
+                "BINBYTES8 exceeds system's maximum size of %d bytes" % maxsize
             )
         self.append(self.read(len))
 
@@ -1477,7 +1463,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BYTEARRAY8 exceeds system's maximum size " "of %d bytes" % maxsize
+                "BYTEARRAY8 exceeds system's maximum size of %d bytes" % maxsize
             )
         b = bytearray(len)
         self.readinto(b)
@@ -1742,7 +1728,7 @@ class _Unpickler:
         i = self.read(1)[0]
         try:
             self.append(self.memo[i])
-        except KeyError as exc:
+        except KeyError:
             msg = f"Memo value not found at index {i}"
             raise UnpicklingError(msg) from None
 
@@ -1752,7 +1738,7 @@ class _Unpickler:
         (i,) = unpack("<I", self.read(4))
         try:
             self.append(self.memo[i])
-        except KeyError as exc:
+        except KeyError:
             msg = f"Memo value not found at index {i}"
             raise UnpicklingError(msg) from None
 
@@ -1921,10 +1907,10 @@ def _loads(s, /, *, fix_imports=True, encoding="ASCII", errors="strict", buffers
 try:
     from _pickle import (
         PickleError,
-        PicklingError,
-        UnpicklingError,
         Pickler,
+        PicklingError,
         Unpickler,
+        UnpicklingError,
         dump,
         dumps,
         load,

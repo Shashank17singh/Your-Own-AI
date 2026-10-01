@@ -41,33 +41,33 @@ Example:
 #
 # This was modified from the Python 1.5 library HTTP lib.
 
-import socket
-import io
-import re
-import email.utils
-import email.message
-import email.generator
 import base64
-import hmac
 import copy
 import datetime
+import email.generator
+import email.message
+import email.utils
+import hmac
+import io
+import re
+import socket
 import sys
 from email.base64mime import body_encode as encode_base64
 
 __all__ = [
+    "SMTP",
+    "SMTPAuthenticationError",
+    "SMTPConnectError",
+    "SMTPDataError",
     "SMTPException",
+    "SMTPHeloError",
     "SMTPNotSupportedError",
-    "SMTPServerDisconnected",
+    "SMTPRecipientsRefused",
     "SMTPResponseException",
     "SMTPSenderRefused",
-    "SMTPRecipientsRefused",
-    "SMTPDataError",
-    "SMTPConnectError",
-    "SMTPHeloError",
-    "SMTPAuthenticationError",
+    "SMTPServerDisconnected",
     "quoteaddr",
     "quotedata",
-    "SMTP",
 ]
 
 SMTP_PORT = 25
@@ -77,7 +77,7 @@ bCRLF = b"\r\n"
 _MAXLINE = 8192  # more than 8 times larger than RFC 821, 4.5.3
 _MAXCHALLENGE = 5  # Maximum number of AUTH challenges sent
 
-OLDSTYLE_AUTH = re.compile(r"auth=(.*)", re.I)
+OLDSTYLE_AUTH = re.compile(r"auth=(.*)", re.IGNORECASE)
 
 
 # Exception classes used by this module.
@@ -809,19 +809,16 @@ class SMTP:
             if not _have_ssl:
                 raise RuntimeError("No SSL support included in this Python")
             if context is not None and keyfile is not None:
-                raise ValueError(
-                    "context and keyfile arguments are mutually " "exclusive"
-                )
+                raise ValueError("context and keyfile arguments are mutually exclusive")
             if context is not None and certfile is not None:
                 raise ValueError(
-                    "context and certfile arguments are mutually " "exclusive"
+                    "context and certfile arguments are mutually exclusive"
                 )
             if keyfile is not None or certfile is not None:
                 import warnings
 
                 warnings.warn(
-                    "keyfile and certfile are deprecated, use a "
-                    "custom context instead",
+                    "keyfile and certfile are deprecated, use a custom context instead",
                     DeprecationWarning,
                     2,
                 )
@@ -1087,19 +1084,16 @@ if _have_ssl:
             context=None,
         ):
             if context is not None and keyfile is not None:
-                raise ValueError(
-                    "context and keyfile arguments are mutually " "exclusive"
-                )
+                raise ValueError("context and keyfile arguments are mutually exclusive")
             if context is not None and certfile is not None:
                 raise ValueError(
-                    "context and certfile arguments are mutually " "exclusive"
+                    "context and certfile arguments are mutually exclusive"
                 )
             if keyfile is not None or certfile is not None:
                 import warnings
 
                 warnings.warn(
-                    "keyfile and certfile are deprecated, use a "
-                    "custom context instead",
+                    "keyfile and certfile are deprecated, use a custom context instead",
                     DeprecationWarning,
                     2,
                 )

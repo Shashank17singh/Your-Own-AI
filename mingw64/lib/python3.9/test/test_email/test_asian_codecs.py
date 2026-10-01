@@ -3,11 +3,11 @@
 # email package unit tests for (optional) Asian codecs
 
 import unittest
-
-from test.test_email import TestEmailBase
 from email.charset import Charset
 from email.header import Header, decode_header
 from email.message import Message
+
+from test.test_email import TestEmailBase
 
 # We're compatible with Python 2.3, but it doesn't have the built-in Asian
 # codecs, so we have to skip all these tests.
@@ -26,7 +26,7 @@ class TestEmailAsianCodecs(TestEmailBase):
         g = Charset(gcode)
         h = Header("Hello World!")
         jhello = str(
-            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc" b"\xa5\xeb\xa5\xc9\xa1\xaa",
+            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc\xa5\xeb\xa5\xc9\xa1\xaa",
             jcode,
         )
         ghello = str(b"Gr\xfc\xdf Gott!", gcode)
@@ -73,7 +73,7 @@ Hello World! =?iso-2022-jp?b?GyRCJU8lbSE8JW8hPCVrJUkhKhsoQg==?=
 
     def test_payload_encoding_utf8(self):
         jhello = str(
-            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc" b"\xa5\xeb\xa5\xc9\xa1\xaa",
+            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc\xa5\xeb\xa5\xc9\xa1\xaa",
             "euc-jp",
         )
         msg = Message()
@@ -84,7 +84,7 @@ Hello World! =?iso-2022-jp?b?GyRCJU8lbSE8JW8hPCVrJUkhKhsoQg==?=
     def test_payload_encoding(self):
         jcode = "euc-jp"
         jhello = str(
-            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc" b"\xa5\xeb\xa5\xc9\xa1\xaa",
+            b"\xa5\xcf\xa5\xed\xa1\xbc\xa5\xef\xa1\xbc\xa5\xeb\xa5\xc9\xa1\xaa",
             jcode,
         )
         msg = Message()

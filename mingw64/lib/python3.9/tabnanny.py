@@ -27,7 +27,7 @@ import tokenize
 if not hasattr(tokenize, "NL"):
     raise ValueError("tokenize.NL doesn't exist -- tokenize module too old")
 
-__all__ = ["check", "NannyNag", "process_tokens"]
+__all__ = ["NannyNag", "check", "process_tokens"]
 
 verbose = 0
 filename_only = 0

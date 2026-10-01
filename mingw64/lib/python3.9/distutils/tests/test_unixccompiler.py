@@ -2,14 +2,13 @@
 
 import sys
 import unittest
-from test.support import EnvironmentVarGuard, run_unittest
-
 from distutils import sysconfig
 from distutils.unixccompiler import UnixCCompiler
 
+from test.support import EnvironmentVarGuard, run_unittest
+
 
 class UnixCCompilerTestCase(unittest.TestCase):
-
     def setUp(self):
         self._backup_platform = sys.platform
         self._backup_get_config_var = sysconfig.get_config_var

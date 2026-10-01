@@ -1,17 +1,18 @@
 # Python test set -- math module
 # XXXX Should not do tests around zero only
 
-from test.support import run_unittest, verbose, requires_IEEE_754
-from test import support
-import unittest
-import itertools
 import decimal
+import itertools
 import math
 import os
 import platform
 import random
 import struct
 import sys
+import unittest
+
+from test import support
+from test.support import requires_IEEE_754, run_unittest, verbose
 
 eps = 1e-05
 NAN = float("nan")
@@ -120,7 +121,7 @@ def ulp_abs_check(expected, got, ulp_tol, abs_tol):
     if abs_error <= abs_tol or ulp_error <= ulp_tol:
         return None
     else:
-        fmt = "error = {:.3g} ({:d} ulps); " "permitted error = {:.3g} or {:d} ulps"
+        fmt = "error = {:.3g} ({:d} ulps); permitted error = {:.3g} or {:d} ulps"
         return fmt.format(abs_error, ulp_error, abs_tol, ulp_tol)
 
 
@@ -219,7 +220,7 @@ def result_check(expected, got, ulp_tol=5, abs_tol=0.0):
     if failure is not None:
         fail_fmt = "expected {!r}, got {!r}"
         fail_msg = fail_fmt.format(expected, got)
-        fail_msg += " ({})".format(failure)
+        fail_msg += f" ({failure})"
         return fail_msg
     else:
         return None
@@ -238,7 +239,7 @@ class IntSubclass(int):
 
 
 # Class providing an __index__ method.
-class MyIndexable(object):
+class MyIndexable:
     def __init__(self, value):
         self.value = value
 
@@ -247,7 +248,6 @@ class MyIndexable(object):
 
 
 class MathTests(unittest.TestCase):
-
     def ftest(self, name, got, expected, ulp_tol=5, abs_tol=0.0):
         """Compare arguments expected and got, as floats, if either
         is a float, using a tolerance expressed in multiples of
@@ -259,7 +259,7 @@ class MathTests(unittest.TestCase):
         """
         failure = result_check(expected, got, ulp_tol, abs_tol)
         if failure is not None:
-            self.fail("{}: {}".format(name, failure))
+            self.fail(f"{name}: {failure}")
 
     def testConstants(self):
         # Ref: Abramowitz & Stegun (Dover, 1965)
@@ -529,7 +529,7 @@ class MathTests(unittest.TestCase):
             self.assertRaises(ValueError, math.factorial, -1.0)
         with self.assertWarns(DeprecationWarning):
             self.assertRaises(ValueError, math.factorial, -1e100)
-        self.assertRaises(TypeError, math.factorial, decimal.Decimal("5"))
+        self.assertRaises(TypeError, math.factorial, decimal.Decimal(5))
         self.assertRaises(TypeError, math.factorial, decimal.Decimal("5.2"))
         self.assertRaises(TypeError, math.factorial, "5")
 
@@ -710,7 +710,7 @@ class MathTests(unittest.TestCase):
                 )
             self.assertEqual(actual, expected)
 
-        from random import random, gauss, shuffle
+        from random import gauss, random, shuffle
 
         for j in range(1000):
             vals = [7, 1e100, -7, -1e100, -9e-20, 8e-20] * 10
@@ -986,7 +986,7 @@ class MathTests(unittest.TestCase):
         self.assertIs(type(s), int)
         self.assertEqual(s, 0)
 
-        class IntegerLike(object):
+        class IntegerLike:
             def __init__(self, value):
                 self.value = value
 
@@ -1010,9 +1010,8 @@ class MathTests(unittest.TestCase):
             -4.0,
         ]
         for value in bad_values:
-            with self.subTest(value=value):
-                with self.assertRaises(TypeError):
-                    math.isqrt(value)
+            with self.subTest(value=value), self.assertRaises(TypeError):
+                math.isqrt(value)
 
     def test_lcm(self):
         lcm = math.lcm
@@ -1592,7 +1591,7 @@ class MathTests(unittest.TestCase):
         except:
             # mathmodule.c is failing to weed out underflows from libm, or
             # we've got an fp format with huge dynamic range
-            self.fail("underflowing exp() should not have raised " "an exception")
+            self.fail("underflowing exp() should not have raised an exception")
         if x != 0:
             self.fail("underflowing exp() should have returned 0")
 
@@ -2051,7 +2050,7 @@ class MathTests(unittest.TestCase):
 
     def assertIsNaN(self, value):
         if not math.isnan(value):
-            self.fail("Expected a NaN, got {!r}.".format(value))
+            self.fail(f"Expected a NaN, got {value!r}.")
 
     def assertEqualSign(self, x, y):
         """Similar to assertEqual(), but compare also the sign with copysign().

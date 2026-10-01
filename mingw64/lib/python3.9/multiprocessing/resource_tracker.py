@@ -21,8 +21,7 @@ import sys
 import threading
 import warnings
 
-from . import spawn
-from . import util
+from . import spawn, util
 
 __all__ = ["ensure_running", "register", "unregister"]
 
@@ -45,8 +44,7 @@ if os.name == "posix":
     )
 
 
-class ResourceTracker(object):
-
+class ResourceTracker:
     def __init__(self):
         self._lock = threading.Lock()
         self._fd = None
@@ -156,15 +154,13 @@ class ResourceTracker(object):
 
     def _send(self, cmd, name, rtype):
         self.ensure_running()
-        msg = "{0}:{1}:{2}\n".format(cmd, name, rtype).encode("ascii")
+        msg = f"{cmd}:{name}:{rtype}\n".encode("ascii")
         if len(name) > 512:
             # posix guarantees that writes to a pipe of less than PIPE_BUF
             # bytes are atomic, and that PIPE_BUF >= 512
             raise ValueError("name too long")
         nbytes = os.write(self._fd, msg)
-        assert nbytes == len(msg), "nbytes {0:n} but len(msg) {1:n}".format(
-            nbytes, len(msg)
-        )
+        assert nbytes == len(msg), f"nbytes {nbytes:n} but len(msg) {len(msg):n}"
 
 
 _resource_tracker = ResourceTracker()
@@ -188,7 +184,7 @@ def main(fd):
         except Exception:
             pass
 
-    cache = {rtype: set() for rtype in _CLEANUP_FUNCS.keys()}
+    cache = {rtype: set() for rtype in _CLEANUP_FUNCS}
     try:
         # keep track of registered/unregistered resources
         with open(fd, "rb") as f:

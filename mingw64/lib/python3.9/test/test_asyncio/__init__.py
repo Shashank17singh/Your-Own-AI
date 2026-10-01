@@ -1,6 +1,7 @@
 import os
-from test import support
 import unittest
+
+from test import support
 
 # Skip tests if we don't have concurrent.futures.
 support.import_module("concurrent.futures")

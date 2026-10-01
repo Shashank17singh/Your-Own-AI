@@ -1,14 +1,13 @@
-import os
 import errno
 import importlib.machinery
+import modulefinder
+import os
 import py_compile
 import shutil
-import unittest
 import tempfile
+import unittest
 
 from test import support
-
-import modulefinder
 
 TEST_DIR = tempfile.mkdtemp()
 TEST_PATH = [TEST_DIR, os.path.dirname(tempfile.__file__)]
@@ -314,9 +313,7 @@ a_cp1252.py
 b_utf8.py
                                 # use the default of utf8
                                 print('Unicode test A code point 2090 \u2090 that is not valid in cp1252')
-""".encode(
-        "utf-8"
-    ),
+""".encode("utf-8"),
 ]
 
 
@@ -423,7 +420,7 @@ class ModuleFinderTest(unittest.TestCase):
         source_path = base_path + importlib.machinery.SOURCE_SUFFIXES[0]
         bytecode_path = base_path + importlib.machinery.BYTECODE_SUFFIXES[0]
         with open_file(source_path) as file:
-            file.write("testing_modulefinder = True\n".encode("utf-8"))
+            file.write(b"testing_modulefinder = True\n")
         py_compile.compile(source_path, cfile=bytecode_path)
         os.remove(source_path)
         self._do_test(bytecode_test)

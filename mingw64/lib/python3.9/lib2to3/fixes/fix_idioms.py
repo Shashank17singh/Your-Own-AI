@@ -30,7 +30,7 @@ into
 
 # Local imports
 from .. import fixer_base
-from ..fixer_util import Call, Comma, Name, Node, BlankLine, syms
+from ..fixer_util import BlankLine, Call, Comma, Name, Node, syms
 
 CMP = "(n='!=' | '==' | 'is' | n=comp_op< 'is' 'not' >)"
 TYPE = "power< 'type' trailer< '(' x=any ')' > >"
@@ -79,7 +79,7 @@ class FixIdioms(fixer_base.BaseFix):
     """ % (TYPE, CMP, CMP, TYPE)
 
     def match(self, node):
-        r = super(FixIdioms, self).match(node)
+        r = super().match(node)
         # If we've matched one of the sort/sorted subpatterns above, we
         # want to reject matches where the initial assignment and the
         # subsequent .sort() call involve different identifiers.

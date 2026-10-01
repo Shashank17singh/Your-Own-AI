@@ -1,14 +1,14 @@
 """Test sidebar, coverage 93%"""
 
 import idlelib.sidebar
-from itertools import chain
+import tkinter as tk
 import unittest
 import unittest.mock
-from test.support import requires
-import tkinter as tk
-
 from idlelib.delegator import Delegator
 from idlelib.percolator import Percolator
+from itertools import chain
+
+from test.support import requires
 
 
 class Dummy_editwin:
@@ -27,7 +27,6 @@ class Dummy_editwin:
 
 
 class LineNumbersTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

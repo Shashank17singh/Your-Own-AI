@@ -6,16 +6,15 @@ exe-program."""
 import os
 import sys
 import warnings
+from distutils import log
 from distutils.core import Command
-from distutils.util import get_platform
 from distutils.dir_util import remove_tree
 from distutils.errors import *
 from distutils.sysconfig import get_python_version
-from distutils import log
+from distutils.util import get_platform
 
 
 class bdist_wininst(Command):
-
     description = "create an executable installer for MS Windows"
 
     user_options = [
@@ -41,7 +40,7 @@ class bdist_wininst(Command):
         (
             "no-target-optimize",
             "o",
-            "do not compile .py to .pyo (optimized) " "on the target system",
+            "do not compile .py to .pyo (optimized) on the target system",
         ),
         ("dist-dir=", "d", "directory to put final built distributions in"),
         (
@@ -277,8 +276,8 @@ class bdist_wininst(Command):
 
         title = self.title or self.distribution.get_fullname()
         lines.append("title=%s" % escape(title))
-        import time
         import distutils
+        import time
 
         build_info = "Built %s with distutils-%s" % (
             time.ctime(time.time()),

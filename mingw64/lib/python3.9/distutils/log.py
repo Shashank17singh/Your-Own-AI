@@ -13,7 +13,6 @@ import sys
 
 
 class Log:
-
     def __init__(self, threshold=WARN):
         self.threshold = threshold
 

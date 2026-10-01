@@ -10,18 +10,13 @@
 import ctypes
 import weakref
 
-from . import heap
-from . import get_context
-
-from .context import reduction, assert_spawning
+from . import get_context, heap
+from .context import assert_spawning, reduction
 
 _ForkingPickler = reduction.ForkingPickler
 
-__all__ = ["RawValue", "RawArray", "Value", "Array", "copy", "synchronized"]
+__all__ = ["Array", "RawArray", "RawValue", "Value", "copy", "synchronized"]
 
-#
-#
-#
 
 typecode_to_type = {
     "c": ctypes.c_char,
@@ -39,10 +34,6 @@ typecode_to_type = {
     "f": ctypes.c_float,
     "d": ctypes.c_double,
 }
-
-#
-#
-#
 
 
 def _new_value(type_):
@@ -199,8 +190,7 @@ class_cache = weakref.WeakKeyDictionary()
 #
 
 
-class SynchronizedBase(object):
-
+class SynchronizedBase:
     def __init__(self, obj, lock=None, ctx=None):
         self._obj = obj
         if lock:
@@ -236,7 +226,6 @@ class Synchronized(SynchronizedBase):
 
 
 class SynchronizedArray(SynchronizedBase):
-
     def __len__(self):
         return len(self._obj)
 

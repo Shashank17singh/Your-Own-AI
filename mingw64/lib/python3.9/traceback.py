@@ -6,23 +6,23 @@ import linecache
 import sys
 
 __all__ = [
+    "FrameSummary",
+    "StackSummary",
+    "TracebackException",
+    "clear_frames",
     "extract_stack",
     "extract_tb",
+    "format_exc",
     "format_exception",
     "format_exception_only",
     "format_list",
     "format_stack",
     "format_tb",
     "print_exc",
-    "format_exc",
     "print_exception",
     "print_last",
     "print_stack",
     "print_tb",
-    "clear_frames",
-    "FrameSummary",
-    "StackSummary",
-    "TracebackException",
     "walk_stack",
     "walk_tb",
 ]
@@ -98,11 +98,11 @@ def extract_tb(tb, limit=None):
 #
 
 _cause_message = (
-    "\nThe above exception was the direct cause " "of the following exception:\n\n"
+    "\nThe above exception was the direct cause of the following exception:\n\n"
 )
 
 _context_message = (
-    "\nDuring handling of the above exception, " "another exception occurred:\n\n"
+    "\nDuring handling of the above exception, another exception occurred:\n\n"
 )
 
 
@@ -271,7 +271,7 @@ class FrameSummary:
       mapping the name to the repr() of the variable.
     """
 
-    __slots__ = ("filename", "lineno", "name", "_line", "locals")
+    __slots__ = ("_line", "filename", "lineno", "locals", "name")
 
     def __init__(
         self, filename, lineno, name, *, lookup_line=True, locals=None, line=None
@@ -312,9 +312,7 @@ class FrameSummary:
         return iter([self.filename, self.lineno, self.name, self.line])
 
     def __repr__(self):
-        return "<FrameSummary file {filename}, line {lineno} in {name}>".format(
-            filename=self.filename, lineno=self.lineno, name=self.name
-        )
+        return f"<FrameSummary file {self.filename}, line {self.lineno} in {self.name}>"
 
     def __len__(self):
         return 4
@@ -455,7 +453,7 @@ class StackSummary(list):
                     count -= _RECURSIVE_CUTOFF
                     result.append(
                         f"  [Previous line repeated {count} more "
-                        f'time{"s" if count > 1 else ""}]\n'
+                        f"time{'s' if count > 1 else ''}]\n"
                     )
                 last_file = frame.filename
                 last_line = frame.lineno
@@ -466,21 +464,19 @@ class StackSummary(list):
                 continue
             row = []
             row.append(
-                '  File "{}", line {}, in {}\n'.format(
-                    frame.filename, frame.lineno, frame.name
-                )
+                f'  File "{frame.filename}", line {frame.lineno}, in {frame.name}\n'
             )
             if frame.line:
-                row.append("    {}\n".format(frame.line.strip()))
+                row.append(f"    {frame.line.strip()}\n")
             if frame.locals:
                 for name, value in sorted(frame.locals.items()):
-                    row.append("    {name} = {value}\n".format(name=name, value=value))
+                    row.append(f"    {name} = {value}\n")
             result.append("".join(row))
         if count > _RECURSIVE_CUTOFF:
             count -= _RECURSIVE_CUTOFF
             result.append(
                 f"  [Previous line repeated {count} more "
-                f'time{"s" if count > 1 else ""}]\n'
+                f"time{'s' if count > 1 else ''}]\n"
             )
         return result
 
@@ -659,7 +655,7 @@ class TracebackException:
                 self.filename or "<string>", self.lineno
             )
         elif self.filename is not None:
-            filename_suffix = " ({})".format(self.filename)
+            filename_suffix = f" ({self.filename})"
 
         text = self.text
         if text is not None:
@@ -669,7 +665,7 @@ class TracebackException:
             rtext = text.rstrip("\n")
             ltext = rtext.lstrip(" \n\f")
             spaces = len(rtext) - len(ltext)
-            yield "    {}\n".format(ltext)
+            yield f"    {ltext}\n"
             # Convert 1-based column offset to 0-based index into stripped text
             caret = (self.offset or 0) - 1 - spaces
             if caret >= 0:
@@ -677,7 +673,7 @@ class TracebackException:
                 caretspace = ((c if c.isspace() else " ") for c in ltext[:caret])
                 yield "    {}^\n".format("".join(caretspace))
         msg = self.msg or "<no detail available>"
-        yield "{}: {}{}\n".format(stype, msg, filename_suffix)
+        yield f"{stype}: {msg}{filename_suffix}\n"
 
     def format(self, *, chain=True):
         """Format the exception.

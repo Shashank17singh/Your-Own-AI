@@ -9,6 +9,7 @@ This must be run from a computer with zoneinfo data installed.
 """
 
 from __future__ import annotations
+
 import base64
 import functools
 import json
@@ -34,18 +35,17 @@ KEYS = [
 TEST_DATA_LOC = pathlib.Path(__file__).parent
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def get_zoneinfo_path() -> pathlib.Path:
     """Get the first zoneinfo directory on TZPATH containing the "UTC" zone."""
     key = "UTC"
     for path in map(pathlib.Path, zoneinfo.TZPATH):
         if (path / key).exists():
             return path
-    else:
-        raise OSError("Cannot find time zone data.")
+    raise OSError("Cannot find time zone data.")
 
 
-def get_zoneinfo_metadata() -> typing.Dict[str, str]:
+def get_zoneinfo_metadata() -> dict[str, str]:
     path = get_zoneinfo_path()
     tzdata_zi = path / "tzdata.zi"
     if not tzdata_zi.exists():
@@ -68,7 +68,7 @@ def get_zoneinfo(key: str) -> bytes:
         return f.read()
 
 
-def encode_compressed(data: bytes) -> typing.List[str]:
+def encode_compressed(data: bytes) -> list[str]:
     compressed_zone = lzma.compress(data)
     raw = base64.b85encode(compressed_zone)
     raw_data_str = raw.decode("utf-8")
@@ -76,14 +76,14 @@ def encode_compressed(data: bytes) -> typing.List[str]:
     return data_str
 
 
-def load_compressed_keys() -> typing.Dict[str, typing.List[str]]:
+def load_compressed_keys() -> dict[str, list[str]]:
     output = {key: encode_compressed(get_zoneinfo(key)) for key in KEYS}
     return output
 
 
 def update_test_data(fname: str = "zoneinfo_data.json") -> None:
     TEST_DATA_LOC.mkdir(exist_ok=True, parents=True)
-    json_kwargs: typing.Dict[str, typing.Any] = dict(
+    json_kwargs: dict[str, typing.Any] = dict(
         indent=2,
         sort_keys=True,
     )

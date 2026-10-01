@@ -2,11 +2,12 @@ import io
 import marshal
 import os
 import sys
-from test import support
 import types
 import unittest
-from unittest import mock
 import warnings
+from unittest import mock
+
+from test import support
 
 from . import util as test_util
 
@@ -46,7 +47,7 @@ class InheritanceTests:
         for subclass in self.subclasses:
             self.assertTrue(
                 issubclass(subclass, self.__test),
-                "{0} is not a subclass of {1}".format(subclass, self.__test),
+                f"{subclass} is not a subclass of {self.__test}",
             )
 
     def test_superclasses(self):
@@ -54,7 +55,7 @@ class InheritanceTests:
         for superclass in self.superclasses:
             self.assertTrue(
                 issubclass(self.__test, superclass),
-                "{0} is not a superclass of {1}".format(superclass, self.__test),
+                f"{superclass} is not a superclass of {self.__test}",
             )
 
 
@@ -146,7 +147,6 @@ def make_abc_subclasses(base_class, name=None, inst=False, **kwargs):
 
 
 class ABCTestHarness:
-
     @property
     def ins(self):
         # Lazily set ins on the class.
@@ -157,13 +157,11 @@ class ABCTestHarness:
 
 
 class MetaPathFinder:
-
     def find_module(self, fullname, path):
         return super().find_module(fullname, path)
 
 
 class MetaPathFinderDefaultsTests(ABCTestHarness):
-
     SPLIT = make_abc_subclasses(MetaPathFinder)
 
     def test_find_module(self):
@@ -183,13 +181,11 @@ Frozen_MPFDefaultTests, Source_MPFDefaultTests = test_util.test_both(
 
 
 class PathEntryFinder:
-
     def find_loader(self, fullname):
         return super().find_loader(fullname)
 
 
 class PathEntryFinderDefaultsTests(ABCTestHarness):
-
     SPLIT = make_abc_subclasses(PathEntryFinder)
 
     def test_find_loader(self):
@@ -211,13 +207,11 @@ Frozen_PEFDefaultTests, Source_PEFDefaultTests = test_util.test_both(
 
 
 class Loader:
-
     def load_module(self, fullname):
         return super().load_module(fullname)
 
 
 class LoaderDefaultsTests(ABCTestHarness):
-
     SPLIT = make_abc_subclasses(Loader)
 
     def test_create_module(self):
@@ -242,13 +236,11 @@ Frozen_LDefaultTests, SourceLDefaultTests = test_util.test_both(LoaderDefaultsTe
 
 
 class ResourceLoader(Loader):
-
     def get_data(self, path):
         return super().get_data(path)
 
 
 class ResourceLoaderDefaultsTests(ABCTestHarness):
-
     SPLIT = make_abc_subclasses(ResourceLoader)
 
     def test_get_data(self):
@@ -262,7 +254,6 @@ Frozen_RLDefaultTests, Source_RLDefaultTests = test_util.test_both(
 
 
 class InspectLoader(Loader):
-
     def is_package(self, fullname):
         return super().is_package(fullname)
 
@@ -274,7 +265,6 @@ SPLIT_IL = make_abc_subclasses(InspectLoader)
 
 
 class InspectLoaderDefaultsTests(ABCTestHarness):
-
     SPLIT = SPLIT_IL
 
     def test_is_package(self):
@@ -292,7 +282,6 @@ Frozen_ILDefaultTests, Source_ILDefaultTests = test_util.test_both(
 
 
 class ExecutionLoader(InspectLoader):
-
     def get_filename(self, fullname):
         return super().get_filename(fullname)
 
@@ -301,7 +290,6 @@ SPLIT_EL = make_abc_subclasses(ExecutionLoader)
 
 
 class ExecutionLoaderDefaultsTests(ABCTestHarness):
-
     SPLIT = SPLIT_EL
 
     def test_get_filename(self):
@@ -315,7 +303,6 @@ Frozen_ELDefaultTests, Source_ELDefaultsTests = test_util.test_both(
 
 
 class ResourceReader:
-
     def open_resource(self, *args, **kwargs):
         return super().open_resource(*args, **kwargs)
 
@@ -330,7 +317,6 @@ class ResourceReader:
 
 
 class ResourceReaderDefaultsTests(ABCTestHarness):
-
     SPLIT = make_abc_subclasses(ResourceReader)
 
     def test_open_resource(self):
@@ -356,11 +342,9 @@ Frozen_RRDefaultTests, Source_RRDefaultsTests = test_util.test_both(
 
 ##### MetaPathFinder concrete methods ##########################################
 class MetaPathFinderFindModuleTests:
-
     @classmethod
     def finder(cls, spec):
         class MetaPathSpecFinder(cls.abc.MetaPathFinder):
-
             def find_spec(self, fullname, path, target=None):
                 self.called_for = fullname, path
                 return spec
@@ -406,11 +390,9 @@ Frozen_MPFFindModuleTests, Source_MPFFindModuleTests = test_util.test_both(
 
 ##### PathEntryFinder concrete methods #########################################
 class PathEntryFinderFindLoaderTests:
-
     @classmethod
     def finder(cls, spec):
         class PathEntrySpecFinder(cls.abc.PathEntryFinder):
-
             def find_spec(self, fullname, target=None):
                 self.called_for = fullname
                 return spec
@@ -452,7 +434,6 @@ Frozen_PEFFindLoaderTests, Source_PEFFindLoaderTests = test_util.test_both(
 
 ##### Loader concrete methods ##################################################
 class LoaderLoadModuleTests:
-
     def loader(self):
         class SpecLoader(self.abc.Loader):
             found = None
@@ -503,7 +484,6 @@ Frozen_LoaderLoadModuleTests, Source_LoaderLoadModuleTests = test_util.test_both
 
 ##### InspectLoader concrete methods ###########################################
 class InspectLoaderSourceToCodeTests:
-
     def source_to_module(self, data, path=None):
         """Help with source_to_code() tests."""
         module = types.ModuleType("blah")
@@ -550,7 +530,6 @@ Frozen_ILSourceToCodeTests, Source_ILSourceToCodeTests = test_util.test_both(
 
 
 class InspectLoaderGetCodeTests:
-
     def test_get_code(self):
         # Test success.
         module = types.ModuleType("blah")
@@ -632,7 +611,6 @@ Frozen_ILLoadModuleTests, Source_ILLoadModuleTests = test_util.test_both(
 
 ##### ExecutionLoader concrete methods #########################################
 class ExecutionLoaderGetCodeTests:
-
     def mock_methods(self, *, get_source=False, get_filename=False):
         source_mock_context, filename_mock_context = None, None
         if get_source:
@@ -699,7 +677,6 @@ Frozen_ELGetCodeTests, Source_ELGetCodeTests = test_util.test_both(
 
 ##### SourceLoader concrete methods ############################################
 class SourceOnlyLoader:
-
     # Globals that should be defined for all modules.
     source = (
         b"_ = '::'.join([__name__, __file__, __cached__, __package__, "
@@ -711,7 +688,7 @@ class SourceOnlyLoader:
 
     def get_data(self, path):
         if path != self.path:
-            raise IOError
+            raise OSError
         return self.source
 
     def get_filename(self, fullname):
@@ -725,7 +702,6 @@ SPLIT_SOL = make_abc_subclasses(SourceOnlyLoader, "SourceLoader")
 
 
 class SourceLoader(SourceOnlyLoader):
-
     source_mtime = 1
 
     def __init__(self, path, magic=None):
@@ -753,7 +729,7 @@ class SourceLoader(SourceOnlyLoader):
 
     def path_stats(self, path):
         if path != self.path:
-            raise IOError
+            raise OSError
         return {"mtime": self.source_mtime, "size": self.source_size}
 
     def set_data(self, path, data):
@@ -765,7 +741,6 @@ SPLIT_SL = make_abc_subclasses(SourceLoader, util=util, init=init)
 
 
 class SourceLoaderTestHarness:
-
     def setUp(self, *, is_package=True, **kwargs):
         self.package = "pkg"
         if is_package:

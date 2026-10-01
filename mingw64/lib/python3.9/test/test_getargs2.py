@@ -1,12 +1,13 @@
-import unittest
 import math
 import string
 import sys
+import unittest
+
 from test import support
 
 # Skip this test if the _testcapi module isn't available.
 _testcapi = support.import_module("_testcapi")
-from _testcapi import getargs_keywords, getargs_keyword_only
+from _testcapi import getargs_keyword_only, getargs_keywords
 
 # > How about the following counterproposal. This also changes some of
 # > the other format codes to be a little more regular.
@@ -42,22 +43,22 @@ LARGE = 0x7FFFFFFF
 VERY_LARGE = 0xFF0000121212121212121242
 
 from _testcapi import (
-    UCHAR_MAX,
-    USHRT_MAX,
-    UINT_MAX,
-    ULONG_MAX,
+    DBL_MAX,
+    DBL_MIN,
+    FLT_MAX,
+    FLT_MIN,
     INT_MAX,
     INT_MIN,
-    LONG_MIN,
     LONG_MAX,
-    PY_SSIZE_T_MIN,
+    LONG_MIN,
     PY_SSIZE_T_MAX,
-    SHRT_MIN,
+    PY_SSIZE_T_MIN,
     SHRT_MAX,
-    FLT_MIN,
-    FLT_MAX,
-    DBL_MIN,
-    DBL_MAX,
+    SHRT_MIN,
+    UCHAR_MAX,
+    UINT_MAX,
+    ULONG_MAX,
+    USHRT_MAX,
 )
 
 DBL_MAX_EXP = sys.float_info.max_exp
@@ -668,7 +669,7 @@ class Keywords_TestCase(unittest.TestCase):
         self.assertEqual(ret, {"a": 1, "b": 2})
         self.assertIs(type(ret), dict)
 
-        ret = get_kwargs(a=1, **{"b": 2, "c": 3})
+        ret = get_kwargs(a=1, b=2, c=3)
         self.assertEqual(ret, {"a": 1, "b": 2, "c": 3})
         self.assertIs(type(ret), dict)
 
@@ -680,7 +681,7 @@ class Keywords_TestCase(unittest.TestCase):
         self.assertIn(ret, ({}, None))
         self.assertIn(type(ret), (dict, type(None)))
 
-        ret = get_kwargs(**{})
+        ret = get_kwargs()
         self.assertIn(ret, ({}, None))
         self.assertIn(type(ret), (dict, type(None)))
 
@@ -1148,7 +1149,6 @@ class Test6012(unittest.TestCase):
 
 
 class SkipitemTest(unittest.TestCase):
-
     def test_skipitem(self):
         """
         If this test failed, you probably added a new "format unit"
@@ -1208,15 +1208,13 @@ class SkipitemTest(unittest.TestCase):
                 )
                 when_skipped = False
             except SystemError as e:
-                s = "impossible<bad format char>: '{}'".format(format)
+                s = f"impossible<bad format char>: '{format}'"
                 when_skipped = str(e) == s
 
             message = (
                 "test_skipitem_parity: "
                 "detected mismatch between convertsimple and skipitem "
-                "for format unit '{}' ({}), not skipped {}, skipped {}".format(
-                    c, i, when_skipped, when_not_skipped
-                )
+                f"for format unit '{c}' ({i}), not skipped {when_skipped}, skipped {when_not_skipped}"
             )
             self.assertIs(when_skipped, when_not_skipped, message)
 
@@ -1255,7 +1253,6 @@ class SkipitemTest(unittest.TestCase):
 
 
 class ParseTupleAndKeywords_Test(unittest.TestCase):
-
     def test_parse_tuple_and_keywords(self):
         # Test handling errors in the parse_tuple_and_keywords helper itself
         self.assertRaises(TypeError, _testcapi.parse_tuple_and_keywords, (), {}, 42, [])

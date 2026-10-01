@@ -4,12 +4,12 @@ XXX The functions here don't copy the resource fork or other metadata on Mac.
 
 """
 
-import os
-import sys
-import stat
-import fnmatch
 import collections
 import errno
+import fnmatch
+import os
+import stat
+import sys
 
 try:
     import zlib
@@ -60,31 +60,31 @@ _HAS_FCOPYFILE = posix and hasattr(posix, "_fcopyfile")  # macOS
 _WIN_DEFAULT_PATHEXT = ".COM;.EXE;.BAT;.CMD;.VBS;.JS;.WS;.MSC"
 
 __all__ = [
-    "copyfileobj",
-    "copyfile",
-    "copymode",
-    "copystat",
+    "Error",
+    "ExecError",
+    "SameFileError",
+    "SpecialFileError",
+    "chown",
     "copy",
     "copy2",
+    "copyfile",
+    "copyfileobj",
+    "copymode",
+    "copystat",
     "copytree",
-    "move",
-    "rmtree",
-    "Error",
-    "SpecialFileError",
-    "ExecError",
-    "make_archive",
     "get_archive_formats",
-    "register_archive_format",
-    "unregister_archive_format",
-    "get_unpack_formats",
-    "register_unpack_format",
-    "unregister_unpack_format",
-    "unpack_archive",
-    "ignore_patterns",
-    "chown",
-    "which",
     "get_terminal_size",
-    "SameFileError",
+    "get_unpack_formats",
+    "ignore_patterns",
+    "make_archive",
+    "move",
+    "register_archive_format",
+    "register_unpack_format",
+    "rmtree",
+    "unpack_archive",
+    "unregister_archive_format",
+    "unregister_unpack_format",
+    "which",
 ]
 # disk_usage is added later, if available on the platform
 
@@ -279,7 +279,7 @@ def copyfile(src, dst, *, follow_symlinks=True):
     sys.audit("shutil.copyfile", src, dst)
 
     if _samefile(src, dst):
-        raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+        raise SameFileError(f"{src!r} and {dst!r} are the same file")
 
     file_size = 0
     for i, fn in enumerate([src, dst]):
@@ -765,7 +765,7 @@ def _rmtree_safe_fd(topfd, path, onerror):
                             # This can only happen if someone replaces
                             # a directory with a symlink after the call to
                             # os.scandir or stat.S_ISDIR above.
-                            raise OSError("Cannot call rmtree on a symbolic " "link")
+                            raise OSError("Cannot call rmtree on a symbolic link")
                         except OSError:
                             onerror(os.path.islink, fullname, sys.exc_info())
                 finally:
@@ -924,7 +924,7 @@ def move(src, dst, copy_function=copy2):
         elif os.path.isdir(src):
             if _destinsrc(src, dst):
                 raise Error(
-                    "Cannot move a directory '%s' into itself" " '%s'." % (src, dst)
+                    "Cannot move a directory '%s' into itself '%s'." % (src, dst)
                 )
             if _is_immutable(src) or (
                 not os.access(src, os.W_OK)
@@ -1020,7 +1020,7 @@ def _make_tarball(
     else:
         raise ValueError(
             "bad value for 'compress', or compression format not "
-            "supported : {0}".format(compress)
+            f"supported : {compress}"
         )
 
     import tarfile  # late import for breaking circular dependency
@@ -1398,7 +1398,7 @@ def unpack_archive(filename, extract_dir=None, format=None):
         try:
             format_info = _UNPACK_FORMATS[format]
         except KeyError:
-            raise ValueError("Unknown unpack format '{0}'".format(format)) from None
+            raise ValueError(f"Unknown unpack format '{format}'") from None
 
         func = format_info[1]
         func(filename, extract_dir, **dict(format_info[2]))
@@ -1406,7 +1406,7 @@ def unpack_archive(filename, extract_dir=None, format=None):
         # we need to look at the registered unpackers supported extensions
         format = _find_unpack_format(filename)
         if format is None:
-            raise ReadError("Unknown archive format '{0}'".format(filename))
+            raise ReadError(f"Unknown archive format '{filename}'")
 
         func = _UNPACK_FORMATS[format][1]
         kwargs = dict(_UNPACK_FORMATS[format][2])
@@ -1414,7 +1414,6 @@ def unpack_archive(filename, extract_dir=None, format=None):
 
 
 if hasattr(os, "statvfs"):
-
     __all__.append("disk_usage")
     _ntuple_diskusage = collections.namedtuple("usage", "total used free")
     _ntuple_diskusage.total.__doc__ = "Total space in bytes"
@@ -1434,7 +1433,6 @@ if hasattr(os, "statvfs"):
         return _ntuple_diskusage(total, used, free)
 
 elif _WINDOWS:
-
     __all__.append("disk_usage")
     _ntuple_diskusage = collections.namedtuple("usage", "total used free")
 
@@ -1470,14 +1468,14 @@ def chown(path, user=None, group=None):
     elif isinstance(user, str):
         _user = _get_uid(user)
         if _user is None:
-            raise LookupError("no such user: {!r}".format(user))
+            raise LookupError(f"no such user: {user!r}")
 
     if group is None:
         _group = -1
     elif not isinstance(group, int):
         _group = _get_gid(group)
         if _group is None:
-            raise LookupError("no such group: {!r}".format(group))
+            raise LookupError(f"no such group: {group!r}")
 
     os.chown(path, _user, _group)
 

@@ -6,19 +6,18 @@
 Implements the bdist_msi command.
 """
 
+import msilib
 import os
 import sys
 import warnings
+from distutils import log
 from distutils.core import Command
 from distutils.dir_util import remove_tree
-from distutils.sysconfig import get_python_version
-from distutils.version import StrictVersion
 from distutils.errors import DistutilsOptionError
+from distutils.sysconfig import get_python_version
 from distutils.util import get_platform
-from distutils import log
-import msilib
-from msilib import schema, sequence, text
-from msilib import Directory, Feature, Dialog, add_data
+from distutils.version import StrictVersion
+from msilib import Dialog, Directory, Feature, add_data, schema, sequence, text
 
 
 class PyDialog(Dialog):
@@ -87,7 +86,6 @@ class PyDialog(Dialog):
 
 
 class bdist_msi(Command):
-
     description = "create a Microsoft Installer (.msi) binary distribution"
 
     user_options = [
@@ -113,7 +111,7 @@ class bdist_msi(Command):
         (
             "no-target-optimize",
             "o",
-            "do not compile .py to .pyo (optimized) " "on the target system",
+            "do not compile .py to .pyo (optimized) on the target system",
         ),
         ("dist-dir=", "d", "directory to put final built distributions in"),
         ("skip-build", None, "skip rebuilding everything (for testing/debugging)"),

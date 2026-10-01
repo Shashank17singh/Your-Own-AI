@@ -1,15 +1,18 @@
 """Base classes for server/gateway implementations"""
 
-from .util import FileWrapper, guess_scheme, is_hop_by_hop
+import os
+import sys
+import time
+
 from .headers import Headers
-import sys, os, time
+from .util import FileWrapper, guess_scheme, is_hop_by_hop
 
 __all__ = [
-    "BaseHandler",
-    "SimpleHandler",
     "BaseCGIHandler",
+    "BaseHandler",
     "CGIHandler",
     "IISCGIHandler",
+    "SimpleHandler",
     "read_environ",
 ]
 _weekdayname = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -207,18 +210,16 @@ class BaseHandler:
             for name, val in headers:
                 name = self._convert_string_type(name, "Header name")
                 val = self._convert_string_type(val, "Header value")
-                assert not is_hop_by_hop(
-                    name
-                ), f"Hop-by-hop header, '{name}: {val}', not allowed"
+                assert not is_hop_by_hop(name), (
+                    f"Hop-by-hop header, '{name}: {val}', not allowed"
+                )
         return self.write
 
     def _convert_string_type(self, value, title):
         """Convert/check value type."""
         if type(value) is str:
             return value
-        raise AssertionError(
-            "{0} must be of type str (got {1})".format(title, repr(value))
-        )
+        raise AssertionError(f"{title} must be of type str (got {value!r})")
 
     def send_preamble(self):
         """Transmit version/status/date/server, via self._write()"""

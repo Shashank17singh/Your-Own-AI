@@ -31,6 +31,7 @@ Notes:
 
 import atexit
 import builtins
+
 import __main__
 
 __all__ = ["Completer"]

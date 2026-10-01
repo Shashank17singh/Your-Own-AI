@@ -11,10 +11,9 @@ import os
 import re
 import sys
 from collections import deque
-
 from io import StringIO
 
-__all__ = ["shlex", "split", "quote", "join"]
+__all__ = ["join", "quote", "shlex", "split"]
 
 
 class shlex:
@@ -38,11 +37,11 @@ class shlex:
             self.eof = ""
         self.commenters = "#"
         self.wordchars = (
-            "abcdfeghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+            "abcdfeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
         )
         if self.posix:
             self.wordchars += (
-                "ßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ" "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ"
+                "ßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞ"
             )
         self.whitespace = " \t\r\n"
         self.whitespace_split = False

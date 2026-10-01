@@ -3,8 +3,8 @@ import textwrap
 import unittest
 from distutils.tests.support import TempdirManager
 from pathlib import Path
-from test import test_tools
-from test import support
+
+from test import support, test_tools
 from test.support.script_helper import assert_python_ok
 
 _py_cflags_nodist = sysconfig.get_config_var("PY_CFLAGS_NODIST")
@@ -15,11 +15,10 @@ test_tools.skip_if_missing("peg_generator")
 with test_tools.imports_under_tool("peg_generator"):
     from pegen.grammar_parser import GeneratedParser as GrammarParser
     from pegen.testutil import (
-        parse_string,
-        generate_parser_c_extension,
         generate_c_parser_source,
+        generate_parser_c_extension,
+        parse_string,
     )
-    from pegen.ast_dump import ast_dump
 TEST_TEMPLATE = """
 tmp_dir = {extension_path!r}
 import ast
@@ -59,14 +58,14 @@ class TestCParser(TempdirManager, unittest.TestCase):
         cmd = support.missing_compiler_executable()
         if cmd is not None:
             self.skipTest("The %r command is not found" % cmd)
-        super(TestCParser, self).setUp()
+        super().setUp()
         self.tmp_path = self.mkdtemp()
         change_cwd = support.change_cwd(self.tmp_path)
         change_cwd.__enter__()
         self.addCleanup(change_cwd.__exit__, None, None, None)
 
     def tearDown(self):
-        super(TestCParser, self).tearDown()
+        super().tearDown()
 
     def build_extension(self, grammar_source):
         grammar = parse_string(grammar_source, GrammarParser)

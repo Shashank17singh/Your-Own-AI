@@ -1,28 +1,27 @@
 # Adapted from test_file.py by Daniel Stutzbach
 
-import sys
-import os
-import io
+import _io  # C implementation of io
+import _pyio  # Python implementation of io
 import errno
+import io
+import os
+import sys
 import unittest
 from array import array
-from weakref import proxy
+from collections import UserList
 from functools import wraps
+from weakref import proxy
 
 from test.support import (
     TESTFN,
     TESTFN_UNICODE,
     check_warnings,
-    run_unittest,
-    make_bad_fd,
     cpython_only,
-    swap_attr,
     gc_collect,
+    make_bad_fd,
+    run_unittest,
+    swap_attr,
 )
-from collections import UserList
-
-import _io  # C implementation of io
-import _pyio  # Python implementation of io
 
 
 class AutoFileTests:
@@ -191,9 +190,8 @@ class AutoFileTests:
 
     def testRecursiveRepr(self):
         # Issue #25455
-        with swap_attr(self.f, "name", self.f):
-            with self.assertRaises(RuntimeError):
-                repr(self.f)  # Should not crash
+        with swap_attr(self.f, "name", self.f), self.assertRaises(RuntimeError):
+            repr(self.f)  # Should not crash
 
     def testErrors(self):
         f = self.f
@@ -377,7 +375,6 @@ class PyAutoFileTests(AutoFileTests, unittest.TestCase):
 
 
 class OtherFileTests:
-
     def testAbles(self):
         try:
             f = self.FileIO(TESTFN, "w")

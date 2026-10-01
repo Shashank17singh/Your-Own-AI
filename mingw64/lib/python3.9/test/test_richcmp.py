@@ -1,13 +1,12 @@
 # Tests for rich comparisons
 
-import unittest
-from test import support
-
 import operator
+import unittest
+
+from test import support
 
 
 class Number:
-
     def __init__(self, x):
         self.x = x
 
@@ -37,7 +36,6 @@ class Number:
 
 
 class Vector:
-
     def __init__(self, data):
         self.data = data
 
@@ -98,7 +96,6 @@ opmap = {
 
 
 class VectorTest(unittest.TestCase):
-
     def checkfail(self, error, opname, *args):
         for op in opmap[opname]:
             self.assertRaises(error, op, *args)
@@ -141,7 +138,6 @@ class VectorTest(unittest.TestCase):
 
 
 class NumberTest(unittest.TestCase):
-
     def test_basic(self):
         # Check that comparisons involving Number objects
         # give the same results give as comparing the
@@ -195,7 +191,6 @@ class NumberTest(unittest.TestCase):
 
 
 class MiscTest(unittest.TestCase):
-
     def test_misbehavin(self):
         class Misb:
             def __lt__(self_, other):
@@ -300,7 +295,6 @@ class MiscTest(unittest.TestCase):
 
 
 class DictTest(unittest.TestCase):
-
     def test_dicts(self):
         # Verify that __eq__ and __ne__ work for dicts even if the keys and
         # values don't support anything other than __eq__ and __ne__ (and
@@ -327,7 +321,6 @@ class DictTest(unittest.TestCase):
 
 
 class ListTest(unittest.TestCase):
-
     def test_coverage(self):
         # exercise all comparisons for lists
         x = [42]

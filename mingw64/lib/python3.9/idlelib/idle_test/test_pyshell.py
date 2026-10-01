@@ -2,10 +2,11 @@
 
 # Plus coverage of test_warning.  Was 20% with test_openshell.
 
-from idlelib import pyshell
 import unittest
-from test.support import requires
+from idlelib import pyshell
 from tkinter import Tk
+
+from test.support import requires
 
 
 class FunctionTest(unittest.TestCase):
@@ -20,7 +21,7 @@ class FunctionTest(unittest.TestCase):
                 file = file or "Shell"
                 line = pyshell.restart_line(width, file)
                 eq(len(line), width)
-                eq(line, f"{bar+extra} RESTART: {file} {bar}")
+                eq(line, f"{bar + extra} RESTART: {file} {bar}")
 
     def test_restart_line_narrow(self):
         expect, taglen = "= RESTART: Shell", 16
@@ -31,7 +32,6 @@ class FunctionTest(unittest.TestCase):
 
 
 class PyShellFileListTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

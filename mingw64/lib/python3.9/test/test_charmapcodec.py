@@ -9,9 +9,8 @@ Written by Marc-Andre Lemburg (mal@lemburg.com).
 
 """  # "
 
-import unittest
-
 import codecs
+import unittest
 
 
 # Register a search function which knows about our codec

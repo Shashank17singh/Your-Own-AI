@@ -1,37 +1,37 @@
 # Copyright (C) 2003 Python Software Foundation
 
-import unittest
-import unittest.mock
-import shutil
-import tempfile
-import sys
-import stat
-import os
-import os.path
+import contextlib
 import errno
 import functools
-import pathlib
-import subprocess
-import random
-import string
-import contextlib
 import io
+import os
+import os.path
+import pathlib
+import random
+import shutil
+import stat
+import string
+import subprocess
+import sys
+import tarfile
+import tempfile
+import unittest
+import unittest.mock
+import zipfile
 from shutil import (
-    make_archive,
-    register_archive_format,
-    unregister_archive_format,
-    get_archive_formats,
     Error,
-    unpack_archive,
-    register_unpack_format,
     RegistryError,
-    unregister_unpack_format,
-    get_unpack_formats,
     SameFileError,
     _GiveupOnFastCopy,
+    get_archive_formats,
+    get_unpack_formats,
+    make_archive,
+    register_archive_format,
+    register_unpack_format,
+    unpack_archive,
+    unregister_archive_format,
+    unregister_unpack_format,
 )
-import tarfile
-import zipfile
 
 try:
     import posix
@@ -108,8 +108,7 @@ def write_test_file(path, size):
         [random.choice(string.ascii_letters).encode() for i in range(bufsize)]
     )
     with open(path, "wb") as f:
-        for csize in chunks(size, bufsize):
-            f.write(chunk)
+        f.writelines(chunk for csize in chunks(size, bufsize))
     assert os.path.getsize(path) == size
 
 
@@ -150,19 +149,19 @@ def supports_file2file_sendfile():
             srcname = f.name
             f.write(b"0123456789")
 
-        with open(srcname, "rb") as src:
-            with tempfile.NamedTemporaryFile(
-                "wb", dir=os.getcwd(), delete=False
-            ) as dst:
-                dstname = dst.name
-                infd = src.fileno()
-                outfd = dst.fileno()
-                try:
-                    os.sendfile(outfd, infd, 0, 2)
-                except OSError:
-                    return False
-                else:
-                    return True
+        with (
+            open(srcname, "rb") as src,
+            tempfile.NamedTemporaryFile("wb", dir=os.getcwd(), delete=False) as dst,
+        ):
+            dstname = dst.name
+            infd = src.fileno()
+            outfd = dst.fileno()
+            try:
+                os.sendfile(outfd, infd, 0, 2)
+            except OSError:
+                return False
+            else:
+                return True
     finally:
         if srcname is not None:
             support.unlink(srcname)
@@ -187,7 +186,6 @@ def _maxdataOK():
 
 
 class BaseTest:
-
     def mkdtemp(self, prefix=None):
         """Create a temporary directory that will be cleaned up.
 
@@ -199,7 +197,6 @@ class BaseTest:
 
 
 class TestRmTree(BaseTest, unittest.TestCase):
-
     def test_rmtree_works_on_bytes(self):
         tmp = self.mkdtemp()
         victim = os.path.join(tmp, "killme")
@@ -480,7 +477,6 @@ class TestRmTree(BaseTest, unittest.TestCase):
 
 
 class TestCopyTree(BaseTest, unittest.TestCase):
-
     def test_copytree_simple(self):
         src_dir = self.mkdtemp()
         dst_dir = os.path.join(self.mkdtemp(), "destination")
@@ -602,9 +598,11 @@ class TestCopyTree(BaseTest, unittest.TestCase):
                     for name in names:
                         path = os.path.join(src, name)
 
-                        if os.path.isdir(path) and path.split()[-1] == "subdir":
-                            res.append(name)
-                        elif os.path.splitext(path)[-1] in (".py"):
+                        if (
+                            os.path.isdir(path)
+                            and path.split()[-1] == "subdir"
+                            or os.path.splitext(path)[-1] in (".py")
+                        ):
                             res.append(name)
                     return res
 
@@ -832,7 +830,6 @@ class TestCopyTree(BaseTest, unittest.TestCase):
 
 
 class TestCopy(BaseTest, unittest.TestCase):
-
     ### shutil.copymode
 
     @support.skip_unless_symlink
@@ -1139,9 +1136,7 @@ class TestCopy(BaseTest, unittest.TestCase):
                 getattr(file1_stat, attr), getattr(file2_stat, attr) + 1
             )
         if hasattr(os, "chflags") and hasattr(file1_stat, "st_flags"):
-            self.assertEqual(
-                getattr(file1_stat, "st_flags"), getattr(file2_stat, "st_flags")
-            )
+            self.assertEqual(file1_stat.st_flags, file2_stat.st_flags)
 
     @support.skip_unless_symlink
     def test_copy2_symlinks(self):
@@ -1313,7 +1308,6 @@ class TestCopy(BaseTest, unittest.TestCase):
 
 
 class TestArchives(BaseTest, unittest.TestCase):
-
     ### shutil.make_archive
 
     @support.requires_zlib()
@@ -1687,7 +1681,6 @@ class TestArchives(BaseTest, unittest.TestCase):
 
 
 class TestMisc(BaseTest, unittest.TestCase):
-
     @unittest.skipUnless(
         hasattr(shutil, "disk_usage"), "disk_usage not available on this platform"
     )
@@ -1768,7 +1761,6 @@ class TestMisc(BaseTest, unittest.TestCase):
 
 
 class TestWhich(BaseTest, unittest.TestCase):
-
     def setUp(self):
         self.temp_dir = self.mkdtemp(prefix="Tmp")
         # Give the temp_file an ".exe" suffix for all.
@@ -1858,9 +1850,11 @@ class TestWhich(BaseTest, unittest.TestCase):
         # PATH='': no match
         with support.EnvironmentVarGuard() as env:
             env["PATH"] = ""
-            with unittest.mock.patch(
-                "os.confstr", return_value=self.dir, create=True
-            ), support.swap_attr(os, "defpath", self.dir), support.change_cwd(self.dir):
+            with (
+                unittest.mock.patch("os.confstr", return_value=self.dir, create=True),
+                support.swap_attr(os, "defpath", self.dir),
+                support.change_cwd(self.dir),
+            ):
                 rv = shutil.which(self.file)
                 self.assertIsNone(rv)
 
@@ -1875,9 +1869,10 @@ class TestWhich(BaseTest, unittest.TestCase):
         # PATH=':': explicitly looks in the current directory
         with support.EnvironmentVarGuard() as env:
             env["PATH"] = os.pathsep
-            with unittest.mock.patch(
-                "os.confstr", return_value=self.dir, create=True
-            ), support.swap_attr(os, "defpath", self.dir):
+            with (
+                unittest.mock.patch("os.confstr", return_value=self.dir, create=True),
+                support.swap_attr(os, "defpath", self.dir),
+            ):
                 rv = shutil.which(self.file)
                 self.assertIsNone(rv)
 
@@ -1891,16 +1886,18 @@ class TestWhich(BaseTest, unittest.TestCase):
             env.pop("PATH", None)
 
             # without confstr
-            with unittest.mock.patch(
-                "os.confstr", side_effect=ValueError, create=True
-            ), support.swap_attr(os, "defpath", self.dir):
+            with (
+                unittest.mock.patch("os.confstr", side_effect=ValueError, create=True),
+                support.swap_attr(os, "defpath", self.dir),
+            ):
                 rv = shutil.which(self.file)
             self.assertEqual(rv, self.temp_file.name)
 
             # with confstr
-            with unittest.mock.patch(
-                "os.confstr", return_value=self.dir, create=True
-            ), support.swap_attr(os, "defpath", ""):
+            with (
+                unittest.mock.patch("os.confstr", return_value=self.dir, create=True),
+                support.swap_attr(os, "defpath", ""),
+            ):
                 rv = shutil.which(self.file)
             self.assertEqual(rv, self.temp_file.name)
 
@@ -1965,7 +1962,6 @@ class TestWhichBytes(TestWhich):
 
 
 class TestMove(BaseTest, unittest.TestCase):
-
     def setUp(self):
         filename = "foo"
         self.src_dir = self.mkdtemp()
@@ -2227,8 +2223,7 @@ class TestMove(BaseTest, unittest.TestCase):
 
 
 class TestCopyFile(unittest.TestCase):
-
-    class Faux(object):
+    class Faux:
         _entered = False
         _exited_with = None
         _raised = False
@@ -2337,14 +2332,12 @@ class TestCopyFileObj(unittest.TestCase):
 
     @contextlib.contextmanager
     def get_files(self):
-        with open(TESTFN, "rb") as src:
-            with open(TESTFN2, "wb") as dst:
-                yield (src, dst)
+        with open(TESTFN, "rb") as src, open(TESTFN2, "wb") as dst:
+            yield (src, dst)
 
     def assert_files_eq(self, src, dst):
-        with open(src, "rb") as fsrc:
-            with open(dst, "rb") as fdst:
-                self.assertEqual(fsrc.read(), fdst.read())
+        with open(src, "rb") as fsrc, open(dst, "rb") as fdst:
+            self.assertEqual(fsrc.read(), fdst.read())
 
     def test_content(self):
         with self.get_files() as (src, dst):
@@ -2394,7 +2387,7 @@ class TestCopyFileObj(unittest.TestCase):
         self.assert_files_eq(fname, TESTFN2)
 
 
-class _ZeroCopyFileTest(object):
+class _ZeroCopyFileTest:
     """Tests common to all zero-copy APIs."""
 
     FILESIZE = 10 * 1024 * 1024  # 10 MiB
@@ -2417,9 +2410,8 @@ class _ZeroCopyFileTest(object):
 
     @contextlib.contextmanager
     def get_files(self):
-        with open(TESTFN, "rb") as src:
-            with open(TESTFN2, "wb") as dst:
-                yield (src, dst)
+        with open(TESTFN, "rb") as src, open(TESTFN2, "wb") as dst:
+            yield (src, dst)
 
     def zerocopy_fun(self, *args, **kwargs):
         raise NotImplementedError("must be implemented in subclass")
@@ -2444,9 +2436,8 @@ class _ZeroCopyFileTest(object):
 
     def test_same_file(self):
         self.addCleanup(self.reset)
-        with self.get_files() as (src, dst):
-            with self.assertRaises(Exception):
-                self.zerocopy_fun(src, src)
+        with self.get_files() as (src, dst), self.assertRaises(Exception):
+            self.zerocopy_fun(src, src)
         # Make sure src file is not corrupted.
         self.assertEqual(read_file(TESTFN, binary=True), self.FILEDATA)
 
@@ -2464,9 +2455,8 @@ class _ZeroCopyFileTest(object):
         with open(srcname, "wb"):
             pass
 
-        with open(srcname, "rb") as src:
-            with open(dstname, "wb") as dst:
-                self.zerocopy_fun(src, dst)
+        with open(srcname, "rb") as src, open(dstname, "wb") as dst:
+            self.zerocopy_fun(src, dst)
 
         self.assertEqual(read_file(dstname, binary=True), b"")
 
@@ -2478,21 +2468,25 @@ class _ZeroCopyFileTest(object):
         # Emulate a case where the first call to the zero-copy
         # function raises an exception in which case the function is
         # supposed to give up immediately.
-        with unittest.mock.patch(
-            self.PATCHPOINT, side_effect=OSError(errno.EINVAL, "yo")
+        with (
+            unittest.mock.patch(
+                self.PATCHPOINT, side_effect=OSError(errno.EINVAL, "yo")
+            ),
+            self.get_files() as (src, dst),
+            self.assertRaises(_GiveupOnFastCopy),
         ):
-            with self.get_files() as (src, dst):
-                with self.assertRaises(_GiveupOnFastCopy):
-                    self.zerocopy_fun(src, dst)
+            self.zerocopy_fun(src, dst)
 
     def test_filesystem_full(self):
         # Emulate a case where filesystem is full and sendfile() fails
         # on first call.
-        with unittest.mock.patch(
-            self.PATCHPOINT, side_effect=OSError(errno.ENOSPC, "yo")
+        with (
+            unittest.mock.patch(
+                self.PATCHPOINT, side_effect=OSError(errno.ENOSPC, "yo")
+            ),
+            self.get_files() as (src, dst),
         ):
-            with self.get_files() as (src, dst):
-                self.assertRaises(OSError, self.zerocopy_fun, src, dst)
+            self.assertRaises(OSError, self.zerocopy_fun, src, dst)
 
 
 @unittest.skipIf(not SUPPORTS_SENDFILE, "os.sendfile() not supported")
@@ -2503,22 +2497,20 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
         return shutil._fastcopy_sendfile(fsrc, fdst)
 
     def test_non_regular_file_src(self):
-        with io.BytesIO(self.FILEDATA) as src:
-            with open(TESTFN2, "wb") as dst:
-                with self.assertRaises(_GiveupOnFastCopy):
-                    self.zerocopy_fun(src, dst)
-                shutil.copyfileobj(src, dst)
+        with io.BytesIO(self.FILEDATA) as src, open(TESTFN2, "wb") as dst:
+            with self.assertRaises(_GiveupOnFastCopy):
+                self.zerocopy_fun(src, dst)
+            shutil.copyfileobj(src, dst)
 
         self.assertEqual(read_file(TESTFN2, binary=True), self.FILEDATA)
 
     def test_non_regular_file_dst(self):
-        with open(TESTFN, "rb") as src:
-            with io.BytesIO() as dst:
-                with self.assertRaises(_GiveupOnFastCopy):
-                    self.zerocopy_fun(src, dst)
-                shutil.copyfileobj(src, dst)
-                dst.seek(0)
-                self.assertEqual(dst.read(), self.FILEDATA)
+        with open(TESTFN, "rb") as src, io.BytesIO() as dst:
+            with self.assertRaises(_GiveupOnFastCopy):
+                self.zerocopy_fun(src, dst)
+            shutil.copyfileobj(src, dst)
+            dst.seek(0)
+            self.assertEqual(dst.read(), self.FILEDATA)
 
     def test_exception_on_second_call(self):
         def sendfile(*args, **kwargs):

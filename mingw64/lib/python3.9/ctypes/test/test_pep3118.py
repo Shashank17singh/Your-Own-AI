@@ -1,6 +1,7 @@
+import re
+import sys
 import unittest
 from ctypes import *
-import re, sys
 
 if sys.byteorder == "little":
     THIS_ENDIAN = "<"
@@ -20,7 +21,6 @@ def normalize(format):
 
 
 class Test(unittest.TestCase):
-
     def test_native_types(self):
         for tp, fmt, shape, itemtp in native_types:
             ob = tp()

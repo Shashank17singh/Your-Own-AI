@@ -1,4 +1,4 @@
-from tkinter import _cnfmerge, Widget, TclError, Button, Pack
+from tkinter import Button, Pack, TclError, Widget, _cnfmerge
 
 __all__ = ["Dialog"]
 DIALOG_ICON = "questhead"
@@ -17,7 +17,7 @@ class Dialog(Widget):
                 cnf["text"],
                 cnf["bitmap"],
                 cnf["default"],
-                *cnf["strings"]
+                *cnf["strings"],
             )
         )
         try:

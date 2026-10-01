@@ -8,15 +8,17 @@ import contextlib
 import os
 import re
 import sys
-from distutils.core import Command
-from distutils.errors import *
-from distutils.sysconfig import customize_compiler, get_python_version
-from distutils.sysconfig import get_config_h_filename
-from distutils.dep_util import newer_group
-from distutils.extension import Extension
-from distutils.util import get_platform
 from distutils import log
-
+from distutils.core import Command
+from distutils.dep_util import newer_group
+from distutils.errors import *
+from distutils.extension import Extension
+from distutils.sysconfig import (
+    customize_compiler,
+    get_config_h_filename,
+    get_python_version,
+)
+from distutils.util import get_platform
 from site import USER_BASE
 
 # An extension name is just a dot-separated list of Python NAMEs (ie.
@@ -31,7 +33,6 @@ def show_compilers():
 
 
 class build_ext(Command):
-
     description = "build C/C++ extensions (compile/link to build directory)"
 
     # XXX thoughts on how to deal with complex command-line options like
@@ -182,7 +183,7 @@ class build_ext(Command):
         # for extensions under windows use different directories
         # for Release and Debug builds.
         # also Python's library directory must be appended to library_dirs
-        if os.name == "nt" and not self.plat_name.startswith(("mingw")):
+        if os.name == "nt" and not self.plat_name.startswith("mingw"):
             # the 'libs' directory is for binary installs - we assume that
             # must be the *native* platform.  But we don't really support
             # cross-compiling via a binary install anyway, so we let it go.
@@ -214,7 +215,7 @@ class build_ext(Command):
 
         # For extensions under Cygwin, Python's library directory must be
         # appended to library_dirs
-        if sys.platform[:6] == "cygwin" or self.plat_name.startswith(("mingw")):
+        if sys.platform[:6] == "cygwin" or self.plat_name.startswith("mingw"):
             if not sysconfig.python_build:
                 # building third party extensions
                 config_dir_name = os.path.basename(sysconfig.get_config_var("LIBPL"))
@@ -411,7 +412,7 @@ class build_ext(Command):
             # Medium-easy stuff: same syntax/semantics, different names.
             ext.runtime_library_dirs = build_info.get("rpath")
             if "def_file" in build_info:
-                log.warn("'def_file' element of build info dict " "no longer supported")
+                log.warn("'def_file' element of build info dict no longer supported")
 
             # Non-trivial stuff: 'macros' split into 'define_macros'
             # and 'undef_macros'.
@@ -422,8 +423,7 @@ class build_ext(Command):
                 for macro in macros:
                     if not (isinstance(macro, tuple) and len(macro) in (1, 2)):
                         raise DistutilsSetupError(
-                            "'macros' element of build info dict "
-                            "must be 1- or 2-tuple"
+                            "'macros' element of build info dict must be 1- or 2-tuple"
                         )
                     if len(macro) == 1:
                         ext.undef_macros.append(macro[0])
@@ -651,8 +651,7 @@ class build_ext(Command):
                 fn = os.path.join("c:\\swig%s" % vers, "swig.exe")
                 if os.path.isfile(fn):
                     return fn
-            else:
-                return "swig.exe"
+            return "swig.exe"
         else:
             raise DistutilsPlatformError(
                 "I don't know how to find (much less run) SWIG "
@@ -780,15 +779,14 @@ class build_ext(Command):
             link_libpython = False
             if get_config_var("Py_ENABLE_SHARED"):
                 # A native build on an Android device or on Cygwin
-                if hasattr(sys, "getandroidapilevel"):
-                    link_libpython = True
-                elif sys.platform == "cygwin":
+                if hasattr(sys, "getandroidapilevel") or sys.platform == "cygwin":
                     link_libpython = True
                 elif "_PYTHON_HOST_PLATFORM" in os.environ:
                     # We are cross-compiling for one of the relevant platforms
-                    if get_config_var("ANDROID_API_LEVEL") != 0:
-                        link_libpython = True
-                    elif get_config_var("MACHDEP") == "cygwin":
+                    if (
+                        get_config_var("ANDROID_API_LEVEL") != 0
+                        or get_config_var("MACHDEP") == "cygwin"
+                    ):
                         link_libpython = True
 
             if link_libpython:

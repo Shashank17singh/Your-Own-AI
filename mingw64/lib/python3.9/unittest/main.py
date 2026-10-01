@@ -1,8 +1,9 @@
 """Unittest main program"""
 
-import sys
 import argparse
 import os
+import sys
+
 from . import loader, runner
 from .signals import installHandler
 
@@ -45,7 +46,7 @@ def _convert_select_pattern(pattern):
     return pattern
 
 
-class TestProgram(object):
+class TestProgram:
     """A command-line program that runs a set of tests; this is primarily
     for making test modules conveniently executable.
     """
@@ -69,7 +70,7 @@ class TestProgram(object):
         buffer=None,
         warnings=None,
         *,
-        tb_locals=False
+        tb_locals=False,
     ):
         if isinstance(module, str):
             self.module = __import__(module)
@@ -222,7 +223,7 @@ class TestProgram(object):
         parser.add_argument(
             "tests",
             nargs="*",
-            help="a list of any number of test modules, " "classes and test methods.",
+            help="a list of any number of test modules, classes and test methods.",
         )
         return parser
 
@@ -250,7 +251,7 @@ class TestProgram(object):
             "-t",
             "--top-level-directory",
             dest="top",
-            help="Top level directory of project (defaults to " "start directory)",
+            help="Top level directory of project (defaults to start directory)",
         )
         for arg in ("start", "pattern", "top"):
             parser.add_argument(

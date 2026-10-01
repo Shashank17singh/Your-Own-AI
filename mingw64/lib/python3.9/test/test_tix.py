@@ -1,6 +1,7 @@
-import unittest
-from test import support
 import sys
+import unittest
+
+from test import support
 
 # Skip this test if the _tkinter module wasn't built.
 _tkinter = support.import_module("_tkinter")
@@ -8,11 +9,10 @@ _tkinter = support.import_module("_tkinter")
 # Skip test if tk cannot be initialized.
 support.requires("gui")
 
-from tkinter import tix, TclError
+from tkinter import TclError, tix
 
 
 class TestTix(unittest.TestCase):
-
     def setUp(self):
         try:
             self.root = tix.Tk()

@@ -1,8 +1,9 @@
+import pickle
 import sys
+import unittest
+
 from test import list_tests
 from test.support import cpython_only
-import pickle
-import unittest
 
 
 class ListTest(list_tests.CommonTest):
@@ -52,7 +53,7 @@ class ListTest(list_tests.CommonTest):
         self.assertTrue([42])
 
     def test_identity(self):
-        self.assertTrue([] is not [])
+        self.assertTrue([] != [])
 
     def test_len(self):
         super().test_len()

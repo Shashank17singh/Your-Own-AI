@@ -213,7 +213,6 @@ def punycode_decode(text, errors):
 
 
 class Codec(codecs.Codec):
-
     def encode(self, input, errors="strict"):
         res = punycode_encode(input)
         return res, len(input)

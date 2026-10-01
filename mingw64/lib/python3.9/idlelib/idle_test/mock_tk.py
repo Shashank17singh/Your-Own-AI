@@ -167,7 +167,7 @@ class Text:
         if char.endswith(" lineend") or char == "end":
             return line, linelength
             # Tk requires that ignored chars before ' lineend' be valid int
-        if m := re.fullmatch(r"end-(\d*)c", char, re.A):  # Used by hyperparser.
+        if m := re.fullmatch(r"end-(\d*)c", char, re.ASCII):  # Used by hyperparser.
             return line, linelength - int(m.group(1))
 
         # Out of bounds char becomes first or last index of line
@@ -284,14 +284,12 @@ class Text:
 
     def mark_set(self, name, index):
         "Set mark *name* before the character at index."
-        pass
 
     def mark_unset(self, *markNames):
         "Delete all marks in markNames."
 
     def tag_remove(self, tagName, index1, index2=None):
         "Remove tag tagName from all characters between index1 and index2."
-        pass
 
     # The following Text methods affect the graphics screen and return None.
     # Doing nothing should always be sufficient for tests.
@@ -304,14 +302,12 @@ class Text:
 
     def see(self, index):
         "Scroll screen to make the character at INDEX is visible."
-        pass
 
     #  The following is a Misc method inherited by Text.
     # It should properly go in a Misc mock, but is included here for now.
 
     def bind(sequence=None, func=None, add=None):
         "Bind to this widget at event sequence a call to function func."
-        pass
 
 
 class Entry:

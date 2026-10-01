@@ -186,7 +186,7 @@ def _name_xform(name):
     return name.lower().replace("-", "_")
 
 
-class DOMEntityResolver(object):
+class DOMEntityResolver:
     __slots__ = ("_opener",)
 
     def resolveEntity(self, publicId, systemId):
@@ -196,7 +196,8 @@ class DOMEntityResolver(object):
         source.systemId = systemId
         source.byteStream = self._get_opener().open(systemId)
         source.encoding = self._guess_media_encoding(source)
-        import posixpath, urllib.parse
+        import posixpath
+        import urllib.parse
 
         parts = urllib.parse.urlparse(systemId)
         scheme, netloc, path, params, query, fragment = parts
@@ -226,15 +227,15 @@ class DOMEntityResolver(object):
                     return param.split("=", 1)[1].lower()
 
 
-class DOMInputSource(object):
+class DOMInputSource:
     __slots__ = (
+        "baseURI",
         "byteStream",
         "characterStream",
-        "stringData",
         "encoding",
         "publicId",
+        "stringData",
         "systemId",
-        "baseURI",
     )
 
     def __init__(self):

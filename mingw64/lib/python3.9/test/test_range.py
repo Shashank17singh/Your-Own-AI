@@ -1,9 +1,10 @@
 # Python test set -- built-in functions
 
-import unittest
-import sys
-import pickle
 import itertools
+import pickle
+import sys
+import unittest
+
 from test.support import ALWAYS_EQ
 
 
@@ -37,18 +38,14 @@ class RangeTest(unittest.TestCase):
                 continue
             elif x == sentinel:
                 self.fail(
-                    "{}: iterator ended unexpectedly "
-                    "at position {}; expected {}".format(test_id, i, y)
+                    f"{test_id}: iterator ended unexpectedly "
+                    f"at position {i}; expected {y}"
                 )
             elif y == sentinel:
-                self.fail(
-                    "{}: unexpected excess element {} at "
-                    "position {}".format(test_id, x, i)
-                )
+                self.fail(f"{test_id}: unexpected excess element {x} at position {i}")
             else:
                 self.fail(
-                    "{}: wrong element at position {}; "
-                    "expected {}, got {}".format(test_id, i, y, x)
+                    f"{test_id}: wrong element at position {i}; expected {y}, got {x}"
                 )
 
     def test_range(self):
@@ -131,7 +128,7 @@ class RangeTest(unittest.TestCase):
         self.assertTrue(x)
 
         # Now test range() with longs
-        for x in [range(-(2**100)), range(0, -(2**100)), range(0, 2**100, -1)]:
+        for x in [range(-(2**100)), range(-(2**100)), range(0, 2**100, -1)]:
             self.assertEqual(list(x), [])
             self.assertFalse(x)
 
@@ -254,7 +251,7 @@ class RangeTest(unittest.TestCase):
         self.assertRaises(TypeError, range, 1, 2, 3, 4)
         self.assertRaises(ValueError, range, 1, 2, 0)
         a = int(10 * sys.maxsize)
-        self.assertRaises(ValueError, range, a, a + 1, int(0))
+        self.assertRaises(ValueError, range, a, a + 1, 0)
         self.assertRaises(TypeError, range, 1.0, 1.0, 1.0)
         self.assertRaises(TypeError, range, 1e100, 1e101, 1e101)
         self.assertRaises(TypeError, range, 0, "spam")
@@ -342,10 +339,10 @@ class RangeTest(unittest.TestCase):
         self.assertEqual(range(10)[: I(5)], range(5))
 
         with self.assertRaises(RuntimeError):
-            range(0, 10)[: IX()]
+            range(10)[: IX()]
 
         with self.assertRaises(TypeError):
-            range(0, 10)[: IN()]
+            range(10)[: IN()]
 
     def test_count(self):
         self.assertEqual(range(3).count(-1), 0)
@@ -522,7 +519,7 @@ class RangeTest(unittest.TestCase):
         self.assertNotIn(0, r)
         self.assertNotIn(1, r)
 
-        r = range(0, -10)
+        r = range(-10)
         self.assertNotIn(0, r)
         self.assertNotIn(-1, r)
         self.assertNotIn(1, r)
@@ -546,13 +543,13 @@ class RangeTest(unittest.TestCase):
         for start, end, step in test_ranges:
             iter1 = range(start, end, step)
             iter2 = pyrange(start, end, step)
-            test_id = "range({}, {}, {})".format(start, end, step)
+            test_id = f"range({start}, {end}, {step})"
             # check first 100 entries
             self.assert_iterators_equal(iter1, iter2, test_id, limit=100)
 
             iter1 = reversed(range(start, end, step))
             iter2 = pyrange_reversed(start, end, step)
-            test_id = "reversed(range({}, {}, {}))".format(start, end, step)
+            test_id = f"reversed(range({start}, {end}, {step}))"
             self.assert_iterators_equal(iter1, iter2, test_id, limit=100)
 
     def test_range_iterators_invocation(self):
@@ -659,7 +656,7 @@ class RangeTest(unittest.TestCase):
     def test_comparison(self):
         test_ranges = [
             range(0),
-            range(0, -1),
+            range(-1),
             range(1, 1, 3),
             range(1),
             range(5, 6),

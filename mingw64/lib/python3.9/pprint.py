@@ -41,13 +41,13 @@ import types as _types
 from io import StringIO as _StringIO
 
 __all__ = [
-    "pprint",
-    "pformat",
+    "PrettyPrinter",
     "isreadable",
     "isrecursive",
-    "saferepr",
-    "PrettyPrinter",
+    "pformat",
     "pp",
+    "pprint",
+    "saferepr",
 ]
 
 
@@ -59,7 +59,7 @@ def pprint(
     depth=None,
     *,
     compact=False,
-    sort_dicts=True
+    sort_dicts=True,
 ):
     """Pretty-print a Python object to a stream [default is sys.stdout]."""
     printer = PrettyPrinter(
@@ -139,7 +139,7 @@ class PrettyPrinter:
         stream=None,
         *,
         compact=False,
-        sort_dicts=True
+        sort_dicts=True,
     ):
         """Handle pretty printing operations onto a stream using a set of
         configured parameters.

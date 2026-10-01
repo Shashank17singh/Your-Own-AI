@@ -2,13 +2,13 @@
 
 import os
 import sys
-import zipfile
 import unittest
-from test.support import run_unittest
-
-from distutils.core import Distribution
+import zipfile
 from distutils.command.bdist_dumb import bdist_dumb
+from distutils.core import Distribution
 from distutils.tests import support
+
+from test.support import run_unittest
 
 SETUP_PY = """\
 from distutils.core import setup
@@ -33,9 +33,8 @@ class BuildDumbTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def setUp(self):
-        super(BuildDumbTestCase, self).setUp()
+        super().setUp()
         self.old_location = os.getcwd()
         self.old_sys_argv = sys.argv, sys.argv[:]
 
@@ -43,7 +42,7 @@ class BuildDumbTestCase(
         os.chdir(self.old_location)
         sys.argv = self.old_sys_argv[0]
         sys.argv[:] = self.old_sys_argv[1]
-        super(BuildDumbTestCase, self).tearDown()
+        super().tearDown()
 
     @unittest.skipUnless(ZLIB_SUPPORT, "Need zlib support to run")
     def test_simple_built(self):

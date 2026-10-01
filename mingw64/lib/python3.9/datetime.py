@@ -5,20 +5,20 @@ time zone and DST data sources.
 """
 
 __all__ = (
+    "MAXYEAR",
+    "MINYEAR",
     "date",
     "datetime",
     "time",
     "timedelta",
     "timezone",
     "tzinfo",
-    "MINYEAR",
-    "MAXYEAR",
 )
 
 
-import time as _time
 import math as _math
 import sys
+import time as _time
 
 
 def _cmp(x, y):
@@ -322,7 +322,7 @@ def _parse_hh_mm_ss_ff(tstr):
 
     time_comps = [0, 0, 0, 0]
     pos = 0
-    for comp in range(0, 3):
+    for comp in range(3):
         if (len_str - pos) < 2:
             raise ValueError("Incomplete time component")
 
@@ -404,7 +404,7 @@ def _parse_isoformat_time(tstr):
 def _check_tzname(name):
     if name is not None and not isinstance(name, str):
         raise TypeError(
-            "tzinfo.tzname() must return None or string, " "not '%s'" % type(name)
+            "tzinfo.tzname() must return None or string, not '%s'" % type(name)
         )
 
 
@@ -420,8 +420,7 @@ def _check_utc_offset(name, offset):
         return
     if not isinstance(offset, timedelta):
         raise TypeError(
-            "tzinfo.%s() must return None "
-            "or timedelta, not '%s'" % (name, type(offset))
+            "tzinfo.%s() must return None or timedelta, not '%s'" % (name, type(offset))
         )
     if not -timedelta(1) < offset < timedelta(1):
         raise ValueError(
@@ -543,7 +542,7 @@ class timedelta:
     felt like it.
     """
 
-    __slots__ = "_days", "_seconds", "_microseconds", "_hashcode"
+    __slots__ = "_days", "_hashcode", "_microseconds", "_seconds"
 
     def __new__(
         cls,
@@ -887,7 +886,7 @@ class date:
     year, month, day
     """
 
-    __slots__ = "_year", "_month", "_day", "_hashcode"
+    __slots__ = "_day", "_hashcode", "_month", "_year"
 
     def __new__(cls, year, month=None, day=None):
         """Constructor.
@@ -1252,7 +1251,7 @@ class tzinfo:
 
         dtoff = dt.utcoffset()
         if dtoff is None:
-            raise ValueError("fromutc() requires a non-None utcoffset() " "result")
+            raise ValueError("fromutc() requires a non-None utcoffset() result")
 
         # See the long comment block at the end of this file for an
         # explanation of this algorithm.
@@ -1265,7 +1264,7 @@ class tzinfo:
             dtdst = dt.dst()
             if dtdst is None:
                 raise ValueError(
-                    "fromutc(): dt.dst gave inconsistent " "results; cannot convert"
+                    "fromutc(): dt.dst gave inconsistent results; cannot convert"
                 )
         return dt + dtdst
 
@@ -1289,7 +1288,6 @@ class tzinfo:
 
 
 class IsoCalendarDate(tuple):
-
     def __new__(cls, year, week, weekday, /):
         return super().__new__(cls, (year, week, weekday))
 
@@ -1347,13 +1345,13 @@ class time:
     """
 
     __slots__ = (
+        "_fold",
+        "_hashcode",
         "_hour",
+        "_microsecond",
         "_minute",
         "_second",
-        "_microsecond",
         "_tzinfo",
-        "_hashcode",
-        "_fold",
     )
 
     def __new__(cls, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, *, fold=0):
@@ -2423,7 +2421,7 @@ def _isoweek1monday(year):
 
 
 class timezone(tzinfo):
-    __slots__ = "_offset", "_name"
+    __slots__ = "_name", "_offset"
 
     # Sentinel value to disallow None
     _Omitted = object()
@@ -2497,26 +2495,26 @@ class timezone(tzinfo):
     def utcoffset(self, dt):
         if isinstance(dt, datetime) or dt is None:
             return self._offset
-        raise TypeError("utcoffset() argument must be a datetime instance" " or None")
+        raise TypeError("utcoffset() argument must be a datetime instance or None")
 
     def tzname(self, dt):
         if isinstance(dt, datetime) or dt is None:
             if self._name is None:
                 return self._name_from_offset(self._offset)
             return self._name
-        raise TypeError("tzname() argument must be a datetime instance" " or None")
+        raise TypeError("tzname() argument must be a datetime instance or None")
 
     def dst(self, dt):
         if isinstance(dt, datetime) or dt is None:
-            return None
-        raise TypeError("dst() argument must be a datetime instance" " or None")
+            return
+        raise TypeError("dst() argument must be a datetime instance or None")
 
     def fromutc(self, dt):
         if isinstance(dt, datetime):
             if dt.tzinfo is not self:
-                raise ValueError("fromutc: dt.tzinfo " "is not self")
+                raise ValueError("fromutc: dt.tzinfo is not self")
             return dt + self._offset
-        raise TypeError("fromutc() argument must be a datetime instance" " or None")
+        raise TypeError("fromutc() argument must be a datetime instance or None")
 
     _maxoffset = timedelta(hours=24, microseconds=-1)
     _minoffset = -_maxoffset
@@ -2536,8 +2534,7 @@ class timezone(tzinfo):
         microseconds = rest.microseconds
         if microseconds:
             return (
-                f"UTC{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
-                f".{microseconds:06d}"
+                f"UTC{sign}{hours:02d}:{minutes:02d}:{seconds:02d}.{microseconds:06d}"
             )
         if seconds:
             return f"UTC{sign}{hours:02d}:{minutes:02d}:{seconds:02d}"
@@ -2798,4 +2795,3 @@ else:
     # docstring does not get overwritten. In the future, it may be
     # appropriate to maintain a single module level docstring and
     # remove the following line.
-    from _datetime import __doc__

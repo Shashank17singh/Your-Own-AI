@@ -5,7 +5,6 @@ and print it out, until terminated."""
 # process' PID to avoid a race condition in case of - unlikely - PID recycling.
 # If the process crashes, reading from the /proc entry will fail with ESRCH.
 
-
 import os
 import sys
 import time
@@ -22,10 +21,6 @@ while True:
     sys.stdin.seek(0)
     statm = sys.stdin.read()
     data = int(statm.split()[5])
-    sys.stdout.write(
-        " ... process data size: {data:.1f}G\n".format(
-            data=data * page_size / (1024**3)
-        )
-    )
+    sys.stdout.write(f" ... process data size: {data * page_size / (1024**3):.1f}G\n")
     sys.stdout.flush()
     time.sleep(1)

@@ -1,12 +1,11 @@
 import asyncio
 import unittest
-
 from unittest import mock
+
 from . import utils as test_utils
 
 
 class TestPolicy(asyncio.AbstractEventLoopPolicy):
-
     def __init__(self, loop_factory):
         self.loop_factory = loop_factory
         self.loop = None
@@ -26,7 +25,6 @@ class TestPolicy(asyncio.AbstractEventLoopPolicy):
 
 
 class BaseTest(unittest.TestCase):
-
     def new_loop(self):
         loop = asyncio.BaseEventLoop()
         loop._process_events = mock.Mock()
@@ -58,7 +56,6 @@ class BaseTest(unittest.TestCase):
 
 
 class RunTests(BaseTest):
-
     def test_asyncio_run_return(self):
         async def main():
             await asyncio.sleep(0)
@@ -76,8 +73,9 @@ class RunTests(BaseTest):
 
     def test_asyncio_run_only_coro(self):
         for o in {1, lambda: None}:
-            with self.subTest(obj=o), self.assertRaisesRegex(
-                ValueError, "a coroutine was expected"
+            with (
+                self.subTest(obj=o),
+                self.assertRaisesRegex(ValueError, "a coroutine was expected"),
             ):
                 asyncio.run(o)
 
@@ -162,7 +160,7 @@ class RunTests(BaseTest):
             nonlocal spinner
             spinner = fidget()
             try:
-                async for the_meaning_of_life in spinner:  # NoQA
+                async for the_meaning_of_life in spinner:
                     pass
             except asyncio.CancelledError:
                 1 / 0

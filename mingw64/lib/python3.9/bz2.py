@@ -5,23 +5,22 @@ This module provides a file interface, classes for incremental
 """
 
 __all__ = [
-    "BZ2File",
     "BZ2Compressor",
     "BZ2Decompressor",
-    "open",
+    "BZ2File",
     "compress",
     "decompress",
+    "open",
 ]
 
 __author__ = "Nadeem Vawda <nadeem.vawda@gmail.com>"
 
-from builtins import open as _builtin_open
+import _compression
 import io
 import os
-import _compression
-from threading import RLock
-
 from _bz2 import BZ2Compressor, BZ2Decompressor
+from builtins import open as _builtin_open
+from threading import RLock
 
 _MODE_CLOSED = 0
 _MODE_READ = 1
@@ -359,7 +358,7 @@ def decompress(data):
         results.append(res)
         if not decomp.eof:
             raise ValueError(
-                "Compressed data ended before the " "end-of-stream marker was reached"
+                "Compressed data ended before the end-of-stream marker was reached"
             )
         data = decomp.unused_data
     return b"".join(results)

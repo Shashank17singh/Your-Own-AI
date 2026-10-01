@@ -10,10 +10,11 @@ support.requires(
     "extralargefile", "test requires loads of disk-space bytes and a long time to run"
 )
 
-import zipfile, os, unittest
-import time
+import os
 import sys
-
+import time
+import unittest
+import zipfile
 from tempfile import TemporaryFile
 
 from test.support import TESTFN, requires_zlib
@@ -37,7 +38,6 @@ class TestsWithSourceFile(unittest.TestCase):
     def zipTest(self, f, compression):
         # Create the ZIP archive.
         with zipfile.ZipFile(f, "w", compression) as zipfp:
-
             # It will contain enough copies of self.data to reach about 6 GiB of
             # raw data to store.
             filecount = 6 * 1024**3 // len(self.data)

@@ -1,7 +1,7 @@
 # Author: Paul Kippes <kippesp@gmail.com>
 
-import unittest
 import sqlite3 as sqlite
+import unittest
 
 
 class DumpTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class DumpTests(unittest.TestCase):
             "begin "
             "update t2 set t2_i1 = new.t1_i1 where t2_i1 = old.t1_i1; "
             "end;",
-            "CREATE VIEW v1 as select * from t1 left join t2 " "using (id);",
+            "CREATE VIEW v1 as select * from t1 left join t2 using (id);",
         ]
         [self.cu.execute(s) for s in expected_sqls]
         i = self.cx.iterdump()

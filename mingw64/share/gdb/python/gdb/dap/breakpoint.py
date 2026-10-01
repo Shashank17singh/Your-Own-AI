@@ -1,7 +1,9 @@
 import re
+from collections.abc import Sequence
 from contextlib import contextmanager
-from typing import Optional, Sequence
+
 import gdb
+
 from .server import capability, export_line, import_line, request, send_event
 from .sources import make_source
 from .startup import (
@@ -191,9 +193,9 @@ def _rewrite_src_breakpoint(
     *,
     source,
     line: int,
-    condition: Optional[str] = None,
-    hitCondition: Optional[str] = None,
-    logMessage: Optional[str] = None,
+    condition: str | None = None,
+    hitCondition: str | None = None,
+    logMessage: str | None = None,
     **args,
 ):
     return {
@@ -228,8 +230,8 @@ def set_breakpoint(*, source, breakpoints: Sequence = (), **args):
 def _rewrite_fn_breakpoint(
     *,
     name: str,
-    condition: Optional[str] = None,
-    hitCondition: Optional[str] = None,
+    condition: str | None = None,
+    hitCondition: str | None = None,
     **args,
 ):
     return {
@@ -252,9 +254,9 @@ def set_fn_breakpoint(*, breakpoints: Sequence, **args):
 def _rewrite_insn_breakpoint(
     *,
     instructionReference: str,
-    offset: Optional[int] = None,
-    condition: Optional[str] = None,
-    hitCondition: Optional[str] = None,
+    offset: int | None = None,
+    condition: str | None = None,
+    hitCondition: str | None = None,
     **args,
 ):
     val = "*" + instructionReference
@@ -269,9 +271,7 @@ def _rewrite_insn_breakpoint(
 
 @request("setInstructionBreakpoints", expect_stopped=False)
 @capability("supportsInstructionBreakpoints")
-def set_insn_breakpoints(
-    *, breakpoints: Sequence, offset: Optional[int] = None, **args
-):
+def set_insn_breakpoints(*, breakpoints: Sequence, offset: int | None = None, **args):
     specs = [_rewrite_insn_breakpoint(**bp) for bp in breakpoints]
     return {
         "breakpoints": _set_breakpoints("instruction", specs),
@@ -301,7 +301,7 @@ def _set_exception_catchpoints(filter_options):
 def _rewrite_exception_breakpoint(
     *,
     filterId: str,
-    condition: Optional[str] = None,
+    condition: str | None = None,
     **args,
 ):
     return {

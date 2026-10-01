@@ -1,9 +1,7 @@
 """Define SearchEngine for search dialogs."""
 
 import re
-
-from tkinter import StringVar, BooleanVar, TclError
-from tkinter import messagebox
+from tkinter import BooleanVar, StringVar, TclError, messagebox
 
 
 def get(root):

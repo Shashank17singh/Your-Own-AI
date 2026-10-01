@@ -2,23 +2,24 @@
 # for working with modules located inside zipfiles
 # The tests are centralised in this fashion to make it easy to drop them
 # if a platform doesn't support zipimport
-import test.support
+import doctest
+import inspect
+import linecache
 import os
 import os.path
 import sys
 import textwrap
+import unittest
 import zipfile
 import zipimport
-import doctest
-import inspect
-import linecache
-import unittest
+
+import test.support
 from test.support.script_helper import (
-    spawn_python,
-    kill_python,
     assert_python_ok,
+    kill_python,
     make_script,
     make_zip_script,
+    spawn_python,
 )
 
 verbose = test.support.verbose
@@ -34,10 +35,10 @@ verbose = test.support.verbose
 
 # Retrieve some helpers from other test cases
 from test import (
-    test_doctest,
     sample_doctest,
-    sample_doctest_no_doctests,
     sample_doctest_no_docstrings,
+    sample_doctest_no_doctests,
+    test_doctest,
 )
 
 

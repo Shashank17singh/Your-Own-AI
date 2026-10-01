@@ -1,19 +1,17 @@
 import datetime
 import textwrap
 import unittest
-from email import errors
-from email import policy
-from email.message import Message
-from test.test_email import TestEmailBase, parameterize
-from email import headerregistry
+from email import errors, headerregistry, policy
 from email.headerregistry import Address, Group
+from email.message import Message
+
 from test.support import ALWAYS_EQ
+from test.test_email import TestEmailBase, parameterize
 
 DITTO = object()
 
 
 class TestHeaderRegistry(TestEmailBase):
-
     def test_arbitrary_name_unstructured(self):
         factory = headerregistry.HeaderRegistry()
         h = factory("foobar", "test")
@@ -71,7 +69,6 @@ class TestHeaderRegistry(TestEmailBase):
 
 
 class TestHeaderBase(TestEmailBase):
-
     factory = headerregistry.HeaderRegistry()
 
     def make_header(self, name, value):
@@ -79,7 +76,6 @@ class TestHeaderBase(TestEmailBase):
 
 
 class TestBaseHeaderFeatures(TestHeaderBase):
-
     def test_str(self):
         h = self.make_header("subject", "this is a test")
         self.assertIsInstance(h, str)
@@ -126,7 +122,6 @@ class TestBaseHeaderFeatures(TestHeaderBase):
 
 @parameterize
 class TestUnstructuredHeader(TestHeaderBase):
-
     def string_as_value(self, source, decoded, *args):
         l = len(args)
         defects = args[0] if l > 0 else []
@@ -160,7 +155,6 @@ class TestUnstructuredHeader(TestHeaderBase):
 
 @parameterize
 class TestDateHeader(TestHeaderBase):
-
     datestring = "Sun, 23 Sep 2001 20:10:55 -0700"
     utcoffset = datetime.timedelta(hours=-7)
     tz = datetime.timezone(utcoffset)
@@ -210,7 +204,6 @@ class TestDateHeader(TestHeaderBase):
 
 @parameterize
 class TestContentTypeHeader(TestHeaderBase):
-
     def content_type_as_value(self, source, content_type, maintype, subtype, *args):
         l = len(args)
         parmdict = args[0] if l > 0 else {}
@@ -460,8 +453,9 @@ class TestContentTypeHeader(TestHeaderBase):
         ),
         "non_ascii_in_params": (
             (
-                "foo\xa7/bar; b\xa7r=two; "
-                "baz=thr\xa7e".encode("latin-1").decode("us-ascii", "surrogateescape")
+                "foo\xa7/bar; b\xa7r=two; baz=thr\xa7e".encode("latin-1").decode(
+                    "us-ascii", "surrogateescape"
+                )
             ),
             "foo\ufffd/bar",
             "foo\ufffd",
@@ -647,10 +641,7 @@ class TestContentTypeHeader(TestHeaderBase):
             "plain",
             {"name": "This is even more %2A%2A%2Afun%2A%2A%2A%20is it.pdf"},
             [errors.InvalidHeaderDefect],
-            (
-                "text/plain;"
-                ' name="This is even more %2A%2A%2Afun%2A%2A%2A%20is it.pdf"'
-            ),
+            ('text/plain; name="This is even more %2A%2A%2Afun%2A%2A%2A%20is it.pdf"'),
             (
                 "Content-Type: text/plain;\n"
                 ' name="This is even more %2A%2A%2Afun%2A%2A%2A%20is'
@@ -674,7 +665,7 @@ class TestContentTypeHeader(TestHeaderBase):
             {"charset": "utf-8\ufffd\ufffd\ufffd"},
             [errors.UndecodableBytesDefect],
             'text/plain; charset="utf-8\ufffd\ufffd\ufffd"',
-            "Content-Type: text/plain;" " charset*=unknown-8bit''utf-8%F1%F2%F3\n",
+            "Content-Type: text/plain; charset*=unknown-8bit''utf-8%F1%F2%F3\n",
         ),
         "rfc2231_utf8_in_supposedly_ascii_charset_parameter_value": (
             "text/plain; charset*=ascii''utf-8%E2%80%9D",
@@ -686,7 +677,7 @@ class TestContentTypeHeader(TestHeaderBase):
             'text/plain; charset="utf-8”"',
             # XXX Should folding change the charset to utf8?  Currently it just
             # reproduces the original, which is arguably fine.
-            "Content-Type: text/plain;" " charset*=unknown-8bit''utf-8%E2%80%9D\n",
+            "Content-Type: text/plain; charset*=unknown-8bit''utf-8%E2%80%9D\n",
         ),
         "rfc2231_encoded_then_unencoded_segments": (
             (
@@ -748,7 +739,7 @@ class TestContentTypeHeader(TestHeaderBase):
         # make them all encoded.  It might be worth fixing that, since the
         # sections can get used for wrapping ascii text.
         "rfc2231_folded_segments_correctly_formatted": (
-            ("application/x-foo;" '\tname="' + "with spaces" * 8 + '"'),
+            ('application/x-foo;\tname="' + "with spaces" * 8 + '"'),
             "application/x-foo",
             "application",
             "x-foo",
@@ -765,7 +756,6 @@ class TestContentTypeHeader(TestHeaderBase):
 
 @parameterize
 class TestContentTransferEncoding(TestHeaderBase):
-
     def cte_as_value(self, source, cte, *args):
         l = len(args)
         defects = args[0] if l > 0 else []
@@ -800,7 +790,6 @@ class TestContentTransferEncoding(TestHeaderBase):
 
 @parameterize
 class TestContentDisposition(TestHeaderBase):
-
     def content_disp_as_value(self, source, content_disposition, *args):
         l = len(args)
         parmdict = args[0] if l > 0 else {}
@@ -881,7 +870,6 @@ class TestContentDisposition(TestHeaderBase):
 
 @parameterize
 class TestMIMEVersionHeader(TestHeaderBase):
-
     def version_string_as_MIME_Version(
         self, source, decoded, version, major, minor, defects
     ):
@@ -973,7 +961,6 @@ class TestMIMEVersionHeader(TestHeaderBase):
 
 @parameterize
 class TestAddressHeader(TestHeaderBase):
-
     example_params = {
         "empty": ("<>", [errors.InvalidHeaderDefect], "<>", "", "<>", "", "", None),
         "address_only": (
@@ -1159,8 +1146,8 @@ class TestAddressHeader(TestHeaderBase):
         domain,
         comment,
     ):
-        source = "foo: {};".format(source)
-        gdecoded = "foo: {};".format(decoded) if decoded else "foo:;"
+        source = f"foo: {source};"
+        gdecoded = f"foo: {decoded};" if decoded else "foo:;"
         h = self.make_header("to", source)
         self.assertEqual(h, gdecoded)
         self.assertDefectsEqual(h.defects, defects)
@@ -1305,7 +1292,6 @@ class TestAddressHeader(TestHeaderBase):
 
 
 class TestAddressAndGroup(TestEmailBase):
-
     def _test_attr_ro(self, obj, attr):
         with self.assertRaises(AttributeError):
             setattr(obj, attr, "foo")
@@ -1422,8 +1408,9 @@ class TestAddressAndGroup(TestEmailBase):
             dict(addr_spec="wok@example.com\r\n"),
         )
         for kwargs in cases:
-            with self.subTest(kwargs=kwargs), self.assertRaisesRegex(
-                ValueError, "invalid arguments"
+            with (
+                self.subTest(kwargs=kwargs),
+                self.assertRaisesRegex(ValueError, "invalid arguments"),
             ):
                 Address(**kwargs)
 
@@ -1536,7 +1523,6 @@ class TestAddressAndGroup(TestEmailBase):
 
 
 class TestFolding(TestHeaderBase):
-
     def test_address_display_names(self):
         """Test the folding and encoding of address headers."""
         for name, result in (
@@ -1582,7 +1568,7 @@ class TestFolding(TestHeaderBase):
 
     def test_unstructured_short_max_line_length(self):
         h = self.make_header(
-            "Subject", "this is a short header " "that will be folded anyway"
+            "Subject", "this is a short header that will be folded anyway"
         )
         self.assertEqual(
             h.fold(policy=policy.default.clone(max_line_length=20)),
@@ -1604,7 +1590,7 @@ class TestFolding(TestHeaderBase):
 
     def test_fold_unstructured_with_overlong_word(self):
         h = self.make_header(
-            "Subject", "thisisaverylonglineconsistingofa" "singlewordthatwontfit"
+            "Subject", "thisisaverylonglineconsistingofasinglewordthatwontfit"
         )
         self.assertEqual(
             h.fold(policy=policy.default.clone(max_line_length=20)),

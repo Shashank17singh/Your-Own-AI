@@ -6,11 +6,11 @@
 import os
 import shlex
 import shutil
-import sys
 import subprocess
+import sys
 import threading
 
-__all__ = ["Error", "open", "open_new", "open_new_tab", "get", "register"]
+__all__ = ["Error", "get", "open", "open_new", "open_new_tab", "register"]
 
 
 class Error(Exception):
@@ -147,7 +147,7 @@ def _synthesize(browser, *, preferred=False):
 # General parent classes
 
 
-class BaseBrowser(object):
+class BaseBrowser:
     """Parent class for all browsers. Do not use directly."""
 
     args = ["%s"]
@@ -592,7 +592,7 @@ def register_standard_browsers():
         # Prefer X browsers if present
         if os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"):
             try:
-                cmd = "xdg-settings get default-web-browser".split()
+                cmd = ["xdg-settings", "get", "default-web-browser"]
                 raw_result = subprocess.check_output(cmd, stderr=subprocess.DEVNULL)
                 result = raw_result.decode().strip()
             except (

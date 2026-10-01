@@ -2,10 +2,10 @@
 
 __all__ = (
     "BaseProtocol",
-    "Protocol",
-    "DatagramProtocol",
-    "SubprocessProtocol",
     "BufferedProtocol",
+    "DatagramProtocol",
+    "Protocol",
+    "SubprocessProtocol",
 )
 
 

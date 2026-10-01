@@ -1,4 +1,4 @@
-__all__ = "coroutine", "iscoroutinefunction", "iscoroutine"
+__all__ = "coroutine", "iscoroutine", "iscoroutinefunction"
 
 import collections.abc
 import functools
@@ -9,9 +9,7 @@ import traceback
 import types
 import warnings
 
-from . import base_futures
-from . import constants
-from . import format_helpers
+from . import base_futures, constants, format_helpers
 from .log import logger
 
 

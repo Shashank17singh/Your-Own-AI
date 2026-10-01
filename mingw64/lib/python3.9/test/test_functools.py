@@ -2,26 +2,23 @@ import abc
 import builtins
 import collections
 import collections.abc
+import contextlib
 import copy
-from itertools import permutations
+import functools
+import gc
 import pickle
-from random import choice
 import sys
-from test import support
 import threading
 import time
 import typing
 import unittest
 import unittest.mock
-import os
 import weakref
-import gc
+from itertools import permutations
+from random import choice
 from weakref import proxy
-import contextlib
 
-from test.support.script_helper import assert_python_ok
-
-import functools
+from test import support
 
 py_functools = support.import_fresh_module("functools", blocked=["_functools"])
 c_functools = support.import_fresh_module("functools", fresh=["_functools"])
@@ -63,7 +60,6 @@ class MyDict(dict):
 
 
 class TestPartial:
-
     def test_basic_examples(self):
         p = self.partial(capture, 1, 2, a=10, b=20)
         self.assertTrue(callable(p))
@@ -450,7 +446,7 @@ class TestPartialC(TestPartial, unittest.TestCase):
     def test_keystr_replaces_value(self):
         p = self.partial(capture)
 
-        class MutatesYourDict(object):
+        class MutatesYourDict:
             def __str__(self):
                 p.keywords[self] = ["sth2"]
                 return "astr"
@@ -501,8 +497,7 @@ class TestPartialPySubclass(TestPartialPy):
 
 
 class TestPartialMethod(unittest.TestCase):
-
-    class A(object):
+    class A:
         nothing = functools.partialmethod(capture)
         positional = functools.partialmethod(capture, 1)
         keywords = functools.partialmethod(capture, a=2)
@@ -601,7 +596,7 @@ class TestPartialMethod(unittest.TestCase):
     def test_invalid_args(self):
         with self.assertRaises(TypeError):
 
-            class B(object):
+            class B:
                 method = functools.partialmethod(None, 1)
 
         with self.assertRaises(TypeError):
@@ -617,12 +612,11 @@ class TestPartialMethod(unittest.TestCase):
     def test_repr(self):
         self.assertEqual(
             repr(vars(self.A)["both"]),
-            "functools.partialmethod({}, 3, b=4)".format(capture),
+            f"functools.partialmethod({capture}, 3, b=4)",
         )
 
     def test_abstract(self):
         class Abstract(abc.ABCMeta):
-
             @abc.abstractmethod
             def add(self, x, y):
                 pass
@@ -650,7 +644,6 @@ class TestPartialMethod(unittest.TestCase):
 
 
 class TestUpdateWrapper(unittest.TestCase):
-
     def check_wrapper(
         self,
         wrapper,
@@ -676,7 +669,6 @@ class TestUpdateWrapper(unittest.TestCase):
     def _default_update(self):
         def f(a: "This is a new annotation"):
             """This is a test"""
-            pass
 
         f.attr = "This is also a test"
         f.__wrapped__ = "This is a bald faced lie"
@@ -707,7 +699,6 @@ class TestUpdateWrapper(unittest.TestCase):
     def test_no_update(self):
         def f():
             """This is a test"""
-            pass
 
         f.attr = "This is also a test"
 
@@ -781,11 +772,9 @@ class TestUpdateWrapper(unittest.TestCase):
 
 
 class TestWraps(TestUpdateWrapper):
-
     def _default_update(self):
         def f():
             """This is a test"""
-            pass
 
         f.attr = "This is also a test"
         f.__wrapped__ = "This is still a bald faced lie"
@@ -813,7 +802,6 @@ class TestWraps(TestUpdateWrapper):
     def test_no_update(self):
         def f():
             """This is a test"""
-            pass
 
         f.attr = "This is also a test"
 
@@ -955,7 +943,6 @@ class TestReducePy(TestReduce, unittest.TestCase):
 
 
 class TestCmpToKey:
-
     def test_cmp_to_key(self):
         def cmp1(x, y):
             return (x > y) - (x < y)
@@ -1056,7 +1043,6 @@ class TestCmpToKeyPy(TestCmpToKey, unittest.TestCase):
 
 
 class TestTotalOrdering(unittest.TestCase):
-
     def test_total_ordering_lt(self):
         @functools.total_ordering
         class A:
@@ -1348,7 +1334,6 @@ class TestCache:
 
 
 class TestLRU:
-
     def test_lru(self):
         def orig(x, y):
             return 3 * x + y
@@ -1491,7 +1476,7 @@ class TestLRU:
             pass
 
         f(0)
-        f(0, **{})
+        f(0)
         self.assertEqual(f.cache_info().hits, 1)
 
     def test_lru_hash_only_once(self):
@@ -1543,7 +1528,7 @@ class TestLRU:
 
     def test_lru_star_arg_handling(self):
         # Test regression that arose in ea064ff3c10f
-        @functools.lru_cache()
+        @functools.lru_cache
         def f(*args):
             return args
 
@@ -1555,7 +1540,7 @@ class TestLRU:
         # lru_cache was leaking when one of the arguments
         # wasn't cacheable.
 
-        @functools.lru_cache(maxsize=None)
+        @functools.cache
         def infinite_cache(o):
             pass
 
@@ -1628,13 +1613,13 @@ class TestLRU:
                 return x * x
 
             self.assertEqual(square(3), 9)
-            self.assertEqual(type(square(3)), type(9))
+            self.assertEqual(type(square(3)), int)
             self.assertEqual(square(3.0), 9.0)
-            self.assertEqual(type(square(3.0)), type(9.0))
+            self.assertEqual(type(square(3.0)), float)
             self.assertEqual(square(x=3), 9)
-            self.assertEqual(type(square(x=3)), type(9))
+            self.assertEqual(type(square(x=3)), int)
             self.assertEqual(square(x=3.0), 9.0)
-            self.assertEqual(type(square(x=3.0)), type(9.0))
+            self.assertEqual(type(square(x=3.0)), float)
             self.assertEqual(square.cache_info().hits, 4)
             self.assertEqual(square.cache_info().misses, 4)
 
@@ -1824,7 +1809,8 @@ class TestLRU:
         test_func(DoubleEq(1))  # Load the cache
         test_func(DoubleEq(2))  # Load the cache
         self.assertEqual(
-            test_func(DoubleEq(2)), DoubleEq(2)  # Trigger a re-entrant __eq__ call
+            test_func(DoubleEq(2)),
+            DoubleEq(2),  # Trigger a re-entrant __eq__ call
         )  # Verify the correct return value
 
     def test_lru_method(self):
@@ -2283,7 +2269,7 @@ class TestSingleDispatch(unittest.TestCase):
         c = collections.abc
         mro = functools._c3_mro
 
-        class A(object):
+        class A:
             pass
 
         class B(A):
@@ -2291,10 +2277,10 @@ class TestSingleDispatch(unittest.TestCase):
                 return 0  # implies Sized
 
         @c.Container.register
-        class C(object):
+        class C:
             pass
 
-        class D(object):
+        class D:
             pass  # unrelated
 
         class X(D, C, B):
@@ -2505,8 +2491,8 @@ class TestSingleDispatch(unittest.TestCase):
         # Sized in the MRO
 
     def test_cache_invalidation(self):
-        from collections import UserDict
         import weakref
+        from collections import UserDict
 
         class TracingDict(UserDict):
             def __init__(self, *args, **kwargs):
@@ -2745,7 +2731,6 @@ class TestSingleDispatch(unittest.TestCase):
 
     def test_abstractmethod_register(self):
         class Abstract(abc.ABCMeta):
-
             @functools.singledispatchmethod
             @abc.abstractmethod
             def add(self, x, y):
@@ -2857,7 +2842,6 @@ class OptionallyCachedCostItem:
 
 
 class CachedCostItemWait:
-
     def __init__(self, event):
         self._cost = 1
         self.lock = py_functools.RLock()

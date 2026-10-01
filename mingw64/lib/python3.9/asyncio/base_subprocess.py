@@ -2,13 +2,11 @@ import collections
 import subprocess
 import warnings
 
-from . import protocols
-from . import transports
+from . import protocols, transports
 from .log import logger
 
 
 class BaseSubprocessTransport(transports.SubprocessTransport):
-
     def __init__(
         self,
         loop,
@@ -130,7 +128,6 @@ class BaseSubprocessTransport(transports.SubprocessTransport):
             # transport hasn't been notified yet?
             self._proc.poll() is None
         ):
-
             if self._loop.get_debug():
                 logger.warning("Close running child process: kill %r", self)
 
@@ -273,7 +270,6 @@ class BaseSubprocessTransport(transports.SubprocessTransport):
 
 
 class WriteSubprocessPipeProto(protocols.BaseProtocol):
-
     def __init__(self, proc, fd):
         self.proc = proc
         self.fd = fd
@@ -299,6 +295,5 @@ class WriteSubprocessPipeProto(protocols.BaseProtocol):
 
 
 class ReadSubprocessPipeProto(WriteSubprocessPipeProto, protocols.Protocol):
-
     def data_received(self, data):
         self.proc._pipe_data_received(self.fd, data)

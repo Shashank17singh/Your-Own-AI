@@ -2,25 +2,23 @@
 Tests for the threading module.
 """
 
-import test.support
-from test.support import verbose, import_module, cpython_only, unlink
-from test.support.script_helper import assert_python_ok, assert_python_failure
-
-import random
-import sys
 import _thread
+import os
+import random
+import signal
+import subprocess
+import sys
+import textwrap
 import threading
 import time
+import traceback
 import unittest
 import weakref
-import os
-import subprocess
-import signal
-import textwrap
-import traceback
 
-from test import lock_tests
-from test import support
+import test.support
+from test import lock_tests, support
+from test.support import cpython_only, import_module, unlink, verbose
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 # Between fork() and exec(), only async-safe functions are allowed (issues
 # #12316 and #11870), and fork() from a worker thread is known to trigger
@@ -30,7 +28,7 @@ platforms_to_skip = ("netbsd5", "hp-ux11")
 
 
 # A trivial mutable counter.
-class Counter(object):
+class Counter:
     def __init__(self):
         self.value = 0
 
@@ -88,7 +86,6 @@ class BaseTestCase(unittest.TestCase):
 
 
 class ThreadTests(BaseTestCase):
-
     # Create a bunch of threads, let each do some work, wait until all are
     # done.
     def test_various_ops(self):
@@ -405,7 +402,7 @@ class ThreadTests(BaseTestCase):
             sys.setswitchinterval(old_interval)
 
     def test_no_refcycle_through_target(self):
-        class RunSelfFunction(object):
+        class RunSelfFunction:
             def __init__(self, should_raise):
                 # The links in this refcycle from Thread back to self
                 # should be cleaned up when the thread completes.
@@ -852,9 +849,9 @@ class ThreadTests(BaseTestCase):
 
 
 class ThreadJoinOnShutdown(BaseTestCase):
-
     def _run_and_join(self, script):
-        script = """if 1:
+        script = (
+            """if 1:
             import sys, os, time, threading
 
             # a thread, which waits for the main program to terminate
@@ -864,7 +861,9 @@ class ThreadJoinOnShutdown(BaseTestCase):
                 # stdout is fully buffered because not a tty, we have to flush
                 # before exit.
                 sys.stdout.flush()
-        \n""" + script
+        \n"""
+            + script
+        )
 
         rc, out, err = assert_python_ok("-c", script)
         data = out.decode().replace("\r", "")
@@ -1035,7 +1034,8 @@ class SubinterpThreadingTests(BaseTestCase):
         # Non-daemon threads should be joined at subinterpreter shutdown
         # (issue #18808)
         r, w = self.pipe()
-        code = textwrap.dedent(r"""
+        code = textwrap.dedent(
+            r"""
             import os
             import random
             import threading
@@ -1053,7 +1053,9 @@ class SubinterpThreadingTests(BaseTestCase):
 
             threading.Thread(target=f).start()
             random_sleep()
-        """ % (w,))
+        """
+            % (w,)
+        )
         ret = test.support.run_in_subinterp(code)
         self.assertEqual(ret, 0)
         # The thread was joined properly.
@@ -1065,7 +1067,8 @@ class SubinterpThreadingTests(BaseTestCase):
         # To achieve this, we register a thread-local object which sleeps
         # a bit when deallocated.
         r, w = self.pipe()
-        code = textwrap.dedent(r"""
+        code = textwrap.dedent(
+            r"""
             import os
             import random
             import threading
@@ -1090,7 +1093,9 @@ class SubinterpThreadingTests(BaseTestCase):
 
             threading.Thread(target=f).start()
             random_sleep()
-        """ % (w,))
+        """
+            % (w,)
+        )
         ret = test.support.run_in_subinterp(code)
         self.assertEqual(ret, 0)
         # The thread was joined properly.
@@ -1117,7 +1122,7 @@ class SubinterpThreadingTests(BaseTestCase):
         with test.support.SuppressCrashReport():
             rc, out, err = assert_python_failure("-c", script)
         self.assertIn(
-            "Fatal Python error: Py_EndInterpreter: " "not the last thread",
+            "Fatal Python error: Py_EndInterpreter: not the last thread",
             err.decode(),
         )
 
@@ -1324,7 +1329,7 @@ class ExceptHookTests(BaseTestCase):
         with support.captured_output("stderr") as stderr:
             try:
                 raise ValueError("bug")
-            except Exception as exc:
+            except Exception:
                 args = threading.ExceptHookArgs([*sys.exc_info(), None])
                 try:
                     threading.excepthook(args)
@@ -1382,11 +1387,11 @@ class ExceptHookTests(BaseTestCase):
             nonlocal err_str
             err_str = str(exc_value)
 
-        with support.swap_attr(
-            threading, "excepthook", threading_hook
-        ), support.swap_attr(sys, "excepthook", sys_hook), support.captured_output(
-            "stderr"
-        ) as stderr:
+        with (
+            support.swap_attr(threading, "excepthook", threading_hook),
+            support.swap_attr(sys, "excepthook", sys_hook),
+            support.captured_output("stderr") as stderr,
+        ):
             thread = ThreadRunFail()
             thread.start()
             thread.join()
@@ -1396,7 +1401,6 @@ class ExceptHookTests(BaseTestCase):
 
 
 class TimerTests(BaseTestCase):
-
     def setUp(self):
         BaseTestCase.setUp(self)
         self.callback_args = []
@@ -1505,7 +1509,6 @@ class InterruptMainTests(unittest.TestCase):
 
 
 class AtexitTests(unittest.TestCase):
-
     def test_atexit_output(self):
         rc, out, err = assert_python_ok(
             "-c",

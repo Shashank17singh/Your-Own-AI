@@ -1,22 +1,21 @@
 "Test replace, coverage 78%."
 
-from idlelib.replace import ReplaceDialog
 import unittest
+from idlelib.replace import ReplaceDialog
+
 from test.support import requires
 
 requires("gui")
-from tkinter import Tk, Text
-
-from unittest.mock import Mock
-from idlelib.idle_test.mock_tk import Mbox
 import idlelib.searchengine as se
+from idlelib.idle_test.mock_tk import Mbox
+from tkinter import Text, Tk
+from unittest.mock import Mock
 
 orig_mbox = se.messagebox
 showerror = Mbox.showerror
 
 
 class ReplaceDialogTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = Tk()

@@ -14,17 +14,14 @@ No changes are applied if print_function is imported from __future__
 """
 
 # Local imports
-from .. import patcomp
-from .. import pytree
+from .. import fixer_base, patcomp, pytree
+from ..fixer_util import Call, Comma, Name, String
 from ..pgen2 import token
-from .. import fixer_base
-from ..fixer_util import Name, Call, Comma, String
 
 parend_expr = patcomp.compile_pattern("""atom< '(' [atom|STRING|NAME] ')' >""")
 
 
 class FixPrint(fixer_base.BaseFix):
-
     BM_compatible = True
 
     PATTERN = """

@@ -1,10 +1,10 @@
 # test_getopt.py
 # David Goodger <dgoodger@bigfoot.com> 2000-08-19
 
-from test.support import verbose, run_doctest, EnvironmentVarGuard
+import getopt
 import unittest
 
-import getopt
+from test.support import EnvironmentVarGuard, run_doctest, verbose
 
 sentinel = object()
 

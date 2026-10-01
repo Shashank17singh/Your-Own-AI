@@ -104,15 +104,14 @@ _ver = "turtle 1.1b- - for Python 3.1   -  4. 5. 2009"
 
 # print(_ver)
 
+import inspect
+import math
+import sys
+import time
 import tkinter as TK
 import types
-import math
-import time
-import inspect
-import sys
-
-from os.path import isfile, split, join
 from copy import deepcopy
+from os.path import isfile, join, split
 from tkinter import simpledialog
 
 _tg_classes = [
@@ -454,7 +453,7 @@ def __forwardmethods(fromClass, toClass, toPart, exclude=()):
     __methodDict(toClass, _dict_1)
     _dict = {}
     mfc = __methods(fromClass)
-    for ex in _dict_1.keys():
+    for ex in _dict_1:
         if ex[:1] == "_" or ex[-1:] == "_" or ex in exclude or ex in mfc:
             pass
         else:
@@ -648,7 +647,7 @@ class _Root(TK.Tk):
 Canvas = TK.Canvas
 
 
-class TurtleScreenBase(object):
+class TurtleScreenBase:
     """Provide the basic graphics functionality.
     Interface between Tkinter and turtle.py.
 
@@ -1068,14 +1067,12 @@ class Terminator(Exception):
     Main purpose: use in the Demo-Viewer turtle.Demo.py.
     """
 
-    pass
-
 
 class TurtleGraphicsError(Exception):
     """Some TurtleGraphics Error"""
 
 
-class Shape(object):
+class Shape:
     """Data structure modeling shapes.
 
     attribute _type is one of "polygon", "image", "compound"
@@ -1122,7 +1119,7 @@ class Shape(object):
         self._data.append([poly, fill, outline])
 
 
-class Tbuffer(object):
+class Tbuffer:
     """Ring buffer used as undobuffer for RawTurtle objects."""
 
     def __init__(self, bufsize=10):
@@ -1768,7 +1765,7 @@ class TurtleScreen(TurtleScreenBase):
     onkeyrelease = onkey
 
 
-class TNavigator(object):
+class TNavigator:
     """Navigation part of the RawTurtle.
     Implements methods for turtle movement.
     """
@@ -2281,7 +2278,7 @@ class TNavigator(object):
     seth = setheading
 
 
-class TPen(object):
+class TPen:
     """Drawing part of the RawTurtle.
     Implements drawing properties.
     """
@@ -2748,7 +2745,7 @@ class TPen(object):
     ht = hideturtle
 
 
-class _TurtleImage(object):
+class _TurtleImage:
     """Helper class: Datatype to store Turtle attributes"""
 
     def __init__(self, screen, shapeIndex):
@@ -3974,7 +3971,6 @@ def Screen():
 
 
 class _Screen(TurtleScreen):
-
     _root = None
     _canvas = None
     _title = _CFG["title"]

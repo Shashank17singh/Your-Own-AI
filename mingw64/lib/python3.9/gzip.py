@@ -5,13 +5,16 @@ but random access is not allowed."""
 
 # based on Andrew Kuchling's minigzip.py distributed with the zlib module
 
-import struct, sys, time, os
-import zlib
+import _compression
 import builtins
 import io
-import _compression
+import os
+import struct
+import sys
+import time
+import zlib
 
-__all__ = ["BadGzipFile", "GzipFile", "open", "compress", "decompress"]
+__all__ = ["BadGzipFile", "GzipFile", "compress", "decompress", "open"]
 
 FTEXT, FHCRC, FEXTRA, FNAME, FCOMMENT = 1, 2, 4, 8, 16
 
@@ -179,7 +182,7 @@ class GzipFile(_compression.BaseStream):
         """
 
         if mode and ("t" in mode or "U" in mode):
-            raise ValueError("Invalid mode: {!r}".format(mode))
+            raise ValueError(f"Invalid mode: {mode!r}")
         if mode and "b" not in mode:
             mode += "b"
         if fileobj is None:
@@ -218,7 +221,7 @@ class GzipFile(_compression.BaseStream):
             )
             self._write_mtime = mtime
         else:
-            raise ValueError("Invalid mode: {!r}".format(mode))
+            raise ValueError(f"Invalid mode: {mode!r}")
 
         self.fileobj = fileobj
 
@@ -440,8 +443,7 @@ class _GzipReader(_compression.DecompressReader):
             b = self._fp.read(n - len(data))
             if not b:
                 raise EOFError(
-                    "Compressed file ended before the "
-                    "end-of-stream marker was reached"
+                    "Compressed file ended before the end-of-stream marker was reached"
                 )
             data += b
         return data
@@ -522,8 +524,7 @@ class _GzipReader(_compression.DecompressReader):
                 break
             if buf == b"":
                 raise EOFError(
-                    "Compressed file ended before the "
-                    "end-of-stream marker was reached"
+                    "Compressed file ended before the end-of-stream marker was reached"
                 )
 
         self._add_read_data(uncompress)

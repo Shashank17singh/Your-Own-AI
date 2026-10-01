@@ -1,16 +1,18 @@
 import _signal
 from _signal import *
-from functools import wraps as _wraps
 from enum import IntEnum as _IntEnum
+from functools import wraps as _wraps
 
 _globals = globals()
 
 _IntEnum._convert_(
     "Signals",
     __name__,
-    lambda name: name.isupper()
-    and (name.startswith("SIG") and not name.startswith("SIG_"))
-    or name.startswith("CTRL_"),
+    lambda name: (
+        name.isupper()
+        and (name.startswith("SIG") and not name.startswith("SIG_"))
+        or name.startswith("CTRL_")
+    ),
 )
 
 _IntEnum._convert_("Handlers", __name__, lambda name: name in ("SIG_DFL", "SIG_IGN"))

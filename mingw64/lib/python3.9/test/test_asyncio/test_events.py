@@ -3,7 +3,6 @@
 import collections.abc
 import concurrent.futures
 import functools
-import io
 import os
 import platform
 import re
@@ -14,27 +13,24 @@ try:
     import ssl
 except ImportError:
     ssl = None
+import errno
 import subprocess
 import sys
 import threading
 import time
-import errno
 import unittest
-from unittest import mock
 import weakref
+from unittest import mock
 
 if sys.platform != "win32":
     import tty
 
 import asyncio
-from asyncio import coroutines
-from asyncio import events
-from asyncio import proactor_events
-from asyncio import selector_events
-from test.test_asyncio import utils as test_utils
+from asyncio import coroutines, events, proactor_events, selector_events
+
 from test import support
-from test.support import socket_helper
-from test.support import ALWAYS_EQ, LARGEST, SMALLEST
+from test.support import ALWAYS_EQ, LARGEST, SMALLEST, socket_helper
+from test.test_asyncio import utils as test_utils
 
 
 def tearDownModule():
@@ -197,7 +193,6 @@ class MyWritePipeProto(asyncio.BaseProtocol):
 
 
 class MySubprocessProtocol(asyncio.SubprocessProtocol):
-
     def __init__(self, loop):
         self.state = "INITIAL"
         self.transport = None
@@ -237,7 +232,6 @@ class MySubprocessProtocol(asyncio.SubprocessProtocol):
 
 
 class EventLoopTestsMixin:
-
     def setUp(self):
         super().setUp()
         self.loop = self.create_event_loop()
@@ -569,7 +563,7 @@ class EventLoopTestsMixin:
                 *,
                 cafile=None,
                 capath=None,
-                cadata=None
+                cadata=None,
             ):
                 """
                 A ssl.create_default_context() replacement that doesn't enable
@@ -602,7 +596,7 @@ class EventLoopTestsMixin:
             create_connection = functools.partial(
                 self.loop.create_connection,
                 lambda: MyProto(loop=self.loop),
-                *httpd.address
+                *httpd.address,
             )
             self._test_create_ssl_connection(
                 httpd, create_connection, peername=httpd.address
@@ -633,7 +627,7 @@ class EventLoopTestsMixin:
             f = self.loop.create_connection(
                 lambda: MyProto(loop=self.loop),
                 *httpd.address,
-                local_addr=(httpd.address[0], port)
+                local_addr=(httpd.address[0], port),
             )
             tr, pr = self.loop.run_until_complete(f)
             expected = pr.transport.get_extra_info("sockname")[1]
@@ -645,7 +639,7 @@ class EventLoopTestsMixin:
             f = self.loop.create_connection(
                 lambda: MyProto(loop=self.loop),
                 *httpd.address,
-                local_addr=httpd.address
+                local_addr=httpd.address,
             )
             with self.assertRaises(OSError) as cm:
                 self.loop.run_until_complete(f)
@@ -656,7 +650,6 @@ class EventLoopTestsMixin:
         loop = self.loop
 
         class MyProto(MyBaseProto):
-
             def connection_lost(self, exc):
                 super().connection_lost(exc)
                 loop.call_soon(loop.stop)
@@ -868,7 +861,7 @@ class EventLoopTestsMixin:
         with sock:
             f = self.loop.create_unix_server(lambda: proto, "/test", sock=sock)
             with self.assertRaisesRegex(
-                ValueError, "path and sock can not be specified " "at the same time"
+                ValueError, "path and sock can not be specified at the same time"
             ):
                 self.loop.run_until_complete(f)
 
@@ -975,11 +968,11 @@ class EventLoopTestsMixin:
         # no CA loaded
         f_c = self.loop.create_connection(MyProto, host, port, ssl=sslcontext_client)
         with mock.patch.object(self.loop, "call_exception_handler"):
-            with test_utils.disable_logger():
-                with self.assertRaisesRegex(
-                    ssl.SSLError, "(?i)certificate.verify.failed"
-                ):
-                    self.loop.run_until_complete(f_c)
+            with (
+                test_utils.disable_logger(),
+                self.assertRaisesRegex(ssl.SSLError, "(?i)certificate.verify.failed"),
+            ):
+                self.loop.run_until_complete(f_c)
 
             # execute the loop to log the connection error
             test_utils.run_briefly(self.loop)
@@ -1007,11 +1000,11 @@ class EventLoopTestsMixin:
             MyProto, path, ssl=sslcontext_client, server_hostname="invalid"
         )
         with mock.patch.object(self.loop, "call_exception_handler"):
-            with test_utils.disable_logger():
-                with self.assertRaisesRegex(
-                    ssl.SSLError, "(?i)certificate.verify.failed"
-                ):
-                    self.loop.run_until_complete(f_c)
+            with (
+                test_utils.disable_logger(),
+                self.assertRaisesRegex(ssl.SSLError, "(?i)certificate.verify.failed"),
+            ):
+                self.loop.run_until_complete(f_c)
 
             # execute the loop to log the connection error
             test_utils.run_briefly(self.loop)
@@ -1040,7 +1033,7 @@ class EventLoopTestsMixin:
             with test_utils.disable_logger():
                 with self.assertRaisesRegex(
                     ssl.CertificateError,
-                    "IP address mismatch, certificate is not valid for " "'127.0.0.1'",
+                    "IP address mismatch, certificate is not valid for '127.0.0.1'",
                 ):
                     self.loop.run_until_complete(f_c)
 
@@ -1306,7 +1299,7 @@ class EventLoopTestsMixin:
         proto = MyReadPipeProto(loop=self.loop)
 
         rpipe, wpipe = os.pipe()
-        pipeobj = io.open(rpipe, "rb", 1024)
+        pipeobj = open(rpipe, "rb", 1024)
 
         async def connect():
             t, p = await self.loop.connect_read_pipe(lambda: proto, pipeobj)
@@ -1340,8 +1333,8 @@ class EventLoopTestsMixin:
         write_proto = MyWritePipeProto(loop=loop)
 
         rpipe, wpipe = os.pipe()
-        rpipeobj = io.open(rpipe, "rb", 1024)
-        wpipeobj = io.open(wpipe, "w", 1024)
+        rpipeobj = open(rpipe, "rb", 1024)
+        wpipeobj = open(wpipe, "w", 1024)
 
         async def connect():
             read_transport, _ = await loop.connect_read_pipe(
@@ -1372,7 +1365,7 @@ class EventLoopTestsMixin:
         proto = MyReadPipeProto(loop=self.loop)
 
         master, slave = os.openpty()
-        master_read_obj = io.open(master, "rb", 0)
+        master_read_obj = open(master, "rb", 0)
 
         async def connect():
             t, p = await self.loop.connect_read_pipe(lambda: proto, master_read_obj)
@@ -1402,7 +1395,7 @@ class EventLoopTestsMixin:
     @unittest.skipUnless(sys.platform != "win32", "Don't support pipes for Windows")
     def test_write_pipe(self):
         rpipe, wpipe = os.pipe()
-        pipeobj = io.open(wpipe, "wb", 1024)
+        pipeobj = open(wpipe, "wb", 1024)
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, pipeobj)
@@ -1442,7 +1435,7 @@ class EventLoopTestsMixin:
     def test_write_pipe_disconnect_on_close(self):
         rsock, wsock = socket.socketpair()
         rsock.setblocking(False)
-        pipeobj = io.open(wsock.detach(), "wb", 1024)
+        pipeobj = open(wsock.detach(), "wb", 1024)
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, pipeobj)
@@ -1466,7 +1459,7 @@ class EventLoopTestsMixin:
     @support.requires_mac_ver(10, 6)
     def test_write_pty(self):
         master, slave = os.openpty()
-        slave_write_obj = io.open(slave, "wb", 0)
+        slave_write_obj = open(slave, "wb", 0)
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, slave_write_obj)
@@ -1515,7 +1508,7 @@ class EventLoopTestsMixin:
         write_slave = os.dup(read_slave)
         tty.setraw(read_slave)
 
-        slave_read_obj = io.open(read_slave, "rb", 0)
+        slave_read_obj = open(read_slave, "rb", 0)
         read_proto = MyReadPipeProto(loop=self.loop)
         read_connect = self.loop.connect_read_pipe(lambda: read_proto, slave_read_obj)
         read_transport, p = self.loop.run_until_complete(read_connect)
@@ -1524,7 +1517,7 @@ class EventLoopTestsMixin:
         self.assertEqual(["INITIAL", "CONNECTED"], read_proto.state)
         self.assertEqual(0, read_proto.nbytes)
 
-        slave_write_obj = io.open(write_slave, "wb", 0)
+        slave_write_obj = open(write_slave, "wb", 0)
         write_proto = MyWritePipeProto(loop=self.loop)
         write_connect = self.loop.connect_write_pipe(
             lambda: write_proto, slave_write_obj
@@ -1719,7 +1712,6 @@ class EventLoopTestsMixin:
 
 
 class SubprocessTestsMixin:
-
     def check_terminated(self, returncode):
         if sys.platform == "win32":
             self.assertIsInstance(returncode, int)
@@ -2025,14 +2017,12 @@ class SubprocessTestsMixin:
 if sys.platform == "win32":
 
     class SelectEventLoopTests(EventLoopTestsMixin, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop()
 
     class ProactorEventLoopTests(
         EventLoopTestsMixin, SubprocessTestsMixin, test_utils.TestCase
     ):
-
         def create_event_loop(self):
             return asyncio.ProactorEventLoop()
 
@@ -2070,7 +2060,6 @@ else:
         class KqueueEventLoopTests(
             UnixEventLoopTestsMixin, SubprocessTestsMixin, test_utils.TestCase
         ):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.KqueueSelector())
 
@@ -2096,7 +2085,6 @@ else:
         class EPollEventLoopTests(
             UnixEventLoopTestsMixin, SubprocessTestsMixin, test_utils.TestCase
         ):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.EpollSelector())
 
@@ -2105,7 +2093,6 @@ else:
         class PollEventLoopTests(
             UnixEventLoopTestsMixin, SubprocessTestsMixin, test_utils.TestCase
         ):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.PollSelector())
 
@@ -2113,7 +2100,6 @@ else:
     class SelectEventLoopTests(
         UnixEventLoopTestsMixin, SubprocessTestsMixin, test_utils.TestCase
     ):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop(selectors.SelectSelector())
 
@@ -2123,7 +2109,6 @@ def noop(*args, **kwargs):
 
 
 class HandleTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = mock.Mock()
@@ -2307,7 +2292,6 @@ class HandleTests(test_utils.TestCase):
 
 
 class TimerTests(unittest.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = mock.Mock()
@@ -2444,7 +2428,6 @@ class TimerTests(unittest.TestCase):
 
 
 class AbstractEventLoopTests(unittest.TestCase):
-
     def test_not_implemented(self):
         f = mock.Mock()
         loop = asyncio.AbstractEventLoop()
@@ -2521,7 +2504,6 @@ class AbstractEventLoopTests(unittest.TestCase):
 
 
 class PolicyTests(unittest.TestCase):
-
     def test_event_loop_policy(self):
         policy = asyncio.AbstractEventLoopPolicy()
         self.assertRaises(NotImplementedError, policy.get_event_loop)
@@ -2547,7 +2529,6 @@ class PolicyTests(unittest.TestCase):
         with mock.patch.object(
             policy, "set_event_loop", wraps=policy.set_event_loop
         ) as m_set_event_loop:
-
             loop = policy.get_event_loop()
 
             # policy._local._loop must be set through .set_event_loop()
@@ -2610,7 +2591,6 @@ class PolicyTests(unittest.TestCase):
 
 
 class GetEventLoopTestsMixin:
-
     _get_running_loop_impl = None
     _set_running_loop_impl = None
     get_running_loop_impl = None
@@ -2730,7 +2710,6 @@ class GetEventLoopTestsMixin:
 
 
 class TestPyGetEventLoop(GetEventLoopTestsMixin, unittest.TestCase):
-
     _get_running_loop_impl = events._py__get_running_loop
     _set_running_loop_impl = events._py__set_running_loop
     get_running_loop_impl = events._py_get_running_loop
@@ -2744,7 +2723,6 @@ except ImportError:
 else:
 
     class TestCGetEventLoop(GetEventLoopTestsMixin, unittest.TestCase):
-
         _get_running_loop_impl = events._c__get_running_loop
         _set_running_loop_impl = events._c__set_running_loop
         get_running_loop_impl = events._c_get_running_loop
@@ -2752,7 +2730,6 @@ else:
 
 
 class TestServer(unittest.TestCase):
-
     def test_get_loop(self):
         loop = asyncio.new_event_loop()
         self.addCleanup(loop.close)
@@ -2766,7 +2743,6 @@ class TestServer(unittest.TestCase):
 
 
 class TestAbstractServer(unittest.TestCase):
-
     def test_close(self):
         with self.assertRaises(NotImplementedError):
             events.AbstractServer().close()

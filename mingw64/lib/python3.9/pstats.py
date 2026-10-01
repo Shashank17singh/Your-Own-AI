@@ -19,19 +19,16 @@
 # either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-
-import sys
-import os
-import time
 import marshal
+import os
 import re
-
+import sys
+import time
+from dataclasses import dataclass
 from enum import Enum
 from functools import cmp_to_key
-from dataclasses import dataclass
-from typing import Dict
 
-__all__ = ["Stats", "SortKey", "FunctionProfile", "StatsProfile"]
+__all__ = ["FunctionProfile", "SortKey", "Stats", "StatsProfile"]
 
 
 class SortKey(str, Enum):
@@ -71,7 +68,7 @@ class StatsProfile:
     """Class for keeping track of an item in inventory."""
 
     total_tt: float
-    func_profiles: Dict[str, FunctionProfile]
+    func_profiles: dict[str, FunctionProfile]
 
 
 class Stats:
@@ -169,8 +166,7 @@ class Stats:
             self.total_tt += tt
             if ("jprofile", 0, "profiler") in callers:
                 self.top_level.add(func)
-            if len(func_std_string(func)) > self.max_name_len:
-                self.max_name_len = len(func_std_string(func))
+            self.max_name_len = max(self.max_name_len, len(func_std_string(func)))
 
     def add(self, *arg_list):
         if not arg_list:
@@ -185,8 +181,7 @@ class Stats:
             for func in item.top_level:
                 self.top_level.add(func)
 
-            if self.max_name_len < item.max_name_len:
-                self.max_name_len = item.max_name_len
+            self.max_name_len = max(self.max_name_len, item.max_name_len)
 
             self.fcn_list = None
 
@@ -299,8 +294,7 @@ class Stats:
         max_name_len = 0
         for func, (cc, nc, tt, ct, callers) in oldstats.items():
             newfunc = func_strip_path(func)
-            if len(func_std_string(newfunc)) > max_name_len:
-                max_name_len = len(func_std_string(newfunc))
+            max_name_len = max(max_name_len, len(func_std_string(newfunc)))
             newcallers = {}
             for func2, caller in callers.items():
                 newcallers[func_strip_path(func2)] = caller
@@ -425,8 +419,7 @@ class Stats:
         if count < len(self.stats):
             width = 0
             for func in stat_list:
-                if len(func_std_string(func)) > width:
-                    width = len(func_std_string(func))
+                width = max(width, len(func_std_string(func)))
         return width + 2, stat_list
 
     def print_stats(self, *amount):
@@ -744,7 +737,7 @@ if __name__ == "__main__":
             self.generic_help()
 
         def do_EOF(self, line):
-            print("", file=self.stream)
+            print(file=self.stream)
             return 1
 
         def help_EOF(self):

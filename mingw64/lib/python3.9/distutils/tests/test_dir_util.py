@@ -1,27 +1,24 @@
 """Tests for distutils.dir_util."""
 
-import unittest
 import os
 import stat
 import sys
-from unittest.mock import patch
-
-from distutils import dir_util, errors
+import unittest
+from distutils import dir_util, errors, log
 from distutils.dir_util import (
+    copy_tree,
+    create_tree,
+    ensure_relative,
     mkpath,
     remove_tree,
-    create_tree,
-    copy_tree,
-    ensure_relative,
 )
-
-from distutils import log
 from distutils.tests import support
+from unittest.mock import patch
+
 from test.support import run_unittest
 
 
 class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
-
     def _log(self, msg, *args):
         if len(args) > 0:
             self._logs.append(msg % args)
@@ -29,7 +26,7 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
             self._logs.append(msg)
 
     def setUp(self):
-        super(DirUtilTestCase, self).setUp()
+        super().setUp()
         self._logs = []
         tmp_dir = self.mkdtemp()
         self.root_target = os.path.join(tmp_dir, "deep")
@@ -40,7 +37,7 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
 
     def tearDown(self):
         log.info = self.old_log
-        super(DirUtilTestCase, self).tearDown()
+        super().tearDown()
 
     def test_mkpath_remove_tree_verbosity(self):
 
@@ -131,8 +128,9 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         """
         An exception in listdir should raise a DistutilsFileError
         """
-        with patch("os.listdir", side_effect=OSError()), self.assertRaises(
-            errors.DistutilsFileError
+        with (
+            patch("os.listdir", side_effect=OSError()),
+            self.assertRaises(errors.DistutilsFileError),
         ):
             src = self.tempdirs[-1]
             dir_util.copy_tree(src, None)

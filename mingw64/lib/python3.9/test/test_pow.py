@@ -3,7 +3,6 @@ import unittest
 
 
 class PowTest(unittest.TestCase):
-
     def powtest(self, type):
         if type != float:
             for i in range(-1000, 1000):
@@ -16,7 +15,7 @@ class PowTest(unittest.TestCase):
                 self.assertEqual(pow(type(i), 3), i * i * i)
 
             pow2 = 1
-            for i in range(0, 31):
+            for i in range(31):
                 self.assertEqual(pow(2, i), pow2)
                 if i != 30:
                     pow2 = pow2 * 2
@@ -79,7 +78,7 @@ class PowTest(unittest.TestCase):
         self.assertEqual(pow(5, 2) % -8, pow(5, 2, -8))
 
         for i in range(-10, 11):
-            for j in range(0, 6):
+            for j in range(6):
                 for k in range(-7, 11):
                     if j >= 0 and k != 0:
                         self.assertEqual(pow(i, j) % k, pow(i, j, k))
@@ -105,7 +104,7 @@ class PowTest(unittest.TestCase):
         eq(pow(a, -1.23e167), 1.0)
         for b in range(-10, 11):
             eq(pow(a, float(b)), b & 1 and -1.0 or 1.0)
-        for n in range(0, 100):
+        for n in range(100):
             fiveto = float(5**n)
             # For small n, fiveto will be odd.  Eventually we run out of
             # mantissa bits, though, and thereafer fiveto will be even.

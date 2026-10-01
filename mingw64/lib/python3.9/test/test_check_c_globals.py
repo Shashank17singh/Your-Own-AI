@@ -1,4 +1,5 @@
 import unittest
+
 import test.test_tools
 
 test.test_tools.skip_if_missing("c-analyzer")
@@ -7,7 +8,6 @@ with test.test_tools.imports_under_tool("c-analyzer"):
 
 
 class ActualChecks(unittest.TestCase):
-
     # XXX Also run the check in "make check".
     # @unittest.expectedFailure
     # Failing on one of the buildbots (see https://bugs.python.org/issue36876).

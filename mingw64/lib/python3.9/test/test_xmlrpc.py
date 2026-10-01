@@ -1,22 +1,23 @@
 import base64
+import contextlib
 import datetime
 import decimal
+import http
+import http.client
+import http.server
+import io
+import re
+import socket
 import sys
+import threading
 import time
 import unittest
-from unittest import mock
 import xmlrpc.client as xmlrpclib
 import xmlrpc.server
-import http.client
-import http, http.server
-import socket
-import threading
-import re
-import io
-import contextlib
+from unittest import mock
+
 from test import support
-from test.support import socket_helper
-from test.support import ALWAYS_EQ, LARGEST, SMALLEST
+from test.support import ALWAYS_EQ, LARGEST, SMALLEST, socket_helper
 
 try:
     import gzip
@@ -44,7 +45,6 @@ alist = [
 
 
 class XMLRPCTestCase(unittest.TestCase):
-
     def test_dump_load(self):
         dump = xmlrpclib.dumps((alist,))
         load = xmlrpclib.loads(dump)
@@ -111,7 +111,7 @@ class XMLRPCTestCase(unittest.TestCase):
         self.assertIsInstance(s, str)
 
     def test_newstyle_class(self):
-        class T(object):
+        class T:
             pass
 
         t = T()
@@ -140,7 +140,7 @@ class XMLRPCTestCase(unittest.TestCase):
 
     def test_dump_big_int(self):
         if sys.maxsize > 2**31 - 1:
-            self.assertRaises(OverflowError, xmlrpclib.dumps, (int(2**34),))
+            self.assertRaises(OverflowError, xmlrpclib.dumps, ((2**34),))
 
         xmlrpclib.dumps((xmlrpclib.MAXINT, xmlrpclib.MININT))
         self.assertRaises(OverflowError, xmlrpclib.dumps, (xmlrpclib.MAXINT + 1,))
@@ -568,7 +568,6 @@ class DateTimeTestCase(unittest.TestCase):
 
 
 class BinaryTestCase(unittest.TestCase):
-
     # XXX What should str(Binary(b"\xff")) return?  I'm chosing "\xff"
     # for now (i.e. interpreting the binary data as Latin-1-encoded
     # text).  But this feels very unsatisfactory.  Perhaps we should
@@ -664,7 +663,7 @@ def http_server(evt, numrequests, requestHandler=None, encoding=None):
             serv.handle_request()
             numrequests -= 1
 
-    except socket.timeout:
+    except TimeoutError:
         pass
     finally:
         serv.socket.close()
@@ -744,7 +743,7 @@ def http_multi_server(evt, numrequests, requestHandler=None):
             serv.handle_request()
             numrequests -= 1
 
-    except socket.timeout:
+    except TimeoutError:
         pass
     finally:
         serv.socket.close()
@@ -850,7 +849,7 @@ class SimpleServerTestCase(BaseServerTestCase):
         try:
             p = xmlrpclib.ServerProxy(URL, encoding="iso-8859-15")
             self.assertEqual(p.add(start_string, end_string), start_string + end_string)
-        except (xmlrpclib.ProtocolError, socket.error) as e:
+        except (OSError, xmlrpclib.ProtocolError) as e:
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
@@ -860,7 +859,7 @@ class SimpleServerTestCase(BaseServerTestCase):
         try:
             p = xmlrpclib.ServerProxy(URL, encoding="ascii")
             self.assertEqual(p.têšt(42), 42)
-        except (xmlrpclib.ProtocolError, socket.error) as e:
+        except (OSError, xmlrpclib.ProtocolError) as e:
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
@@ -972,7 +971,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             self.assertEqual(result.results[0]["faultCode"], 1)
             self.assertEqual(
                 result.results[0]["faultString"],
-                "<class 'Exception'>:method \"this_is_not_exists\" " "is not supported",
+                "<class 'Exception'>:method \"this_is_not_exists\" is not supported",
             )
         except (xmlrpclib.ProtocolError, OSError) as e:
             # ignore failures due to non-blocking socket 'unavailable' errors
@@ -1040,7 +1039,7 @@ class SimpleServerEncodingTestCase(BaseServerTestCase):
         try:
             p = xmlrpclib.ServerProxy(URL)
             self.assertEqual(p.add(start_string, end_string), start_string + end_string)
-        except (xmlrpclib.ProtocolError, socket.error) as e:
+        except (OSError, xmlrpclib.ProtocolError) as e:
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
@@ -1252,7 +1251,6 @@ class GzipServerTestCase(BaseServerTestCase):
 
 @unittest.skipIf(gzip is None, "requires gzip")
 class GzipUtilTestCase(unittest.TestCase):
-
     def test_gzip_decode_limit(self):
         max_gzip_decode = 20 * 1024 * 1024
         data = b"\0" * max_gzip_decode
@@ -1495,9 +1493,11 @@ class CGIHandlerTestCase(unittest.TestCase):
         </methodCall>
         """
 
-        with support.EnvironmentVarGuard() as env, captured_stdout(
-            encoding=self.cgi.encoding
-        ) as data_out, support.captured_stdin() as data_in:
+        with (
+            support.EnvironmentVarGuard() as env,
+            captured_stdout(encoding=self.cgi.encoding) as data_out,
+            support.captured_stdin() as data_in,
+        ):
             data_in.write(data)
             data_in.seek(0)
             env["CONTENT_LENGTH"] = str(len(data))
@@ -1524,7 +1524,6 @@ class CGIHandlerTestCase(unittest.TestCase):
 
 
 class UseBuiltinTypesTestCase(unittest.TestCase):
-
     def test_use_builtin_types(self):
         # SimpleXMLRPCDispatcher.__init__ accepts use_builtin_types, which
         # makes all dispatch of binary data as bytes instances, and all

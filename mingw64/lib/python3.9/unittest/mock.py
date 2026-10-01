@@ -1,31 +1,31 @@
 __all__ = (
-    "Mock",
-    "MagicMock",
-    "patch",
-    "sentinel",
-    "DEFAULT",
     "ANY",
+    "DEFAULT",
+    "FILTER_DIR",
+    "AsyncMock",
+    "MagicMock",
+    "Mock",
+    "NonCallableMagicMock",
+    "NonCallableMock",
+    "PropertyMock",
     "call",
     "create_autospec",
-    "AsyncMock",
-    "FILTER_DIR",
-    "NonCallableMock",
-    "NonCallableMagicMock",
     "mock_open",
-    "PropertyMock",
+    "patch",
     "seal",
+    "sentinel",
 )
 import asyncio
+import builtins
 import contextlib
-import io
 import inspect
+import io
 import pprint
 import sys
-import builtins
 from asyncio import iscoroutinefunction
-from types import CodeType, ModuleType, MethodType
+from functools import partial, wraps
+from types import CodeType, MethodType, ModuleType
 from unittest.util import safe_repr
-from functools import wraps, partial
 
 _builtins = {name for name in dir(builtins) if not name.startswith("_")}
 FILTER_DIR = True
@@ -36,7 +36,7 @@ def _is_async_obj(obj):
     if _is_instance_mock(obj) and not isinstance(obj, AsyncMock):
         return False
     if hasattr(obj, "__func__"):
-        obj = getattr(obj, "__func__")
+        obj = obj.__func__
     return iscoroutinefunction(obj) or inspect.isawaitable(obj)
 
 
@@ -159,9 +159,12 @@ def _set_signature(mock, original, instance=False):
     if not name.isidentifier():
         name = "funcopy"
     context = {"_checksig_": checksig, "mock": mock}
-    src = """def %s(*args, **kwargs):
+    src = (
+        """def %s(*args, **kwargs):
     _checksig_(*args, **kwargs)
-    return mock(*args, **kwargs)""" % name
+    return mock(*args, **kwargs)"""
+        % name
+    )
     exec(src, context)
     funcopy = context[name]
     _setup_func(funcopy, mock, sig)
@@ -246,7 +249,7 @@ def _is_magic(name):
     return "__%s__" % name[2:-2] == name
 
 
-class _SentinelObject(object):
+class _SentinelObject:
     "A unique, named, sentinel object."
 
     def __init__(self, name):
@@ -259,7 +262,7 @@ class _SentinelObject(object):
         return "sentinel.%s" % self.name
 
 
-class _Sentinel(object):
+class _Sentinel:
     """Access attributes to return a named object, usable as a sentinel."""
 
     def __init__(self):
@@ -318,7 +321,7 @@ class _CallList(list):
         len_self = len(self)
         if len_value > len_self:
             return False
-        for i in range(0, len_self - len_value + 1):
+        for i in range(len_self - len_value + 1):
             sub_list = self[i : i + len_value]
             if sub_list == value:
                 return True
@@ -352,7 +355,7 @@ def _check_and_set_parent(parent, value, name, new_name):
     return True
 
 
-class _MockIter(object):
+class _MockIter:
     def __init__(self, obj):
         self.obj = iter(obj)
 
@@ -360,7 +363,7 @@ class _MockIter(object):
         return next(self.obj)
 
 
-class Base(object):
+class Base:
     _mock_return_value = DEFAULT
     _mock_side_effect = None
 
@@ -577,7 +580,7 @@ class NonCallableMock(Base):
         if not self._mock_unsafe:
             if name.startswith(("assert", "assret")):
                 raise AttributeError(
-                    "Attributes cannot start with 'assert' " "or 'assret'"
+                    "Attributes cannot start with 'assert' or 'assret'"
                 )
         result = self._mock_children.get(name)
         if result is _deleted:
@@ -846,14 +849,13 @@ class NonCallableMock(Base):
                     problem = "Calls not found."
                 else:
                     problem = (
-                        "Error processing expected calls.\n" "Errors: {}"
-                    ).format(
-                        [e if isinstance(e, Exception) else None for e in expected]
+                        "Error processing expected calls.\n"
+                        f"Errors: {[e if isinstance(e, Exception) else None for e in expected]}"
                     )
                 raise AssertionError(
                     f"{problem}\n"
                     f"Expected: {_CallList(calls)}"
-                    f'{self._calls_repr(prefix="Actual").rstrip(".")}'
+                    f"{self._calls_repr(prefix='Actual').rstrip('.')}"
                 ) from cause
             return
         all_calls = list(all_calls)
@@ -1107,7 +1109,7 @@ def _importer(target):
     return thing
 
 
-class _patch(object):
+class _patch:
     attribute_name = None
     _active_patches = []
 
@@ -1313,8 +1315,7 @@ class _patch(object):
         elif autospec is not None:
             if new is not DEFAULT:
                 raise TypeError(
-                    "autospec creates the mock for you. Can't specify "
-                    "autospec and new."
+                    "autospec creates the mock for you. Can't specify autospec and new."
                 )
             if original is DEFAULT:
                 raise TypeError("Can't use 'autospec' with create=True")
@@ -1546,7 +1547,7 @@ def patch(
     )
 
 
-class _patch_dict(object):
+class _patch_dict:
     """
     Patch a dictionary, or dictionary like object, and restore the dictionary
     to its original state after the test.
@@ -1746,7 +1747,9 @@ _calculate_return_value = {
     "__hash__": lambda self: object.__hash__(self),
     "__str__": lambda self: object.__str__(self),
     "__sizeof__": lambda self: object.__sizeof__(self),
-    "__fspath__": lambda self: f"{type(self).__name__}/{self._extract_mock_name()}/{id(self)}",
+    "__fspath__": lambda self: (
+        f"{type(self).__name__}/{self._extract_mock_name()}/{id(self)}"
+    ),
 }
 _return_values = {
     "__lt__": NotImplemented,
@@ -2033,9 +2036,8 @@ class AsyncMockMixin(Base):
                     problem = "Awaits not found."
                 else:
                     problem = (
-                        "Error processing expected awaits.\n" "Errors: {}"
-                    ).format(
-                        [e if isinstance(e, Exception) else None for e in expected]
+                        "Error processing expected awaits.\n"
+                        f"Errors: {[e if isinstance(e, Exception) else None for e in expected]}"
                     )
                 raise AssertionError(
                     f"{problem}\n"
@@ -2111,7 +2113,7 @@ class AsyncMock(AsyncMockMixin, AsyncMagicMixin, Mock):
     """
 
 
-class _ANY(object):
+class _ANY:
     "A helper object that compares equal to everything."
 
     def __eq__(self, other):
@@ -2344,9 +2346,7 @@ def create_autospec(
                 "is mocking an async function"
             )
         Klass = AsyncMock
-    elif not _callable(spec):
-        Klass = NonCallableMagicMock
-    elif is_type and instance and not _instance_callable(spec):
+    elif not _callable(spec) or is_type and instance and not _instance_callable(spec):
         Klass = NonCallableMagicMock
     _name = _kwargs.pop("name", _name)
     _new_name = _name
@@ -2422,7 +2422,7 @@ def _must_skip(spec, entry, is_type):
     return is_type
 
 
-class _SpecState(object):
+class _SpecState:
     def __init__(
         self, spec, spec_set=False, parent=None, name=None, ids=None, instance=False
     ):

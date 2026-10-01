@@ -1,8 +1,8 @@
-import unittest
-import operator
-import sys
-import pickle
 import gc
+import operator
+import pickle
+import sys
+import unittest
 
 from test import support
 
@@ -108,7 +108,6 @@ class PickleTest:
 
 
 class EnumerateTestCase(unittest.TestCase, PickleTest):
-
     enum = enumerate
     seq, res = "abc", [(0, "a"), (1, "b"), (2, "c")]
 
@@ -177,23 +176,19 @@ class MyEnum(enumerate):
 
 
 class SubclassTestCase(EnumerateTestCase):
-
     enum = MyEnum
 
 
 class TestEmpty(EnumerateTestCase):
-
     seq, res = "", []
 
 
 class TestBig(EnumerateTestCase):
-
     seq = range(10, 20000, 2)
     res = list(zip(range(20000), seq))
 
 
 class TestReversed(unittest.TestCase, PickleTest):
-
     def test_simple(self):
         class A:
             def __getitem__(self, i):
@@ -278,21 +273,21 @@ class TestReversed(unittest.TestCase, PickleTest):
 
     def test_objmethods(self):
         # Objects must have __len__() and __getitem__() implemented.
-        class NoLen(object):
+        class NoLen:
             def __getitem__(self, i):
                 return 1
 
         nl = NoLen()
         self.assertRaises(TypeError, reversed, nl)
 
-        class NoGetItem(object):
+        class NoGetItem:
             def __len__(self):
                 return 2
 
         ngi = NoGetItem()
         self.assertRaises(TypeError, reversed, ngi)
 
-        class Blocked(object):
+        class Blocked:
             def __getitem__(self, i):
                 return 1
 
@@ -310,7 +305,6 @@ class TestReversed(unittest.TestCase, PickleTest):
 
 
 class EnumerateStartTestCase(EnumerateTestCase):
-
     def test_basicfunction(self):
         e = self.enum(self.seq)
         self.assertEqual(iter(e), e)
@@ -318,19 +312,20 @@ class EnumerateStartTestCase(EnumerateTestCase):
 
 
 class TestStart(EnumerateStartTestCase):
-
     enum = lambda self, i: enumerate(i, start=11)
     seq, res = "abc", [(11, "a"), (12, "b"), (13, "c")]
 
 
 class TestLongStart(EnumerateStartTestCase):
-
     enum = lambda self, i: enumerate(i, start=sys.maxsize + 1)
-    seq, res = "abc", [
-        (sys.maxsize + 1, "a"),
-        (sys.maxsize + 2, "b"),
-        (sys.maxsize + 3, "c"),
-    ]
+    seq, res = (
+        "abc",
+        [
+            (sys.maxsize + 1, "a"),
+            (sys.maxsize + 2, "b"),
+            (sys.maxsize + 3, "c"),
+        ],
+    )
 
 
 if __name__ == "__main__":

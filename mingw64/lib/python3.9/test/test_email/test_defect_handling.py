@@ -1,13 +1,12 @@
+import contextlib
 import textwrap
 import unittest
-import contextlib
-from email import policy
-from email import errors
+from email import errors, policy
+
 from test.test_email import TestEmailBase
 
 
 class TestDefectsBase:
-
     policy = policy.default
     raise_expected = False
 
@@ -329,13 +328,11 @@ class TestDefectsBase:
 
 
 class TestDefectDetection(TestDefectsBase, TestEmailBase):
-
     def get_defects(self, obj):
         return obj.defects
 
 
 class TestDefectCapture(TestDefectsBase, TestEmailBase):
-
     class CapturePolicy(policy.EmailPolicy):
         captured = None
 
@@ -350,7 +347,6 @@ class TestDefectCapture(TestDefectsBase, TestEmailBase):
 
 
 class TestDefectRaising(TestDefectsBase, TestEmailBase):
-
     policy = TestDefectsBase.policy
     policy = policy.clone(raise_on_defect=True)
     raise_expected = True

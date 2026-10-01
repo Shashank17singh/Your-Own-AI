@@ -1,17 +1,17 @@
 """Test cases for traceback module"""
 
+import linecache
+import re
+import sys
+import textwrap
+import traceback
+import unittest
 from collections import namedtuple
 from io import StringIO
-import linecache
-import sys
-import unittest
-import re
-from test import support
-from test.support import TESTFN, Error, captured_output, unlink, cpython_only, ALWAYS_EQ
-from test.support.script_helper import assert_python_ok
-import textwrap
 
-import traceback
+from test import support
+from test.support import ALWAYS_EQ, TESTFN, Error, captured_output, cpython_only, unlink
+from test.support.script_helper import assert_python_ok
 
 test_code = namedtuple("code", ["co_filename", "co_name"])
 test_frame = namedtuple("frame", ["f_code", "f_globals", "f_locals"])
@@ -147,7 +147,8 @@ class TracebackCases(unittest.TestCase):
         # Test that tracebacks are correctly printed for encoded source files:
         # - correct line number (Issue2384)
         # - respect file encoding (Issue3975)
-        import sys, subprocess
+        import subprocess
+        import sys
 
         # The spawned subprocess has its stdout redirected to a PIPE, and its
         # encoding may be different from the current interpreter, on Windows
@@ -164,10 +165,10 @@ class TracebackCases(unittest.TestCase):
             # Raise the message in a subprocess, and catch the output
             try:
                 with open(TESTFN, "w", encoding=charset) as output:
-                    output.write("""{0}if 1:
+                    output.write(f"""{firstlines}if 1:
                         import traceback;
-                        raise RuntimeError('{1}')
-                        """.format(firstlines, message))
+                        raise RuntimeError('{message}')
+                        """)
 
                 process = subprocess.Popen(
                     [sys.executable, TESTFN],
@@ -184,25 +185,21 @@ class TracebackCases(unittest.TestCase):
             # and we just decoded them with the output_encoding.
             message_ascii = encoded_message.decode(output_encoding)
 
-            err_line = "raise RuntimeError('{0}')".format(message_ascii)
-            err_msg = "RuntimeError: {0}".format(message_ascii)
+            err_line = f"raise RuntimeError('{message_ascii}')"
+            err_msg = f"RuntimeError: {message_ascii}"
 
             self.assertIn(
                 ("line %s" % lineno),
                 stdout[1],
-                "Invalid line number: {0!r} instead of {1}".format(stdout[1], lineno),
+                f"Invalid line number: {stdout[1]!r} instead of {lineno}",
             )
             self.assertTrue(
                 stdout[2].endswith(err_line),
-                "Invalid traceback line: {0!r} instead of {1!r}".format(
-                    stdout[2], err_line
-                ),
+                f"Invalid traceback line: {stdout[2]!r} instead of {err_line!r}",
             )
             self.assertTrue(
                 stdout[3] == err_msg,
-                "Invalid error message: {0!r} instead of {1!r}".format(
-                    stdout[3], err_msg
-                ),
+                f"Invalid error message: {stdout[3]!r} instead of {err_msg!r}",
             )
 
         do_test("", "foo", "ascii", 3)
@@ -213,9 +210,9 @@ class TracebackCases(unittest.TestCase):
                 text = "\u4e02\u5100"
             else:
                 text = "h\xe9 ho"
-            do_test("# coding: {0}\n".format(charset), text, charset, 4)
-            do_test("#!shebang\n# coding: {0}\n".format(charset), text, charset, 5)
-            do_test(" \t\f\n# coding: {0}\n".format(charset), text, charset, 5)
+            do_test(f"# coding: {charset}\n", text, charset, 4)
+            do_test(f"#!shebang\n# coding: {charset}\n", text, charset, 5)
+            do_test(f" \t\f\n# coding: {charset}\n", text, charset, 5)
         # Issue #18960: coding spec should have no effect
         do_test("x=0\n# coding: GBK\n", "h\xe9 ho", "utf-8", 5)
 
@@ -259,7 +256,6 @@ class TracebackCases(unittest.TestCase):
 
 
 class TracebackFormatTests(unittest.TestCase):
-
     def some_exception(self):
         raise KeyError("blah")
 
@@ -372,13 +368,13 @@ class TracebackFormatTests(unittest.TestCase):
         lineno_f = f.__code__.co_firstlineno
         result_f = (
             "Traceback (most recent call last):\n"
-            f'  File "{__file__}", line {lineno_f+5}, in _check_recursive_traceback_display\n'
+            f'  File "{__file__}", line {lineno_f + 5}, in _check_recursive_traceback_display\n'
             "    f()\n"
-            f'  File "{__file__}", line {lineno_f+1}, in f\n'
+            f'  File "{__file__}", line {lineno_f + 1}, in f\n'
             "    f()\n"
-            f'  File "{__file__}", line {lineno_f+1}, in f\n'
+            f'  File "{__file__}", line {lineno_f + 1}, in f\n'
             "    f()\n"
-            f'  File "{__file__}", line {lineno_f+1}, in f\n'
+            f'  File "{__file__}", line {lineno_f + 1}, in f\n'
             "    f()\n"
             # XXX: The following line changes depending on whether the tests
             # are run through the interactive interpreter or with -m
@@ -421,20 +417,20 @@ class TracebackFormatTests(unittest.TestCase):
 
         lineno_g = g.__code__.co_firstlineno
         result_g = (
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
             "  [Previous line repeated 7 more times]\n"
-            f'  File "{__file__}", line {lineno_g+3}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 3}, in g\n'
             "    raise ValueError\n"
             "ValueError\n"
         )
         tb_line = (
             "Traceback (most recent call last):\n"
-            f'  File "{__file__}", line {lineno_g+7}, in _check_recursive_traceback_display\n'
+            f'  File "{__file__}", line {lineno_g + 7}, in _check_recursive_traceback_display\n'
             "    g()\n"
         )
         expected = (tb_line + result_g).splitlines()
@@ -458,16 +454,16 @@ class TracebackFormatTests(unittest.TestCase):
         lineno_h = h.__code__.co_firstlineno
         result_h = (
             "Traceback (most recent call last):\n"
-            f'  File "{__file__}", line {lineno_h+7}, in _check_recursive_traceback_display\n'
+            f'  File "{__file__}", line {lineno_h + 7}, in _check_recursive_traceback_display\n'
             "    h()\n"
-            f'  File "{__file__}", line {lineno_h+2}, in h\n'
+            f'  File "{__file__}", line {lineno_h + 2}, in h\n'
             "    return h(count-1)\n"
-            f'  File "{__file__}", line {lineno_h+2}, in h\n'
+            f'  File "{__file__}", line {lineno_h + 2}, in h\n'
             "    return h(count-1)\n"
-            f'  File "{__file__}", line {lineno_h+2}, in h\n'
+            f'  File "{__file__}", line {lineno_h + 2}, in h\n'
             "    return h(count-1)\n"
             "  [Previous line repeated 7 more times]\n"
-            f'  File "{__file__}", line {lineno_h+3}, in h\n'
+            f'  File "{__file__}", line {lineno_h + 3}, in h\n'
             "    g()\n"
         )
         expected = (result_h + result_g).splitlines()
@@ -483,19 +479,19 @@ class TracebackFormatTests(unittest.TestCase):
             else:
                 self.fail("no error raised")
         result_g = (
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+3}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 3}, in g\n'
             "    raise ValueError\n"
             "ValueError\n"
         )
         tb_line = (
             "Traceback (most recent call last):\n"
-            f'  File "{__file__}", line {lineno_g+71}, in _check_recursive_traceback_display\n'
+            f'  File "{__file__}", line {lineno_g + 71}, in _check_recursive_traceback_display\n'
             "    g(traceback._RECURSIVE_CUTOFF)\n"
         )
         expected = (tb_line + result_g).splitlines()
@@ -511,20 +507,20 @@ class TracebackFormatTests(unittest.TestCase):
             else:
                 self.fail("no error raised")
         result_g = (
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
-            f'  File "{__file__}", line {lineno_g+2}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 2}, in g\n'
             "    return g(count-1)\n"
             "  [Previous line repeated 1 more time]\n"
-            f'  File "{__file__}", line {lineno_g+3}, in g\n'
+            f'  File "{__file__}", line {lineno_g + 3}, in g\n'
             "    raise ValueError\n"
             "ValueError\n"
         )
         tb_line = (
             "Traceback (most recent call last):\n"
-            f'  File "{__file__}", line {lineno_g+99}, in _check_recursive_traceback_display\n'
+            f'  File "{__file__}", line {lineno_g + 99}, in _check_recursive_traceback_display\n'
             "    g(traceback._RECURSIVE_CUTOFF + 1)\n"
         )
         expected = (tb_line + result_g).splitlines()
@@ -589,11 +585,11 @@ class TracebackFormatTests(unittest.TestCase):
 
 
 cause_message = (
-    "\nThe above exception was the direct cause " "of the following exception:\n\n"
+    "\nThe above exception was the direct cause of the following exception:\n\n"
 )
 
 context_message = (
-    "\nDuring handling of the above exception, " "another exception occurred:\n\n"
+    "\nDuring handling of the above exception, another exception occurred:\n\n"
 )
 
 boundaries = re.compile(
@@ -602,7 +598,6 @@ boundaries = re.compile(
 
 
 class BaseExceptionReportingTests:
-
     def get_exception(self, exception_or_callable):
         if isinstance(exception_or_callable, Exception):
             return exception_or_callable
@@ -1003,7 +998,6 @@ class MiscTracebackCases(unittest.TestCase):
 
 
 class TestFrame(unittest.TestCase):
-
     def test_basics(self):
         linecache.clearcache()
         linecache.lazycache("f", globals())
@@ -1038,7 +1032,6 @@ class TestFrame(unittest.TestCase):
 
 
 class TestStack(unittest.TestCase):
-
     def test_walk_stack(self):
         def deeper():
             return list(traceback.walk_stack(None))
@@ -1135,7 +1128,6 @@ class TestStack(unittest.TestCase):
 
 
 class TestTracebackException(unittest.TestCase):
-
     def test_smoke(self):
         try:
             1 / 0
@@ -1367,7 +1359,6 @@ class TestTracebackException(unittest.TestCase):
 
 
 class MiscTest(unittest.TestCase):
-
     def test_all(self):
         expected = set()
         blacklist = {"print_list"}

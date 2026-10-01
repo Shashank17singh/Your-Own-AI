@@ -142,7 +142,6 @@ trans.update((ord(c), ord(c)) for c in "\"'\\\n#")  # Keep these.
 
 
 class Parser:
-
     def __init__(self, indentwidth, tabwidth):
         self.indentwidth = indentwidth
         self.tabwidth = tabwidth

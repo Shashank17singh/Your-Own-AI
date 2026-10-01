@@ -5,8 +5,8 @@ import operator
 import sys
 import unittest
 import weakref
+from pickle import dumps, loads
 
-from pickle import loads, dumps
 from test import support
 
 
@@ -20,7 +20,7 @@ def evaluate_slice_index(arg):
         return operator.index(arg)
     else:
         raise TypeError(
-            "slice indices must be integers or " "None or have an __index__ method"
+            "slice indices must be integers or None or have an __index__ method"
         )
 
 
@@ -63,7 +63,7 @@ def slice_indices(slice, length):
 # Class providing an __index__ method.  Used for testing slice.indices.
 
 
-class MyIndexable(object):
+class MyIndexable:
     def __init__(self, value):
         self.value = value
 
@@ -72,7 +72,6 @@ class MyIndexable(object):
 
 
 class SliceTest(unittest.TestCase):
-
     def test_constructor(self):
         self.assertRaises(TypeError, slice)
         self.assertRaises(TypeError, slice, 1, 2, 3, 4)
@@ -99,7 +98,7 @@ class SliceTest(unittest.TestCase):
         class Exc(Exception):
             pass
 
-        class BadCmp(object):
+        class BadCmp:
             def __eq__(self, other):
                 raise Exc
 
@@ -225,7 +224,7 @@ class SliceTest(unittest.TestCase):
     def test_setslice_without_getslice(self):
         tmp = []
 
-        class X(object):
+        class X:
             def __setitem__(self, i, k):
                 tmp.append((i, k))
 

@@ -7,20 +7,19 @@ https://www.python.org/dev/peps/pep-0506/
 """
 
 __all__ = [
+    "SystemRandom",
     "choice",
+    "compare_digest",
     "randbelow",
     "randbits",
-    "SystemRandom",
     "token_bytes",
     "token_hex",
     "token_urlsafe",
-    "compare_digest",
 ]
 
 
 import base64
 import binascii
-
 from hmac import compare_digest
 from random import SystemRandom
 

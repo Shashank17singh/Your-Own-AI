@@ -18,7 +18,7 @@ if __name__ == "__main__":
             _MAXFD = os.sysconf("SC_OPEN_MAX")
         except:
             _MAXFD = 256
-        test_fds = range(0, _MAXFD)
+        test_fds = range(_MAXFD)
     else:
         test_fds = map(int, sys.argv[1:])
     for fd in test_fds:
