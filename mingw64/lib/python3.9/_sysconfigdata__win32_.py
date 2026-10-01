@@ -1,4 +1,5 @@
-import sys, os
+import os
+import sys
 
 # system configuration generated and used by the sysconfig module
 build_time_vars = {
@@ -36,7 +37,7 @@ build_time_vars = {
     "-Wno-implicit-function-declaration -Wno-incompatible-pointer-types",
     "CFLAGSFORSHARED": "",
     "CFLAGS_ALIASING": "",
-    "CONFIGFILES": "configure configure.ac acconfig.h pyconfig.h.in " "Makefile.pre.in",
+    "CONFIGFILES": "configure configure.ac acconfig.h pyconfig.h.in Makefile.pre.in",
     "CONFIGURE_CFLAGS": "-D_POSIX -Wno-implicit-function-declaration "
     "-Wno-incompatible-pointer-types",
     "CONFIGURE_CFLAGS_NODIST": "-std=c99 -Wextra -Wno-unused-result "
@@ -73,7 +74,7 @@ build_time_vars = {
     "COREPYTHONPATH": "",
     "COVERAGE_INFO": "/R/winlibs_staging_ucrt64/cpython-mingw-3.9.7/cpython-mingw/build_win/coverage.info",
     "COVERAGE_REPORT": "/R/winlibs_staging_ucrt64/cpython-mingw-3.9.7/cpython-mingw/build_win/lcov-report",
-    "COVERAGE_REPORT_OPTIONS": '--no-branch-coverage --title "CPython lcov ' 'report"',
+    "COVERAGE_REPORT_OPTIONS": '--no-branch-coverage --title "CPython lcov report"',
     "CPPFLAGS": "-IObjects -IInclude -IPython -I. -I../Include -I../PC  -I.",
     "CXX": "/c/Prog/winlibs_staging_ucrt/mingw64/bin/x86_64-w64-mingw32-g++.exe "
     "-fno-ident",
@@ -683,7 +684,7 @@ build_time_vars = {
     "PACKAGE_URL": 0,
     "PACKAGE_VERSION": 0,
     "PARSER_HEADERS": "\\",
-    "PARSER_OBJS": "\\ \\ Parser/myreadline.o Parser/parsetok.o " "Parser/tokenizer.o",
+    "PARSER_OBJS": "\\ \\ Parser/myreadline.o Parser/parsetok.o Parser/tokenizer.o",
     "PEGEN_HEADERS": "\\",
     "PEGEN_OBJS": "\\",
     "PGO_PROF_GEN_FLAG": "-fprofile-generate",
@@ -796,7 +797,7 @@ build_time_vars = {
     "SIZEOF_WCHAR_T": 2,
     "SIZEOF__BOOL": 1,
     "SOABI": "cpython-39",
-    "SRCDIRS": "Parser Parser/pegen Objects Python Modules Modules/_io Programs " "PC",
+    "SRCDIRS": "Parser Parser/pegen Objects Python Modules Modules/_io Programs PC",
     "SRC_GDB_HOOKS": "../Tools/gdb/libpython.py",
     "STDC_HEADERS": 1,
     "STRICT_SYSV_CURSES": "/* Don't use ncurses extensions */",

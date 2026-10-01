@@ -1,8 +1,8 @@
 import unittest
-import tkinter
-from test.support import requires, run_unittest, swap_attr
-from tkinter.test.support import AbstractTkTest
 from tkinter import colorchooser
+from tkinter.test.support import AbstractTkTest
+
+from test.support import requires, run_unittest
 
 requires("gui")
 

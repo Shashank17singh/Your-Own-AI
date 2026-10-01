@@ -3,8 +3,9 @@
 import io
 import sys
 import traceback
-from . import util
 from functools import wraps
+
+from . import util
 
 __unittest = True
 
@@ -23,7 +24,7 @@ STDOUT_LINE = "\nStdout:\n%s"
 STDERR_LINE = "\nStderr:\n%s"
 
 
-class TestResult(object):
+class TestResult:
     """Holder for test result information.
     Test results are automatically managed by the TestCase and TestSuite
     classes, and do not need to be explicitly manipulated by writers of tests.
@@ -138,7 +139,6 @@ class TestResult(object):
 
     def addSuccess(self, test):
         "Called when a test has completed successfully"
-        pass
 
     def addSkip(self, test, reason):
         """Called when a test is skipped."""

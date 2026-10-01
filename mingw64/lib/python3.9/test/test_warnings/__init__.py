@@ -1,15 +1,16 @@
-from contextlib import contextmanager
 import linecache
 import os
-from io import StringIO
 import re
 import sys
 import textwrap
 import unittest
-from test import support
-from test.support.script_helper import assert_python_ok, assert_python_failure
-from test.test_warnings.data import stacklevel as warning_tests
 import warnings as original_warnings
+from contextlib import contextmanager
+from io import StringIO
+
+from test import support
+from test.support.script_helper import assert_python_failure, assert_python_ok
+from test.test_warnings.data import stacklevel as warning_tests
 
 py_warnings = support.import_fresh_module("warnings", blocked=["_warnings"])
 c_warnings = support.import_fresh_module("warnings", fresh=["_warnings"])
@@ -58,12 +59,12 @@ class BaseTest:
             del sys.__warningregistry__
         sys.modules["warnings"] = self.module
         unittest.case.warnings = self.module
-        super(BaseTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         sys.modules["warnings"] = original_warnings
         unittest.case.warnings = self.old_unittest_module
-        super(BaseTest, self).tearDown()
+        super().tearDown()
 
 
 class PublicAPITests(BaseTest):
@@ -313,7 +314,7 @@ class FilterTests(BaseTest):
             self.assertEqual(
                 self.module.filters[0][0],
                 "error",
-                "filterwarnings did not promote filter to " "the beginning of list",
+                "filterwarnings did not promote filter to the beginning of list",
             )
 
     def test_simplefilter_duplicate_filters(self):
@@ -409,7 +410,7 @@ class WarnTests(BaseTest):
     def test_exec_filename(self):
         filename = "<warnings-test>"
         codeobj = compile(
-            ("import warnings\n" "warnings.warn('hello', UserWarning)"),
+            ("import warnings\nwarnings.warn('hello', UserWarning)"),
             filename,
             "exec",
         )
@@ -770,8 +771,9 @@ class _WarningsTests(BaseTest, unittest.TestCase):
             with self.assertRaises(TypeError):
                 wmod.warn_explicit("foo", Warning, "bar", 1)
             wmod.filters = []
-            with support.swap_attr(wmod, "defaultaction", None), self.assertRaises(
-                TypeError
+            with (
+                support.swap_attr(wmod, "defaultaction", None),
+                self.assertRaises(TypeError),
             ):
                 wmod.warn_explicit("foo", Warning, "bar", 1)
 
@@ -779,8 +781,9 @@ class _WarningsTests(BaseTest, unittest.TestCase):
     def test_issue31566(self):
         with original_warnings.catch_warnings(module=self.module):
             self.module.filterwarnings("error", category=UserWarning)
-            with support.swap_item(globals(), "__name__", b"foo"), support.swap_item(
-                globals(), "__file__", None
+            with (
+                support.swap_item(globals(), "__name__", b"foo"),
+                support.swap_item(globals(), "__file__", None),
             ):
                 self.assertRaises(UserWarning, self.module.warn, "bar")
 
@@ -859,12 +862,14 @@ class PyWarningsDisplayTests(WarningsDisplayTests, unittest.TestCase):
     def test_tracemalloc(self):
         self.addCleanup(support.unlink, support.TESTFN)
         with open(support.TESTFN, "w") as fp:
-            fp.write(textwrap.dedent("""
+            fp.write(
+                textwrap.dedent("""
                 def func():
                     f = open(__file__)
                     f = None
                 func()
-            """))
+            """)
+            )
 
         def run(*args):
             res = assert_python_ok(*args, PYTHONIOENCODING="utf-8")

@@ -71,10 +71,13 @@ def build_pattern(mapping=MAPPING):
     yield """name_import=import_name< 'import' ((%s) |
                multiple_imports=dotted_as_names< any* (%s) any* >) >
           """ % (mod_list, mod_list)
-    yield """import_from< 'from' (%s) 'import' ['(']
+    yield (
+        """import_from< 'from' (%s) 'import' ['(']
               ( any | import_as_name< any 'as' any > |
                 import_as_names< any* >)  [')'] >
-          """ % mod_list
+          """
+        % mod_list
+    )
     yield """import_name< 'import' (dotted_as_name< (%s) 'as' any > |
                multiple_imports=dotted_as_names<
                  any* dotted_as_name< (%s) 'as' any > any* >) >
@@ -85,7 +88,6 @@ def build_pattern(mapping=MAPPING):
 
 
 class FixImports(fixer_base.BaseFix):
-
     BM_compatible = True
     keep_line_order = True
     # This is overridden in fix_imports2.
@@ -102,11 +104,11 @@ class FixImports(fixer_base.BaseFix):
         # We override this, so MAPPING can be pragmatically altered and the
         # changes will be reflected in PATTERN.
         self.PATTERN = self.build_pattern()
-        super(FixImports, self).compile_pattern()
+        super().compile_pattern()
 
     # Don't match the node if it's within another match.
     def match(self, node):
-        match = super(FixImports, self).match
+        match = super().match
         results = match(node)
         if results:
             # Module usage could be in the trailer of an attribute lookup, so we
@@ -119,7 +121,7 @@ class FixImports(fixer_base.BaseFix):
         return False
 
     def start_tree(self, tree, filename):
-        super(FixImports, self).start_tree(tree, filename)
+        super().start_tree(tree, filename)
         self.replace = {}
 
     def transform(self, node, results):

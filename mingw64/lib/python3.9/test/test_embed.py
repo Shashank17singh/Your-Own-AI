@@ -1,8 +1,4 @@
 # Run the tests in Programs/_testembed.c (tests for the CPython embedding APIs)
-from test import support
-import unittest
-
-from collections import namedtuple
 import contextlib
 import json
 import os
@@ -12,6 +8,10 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import unittest
+from collections import namedtuple
+
+from test import support
 
 MS_WINDOWS = os.name == "nt"
 MACOS = sys.platform == "darwin"
@@ -98,7 +98,7 @@ class EmbeddingTestsMixin:
             print(f"--- {cmd} failed ---")
             print(f"stdout:\n{out}")
             print(f"stderr:\n{err}")
-            print(f"------")
+            print("------")
 
         self.assertEqual(
             p.returncode,
@@ -133,7 +133,7 @@ class EmbeddingTestsMixin:
         numloops = 1
         current_run = []
         for line in out.splitlines():
-            if line == "--- Pass {} ---".format(numloops):
+            if line == f"--- Pass {numloops} ---":
                 self.assertEqual(len(current_run), 0)
                 if support.verbose > 1:
                     print(line)
@@ -1292,7 +1292,10 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
     def test_init_pyvenv_cfg(self):
         # Test path configuration with pyvenv.cfg configuration file
 
-        with self.tmpdir_with_python() as tmpdir, tempfile.TemporaryDirectory() as pyvenv_home:
+        with (
+            self.tmpdir_with_python() as tmpdir,
+            tempfile.TemporaryDirectory() as pyvenv_home,
+        ):
             ver = sys.version_info
 
             if not MS_WINDOWS:

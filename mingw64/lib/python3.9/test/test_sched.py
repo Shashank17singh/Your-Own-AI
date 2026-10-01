@@ -3,6 +3,7 @@ import sched
 import threading
 import time
 import unittest
+
 from test import support
 
 TIMEOUT = support.SHORT_TIMEOUT
@@ -37,7 +38,6 @@ class Timer:
 
 
 class TestCase(unittest.TestCase):
-
     def test_enter(self):
         l = []
         fun = lambda x: l.append(x)

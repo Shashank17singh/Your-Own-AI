@@ -2,10 +2,10 @@
 # tests use new style classes and properties, they actually do whitebox
 # testing of error conditions uncovered when using extension types.
 
-import unittest
 import sys
+import unittest
 
-
+
 class TestIsInstanceExceptions(unittest.TestCase):
     # Test to make sure that an AttributeError when accessing the instance's
     # class's bases is masked.  This was actually a bug in Python 2.2 and
@@ -22,14 +22,14 @@ class TestIsInstanceExceptions(unittest.TestCase):
     # extension type raises an AttributeError when its __bases__ attribute is
     # gotten.  In that case, isinstance() should return False.
     def test_class_has_no_bases(self):
-        class I(object):
+        class I:
             def getclass(self):
                 # This must return an object that has no __bases__ attribute
                 return None
 
             __class__ = property(getclass)
 
-        class C(object):
+        class C:
             def getbases(self):
                 return ()
 
@@ -40,19 +40,19 @@ class TestIsInstanceExceptions(unittest.TestCase):
     # Like above except that inst.__class__.__bases__ raises an exception
     # other than AttributeError
     def test_bases_raises_other_than_attribute_error(self):
-        class E(object):
+        class E:
             def getbases(self):
                 raise RuntimeError
 
             __bases__ = property(getbases)
 
-        class I(object):
+        class I:
             def getclass(self):
                 return E()
 
             __class__ = property(getclass)
 
-        class C(object):
+        class C:
             def getbases(self):
                 return ()
 
@@ -66,7 +66,7 @@ class TestIsInstanceExceptions(unittest.TestCase):
         class I:
             pass
 
-        class C(object):
+        class C:
             def getbases(self):
                 raise RuntimeError
 
@@ -80,7 +80,7 @@ class TestIsInstanceExceptions(unittest.TestCase):
         class I:
             pass
 
-        class C(object):
+        class C:
             def getbases(self):
                 raise AttributeError
 
@@ -91,7 +91,7 @@ class TestIsInstanceExceptions(unittest.TestCase):
     # check that we don't mask non AttributeErrors
     # see: http://bugs.python.org/issue1574217
     def test_isinstance_dont_mask_non_attribute_error(self):
-        class C(object):
+        class C:
             def getclass(self):
                 raise RuntimeError
 
@@ -106,13 +106,13 @@ class TestIsInstanceExceptions(unittest.TestCase):
 
         self.assertRaises(RuntimeError, isinstance, c, D)
 
-
+
 # These tests are similar to above, but tickle certain code paths in
 # issubclass() instead of isinstance() -- really PyObject_IsSubclass()
 # vs. PyObject_IsInstance().
 class TestIsSubclassExceptions(unittest.TestCase):
     def test_dont_mask_non_attribute_error(self):
-        class C(object):
+        class C:
             def getbases(self):
                 raise RuntimeError
 
@@ -124,7 +124,7 @@ class TestIsSubclassExceptions(unittest.TestCase):
         self.assertRaises(RuntimeError, issubclass, C(), S())
 
     def test_mask_attribute_error(self):
-        class C(object):
+        class C:
             def getbases(self):
                 raise AttributeError
 
@@ -143,7 +143,7 @@ class TestIsSubclassExceptions(unittest.TestCase):
         class B:
             pass
 
-        class C(object):
+        class C:
             def getbases(self):
                 raise RuntimeError
 
@@ -155,7 +155,7 @@ class TestIsSubclassExceptions(unittest.TestCase):
         class B:
             pass
 
-        class C(object):
+        class C:
             def getbases(self):
                 raise AttributeError
 
@@ -163,9 +163,9 @@ class TestIsSubclassExceptions(unittest.TestCase):
 
         self.assertRaises(TypeError, issubclass, B, C())
 
-
+
 # meta classes for creating abstract classes and instances
-class AbstractClass(object):
+class AbstractClass:
     def __init__(self, bases):
         self.bases = bases
 
@@ -178,7 +178,7 @@ class AbstractClass(object):
         return AbstractInstance(self)
 
 
-class AbstractInstance(object):
+class AbstractInstance:
     def __init__(self, klass):
         self.klass = klass
 
@@ -202,7 +202,7 @@ class Super:
 class Child(Super):
     pass
 
-
+
 class TestIsInstanceIsSubclass(unittest.TestCase):
     # Tests to ensure that isinstance and issubclass work on abstract
     # classes and instances.  Before the 2.2 release, TypeErrors were
@@ -315,6 +315,6 @@ def blowstack(fxn, arg, compare_to):
         tuple_arg = (tuple_arg,)
         fxn(arg, tuple_arg)
 
-
+
 if __name__ == "__main__":
     unittest.main()

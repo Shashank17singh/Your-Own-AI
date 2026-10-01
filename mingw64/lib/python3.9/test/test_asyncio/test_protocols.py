@@ -1,11 +1,9 @@
+import asyncio
 import unittest
 from unittest import mock
 
-import asyncio
-
 
 class ProtocolsAbsTests(unittest.TestCase):
-
     def test_base_protocol(self):
         f = mock.Mock()
         p = asyncio.BaseProtocol()

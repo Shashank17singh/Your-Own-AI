@@ -82,13 +82,14 @@ XXX To do:
 __version__ = "0.6"
 
 __all__ = [
-    "HTTPServer",
-    "ThreadingHTTPServer",
     "BaseHTTPRequestHandler",
-    "SimpleHTTPRequestHandler",
     "CGIHTTPRequestHandler",
+    "HTTPServer",
+    "SimpleHTTPRequestHandler",
+    "ThreadingHTTPServer",
 ]
 
+import contextlib
 import copy
 import datetime
 import email.utils
@@ -105,9 +106,7 @@ import socketserver
 import sys
 import time
 import urllib.parse
-import contextlib
 from functools import partial
-
 from http import HTTPStatus
 
 # Default error message template
@@ -132,7 +131,6 @@ DEFAULT_ERROR_CONTENT_TYPE = "text/html;charset=utf-8"
 
 
 class HTTPServer(socketserver.TCPServer):
-
     allow_reuse_address = 1  # Seems to make sense in testing environment
 
     def server_bind(self):
@@ -415,7 +413,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             method = getattr(self, mname)
             method()
             self.wfile.flush()  # actually send the response if not already done.
-        except socket.timeout as e:
+        except TimeoutError as e:
             # a read or a write timed out.  Discard this connection
             self.log_error("Request timed out: %r", e)
             self.close_connection = True
@@ -803,7 +801,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         )
         r.append("<html>\n<head>")
         r.append(
-            '<meta http-equiv="Content-Type" ' 'content="text/html; charset=%s">' % enc
+            '<meta http-equiv="Content-Type" content="text/html; charset=%s">' % enc
         )
         r.append("<title>%s</title>\n</head>" % title)
         r.append("<body>\n<h1>%s</h1>" % title)
@@ -1121,7 +1119,8 @@ class CGIHTTPRequestHandler(SimpleHTTPRequestHandler):
         if authorization:
             authorization = authorization.split()
             if len(authorization) == 2:
-                import base64, binascii
+                import base64
+                import binascii
 
                 env["AUTH_TYPE"] = authorization[0]
                 if authorization[0].lower() == "basic":
@@ -1280,7 +1279,7 @@ def test(
     with ServerClass(addr, HandlerClass) as httpd:
         host, port = httpd.socket.getsockname()[:2]
         url_host = f"[{host}]" if ":" in host else host
-        print(f"Serving HTTP on {host} port {port} " f"(http://{url_host}:{port}/) ...")
+        print(f"Serving HTTP on {host} port {port} (http://{url_host}:{port}/) ...")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -1297,13 +1296,13 @@ if __name__ == "__main__":
         "--bind",
         "-b",
         metavar="ADDRESS",
-        help="Specify alternate bind address " "[default: all interfaces]",
+        help="Specify alternate bind address [default: all interfaces]",
     )
     parser.add_argument(
         "--directory",
         "-d",
         default=os.getcwd(),
-        help="Specify alternative directory " "[default:current directory]",
+        help="Specify alternative directory [default:current directory]",
     )
     parser.add_argument(
         "port",

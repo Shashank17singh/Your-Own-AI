@@ -49,14 +49,15 @@ Definitions of the members of the 'set_tuple':
 """
 
 import bdb as _bdb
-import sys
-import os
-import unittest
-import textwrap
 import importlib
 import linecache
+import os
+import sys
+import textwrap
+import unittest
 from contextlib import contextmanager
 from itertools import islice, repeat
+
 import test.support
 
 
@@ -567,9 +568,8 @@ def run_test(modules, set_list, skip=None):
     test.dry_run = True
     test.id = lambda: None
     test.expect_set = list(gen(repeat(()), iter(sl)))
-    with create_modules(modules):
-        with TracerRun(test, skip=skip) as tracer:
-            tracer.runcall(tfunc_import)
+    with create_modules(modules), TracerRun(test, skip=skip) as tracer:
+        tracer.runcall(tfunc_import)
 
 
 @contextmanager
@@ -1131,7 +1131,6 @@ class RunTestCase(BaseTestCase):
                 ("return", 1, "<module>"),
                 ("quit",),
             ]
-            import test_module_for_bdb
 
             with TracerRun(self) as tracer:
                 tracer.runeval("test_module_for_bdb.main()", globals(), locals())
@@ -1193,35 +1192,34 @@ class IssuesTestCase(BaseTestCase):
         """
         modules = {TEST_MODULE: code}
         for set_type in ("next", "until", "return"):
-            with self.subTest(set_type=set_type):
-                with create_modules(modules):
-                    self.expect_set = [
-                        ("line", 2, "tfunc_import"),
-                        break_in_func("test_gen", TEST_MODULE_FNAME),
-                        ("None", 2, "tfunc_import"),
-                        ("continue",),
-                        ("line", 3, "test_gen", ({1: 1}, [])),
-                        (set_type,),
-                    ]
+            with self.subTest(set_type=set_type), create_modules(modules):
+                self.expect_set = [
+                    ("line", 2, "tfunc_import"),
+                    break_in_func("test_gen", TEST_MODULE_FNAME),
+                    ("None", 2, "tfunc_import"),
+                    ("continue",),
+                    ("line", 3, "test_gen", ({1: 1}, [])),
+                    (set_type,),
+                ]
 
-                    if set_type == "return":
-                        self.expect_set.extend(
-                            [
-                                ("exception", 10, "main", StopIteration),
-                                ("step",),
-                                ("return", 10, "main"),
-                                ("quit",),
-                            ]
-                        )
-                    else:
-                        self.expect_set.extend(
-                            [
-                                ("line", 4, "test_gen"),
-                                ("quit",),
-                            ]
-                        )
-                    with TracerRun(self) as tracer:
-                        tracer.runcall(tfunc_import)
+                if set_type == "return":
+                    self.expect_set.extend(
+                        [
+                            ("exception", 10, "main", StopIteration),
+                            ("step",),
+                            ("return", 10, "main"),
+                            ("quit",),
+                        ]
+                    )
+                else:
+                    self.expect_set.extend(
+                        [
+                            ("line", 4, "test_gen"),
+                            ("quit",),
+                        ]
+                    )
+                with TracerRun(self) as tracer:
+                    tracer.runcall(tfunc_import)
 
     def test_next_command_in_generator_for_loop(self):
         # Issue #16596.

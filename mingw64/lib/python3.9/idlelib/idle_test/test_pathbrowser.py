@@ -1,22 +1,19 @@
 "Test pathbrowser, coverage 95%."
 
-from idlelib import pathbrowser
-import unittest
-from test.support import requires
-from tkinter import Tk
-
+import idlelib  # for __file__
 import os.path
 import pyclbr  # for _modules
 import sys  # for sys.path
-
+import unittest
+from idlelib import browser, pathbrowser
 from idlelib.idle_test.mock_idle import Func
-import idlelib  # for __file__
-from idlelib import browser
 from idlelib.tree import TreeNode
+from tkinter import Tk
+
+from test.support import requires
 
 
 class PathBrowserTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -60,7 +57,6 @@ class PathBrowserTest(unittest.TestCase):
 
 
 class DirBrowserTreeItemTest(unittest.TestCase):
-
     def test_DirBrowserTreeItem(self):
         # Issue16226 - make sure that getting a sublist works
         d = pathbrowser.DirBrowserTreeItem("")
@@ -73,7 +69,6 @@ class DirBrowserTreeItemTest(unittest.TestCase):
 
 
 class PathBrowserTreeItemTest(unittest.TestCase):
-
     def test_PathBrowserTreeItem(self):
         p = pathbrowser.PathBrowserTreeItem()
         self.assertEqual(p.GetText(), "sys.path")

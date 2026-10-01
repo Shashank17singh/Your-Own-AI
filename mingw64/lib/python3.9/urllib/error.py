@@ -11,7 +11,7 @@ response.
 
 import urllib.response
 
-__all__ = ["URLError", "HTTPError", "ContentTooShortError"]
+__all__ = ["ContentTooShortError", "HTTPError", "URLError"]
 
 
 class URLError(OSError):

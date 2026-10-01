@@ -1,22 +1,22 @@
-import os
-import sys
-import time
-import stat
-import socket
 import email
 import email.message
-import re
-import io
-import tempfile
-from test import support
-import unittest
-import textwrap
-import mailbox
 import glob
+import io
+import mailbox
+import os
+import re
+import socket
+import stat
+import sys
+import tempfile
+import textwrap
+import time
+import unittest
+
+from test import support
 
 
 class TestBase:
-
     all_mailbox_types = (
         mailbox.Message,
         mailbox.MaildirMessage,
@@ -49,7 +49,6 @@ class TestBase:
 
 
 class TestMailbox(TestBase):
-
     maxDiff = None
 
     _factory = None  # Overridden by subclasses to reuse tests
@@ -556,7 +555,6 @@ class TestMailbox(TestBase):
 
 
 class TestMailboxSuperclass(TestBase, unittest.TestCase):
-
     def test_notimplemented(self):
         # Test that all Mailbox methods raise NotImplementedException.
         box = mailbox.Mailbox("path")
@@ -592,7 +590,6 @@ class TestMailboxSuperclass(TestBase, unittest.TestCase):
 
 
 class TestMaildir(TestMailbox, unittest.TestCase):
-
     _factory = lambda self, path, factory=None: mailbox.Maildir(path, factory)
 
     def setUp(self):
@@ -925,7 +922,7 @@ class TestMaildir(TestMailbox, unittest.TestCase):
         path = os.path.join(subfolder._path, "maildirfolder")
         st = os.stat(path)
         perms = st.st_mode
-        self.assertFalse((perms & 0o111))  # Execute bits should all be off.
+        self.assertFalse(perms & 0o111)  # Execute bits should all be off.
 
     def test_reread(self):
         # Do an initial unconditional refresh
@@ -1010,7 +1007,6 @@ class _TestSingleFile(TestMailbox):
 
 
 class _TestMboxMMDF(_TestSingleFile):
-
     def tearDown(self):
         super().tearDown()
         self._box.close()
@@ -1157,7 +1153,6 @@ class _TestMboxMMDF(_TestSingleFile):
 
 
 class TestMbox(_TestMboxMMDF, unittest.TestCase):
-
     _factory = lambda self, path, factory=None: mailbox.mbox(path, factory)
 
     @unittest.skipUnless(hasattr(os, "umask"), "test needs os.umask()")
@@ -1177,7 +1172,7 @@ class TestMbox(_TestMboxMMDF, unittest.TestCase):
 
         st = os.stat(self._path)
         perms = st.st_mode
-        self.assertFalse((perms & 0o111))  # Execute bits should all be off.
+        self.assertFalse(perms & 0o111)  # Execute bits should all be off.
 
     def test_terminating_newline(self):
         message = email.message.Message()
@@ -1203,12 +1198,10 @@ class TestMbox(_TestMboxMMDF, unittest.TestCase):
 
 
 class TestMMDF(_TestMboxMMDF, unittest.TestCase):
-
     _factory = lambda self, path, factory=None: mailbox.MMDF(path, factory)
 
 
 class TestMH(TestMailbox, unittest.TestCase):
-
     _factory = lambda self, path, factory=None: mailbox.MH(path, factory)
 
     def assertMailboxEmpty(self):
@@ -1361,7 +1354,6 @@ class TestMH(TestMailbox, unittest.TestCase):
 
 
 class TestBabyl(_TestSingleFile, unittest.TestCase):
-
     _factory = lambda self, path, factory=None: mailbox.Babyl(path, factory)
 
     def assertMailboxEmpty(self):
@@ -1394,7 +1386,6 @@ class TestBabyl(_TestSingleFile, unittest.TestCase):
 
 
 class FakeFileLikeObject:
-
     def __init__(self):
         self.closed = False
 
@@ -1403,7 +1394,6 @@ class FakeFileLikeObject:
 
 
 class FakeMailBox(mailbox.Mailbox):
-
     def __init__(self):
         mailbox.Mailbox.__init__(self, "", lambda file: None)
         self.files = [FakeFileLikeObject() for i in range(10)]
@@ -1413,7 +1403,6 @@ class FakeMailBox(mailbox.Mailbox):
 
 
 class TestFakeMailBox(unittest.TestCase):
-
     def test_closing_fd(self):
         box = FakeMailBox()
         for i in range(10):
@@ -1425,7 +1414,6 @@ class TestFakeMailBox(unittest.TestCase):
 
 
 class TestMessage(TestBase, unittest.TestCase):
-
     _factory = mailbox.Message  # Overridden by subclasses to reuse tests
 
     def setUp(self):
@@ -1485,9 +1473,7 @@ class TestMessage(TestBase, unittest.TestCase):
         eMM = email.message_from_string(_sample_message)
         msg = self._factory(_sample_message)
         for attr in eMM.__dict__:
-            self.assertIn(
-                attr, msg.__dict__, "{} attribute does not exist".format(attr)
-            )
+            self.assertIn(attr, msg.__dict__, f"{attr} attribute does not exist")
 
     def test_become_message(self):
         # Take on the state of another message
@@ -1512,7 +1498,6 @@ class TestMessage(TestBase, unittest.TestCase):
 
 
 class TestMaildirMessage(TestMessage, unittest.TestCase):
-
     _factory = mailbox.MaildirMessage
 
     def _post_initialize_hook(self, msg):
@@ -1586,7 +1571,6 @@ class TestMaildirMessage(TestMessage, unittest.TestCase):
 
 
 class _TestMboxMMDFMessage:
-
     _factory = mailbox._mboxMMDFMessage
 
     def _post_initialize_hook(self, msg):
@@ -1637,12 +1621,10 @@ class _TestMboxMMDFMessage:
 
 
 class TestMboxMessage(_TestMboxMMDFMessage, TestMessage):
-
     _factory = mailbox.mboxMessage
 
 
 class TestMHMessage(TestMessage, unittest.TestCase):
-
     _factory = mailbox.MHMessage
 
     def _post_initialize_hook(self, msg):
@@ -1673,7 +1655,6 @@ class TestMHMessage(TestMessage, unittest.TestCase):
 
 
 class TestBabylMessage(TestMessage, unittest.TestCase):
-
     _factory = mailbox.BabylMessage
 
     def _post_initialize_hook(self, msg):
@@ -1729,12 +1710,10 @@ class TestBabylMessage(TestMessage, unittest.TestCase):
 
 
 class TestMMDFMessage(_TestMboxMMDFMessage, TestMessage):
-
     _factory = mailbox.MMDFMessage
 
 
 class TestMessageConversion(TestBase, unittest.TestCase):
-
     def test_plain_to_x(self):
         # Convert Message to all formats
         for class_ in self.all_mailbox_types:
@@ -1778,7 +1757,7 @@ class TestMessageConversion(TestBase, unittest.TestCase):
                     self.assertNotIn(
                         attr,
                         target.__dict__,
-                        "while converting {} to {}".format(class1, class2),
+                        f"while converting {class1} to {class2}",
                     )
 
     def test_maildir_to_maildir(self):
@@ -2081,7 +2060,6 @@ class TestMessageConversion(TestBase, unittest.TestCase):
 
 
 class TestProxyFileBase(TestBase):
-
     def _test_read(self, proxy):
         # Read by byte
         proxy.seek(0)
@@ -2168,7 +2146,6 @@ class TestProxyFileBase(TestBase):
 
 
 class TestProxyFile(TestProxyFileBase, unittest.TestCase):
-
     def setUp(self):
         self._path = support.TESTFN
         self._file = open(self._path, "wb+")
@@ -2220,7 +2197,6 @@ class TestProxyFile(TestProxyFileBase, unittest.TestCase):
 
 
 class TestPartialFile(TestProxyFileBase, unittest.TestCase):
-
     def setUp(self):
         self._path = support.TESTFN
         self._file = open(self._path, "wb+")
@@ -2298,7 +2274,6 @@ This is a dummy message.
 
 
 class MaildirTestCase(unittest.TestCase):
-
     def setUp(self):
         # create a new maildir mailbox to work with:
         self._dir = support.TESTFN

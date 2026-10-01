@@ -16,7 +16,8 @@ import textwrap
 import unicodedata
 import unittest
 import warnings
-from test import support, string_tests
+
+from test import string_tests, support
 from test.support.script_helper import assert_python_failure
 
 
@@ -66,7 +67,6 @@ class UnicodeTest(
     string_tests.MixinStrUnicodeTest,
     unittest.TestCase,
 ):
-
     type2test = str
 
     def checkequalnofix(self, result, object, methodname, *args):
@@ -496,7 +496,7 @@ class UnicodeTest(
         self.checkequalnofix("abcd", "", "join", ("a", "b", "c", "d"))
         self.checkequalnofix("w x y z", " ", "join", string_tests.Sequence("wxyz"))
         self.checkraises(TypeError, " ", "join", ["1", "2", MyWrapper("foo")])
-        self.checkraises(TypeError, " ", "join", ["1", "2", "3", bytes()])
+        self.checkraises(TypeError, " ", "join", ["1", "2", "3", b""])
         self.checkraises(TypeError, " ", "join", [1, 2, 3])
         self.checkraises(TypeError, " ", "join", ["1", "2", 3])
 
@@ -651,7 +651,7 @@ class UnicodeTest(
         self.assertTrue("\U00010427\U0001044e".istitle())
         # apparently there are no titlecased (Lt) non-BMP chars in Unicode 6
         for ch in ["\U00010429", "\U0001044e", "\U0001f40d", "\U0001f46f"]:
-            self.assertFalse(ch.istitle(), "{!a} is not title".format(ch))
+            self.assertFalse(ch.istitle(), f"{ch!a} is not title")
 
     def test_isspace(self):
         super().test_isspace()
@@ -667,7 +667,7 @@ class UnicodeTest(
             "\U0001f40d",
             "\U0001f46f",
         ]:
-            self.assertFalse(ch.isspace(), "{!a} is not space.".format(ch))
+            self.assertFalse(ch.isspace(), f"{ch!a} is not space.")
 
     @support.requires_resource("cpu")
     def test_isspace_invariant(self):
@@ -691,7 +691,7 @@ class UnicodeTest(
             "\U000104a0",
             "\U0001f107",
         ]:
-            self.assertTrue(ch.isalnum(), "{!a} is alnum.".format(ch))
+            self.assertTrue(ch.isalnum(), f"{ch!a} is alnum.")
 
     def test_isalpha(self):
         super().test_isalpha()
@@ -732,9 +732,9 @@ class UnicodeTest(
             "\U00011065",
             "\U0001f107",
         ]:
-            self.assertFalse(ch.isdecimal(), "{!a} is not decimal.".format(ch))
+            self.assertFalse(ch.isdecimal(), f"{ch!a} is not decimal.")
         for ch in ["\U0001d7f6", "\U00011066", "\U000104a0"]:
-            self.assertTrue(ch.isdecimal(), "{!a} is decimal.".format(ch))
+            self.assertTrue(ch.isdecimal(), f"{ch!a} is decimal.")
 
     def test_isdigit(self):
         super().test_isdigit()
@@ -751,9 +751,9 @@ class UnicodeTest(
             "\U0001f46f",
             "\U00011065",
         ]:
-            self.assertFalse(ch.isdigit(), "{!a} is not a digit.".format(ch))
+            self.assertFalse(ch.isdigit(), f"{ch!a} is not a digit.")
         for ch in ["\U0001d7f6", "\U00011066", "\U000104a0", "\U0001f107"]:
-            self.assertTrue(ch.isdigit(), "{!a} is a digit.".format(ch))
+            self.assertTrue(ch.isdigit(), f"{ch!a} is a digit.")
 
     def test_isnumeric(self):
         self.checkequalnofix(False, "", "isnumeric")
@@ -775,7 +775,7 @@ class UnicodeTest(
             "\U0001f40d",
             "\U0001f46f",
         ]:
-            self.assertFalse(ch.isnumeric(), "{!a} is not numeric.".format(ch))
+            self.assertFalse(ch.isnumeric(), f"{ch!a} is not numeric.")
         for ch in [
             "\U00011065",
             "\U0001d7f6",
@@ -783,7 +783,7 @@ class UnicodeTest(
             "\U000104a0",
             "\U0001f107",
         ]:
-            self.assertTrue(ch.isnumeric(), "{!a} is numeric.".format(ch))
+            self.assertTrue(ch.isnumeric(), f"{ch!a} is numeric.")
 
     def test_isidentifier(self):
         self.assertTrue("a".isidentifier())
@@ -1064,7 +1064,7 @@ class UnicodeTest(
         self.assertEqual("My name is {0} :-{{}}".format("Fred"), "My name is Fred :-{}")
 
         d = datetime.date(2007, 8, 18)
-        self.assertEqual("The year is {0.year}".format(d), "The year is 2007")
+        self.assertEqual(f"The year is {d.year}", "The year is 2007")
 
         # classes we'll use for testing
         class C:
@@ -1148,14 +1148,14 @@ class UnicodeTest(
         self.assertEqual("X{1}".format(1, "abc"), "Xabc")
         self.assertEqual("{1}X".format(1, "abc"), "abcX")
         self.assertEqual("X{1}Y".format(1, "abc"), "XabcY")
-        self.assertEqual("{0}".format(-15), "-15")
+        self.assertEqual(f"{-15}", "-15")
         self.assertEqual("{0}{1}".format(-15, "abc"), "-15abc")
         self.assertEqual("{0}X{1}".format(-15, "abc"), "-15Xabc")
         self.assertEqual("{{".format(), "{")
         self.assertEqual("}}".format(), "}")
         self.assertEqual("{{}}".format(), "{}")
         self.assertEqual("{{x}}".format(), "{x}")
-        self.assertEqual("{{{0}}}".format(123), "{123}")
+        self.assertEqual(f"{{{123}}}", "{123}")
         self.assertEqual("{{{{0}}}}".format(), "{{0}}")
         self.assertEqual("}}{{".format(), "}{")
         self.assertEqual("}}x{{".format(), "}x{")
@@ -1165,8 +1165,8 @@ class UnicodeTest(
         self.assertEqual("{0[foo bar]}".format({"foo bar": "baz"}), "baz")
         self.assertEqual("{0[ ]}".format({" ": 3}), "3")
 
-        self.assertEqual("{foo._x}".format(foo=C(20)), "20")
-        self.assertEqual("{1}{0}".format(D(10), D(20)), "2010")
+        self.assertEqual(f"{C(20)._x}", "20")
+        self.assertEqual(f"{D(20)}{D(10)}", "2010")
         self.assertEqual("{0._x.x}".format(C(D("abc"))), "abc")
         self.assertEqual("{0[0]}".format(["abc", "def"]), "abc")
         self.assertEqual("{0[1]}".format(["abc", "def"]), "def")
@@ -1204,29 +1204,23 @@ class UnicodeTest(
         self.assertEqual("{0:\x00^6s}".format("foo"), "\x00foo\x00\x00")
         self.assertEqual("{0:^6s}".format("foo"), " foo  ")
 
-        self.assertEqual("{0:\x00<6}".format(3), "3\x00\x00\x00\x00\x00")
-        self.assertEqual("{0:\x01<6}".format(3), "3\x01\x01\x01\x01\x01")
-        self.assertEqual("{0:\x00^6}".format(3), "\x00\x003\x00\x00\x00")
-        self.assertEqual("{0:<6}".format(3), "3     ")
+        self.assertEqual(f"{3:\x00<6}", "3\x00\x00\x00\x00\x00")
+        self.assertEqual(f"{3:\x01<6}", "3\x01\x01\x01\x01\x01")
+        self.assertEqual(f"{3:\x00^6}", "\x00\x003\x00\x00\x00")
+        self.assertEqual(f"{3:<6}", "3     ")
 
-        self.assertEqual("{0:\x00<6}".format(3.14), "3.14\x00\x00")
-        self.assertEqual("{0:\x01<6}".format(3.14), "3.14\x01\x01")
-        self.assertEqual("{0:\x00^6}".format(3.14), "\x003.14\x00")
-        self.assertEqual("{0:^6}".format(3.14), " 3.14 ")
+        self.assertEqual(f"{3.14:\x00<6}", "3.14\x00\x00")
+        self.assertEqual(f"{3.14:\x01<6}", "3.14\x01\x01")
+        self.assertEqual(f"{3.14:\x00^6}", "\x003.14\x00")
+        self.assertEqual(f"{3.14:^6}", " 3.14 ")
 
-        self.assertEqual(
-            "{0:\x00<12}".format(3 + 2.0j), "(3+2j)\x00\x00\x00\x00\x00\x00"
-        )
-        self.assertEqual(
-            "{0:\x01<12}".format(3 + 2.0j), "(3+2j)\x01\x01\x01\x01\x01\x01"
-        )
-        self.assertEqual(
-            "{0:\x00^12}".format(3 + 2.0j), "\x00\x00\x00(3+2j)\x00\x00\x00"
-        )
-        self.assertEqual("{0:^12}".format(3 + 2.0j), "   (3+2j)   ")
+        self.assertEqual(f"{3 + 2.0j:\x00<12}", "(3+2j)\x00\x00\x00\x00\x00\x00")
+        self.assertEqual(f"{3 + 2.0j:\x01<12}", "(3+2j)\x01\x01\x01\x01\x01\x01")
+        self.assertEqual(f"{3 + 2.0j:\x00^12}", "\x00\x00\x00(3+2j)\x00\x00\x00")
+        self.assertEqual(f"{3 + 2.0j:^12}", "   (3+2j)   ")
 
         # format specifiers for user defined type
-        self.assertEqual("{0:abc}".format(C()), "abc")
+        self.assertEqual(f"{C():abc}", "abc")
 
         # !r, !s and !a coercions
         self.assertEqual("{0!s}".format("Hello"), "Hello")
@@ -1247,9 +1241,9 @@ class UnicodeTest(
         self.assertEqual("{0!a}".format(F("\u0374")), "F(\\u0374)")
 
         # test fallback to object.__format__
-        self.assertEqual("{0}".format({}), "{}")
-        self.assertEqual("{0}".format([]), "[]")
-        self.assertEqual("{0}".format([1]), "[1]")
+        self.assertEqual(f"{ ({}) }", "{}")
+        self.assertEqual(f"{[]}", "[]")
+        self.assertEqual(f"{[1]}", "[1]")
 
         self.assertEqual("{0:d}".format(G("data")), "G(data)")
         self.assertEqual("{0!s}".format(G("data")), "string is data")
@@ -1259,12 +1253,12 @@ class UnicodeTest(
         self.assertRaises(TypeError, "{0:>15s}".format, G("data"))
 
         self.assertEqual(
-            "{0:date: %Y-%m-%d}".format(I(year=2007, month=8, day=27)),
+            f"{I(year=2007, month=8, day=27):date: %Y-%m-%d}",
             "date: 2007-08-27",
         )
 
         # test deriving from a builtin type and overriding __format__
-        self.assertEqual("{0}".format(J(10)), "20")
+        self.assertEqual(f"{J(10)}", "20")
 
         # string format specifiers
         self.assertEqual("{0:}".format("a"), "a")
@@ -1367,12 +1361,12 @@ class UnicodeTest(
 
         # Blocking fallback
         m = M("data")
-        self.assertEqual("{!r}".format(m), "M(data)")
+        self.assertEqual(f"{m!r}", "M(data)")
         self.assertRaises(TypeError, "{!s}".format, m)
         self.assertRaises(TypeError, "{}".format, m)
         n = N("data")
-        self.assertEqual("{!r}".format(n), "N(data)")
-        self.assertEqual("{!s}".format(n), "N(data)")
+        self.assertEqual(f"{n!r}", "N(data)")
+        self.assertEqual(f"{n!s}", "N(data)")
         self.assertRaises(TypeError, "{}".format, n)
 
     def test_format_map(self):
@@ -1436,17 +1430,17 @@ class UnicodeTest(
         self.assertRaises(ZeroDivisionError, "{a}".format_map, BadMapping())
 
     def test_format_huge_precision(self):
-        format_string = ".{}f".format(sys.maxsize + 1)
+        format_string = f".{sys.maxsize + 1}f"
         with self.assertRaises(ValueError):
             result = format(2.34, format_string)
 
     def test_format_huge_width(self):
-        format_string = "{}f".format(sys.maxsize + 1)
+        format_string = f"{sys.maxsize + 1}f"
         with self.assertRaises(ValueError):
             result = format(2.34, format_string)
 
     def test_format_huge_item_number(self):
-        format_string = "{{{}:.6f}}".format(sys.maxsize + 1)
+        format_string = f"{{{sys.maxsize + 1}:.6f}}"
         with self.assertRaises(ValueError):
             result = format_string.format(2.34)
 
@@ -1458,13 +1452,13 @@ class UnicodeTest(
             def __format__(self, spec):
                 return spec
 
-        self.assertEqual("{}".format(10), "10")
+        self.assertEqual(f"{10}", "10")
         self.assertEqual("{:5}".format("s"), "s    ")
         self.assertEqual("{!r}".format("s"), "'s'")
-        self.assertEqual("{._x}".format(C(10)), "10")
-        self.assertEqual("{[1]}".format([1, 2]), "2")
+        self.assertEqual(f"{C(10)._x}", "10")
+        self.assertEqual(f"{[1, 2][1]}", "2")
         self.assertEqual("{[a]}".format({"a": 4, "b": 2}), "4")
-        self.assertEqual("a{}b{}c".format(0, 1), "a0b1c")
+        self.assertEqual(f"a{0}b{1}c", "a0b1c")
 
         self.assertEqual("a{:{}}b".format("x", "^10"), "a    x     b")
         self.assertEqual("a{:{}x}b".format(20, "#"), "a0x14b")
@@ -1525,8 +1519,20 @@ class UnicodeTest(
         self.assertEqual("...%(foo)s..." % {"foo": "abc"}, "...abc...")
         self.assertEqual("...%(foo)s..." % {"foo": "abc"}, "...abc...")
         self.assertEqual("...%(foo)s..." % {"foo": "abc"}, "...abc...")
-        self.assertEqual("...%(foo)s..." % {"foo": "abc", "def": 123}, "...abc...")
-        self.assertEqual("...%(foo)s..." % {"foo": "abc", "def": 123}, "...abc...")
+        self.assertEqual(
+            "...%(foo)s..."
+            % {
+                "foo": "abc",
+            },
+            "...abc...",
+        )
+        self.assertEqual(
+            "...%(foo)s..."
+            % {
+                "foo": "abc",
+            },
+            "...abc...",
+        )
         self.assertEqual(
             "...%s...%s...%s...%s..." % (1, 2, 3, "abc"), "...1...2...3...abc..."
         )
@@ -1638,35 +1644,43 @@ class UnicodeTest(
         self.assertEqual("%X" % letter_m, "6D")
         self.assertEqual("%o" % letter_m, "155")
         self.assertEqual("%c" % letter_m, "m")
-        self.assertRaisesRegex(
-            TypeError,
-            "%x format: an integer is required, not float",
-            operator.mod,
-            "%x",
-            3.14,
-        ),
-        self.assertRaisesRegex(
-            TypeError,
-            "%X format: an integer is required, not float",
-            operator.mod,
-            "%X",
-            2.11,
-        ),
-        self.assertRaisesRegex(
-            TypeError,
-            "%o format: an integer is required, not float",
-            operator.mod,
-            "%o",
-            1.79,
-        ),
-        self.assertRaisesRegex(
-            TypeError,
-            "%x format: an integer is required, not PseudoFloat",
-            operator.mod,
-            "%x",
-            pi,
-        ),
-        self.assertRaises(TypeError, operator.mod, "%c", pi),
+        (
+            self.assertRaisesRegex(
+                TypeError,
+                "%x format: an integer is required, not float",
+                operator.mod,
+                "%x",
+                3.14,
+            ),
+        )
+        (
+            self.assertRaisesRegex(
+                TypeError,
+                "%X format: an integer is required, not float",
+                operator.mod,
+                "%X",
+                2.11,
+            ),
+        )
+        (
+            self.assertRaisesRegex(
+                TypeError,
+                "%o format: an integer is required, not float",
+                operator.mod,
+                "%o",
+                1.79,
+            ),
+        )
+        (
+            self.assertRaisesRegex(
+                TypeError,
+                "%x format: an integer is required, not PseudoFloat",
+                operator.mod,
+                "%x",
+                pi,
+            ),
+        )
+        (self.assertRaises(TypeError, operator.mod, "%c", pi),)
 
     def test_formatting_with_enum(self):
         # issue18780
@@ -1695,14 +1709,22 @@ class UnicodeTest(
         self.assertEqual("...%(foo)i..." % {"foo": Int.IDES}, "...15...")
         self.assertEqual("...%(foo)d..." % {"foo": Int.IDES}, "...15...")
         self.assertEqual(
-            "...%(foo)u..." % {"foo": Int.IDES, "def": Float.PI}, "...15..."
+            "...%(foo)u..."
+            % {
+                "foo": Int.IDES,
+            },
+            "...15...",
         )
         self.assertEqual(
-            "...%(foo)f..." % {"foo": Float.PI, "def": 123}, "...3.141593..."
+            "...%(foo)f..."
+            % {
+                "foo": Float.PI,
+            },
+            "...3.141593...",
         )
 
     def test_formatting_huge_precision(self):
-        format_string = "%.{}f".format(sys.maxsize + 1)
+        format_string = f"%.{sys.maxsize + 1}f"
         with self.assertRaises(ValueError):
             result = format_string % 2.34
 
@@ -1711,7 +1733,7 @@ class UnicodeTest(
         # into the % operator
         class SubclassedStr(str):
             def __rmod__(self, other):
-                return "Success, self.__rmod__({!r}) was called".format(other)
+                return f"Success, self.__rmod__({other!r}) was called"
 
         self.assertEqual(
             "lhs %% %r" % SubclassedStr("rhs"),
@@ -1722,12 +1744,12 @@ class UnicodeTest(
     def test_formatting_huge_precision_c_limits(self):
         from _testcapi import INT_MAX
 
-        format_string = "%.{}f".format(INT_MAX + 1)
+        format_string = f"%.{INT_MAX + 1}f"
         with self.assertRaises(ValueError):
             result = format_string % 2.34
 
     def test_formatting_huge_width(self):
-        format_string = "%{}f".format(sys.maxsize + 1)
+        format_string = f"%{sys.maxsize + 1}f"
         with self.assertRaises(ValueError):
             result = format_string % 2.34
 
@@ -1747,7 +1769,7 @@ class UnicodeTest(
     def test_constructor(self):
         # unicode(obj) tests (this maps to PyObject_Unicode() at C level)
 
-        self.assertEqual(str("unicode remains unicode"), "unicode remains unicode")
+        self.assertEqual("unicode remains unicode", "unicode remains unicode")
 
         for text in ("ascii", "\xe9", "\u20ac", "\U0010ffff"):
             subclass = StrSubclass(text)
@@ -1758,7 +1780,7 @@ class UnicodeTest(
                 self.assertEqual(subclass.encode("utf-8"), b"ascii")
 
         self.assertEqual(
-            str("strings are converted to unicode"), "strings are converted to unicode"
+            "strings are converted to unicode", "strings are converted to unicode"
         )
 
         class StringCompat:
@@ -1810,7 +1832,7 @@ class UnicodeTest(
     def test_constructor_keyword_args(self):
         """Pass various keyword argument combinations to the constructor."""
         # The object argument can be passed as a keyword.
-        self.assertEqual(str(object="foo"), "foo")
+        self.assertEqual("foo", "foo")
         self.assertEqual(str(object=b"foo", encoding="utf-8"), "foo")
         # The errors argument without encoding triggers "decode" mode.
         self.assertEqual(str(b"foo", errors="strict"), "foo")  # not "b'foo'"
@@ -1819,9 +1841,9 @@ class UnicodeTest(
     def test_constructor_defaults(self):
         """Check the constructor argument defaults."""
         # The object argument defaults to '' or b''.
-        self.assertEqual(str(), "")
+        self.assertEqual("", "")
         self.assertEqual(str(errors="strict"), "")
-        utf8_cent = "¢".encode("utf-8")
+        utf8_cent = "¢".encode()
         # The encoding argument defaults to utf-8.
         self.assertEqual(str(utf8_cent, errors="strict"), "¢")
         # The errors argument defaults to strict.
@@ -1880,7 +1902,7 @@ class UnicodeTest(
             b"+@".decode("utf-7")
 
     def test_codecs_utf8(self):
-        self.assertEqual("".encode("utf-8"), b"")
+        self.assertEqual(b"", b"")
         self.assertEqual("\u20ac".encode("utf-8"), b"\xe2\x82\xac")
         self.assertEqual("\U00010002".encode("utf-8"), b"\xf0\x90\x80\x82")
         self.assertEqual("\U00023456".encode("utf-8"), b"\xf0\xa3\x91\x96")
@@ -2503,8 +2525,8 @@ class UnicodeTest(
         # Encoding
         self.assertEqual("hello".encode("ascii"), b"hello")
         self.assertEqual("hello".encode("utf-7"), b"hello")
-        self.assertEqual("hello".encode("utf-8"), b"hello")
-        self.assertEqual("hello".encode("utf-8"), b"hello")
+        self.assertEqual(b"hello", b"hello")
+        self.assertEqual(b"hello", b"hello")
         self.assertEqual("hello".encode("utf-16-le"), b"h\000e\000l\000l\000o\000")
         self.assertEqual("hello".encode("utf-16-be"), b"\000h\000e\000l\000l\000o")
         self.assertEqual("hello".encode("latin-1"), b"hello")
@@ -2553,7 +2575,7 @@ class UnicodeTest(
 
         # UTF-8 must be roundtrip safe for all code points
         # (except surrogates, which are forbidden).
-        u = "".join(map(chr, list(range(0, 0xD800)) + list(range(0xE000, 0x110000))))
+        u = "".join(map(chr, list(range(0xD800)) + list(range(0xE000, 0x110000))))
         for encoding in ("utf-8",):
             self.assertEqual(str(u.encode(encoding), encoding), u)
 
@@ -2672,11 +2694,11 @@ class UnicodeTest(
             self.assertEqual(str(s, encoding).encode(encoding), s)
 
     def test_concatenation(self):
-        self.assertEqual(("abc" "def"), "abcdef")
-        self.assertEqual(("abc" "def"), "abcdef")
-        self.assertEqual(("abc" "def"), "abcdef")
-        self.assertEqual(("abc" "def" "ghi"), "abcdefghi")
-        self.assertEqual(("abc" "def" "ghi"), "abcdefghi")
+        self.assertEqual(("abcdef"), "abcdef")
+        self.assertEqual(("abcdef"), "abcdef")
+        self.assertEqual(("abcdef"), "abcdef")
+        self.assertEqual(("abcdefghi"), "abcdefghi")
+        self.assertEqual(("abcdefghi"), "abcdefghi")
 
     def test_printing(self):
         class BitBucket:
@@ -2807,7 +2829,7 @@ class UnicodeTest(
 
         s = S("xxx")
         self.assertEqual("%s" % s, "__str__ overridden")
-        self.assertEqual("{}".format(s), "__str__ overridden")
+        self.assertEqual(f"{s}", "__str__ overridden")
 
     def test_subclass_add(self):
         class S(str):
@@ -2985,24 +3007,23 @@ class UnicodeTest(
 
 
 class CAPITest(unittest.TestCase):
-
     # Test PyUnicode_FromFormat()
     def test_from_format(self):
         support.import_module("ctypes")
         from ctypes import (
             c_char_p,
-            pythonapi,
-            py_object,
-            sizeof,
             c_int,
             c_long,
             c_longlong,
+            c_size_t,
             c_ssize_t,
             c_uint,
             c_ulong,
             c_ulonglong,
-            c_size_t,
             c_void_p,
+            py_object,
+            pythonapi,
+            sizeof,
         )
 
         name = "PyUnicode_FromFormat"

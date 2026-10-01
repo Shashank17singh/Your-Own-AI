@@ -11,13 +11,12 @@ packages -- for now, you'll have to deal with packages separately.)
 See module py_compile for details of the actual byte-compilation.
 """
 
-import os
-import sys
+import filecmp
 import importlib.util
+import os
 import py_compile
 import struct
-import filecmp
-
+import sys
 from functools import partial
 from pathlib import Path
 
@@ -28,12 +27,12 @@ def _walk_dir(dir, maxlevels, quiet=0):
     if quiet < 2 and isinstance(dir, os.PathLike):
         dir = os.fspath(dir)
     if not quiet:
-        print("Listing {!r}...".format(dir))
+        print(f"Listing {dir!r}...")
     try:
         names = os.listdir(dir)
     except OSError:
         if quiet < 2:
-            print("Can't list {!r}".format(dir))
+            print(f"Can't list {dir!r}")
         names = []
     names.sort()
     for name in names:
@@ -98,10 +97,8 @@ def compile_dir(
     ProcessPoolExecutor = None
     if ddir is not None and (stripdir is not None or prependdir is not None):
         raise ValueError(
-            (
-                "Destination dir (ddir) cannot be used "
-                "in combination with stripdir or prependdir"
-            )
+            "Destination dir (ddir) cannot be used "
+            "in combination with stripdir or prependdir"
         )
     if ddir is not None:
         stripdir = dir
@@ -202,10 +199,8 @@ def compile_file(
 
     if ddir is not None and (stripdir is not None or prependdir is not None):
         raise ValueError(
-            (
-                "Destination dir (ddir) cannot be used "
-                "in combination with stripdir or prependdir"
-            )
+            "Destination dir (ddir) cannot be used "
+            "in combination with stripdir or prependdir"
         )
 
     success = True
@@ -290,7 +285,7 @@ def compile_file(
                 except OSError:
                     pass
             if not quiet:
-                print("Compiling {!r}...".format(fullname))
+                print(f"Compiling {fullname!r}...")
             try:
                 for index, opt_level in enumerate(optimize):
                     cfile = opt_cfiles[opt_level]
@@ -312,7 +307,7 @@ def compile_file(
                 if quiet >= 2:
                     return success
                 elif quiet:
-                    print("*** Error compiling {!r}...".format(fullname))
+                    print(f"*** Error compiling {fullname!r}...")
                 else:
                     print("*** ", end="")
                 # escape non-printable characters in msg
@@ -326,7 +321,7 @@ def compile_file(
                 if quiet >= 2:
                     return success
                 elif quiet:
-                    print("*** Error compiling {!r}...".format(fullname))
+                    print(f"*** Error compiling {fullname!r}...")
                 else:
                     print("*** ", end="")
                 print(e.__class__.__name__ + ":", e)
@@ -551,10 +546,8 @@ def main():
 
     if len(args.opt_levels) == 1 and args.hardlink_dupes:
         parser.error(
-            (
-                "Hardlinking of duplicated bytecode makes sense "
-                "only for more than one optimization level."
-            )
+            "Hardlinking of duplicated bytecode makes sense "
+            "only for more than one optimization level."
         )
 
     if args.ddir is not None and (
@@ -570,7 +563,7 @@ def main():
                     compile_dests.append(line.strip())
         except OSError:
             if args.quiet < 2:
-                print("Error reading file list {}".format(args.flist))
+                print(f"Error reading file list {args.flist}")
             return False
 
     if args.invalidation_mode:

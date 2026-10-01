@@ -2,8 +2,6 @@
 Very minimal unittests for parts of the readline module.
 """
 
-from contextlib import ExitStack
-from errno import EIO
 import locale
 import os
 import selectors
@@ -11,7 +9,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from test.support import import_module, unlink, temp_dir, TESTFN, verbose
+from contextlib import ExitStack
+from errno import EIO
+
+from test.support import TESTFN, import_module, temp_dir, unlink, verbose
 from test.support.script_helper import assert_python_ok
 
 # Skip tests if there is no readline module
@@ -131,7 +132,6 @@ class TestHistoryManipulation(unittest.TestCase):
 
 
 class TestReadline(unittest.TestCase):
-
     @unittest.skipIf(
         readline._READLINE_VERSION < 0x0601 and not is_editline,
         "not supported in this library version",

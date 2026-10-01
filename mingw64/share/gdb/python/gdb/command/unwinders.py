@@ -1,4 +1,5 @@
 import re
+
 import gdb
 
 
@@ -48,7 +49,7 @@ class InfoUnwinder(gdb.Command):
     in the locus are listed."""
 
     def __init__(self):
-        super(InfoUnwinder, self).__init__("info unwinder", gdb.COMMAND_STACK)
+        super().__init__("info unwinder", gdb.COMMAND_STACK)
 
     def list_unwinders(self, title, unwinders, name_re):
         """Lists the unwinders whose name matches regexp.
@@ -132,7 +133,7 @@ class EnableUnwinder(gdb.Command):
     in the locus are affected."""
 
     def __init__(self):
-        super(EnableUnwinder, self).__init__("enable unwinder", gdb.COMMAND_STACK)
+        super().__init__("enable unwinder", gdb.COMMAND_STACK)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""
@@ -150,7 +151,7 @@ class DisableUnwinder(gdb.Command):
     in the locus are affected."""
 
     def __init__(self):
-        super(DisableUnwinder, self).__init__("disable unwinder", gdb.COMMAND_STACK)
+        super().__init__("disable unwinder", gdb.COMMAND_STACK)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""

@@ -88,7 +88,7 @@ def assert_(cond, *args):
 def check_string_type(value, title):
     if type(value) is str:
         return value
-    raise AssertionError("{0} must be of type str (got {1})".format(title, repr(value)))
+    raise AssertionError(f"{title} must be of type str (got {value!r})")
 
 
 def validator(application):
@@ -267,8 +267,7 @@ def check_environ(environ):
     for key in ["HTTP_CONTENT_TYPE", "HTTP_CONTENT_LENGTH"]:
         assert_(
             key not in environ,
-            "Environment should not have the key: %s "
-            "(use %s instead)" % (key, key[5:]),
+            "Environment should not have the key: %s (use %s instead)" % (key, key[5:]),
         )
     if "QUERY_STRING" not in environ:
         warnings.warn(

@@ -133,8 +133,7 @@ class Chunk:
             return b""
         if size < 0:
             size = self.chunksize - self.size_read
-        if size > self.chunksize - self.size_read:
-            size = self.chunksize - self.size_read
+        size = min(size, self.chunksize - self.size_read)
         data = self.file.read(size)
         self.size_read = self.size_read + len(data)
         if self.size_read == self.chunksize and self.align and (self.chunksize & 1):

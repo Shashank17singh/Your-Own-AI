@@ -1,10 +1,12 @@
 # Test the runpy module
 import contextlib
-import importlib.machinery, importlib.util
+import importlib.machinery
+import importlib.util
 import os.path
 import pathlib
 import py_compile
 import re
+import runpy
 import signal
 import subprocess
 import sys
@@ -12,20 +14,18 @@ import tempfile
 import textwrap
 import unittest
 import warnings
+from runpy import _run_code, _run_module_code, run_module, run_path
+
 from test.support import (
+    create_empty_file,
     forget,
     make_legacy_pyc,
+    no_tracing,
+    temp_dir,
     unload,
     verbose,
-    no_tracing,
-    create_empty_file,
-    temp_dir,
 )
 from test.support.script_helper import make_script, make_zip_script
-
-
-import runpy
-from runpy import _run_code, _run_module_code, run_module, run_path
 
 # Note: This module can't safely test _run_module_as_main as it
 # runs its tests in the current process, which would mess with the
@@ -245,11 +245,11 @@ class RunModuleTestCase(unittest.TestCase, CodeExecutionMixin):
         mod_base="runpy_test",
         *,
         namespace=False,
-        parent_namespaces=False
+        parent_namespaces=False,
     ):
         # Enforce a couple of internal sanity checks on test cases
         if (namespace or parent_namespaces) and not depth:
-            raise RuntimeError("Can't mark top level module as a " "namespace package")
+            raise RuntimeError("Can't mark top level module as a namespace package")
         pkg_name = "__runpy_pkg__"
         test_fname = mod_base + os.extsep + "py"
         pkg_dir = sub_dir = os.path.realpath(tempfile.mkdtemp())
@@ -523,7 +523,7 @@ from ..uncle.cousin import nephew
         for exception in exceptions:
             name = exception.__name__
             with self.subTest(name):
-                source = "raise {0}('{0} in __init__.py.')".format(name)
+                source = f"raise {name}('{name} in __init__.py.')"
                 with open(init, "wt", encoding="ascii") as mod_file:
                     mod_file.write(source)
                 try:
@@ -531,13 +531,13 @@ from ..uncle.cousin import nephew
                 except exception as err:
                     self.assertNotIn("finding spec", format(err))
                 else:
-                    self.fail("Nothing raised; expected {}".format(name))
+                    self.fail(f"Nothing raised; expected {name}")
                 try:
                     run_module(mod_name + ".submodule")
                 except exception as err:
                     self.assertNotIn("finding spec", format(err))
                 else:
-                    self.fail("Nothing raised; expected {}".format(name))
+                    self.fail(f"Nothing raised; expected {name}")
 
     def test_submodule_imported_warning(self):
         pkg_dir, _, mod_name, _ = self._make_pkg("", 1)
@@ -842,7 +842,7 @@ class RunPathTestCase(unittest.TestCase, CodeExecutionMixin):
     def test_main_recursion_error(self):
         with temp_dir() as script_dir, temp_dir() as dummy_dir:
             mod_name = "__main__"
-            source = ("import runpy\n" "runpy.run_path(%r)\n") % dummy_dir
+            source = ("import runpy\nrunpy.run_path(%r)\n") % dummy_dir
             script_name = self._make_test_script(script_dir, mod_name, source)
             zip_name, fname = make_zip_script(script_dir, "test_zip", script_name)
             msg = "recursion depth exceeded"
@@ -873,9 +873,11 @@ class TestExit(unittest.TestCase):
     def run(self, *args, **kwargs):
         with self.tmp_path() as tmp:
             self.ham = ham = tmp / "ham.py"
-            ham.write_text(textwrap.dedent("""\
+            ham.write_text(
+                textwrap.dedent("""\
                     raise KeyboardInterrupt
-                    """))
+                    """)
+            )
             super().run(*args, **kwargs)
 
     def assertSigInt(self, *args, **kwargs):
@@ -889,19 +891,23 @@ class TestExit(unittest.TestCase):
     def test_pymain_run_file_runpy_run_module(self):
         tmp = self.ham.parent
         run_module = tmp / "run_module.py"
-        run_module.write_text(textwrap.dedent("""\
+        run_module.write_text(
+            textwrap.dedent("""\
                 import runpy
                 runpy.run_module("ham")
-                """))
+                """)
+        )
         self.assertSigInt([sys.executable, run_module], cwd=tmp)
 
     def test_pymain_run_file_runpy_run_module_as_main(self):
         tmp = self.ham.parent
         run_module_as_main = tmp / "run_module_as_main.py"
-        run_module_as_main.write_text(textwrap.dedent("""\
+        run_module_as_main.write_text(
+            textwrap.dedent("""\
                 import runpy
                 runpy._run_module_as_main("ham")
-                """))
+                """)
+        )
         self.assertSigInt([sys.executable, run_module_as_main], cwd=tmp)
 
     def test_pymain_run_command_run_module(self):

@@ -35,16 +35,16 @@ __credits__ = "Gustavo Niemeyer, Niels Gust\u00e4bel, Richard Townsend."
 # ---------
 # Imports
 # ---------
-from builtins import open as bltn_open
-import sys
-import os
+import copy
 import io
+import os
+import re
 import shutil
 import stat
-import time
 import struct
-import copy
-import re
+import sys
+import time
+from builtins import open as bltn_open
 
 try:
     import pwd
@@ -66,20 +66,20 @@ except NameError:
 
 # from tarfile import *
 __all__ = [
+    "DEFAULT_FORMAT",
+    "ENCODING",
+    "GNU_FORMAT",
+    "PAX_FORMAT",
+    "USTAR_FORMAT",
+    "CompressionError",
+    "ExtractError",
+    "HeaderError",
+    "ReadError",
+    "StreamError",
+    "TarError",
     "TarFile",
     "TarInfo",
     "is_tarfile",
-    "TarError",
-    "ReadError",
-    "CompressionError",
-    "StreamError",
-    "ExtractError",
-    "HeaderError",
-    "ENCODING",
-    "USTAR_FORMAT",
-    "GNU_FORMAT",
-    "PAX_FORMAT",
-    "DEFAULT_FORMAT",
     "open",
 ]
 
@@ -287,67 +287,45 @@ def _safe_print(s):
 class TarError(Exception):
     """Base exception."""
 
-    pass
-
 
 class ExtractError(TarError):
     """General exception for extract errors."""
-
-    pass
 
 
 class ReadError(TarError):
     """Exception for unreadable tar archives."""
 
-    pass
-
 
 class CompressionError(TarError):
     """Exception for unavailable compression methods."""
-
-    pass
 
 
 class StreamError(TarError):
     """Exception for unsupported operations on stream-like TarFiles."""
 
-    pass
-
 
 class HeaderError(TarError):
     """Base exception for header errors."""
-
-    pass
 
 
 class EmptyHeaderError(HeaderError):
     """Exception for empty headers."""
 
-    pass
-
 
 class TruncatedHeaderError(HeaderError):
     """Exception for truncated headers."""
-
-    pass
 
 
 class EOFHeaderError(HeaderError):
     """Exception for end of file headers."""
 
-    pass
-
 
 class InvalidHeaderError(HeaderError):
     """Exception for invalid headers."""
 
-    pass
-
 
 class SubsequentHeaderError(HeaderError):
     """Exception for missing and invalid extended headers."""
-
-    pass
 
 
 # ---------------------------
@@ -469,8 +447,7 @@ class _Stream:
         )
         timestamp = struct.pack("<L", int(time.time()))
         self.__write(b"\037\213\010\010" + timestamp + b"\002\377")
-        if self.name.endswith(".gz"):
-            self.name = self.name[:-3]
+        self.name = self.name.removesuffix(".gz")
         # Honor "directory components removed" from RFC1952
         self.name = os.path.basename(self.name)
         # RFC1952 says we must use ISO-8859-1 for the FNAME field.
@@ -616,7 +593,7 @@ class _Stream:
 # class _Stream
 
 
-class _StreamProxy(object):
+class _StreamProxy:
     """Small proxy class that enables transparent compression
     detection for the Stream interface (mode 'r|*').
     """
@@ -649,7 +626,7 @@ class _StreamProxy(object):
 # ------------------------
 # Extraction file object
 # ------------------------
-class _FileInFile(object):
+class _FileInFile:
     """A thin wrapper around an existing file object that
     provides a part of its data as an individual file
     object.
@@ -754,7 +731,6 @@ class _FileInFile(object):
 
 
 class ExFileObject(io.BufferedReader):
-
     def __init__(self, tarfile, tarinfo):
         fileobj = _FileInFile(
             tarfile.fileobj, tarinfo.offset_data, tarinfo.size, tarinfo.sparse
@@ -768,7 +744,7 @@ class ExFileObject(io.BufferedReader):
 # ------------------
 # Exported Classes
 # ------------------
-class TarInfo(object):
+class TarInfo:
     """Informational class which holds the details about an
     archive member given by a tar header block.
     TarInfo objects are returned by TarFile.getmember(),
@@ -937,7 +913,6 @@ class TarInfo(object):
             ("uname", "uname", 32),
             ("gname", "gname", 32),
         ):
-
             if hname in pax_headers:
                 # The pax header has priority.
                 continue
@@ -1416,11 +1391,9 @@ class TarInfo(object):
         """
         for keyword, value in pax_headers.items():
             if keyword == "GNU.sparse.name":
-                setattr(self, "path", value)
-            elif keyword == "GNU.sparse.size":
-                setattr(self, "size", int(value))
-            elif keyword == "GNU.sparse.realsize":
-                setattr(self, "size", int(value))
+                self.path = value
+            elif keyword == "GNU.sparse.size" or keyword == "GNU.sparse.realsize":
+                self.size = int(value)
             elif keyword in PAX_FIELDS:
                 if keyword in PAX_NUMBER_FIELDS:
                     try:
@@ -1492,7 +1465,7 @@ class TarInfo(object):
 # class TarInfo
 
 
-class TarFile(object):
+class TarFile:
     """The TarFile Class provides an interface to tar archives."""
 
     debug = 0  # May be set from 0 (no msgs) to 3 (all msgs)
@@ -1812,7 +1785,7 @@ class TarFile(object):
             raise ValueError("mode must be 'r', 'w' or 'x'")
 
         try:
-            from lzma import LZMAFile, LZMAError
+            from lzma import LZMAError, LZMAFile
         except ImportError:
             raise CompressionError("lzma module is not available")
 
@@ -2305,8 +2278,7 @@ class TarFile(object):
         self.makefile(tarinfo, targetpath)
         self._dbg(
             1,
-            "tarfile: Unknown file type %r, "
-            "extracted as regular file." % tarinfo.type,
+            "tarfile: Unknown file type %r, extracted as regular file." % tarinfo.type,
         )
 
     def makefifo(self, tarinfo, targetpath):
@@ -2627,9 +2599,9 @@ def main():
                 tar.getmembers()
                 print(tar.getmembers(), file=sys.stderr)
             if args.verbose:
-                print("{!r} is a tar archive.".format(src))
+                print(f"{src!r} is a tar archive.")
         else:
-            parser.exit(1, "{!r} is not a tar archive.\n".format(src))
+            parser.exit(1, f"{src!r} is not a tar archive.\n")
 
     elif args.list is not None:
         src = args.list
@@ -2637,7 +2609,7 @@ def main():
             with TarFile.open(src, "r:*") as tf:
                 tf.list(verbose=args.verbose)
         else:
-            parser.exit(1, "{!r} is not a tar archive.\n".format(src))
+            parser.exit(1, f"{src!r} is not a tar archive.\n")
 
     elif args.extract is not None:
         if len(args.extract) == 1:
@@ -2653,14 +2625,12 @@ def main():
                 tf.extractall(path=curdir)
             if args.verbose:
                 if curdir == ".":
-                    msg = "{!r} file is extracted.".format(src)
+                    msg = f"{src!r} file is extracted."
                 else:
-                    msg = ("{!r} file is extracted " "into {!r} directory.").format(
-                        src, curdir
-                    )
+                    msg = f"{src!r} file is extracted into {curdir!r} directory."
                 print(msg)
         else:
-            parser.exit(1, "{!r} is not a tar archive.\n".format(src))
+            parser.exit(1, f"{src!r} is not a tar archive.\n")
 
     elif args.create is not None:
         tar_name = args.create.pop(0)
@@ -2686,7 +2656,7 @@ def main():
                 tf.add(file_name)
 
         if args.verbose:
-            print("{!r} file created.".format(tar_name))
+            print(f"{tar_name!r} file created.")
 
 
 if __name__ == "__main__":

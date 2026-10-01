@@ -45,16 +45,26 @@ General notes on the underlying Mersenne Twister core generator:
 # Adrian Baddeley.  Adapted by Raymond Hettinger for use with
 # the Mersenne Twister  and os.urandom() core generators.
 
-from warnings import warn as _warn
-from math import log as _log, exp as _exp, pi as _pi, e as _e, ceil as _ceil
-from math import sqrt as _sqrt, acos as _acos, cos as _cos, sin as _sin
-from math import tau as TWOPI, floor as _floor
-from os import urandom as _urandom
-from _collections_abc import Set as _Set, Sequence as _Sequence
-from itertools import accumulate as _accumulate, repeat as _repeat
-from bisect import bisect as _bisect
-import os as _os
 import _random
+import os as _os
+from _collections_abc import Sequence as _Sequence
+from _collections_abc import Set as _Set
+from bisect import bisect as _bisect
+from itertools import accumulate as _accumulate
+from itertools import repeat as _repeat
+from math import acos as _acos
+from math import ceil as _ceil
+from math import cos as _cos
+from math import e as _e
+from math import exp as _exp
+from math import floor as _floor
+from math import log as _log
+from math import pi as _pi
+from math import sin as _sin
+from math import sqrt as _sqrt
+from math import tau as TWOPI
+from os import urandom as _urandom
+from warnings import warn as _warn
 
 try:
     # hashlib is pretty heavy to load, try lean internal module first
@@ -690,7 +700,6 @@ class Random(_random.Random):
 
         random = self.random
         if alpha > 1.0:
-
             # Uses R.C.H. Cheng, "The generation of Gamma
             # variables with non-integral shape parameters",
             # Applied Statistics, (1977), 26, No. 1, p71-74
@@ -813,7 +822,7 @@ class SystemRandom(Random):
 
     def seed(self, *args, **kwds):
         "Stub method.  Not used for a system random number generator."
-        return None
+        return
 
     def _notimplemented(self, *args, **kwds):
         "Method should not be called for a system random number generator."
@@ -860,7 +869,8 @@ randbytes = _inst.randbytes
 
 
 def _test_generator(n, func, args):
-    from statistics import stdev, fmean as mean
+    from statistics import fmean as mean
+    from statistics import stdev
     from time import perf_counter
 
     t0 = perf_counter()

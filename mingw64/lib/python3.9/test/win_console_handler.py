@@ -8,11 +8,11 @@ See http://msdn.microsoft.com/en-us/library/ms685049%28v=VS.85%29.aspx for a
 similar example in C.
 """
 
-from ctypes import wintypes, WINFUNCTYPE
-import signal
 import ctypes
 import mmap
+import signal
 import sys
+from ctypes import WINFUNCTYPE, wintypes
 
 # Function prototype for the handler function. Returns BOOL, takes a DWORD.
 HandlerRoutine = WINFUNCTYPE(wintypes.BOOL, wintypes.DWORD)
@@ -20,9 +20,7 @@ HandlerRoutine = WINFUNCTYPE(wintypes.BOOL, wintypes.DWORD)
 
 def _ctrl_handler(sig):
     """Handle a sig event and return 0 to terminate the process"""
-    if sig == signal.CTRL_C_EVENT:
-        pass
-    elif sig == signal.CTRL_BREAK_EVENT:
+    if sig == signal.CTRL_C_EVENT or sig == signal.CTRL_BREAK_EVENT:
         pass
     else:
         print("UNKNOWN EVENT")

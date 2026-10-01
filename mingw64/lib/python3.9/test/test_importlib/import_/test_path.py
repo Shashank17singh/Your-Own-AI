@@ -6,10 +6,10 @@ machinery = util.import_importlib("importlib.machinery")
 import os
 import sys
 import tempfile
-from types import ModuleType
 import unittest
 import warnings
 import zipimport
+from types import ModuleType
 
 
 class FinderTests:
@@ -69,15 +69,15 @@ class FinderTests:
         # Test that if sys.path_hooks is empty a warning is raised,
         # sys.path_importer_cache gets None set, and PathFinder returns None.
         path_entry = "bogus_path"
-        with util.import_state(
-            path_importer_cache={}, path_hooks=[], path=[path_entry]
+        with (
+            util.import_state(path_importer_cache={}, path_hooks=[], path=[path_entry]),
+            warnings.catch_warnings(record=True) as w,
         ):
-            with warnings.catch_warnings(record=True) as w:
-                warnings.simplefilter("always")
-                self.assertIsNone(self.find("os"))
-                self.assertIsNone(sys.path_importer_cache[path_entry])
-                self.assertEqual(len(w), 1)
-                self.assertTrue(issubclass(w[-1].category, ImportWarning))
+            warnings.simplefilter("always")
+            self.assertIsNone(self.find("os"))
+            self.assertIsNone(sys.path_importer_cache[path_entry])
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, ImportWarning))
 
     def test_path_importer_cache_empty_string(self):
         # The empty string should create a finder using the cwd.
@@ -178,7 +178,7 @@ class FinderTests:
                 os.rmdir(new_dir)
             except OSError:
                 # EINVAL on Solaris, EBUSY on AIX, ENOTEMPTY on Windows
-                self.skipTest("platform does not allow " "the deletion of the cwd")
+                self.skipTest("platform does not allow the deletion of the cwd")
         except:
             os.chdir(old_dir)
             os.rmdir(new_dir)
@@ -237,7 +237,6 @@ Frozen_FindSpecTests, Source_FindSpecTests = util.test_both(
 
 
 class PathEntryFinderTests:
-
     def test_finder_with_failing_find_spec(self):
         # PathEntryFinder with find_module() defined should work.
         # Issue #20763.

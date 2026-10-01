@@ -1,13 +1,12 @@
-from importlib import machinery
 import sys
 import types
 import unittest
+from importlib import machinery
 
 from .. import util
 
 
 class SpecLoaderMock:
-
     def find_spec(self, fullname, path=None, target=None):
         return machinery.ModuleSpec(fullname, self)
 
@@ -19,7 +18,6 @@ class SpecLoaderMock:
 
 
 class SpecLoaderAttributeTests:
-
     def test___loader__(self):
         loader = SpecLoaderMock()
         with util.uncache("blah"), util.import_state(meta_path=[loader]):
@@ -33,7 +31,6 @@ Frozen_SpecTests, Source_SpecTests = util.test_both(
 
 
 class LoaderMock:
-
     def find_module(self, fullname, path=None):
         return self
 
@@ -43,7 +40,6 @@ class LoaderMock:
 
 
 class LoaderAttributeTests:
-
     def test___loader___missing(self):
         module = types.ModuleType("blah")
         try:

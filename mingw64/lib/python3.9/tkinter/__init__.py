@@ -25,14 +25,14 @@ button.pack(side=BOTTOM)
 tk.mainloop()
 """
 
+import _tkinter  # If this fails your Python may not be configured for Tk
 import enum
 import sys
 import types
-import _tkinter  # If this fails your Python may not be configured for Tk
 
 TclError = _tkinter.TclError
-from tkinter.constants import *
 import re
+from tkinter.constants import *
 
 wantobjects = 1
 TkVersion = float(_tkinter.TK_VERSION)
@@ -92,9 +92,7 @@ except AttributeError:
 
 def _cnfmerge(cnfs):
     """Internal function."""
-    if isinstance(cnfs, dict):
-        return cnfs
-    elif isinstance(cnfs, (type(None), str)):
+    if isinstance(cnfs, dict) or isinstance(cnfs, (type(None), str)):
         return cnfs
     else:
         cnf = {}
@@ -295,8 +293,7 @@ def NoDefaultRoot():
 def _get_default_root(what=None):
     if not _support_default_root:
         raise RuntimeError(
-            "No master specified and tkinter is "
-            "configured to not support default root"
+            "No master specified and tkinter is configured to not support default root"
         )
     if not _default_root:
         if what:
@@ -308,7 +305,6 @@ def _get_default_root(what=None):
 
 def _tkerror(err):
     """Internal function."""
-    pass
 
 
 def _exit(code=0):
@@ -811,7 +807,7 @@ class Misc:
         """
         if not id:
             raise ValueError(
-                "id must be a valid identifier returned from " "after or after_idle"
+                "id must be a valid identifier returned from after or after_idle"
             )
         try:
             data = self.tk.call("after", "info", id)
@@ -2475,8 +2471,6 @@ class Widget(BaseWidget, Pack, Place, Grid):
     Base class for a widget which can be positioned with the geometry managers
     Pack, Place or Grid."""
 
-    pass
-
 
 class Toplevel(BaseWidget, Wm):
     """Toplevel widget, e.g. for dialogs."""
@@ -3787,8 +3781,7 @@ class OptionMenu(Menubutton):
         menu = self.__menu = Menu(self, name="menu", tearoff=0)
         self.menuname = menu._w
         callback = kwargs.get("command")
-        if "command" in kwargs:
-            del kwargs["command"]
+        kwargs.pop("command", None)
         if kwargs:
             raise TclError("unknown option -" + next(iter(kwargs)))
         menu.add_command(label=value, command=_setit(variable, value, callback))

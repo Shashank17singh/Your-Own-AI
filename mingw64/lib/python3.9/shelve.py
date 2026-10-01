@@ -56,12 +56,11 @@ entries in the cache, and empty the cache (d.sync() also synchronizes
 the persistent dictionary on disk, if feasible).
 """
 
-from pickle import Pickler, Unpickler
-from io import BytesIO
-
 import collections.abc
+from io import BytesIO
+from pickle import Pickler, Unpickler
 
-__all__ = ["Shelf", "BsdDbShelf", "DbfilenameShelf", "open"]
+__all__ = ["BsdDbShelf", "DbfilenameShelf", "Shelf", "open"]
 
 
 class _ClosedDict(collections.abc.MutableMapping):

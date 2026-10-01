@@ -1,14 +1,13 @@
 "Test codecontext, coverage 100%"
 
-from idlelib import codecontext
+import re
 import unittest
 import unittest.mock
-from test.support import requires
-from tkinter import NSEW, Tk, Frame, Text, TclError
-
+from idlelib import codecontext, config
+from tkinter import NSEW, Frame, TclError, Text, Tk
 from unittest import mock
-import re
-from idlelib import config
+
+from test.support import requires
 
 usercfg = codecontext.idleConf.userCfg
 testcfg = {
@@ -50,7 +49,6 @@ class DummyEditwin:
 
 
 class CodeContextTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -333,7 +331,7 @@ class CodeContextTest(unittest.TestCase):
         eq(cc.topvisible, 5)
         eq(
             cc.context.get("1.0", "end-1c"),
-            "class C1:\n" "    def __init__(self, a, b):",
+            "class C1:\n    def __init__(self, a, b):",
         )
 
         # Scroll down to line 11.  Last 'def' is removed.
@@ -352,10 +350,7 @@ class CodeContextTest(unittest.TestCase):
         eq(cc.topvisible, 12)
         eq(
             cc.context.get("1.0", "end-1c"),
-            "class C1:\n"
-            "    def compare(self):\n"
-            "        if a > b:\n"
-            "        elif a < b:",
+            "class C1:\n    def compare(self):\n        if a > b:\n        elif a < b:",
         )
 
         # No scroll.  No update, even though context_depth changed.
@@ -374,10 +369,7 @@ class CodeContextTest(unittest.TestCase):
         eq(cc.topvisible, 12)
         eq(
             cc.context.get("1.0", "end-1c"),
-            "class C1:\n"
-            "    def compare(self):\n"
-            "        if a > b:\n"
-            "        elif a < b:",
+            "class C1:\n    def compare(self):\n        if a > b:\n        elif a < b:",
         )
 
         # Scroll up.
@@ -508,7 +500,6 @@ class CodeContextTest(unittest.TestCase):
 
 
 class HelperFunctionText(unittest.TestCase):
-
     def test_get_spaces_firstword(self):
         get = codecontext.get_spaces_firstword
         test_lines = (

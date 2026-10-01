@@ -1,7 +1,7 @@
-import unittest
-from ctypes import *
-from binascii import hexlify
 import re
+import unittest
+from binascii import hexlify
+from ctypes import *
 
 
 def dump(obj):

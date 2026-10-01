@@ -1,11 +1,10 @@
-import unittest
-from test import support
-
-import sys
-
-import random
-import math
 import array
+import math
+import random
+import sys
+import unittest
+
+from test import support
 
 # SHIFT should match the value in longintrepr.h for best testing.
 SHIFT = sys.int_info.bits_per_digit
@@ -113,7 +112,6 @@ def truediv(a, b):
 
 
 class LongTest(unittest.TestCase):
-
     # Get quasi-random long consisting of ndigits digits (in base BASE).
     # quasi == the most-significant digit will not be 0, and the number
     # is constructed to contain long strings of 0 and 1 bits.  These are
@@ -414,8 +412,8 @@ class LongTest(unittest.TestCase):
             expected = "overflow"
 
         msg = (
-            "Error in conversion of integer {} to float.  "
-            "Got {}, expected {}.".format(n, actual, expected)
+            f"Error in conversion of integer {n} to float.  "
+            f"Got {actual}, expected {expected}."
         )
         self.assertEqual(actual, expected, msg)
 
@@ -564,7 +562,6 @@ class LongTest(unittest.TestCase):
             # math.floor() of an int returns an int now
             ##"math.floor(huge)", "math.floor(mhuge)",
         ]:
-
             self.assertRaises(OverflowError, eval, test, namespace)
 
         # XXX Perhaps float(shuge) can raise OverflowError on some box?
@@ -906,8 +903,7 @@ class LongTest(unittest.TestCase):
         self.assertEqual(
             expected,
             got,
-            "Incorrectly rounded division {}/{}: "
-            "expected {}, got {}".format(a, b, expected, got),
+            f"Incorrectly rounded division {a}/{b}: expected {expected}, got {got}",
         )
 
     @support.requires_IEEE_754
@@ -1223,9 +1219,7 @@ class LongTest(unittest.TestCase):
                     )
                 except Exception as err:
                     raise AssertionError(
-                        "failed to convert {0} with byteorder={1} and signed={2}".format(
-                            test, byteorder, signed
-                        )
+                        f"failed to convert {test} with byteorder={byteorder} and signed={signed}"
                     ) from err
 
         # Convert integers to signed big-endian byte arrays.
@@ -1323,9 +1317,7 @@ class LongTest(unittest.TestCase):
                     )
                 except Exception as err:
                     raise AssertionError(
-                        "failed to convert {0} with byteorder={1!r} and signed={2}".format(
-                            test, byteorder, signed
-                        )
+                        f"failed to convert {test} with byteorder={byteorder!r} and signed={signed}"
                     ) from err
 
         # Convert signed big-endian byte arrays to integers.

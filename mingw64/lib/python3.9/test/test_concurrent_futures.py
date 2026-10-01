@@ -5,13 +5,11 @@ support.import_module("_multiprocessing")
 # Skip tests if sem_open implementation is broken.
 support.skip_if_broken_multiprocessing_synchronize()
 
-from test.support import hashlib_helper
-from test.support.script_helper import assert_python_ok
-
 import contextlib
 import itertools
 import logging
-from logging.handlers import QueueHandler
+import multiprocessing.process
+import multiprocessing.util
 import os
 import queue
 import sys
@@ -19,23 +17,23 @@ import threading
 import time
 import unittest
 import weakref
-from pickle import PicklingError
-
 from concurrent import futures
 from concurrent.futures._base import (
-    PENDING,
-    RUNNING,
     CANCELLED,
     CANCELLED_AND_NOTIFIED,
     FINISHED,
-    Future,
+    PENDING,
+    RUNNING,
     BrokenExecutor,
+    Future,
 )
 from concurrent.futures.process import BrokenProcessPool
+from logging.handlers import QueueHandler
 from multiprocessing import get_context
+from pickle import PicklingError
 
-import multiprocessing.process
-import multiprocessing.util
+from test.support import hashlib_helper
+from test.support.script_helper import assert_python_ok
 
 
 def create_future(state=PENDING, exception=None, result=None):
@@ -94,7 +92,7 @@ def init_fail(log_queue=None):
     raise ValueError("error in initializer")
 
 
-class MyObject(object):
+class MyObject:
     def my_method(self):
         pass
 
@@ -402,14 +400,14 @@ class ExecutorShutdownTest:
 
         rc, out, err = assert_python_ok(
             "-c",
-            """if True:
-            from concurrent.futures import {executor_type}
+            f"""if True:
+            from concurrent.futures import {self.executor_type.__name__}
             from test.test_concurrent_futures import sleep_and_print
             if __name__ == "__main__":
-                t = {executor_type}(max_workers=3)
+                t = {self.executor_type.__name__}(max_workers=3)
                 t.submit(sleep_and_print, 1.0, "apple")
                 t.shutdown(wait=False)
-            """.format(executor_type=self.executor_type.__name__),
+            """,
         )
         self.assertFalse(err)
         self.assertEqual(out.strip(), b"apple")
@@ -508,7 +506,7 @@ class ThreadPoolShutdownTest(ThreadPoolMixin, ExecutorShutdownTest, BaseTestCase
                 t = ThreadPoolExecutor()
                 t.submit(sleep_and_print, .1, "apple")
                 t.shutdown(wait=False, cancel_futures=True)
-            """.format(executor_type=self.executor_type.__name__),
+            """.format(),
         )
         # Errors in atexit hooks don't change the process exit code, check
         # stderr manually.
@@ -601,7 +599,6 @@ create_executor_tests(
 
 
 class WaitTests:
-
     def test_first_completed(self):
         future1 = self.executor.submit(mul, 21, 2)
         future2 = self.executor.submit(time.sleep, 1.5)
@@ -728,7 +725,6 @@ class WaitTests:
 
 
 class ThreadPoolWaitTests(ThreadPoolMixin, WaitTests, BaseTestCase):
-
     def test_pending_calls_race(self):
         # Issue #14406: multi-threaded race condition when waiting on all
         # futures.
@@ -931,7 +927,7 @@ class ExecutorTest:
     def test_max_workers_negative(self):
         for number in (0, -1):
             with self.assertRaisesRegex(
-                ValueError, "max_workers must be greater " "than 0"
+                ValueError, "max_workers must be greater than 0"
             ):
                 self.executor_type(max_workers=number)
 
@@ -986,7 +982,6 @@ class ThreadPoolExecutorTest(ThreadPoolMixin, ExecutorTest, BaseTestCase):
 
 
 class ProcessPoolExecutorTest(ExecutorTest):
-
     @unittest.skipUnless(sys.platform == "win32", "Windows-only process limit")
     def test_max_workers_too_large(self):
         with self.assertRaisesRegex(ValueError, "max_workers must be <= 61"):
@@ -1139,35 +1134,35 @@ def _return_instance(cls):
     return cls()
 
 
-class CrashAtPickle(object):
+class CrashAtPickle:
     """Bad object that triggers a segfault at pickling time."""
 
     def __reduce__(self):
         _crash()
 
 
-class CrashAtUnpickle(object):
+class CrashAtUnpickle:
     """Bad object that triggers a segfault at unpickling time."""
 
     def __reduce__(self):
         return _crash, ()
 
 
-class ExitAtPickle(object):
+class ExitAtPickle:
     """Bad object that triggers a process exit at pickling time."""
 
     def __reduce__(self):
         _exit()
 
 
-class ExitAtUnpickle(object):
+class ExitAtUnpickle:
     """Bad object that triggers a process exit at unpickling time."""
 
     def __reduce__(self):
         return _exit, ()
 
 
-class ErrorAtPickle(object):
+class ErrorAtPickle:
     """Bad object that triggers an error at pickling time."""
 
     def __reduce__(self):
@@ -1176,7 +1171,7 @@ class ErrorAtPickle(object):
         raise PicklingError("Error in pickle")
 
 
-class ErrorAtUnpickle(object):
+class ErrorAtUnpickle:
     """Bad object that triggers an error at unpickling time."""
 
     def __reduce__(self):
@@ -1220,9 +1215,8 @@ class ExecutorDeadlockTest:
             cm = contextlib.nullcontext()
 
         try:
-            with self.assertRaises(error):
-                with cm:
-                    res.result(timeout=self.TIMEOUT)
+            with self.assertRaises(error), cm:
+                res.result(timeout=self.TIMEOUT)
         except futures.TimeoutError:
             # If we did not recover before TIMEOUT seconds,
             # consider that the executor is in a deadlock state
@@ -1590,7 +1584,7 @@ class FutureTests(BaseTestCase):
 
         with self.assertRaisesRegex(
             futures.InvalidStateError,
-            "FINISHED: <Future at 0x[0-9a-f]+ " "state=finished returned int>",
+            "FINISHED: <Future at 0x[0-9a-f]+ state=finished returned int>",
         ):
             f.set_result(2)
 
@@ -1604,7 +1598,7 @@ class FutureTests(BaseTestCase):
 
         with self.assertRaisesRegex(
             futures.InvalidStateError,
-            "FINISHED: <Future at 0x[0-9a-f]+ " "state=finished raised ValueError>",
+            "FINISHED: <Future at 0x[0-9a-f]+ state=finished raised ValueError>",
         ):
             f.set_exception(Exception())
 

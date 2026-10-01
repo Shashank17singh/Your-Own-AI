@@ -4,12 +4,13 @@ import sys
 import tracemalloc
 import unittest
 from unittest.mock import patch
+
+from test import support
 from test.support.script_helper import (
-    assert_python_ok,
     assert_python_failure,
+    assert_python_ok,
     interpreter_requires_environment,
 )
-from test import support
 
 try:
     import _testcapi
@@ -98,7 +99,7 @@ class TestTraceback(unittest.TestCase):
 
         frames = (("f1", 1), ("f2", 2))
         exp_repr_frames = (
-            "(<Frame filename='f2' lineno=2>," " <Frame filename='f1' lineno=1>)"
+            "(<Frame filename='f2' lineno=2>, <Frame filename='f1' lineno=1>)"
         )
         self.assertEqual(get_repr(frames), f"<Traceback {exp_repr_frames}>")
         self.assertEqual(

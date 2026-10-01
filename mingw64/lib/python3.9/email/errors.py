@@ -117,8 +117,8 @@ class NonPrintableDefect(HeaderDefect):
         self.non_printables = non_printables
 
     def __str__(self):
-        return "the following ASCII non-printables found in header: " "{}".format(
-            self.non_printables
+        return (
+            f"the following ASCII non-printables found in header: {self.non_printables}"
         )
 
 

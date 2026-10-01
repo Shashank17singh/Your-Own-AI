@@ -1,6 +1,3 @@
-from __future__ import nested_scopes
-from __future__ import division
-
 import unittest
 
 x = 2
@@ -16,7 +13,6 @@ def nester():
 
 
 class TestFuture(unittest.TestCase):
-
     def test_floor_div_operator(self):
         self.assertEqual(7 // 2, 3)
 

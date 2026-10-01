@@ -15,10 +15,7 @@
           "type": {
             "type": "string",
             "description": "The type of the dependency.",
-            "enum": [
-              "system",
-              "bundled"
-            ]
+            "enum": ["system", "bundled"]
           },
           "version": {
             "type": "string",
@@ -29,10 +26,7 @@
             "description": "The source from which the dependency is came from. Not presented for direct CMake dependencies."
           }
         },
-        "required": [
-          "name",
-          "type"
-        ],
+        "required": ["name", "type"],
         "additionalProperties": false
       },
       "additionalItems": false
@@ -66,19 +60,11 @@
               "description": "The full version string of the CMake tool."
             }
           },
-          "required": [
-            "major",
-            "minor",
-            "patch",
-            "string"
-          ],
+          "required": ["major", "minor", "patch", "string"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "name",
-        "version"
-      ],
+      "required": ["name", "version"],
       "additionalProperties": false
     },
     "version": {
@@ -93,17 +79,10 @@
           "description": "The minor version of the JSON output format."
         }
       },
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "dependencies",
-    "program",
-    "version"
-  ],
+  "required": ["dependencies", "program", "version"],
   "additionalProperties": false
 }

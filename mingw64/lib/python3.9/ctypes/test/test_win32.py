@@ -1,10 +1,11 @@
 # Windows specific tests
 
-from ctypes import *
-import unittest, sys
-from test import support
-
 import _ctypes_test
+import sys
+import unittest
+from ctypes import *
+
+from test import support
 
 
 @unittest.skipUnless(sys.platform == "win32", "Windows-specific test")

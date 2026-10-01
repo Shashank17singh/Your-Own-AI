@@ -31,30 +31,30 @@ __version__ = "2.6"
 # Imports
 # =======
 
-from io import StringIO, BytesIO, TextIOWrapper
-from collections.abc import Mapping
-import sys
-import os
-import urllib.parse
-from email.parser import FeedParser
-from email.message import Message
 import html
 import locale
+import os
+import sys
 import tempfile
+import urllib.parse
+from collections.abc import Mapping
+from email.message import Message
+from email.parser import FeedParser
+from io import BytesIO, StringIO, TextIOWrapper
 
 __all__ = [
-    "MiniFieldStorage",
     "FieldStorage",
+    "MiniFieldStorage",
     "parse",
-    "parse_multipart",
     "parse_header",
-    "test",
-    "print_exception",
-    "print_environ",
-    "print_form",
-    "print_directory",
+    "parse_multipart",
     "print_arguments",
+    "print_directory",
+    "print_environ",
     "print_environ_usage",
+    "print_exception",
+    "print_form",
+    "test",
 ]
 
 # Logging support
@@ -107,7 +107,6 @@ def dolog(fmt, *args):
 
 def nolog(*allargs):
     """Dummy function, assigned to log when logging is disabled."""
-    pass
 
 
 def closelog():
@@ -221,7 +220,7 @@ def parse_multipart(fp, pdict, encoding="utf-8", errors="replace", separator="&"
     # RFC 2026, Section 5.1 : The "multipart" boundary delimiters are always
     # represented as 7bit US-ASCII.
     boundary = pdict["boundary"].decode("ascii")
-    ctype = "multipart/form-data; boundary={}".format(boundary)
+    ctype = f"multipart/form-data; boundary={boundary}"
     headers = Message()
     headers.set_type(ctype)
     try:
@@ -434,7 +433,7 @@ class FieldStorage:
         else:
             if not (isinstance(headers, (Mapping, Message))):
                 raise TypeError(
-                    "headers must be mapping or an instance of " "email.message.Message"
+                    "headers must be mapping or an instance of email.message.Message"
                 )
         self.headers = headers
         if fp is None:
@@ -804,7 +803,6 @@ class FieldStorage:
         last_line_lfend = True
         _read = 0
         while 1:
-
             if self.limit is not None and 0 <= self.limit <= _read:
                 break
             line = self.fp.readline(1 << 16)  # bytes

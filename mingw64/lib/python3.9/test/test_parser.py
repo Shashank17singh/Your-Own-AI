@@ -6,13 +6,13 @@ with warnings.catch_warnings():
         "ignore", "The parser module is deprecated", DeprecationWarning
     )
     import parser
-import pickle
-import unittest
 import operator
+import pickle
 import struct
+import unittest
+
 from test import support
-from test.support.script_helper import assert_python_failure
-from test.support.script_helper import assert_python_ok
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 #
 #  First, we test that we can generate trees from valid source fragments,
@@ -22,7 +22,6 @@ from test.support.script_helper import assert_python_ok
 
 
 class RoundtripLegalSyntaxTestCase(unittest.TestCase):
-
     def roundtrip(self, f, s):
         st1 = f(s)
         t = st1.totuple()
@@ -64,8 +63,8 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("def f(): x = yield from 1")
         self.check_suite("def f(): f((yield from 1))")
         self.check_suite("def f(): yield 1; return 1")
-        self.check_suite("def f():\n" "    for x in range(30):\n" "        yield x\n")
-        self.check_suite("def f():\n" "    if (yield):\n" "        yield x\n")
+        self.check_suite("def f():\n    for x in range(30):\n        yield x\n")
+        self.check_suite("def f():\n    if (yield):\n        yield x\n")
 
     def test_await_statement(self):
         self.check_suite("async def f():\n await smth()")
@@ -84,11 +83,9 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("async def f():\n async for i, b in (): pass")
 
     def test_nonlocal_statement(self):
+        self.check_suite("def f():\n    x = 0\n    def g():\n        nonlocal x\n")
         self.check_suite(
-            "def f():\n" "    x = 0\n" "    def g():\n" "        nonlocal x\n"
-        )
-        self.check_suite(
-            "def f():\n" "    x = y = 0\n" "    def g():\n" "        nonlocal x, y\n"
+            "def f():\n    x = y = 0\n    def g():\n        nonlocal x, y\n"
         )
 
     def test_expressions(self):
@@ -150,8 +147,8 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("f(d[x]): str = 'abc'")
         self.check_suite("x.y.z.w: complex = 42j")
         self.check_suite("x: int")
-        self.check_suite("def f():\n" "    x: str\n" "    y: int = 5\n")
-        self.check_suite("class C:\n" "    x: str\n" "    y: int = 5\n")
+        self.check_suite("def f():\n    x: str\n    y: int = 5\n")
+        self.check_suite("class C:\n    x: str\n    y: int = 5\n")
         self.check_suite(
             "class C:\n"
             "    def __init__(self, x: int) -> None:\n"
@@ -212,20 +209,20 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("def f(a, b, foo=bar, *args, **kw): pass")
         self.check_suite("def f(a, b, foo=bar, **kw): pass")
 
-        self.check_suite("@staticmethod\n" "def f(): pass")
-        self.check_suite("@staticmethod\n" "@funcattrs(x, y)\n" "def f(): pass")
-        self.check_suite("@funcattrs()\n" "def f(): pass")
+        self.check_suite("@staticmethod\ndef f(): pass")
+        self.check_suite("@staticmethod\n@funcattrs(x, y)\ndef f(): pass")
+        self.check_suite("@funcattrs()\ndef f(): pass")
 
-        self.check_suite("@False or x\n" "def f(): pass")
-        self.check_suite("@d := x\n" "def f(): pass")
-        self.check_suite("@lambda f: x(f)\n" "def f(): pass")
-        self.check_suite("@[..., x, ...][1]\n" "def f(): pass")
-        self.check_suite("@x(x)(x)\n" "def f(): pass")
-        self.check_suite("@(x, x)\n" "def f(): pass")
-        self.check_suite("@...\n" "def f(): pass")
-        self.check_suite("@None\n" "def f(): pass")
-        self.check_suite("@w @(x @y) @(z)\n" "def f(): pass")
-        self.check_suite("@w[x].y.z\n" "def f(): pass")
+        self.check_suite("@False or x\ndef f(): pass")
+        self.check_suite("@d := x\ndef f(): pass")
+        self.check_suite("@lambda f: x(f)\ndef f(): pass")
+        self.check_suite("@[..., x, ...][1]\ndef f(): pass")
+        self.check_suite("@x(x)(x)\ndef f(): pass")
+        self.check_suite("@(x, x)\ndef f(): pass")
+        self.check_suite("@...\ndef f(): pass")
+        self.check_suite("@None\ndef f(): pass")
+        self.check_suite("@w @(x @y) @(z)\ndef f(): pass")
+        self.check_suite("@w[x].y.z\ndef f(): pass")
 
         # keyword-only arguments
         self.check_suite("def f(*, a): pass")
@@ -263,20 +260,20 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
     def test_class_defs(self):
         self.check_suite("class foo():pass")
         self.check_suite("class foo(object):pass")
-        self.check_suite("@class_decorator\n" "class foo():pass")
-        self.check_suite("@class_decorator(arg)\n" "class foo():pass")
-        self.check_suite("@decorator1\n" "@decorator2\n" "class foo():pass")
+        self.check_suite("@class_decorator\nclass foo():pass")
+        self.check_suite("@class_decorator(arg)\nclass foo():pass")
+        self.check_suite("@decorator1\n@decorator2\nclass foo():pass")
 
-        self.check_suite("@False or x\n" "class C: pass")
-        self.check_suite("@d := x\n" "class C: pass")
-        self.check_suite("@lambda f: x(f)\n" "class C: pass")
-        self.check_suite("@[..., x, ...][1]\n" "class C: pass")
-        self.check_suite("@x(x)(x)\n" "class C: pass")
-        self.check_suite("@(x, x)\n" "class C: pass")
-        self.check_suite("@...\n" "class C: pass")
-        self.check_suite("@None\n" "class C: pass")
-        self.check_suite("@w @(x @y) @(z)\n" "class C: pass")
-        self.check_suite("@w[x].y.z\n" "class C: pass")
+        self.check_suite("@False or x\nclass C: pass")
+        self.check_suite("@d := x\nclass C: pass")
+        self.check_suite("@lambda f: x(f)\nclass C: pass")
+        self.check_suite("@[..., x, ...][1]\nclass C: pass")
+        self.check_suite("@x(x)(x)\nclass C: pass")
+        self.check_suite("@(x, x)\nclass C: pass")
+        self.check_suite("@...\nclass C: pass")
+        self.check_suite("@None\nclass C: pass")
+        self.check_suite("@w @(x @y) @(z)\nclass C: pass")
+        self.check_suite("@w[x].y.z\nclass C: pass")
 
     def test_import_from_statement(self):
         self.check_suite("from sys.path import *")
@@ -317,7 +314,7 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("from ....pkg import name")
 
     def test_pep263(self):
-        self.check_suite("# -*- coding: iso-8859-1 -*-\n" "pass\n")
+        self.check_suite("# -*- coding: iso-8859-1 -*-\npass\n")
 
     def test_assert(self):
         self.check_suite("assert alo < ahi and blo < bhi\n")
@@ -331,9 +328,9 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("try: pass\nexcept: pass\n")
         self.check_suite("try: pass\nfinally: pass\n")
         self.check_suite("try: pass\nexcept A: pass\nfinally: pass\n")
-        self.check_suite("try: pass\nexcept A: pass\nexcept: pass\n" "finally: pass\n")
+        self.check_suite("try: pass\nexcept A: pass\nexcept: pass\nfinally: pass\n")
         self.check_suite("try: pass\nexcept: pass\nelse: pass\n")
-        self.check_suite("try: pass\nexcept: pass\nelse: pass\n" "finally: pass\n")
+        self.check_suite("try: pass\nexcept: pass\nelse: pass\nfinally: pass\n")
 
     def test_if_stmt(self):
         self.check_suite("if True:\n  pass\nelse:\n  pass\n")
@@ -408,10 +405,7 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         self.check_suite("raise\n")
         self.check_suite("raise e\n")
         self.check_suite(
-            "try:\n"
-            "    suite\n"
-            "except Exception as e:\n"
-            "    raise ValueError from e\n"
+            "try:\n    suite\nexcept Exception as e:\n    raise ValueError from e\n"
         )
 
     def test_list_displays(self):
@@ -498,7 +492,6 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
 
 
 class IllegalSyntaxTestCase(unittest.TestCase):
-
     def check_bad_tree(self, tree, label):
         try:
             parser.sequence2st(tree)
@@ -1109,7 +1102,6 @@ class IllegalSyntaxTestCase(unittest.TestCase):
 
 
 class CompileTestCase(unittest.TestCase):
-
     # These tests are very minimal. :-(
 
     def test_compile_expr(self):
@@ -1311,7 +1303,6 @@ class STObjectTestCase(unittest.TestCase):
 
 
 class OtherParserCase(unittest.TestCase):
-
     def test_two_args_to_expr(self):
         # See bug #12264
         with self.assertRaises(TypeError):

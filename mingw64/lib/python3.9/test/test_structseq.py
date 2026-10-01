@@ -4,7 +4,6 @@ import unittest
 
 
 class StructSeqTest(unittest.TestCase):
-
     def test_tuple(self):
         t = time.gmtime()
         self.assertIsInstance(t, tuple)

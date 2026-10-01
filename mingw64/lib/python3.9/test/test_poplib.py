@@ -3,18 +3,17 @@
 # Modified by Giampaolo Rodola' to give poplib.POP3 and poplib.POP3_SSL
 # a real test suite
 
-import poplib
-import asyncore
 import asynchat
-import socket
-import os
+import asyncore
 import errno
+import os
+import poplib
+import socket
 import threading
-
 from unittest import TestCase, skipUnless
+
 from test import support as test_support
-from test.support import hashlib_helper
-from test.support import socket_helper
+from test.support import hashlib_helper, socket_helper
 
 HOST = socket_helper.HOST
 PORT = 0
@@ -43,7 +42,6 @@ line3\r\n\
 
 
 class DummyPOP3Handler(asynchat.async_chat):
-
     CAPAS = {"UIDL": [], "IMPLEMENTATION": ["python-testlib-pop-server"]}
     enable_UTF8 = False
 
@@ -175,10 +173,7 @@ class DummyPOP3Handler(asynchat.async_chat):
             except ssl.SSLError as err:
                 if err.args[0] in (ssl.SSL_ERROR_WANT_READ, ssl.SSL_ERROR_WANT_WRITE):
                     return
-                elif err.args[0] == ssl.SSL_ERROR_EOF:
-                    return self.handle_close()
-                # TODO: SSLError does not expose alert information
-                elif (
+                elif err.args[0] == ssl.SSL_ERROR_EOF or (
                     "SSLV3_ALERT_BAD_CERTIFICATE" in err.args[1]
                     or "SSLV3_ALERT_CERTIFICATE_UNKNOWN" in err.args[1]
                 ):
@@ -202,7 +197,6 @@ class DummyPOP3Handler(asynchat.async_chat):
 
 
 class DummyPOP3Server(asyncore.dispatcher, threading.Thread):
-
     handler = DummyPOP3Handler
 
     def __init__(self, address, af=socket.AF_INET):
@@ -416,7 +410,6 @@ if SUPPORTS_SSL:
     from test.test_ftplib import SSLConnection
 
     class DummyPOP3_SSLHandler(SSLConnection, DummyPOP3Handler):
-
         def __init__(self, conn):
             asynchat.async_chat.__init__(self, conn)
             self.secure_connection()
@@ -522,7 +515,6 @@ class TestPOP3_TLSClass(TestPOP3Class):
 
 
 class TestTimeouts(TestCase):
-
     def setUp(self):
         self.evt = threading.Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -545,7 +537,7 @@ class TestTimeouts(TestCase):
             conn, addr = serv.accept()
             conn.send(b"+ Hola mundo\n")
             conn.close()
-        except socket.timeout:
+        except TimeoutError:
             pass
         finally:
             serv.close()

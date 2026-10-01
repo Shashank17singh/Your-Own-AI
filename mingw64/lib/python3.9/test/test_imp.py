@@ -4,10 +4,11 @@ import os
 import os.path
 import py_compile
 import sys
-from test import support
-from test.support import script_helper
 import unittest
 import warnings
+
+from test import support
+from test.support import script_helper
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", DeprecationWarning)
@@ -56,7 +57,7 @@ class LockTests(unittest.TestCase):
             except RuntimeError:
                 pass
             else:
-                self.fail("release_lock() without lock should raise " "RuntimeError")
+                self.fail("release_lock() without lock should raise RuntimeError")
 
 
 class ImportTests(unittest.TestCase):
@@ -67,7 +68,7 @@ class ImportTests(unittest.TestCase):
 
     def test_import_encoded_module(self):
         for modname, encoding, teststr in self.test_strings:
-            mod = importlib.import_module("test.encoded_modules." "module_" + modname)
+            mod = importlib.import_module("test.encoded_modules.module_" + modname)
             self.assertEqual(teststr, mod.test)
 
     def test_find_module_encoding(self):
@@ -439,21 +440,17 @@ class PEP3147Tests(unittest.TestCase):
         # Given the path to a .py file, return the path to its PEP 3147
         # defined .pyc file (i.e. under __pycache__).
         path = os.path.join("foo", "bar", "baz", "qux.py")
-        expect = os.path.join(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
-        )
+        expect = os.path.join("foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc")
         self.assertEqual(imp.cache_from_source(path, True), expect)
 
     @unittest.skipUnless(
         sys.implementation.cache_tag is not None,
-        "requires sys.implementation.cache_tag to not be " "None",
+        "requires sys.implementation.cache_tag to not be None",
     )
     def test_source_from_cache(self):
         # Given the path to a PEP 3147 defined .pyc file, return the path to
         # its source.  This tests the good path.
-        path = os.path.join(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
-        )
+        path = os.path.join("foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc")
         expect = os.path.join("foo", "bar", "baz", "qux.py")
         self.assertEqual(imp.source_from_cache(path), expect)
 

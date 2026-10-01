@@ -14,8 +14,7 @@
 import warnings
 
 warnings.warn(
-    "The symbol module is deprecated and will be removed "
-    "in future versions of Python",
+    "The symbol module is deprecated and will be removed in future versions of Python",
     DeprecationWarning,
     stacklevel=2,
 )
@@ -117,6 +116,6 @@ typelist = 347
 
 sym_name = {}
 for _name, _value in list(globals().items()):
-    if type(_value) is type(0):
+    if type(_value) is int:
         sym_name[_value] = _name
 del _name, _value

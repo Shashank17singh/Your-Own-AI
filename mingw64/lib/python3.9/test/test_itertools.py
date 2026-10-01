@@ -1,18 +1,19 @@
+import copy
+import gc
+import operator
+import pickle
+import random
+import struct
+import sys
+import threading
 import unittest
-from test import support
-from itertools import *
 import weakref
 from decimal import Decimal
 from fractions import Fraction
-import operator
-import random
-import copy
-import pickle
 from functools import reduce
-import sys
-import struct
-import threading
-import gc
+from itertools import *
+
+from test import support
 
 maxsize = support.MAX_Py_ssize_t
 minsize = -maxsize - 1
@@ -101,7 +102,6 @@ picklecopiers = [
 
 
 class TestBasicOps(unittest.TestCase):
-
     def pickletest(self, protocol, it, stop=4, take=1, compare=None):
         """Test that an iterator is the same after pickling, also when part-consumed"""
 
@@ -635,7 +635,6 @@ class TestBasicOps(unittest.TestCase):
                 ("ABCDEF", [1, 0, 1], "AC", "C"),
                 ("ABC", [0, 1, 1, 1, 1, 1], "BC", "C"),
             ]:
-
                 self.assertEqual(
                     list(op(compress(data=data, selectors=selectors))), list(result1)
                 )
@@ -1129,7 +1128,7 @@ class TestBasicOps(unittest.TestCase):
                 for i in range(max(map(len, args)))
             ]
             self.assertEqual(list(zip_longest(*args)), target)
-            self.assertEqual(list(zip_longest(*args, **{})), target)
+            self.assertEqual(list(zip_longest(*args)), target)
             target = [
                 tuple((e is None and "X" or e) for e in t) for t in target
             ]  # Replace None fills with 'X'
@@ -1144,7 +1143,7 @@ class TestBasicOps(unittest.TestCase):
         self.assertEqual(list(zip_longest("abcdef")), list(zip("abcdef")))
 
         self.assertEqual(
-            list(zip_longest("abc", "defg", **{})),
+            list(zip_longest("abc", "defg")),
             list(zip(list("abc") + [None], "defg")),
         )  # empty keyword dict
         self.assertRaises(TypeError, zip_longest, 3)
@@ -1523,7 +1522,7 @@ class TestBasicOps(unittest.TestCase):
 
         # Issue #30537: islice can accept integer-like objects as
         # arguments
-        class IntLike(object):
+        class IntLike:
             def __init__(self, val):
                 self.val = val
 
@@ -1658,7 +1657,7 @@ class TestBasicOps(unittest.TestCase):
         # test that tee objects are weak referencable
         a, b = tee(range(10))
         p = weakref.proxy(a)
-        self.assertEqual(getattr(p, "__class__"), type(b))
+        self.assertEqual(p.__class__, type(b))
         del a
         support.gc_collect()  # For PyPy or other GCs.
         self.assertRaises(ReferenceError, getattr, p, "__class__")
@@ -1844,7 +1843,6 @@ class TestBasicOps(unittest.TestCase):
 
 
 class TestExamples(unittest.TestCase):
-
     def test_accumulate(self):
         self.assertEqual(list(accumulate([1, 2, 3, 4, 5])), [1, 3, 6, 10, 15])
 
@@ -1945,7 +1943,25 @@ class TestExamples(unittest.TestCase):
     def test_permutations(self):
         self.assertEqual(
             list(permutations("ABCD", 2)),
-            list(map(tuple, "AB AC AD BA BC BD CA CB CD DA DB DC".split())),
+            list(
+                map(
+                    tuple,
+                    [
+                        "AB",
+                        "AC",
+                        "AD",
+                        "BA",
+                        "BC",
+                        "BD",
+                        "CA",
+                        "CB",
+                        "CD",
+                        "DA",
+                        "DB",
+                        "DC",
+                    ],
+                )
+            ),
         )
         self.assertEqual(
             list(permutations(range(3))),
@@ -1955,7 +1971,7 @@ class TestExamples(unittest.TestCase):
     def test_product(self):
         self.assertEqual(
             list(product("ABCD", "xy")),
-            list(map(tuple, "Ax Ay Bx By Cx Cy Dx Dy".split())),
+            list(map(tuple, ["Ax", "Ay", "Bx", "By", "Cx", "Cy", "Dx", "Dy"])),
         )
         self.assertEqual(
             list(product(range(2), repeat=3)),
@@ -1982,7 +1998,6 @@ class TestExamples(unittest.TestCase):
 
 
 class TestPurePythonRoughEquivalents(unittest.TestCase):
-
     @staticmethod
     def islice(iterable, *args):
         s = slice(*args)
@@ -2024,7 +2039,6 @@ class TestPurePythonRoughEquivalents(unittest.TestCase):
 
 
 class TestGC(unittest.TestCase):
-
     def makecycle(self, iterator, container):
         container.append(iterator)
         next(iterator)
@@ -2230,7 +2244,6 @@ def L(seqn):
 
 
 class TestVariousIteratorArgs(unittest.TestCase):
-
     def test_accumulate(self):
         s = [1, 2, 3, 4, 5]
         r = [1, 3, 6, 10, 15]
@@ -2391,7 +2404,6 @@ class TestVariousIteratorArgs(unittest.TestCase):
 
 
 class LengthTransparency(unittest.TestCase):
-
     def test_repeat(self):
         self.assertEqual(operator.length_hint(repeat(None, 50)), 50)
         self.assertEqual(operator.length_hint(repeat(None, 0)), 0)
@@ -2405,7 +2417,6 @@ class LengthTransparency(unittest.TestCase):
 
 
 class RegressionTests(unittest.TestCase):
-
     def test_sf_793826(self):
         # Fix Armin Rigo's successful efforts to wreak havoc
 

@@ -28,11 +28,12 @@ with elsewhere (I assume).
 """
 
 import os
-import sys
 import shutil
+import sys
 import tempfile
 import unittest
 import warnings
+
 from test.support import use_old_parser
 
 TEMPLATE = r"""# coding: %s
@@ -62,7 +63,6 @@ def byte(i):
 
 
 class TestLiterals(unittest.TestCase):
-
     def setUp(self):
         self.save_path = sys.path[:]
         self.tmpdir = tempfile.mkdtemp()

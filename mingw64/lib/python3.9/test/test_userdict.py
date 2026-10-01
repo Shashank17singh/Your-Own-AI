@@ -1,8 +1,9 @@
 # Check every path through every method of UserDict
 
-from test import mapping_tests
-import unittest
 import collections
+import unittest
+
+from test import mapping_tests
 
 d0 = {}
 d1 = {"one": 1}
@@ -41,13 +42,13 @@ class UserDictTest(mapping_tests.TestHashMappingProtocol):
         )
 
         # alternate constructor
-        self.assertEqual(collections.UserDict.fromkeys("one two".split()), d4)
-        self.assertEqual(collections.UserDict().fromkeys("one two".split()), d4)
-        self.assertEqual(collections.UserDict.fromkeys("one two".split(), 1), d5)
-        self.assertEqual(collections.UserDict().fromkeys("one two".split(), 1), d5)
-        self.assertTrue(u1.fromkeys("one two".split()) is not u1)
-        self.assertIsInstance(u1.fromkeys("one two".split()), collections.UserDict)
-        self.assertIsInstance(u2.fromkeys("one two".split()), collections.UserDict)
+        self.assertEqual(collections.UserDict.fromkeys(["one", "two"]), d4)
+        self.assertEqual(collections.UserDict().fromkeys(["one", "two"]), d4)
+        self.assertEqual(collections.UserDict.fromkeys(["one", "two"], 1), d5)
+        self.assertEqual(collections.UserDict().fromkeys(["one", "two"], 1), d5)
+        self.assertTrue(u1.fromkeys(["one", "two"]) is not u1)
+        self.assertIsInstance(u1.fromkeys(["one", "two"]), collections.UserDict)
+        self.assertIsInstance(u2.fromkeys(["one", "two"]), collections.UserDict)
 
         # Test __repr__
         self.assertEqual(str(u0), str(d0))

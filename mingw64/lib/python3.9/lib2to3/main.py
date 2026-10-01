@@ -2,14 +2,12 @@
 Main program for 2to3.
 """
 
-from __future__ import with_statement, print_function
-
-import sys
-import os
 import difflib
 import logging
-import shutil
 import optparse
+import os
+import shutil
+import sys
 
 from . import refactor
 
@@ -69,7 +67,7 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
         self._input_base_dir = input_base_dir
         self._output_dir = output_dir
         self._append_suffix = append_suffix
-        super(StdoutRefactoringTool, self).__init__(fixers, options, explicit)
+        super().__init__(fixers, options, explicit)
 
     def log_error(self, msg, *args, **kwargs):
         self.errors.append((msg, args, kwargs))
@@ -107,7 +105,7 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
             except OSError:
                 self.log_message("Can't rename %s to %s", filename, backup)
         # Actually write the new file
-        write = super(StdoutRefactoringTool, self).write_file
+        write = super().write_file
         write(new_text, filename, old_text, encoding)
         if not self.nobackups:
             shutil.copymode(backup, filename)

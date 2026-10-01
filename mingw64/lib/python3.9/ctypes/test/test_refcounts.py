@@ -1,7 +1,8 @@
-import unittest
-from test import support
 import ctypes
 import gc
+import unittest
+
+from test import support
 
 MyCallback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int)
 OtherCallback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_ulonglong)
@@ -12,7 +13,6 @@ dll = ctypes.CDLL(_ctypes_test.__file__)
 
 
 class RefcountTestCase(unittest.TestCase):
-
     @support.refcount_test
     def test_1(self):
         from sys import getrefcount as grc

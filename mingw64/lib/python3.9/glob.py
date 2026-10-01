@@ -1,12 +1,12 @@
 """Filename globbing utility."""
 
 import contextlib
+import fnmatch
 import os
 import re
-import fnmatch
 import sys
 
-__all__ = ["glob", "iglob", "escape"]
+__all__ = ["escape", "glob", "iglob"]
 
 
 def glob(pathname, *, recursive=False):

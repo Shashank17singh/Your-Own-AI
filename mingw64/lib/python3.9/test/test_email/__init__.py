@@ -1,9 +1,10 @@
-import os
-import unittest
 import collections
 import email
-from email.message import Message
+import os
+import unittest
 from email._policybase import compat32
+from email.message import Message
+
 from test.support import load_package_tests
 from test.test_email import __file__ as landmark
 
@@ -23,7 +24,6 @@ def openfile(filename, *args, **kws):
 
 # Base test class
 class TestEmailBase(unittest.TestCase):
-
     maxDiff = None
     # Currently the default policy is compat32.  By setting that as the default
     # here we make minimal changes in the test_email tests compared to their
@@ -70,7 +70,7 @@ class TestEmailBase(unittest.TestCase):
     def assertDefectsEqual(self, actual, expected):
         self.assertEqual(len(actual), len(expected), actual)
         for i in range(len(actual)):
-            self.assertIsInstance(actual[i], expected[i], "item {}".format(i))
+            self.assertIsInstance(actual[i], expected[i], f"item {i}")
 
 
 def parameterize(cls):
@@ -144,10 +144,10 @@ def parameterize(cls):
     testfuncs = {}
     for name in paramdicts:
         if name not in testers:
-            raise ValueError("No tester found for {}".format(name))
+            raise ValueError(f"No tester found for {name}")
     for name in testers:
         if name not in paramdicts:
-            raise ValueError("No params found for {}".format(name))
+            raise ValueError(f"No params found for {name}")
     for name, attr in cls.__dict__.items():
         for paramsname, paramsdict in paramdicts.items():
             if name.startswith(paramsname):

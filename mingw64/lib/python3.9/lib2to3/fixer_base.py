@@ -6,13 +6,14 @@
 # Python imports
 import itertools
 
-# Local imports
-from .patcomp import PatternCompiler
 from . import pygram
 from .fixer_util import does_tree_import
 
+# Local imports
+from .patcomp import PatternCompiler
 
-class BaseFix(object):
+
+class BaseFix:
     """Optional base class for fixers.
 
     The subclass name must be FixFooBar where FooBar is the result of
@@ -164,7 +165,6 @@ class BaseFix(object):
         tree - the root node of the tree to be processed.
         filename - the name of the file the tree came from.
         """
-        pass
 
 
 class ConditionalFix(BaseFix):
@@ -174,7 +174,7 @@ class ConditionalFix(BaseFix):
     skip_on = None
 
     def start_tree(self, *args):
-        super(ConditionalFix, self).start_tree(*args)
+        super().start_tree(*args)
         self._should_skip = None
 
     def should_skip(self, node):

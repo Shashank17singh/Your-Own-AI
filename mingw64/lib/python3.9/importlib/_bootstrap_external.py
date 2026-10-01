@@ -23,9 +23,9 @@ work. One should use importlib as the public-facing version of this module.
 # Import builtin modules
 import _imp
 import _io
-import sys
 import _warnings
 import marshal
+import sys
 
 _MS_WINDOWS = sys.platform == "win32"
 if _MS_WINDOWS:
@@ -192,7 +192,7 @@ def _write_atomic(path, data, mode=0o666):
     Be prepared to handle a FileExistsError if concurrent writing of the
     temporary file is attempted."""
     # id() is used to generate a pseudo-random filename.
-    path_tmp = "{}.{}".format(path, id(path))
+    path_tmp = f"{path}.{id(path)}"
     fd = _os.open(path_tmp, _os.O_EXCL | _os.O_CREAT | _os.O_WRONLY, mode & 0o666)
     try:
         # We first write data to a temporary file, and then use os.replace() to
@@ -388,7 +388,7 @@ def cache_from_source(path, debug_override=None, *, optimization=None):
     """
     if debug_override is not None:
         _warnings.warn(
-            "the debug_override parameter is deprecated; use " "'optimization' instead",
+            "the debug_override parameter is deprecated; use 'optimization' instead",
             DeprecationWarning,
         )
         if optimization is not None:
@@ -410,8 +410,8 @@ def cache_from_source(path, debug_override=None, *, optimization=None):
     optimization = str(optimization)
     if optimization != "":
         if not optimization.isalnum():
-            raise ValueError("{!r} is not alphanumeric".format(optimization))
-        almost_filename = "{}.{}{}".format(almost_filename, _OPT, optimization)
+            raise ValueError(f"{optimization!r} is not alphanumeric")
+        almost_filename = f"{almost_filename}.{_OPT}{optimization}"
     filename = almost_filename + BYTECODE_SUFFIXES[0]
     if sys.pycache_prefix is not None:
         # We need an absolute path to the py file to avoid the possibility of
@@ -463,7 +463,7 @@ def source_from_cache(path):
     if not found_in_pycache_prefix:
         head, pycache = _path_split(head)
         if pycache != _PYCACHE:
-            raise ValueError(f"{_PYCACHE} not bottom-level directory in " f"{path!r}")
+            raise ValueError(f"{_PYCACHE} not bottom-level directory in {path!r}")
     dot_count = pycache_filename.count(".")
     if dot_count not in {2, 3}:
         raise ValueError(f"expected only 2 or 3 dots in {pycache_filename!r}")
@@ -471,12 +471,12 @@ def source_from_cache(path):
         optimization = pycache_filename.rsplit(".", 2)[-2]
         if not optimization.startswith(_OPT):
             raise ValueError(
-                "optimization portion of filename does not start " f"with {_OPT!r}"
+                f"optimization portion of filename does not start with {_OPT!r}"
             )
         opt_level = optimization[len(_OPT) :]
         if not opt_level.isalnum():
             raise ValueError(
-                f"optimization level {optimization!r} is not an " "alphanumeric value"
+                f"optimization level {optimization!r} is not an alphanumeric value"
             )
     base_filename = pycache_filename.partition(".")[0]
     return _path_join(head, base_filename + SOURCE_SUFFIXES[0])
@@ -669,7 +669,7 @@ def _compile_bytecode(data, name=None, bytecode_path=None, source_path=None):
         return code
     else:
         raise ImportError(
-            "Non-code object in {!r}".format(bytecode_path),
+            f"Non-code object in {bytecode_path!r}",
             name=name,
             path=bytecode_path,
         )
@@ -787,9 +787,9 @@ def spec_from_file_location(
 class WindowsRegistryFinder:
     """Meta path finder for modules declared in the Windows registry."""
 
-    REGISTRY_KEY = "Software\\Python\\PythonCore\\{sys_version}" "\\Modules\\{fullname}"
+    REGISTRY_KEY = "Software\\Python\\PythonCore\\{sys_version}\\Modules\\{fullname}"
     REGISTRY_KEY_DEBUG = (
-        "Software\\Python\\PythonCore\\{sys_version}" "\\Modules\\{fullname}\\Debug"
+        "Software\\Python\\PythonCore\\{sys_version}\\Modules\\{fullname}\\Debug"
     )
     DEBUG_BUILD = False  # Changed in _setup()
 
@@ -866,8 +866,7 @@ class _LoaderBasics:
         code = self.get_code(module.__name__)
         if code is None:
             raise ImportError(
-                "cannot load module {!r} when get_code() "
-                "returns None".format(module.__name__)
+                f"cannot load module {module.__name__!r} when get_code() returns None"
             )
         _bootstrap._call_with_frames_removed(exec, code, module.__dict__)
 
@@ -877,7 +876,6 @@ class _LoaderBasics:
 
 
 class SourceLoader(_LoaderBasics):
-
     def path_mtime(self, path):
         """Optional method that returns the modification time (an int) for the
         specified path (a str).
@@ -1056,7 +1054,7 @@ class FileLoader:
         # The only reason for this method is for the name check.
         # Issue #14857: Avoid the zero-argument form of super so the implementation
         # of that form can be updated without breaking the frozen module
-        return super(FileLoader, self).load_module(fullname)
+        return super().load_module(fullname)
 
     @_check_name
     def get_filename(self, fullname):
@@ -1163,7 +1161,7 @@ class SourcelessFileLoader(FileLoader, _LoaderBasics):
 
     def get_source(self, fullname):
         """Return None as there is no source code."""
-        return None
+        return
 
 
 # Filled in by _setup().
@@ -1214,11 +1212,11 @@ class ExtensionFileLoader(FileLoader, _LoaderBasics):
 
     def get_code(self, fullname):
         """Return None as an extension module cannot create a code object."""
-        return None
+        return
 
     def get_source(self, fullname):
         """Return None as extension modules have no source code."""
-        return None
+        return
 
     @_check_name
     def get_filename(self, fullname):
@@ -1279,7 +1277,7 @@ class _NamespacePath:
         return len(self._recalculate())
 
     def __repr__(self):
-        return "_NamespacePath({!r})".format(self._path)
+        return f"_NamespacePath({self._path!r})"
 
     def __contains__(self, item):
         return item in self._recalculate()
@@ -1300,7 +1298,7 @@ class _NamespaceLoader:
         The method is deprecated.  The import machinery does the job itself.
 
         """
-        return "<module {!r} (namespace)>".format(module.__name__)
+        return f"<module {module.__name__!r} (namespace)>"
 
     def is_package(self, fullname):
         return True
@@ -1356,8 +1354,7 @@ class PathFinder:
                 return hook(path)
             except ImportError:
                 continue
-        else:
-            return None
+        return None
 
     @classmethod
     def _path_importer_cache(cls, path):
@@ -1423,10 +1420,9 @@ class PathFinder:
                 #  create a namespace package, and continue iterating
                 #  on path.
                 namespace_path.extend(portions)
-        else:
-            spec = _bootstrap.ModuleSpec(fullname, None)
-            spec.submodule_search_locations = namespace_path
-            return spec
+        spec = _bootstrap.ModuleSpec(fullname, None)
+        spec.submodule_search_locations = namespace_path
+        return spec
 
     @classmethod
     def find_spec(cls, fullname, path=None, target=None):
@@ -1561,10 +1557,9 @@ class FileFinder:
                     return self._get_spec(
                         loader_class, fullname, full_path, [base_path], target
                     )
-            else:
-                # If a namespace package, return the path if we don't
-                #  find a module in the next section.
-                is_namespace = _path_isdir(base_path)
+            # If a namespace package, return the path if we don't
+            #  find a module in the next section.
+            is_namespace = _path_isdir(base_path)
         # Check for a file w/ a proper suffix exists.
         for suffix, loader_class in self._loaders:
             try:
@@ -1607,7 +1602,7 @@ class FileFinder:
             for item in contents:
                 name, dot, suffix = item.partition(".")
                 if dot:
-                    new_name = "{}.{}".format(name, suffix.lower())
+                    new_name = f"{name}.{suffix.lower()}"
                 else:
                     new_name = name
                 lower_suffix_contents.add(new_name)
@@ -1635,7 +1630,7 @@ class FileFinder:
         return path_hook_for_FileFinder
 
     def __repr__(self):
-        return "FileFinder({!r})".format(self.path)
+        return f"FileFinder({self.path!r})"
 
 
 # Import setup ###############################################################
@@ -1711,10 +1706,10 @@ def _setup(_bootstrap_module):
         path_separators = path_separators[::-1]
         path_sep = path_separators[0]
 
-    setattr(self_module, "_os", os_module)
-    setattr(self_module, "path_sep", path_sep)
-    setattr(self_module, "path_separators", "".join(path_separators))
-    setattr(self_module, "_pathseps_with_colon", {f":{s}" for s in path_separators})
+    self_module._os = os_module
+    self_module.path_sep = path_sep
+    self_module.path_separators = "".join(path_separators)
+    self_module._pathseps_with_colon = {f":{s}" for s in path_separators}
 
     # Directly load built-in modules needed during bootstrap.
     builtin_names = ["_io", "_warnings", "marshal"]
@@ -1728,7 +1723,7 @@ def _setup(_bootstrap_module):
         setattr(self_module, builtin_name, builtin_module)
 
     # Constants
-    setattr(self_module, "_relax_case", _make_relax_case())
+    self_module._relax_case = _make_relax_case()
     EXTENSION_SUFFIXES.extend(_imp.extension_suffixes())
     if builtin_os == "nt":
         SOURCE_SUFFIXES.append(".pyw")

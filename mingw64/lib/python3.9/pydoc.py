@@ -107,10 +107,7 @@ def _finddoc(obj):
     if inspect.ismethod(obj):
         name = obj.__func__.__name__
         self = obj.__self__
-        if (
-            inspect.isclass(self)
-            and getattr(getattr(self, name, None), "__func__") is obj.__func__
-        ):
+        if inspect.isclass(self) and getattr(self, name, None).__func__ is obj.__func__:
             # classmethod
             cls = self
         else:
@@ -270,7 +267,7 @@ def allmethods(cl):
         methods[key] = 1
     for base in cl.__bases__:
         methods.update(allmethods(base))  # all your base are belong to us
-    for key in methods.keys():
+    for key in methods:
         methods[key] = getattr(cl, key)
     return methods
 
@@ -514,7 +511,6 @@ def safeimport(path, forceload=0, cache={}):
 
 
 class Doc:
-
     PYTHONDOCS = os.environ.get(
         "PYTHONDOCS", "https://docs.python.org/%d.%d/library" % sys.version_info[:2]
     )
@@ -692,13 +688,21 @@ class HTMLDoc(Doc):
 <font color="%s" face="helvetica, arial">%s</font></td></tr>
     """ % (bgcol, fgcol, title)
         if prelude:
-            result = result + """
+            result = (
+                result
+                + """
 <tr bgcolor="%s"><td rowspan=2>%s</td>
 <td colspan=2>%s</td></tr>
-<tr><td>%s</td>""" % (bgcol, marginalia, prelude, gap)
+<tr><td>%s</td>"""
+                % (bgcol, marginalia, prelude, gap)
+            )
         else:
-            result = result + """
-<tr><td bgcolor="%s">%s</td><td>%s</td>""" % (bgcol, marginalia, gap)
+            result = (
+                result
+                + """
+<tr><td bgcolor="%s">%s</td><td>%s</td>"""
+                % (bgcol, marginalia, gap)
+            )
 
         return result + '\n<td width="100%%">%s</td></tr></table>' % contents
 
@@ -1339,7 +1343,8 @@ class TextDoc(Doc):
         if docloc is not None:
             result = result + self.section(
                 "MODULE REFERENCE",
-                docloc + """
+                docloc
+                + """
 
 The following documentation is automatically generated from the Python
 source files.  It may be incomplete, incorrect or include features that
@@ -1833,8 +1838,7 @@ def ttypager(text):
                 continue
             if c in ("b", "B", "\x1b"):
                 r = r - inc - inc
-                if r < 0:
-                    r = 0
+                r = max(r, 0)
             sys.stdout.write("\n" + "\n".join(lines[r : r + inc]) + "\n")
             r = r + inc
 
@@ -1914,10 +1918,13 @@ def resolve(thing, forceload=0):
     if isinstance(thing, str):
         object = locate(thing, forceload)
         if object is None:
-            raise ImportError("""\
+            raise ImportError(
+                """\
 No Python documentation found for %r.
 Use help() to get the interactive help utility.
-Use help(str) for help on the str class.""" % thing)
+Use help(str) for help on the str class."""
+                % thing
+            )
         return object, thing
     else:
         name = getattr(thing, "__name__", None)
@@ -1984,11 +1991,9 @@ def writedocs(dir, pkgpath="", done=None):
         done = {}
     for importer, modname, ispkg in pkgutil.walk_packages([dir], pkgpath):
         writedoc(modname)
-    return
 
 
 class Helper:
-
     # These dictionaries map a topic name to either an alias, or a tuple
     # (label, seealso-items).  The "label" is the label of the corresponding
     # section in the .rst file under Doc/ and an index into the dictionary
@@ -2116,13 +2121,13 @@ class Helper:
         ),
         "STRINGS": (
             "strings",
-            "str UNICODE SEQUENCES STRINGMETHODS " "FORMATTING TYPES",
+            "str UNICODE SEQUENCES STRINGMETHODS FORMATTING TYPES",
         ),
         "STRINGMETHODS": ("string-methods", "STRINGS FORMATTING"),
         "FORMATTING": ("formatstrings", "OPERATORS"),
         "UNICODE": (
             "strings",
-            "encodings unicode SEQUENCES STRINGMETHODS " "FORMATTING TYPES",
+            "encodings unicode SEQUENCES STRINGMETHODS FORMATTING TYPES",
         ),
         "NUMBERS": ("numbers", "INTEGER FLOAT COMPLEX TYPES"),
         "INTEGER": ("integers", "int range"),
@@ -2163,12 +2168,12 @@ class Helper:
         "CALLABLEMETHODS": ("callable-types", "CALLS SPECIALMETHODS"),
         "SEQUENCEMETHODS": (
             "sequence-types",
-            "SEQUENCES SEQUENCEMETHODS " "SPECIALMETHODS",
+            "SEQUENCES SEQUENCEMETHODS SPECIALMETHODS",
         ),
         "MAPPINGMETHODS": ("sequence-types", "MAPPINGS SPECIALMETHODS"),
         "NUMBERMETHODS": (
             "numeric-types",
-            "NUMBERS AUGMENTEDASSIGNMENT " "SPECIALMETHODS",
+            "NUMBERS AUGMENTEDASSIGNMENT SPECIALMETHODS",
         ),
         "EXECUTION": ("execmodel", "NAMESPACES DYNAMICFEATURES EXCEPTIONS"),
         "NAMESPACES": ("naming", "global nonlocal ASSIGNMENT DELETION DYNAMICFEATURES"),
@@ -2182,7 +2187,7 @@ class Helper:
         "PRIVATENAMES": ("atom-identifiers", ""),
         "LITERALS": (
             "atom-literals",
-            "STRINGS NUMBERS TUPLELITERALS " "LISTLITERALS DICTIONARYLITERALS",
+            "STRINGS NUMBERS TUPLELITERALS LISTLITERALS DICTIONARYLITERALS",
         ),
         "TUPLES": "SEQUENCES",
         "TUPLELITERALS": ("exprlists", "TUPLES LITERALS"),
@@ -2289,7 +2294,7 @@ has the same effect as typing a particular string at the help> prompt.
             return self.input.readline()
 
     def help(self, request):
-        if type(request) is type(""):
+        if type(request) is str:
             request = request.strip()
             if request == "keywords":
                 self.listkeywords()
@@ -2306,9 +2311,7 @@ has the same effect as typing a particular string at the help> prompt.
             elif request in ["True", "False", "None"]:
                 # special case these keywords since they are objects too
                 doc(eval(request), "Help on %s:")
-            elif request in self.keywords:
-                self.showtopic(request)
-            elif request in self.topics:
+            elif request in self.keywords or request in self.topics:
                 self.showtopic(request)
             elif request:
                 doc(request, "Help on %s:", output=self._output)
@@ -2321,7 +2324,8 @@ has the same effect as typing a particular string at the help> prompt.
         self.output.write("\n")
 
     def intro(self):
-        self.output.write("""
+        self.output.write(
+            """
 Welcome to Python {0}'s help utility!
 
 If this is your first time using Python, you should definitely check out
@@ -2335,10 +2339,11 @@ To get a list of available modules, keywords, symbols, or topics, type
 "modules", "keywords", "symbols", or "topics".  Each module also comes
 with a one-line summary of what it does; to list the modules whose name
 or summary contain a given string such as "spam", type "modules spam".
-""".format("%d.%d" % sys.version_info[:2]))
+""".format("%d.%d" % sys.version_info[:2])
+        )
 
     def list(self, items, columns=4, width=80):
-        items = list(sorted(items))
+        items = sorted(items)
         colw = width // columns
         rows = (len(items) + columns - 1) // columns
         for row in range(rows):
@@ -2385,7 +2390,7 @@ module "pydoc_data.topics" could not be found.
         if not target:
             self.output.write("no documentation found for %s\n" % repr(topic))
             return
-        if type(target) is type(""):
+        if type(target) is str:
             return self.showtopic(target, more_xrefs)
 
         label, xrefs = target
@@ -2442,11 +2447,11 @@ module "pydoc_data.topics" could not be found.
 
     def listmodules(self, key=""):
         if key:
-            self.output.write("""
-Here is a list of modules whose name or summary contains '{}'.
+            self.output.write(f"""
+Here is a list of modules whose name or summary contains '{key}'.
 If there are any, enter a module name to get more help.
 
-""".format(key))
+""")
             apropos(key)
         else:
             self.output.write("""
@@ -2613,13 +2618,12 @@ def _start_server(urlhandler, hostname, port):
         >>> print(serverthread.error)
         None
     """
-    import http.server
     import email.message
+    import http.server
     import select
     import threading
 
     class DocHandler(http.server.BaseHTTPRequestHandler):
-
         def do_GET(self):
             """Process a request from an HTML browser.
 
@@ -2640,7 +2644,6 @@ def _start_server(urlhandler, hostname, port):
             pass
 
     class DocServer(http.server.HTTPServer):
-
         def __init__(self, host, port, callback):
             self.host = host
             self.address = (self.host, port)
@@ -2661,7 +2664,6 @@ def _start_server(urlhandler, hostname, port):
                 self.callback(self)
 
     class ServerThread(threading.Thread):
-
         def __init__(self, urlhandler, host, port):
             self.urlhandler = urlhandler
             self.host = host
@@ -2719,7 +2721,6 @@ def _url_handler(url, content_type="text/html"):
     """
 
     class _HTMLDoc(HTMLDoc):
-
         def page(self, title, contents):
             """Format an HTML page."""
             css_path = "pydoc_data/_pydoc.css"
@@ -2903,8 +2904,7 @@ def _url_handler(url, content_type="text/html"):
     def get_html_page(url):
         """Generate an HTML page for url."""
         complete_url = url
-        if url.endswith(".html"):
-            url = url[:-5]
+        url = url.removesuffix(".html")
         try:
             if url in ("", "index"):
                 title, content = html_index()
@@ -2940,8 +2940,7 @@ def _url_handler(url, content_type="text/html"):
             title, content = html_error(complete_url, exc)
         return html.page(title, content)
 
-    if url.startswith("/"):
-        url = url[1:]
+    url = url.removeprefix("/")
     if content_type == "text/css":
         path_here = os.path.dirname(os.path.realpath(__file__))
         css_path = os.path.join(path_here, url)
@@ -3091,13 +3090,13 @@ def cli():
 
     except (getopt.error, BadUsage):
         cmd = os.path.splitext(os.path.basename(sys.argv[0]))[0]
-        print("""pydoc - the Python documentation tool
+        print(f"""pydoc - the Python documentation tool
 
 {cmd} <name> ...
     Show text documentation on something.  <name> may be the name of a
     Python keyword, topic, function, module, or package, or a dotted
     reference to a class or function within a module or module in a
-    package.  If <name> contains a '{sep}', it is used as the path to a
+    package.  If <name> contains a '{os.sep}', it is used as the path to a
     Python source file to document. If name is 'keywords', 'topics',
     or 'modules', a listing of these things is displayed.
 
@@ -3118,9 +3117,9 @@ def cli():
 
 {cmd} -w <name> ...
     Write out the HTML documentation for a module to a file in the current
-    directory.  If <name> contains a '{sep}', it is treated as a filename; if
+    directory.  If <name> contains a '{os.sep}', it is treated as a filename; if
     it names a directory, documentation is written for all the contents.
-""".format(cmd=cmd, sep=os.sep))
+""")
 
 
 if __name__ == "__main__":

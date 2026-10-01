@@ -1,4 +1,5 @@
-import sys, unittest
+import sys
+import unittest
 from ctypes import *
 
 structures = []

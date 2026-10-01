@@ -406,7 +406,7 @@ def walk(node):
         yield node
 
 
-class NodeVisitor(object):
+class NodeVisitor:
     """
     A node visitor base class that walks the abstract syntax tree and calls a
     visitor function for every node found.  This function may return a value
@@ -542,7 +542,6 @@ if not hasattr(Constant, "n"):
 
 
 class _ABC(type):
-
     def __init__(cls, *args):
         cls.__doc__ = """Deprecated AST node class. Use ast.Constant instead"""
 
@@ -983,7 +982,7 @@ class _Unparser(NodeVisitor):
         self.fill("raise")
         if not node.exc:
             if node.cause:
-                raise ValueError(f"Node can't use cause without an exception.")
+                raise ValueError("Node can't use cause without an exception.")
             return
         self.write(" ")
         self.traverse(node.exc)
@@ -1651,7 +1650,7 @@ def main():
         "-a",
         "--include-attributes",
         action="store_true",
-        help="include attributes such as line numbers and " "column offsets",
+        help="include attributes such as line numbers and column offsets",
     )
     parser.add_argument(
         "-i",

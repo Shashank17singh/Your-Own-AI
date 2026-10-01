@@ -1,28 +1,27 @@
 # Python test set -- part 5, built-in exceptions
 
 import copy
-import gc
+import errno
 import os
+import pickle
 import sys
 import unittest
-import pickle
 import weakref
-import errno
 
+from test import support
 from test.support import (
     TESTFN,
+    SuppressCrashReport,
     captured_stderr,
     check_impl_detail,
     check_warnings,
     cpython_only,
     gc_collect,
-    no_tracing,
-    unlink,
     import_module,
+    no_tracing,
     script_helper,
-    SuppressCrashReport,
+    unlink,
 )
-from test import support
 
 
 class NaiveException(Exception):
@@ -46,7 +45,6 @@ class BrokenStrException(Exception):
 
 
 class ExceptionTests(unittest.TestCase):
-
     def raise_catch(self, exc, excname):
         with self.subTest(exc=exc, excname=excname):
             try:
@@ -152,7 +150,7 @@ class ExceptionTests(unittest.TestCase):
         self.raise_catch(Exception, "Exception")
         try:
             x = 1 / 0
-        except Exception as e:
+        except Exception:
             pass
 
         self.raise_catch(StopAsyncIteration, "StopAsyncIteration")
@@ -319,7 +317,7 @@ class ExceptionTests(unittest.TestCase):
 
             try:
                 _testcapi.raise_exception(BadException, 1)
-            except TypeError as err:
+            except TypeError:
                 exc, err, tb = sys.exc_info()
                 co = tb.tb_frame.f_code
                 self.assertEqual(co.co_name, "test_capi1")
@@ -332,7 +330,7 @@ class ExceptionTests(unittest.TestCase):
 
             try:
                 _testcapi.raise_exception(BadException, 0)
-            except RuntimeError as err:
+            except RuntimeError:
                 exc, err, tb = sys.exc_info()
                 co = tb.tb_frame.f_code
                 self.assertEqual(co.co_name, "__init__")
@@ -790,7 +788,7 @@ class ExceptionTests(unittest.TestCase):
         wr = weakref.ref(obj)
         try:
             inner_raising_func()
-        except MyException as e:
+        except MyException:
             pass
         obj = None
         gc_collect()  # For PyPy or other GCs.
@@ -901,7 +899,7 @@ class ExceptionTests(unittest.TestCase):
 
         try:
             something
-        except Exception as e:
+        except Exception:
             print_error()
             # implicit "del e" here
 
@@ -1350,7 +1348,7 @@ class ExceptionTests(unittest.TestCase):
         with captured_stderr() as stderr:
             try:
                 raise KeyError()
-            except MyException as e:
+            except MyException:
                 self.fail("exception should not be a MyException")
             except KeyError:
                 pass
@@ -1394,7 +1392,8 @@ class ExceptionTests(unittest.TestCase):
         # singleton was being used in that case, that held traceback data and
         # locals indefinitely and would cause a segfault in _PyExc_Fini() upon
         # finalization of these locals.
-        code = """if 1:
+        code = (
+            """if 1:
             import sys
             from _testinternalcapi import get_recursion_depth
 
@@ -1434,7 +1433,9 @@ class ExceptionTests(unittest.TestCase):
             finally:
                 sys.setrecursionlimit(recursionlimit)
                 print('Done.')
-        """ % __file__
+        """
+            % __file__
+        )
         rc, out, err = script_helper.assert_python_failure("-Wd", "-c", code)
         # Check that the program does not fail with SIGABRT.
         self.assertEqual(rc, 1)
@@ -1534,7 +1535,7 @@ class ExceptionTests(unittest.TestCase):
         self.assertTrue(issubclass(error3, error2))
 
         # test with explicit base tuple
-        class C(object):
+        class C:
             pass
 
         error4 = _testcapi.make_exception_with_doc(
@@ -1572,7 +1573,7 @@ class ExceptionTests(unittest.TestCase):
         # We cannot use assertRaises since it manually deletes the traceback
         try:
             inner()
-        except MemoryError as e:
+        except MemoryError:
             self.assertNotEqual(wr(), None)
         else:
             self.fail("MemoryError not raised")
@@ -1596,7 +1597,7 @@ class ExceptionTests(unittest.TestCase):
         # We cannot use assertRaises since it manually deletes the traceback
         try:
             inner()
-        except RecursionError as e:
+        except RecursionError:
             self.assertNotEqual(wr(), None)
         else:
             self.fail("RecursionError not raised")
@@ -1760,14 +1761,13 @@ class ExceptionTests(unittest.TestCase):
         for _ in range(10):
             try:
                 raise MemoryError
-            except MemoryError as exc:
+            except MemoryError:
                 pass
 
             gc_collect()
 
 
 class ImportErrorTests(unittest.TestCase):
-
     def test_attributes(self):
         # Setting 'name' and 'path' should not be a problem.
         exc = ImportError("test")

@@ -39,10 +39,7 @@
   "definitions": {
     "codemodelVersionV2_9": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -57,10 +54,7 @@
     },
     "codemodelVersionV2_10": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -130,9 +124,7 @@
     "folder": {
       "type": "object",
       "description": "This will only be present if the FOLDER target property is set",
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
         "name": {
           "type": "string",
@@ -143,10 +135,7 @@
     },
     "paths": {
       "type": "object",
-      "required": [
-        "source",
-        "build"
-      ],
+      "required": ["source", "build"],
       "properties": {
         "source": {
           "type": "string",
@@ -168,9 +157,7 @@
       "description": "Only present for executable and library targets that produce artifacts on disk meant for consumption by dependents",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "type": "string",
@@ -187,16 +174,11 @@
     "install": {
       "type": "object",
       "description": "Only present if the target has an install() rule",
-      "required": [
-        "prefix",
-        "destinations"
-      ],
+      "required": ["prefix", "destinations"],
       "properties": {
         "prefix": {
           "type": "object",
-          "required": [
-            "path"
-          ],
+          "required": ["path"],
           "properties": {
             "path": {
               "type": "string",
@@ -209,9 +191,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "path"
-            ],
+            "required": ["path"],
             "properties": {
               "path": {
                 "type": "string",
@@ -233,10 +213,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "command",
-          "type"
-        ],
+        "required": ["command", "type"],
         "properties": {
           "command": {
             "type": "string",
@@ -251,10 +228,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "emulator",
-              "test"
-            ],
+            "enum": ["emulator", "test"],
             "description": "Type of launcher"
           }
         },
@@ -264,9 +238,7 @@
     "link": {
       "type": "object",
       "description": "This is only present for executables and shared library targets that link into a runtime binary",
-      "required": [
-        "language"
-      ],
+      "required": ["language"],
       "properties": {
         "language": {
           "type": "string",
@@ -277,10 +249,7 @@
           "description": "Ordered fragments of the link command line, if available",
           "items": {
             "type": "object",
-            "required": [
-              "fragment",
-              "role"
-            ],
+            "required": ["fragment", "role"],
             "properties": {
               "fragment": {
                 "type": "string",
@@ -288,12 +257,7 @@
               },
               "role": {
                 "type": "string",
-                "enum": [
-                  "flags",
-                  "libraries",
-                  "libraryPath",
-                  "frameworkPath"
-                ],
+                "enum": ["flags", "libraries", "libraryPath", "frameworkPath"],
                 "description": "Role of the fragment content"
               },
               "backtrace": {
@@ -312,9 +276,7 @@
         "sysroot": {
           "type": "object",
           "description": "Only present when the CMAKE_SYSROOT_LINK or CMAKE_SYSROOT variable is defined",
-          "required": [
-            "path"
-          ],
+          "required": ["path"],
           "properties": {
             "path": {
               "type": "string",
@@ -335,10 +297,7 @@
           "description": "Ordered fragments of the archiver command line, if available",
           "items": {
             "type": "object",
-            "required": [
-              "fragment",
-              "role"
-            ],
+            "required": ["fragment", "role"],
             "properties": {
               "fragment": {
                 "type": "string",
@@ -346,9 +305,7 @@
               },
               "role": {
                 "type": "string",
-                "enum": [
-                  "flags"
-                ],
+                "enum": ["flags"],
                 "description": "Role of the fragment content"
               }
             },
@@ -376,9 +333,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -450,9 +405,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -480,9 +433,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string",
@@ -519,30 +470,18 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "type",
-          "visibility",
-          "baseDirectories"
-        ],
+        "required": ["name", "type", "visibility", "baseDirectories"],
         "properties": {
           "name": {
             "type": "string"
           },
           "type": {
             "type": "string",
-            "enum": [
-              "HEADERS",
-              "CXX_MODULES"
-            ]
+            "enum": ["HEADERS", "CXX_MODULES"]
           },
           "visibility": {
             "type": "string",
-            "enum": [
-              "PUBLIC",
-              "PRIVATE",
-              "INTERFACE"
-            ]
+            "enum": ["PUBLIC", "PRIVATE", "INTERFACE"]
           },
           "baseDirectories": {
             "type": "array",
@@ -583,9 +522,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "$ref": "#/definitions/sourcesPath"
@@ -610,9 +547,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "$ref": "#/definitions/sourcesPath"
@@ -640,9 +575,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "$ref": "#/definitions/sourcesPath"
@@ -664,10 +597,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "sourceIndexes"
-        ],
+        "required": ["name", "sourceIndexes"],
         "properties": {
           "name": {
             "type": "string",
@@ -689,10 +619,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "sourceIndexes"
-        ],
+        "required": ["name", "sourceIndexes"],
         "properties": {
           "name": {
             "type": "string",
@@ -732,10 +659,7 @@
     },
     "compileGroupsLanguageStandardV2_2": {
       "type": "object",
-      "required": [
-        "backtraces",
-        "standard"
-      ],
+      "required": ["backtraces", "standard"],
       "properties": {
         "backtraces": {
           "type": "array",
@@ -756,9 +680,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "fragment"
-        ],
+        "required": ["fragment"],
         "properties": {
           "fragment": {
             "type": "string",
@@ -777,9 +699,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "type": "string",
@@ -802,9 +722,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "path"
-        ],
+        "required": ["path"],
         "properties": {
           "path": {
             "type": "string",
@@ -827,9 +745,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "header"
-        ],
+        "required": ["header"],
         "properties": {
           "header": {
             "type": "string",
@@ -848,9 +764,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "define"
-        ],
+        "required": ["define"],
         "properties": {
           "define": {
             "type": "string",
@@ -867,9 +781,7 @@
     },
     "compileGroupsSysroot": {
       "type": "object",
-      "required": [
-        "path"
-      ],
+      "required": ["path"],
       "properties": {
         "path": {
           "type": "string",
@@ -882,10 +794,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "sourceIndexes",
-          "language"
-        ],
+        "required": ["sourceIndexes", "language"],
         "properties": {
           "sourceIndexes": {
             "$ref": "#/definitions/compileGroupsSourceIndexes"
@@ -913,10 +822,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "sourceIndexes",
-          "language"
-        ],
+        "required": ["sourceIndexes", "language"],
         "properties": {
           "sourceIndexes": {
             "$ref": "#/definitions/compileGroupsSourceIndexes"
@@ -947,10 +853,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "sourceIndexes",
-          "language"
-        ],
+        "required": ["sourceIndexes", "language"],
         "properties": {
           "sourceIndexes": {
             "$ref": "#/definitions/compileGroupsSourceIndexes"
@@ -984,10 +887,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "sourceIndexes",
-          "language"
-        ],
+        "required": ["sourceIndexes", "language"],
         "properties": {
           "sourceIndexes": {
             "$ref": "#/definitions/compileGroupsSourceIndexes"
@@ -1022,19 +922,13 @@
     },
     "backtraceGraph": {
       "type": "object",
-      "required": [
-        "nodes",
-        "commands",
-        "files"
-      ],
+      "required": ["nodes", "commands", "files"],
       "properties": {
         "nodes": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "file"
-            ],
+            "required": ["file"],
             "properties": {
               "file": {
                 "type": "integer",
@@ -1078,14 +972,7 @@
       "additionalProperties": false
     },
     "codemodelV2_0": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1142,14 +1029,7 @@
       "additionalProperties": false
     },
     "codemodelV2_1": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1206,14 +1086,7 @@
       "additionalProperties": false
     },
     "codemodelV2_2": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1270,14 +1143,7 @@
       "additionalProperties": false
     },
     "codemodelV2_5": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1337,14 +1203,7 @@
       "additionalProperties": false
     },
     "codemodelV2_6": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1404,14 +1263,7 @@
       "additionalProperties": false
     },
     "codemodelV2_7": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"
@@ -1474,14 +1326,7 @@
       "additionalProperties": false
     },
     "codemodelV2_8": {
-      "required": [
-        "name",
-        "id",
-        "type",
-        "paths",
-        "sources",
-        "backtraceGraph"
-      ],
+      "required": ["name", "id", "type", "paths", "sources", "backtraceGraph"],
       "properties": {
         "name": {
           "$ref": "#/definitions/name"

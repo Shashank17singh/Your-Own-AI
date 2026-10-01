@@ -1,6 +1,7 @@
-import cppcheckdata
-import sys
 import os
+import sys
+
+import cppcheckdata
 
 __checkers__ = []
 

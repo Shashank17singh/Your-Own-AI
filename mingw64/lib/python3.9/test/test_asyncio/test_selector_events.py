@@ -11,10 +11,13 @@ except ImportError:
     ssl = None
 
 import asyncio
-from asyncio.selector_events import BaseSelectorEventLoop
-from asyncio.selector_events import _SelectorTransport
-from asyncio.selector_events import _SelectorSocketTransport
-from asyncio.selector_events import _SelectorDatagramTransport
+from asyncio.selector_events import (
+    BaseSelectorEventLoop,
+    _SelectorDatagramTransport,
+    _SelectorSocketTransport,
+    _SelectorTransport,
+)
+
 from test.test_asyncio import utils as test_utils
 
 MOCK_ANY = mock.ANY
@@ -25,7 +28,6 @@ def tearDownModule():
 
 
 class TestBaseSelectorEventLoop(BaseSelectorEventLoop):
-
     def _make_self_pipe(self):
         self._ssock = mock.Mock()
         self._csock = mock.Mock()
@@ -49,7 +51,6 @@ def close_transport(transport):
 
 
 class BaseSelectorEventLoopTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.selector = mock.Mock()
@@ -397,7 +398,6 @@ class BaseSelectorEventLoopTests(test_utils.TestCase):
 
 
 class SelectorTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -523,7 +523,6 @@ class SelectorTransportTests(test_utils.TestCase):
 
 
 class SelectorSocketTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -914,7 +913,6 @@ class SelectorSocketTransportTests(test_utils.TestCase):
 
 
 class SelectorSocketTransportBufferedProtocolTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -1094,7 +1092,6 @@ class SelectorSocketTransportBufferedProtocolTests(test_utils.TestCase):
 
 
 class SelectorDatagramTransportTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()

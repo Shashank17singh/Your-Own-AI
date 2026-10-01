@@ -1,11 +1,11 @@
 """Tests for distutils.msvc9compiler."""
 
+import os
 import sys
 import unittest
-import os
-
 from distutils.errors import DistutilsPlatformError
 from distutils.tests import support
+
 from test.support import run_unittest
 
 # A manifest with the only assembly reference being the msvcrt assembly, so
@@ -104,7 +104,6 @@ else:
 
 @unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class msvc9compilerTestCase(support.TempdirManager, unittest.TestCase):
-
     def test_no_compiler(self):
         # makes sure query_vcvarsall raises
         # a DistutilsPlatformError if the compiler
@@ -163,7 +162,7 @@ class msvc9compilerTestCase(support.TempdirManager, unittest.TestCase):
         f = open(manifest)
         try:
             # removing trailing spaces
-            content = "\n".join([line.rstrip() for line in f.readlines()])
+            content = "\n".join([line.rstrip() for line in f])
         finally:
             f.close()
 

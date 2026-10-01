@@ -3,9 +3,9 @@
 import io
 import sys
 import unittest
-from test.support import swap_attr, run_unittest
-
 from distutils import log
+
+from test.support import run_unittest, swap_attr
 
 
 class TestLog(unittest.TestCase):
@@ -25,8 +25,9 @@ class TestLog(unittest.TestCase):
                 stderr = io.TextIOWrapper(io.BytesIO(), encoding="cp437", errors=errors)
                 old_threshold = log.set_threshold(log.DEBUG)
                 try:
-                    with swap_attr(sys, "stdout", stdout), swap_attr(
-                        sys, "stderr", stderr
+                    with (
+                        swap_attr(sys, "stdout", stdout),
+                        swap_attr(sys, "stderr", stderr),
                     ):
                         log.debug("Dεbug\tMėssãge")
                         log.fatal("Fαtal\tÈrrōr")

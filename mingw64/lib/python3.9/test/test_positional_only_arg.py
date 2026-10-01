@@ -20,7 +20,6 @@ def global_pos_only_defaults(a=1, /, b=2):
 
 
 class PositionalOnlyTestCase(unittest.TestCase):
-
     def assertRaisesSyntaxError(self, codestr, regex="invalid syntax"):
         with self.assertRaisesRegex(SyntaxError, regex):
             compile(codestr + "\n", "<test>", "single")

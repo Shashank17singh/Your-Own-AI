@@ -1,5 +1,5 @@
-import unittest
 import sys
+import unittest
 from io import StringIO
 
 from test import support
@@ -181,7 +181,7 @@ class TestPy2MigrationHint(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             print >> sys.stderr, "message"
         self.assertIn(
-            'Did you mean "print(<message>, ' 'file=<output_stream>)"?',
+            'Did you mean "print(<message>, file=<output_stream>)"?',
             str(context.exception),
         )
 
@@ -190,7 +190,7 @@ class TestPy2MigrationHint(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             print >> 42
         self.assertIn(
-            'Did you mean "print(<message>, ' 'file=<output_stream>)"?',
+            'Did you mean "print(<message>, file=<output_stream>)"?',
             str(context.exception),
         )
 

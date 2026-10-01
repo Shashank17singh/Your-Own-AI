@@ -2,9 +2,10 @@
 
 import os
 import unittest
+
 from test import support
 from test.support import hashlib_helper
-from test.support.script_helper import assert_python_ok, assert_python_failure
+from test.support.script_helper import assert_python_failure, assert_python_ok
 from test.test_tools import scriptsdir, skip_if_missing
 
 skip_if_missing()

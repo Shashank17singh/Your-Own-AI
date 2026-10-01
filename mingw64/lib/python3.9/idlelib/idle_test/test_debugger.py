@@ -1,7 +1,8 @@
 "Test debugger, coverage 19%"
 
-from idlelib import debugger
 import unittest
+from idlelib import debugger
+
 from test.support import requires
 
 requires("gui")
@@ -9,7 +10,6 @@ from tkinter import Tk
 
 
 class NameSpaceTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = Tk()

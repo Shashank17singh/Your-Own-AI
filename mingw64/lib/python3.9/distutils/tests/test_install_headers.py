@@ -2,9 +2,9 @@
 
 import os
 import unittest
-
 from distutils.command.install_headers import install_headers
 from distutils.tests import support
+
 from test.support import run_unittest
 
 
@@ -14,7 +14,6 @@ class InstallHeadersTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def test_simple_run(self):
         # we have two headers
         header_list = self.mkdtemp()

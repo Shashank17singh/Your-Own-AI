@@ -1,8 +1,6 @@
 __all__ = ("run",)
 
-from . import coroutines
-from . import events
-from . import tasks
+from . import coroutines, events, tasks
 
 
 def run(main, *, debug=None):
@@ -33,7 +31,7 @@ def run(main, *, debug=None):
         raise RuntimeError("asyncio.run() cannot be called from a running event loop")
 
     if not coroutines.iscoroutine(main):
-        raise ValueError("a coroutine was expected, got {!r}".format(main))
+        raise ValueError(f"a coroutine was expected, got {main!r}")
 
     loop = events.new_event_loop()
     try:

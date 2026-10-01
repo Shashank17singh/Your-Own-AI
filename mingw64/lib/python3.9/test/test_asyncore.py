@@ -1,17 +1,17 @@
 import asyncore
-import unittest
-import select
-import os
-import socket
-import sys
-import time
 import errno
+import os
+import select
+import socket
 import struct
+import sys
 import threading
+import time
+import unittest
+from io import BytesIO
 
 from test import support
 from test.support import socket_helper
-from io import BytesIO
 
 if support.PGO:
     raise unittest.SkipTest("test is not helpful for PGO")
@@ -71,7 +71,7 @@ def capture_server(evt, buf, serv):
     try:
         serv.listen()
         conn, addr = serv.accept()
-    except socket.timeout:
+    except TimeoutError:
         pass
     else:
         n = 200
@@ -449,7 +449,6 @@ class FileWrapperTest(unittest.TestCase):
 
 
 class BaseTestHandler(asyncore.dispatcher):
-
     def __init__(self, sock=None):
         asyncore.dispatcher.__init__(self, sock)
         self.flag = False
@@ -498,7 +497,6 @@ class BaseServer(asyncore.dispatcher):
 
 
 class BaseClient(BaseTestHandler):
-
     def __init__(self, family, address):
         BaseTestHandler.__init__(self)
         self.create_socket(family)
@@ -509,7 +507,6 @@ class BaseClient(BaseTestHandler):
 
 
 class BaseTestAPI:
-
     def tearDown(self):
         asyncore.close_all(ignore_all=True)
 
@@ -539,7 +536,6 @@ class BaseTestAPI:
         # make sure handle_accept() is called when a client connects
 
         class TestListener(BaseTestHandler):
-
             def __init__(self, family, addr):
                 BaseTestHandler.__init__(self)
                 self.create_socket(family)
@@ -558,7 +554,6 @@ class BaseTestAPI:
         # make sure handle_accepted() is called when a client connects
 
         class TestListener(BaseTestHandler):
-
             def __init__(self, family, addr):
                 BaseTestHandler.__init__(self)
                 self.create_socket(family)
@@ -609,7 +604,6 @@ class BaseTestAPI:
         # the connection
 
         class TestClient(BaseClient):
-
             def handle_read(self):
                 # in order to make handle_close be called we are supposed
                 # to make at least one recv() call
@@ -635,7 +629,6 @@ class BaseTestAPI:
         data = b"\0" * 128
 
         class TestClient(BaseClient):
-
             def handle_write(self):
                 self.send(data)
 
@@ -648,7 +641,6 @@ class BaseTestAPI:
                 self.close()
 
         class TestHandler(BaseTestHandler):
-
             def handle_read(self):
                 self.recv(len(data))
                 self.close()

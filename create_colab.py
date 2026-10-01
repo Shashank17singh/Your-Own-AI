@@ -3,7 +3,6 @@ Script to generate a Jupyter Notebook for hosting Ollama on a Free Cloud GPU (Go
 """
 
 import json
-import os
 
 notebook = {
     "cells": [

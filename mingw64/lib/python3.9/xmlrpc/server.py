@@ -71,18 +71,18 @@ server.register_function(pow)
 server.handle_request()
 """
 
-from xmlrpc.client import Fault, dumps, loads, gzip_encode, gzip_decode
-from http.server import BaseHTTPRequestHandler
-from functools import partial
-from inspect import signature
 import html
 import http.server
+import os
+import pydoc
+import re
 import socketserver
 import sys
-import os
-import re
-import pydoc
 import traceback
+from functools import partial
+from http.server import BaseHTTPRequestHandler
+from inspect import signature
+from xmlrpc.client import Fault, dumps, gzip_decode, gzip_encode, loads
 
 try:
     import fcntl
@@ -695,7 +695,7 @@ class XMLRPCDocGenerator:
     def __init__(self):
         self.server_name = "XML-RPC Server Documentation"
         self.server_documentation = (
-            "This server exports the following methods through the XML-RPC " "protocol."
+            "This server exports the following methods through the XML-RPC protocol."
         )
         self.server_title = "XML-RPC Server Documentation"
 
@@ -742,8 +742,7 @@ class XMLRPCDocGenerator:
                     method = method_info
             else:
                 assert 0, (
-                    "Could not find method in self.functions and no "
-                    "instance installed"
+                    "Could not find method in self.functions and no instance installed"
                 )
             methods[method_name] = method
         documenter = ServerHTMLDoc()

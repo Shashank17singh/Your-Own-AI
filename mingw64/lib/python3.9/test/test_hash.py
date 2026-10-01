@@ -7,8 +7,9 @@ import datetime
 import os
 import sys
 import unittest
-from test.support.script_helper import assert_python_ok
 from collections.abc import Hashable
+
+from test.support.script_helper import assert_python_ok
 
 IS_64BIT = sys.maxsize > 2**32
 
@@ -50,7 +51,6 @@ def skip_unless_internalhash(test):
 
 
 class HashEqualityTestCase(unittest.TestCase):
-
     def same_hash(self, *objlist):
         # Hash each object given and fail if
         # the hash values are not all the same.
@@ -66,18 +66,18 @@ class HashEqualityTestCase(unittest.TestCase):
         self.same_hash(-2, -2.0, -2.0 + 0.0j)
 
     def test_coerced_integers(self):
-        self.same_hash(int(1), int(1), float(1), complex(1), int("1"), float("1.0"))
-        self.same_hash(int(-(2**31)), float(-(2**31)))
-        self.same_hash(int(1 - 2**31), float(1 - 2**31))
-        self.same_hash(int(2**31 - 1), float(2**31 - 1))
+        self.same_hash(1, 1, float(1), complex(1), int("1"), float("1.0"))
+        self.same_hash(-(2**31), float(-(2**31)))
+        self.same_hash(1 - 2**31, float(1 - 2**31))
+        self.same_hash(2**31 - 1, float(2**31 - 1))
         # for 64-bit platforms
-        self.same_hash(int(2**31), float(2**31))
-        self.same_hash(int(-(2**63)), float(-(2**63)))
-        self.same_hash(int(2**63), float(2**63))
+        self.same_hash(2**31, float(2**31))
+        self.same_hash(-(2**63), float(-(2**63)))
+        self.same_hash(2**63, float(2**63))
 
     def test_coerced_floats(self):
-        self.same_hash(int(1.23e300), float(1.23e300))
-        self.same_hash(float(0.5), complex(0.5, 0.0))
+        self.same_hash(int(1.23e300), 1.23e300)
+        self.same_hash(0.5, complex(0.5, 0.0))
 
     def test_unaligned_buffers(self):
         # The hash function for bytes-like objects shouldn't have
@@ -93,24 +93,24 @@ class HashEqualityTestCase(unittest.TestCase):
 _default_hash = object.__hash__
 
 
-class DefaultHash(object):
+class DefaultHash:
     pass
 
 
 _FIXED_HASH_VALUE = 42
 
 
-class FixedHash(object):
+class FixedHash:
     def __hash__(self):
         return _FIXED_HASH_VALUE
 
 
-class OnlyEquality(object):
+class OnlyEquality:
     def __eq__(self, other):
         return self is other
 
 
-class OnlyInequality(object):
+class OnlyInequality:
     def __ne__(self, other):
         return self is not other
 
@@ -123,7 +123,7 @@ class InheritedHashWithInequality(FixedHash, OnlyInequality):
     pass
 
 
-class NoHash(object):
+class NoHash:
     __hash__ = None
 
 
@@ -166,7 +166,7 @@ class HashInheritanceTestCase(unittest.TestCase):
 
 
 # Issue #4701: Check that some builtin types are correctly hashable
-class DefaultIterSeq(object):
+class DefaultIterSeq:
     seq = range(10)
 
     def __len__(self):
@@ -190,7 +190,6 @@ class HashBuiltinsTestCase(unittest.TestCase):
 
 
 class HashRandomizationTests:
-
     # Each subclass should define a field "repr_", containing the repr() of
     # an object to be tested
 
@@ -347,7 +346,6 @@ class DatetimeTimeTests(DatetimeTests, unittest.TestCase):
 
 
 class HashDistributionTestCase(unittest.TestCase):
-
     def test_hash_distribution(self):
         # check for hash collision
         base = "abcdefghabcdefg"

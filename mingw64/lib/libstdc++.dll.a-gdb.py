@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import gdb
 import os
 import os.path
+import sys
+
+import gdb
 
 pythondir = (
     os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/..")

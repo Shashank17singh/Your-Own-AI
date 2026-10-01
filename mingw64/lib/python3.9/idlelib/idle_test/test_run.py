@@ -1,19 +1,19 @@
 "Test run, coverage 49%."
 
-from idlelib import run
+import idlelib
 import io
 import sys
-from test.support import captured_output, captured_stderr
 import unittest
-from unittest import mock
-import idlelib
+from idlelib import run
 from idlelib.idle_test.mock_idle import Func
+from unittest import mock
+
+from test.support import captured_output, captured_stderr
 
 idlelib.testing = True  # Use {} for executing test user code.
 
 
 class PrintExceptionTest(unittest.TestCase):
-
     def test_print_exception_unhashable(self):
         class UnhashableException(Exception):
             def __eq__(self, other):
@@ -82,7 +82,6 @@ class MockShell:
 
 
 class StdInputFilesTest(unittest.TestCase):
-
     def test_misc(self):
         shell = MockShell()
         f = run.StdInputFile(shell, "stdin")
@@ -185,7 +184,6 @@ class StdInputFilesTest(unittest.TestCase):
 
 
 class StdOutputFilesTest(unittest.TestCase):
-
     def test_misc(self):
         shell = MockShell()
         f = run.StdOutputFile(shell, "stdout")
@@ -340,9 +338,10 @@ class HandleErrorTest(unittest.TestCase):
     # Method of MyRPCServer
     def test_fatal_error(self):
         eq = self.assertEqual
-        with captured_output("__stderr__") as err, mock.patch(
-            "idlelib.run.thread.interrupt_main", new_callable=Func
-        ) as func:
+        with (
+            captured_output("__stderr__") as err,
+            mock.patch("idlelib.run.thread.interrupt_main", new_callable=Func) as func,
+        ):
             try:
                 raise EOFError
             except EOFError:
@@ -365,7 +364,6 @@ class HandleErrorTest(unittest.TestCase):
 
 
 class ExecRuncodeTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.addClassCleanup(setattr, run, "print_exception", run.print_exception)

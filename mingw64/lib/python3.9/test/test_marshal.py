@@ -1,11 +1,12 @@
-from test import support
 import array
 import io
 import marshal
-import sys
-import unittest
 import os
+import sys
 import types
+import unittest
+
+from test import support
 
 try:
     import _testcapi
@@ -175,7 +176,6 @@ class ContainerTestCase(unittest.TestCase, HelperMixin):
 
 
 class BufferTestCase(unittest.TestCase, HelperMixin):
-
     def test_bytearray(self):
         b = bytearray(b"abc")
         self.helper(b)
@@ -543,7 +543,6 @@ class InterningTestCase(unittest.TestCase, HelperMixin):
 @support.cpython_only
 @unittest.skipUnless(_testcapi, "requires _testcapi")
 class CAPI_TestCase(unittest.TestCase, HelperMixin):
-
     def test_write_long_to_file(self):
         for v in range(marshal.version + 1):
             _testcapi.pymarshal_write_long_to_file(0x12345678, support.TESTFN, v)

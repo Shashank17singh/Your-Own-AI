@@ -1,4 +1,3 @@
-from typing import Optional
 from .server import capability, export_line, import_line, request
 from .sources import decode_source
 from .startup import exec_mi_and_log
@@ -6,7 +5,7 @@ from .startup import exec_mi_and_log
 
 @request("breakpointLocations", expect_stopped=False)
 @capability("supportsBreakpointLocationsRequest")
-def breakpoint_locations(*, source, line: int, endLine: Optional[int] = None, **extra):
+def breakpoint_locations(*, source, line: int, endLine: int | None = None, **extra):
     line = import_line(line)
     if endLine is None:
         endLine = line

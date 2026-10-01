@@ -269,9 +269,7 @@ def _compile_charset(charset, flags, code):
         elif op is RANGE or op is RANGE_UNI_IGNORE:
             emit(av[0])
             emit(av[1])
-        elif op is CHARSET:
-            code.extend(av)
-        elif op is BIGCHARSET:
+        elif op is CHARSET or op is BIGCHARSET:
             code.extend(av)
         elif op is CATEGORY:
             if flags & SRE_FLAG_LOCALE:
@@ -559,8 +557,7 @@ def _compile_info(code, pattern, flags):
     # this contains min/max pattern width, and an optional literal
     # prefix or a character map
     lo, hi = pattern.getwidth()
-    if hi > MAXCODE:
-        hi = MAXCODE
+    hi = min(hi, MAXCODE)
     if lo == 0:
         code.extend([INFO, 4, 0, lo, hi])
         return

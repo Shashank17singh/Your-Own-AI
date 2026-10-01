@@ -7,10 +7,10 @@
 #   - "with" statement targets aren't checked
 
 # Local imports
+from .. import fixer_base
+from ..fixer_util import Call, Name, find_binding
 from ..pgen2 import token
 from ..pygram import python_symbols as syms
-from .. import fixer_base
-from ..fixer_util import Name, Call, find_binding
 
 bind_warning = "Calls to builtin next() possibly shadowed by global binding"
 
@@ -35,7 +35,7 @@ class FixNext(fixer_base.BaseFix):
     order = "pre"  # Pre-order tree traversal
 
     def start_tree(self, tree, filename):
-        super(FixNext, self).start_tree(tree, filename)
+        super().start_tree(tree, filename)
 
         n = find_binding("next", tree)
         if n:

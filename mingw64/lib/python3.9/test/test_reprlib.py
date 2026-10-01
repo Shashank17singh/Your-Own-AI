@@ -3,17 +3,16 @@ Test cases for the repr module
 Nick Mathewson
 """
 
-import sys
-import os
-import shutil
 import importlib
 import importlib.util
+import os
+import shutil
+import sys
 import unittest
+from reprlib import Repr, recursive_repr
+from reprlib import repr as r  # Don't shadow builtin repr
 
 from test.support import create_empty_file, verbose
-from reprlib import repr as r  # Don't shadow builtin repr
-from reprlib import Repr
-from reprlib import recursive_repr
 
 
 def nestedTuple(nesting):
@@ -24,7 +23,6 @@ def nestedTuple(nesting):
 
 
 class ReprTests(unittest.TestCase):
-
     def test_string(self):
         eq = self.assertEqual
         eq(r("abc"), "'abc'")
@@ -392,9 +390,7 @@ class aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             r,
         )
         # Bound method next
-        iqux = (
-            qux.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()
-        )
+        iqux = qux.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa()
         r = repr(iqux.amethod)
         self.assertTrue(
             r.startswith(
@@ -446,7 +442,6 @@ class MyContainer2(MyContainer):
 class MyContainer3:
     def __repr__(self):
         "Test document content"
-        pass
 
     wrapped = __repr__
     wrapper = recursive_repr()(wrapped)

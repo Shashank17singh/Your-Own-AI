@@ -123,36 +123,28 @@
     "switch": "DEBUG",
     "comment": "Generate Debug Information",
     "value": "true",
-    "flags": [
-      "CaseInsensitive"
-    ]
+    "flags": ["CaseInsensitive"]
   },
   {
     "name": "GenerateDebugInformation",
     "switch": "DEBUG:FASTLINK",
     "comment": "Generate Debug Information optimized for faster links",
     "value": "DebugFastLink",
-    "flags": [
-      "CaseInsensitive"
-    ]
+    "flags": ["CaseInsensitive"]
   },
   {
     "name": "GenerateDebugInformation",
     "switch": "DEBUG:FULL",
     "comment": "Generate Debug Information optimized for sharing and publishing",
     "value": "DebugFull",
-    "flags": [
-      "CaseInsensitive"
-    ]
+    "flags": ["CaseInsensitive"]
   },
   {
     "name": "GenerateDebugInformation",
     "switch": "DEBUG:NONE",
     "comment": "Produces no debugging information",
     "value": "false",
-    "flags": [
-      "CaseInsensitive"
-    ]
+    "flags": ["CaseInsensitive"]
   },
   {
     "name": "SubSystem",
@@ -649,21 +641,14 @@
     "switch": "MANIFESTUAC:",
     "comment": "",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired",
-      "SpaceAppendable"
-    ]
+    "flags": ["UserValue", "UserRequired", "SpaceAppendable"]
   },
   {
     "name": "UACUIAccess",
     "switch": "uiAccess='false'",
     "comment": "UAC Bypass UI Protection",
     "value": "false",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "UACUIAccess",
@@ -691,11 +676,7 @@
     "switch": "MAP",
     "comment": "Generate Map File",
     "value": "true",
-    "flags": [
-      "UserValue",
-      "UserIgnored",
-      "Continue"
-    ]
+    "flags": ["UserValue", "UserIgnored", "Continue"]
   },
   {
     "name": "MapExports",
@@ -961,354 +942,265 @@
     "switch": "LIBPATH:",
     "comment": "Additional Library Directories",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "Natvis",
     "switch": "NATVIS:",
     "comment": "Natvis files",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "IgnoreSpecificDefaultLibraries",
     "switch": "NODEFAULTLIB:",
     "comment": "Ignore Specific Default Libraries",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AddModuleNamesToAssembly",
     "switch": "ASSEMBLYMODULE:",
     "comment": "Add Module to Assembly",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "EmbedManagedResourceFile",
     "switch": "ASSEMBLYRESOURCE:",
     "comment": "Embed Managed Resource File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ForceSymbolReferences",
     "switch": "INCLUDE:",
     "comment": "Force Symbol References",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "DelayLoadDLLs",
     "switch": "DELAYLOAD:",
     "comment": "Delay Loaded Dlls",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AssemblyLinkResource",
     "switch": "ASSEMBLYLINKRESOURCE:",
     "comment": "Assembly Link Resource",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "AdditionalManifestDependencies",
     "switch": "MANIFESTDEPENDENCY:",
     "comment": "Additional Manifest Dependencies",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ManifestInput",
     "switch": "manifestinput:",
     "comment": "Manifest Input",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "OutputFile",
     "switch": "OUT:",
     "comment": "Output File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "Version",
     "switch": "VERSION:",
     "comment": "Version",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "SpecifySectionAttributes",
     "switch": "SECTION:",
     "comment": "Specify Section Attributes",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "MSDOSStubFileName",
     "switch": "STUB:",
     "comment": "MS-DOS Stub File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ModuleDefinitionFile",
     "switch": "DEF:",
     "comment": "Module Definition File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ManifestFile",
     "switch": "ManifestFile:",
     "comment": "Manifest File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ProgramDatabaseFile",
     "switch": "PDB:",
     "comment": "Generate Program Database File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "StripPrivateSymbols",
     "switch": "PDBSTRIPPED:",
     "comment": "Strip Private Symbols",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "MapFileName",
     "switch": "MAP:",
     "comment": "Map File Name",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "HeapReserveSize",
     "switch": "HEAP:",
     "comment": "Heap Reserve Size",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "HeapCommitSize",
     "switch": "HEAP",
     "comment": "Heap Commit Size",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "StackReserveSize",
     "switch": "STACK:",
     "comment": "Stack Reserve Size",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "StackCommitSize",
     "switch": "STACK",
     "comment": "Stack Commit Size",
     "value": "",
-    "flags": [
-      "UserValue",
-      "UserRequired"
-    ]
+    "flags": ["UserValue", "UserRequired"]
   },
   {
     "name": "FunctionOrder",
     "switch": "ORDER:@",
     "comment": "Function Order",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ProfileGuidedDatabase",
     "switch": "PGD:",
     "comment": "Profile Guided Database",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "MidlCommandFile",
     "switch": "MIDL:@",
     "comment": "MIDL Commands",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "MergedIDLBaseFileName",
     "switch": "IDLOUT:",
     "comment": "Merged IDL Base File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "TypeLibraryFile",
     "switch": "TLBOUT:",
     "comment": "Type Library",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "WindowsMetadataFile",
     "switch": "WINMDFILE:",
     "comment": "Windows Metadata File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "WindowsMetadataLinkKeyFile",
     "switch": "WINMDKEYFILE:",
     "comment": "Windows Metadata Key File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "WindowsMetadataKeyContainer",
     "switch": "WINMDKEYCONTAINER:",
     "comment": "Windows Metadata Key Container",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "EntryPointSymbol",
     "switch": "ENTRY:",
     "comment": "Entry Point",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "BaseAddress",
     "switch": "BASE:",
     "comment": "Base Address",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "ImportLibrary",
     "switch": "IMPLIB:",
     "comment": "Import Library",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "LinkKeyFile",
     "switch": "KEYFILE:",
     "comment": "Key File",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "KeyContainer",
     "switch": "KEYCONTAINER:",
     "comment": "Key Container",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "TypeLibraryResourceID",
     "switch": "TLBID:",
     "comment": "TypeLib Resource ID",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   },
   {
     "name": "SectionAlignment",
     "switch": "ALIGN:",
     "comment": "SectionAlignment",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   }
 ]

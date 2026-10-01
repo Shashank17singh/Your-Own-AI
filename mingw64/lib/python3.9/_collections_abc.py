@@ -6,8 +6,8 @@
 Unit tests are in test_collections.
 """
 
-from abc import ABCMeta, abstractmethod
 import sys
+from abc import ABCMeta, abstractmethod
 
 GenericAlias = type(list[int])
 EllipsisType = type(...)
@@ -21,31 +21,31 @@ FunctionType = type(_f)
 del _f
 
 __all__ = [
-    "Awaitable",
-    "Coroutine",
+    "AsyncGenerator",
     "AsyncIterable",
     "AsyncIterator",
-    "AsyncGenerator",
-    "Hashable",
-    "Iterable",
-    "Iterator",
-    "Generator",
-    "Reversible",
-    "Sized",
-    "Container",
+    "Awaitable",
+    "ByteString",
     "Callable",
     "Collection",
-    "Set",
-    "MutableSet",
-    "Mapping",
-    "MutableMapping",
-    "MappingView",
-    "KeysView",
+    "Container",
+    "Coroutine",
+    "Generator",
+    "Hashable",
     "ItemsView",
-    "ValuesView",
-    "Sequence",
+    "Iterable",
+    "Iterator",
+    "KeysView",
+    "Mapping",
+    "MappingView",
+    "MutableMapping",
     "MutableSequence",
-    "ByteString",
+    "MutableSet",
+    "Reversible",
+    "Sequence",
+    "Set",
+    "Sized",
+    "ValuesView",
 ]
 
 # This module has been renamed from collections.abc to _collections_abc to
@@ -122,7 +122,6 @@ def _check_methods(C, *methods):
 
 
 class Hashable(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -137,7 +136,6 @@ class Hashable(metaclass=ABCMeta):
 
 
 class Awaitable(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -154,7 +152,6 @@ class Awaitable(metaclass=ABCMeta):
 
 
 class Coroutine(Awaitable):
-
     __slots__ = ()
 
     @abstractmethod
@@ -197,7 +194,6 @@ Coroutine.register(coroutine)
 
 
 class AsyncIterable(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -214,7 +210,6 @@ class AsyncIterable(metaclass=ABCMeta):
 
 
 class AsyncIterator(AsyncIterable):
-
     __slots__ = ()
 
     @abstractmethod
@@ -233,7 +228,6 @@ class AsyncIterator(AsyncIterable):
 
 
 class AsyncGenerator(AsyncIterator):
-
     __slots__ = ()
 
     async def __anext__(self):
@@ -284,7 +278,6 @@ AsyncGenerator.register(async_generator)
 
 
 class Iterable(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -302,7 +295,6 @@ class Iterable(metaclass=ABCMeta):
 
 
 class Iterator(Iterable):
-
     __slots__ = ()
 
     @abstractmethod
@@ -337,7 +329,6 @@ Iterator.register(zip_iterator)
 
 
 class Reversible(Iterable):
-
     __slots__ = ()
 
     @abstractmethod
@@ -353,7 +344,6 @@ class Reversible(Iterable):
 
 
 class Generator(Iterator):
-
     __slots__ = ()
 
     def __next__(self):
@@ -402,7 +392,6 @@ Generator.register(generator)
 
 
 class Sized(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -417,7 +406,6 @@ class Sized(metaclass=ABCMeta):
 
 
 class Container(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -434,7 +422,6 @@ class Container(metaclass=ABCMeta):
 
 
 class Collection(Sized, Iterable, Container):
-
     __slots__ = ()
 
     @classmethod
@@ -463,7 +450,7 @@ class _CallableGenericAlias(GenericAlias):
             import warnings
 
             warnings.warn(
-                f"{str(exc)} " f"(This will raise a TypeError in Python 3.10.)",
+                f"{exc!s} (This will raise a TypeError in Python 3.10.)",
                 DeprecationWarning,
             )
             return GenericAlias(origin, args)
@@ -487,7 +474,7 @@ class _CallableGenericAlias(GenericAlias):
             return super().__repr__()
         return (
             f"collections.abc.Callable"
-            f'[[{", ".join([_type_repr(a) for a in self.__args__[:-1]])}], '
+            f"[[{', '.join([_type_repr(a) for a in self.__args__[:-1]])}], "
             f"{_type_repr(self.__args__[-1])}]"
         )
 
@@ -528,7 +515,6 @@ def _type_repr(obj):
 
 
 class Callable(metaclass=ABCMeta):
-
     __slots__ = ()
 
     @abstractmethod
@@ -773,7 +759,6 @@ MutableSet.register(set)
 
 
 class Mapping(Collection):
-
     __slots__ = ()
 
     """A Mapping is a generic container for associating key/value
@@ -827,7 +812,6 @@ Mapping.register(mappingproxy)
 
 
 class MappingView(Sized):
-
     __slots__ = ("_mapping",)
 
     def __init__(self, mapping):
@@ -837,13 +821,12 @@ class MappingView(Sized):
         return len(self._mapping)
 
     def __repr__(self):
-        return "{0.__class__.__name__}({0._mapping!r})".format(self)
+        return f"{self.__class__.__name__}({self._mapping!r})"
 
     __class_getitem__ = classmethod(GenericAlias)
 
 
 class KeysView(MappingView, Set):
-
     __slots__ = ()
 
     @classmethod
@@ -861,7 +844,6 @@ KeysView.register(dict_keys)
 
 
 class ItemsView(MappingView, Set):
-
     __slots__ = ()
 
     @classmethod
@@ -886,7 +868,6 @@ ItemsView.register(dict_items)
 
 
 class ValuesView(MappingView, Collection):
-
     __slots__ = ()
 
     def __contains__(self, value):
@@ -905,7 +886,6 @@ ValuesView.register(dict_values)
 
 
 class MutableMapping(Mapping):
-
     __slots__ = ()
 
     """A MutableMapping is a generic container for associating
@@ -1075,7 +1055,6 @@ ByteString.register(bytearray)
 
 
 class MutableSequence(Sequence):
-
     __slots__ = ()
 
     """All the operations on a read-write sequence.

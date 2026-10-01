@@ -11,15 +11,13 @@ class A:
 
     def __init__():
         """Wow, I have no function!"""
-        pass
 
 
-class B(object):
+class B:
     NO_MEANING: str = "eggs"
-    pass
 
 
-class C(object):
+class C:
     def say_no(self):
         return "no"
 

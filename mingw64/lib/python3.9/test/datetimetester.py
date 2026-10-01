@@ -3,41 +3,29 @@
 See http://www.zope.org/Members/fdrake/DateTimeWiki/TestCases
 """
 
-import io
-import itertools
+# Needed by test_datetime
+import _strptime
+import _testcapi
 import bisect
 import copy
+import datetime as datetime_module
 import decimal
-import sys
+import io
+import itertools
 import os
 import pickle
 import random
 import re
 import struct
+import sys
+import time as _time
 import unittest
-
 from array import array
-
-from operator import lt, le, gt, ge, eq, ne, truediv, floordiv, mod
+from datetime import MAXYEAR, MINYEAR, date, datetime, time, timedelta, timezone, tzinfo
+from operator import eq, floordiv, ge, gt, le, lt, mod, ne, truediv
 
 from test import support
-from test.support import is_resource_enabled, ALWAYS_EQ, LARGEST, SMALLEST
-
-import datetime as datetime_module
-from datetime import MINYEAR, MAXYEAR
-from datetime import timedelta
-from datetime import tzinfo
-from datetime import time
-from datetime import timezone
-from datetime import date, datetime
-import time as _time
-
-import _testcapi
-
-# Needed by test_datetime
-import _strptime
-
-#
+from test.support import ALWAYS_EQ, LARGEST, SMALLEST, is_resource_enabled
 
 pickle_loads = {pickle.loads, pickle._loads}
 
@@ -61,7 +49,6 @@ NAN = float("nan")
 
 
 class TestModule(unittest.TestCase):
-
     def test_constants(self):
         datetime = datetime_module
         self.assertEqual(datetime.MINYEAR, 1)
@@ -132,7 +119,6 @@ class TestModule(unittest.TestCase):
 
 
 class FixedOffset(tzinfo):
-
     def __init__(self, offset, name, dstoffset=42):
         if isinstance(offset, int):
             offset = timedelta(minutes=offset)
@@ -156,7 +142,6 @@ class FixedOffset(tzinfo):
 
 
 class PicklableFixedOffset(FixedOffset):
-
     def __init__(self, offset=None, name=None, dstoffset=None):
         FixedOffset.__init__(self, offset, name, dstoffset)
 
@@ -170,7 +155,6 @@ class _TZInfo(tzinfo):
 
 
 class TestTZInfo(unittest.TestCase):
-
     def test_refcnt_crash_bug_22044(self):
         tz1 = _TZInfo()
         dt1 = datetime(2014, 7, 21, 11, 32, 3, 0, tz1)
@@ -267,7 +251,6 @@ class TestTZInfo(unittest.TestCase):
 
 
 class TestTimeZone(unittest.TestCase):
-
     def setUp(self):
         self.ACDT = timezone(timedelta(hours=9.5), "ACDT")
         self.EST = timezone(-timedelta(hours=5), "EST")
@@ -520,7 +503,6 @@ class HarmlessMixedComparison:
 
 
 class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
-
     theclass = timedelta
 
     def test_constructor(self):
@@ -825,7 +807,6 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
             timedelta(days=-999999999, seconds=1),
             timedelta(days=1, seconds=2, microseconds=3),
         ):
-
             # Verify td -> string -> td identity.
             s = repr(td)
             self.assertTrue(s.startswith("datetime."))
@@ -1793,7 +1774,7 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
         args = 2003, 4, 14
 
         dt1 = self.theclass(*args)
-        dt2 = C(*args, **{"extra": 7})
+        dt2 = C(*args, extra=7)
 
         self.assertEqual(dt2.__class__, C)
         self.assertEqual(dt2.theAnswer, 42)
@@ -1935,7 +1916,6 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
 
     def test_fromisoformat_fails_typeerror(self):
         # Test that fromisoformat fails when passed the wrong type
-        import io
 
         bad_types = [b"2009-03-01", None, io.StringIO("2009-03-01")]
         for bad_type in bad_types:
@@ -1990,9 +1970,8 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
         ]
 
         for isocal in isocals:
-            with self.subTest(isocal=isocal):
-                with self.assertRaises(ValueError):
-                    self.theclass.fromisocalendar(*isocal)
+            with self.subTest(isocal=isocal), self.assertRaises(ValueError):
+                self.theclass.fromisocalendar(*isocal)
 
     def test_fromisocalendar_type_errors(self):
         err_txformers = [
@@ -2013,9 +1992,8 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
                 isocals.append(tuple(err_val))
 
         for isocal in isocals:
-            with self.subTest(isocal=isocal):
-                with self.assertRaises(TypeError):
-                    self.theclass.fromisocalendar(*isocal)
+            with self.subTest(isocal=isocal), self.assertRaises(TypeError):
+                self.theclass.fromisocalendar(*isocal)
 
 
 #############################################################################
@@ -2027,7 +2005,6 @@ class SubclassDatetime(datetime):
 
 
 class TestDateTime(TestDate):
-
     theclass = datetime
 
     def test_basic_attributes(self):
@@ -2409,7 +2386,7 @@ class TestDateTime(TestDate):
         tests = [
             b"cdatetime\ndatetime\n("
             b"S'\\x07\\xdf\\x0b\\x1b\\x14;\\x01\\x00\\x10\\x00'\ntR.",
-            b"cdatetime\ndatetime\n(" b"U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00tR.",
+            b"cdatetime\ndatetime\n(U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00tR.",
             b"\x80\x02cdatetime\ndatetime\n"
             b"U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00\x85R.",
         ]
@@ -2684,7 +2661,7 @@ class TestDateTime(TestDate):
                 sign = "+"
                 seconds = tzseconds
             hours, minutes = divmod(seconds // 60, 60)
-            dtstr = "{}{:02d}{:02d} {}".format(sign, hours, minutes, tzname)
+            dtstr = f"{sign}{hours:02d}{minutes:02d} {tzname}"
             dt = strptime(dtstr, "%z %Z")
             self.assertEqual(dt.utcoffset(), timedelta(seconds=tzseconds))
             self.assertEqual(dt.tzname(), tzname)
@@ -2917,7 +2894,7 @@ class TestDateTime(TestDate):
         args = 2003, 4, 14, 12, 13, 41
 
         dt1 = self.theclass(*args)
-        dt2 = C(*args, **{"extra": 7})
+        dt2 = C(*args, extra=7)
 
         self.assertEqual(dt2.__class__, C)
         self.assertEqual(dt2.theAnswer, 42)
@@ -3203,7 +3180,6 @@ class SubclassTime(time):
 
 
 class TestTime(HarmlessMixedComparison, unittest.TestCase):
-
     theclass = time
 
     def test_basic_attributes(self):
@@ -3589,7 +3565,7 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
         args = 4, 5, 6
 
         dt1 = self.theclass(*args)
-        dt2 = C(*args, **{"extra": 7})
+        dt2 = C(*args, extra=7)
 
         self.assertEqual(dt2.__class__, C)
         self.assertEqual(dt2.theAnswer, 42)
@@ -3611,7 +3587,6 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
 # theclass as a class attribute, and theclass(1, 1, 1, tzinfo=whatever)
 # must be legit (which is true for time and datetime).
 class TZInfoBase:
-
     def test_argument_passing(self):
         cls = self.theclass
 
@@ -3638,7 +3613,7 @@ class TZInfoBase:
         cls = self.theclass
         self.assertRaises(TypeError, cls, 1, 1, 1, tzinfo=12)
 
-        class NiceTry(object):
+        class NiceTry:
             def __init__(self):
                 pass
 
@@ -3798,9 +3773,7 @@ class TZInfoBase:
             for x in d0, d1, d2:
                 for y in d0, d1, d2:
                     got = (x > y) - (x < y)
-                    if (x is d0 or x is d1) and (y is d0 or y is d1):
-                        expected = 0
-                    elif x is y is d2:
+                    if (x is d0 or x is d1) and (y is d0 or y is d1) or x is y is d2:
                         expected = 0
                     elif x is d2:
                         expected = -1
@@ -4178,7 +4151,6 @@ class TestTimeTZ(TestTime, TZInfoBase, unittest.TestCase):
 
     def test_fromisoformat_fails_typeerror(self):
         # Test the fromisoformat fails when passed the wrong type
-        import io
 
         bad_types = [b"12:30:45", None, io.StringIO("12:30:45")]
 
@@ -4214,7 +4186,7 @@ class TestTimeTZ(TestTime, TZInfoBase, unittest.TestCase):
         args = 4, 5, 6, 500, FixedOffset(-300, "EST", 1)
 
         dt1 = self.theclass(*args)
-        dt2 = C(*args, **{"extra": 7})
+        dt2 = C(*args, extra=7)
 
         self.assertEqual(dt2.__class__, C)
         self.assertEqual(dt2.theAnswer, 42)
@@ -4323,7 +4295,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
 
         # Try one with a tzinfo.
         tinfo = PicklableFixedOffset(-300, "cookie")
-        orig = self.theclass(*args, **{"tzinfo": tinfo})
+        orig = self.theclass(*args, tzinfo=tinfo)
         derived = self.theclass(1, 1, 1, tzinfo=FixedOffset(0, "", 0))
         for pickler, unpickler, proto in pickle_choices:
             green = pickler.dumps(orig, proto)
@@ -4360,7 +4332,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         ]
         args = 2015, 11, 27, 20, 59, 1, 123456
         tinfo = PicklableFixedOffset(-300, "cookie")
-        expected = self.theclass(*args, **{"tzinfo": tinfo})
+        expected = self.theclass(*args, tzinfo=tinfo)
         for data in tests:
             for loads in pickle_loads:
                 derived = loads(data, encoding="latin1")
@@ -4866,9 +4838,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         for x in d0, d1, d2:
             for y in d0, d1, d2:
                 got = x - y
-                if (x is d0 or x is d1) and (y is d0 or y is d1):
-                    expected = timedelta(0)
-                elif x is y is d2:
+                if (x is d0 or x is d1) and (y is d0 or y is d1) or x is y is d2:
                     expected = timedelta(0)
                 elif x is d2:
                     expected = timedelta(minutes=(11 - 59) - 0)
@@ -4926,7 +4896,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         args = 2002, 12, 31, 4, 5, 6, 500, FixedOffset(-300, "EST", 1)
 
         dt1 = self.theclass(*args)
-        dt2 = C(*args, **{"extra": 7})
+        dt2 = C(*args, extra=7)
 
         self.assertEqual(dt2.__class__, C)
         self.assertEqual(dt2.theAnswer, 42)
@@ -4959,7 +4929,6 @@ DSTEND = datetime(1, 10, 25, 1)
 
 
 class USTimeZone(tzinfo):
-
     def __init__(self, hours, reprname, stdname, dstname):
         self.stdoffset = timedelta(hours=hours)
         self.reprname = reprname
@@ -5096,7 +5065,6 @@ class TestTimezoneConversions(unittest.TestCase):
             timedelta(minutes=1),
             timedelta(microseconds=1),
         ):
-
             self.checkinside(dston, tz, utc, dston, dstoff)
             for during in dston + delta, dstoff - delta:
                 self.checkinside(during, tz, utc, dston, dstoff)
@@ -5279,7 +5247,6 @@ class TestTimezoneConversions(unittest.TestCase):
 
 
 class Oddballs(unittest.TestCase):
-
     def test_bug_1028306(self):
         # Trying to compare a date to a datetime should act like a mixed-
         # type comparison, despite that datetime is a subclass of date.
@@ -5361,7 +5328,7 @@ class Oddballs(unittest.TestCase):
 
         s10 = Float(10.9)
         with self.assertRaisesRegex(
-            TypeError, "^integer argument expected, " "got float$"
+            TypeError, "^integer argument expected, got float$"
         ):
             datetime(10, 10, s10)
 
@@ -5388,7 +5355,6 @@ class Oddballs(unittest.TestCase):
 
 
 class tzinfo2(tzinfo):
-
     def fromutc(self, dt):
         "datetime in UTC -> datetime in local time."
 
@@ -5424,7 +5390,6 @@ class tzinfo2(tzinfo):
 
 
 class USTimeZone2(tzinfo2):
-
     def __init__(self, hours, reprname, stdname, dstname):
         self.stdoffset = timedelta(hours=hours)
         self.reprname = reprname
@@ -5550,7 +5515,6 @@ class Europe_Vilnius_1941(tzinfo):
 
 
 class TestLocalTimeDisambiguation(unittest.TestCase):
-
     def test_vilnius_1941_fromutc(self):
         Vilnius = Europe_Vilnius_1941()
 

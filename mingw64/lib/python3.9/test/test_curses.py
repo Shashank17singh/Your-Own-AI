@@ -6,7 +6,7 @@ import sys
 import tempfile
 import unittest
 
-from test.support import requires, import_module, verbose, SaveSignals
+from test.support import SaveSignals, import_module, requires, verbose
 
 # Optionally test curses module.  This currently requires that the
 # 'curses' resource be given on the regrtest command line using the -u
@@ -61,7 +61,6 @@ SHORT_MAX = 0x7FFF
 )
 @unittest.skipIf(sys.platform == "cygwin", "cygwin's curses mostly just hangs")
 class TestCurses(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         if verbose:
@@ -1171,7 +1170,6 @@ class TestCurses(unittest.TestCase):
 
 
 class MiscTests(unittest.TestCase):
-
     @requires_curses_func("update_lines_cols")
     def test_update_lines_cols(self):
         curses.update_lines_cols()
@@ -1203,7 +1201,6 @@ class MiscTests(unittest.TestCase):
 
 
 class TestAscii(unittest.TestCase):
-
     def test_controlnames(self):
         for name in curses.ascii.controlnames:
             self.assertTrue(hasattr(curses.ascii, name), name)

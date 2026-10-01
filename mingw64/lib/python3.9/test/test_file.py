@@ -1,15 +1,14 @@
-import sys
+import _pyio as pyio
+import io
 import os
+import sys
 import unittest
 from array import array
+from collections import UserList
 from weakref import proxy
 
-import io
-import _pyio as pyio
-
-from test.support import TESTFN, gc_collect
 from test import support
-from collections import UserList
+from test.support import TESTFN, gc_collect
 
 
 class AutoFileTests:
@@ -141,7 +140,6 @@ class PyAutoFileTests(AutoFileTests, unittest.TestCase):
 
 
 class OtherFileTests:
-
     def tearDown(self):
         support.unlink(TESTFN)
 
@@ -161,8 +159,7 @@ class OtherFileTests:
         if sys.platform == "osf1V5":
             # This causes the interpreter to exit on OSF1 v5.1.
             self.skipTest(
-                " sys.stdin.seek(-1) may crash the interpreter on OSF1."
-                " Test manually."
+                " sys.stdin.seek(-1) may crash the interpreter on OSF1. Test manually."
             )
 
         if not sys.stdin.isatty():
@@ -251,9 +248,9 @@ class OtherFileTests:
         # various read* methods.
         dataoffset = 16384
         filler = b"ham\n"
-        assert not dataoffset % len(
-            filler
-        ), "dataoffset must be multiple of len(filler)"
+        assert not dataoffset % len(filler), (
+            "dataoffset must be multiple of len(filler)"
+        )
         nchunks = dataoffset // len(filler)
         testlines = [
             b"spam, spam and eggs\n",

@@ -1,10 +1,11 @@
-import unittest
 import sys
 import tkinter
+import unittest
 from tkinter import ttk
+from tkinter.test.support import AbstractTkTest
+
 from test import support
 from test.support import requires, run_unittest
-from tkinter.test.support import AbstractTkTest
 
 requires("gui")
 CLASS_NAMES = [

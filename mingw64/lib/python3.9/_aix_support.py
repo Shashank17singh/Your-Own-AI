@@ -17,7 +17,7 @@ def _aix_tag(vrtl, bd):
     _sz = 32 if sys.maxsize == (2**31 - 1) else 64
     _bd = bd if bd != 0 else 9988
     # vrtl[version, release, technology_level]
-    return "aix-{:1x}{:1d}{:02d}-{:04d}-{}".format(vrtl[0], vrtl[1], vrtl[2], _bd, _sz)
+    return f"aix-{vrtl[0]:1x}{vrtl[1]:1d}{vrtl[2]:02d}-{_bd:04d}-{_sz}"
 
 
 # extract version, release and technology level from a VRMF string
@@ -86,5 +86,5 @@ def aix_buildtag():
     try:
         build_date = int(build_date)
     except (ValueError, TypeError):
-        raise ValueError(f"AIX_BUILDDATE is not defined or invalid: " f"{build_date!r}")
+        raise ValueError(f"AIX_BUILDDATE is not defined or invalid: {build_date!r}")
     return _aix_tag(_aix_bgt(), build_date)

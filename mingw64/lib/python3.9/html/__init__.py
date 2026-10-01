@@ -221,8 +221,7 @@ def _replace_charref(s):
         for x in range(len(s) - 1, 1, -1):
             if s[:x] in _html5:
                 return _html5[s[:x]] + s[x:]
-        else:
-            return "&" + s
+        return "&" + s
 
 
 _charref = _re.compile(

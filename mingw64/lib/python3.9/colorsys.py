@@ -22,12 +22,12 @@ HSV: Hue, Saturation, Value
 # http://en.wikipedia.org/wiki/HSV_color_space
 
 __all__ = [
+    "hls_to_rgb",
+    "hsv_to_rgb",
+    "rgb_to_hls",
+    "rgb_to_hsv",
     "rgb_to_yiq",
     "yiq_to_rgb",
-    "rgb_to_hls",
-    "hls_to_rgb",
-    "rgb_to_hsv",
-    "hsv_to_rgb",
 ]
 
 # Some floating point constants
@@ -60,18 +60,12 @@ def yiq_to_rgb(y, i, q):
     g = y - 0.27478764629897834 * i - 0.6356910791873801 * q
     b = y - 1.1085450346420322 * i + 1.7090069284064666 * q
 
-    if r < 0.0:
-        r = 0.0
-    if g < 0.0:
-        g = 0.0
-    if b < 0.0:
-        b = 0.0
-    if r > 1.0:
-        r = 1.0
-    if g > 1.0:
-        g = 1.0
-    if b > 1.0:
-        b = 1.0
+    r = max(r, 0.0)
+    g = max(g, 0.0)
+    b = max(b, 0.0)
+    r = min(r, 1.0)
+    g = min(g, 1.0)
+    b = min(b, 1.0)
     return (r, g, b)
 
 

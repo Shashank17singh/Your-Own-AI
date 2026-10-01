@@ -4,15 +4,16 @@
 Much of IdleConf is also exercised by ConfigDialog and test_configdialog.
 """
 
-from idlelib import config
-import sys
-import os
-import tempfile
-from test.support import captured_stderr, findfile
-import unittest
-from unittest import mock
 import idlelib
+import os
+import sys
+import tempfile
+import unittest
+from idlelib import config
 from idlelib.idle_test.mock_idle import Func
+from unittest import mock
+
+from test.support import captured_stderr, findfile
 
 # Tests should not depend on fortuitous user configurations.
 # They must not affect actual user .cfg files.
@@ -609,9 +610,10 @@ class IdleConfTest(unittest.TestCase):
         )
 
     def test_get_font(self):
-        from test.support import requires
         from tkinter import Tk
         from tkinter.font import Font
+
+        from test.support import requires
 
         conf = self.mock_config()
 
@@ -764,7 +766,6 @@ class CurrentColorKeysTest(unittest.TestCase):
 
 
 class ChangesTest(unittest.TestCase):
-
     empty = {"main": {}, "highlight": {}, "keys": {}, "extensions": {}}
 
     def load(self):  # Test_add_option verifies that this works.
@@ -852,7 +853,6 @@ class ChangesTest(unittest.TestCase):
 
 
 class WarningTest(unittest.TestCase):
-
     def test_warn(self):
         Equal = self.assertEqual
         config._warned = set()

@@ -1,17 +1,16 @@
-import sys
-import unittest
-from doctest import DocTestSuite
-from test import support
-import weakref
-import gc
-
 # Modules under test
 import _thread
-import threading
 import _threading_local
+import sys
+import threading
+import unittest
+import weakref
+from doctest import DocTestSuite
+
+from test import support
 
 
-class Weak(object):
+class Weak:
     pass
 
 
@@ -22,7 +21,6 @@ def target(local, weaklist):
 
 
 class BaseLocalTest:
-
     def test_local_refs(self):
         self._local_refs(20)
         self._local_refs(50)

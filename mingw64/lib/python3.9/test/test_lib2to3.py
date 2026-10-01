@@ -1,4 +1,5 @@
 import unittest
+
 from test.support import check_warnings, import_fresh_module
 
 with check_warnings(("", PendingDeprecationWarning)):

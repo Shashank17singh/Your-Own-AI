@@ -45,18 +45,18 @@ Process #1..n:
 
 __author__ = "Brian Quinlan (brian@sweetapp.com)"
 
-import os
-from concurrent.futures import _base
-import queue
+import itertools
 import multiprocessing as mp
 import multiprocessing.connection
-from multiprocessing.queues import Queue
-import threading
-import weakref
-from functools import partial
-import itertools
+import os
+import queue
 import sys
+import threading
 import traceback
+import weakref
+from concurrent.futures import _base
+from functools import partial
+from multiprocessing.queues import Queue
 
 _threads_wakeups = weakref.WeakKeyDictionary()
 _global_shutdown = False
@@ -140,7 +140,7 @@ def _rebuild_exc(exc, tb):
     return exc
 
 
-class _WorkItem(object):
+class _WorkItem:
     def __init__(self, future, fn, args, kwargs):
         self.future = future
         self.fn = fn
@@ -148,14 +148,14 @@ class _WorkItem(object):
         self.kwargs = kwargs
 
 
-class _ResultItem(object):
+class _ResultItem:
     def __init__(self, work_id, exception=None, result=None):
         self.work_id = work_id
         self.exception = exception
         self.result = result
 
 
-class _CallItem(object):
+class _CallItem:
     def __init__(self, work_id, fn, args, kwargs):
         self.work_id = work_id
         self.fn = fn
@@ -292,7 +292,7 @@ class _ExecutorManagerThread(threading.Thread):
             _, thread_wakeup=self.thread_wakeup, shutdown_lock=self.shutdown_lock
         ):
             mp.util.debug(
-                "Executor collected: triggering callback for" " QueueManager wakeup"
+                "Executor collected: triggering callback for QueueManager wakeup"
             )
             with shutdown_lock:
                 thread_wakeup.wakeup()
@@ -558,8 +558,7 @@ def _check_system_limits():
         # according to POSIX
         return
     _system_limited = (
-        "system provides too few semaphores (%d"
-        " available, 256 necessary)" % nsems_max
+        "system provides too few semaphores (%d available, 256 necessary)" % nsems_max
     )
     raise NotImplementedError(_system_limited)
 
@@ -701,7 +700,7 @@ class ProcessPoolExecutor(_base.Executor):
                 raise RuntimeError("cannot schedule new futures after shutdown")
             if _global_shutdown:
                 raise RuntimeError(
-                    "cannot schedule new futures after " "interpreter shutdown"
+                    "cannot schedule new futures after interpreter shutdown"
                 )
 
             f = _base.Future()

@@ -1,14 +1,12 @@
-import socket
-import time
 import asyncio
+import socket
 import sys
-import unittest
-
 from asyncio import proactor_events
 from itertools import cycle, islice
-from test.test_asyncio import utils as test_utils
+
 from test import support
 from test.support import socket_helper
+from test.test_asyncio import utils as test_utils
 
 
 class MyProto(asyncio.Protocol):
@@ -47,7 +45,6 @@ class MyProto(asyncio.Protocol):
 
 
 class BaseSockTestsMixin:
-
     def create_event_loop(self):
         raise NotImplementedError
 
@@ -474,12 +471,10 @@ class BaseSockTestsMixin:
 if sys.platform == "win32":
 
     class SelectEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop()
 
     class ProactorEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.ProactorEventLoop()
 
@@ -489,26 +484,22 @@ else:
     if hasattr(selectors, "KqueueSelector"):
 
         class KqueueEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.KqueueSelector())
 
     if hasattr(selectors, "EpollSelector"):
 
         class EPollEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.EpollSelector())
 
     if hasattr(selectors, "PollSelector"):
 
         class PollEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.PollSelector())
 
     # Should always exist.
     class SelectEventLoopTests(BaseSockTestsMixin, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop(selectors.SelectSelector())

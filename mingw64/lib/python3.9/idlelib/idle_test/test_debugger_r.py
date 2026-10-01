@@ -1,13 +1,10 @@
 "Test debugger_r, coverage 30%."
 
-from idlelib import debugger_r
 import unittest
-from test.support import requires
-from tkinter import Tk
+from idlelib import debugger_r
 
 
 class Test(unittest.TestCase):
-
     ##    @classmethod
     ##    def setUpClass(cls):
     ##        requires('gui')
@@ -27,7 +24,6 @@ class Test(unittest.TestCase):
 
 
 class IdbAdapterTest(unittest.TestCase):
-
     def test_dict_item_noattr(self):  # Issue 33065.
 
         class BinData:

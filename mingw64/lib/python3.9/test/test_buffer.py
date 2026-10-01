@@ -13,15 +13,19 @@
 # Written and designed by Stefan Krah for Python 3.3.
 #
 
+import array
 import contextlib
+import io
+import os
+import sys
 import unittest
-from test import support
-from itertools import permutations, product
-from random import randrange, sample, choice
 import warnings
-import sys, array, io, os
 from decimal import Decimal
 from fractions import Fraction
+from itertools import permutations, product
+from random import choice, randrange, sample
+
+from test import support
 
 try:
     from _testbuffer import *
@@ -844,7 +848,6 @@ if SHORT_TEST:
 @unittest.skipUnless(struct, "struct module required for this test.")
 @unittest.skipUnless(ndarray, "ndarray object required for this test")
 class TestBufferProtocol(unittest.TestCase):
-
     def setUp(self):
         # The suboffsets tests need sizeof(void *).
         self.sizeof_void_p = get_sizeof_void_p()
@@ -862,7 +865,7 @@ class TestBufferProtocol(unittest.TestCase):
         strides,
         lst,
         sliced=False,
-        cast=False
+        cast=False,
     ):
         # Verify buffer contents against expected values.
         if shape:
@@ -1091,7 +1094,6 @@ class TestBufferProtocol(unittest.TestCase):
             # PyBUF_SIMPLE|PyBUF_FORMAT and PyBUF_WRITABLE|PyBUF_FORMAT
             (not match(req, PyBUF_ND) and match(req, PyBUF_FORMAT))
         ):
-
             self.assertRaises(BufferError, ndarray, ex, getbuf=req)
             return
 
@@ -1189,7 +1191,6 @@ class TestBufferProtocol(unittest.TestCase):
                 strides = [v * itemsize for v in strides]
                 offset *= itemsize
                 for flags in ndflags:
-
                     if strides and (flags & ND_FORTRAN):
                         continue
                     if not shape and (flags & ND_PIL):
@@ -1505,7 +1506,6 @@ class TestBufferProtocol(unittest.TestCase):
             shape_t = [randrange(2, 10) for _ in range(ndim)]
             nitems = prod(shape_t)
             for shape in permutations(shape_t):
-
                 fmt, items, _ = randitems(nitems)
                 itemsize = struct.calcsize(fmt)
 
@@ -1746,7 +1746,6 @@ class TestBufferProtocol(unittest.TestCase):
         shape_t = (2, 3, 5)
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
-
             fmt, items, _ = randitems(nitems)
 
             for flags in (0, ND_PIL):
@@ -1903,7 +1902,6 @@ class TestBufferProtocol(unittest.TestCase):
         ndim = len(shape_t)
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
-
             fmt, items, _ = randitems(nitems)
             itemsize = struct.calcsize(fmt)
 
@@ -1912,7 +1910,6 @@ class TestBufferProtocol(unittest.TestCase):
                 lst = carray(items, shape)
 
                 for slices in rslices_ndim(ndim, shape):
-
                     listerr = None
                     try:
                         sliced = multislice(lst, slices)
@@ -1935,7 +1932,6 @@ class TestBufferProtocol(unittest.TestCase):
         ndim = len(shape_t)
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
-
             fmt, items, _ = randitems(nitems)
             itemsize = struct.calcsize(fmt)
 
@@ -1947,7 +1943,6 @@ class TestBufferProtocol(unittest.TestCase):
             lst = carray(items, shape)
 
             for slices in rslices_ndim(ndim, shape):
-
                 listerr = None
                 try:
                     sliced = multislice(lst, slices)
@@ -1970,7 +1965,6 @@ class TestBufferProtocol(unittest.TestCase):
             for lslice in genslices(5):
                 for rslice in genslices(5):
                     for flags in (0, ND_PIL):
-
                         f = flags | ND_WRITABLE
                         nd = ndarray(items, shape=[5], format=fmt, flags=f)
                         ex = ndarray(items, shape=[5], format=fmt, flags=f)
@@ -2031,7 +2025,6 @@ class TestBufferProtocol(unittest.TestCase):
         ndim = len(shape_t)
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
-
             fmt, items, _ = randitems(nitems)
 
             for flags in (0, ND_PIL):
@@ -2590,7 +2583,6 @@ class TestBufferProtocol(unittest.TestCase):
 
         # NumPy style, C-contiguous:
         for items, shape in items_shape:
-
             # From PEP-3118 compliant exporter:
             ex = ndarray(items, shape=shape)
             m = memoryview(ex)
@@ -2665,7 +2657,6 @@ class TestBufferProtocol(unittest.TestCase):
 
         # NumPy style, Fortran contiguous:
         for items, shape in items_shape:
-
             # From PEP-3118 compliant exporter:
             ex = ndarray(items, shape=shape, flags=ND_FORTRAN)
             m = memoryview(ex)
@@ -2704,7 +2695,6 @@ class TestBufferProtocol(unittest.TestCase):
 
         # PIL style:
         for items, shape in items_shape[1:]:
-
             # From PEP-3118 compliant exporter:
             ex = ndarray(items, shape=shape, flags=ND_PIL)
             m = memoryview(ex)
@@ -2792,14 +2782,14 @@ class TestBufferProtocol(unittest.TestCase):
 
     def test_memoryview_struct_module(self):
 
-        class INT(object):
+        class INT:
             def __init__(self, val):
                 self.val = val
 
             def __int__(self):
                 return self.val
 
-        class IDX(object):
+        class IDX:
             def __init__(self, val):
                 self.val = val
 
@@ -3005,7 +2995,6 @@ class TestBufferProtocol(unittest.TestCase):
         def iter_roundtrip(ex, m, items, fmt):
             srcsize = struct.calcsize(fmt)
             for bytefmt, to_bytelist in bytespec:
-
                 m2 = m.cast(bytefmt)
                 lst = to_bytelist(ex)
                 self.verify(
@@ -3240,7 +3229,7 @@ class TestBufferProtocol(unittest.TestCase):
     def test_memoryview_sequence(self):
 
         for fmt in ("d", "f"):
-            inf = float(3e400)
+            inf = 3e400
             ex = array.array(fmt, [1.0, inf, 3.0])
             m = memoryview(ex)
             self.assertIn(1.0, m)
@@ -3509,7 +3498,6 @@ class TestBufferProtocol(unittest.TestCase):
             for fmt, items, singleitem in iter_format(n, "array"):
                 for lslice in genslices(n):
                     for rslice in genslices(n):
-
                         a = array.array(fmt, items)
                         b = array.array(fmt, items)
                         m = memoryview(b)
@@ -3822,7 +3810,7 @@ class TestBufferProtocol(unittest.TestCase):
 
         # C-contiguous, different values
         nd1 = ndarray(list(range(-15, 15)), shape=[3, 2, 5], format="@h")
-        nd2 = ndarray(list(range(0, 30)), shape=[3, 2, 5], format="@h")
+        nd2 = ndarray(list(range(30)), shape=[3, 2, 5], format="@h")
         v = memoryview(nd1)
         w = memoryview(nd2)
 
@@ -3886,9 +3874,7 @@ class TestBufferProtocol(unittest.TestCase):
         nd1 = ndarray(
             list(range(-15, 15)), shape=[5, 2, 3], format="@h", flags=ND_FORTRAN
         )
-        nd2 = ndarray(
-            list(range(0, 30)), shape=[5, 2, 3], format="@h", flags=ND_FORTRAN
-        )
+        nd2 = ndarray(list(range(30)), shape=[5, 2, 3], format="@h", flags=ND_FORTRAN)
         v = memoryview(nd1)
         w = memoryview(nd2)
 
@@ -4707,10 +4693,9 @@ class TestBufferProtocol(unittest.TestCase):
 
         # memoryview.release() fails if the view has exported buffers.
         x = bytearray(b"123")
-        with self.assertRaises(BufferError):
-            with memoryview(x) as m:
-                ex = ndarray(m)
-                m[0] == ord(b"1")
+        with self.assertRaises(BufferError), memoryview(x) as m:
+            ex = ndarray(m)
+            m[0] == ord(b"1")
 
     def test_memoryview_redirect(self):
 

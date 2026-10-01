@@ -20,11 +20,11 @@ import types
 import unittest
 import warnings
 import weakref
-
 from functools import partial
-from itertools import product, islice
+from itertools import islice, product
+
 from test import support
-from test.support import TESTFN, findfile, import_fresh_module, gc_collect, swap_attr
+from test.support import TESTFN, findfile, gc_collect, import_fresh_module, swap_attr
 
 # pyET is the pure-Python implementation.
 #
@@ -120,9 +120,7 @@ class ModuleTest(unittest.TestCase):
     def test_sanity(self):
         # Import sanity.
 
-        from xml.etree import ElementTree
-        from xml.etree import ElementInclude
-        from xml.etree import ElementPath
+        pass
 
     def test_all(self):
         names = ("xml.etree.ElementTree", "_elementtree")
@@ -185,7 +183,6 @@ class ElementTestCase:
 
 
 class ElementTreeTest(unittest.TestCase):
-
     def serialize_check(self, elem, expected):
         self.assertEqual(serialize(elem), expected)
 
@@ -552,8 +549,7 @@ class ElementTreeTest(unittest.TestCase):
         )
         self.assertEqual(
             ET.tostring(element, "ascii"),
-            b"<?xml version='1.0' encoding='ascii'?>\n"
-            b"<html><body>text</body></html>",
+            b"<?xml version='1.0' encoding='ascii'?>\n<html><body>text</body></html>",
         )
         _, ids = ET.XMLID("<html><body>text</body></html>")
         self.assertEqual(len(ids), 0)
@@ -796,7 +792,8 @@ class ElementTreeTest(unittest.TestCase):
 
         builder = Builder()
         parser = ET.XMLParser(target=builder)
-        parser.feed(textwrap.dedent("""\
+        parser.feed(
+            textwrap.dedent("""\
             <?pi data?>
             <!-- comment -->
             <root xmlns='namespace' xmlns:p='pns' xmlns:a='ans'>
@@ -804,7 +801,8 @@ class ElementTreeTest(unittest.TestCase):
                <p:element>text</p:element>tail
                <empty-element/>
             </root>
-            """))
+            """)
+        )
         self.assertEqual(
             builder,
             [
@@ -922,12 +920,7 @@ class ElementTreeTest(unittest.TestCase):
         ET.indent(elem, space="")
         self.assertEqual(
             ET.tostring(elem),
-            b"<html>\n"
-            b"<body>\n"
-            b"<p>pre<br />post</p>\n"
-            b"<p>text</p>\n"
-            b"</body>\n"
-            b"</html>",
+            b"<html>\n<body>\n<p>pre<br />post</p>\n<p>text</p>\n</body>\n</html>",
         )
 
     def test_indent_space_caching(self):
@@ -1079,9 +1072,7 @@ class ElementTreeTest(unittest.TestCase):
             ),
         ]
         for expected_retval, encoding, xml_declaration in TESTCASES:
-            with self.subTest(
-                f"encoding={encoding} " f"xml_declaration={xml_declaration}"
-            ):
+            with self.subTest(f"encoding={encoding} xml_declaration={xml_declaration}"):
                 self.assertEqual(
                     ET.tostring(
                         elem, encoding=encoding, xml_declaration=xml_declaration
@@ -1537,7 +1528,7 @@ class ElementTreeTest(unittest.TestCase):
         )
         self.assertEqual(
             ET.tostring(ET.PI("test", "<testing&>\xe3"), "latin-1"),
-            b"<?xml version='1.0' encoding='latin-1'?>\n" b"<?test <testing&>\xe3?>",
+            b"<?xml version='1.0' encoding='latin-1'?>\n<?test <testing&>\xe3?>",
         )
 
     def test_html_empty_elems_serialization(self):
@@ -1589,7 +1580,6 @@ class ElementTreeTest(unittest.TestCase):
 
 
 class XMLPullParserTest(unittest.TestCase):
-
     def _feed(self, parser, data, chunk_size=None):
         if chunk_size is None:
             parser.feed(data)
@@ -1941,13 +1931,13 @@ XINCLUDE["C5.xml"] = """\
 </div>
 """
 
-XINCLUDE["default.xml"] = """\
+XINCLUDE["default.xml"] = f"""\
 <?xml version='1.0'?>
 <document xmlns:xi="http://www.w3.org/2001/XInclude">
   <p>Example.</p>
-  <xi:include href="{}"/>
+  <xi:include href="{html.escape(SIMPLE_XMLFILE, True)}"/>
 </document>
-""".format(html.escape(SIMPLE_XMLFILE, True))
+"""
 
 XINCLUDE["include_c1_repeated.xml"] = """\
 <?xml version='1.0'?>
@@ -2006,7 +1996,6 @@ XINCLUDE["Recursive3.xml"] = """\
 
 
 class XIncludeTest(unittest.TestCase):
-
     def xinclude_loader(self, href, parse="xml", encoding=None):
         try:
             data = XINCLUDE[href]
@@ -2206,7 +2195,6 @@ class XIncludeTest(unittest.TestCase):
 
 
 class BugsTest(unittest.TestCase):
-
     def test_bug_xmltoolkit21(self):
         # marshaller gives obscure errors for non-string values
 
@@ -2264,8 +2252,7 @@ class BugsTest(unittest.TestCase):
         self.assertEqual(ET.tostring(tree, "utf-8"), b"<t\xc3\xa4g />")
 
         tree = ET.XML(
-            b"<?xml version='1.0' encoding='iso-8859-1'?>"
-            b"<tag \xe4ttr='v&#228;lue' />"
+            b"<?xml version='1.0' encoding='iso-8859-1'?><tag \xe4ttr='v&#228;lue' />"
         )
         self.assertEqual(tree.attrib, {"\xe4ttr": "v\xe4lue"})
         self.assertEqual(
@@ -2273,7 +2260,7 @@ class BugsTest(unittest.TestCase):
         )
 
         tree = ET.XML(
-            b"<?xml version='1.0' encoding='iso-8859-1'?>" b"<t\xe4g>text</t\xe4g>"
+            b"<?xml version='1.0' encoding='iso-8859-1'?><t\xe4g>text</t\xe4g>"
         )
         self.assertEqual(ET.tostring(tree, "utf-8"), b"<t\xc3\xa4g>text</t\xc3\xa4g>")
 
@@ -2289,7 +2276,7 @@ class BugsTest(unittest.TestCase):
     def test_bug_xmltoolkit54(self):
         # problems handling internally defined entities
 
-        e = ET.XML("<!DOCTYPE doc [<!ENTITY ldots '&#x8230;'>]>" "<doc>&ldots;</doc>")
+        e = ET.XML("<!DOCTYPE doc [<!ENTITY ldots '&#x8230;'>]><doc>&ldots;</doc>")
         self.assertEqual(serialize(e, encoding="us-ascii"), b"<doc>&#33328;</doc>")
         self.assertEqual(serialize(e), "<doc>\u8230</doc>")
 
@@ -2297,9 +2284,7 @@ class BugsTest(unittest.TestCase):
         # make sure we're reporting the first error, not the last
 
         with self.assertRaises(ET.ParseError) as cm:
-            ET.XML(
-                b"<!DOCTYPE doc SYSTEM 'doc.dtd'>" b"<doc>&ldots;&ndots;&rdots;</doc>"
-            )
+            ET.XML(b"<!DOCTYPE doc SYSTEM 'doc.dtd'><doc>&ldots;&ndots;&rdots;</doc>")
         self.assertEqual(
             str(cm.exception), "undefined entity &ldots;: line 1, column 36"
         )
@@ -2388,10 +2373,7 @@ class BugsTest(unittest.TestCase):
         s = ET.SubElement(e, "{not-default}elem")
         self.assertEqual(
             serialize(e, default_namespace="default"),  # 2
-            '<elem xmlns="default" xmlns:ns1="not-default">'
-            "<elem />"
-            "<ns1:elem />"
-            "</elem>",
+            '<elem xmlns="default" xmlns:ns1="not-default"><elem /><ns1:elem /></elem>',
         )
 
         e = ET.Element("{default}elem")
@@ -2465,17 +2447,15 @@ class BugsTest(unittest.TestCase):
         self.assertEqual(serialize(e), "<tag />")
 
     def test_issue6233(self):
-        e = ET.XML(b"<?xml version='1.0' encoding='utf-8'?>" b"<body>t\xc3\xa3g</body>")
+        e = ET.XML(b"<?xml version='1.0' encoding='utf-8'?><body>t\xc3\xa3g</body>")
         self.assertEqual(
             ET.tostring(e, "ascii"),
-            b"<?xml version='1.0' encoding='ascii'?>\n" b"<body>t&#227;g</body>",
+            b"<?xml version='1.0' encoding='ascii'?>\n<body>t&#227;g</body>",
         )
-        e = ET.XML(
-            b"<?xml version='1.0' encoding='iso-8859-1'?>" b"<body>t\xe3g</body>"
-        )
+        e = ET.XML(b"<?xml version='1.0' encoding='iso-8859-1'?><body>t\xe3g</body>")
         self.assertEqual(
             ET.tostring(e, "ascii"),
-            b"<?xml version='1.0' encoding='ascii'?>\n" b"<body>t&#227;g</body>",
+            b"<?xml version='1.0' encoding='ascii'?>\n<body>t&#227;g</body>",
         )
 
     def test_issue3151(self):
@@ -2588,7 +2568,6 @@ class BugsTest(unittest.TestCase):
 
 
 class BasicElementTest(ElementTestCase, unittest.TestCase):
-
     def test___init__(self):
         tag = "foo"
         attrib = {"zix": "wyp"}
@@ -2880,9 +2859,8 @@ class BadElementTest(ElementTestCase, unittest.TestCase):
     def test_recursive_repr(self):
         # Issue #25455
         e = ET.Element("foo")
-        with swap_attr(e, "tag", e):
-            with self.assertRaises(RuntimeError):
-                repr(e)  # Should not crash
+        with swap_attr(e, "tag", e), self.assertRaises(RuntimeError):
+            repr(e)  # Should not crash
 
     def test_element_get_text(self):
         # Issue #27863
@@ -3276,7 +3254,8 @@ class ElementFindTest(unittest.TestCase):
         self.assertEqual(summarize_list(root.findall("{Y}*")), ["{Y}b"])
         self.assertEqual(summarize_list(root.findall("{}*")), ["b", "c"])
         self.assertEqual(
-            summarize_list(root.findall("{}b")), ["b"]  # only for consistency
+            summarize_list(root.findall("{}b")),
+            ["b"],  # only for consistency
         )
         self.assertEqual(
             summarize_list(root.findall("{}b")), summarize_list(root.findall("b"))
@@ -3298,7 +3277,8 @@ class ElementFindTest(unittest.TestCase):
         self.assertEqual(summarize_list(root.findall(".//{Y}*")), ["{Y}b"])
         self.assertEqual(summarize_list(root.findall(".//{}*")), ["c", "b", "c", "b"])
         self.assertEqual(
-            summarize_list(root.findall(".//{}b")), ["b", "b"]  # only for consistency
+            summarize_list(root.findall(".//{}b")),
+            ["b", "b"],  # only for consistency
         )
         self.assertEqual(
             summarize_list(root.findall(".//{}b")), summarize_list(root.findall(".//b"))
@@ -3950,14 +3930,14 @@ class IOTest(unittest.TestCase):
                 self.assertEqual(
                     serialize(elem, encoding=enc),
                     (
-                        "<?xml version='1.0' encoding='%s'?>\n" "<tag>abc</tag>" % enc
+                        "<?xml version='1.0' encoding='%s'?>\n<tag>abc</tag>" % enc
                     ).encode(enc),
                 )
                 upper = enc.upper()
                 self.assertEqual(
                     serialize(elem, encoding=upper),
                     (
-                        "<?xml version='1.0' encoding='%s'?>\n" "<tag>abc</tag>" % upper
+                        "<?xml version='1.0' encoding='%s'?>\n<tag>abc</tag>" % upper
                     ).encode(enc),
                 )
 
@@ -4012,8 +3992,7 @@ class IOTest(unittest.TestCase):
             self.assertEqual(
                 serialize(elem, encoding=enc),
                 (
-                    "<?xml version='1.0' encoding='%s'?>\n"
-                    "<tag>åöö&lt;&gt;</tag>" % enc
+                    "<?xml version='1.0' encoding='%s'?>\n<tag>åöö&lt;&gt;</tag>" % enc
                 ).encode(enc),
             )
 
@@ -4275,7 +4254,8 @@ class C14NTest(unittest.TestCase):
         # Basics
         self.assertEqual(c14n_roundtrip("<doc/>"), "<doc></doc>")
         self.assertEqual(
-            c14n_roundtrip("<doc xmlns='uri'/>"), '<doc xmlns="uri"></doc>'  # FIXME
+            c14n_roundtrip("<doc xmlns='uri'/>"),
+            '<doc xmlns="uri"></doc>',  # FIXME
         )
         self.assertEqual(
             c14n_roundtrip("<prefix:doc xmlns:prefix='uri'/>"),
@@ -4384,11 +4364,11 @@ class C14NTest(unittest.TestCase):
                 exclude_attrs=["{http://example.com/x}attr"],
                 exclude_tags=["{http://example.com/x}d"],
             ),
-            "<root>" "<a><b>abtext</b></a>" "<b>btext</b>" "<c></c>" "</root>",
+            "<root><a><b>abtext</b></a><b>btext</b><c></c></root>",
         )
         self.assertEqual(
             c14n_roundtrip(xml, strip_text=True, exclude_tags=["a", "b"]),
-            "<root>" '<c><x:d xmlns:x="http://example.com/x">dtext</x:d></c>' "</root>",
+            '<root><c><x:d xmlns:x="http://example.com/x">dtext</x:d></c></root>',
         )
         self.assertEqual(
             c14n_roundtrip(xml, exclude_tags=["a", "b"]),
@@ -4404,10 +4384,7 @@ class C14NTest(unittest.TestCase):
             c14n_roundtrip(
                 xml, strip_text=True, exclude_tags=["{http://example.com/x}d", "b"]
             ),
-            "<root>"
-            '<a xmlns:x="http://example.com/x" x:attr="attrx"></a>'
-            "<c></c>"
-            "</root>",
+            '<root><a xmlns:x="http://example.com/x" x:attr="attrx"></a><c></c></root>',
         )
         self.assertEqual(
             c14n_roundtrip(xml, exclude_tags=["{http://example.com/x}d", "b"]),

@@ -1,19 +1,19 @@
 # tempfile.py unit tests.
-import tempfile
+import contextlib
 import errno
 import io
 import os
 import pathlib
-import sys
 import re
-import warnings
-import contextlib
 import stat
+import sys
+import tempfile
 import types
+import unittest
+import warnings
 import weakref
 from unittest import mock
 
-import unittest
 from test import support
 from test.support import script_helper
 
@@ -65,7 +65,6 @@ class TestLowLevelInternals(unittest.TestCase):
 
 
 class BaseTestCase(unittest.TestCase):
-
     str_check = re.compile(r"^[a-z0-9_-]{8}$")
     b_check = re.compile(rb"^[a-z0-9_-]{8}$")
 
@@ -322,7 +321,6 @@ def _mock_candidate_names(*names):
 
 
 class TestBadTempdir:
-
     def test_read_only_directory(self):
         with _inside_empty_temp_dir():
             oldmode = mode = os.stat(tempfile.tempdir).st_mode
@@ -1405,7 +1403,7 @@ class TestTemporaryDirectory(BaseTestCase):
         self.assertEqual(
             os.listdir(d2.name),
             ["test0.txt"],
-            "Contents of the directory pointed to by a symlink " "were deleted",
+            "Contents of the directory pointed to by a symlink were deleted",
         )
         d2.cleanup()
 
@@ -1428,7 +1426,7 @@ class TestTemporaryDirectory(BaseTestCase):
         # A TemporaryDirectory may be cleaned up during shutdown
         with self.do_create() as dir:
             for mod in ("builtins", "os", "shutil", "sys", "tempfile", "warnings"):
-                code = """if True:
+                code = f"""if True:
                     import builtins
                     import os
                     import shutil
@@ -1447,7 +1445,7 @@ class TestTemporaryDirectory(BaseTestCase):
                     {mod}.tmp = tmp
 
                     warnings.filterwarnings("always", category=ResourceWarning)
-                    """.format(dir=dir, mod=mod)
+                    """
                 rc, out, err = script_helper.assert_python_ok("-c", code)
                 tmp_name = out.decode().strip()
                 self.assertFalse(
@@ -1461,7 +1459,7 @@ class TestTemporaryDirectory(BaseTestCase):
     def test_exit_on_shutdown(self):
         # Issue #22427
         with self.do_create() as dir:
-            code = """if True:
+            code = f"""if True:
                 import sys
                 import tempfile
                 import warnings
@@ -1473,7 +1471,7 @@ class TestTemporaryDirectory(BaseTestCase):
                 sys.stdout.buffer.write(next(g).encode())
 
                 warnings.filterwarnings("always", category=ResourceWarning)
-                """.format(dir=dir)
+                """
             rc, out, err = script_helper.assert_python_ok("-c", code)
             tmp_name = out.decode().strip()
             self.assertFalse(

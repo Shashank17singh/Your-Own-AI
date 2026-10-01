@@ -3,7 +3,6 @@ import contextlib
 import errno
 import glob
 import importlib.util
-from importlib._bootstrap_external import _get_sourcefile
 import marshal
 import os
 import py_compile
@@ -16,28 +15,29 @@ import textwrap
 import threading
 import time
 import unittest
+from importlib._bootstrap_external import _get_sourcefile
+from types import ModuleType
 from unittest import mock
 
 import test.support
 from test.support import (
     TESTFN,
+    TESTFN_UNENCODABLE,
+    DirsOnSysPath,
+    cpython_only,
     forget,
     is_jython,
     make_legacy_pyc,
     rmtree,
+    script_helper,
     swap_attr,
     swap_item,
+    temp_dir,
     temp_umask,
     unlink,
     unload,
-    cpython_only,
-    TESTFN_UNENCODABLE,
-    temp_dir,
-    DirsOnSysPath,
 )
-from test.support import script_helper
 from test.test_importlib.util import uncache
-from types import ModuleType
 
 skip_if_dont_write_bytecode = unittest.skipIf(
     sys.dont_write_bytecode, "test meaningful only when writing bytecode"
@@ -72,7 +72,6 @@ def _ready_to_import(name=None, source=""):
 
 
 class ImportTests(unittest.TestCase):
-
     def setUp(self):
         remove_files(TESTFN)
         importlib.invalidate_caches()
@@ -213,8 +212,7 @@ class ImportTests(unittest.TestCase):
         # Create a file with a list of 65000 elements.
         with open(filename, "w") as f:
             f.write("d = [\n")
-            for i in range(65000):
-                f.write('"",\n')
+            f.writelines('"",\n' for i in range(65000))
             f.write("]")
 
         try:
@@ -296,7 +294,7 @@ class ImportTests(unittest.TestCase):
 
         # import in a 'for' loop resulted in segmentation fault
         for i in range(2):
-            import test.support.script_helper as x
+            pass
 
     def test_failing_reload(self):
         # A failing reload should leave the module object in sys.modules.
@@ -366,7 +364,7 @@ class ImportTests(unittest.TestCase):
         try:
             path.encode(encoding)
         except UnicodeEncodeError:
-            self.skipTest("path is not encodable to {}".format(encoding))
+            self.skipTest(f"path is not encodable to {encoding}")
         with self.assertRaises(ImportError) as c:
             __import__(path)
 
@@ -405,9 +403,7 @@ class ImportTests(unittest.TestCase):
                     getattr(errno, "EINVAL", None),
                 ):
                     raise
-                self.skipTest(
-                    "cannot set modification time to large integer ({})".format(e)
-                )
+                self.skipTest(f"cannot set modification time to large integer ({e})")
             __import__(TESTFN)
             # The pyc file was created.
             os.stat(compiled)
@@ -536,9 +532,7 @@ class ImportTests(unittest.TestCase):
                     ";".join(
                         [
                             "import os",
-                            "p = os.add_dll_directory({!r})".format(
-                                os.path.dirname(depname)
-                            ),
+                            f"p = os.add_dll_directory({os.path.dirname(depname)!r})",
                             "import _sqlite3",
                             "p.close",
                         ]
@@ -570,7 +564,7 @@ class FilePermissionTests(unittest.TestCase):
             cached_path = importlib.util.cache_from_source(path)
             module = __import__(name)
             if not os.path.exists(cached_path):
-                self.fail("__import__ did not result in creation of " "a .pyc file")
+                self.fail("__import__ did not result in creation of a .pyc file")
             stat_info = os.stat(cached_path)
 
         # Check that the umask is respected, and the executable bits
@@ -586,7 +580,7 @@ class FilePermissionTests(unittest.TestCase):
             os.chmod(path, mode)
             __import__(name)
             if not os.path.exists(cached_path):
-                self.fail("__import__ did not result in creation of " "a .pyc file")
+                self.fail("__import__ did not result in creation of a .pyc file")
             stat_info = os.stat(cached_path)
 
         self.assertEqual(oct(stat.S_IMODE(stat_info.st_mode)), oct(mode))
@@ -599,7 +593,7 @@ class FilePermissionTests(unittest.TestCase):
             os.chmod(path, mode)
             __import__(name)
             if not os.path.exists(cached_path):
-                self.fail("__import__ did not result in creation of " "a .pyc file")
+                self.fail("__import__ did not result in creation of a .pyc file")
             stat_info = os.stat(cached_path)
 
         expected = mode | 0o200  # Account for fix for issue #6074
@@ -783,7 +777,6 @@ class PathsTests(unittest.TestCase):
 
 
 class RelativeImportTests(unittest.TestCase):
-
     def tearDown(self):
         unload("test.relimport")
 
@@ -837,9 +830,7 @@ class RelativeImportTests(unittest.TestCase):
         with self.assertRaises(ImportError):
             from .os import sep
 
-            self.fail(
-                "explicit relative import triggered an " "implicit absolute import"
-            )
+            self.fail("explicit relative import triggered an implicit absolute import")
 
     def test_import_from_non_package(self):
         path = os.path.join(os.path.dirname(__file__), "data", "package2")
@@ -850,9 +841,10 @@ class RelativeImportTests(unittest.TestCase):
             self.assertNotIn("submodule2", sys.modules)
 
     def test_import_from_unloaded_package(self):
-        with uncache(
-            "package2", "package2.submodule1", "package2.submodule2"
-        ), DirsOnSysPath(os.path.join(os.path.dirname(__file__), "data")):
+        with (
+            uncache("package2", "package2.submodule1", "package2.submodule2"),
+            DirsOnSysPath(os.path.join(os.path.dirname(__file__), "data")),
+        ):
             import package2.submodule1
 
             package2.submodule1.submodule2
@@ -909,7 +901,7 @@ class PycacheTests(unittest.TestCase):
         pyc_path = importlib.util.cache_from_source(self.source)
         self.assertTrue(
             os.path.exists(pyc_path),
-            "bytecode file {!r} for {!r} does not " "exist".format(pyc_path, TESTFN),
+            f"bytecode file {pyc_path!r} for {TESTFN!r} does not exist",
         )
 
     @unittest.skipUnless(os.name == "posix", "test meaningful only on posix systems")
@@ -927,7 +919,7 @@ class PycacheTests(unittest.TestCase):
         pyc_path = importlib.util.cache_from_source(self.source)
         self.assertFalse(
             os.path.exists(pyc_path),
-            "bytecode file {!r} for {!r} " "exists".format(pyc_path, TESTFN),
+            f"bytecode file {pyc_path!r} for {TESTFN!r} exists",
         )
 
     @skip_if_dont_write_bytecode
@@ -1172,7 +1164,6 @@ class GetSourcefileTests(unittest.TestCase):
 
 
 class ImportTracebackTests(unittest.TestCase):
-
     def setUp(self):
         os.mkdir(TESTFN)
         self.old_path = sys.path[:]
@@ -1372,7 +1363,7 @@ class CircularImportTests(unittest.TestCase):
             import test.test_import.data.circular_imports.indirect
         except ImportError:
             self.fail(
-                "relative import in module contributing to circular " "import failed"
+                "relative import in module contributing to circular import failed"
             )
 
     def test_subpackage(self):
@@ -1383,7 +1374,7 @@ class CircularImportTests(unittest.TestCase):
 
     def test_rebinding(self):
         try:
-            import test.test_import.data.circular_imports.rebinding as rebinding
+            from test.test_import.data.circular_imports import rebinding
         except ImportError:
             self.fail("circular import with rebinding of module attribute failed")
         from test.test_import.data.circular_imports.subpkg import util
@@ -1397,8 +1388,8 @@ class CircularImportTests(unittest.TestCase):
             self.fail("circular import with binding a submodule to a name failed")
 
     def test_crossreference1(self):
-        import test.test_import.data.circular_imports.use
         import test.test_import.data.circular_imports.source
+        import test.test_import.data.circular_imports.use
 
     def test_crossreference2(self):
         with self.assertRaises(AttributeError) as cm:
@@ -1423,7 +1414,7 @@ class CircularImportTests(unittest.TestCase):
         self.addCleanup(unload, "test.test_import.data.unwritable")
         self.addCleanup(unload, "test.test_import.data.unwritable.x")
 
-        import test.test_import.data.unwritable as unwritable
+        from test.test_import.data import unwritable
 
         with self.assertWarns(ImportWarning):
             from test.test_import.data.unwritable import x

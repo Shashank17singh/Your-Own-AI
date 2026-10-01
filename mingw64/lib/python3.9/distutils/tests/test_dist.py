@@ -1,20 +1,18 @@
 """Tests for distutils.dist."""
 
-import os
 import io
+import os
 import sys
+import textwrap
 import unittest
 import warnings
-import textwrap
-
+from distutils import log
+from distutils.cmd import Command
+from distutils.dist import Distribution, fix_help_options
+from distutils.tests import support
 from unittest import mock
 
-from distutils.dist import Distribution, fix_help_options
-from distutils.cmd import Command
-
-from test.support import TESTFN, captured_stdout, captured_stderr, run_unittest
-from distutils.tests import support
-from distutils import log
+from test.support import TESTFN, captured_stderr, captured_stdout, run_unittest
 
 
 class test_dist(Command):
@@ -46,16 +44,15 @@ class DistributionTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def setUp(self):
-        super(DistributionTestCase, self).setUp()
+        super().setUp()
         self.argv = sys.argv, sys.argv[:]
         del sys.argv[1:]
 
     def tearDown(self):
         sys.argv = self.argv[0]
         sys.argv[:] = self.argv[1]
-        super(DistributionTestCase, self).tearDown()
+        super().tearDown()
 
     def create_distribution(self, configfiles=()):
         d = TestDistribution()
@@ -100,20 +97,20 @@ class DistributionTestCase(
             print(
                 (
                     "[install]\n"
-                    "install-base = {0}\n"
-                    "install-platbase = {0}\n"
-                    "install-lib = {0}\n"
-                    "install-platlib = {0}\n"
-                    "install-purelib = {0}\n"
-                    "install-headers = {0}\n"
-                    "install-scripts = {0}\n"
-                    "install-data = {0}\n"
-                    "prefix = {0}\n"
-                    "exec-prefix = {0}\n"
-                    "home = {0}\n"
-                    "user = {0}\n"
-                    "root = {0}"
-                ).format(fakepath),
+                    f"install-base = {fakepath}\n"
+                    f"install-platbase = {fakepath}\n"
+                    f"install-lib = {fakepath}\n"
+                    f"install-platlib = {fakepath}\n"
+                    f"install-purelib = {fakepath}\n"
+                    f"install-headers = {fakepath}\n"
+                    f"install-scripts = {fakepath}\n"
+                    f"install-data = {fakepath}\n"
+                    f"prefix = {fakepath}\n"
+                    f"exec-prefix = {fakepath}\n"
+                    f"home = {fakepath}\n"
+                    f"user = {fakepath}\n"
+                    f"root = {fakepath}"
+                ),
                 file=f,
             )
 
@@ -150,7 +147,7 @@ class DistributionTestCase(
         with mock.patch.multiple(sys, prefix="/a", base_prefix="/b") as values:
             d = self.create_distribution([TESTFN])
 
-        for key in result_dict.keys():
+        for key in result_dict:
             self.assertNotIn(key, d.command_options.get("install", {}))
 
     def test_command_packages_configfile(self):
@@ -268,15 +265,14 @@ class DistributionTestCase(
 
 
 class MetadataTestCase(support.TempdirManager, support.EnvironGuard, unittest.TestCase):
-
     def setUp(self):
-        super(MetadataTestCase, self).setUp()
+        super().setUp()
         self.argv = sys.argv, sys.argv[:]
 
     def tearDown(self):
         sys.argv = self.argv[0]
         sys.argv[:] = self.argv[1]
-        super(MetadataTestCase, self).tearDown()
+        super().tearDown()
 
     def format_metadata(self, dist):
         sio = io.StringIO()

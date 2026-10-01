@@ -33,7 +33,7 @@ def normalize_trace_output(output):
         result = [row[1] for row in result]
         return "\n".join(result)
     except (IndexError, ValueError):
-        raise AssertionError("tracer produced unparseable output:\n{}".format(output))
+        raise AssertionError(f"tracer produced unparseable output:\n{output}")
 
 
 class TraceBackend:
@@ -85,7 +85,7 @@ class TraceBackend:
         except (FileNotFoundError, NotADirectoryError, PermissionError) as fnfe:
             output = str(fnfe)
         if output != "probe: success":
-            raise unittest.SkipTest("{}(1) failed: {}".format(self.COMMAND[0], output))
+            raise unittest.SkipTest(f"{self.COMMAND[0]}(1) failed: {output}")
 
 
 class DTraceBackend(TraceBackend):

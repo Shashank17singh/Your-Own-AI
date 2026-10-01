@@ -4,9 +4,9 @@ import mimetypes
 import pathlib
 import sys
 import unittest
+from platform import win32_edition
 
 from test import support
-from platform import win32_edition
 
 
 def setUpModule():
@@ -255,7 +255,6 @@ class MiscTestCase(unittest.TestCase):
 
 
 class MimetypesCliTestCase(unittest.TestCase):
-
     def mimetypes_cmd(self, *args, **kwargs):
         support.patch(self, sys, "argv", [sys.executable, *args])
         with support.captured_stdout() as output:

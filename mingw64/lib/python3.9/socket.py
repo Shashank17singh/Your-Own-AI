@@ -49,9 +49,11 @@ the setsockopt() and getsockopt() methods.
 """
 
 import _socket
+import io
+import os
+import selectors
+import sys
 from _socket import *
-
-import os, sys, io, selectors
 from enum import IntEnum, IntFlag
 
 try:
@@ -63,13 +65,13 @@ EAGAIN = getattr(errno, "EAGAIN", 11)
 EWOULDBLOCK = getattr(errno, "EWOULDBLOCK", 11)
 
 __all__ = [
-    "fromfd",
-    "getfqdn",
-    "create_connection",
-    "create_server",
-    "has_dualstack_ipv6",
     "AddressFamily",
     "SocketKind",
+    "create_connection",
+    "create_server",
+    "fromfd",
+    "getfqdn",
+    "has_dualstack_ipv6",
 ]
 __all__.extend(os._get_exports_list(_socket))
 
@@ -216,7 +218,7 @@ class _GiveupOnSendfile(Exception):
 class socket(_socket.socket):
     """A subclass of _socket.socket adding the makefile() method."""
 
-    __slots__ = ["__weakref__", "_io_refs", "_closed"]
+    __slots__ = ["__weakref__", "_closed", "_io_refs"]
 
     def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
         # For user code address family and type values are IntEnum members, but
@@ -459,13 +461,9 @@ class socket(_socket.socket):
             raise ValueError("only SOCK_STREAM type sockets are supported")
         if count is not None:
             if not isinstance(count, int):
-                raise TypeError(
-                    "count must be a positive integer (got {!r})".format(count)
-                )
+                raise TypeError(f"count must be a positive integer (got {count!r})")
             if count <= 0:
-                raise ValueError(
-                    "count must be a positive integer (got {!r})".format(count)
-                )
+                raise ValueError(f"count must be a positive integer (got {count!r})")
 
     def sendfile(self, file, offset=0, count=None):
         """sendfile(file[, offset[, count]]) -> sent
@@ -628,7 +626,6 @@ if hasattr(_socket, "socketpair"):
         return a, b
 
 else:
-
     # Origin: https://gist.github.com/4325783, by Geert Jansen.  Public domain.
     def socketpair(family=AF_INET, type=SOCK_STREAM, proto=0):
         if family == AF_INET:
@@ -637,7 +634,7 @@ else:
             host = _LOCALHOST_V6
         else:
             raise ValueError(
-                "Only AF_INET and AF_INET6 socket address families " "are supported"
+                "Only AF_INET and AF_INET6 socket address families are supported"
             )
         if type != SOCK_STREAM:
             raise ValueError("Only SOCK_STREAM socket type is supported")

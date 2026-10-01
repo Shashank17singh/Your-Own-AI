@@ -1,5 +1,6 @@
 """Tests for base_events.py"""
 
+import asyncio
 import concurrent.futures
 import errno
 import math
@@ -8,15 +9,13 @@ import sys
 import threading
 import time
 import unittest
+from asyncio import base_events, constants
 from unittest import mock
 
-import asyncio
-from asyncio import base_events
-from asyncio import constants
-from test.test_asyncio import utils as test_utils
 from test import support
-from test.support.script_helper import assert_python_ok
 from test.support import socket_helper
+from test.support.script_helper import assert_python_ok
+from test.test_asyncio import utils as test_utils
 
 MOCK_ANY = mock.ANY
 PY34 = sys.version_info >= (3, 4)
@@ -57,7 +56,6 @@ def patch_socket(f):
 
 
 class BaseEventTests(test_utils.TestCase):
-
     def test_ipaddr_info(self):
         UNSPEC = socket.AF_UNSPEC
         INET = socket.AF_INET
@@ -168,7 +166,6 @@ class BaseEventTests(test_utils.TestCase):
 
 
 class BaseEventLoopTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = base_events.BaseEventLoop()
@@ -562,7 +559,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             self.loop.subprocess_exec,
             asyncio.SubprocessProtocol,
             *args,
-            universal_newlines=True
+            universal_newlines=True,
         )
         self.assertRaises(
             TypeError,
@@ -570,7 +567,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             self.loop.subprocess_exec,
             asyncio.SubprocessProtocol,
             *args,
-            shell=True
+            shell=True,
         )
         self.assertRaises(
             TypeError,
@@ -578,7 +575,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             self.loop.subprocess_exec,
             asyncio.SubprocessProtocol,
             *args,
-            bufsize=4096
+            bufsize=4096,
         )
 
     def test_subprocess_shell_invalid_args(self):
@@ -749,7 +746,6 @@ class BaseEventLoopTests(test_utils.TestCase):
         _context = None
 
         class Loop(base_events.BaseEventLoop):
-
             _selector = mock.Mock()
             _process_events = mock.Mock()
 
@@ -785,7 +781,7 @@ class BaseEventLoopTests(test_utils.TestCase):
             run_loop()
             log.error.assert_called_with(
                 test_utils.MockPattern(
-                    "Exception in default exception.*" "while handling.*in custom"
+                    "Exception in default exception.*while handling.*in custom"
                 ),
                 exc_info=True,
             )
@@ -799,7 +795,6 @@ class BaseEventLoopTests(test_utils.TestCase):
         with self.assertRaisesRegex(
             TypeError, "task factory must be a callable or None"
         ):
-
             self.loop.set_task_factory(1)
 
         self.assertIsNone(self.loop.get_task_factory())
@@ -1136,7 +1131,6 @@ class MyDatagramProto(asyncio.DatagramProtocol):
 
 
 class BaseEventLoopWithSelectorTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.SelectorEventLoop()
@@ -2041,7 +2035,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.loop.run_forever()
         fmt, *args = m_logger.warning.call_args[0]
         self.assertRegex(
-            fmt % tuple(args), "^Executing <Handle.*stop_loop_cb.*> " "took .* seconds$"
+            fmt % tuple(args), "^Executing <Handle.*stop_loop_cb.*> took .* seconds$"
         )
 
         # slow task
@@ -2049,12 +2043,11 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.loop.run_forever()
         fmt, *args = m_logger.warning.call_args[0]
         self.assertRegex(
-            fmt % tuple(args), "^Executing <Task.*stop_loop_coro.*> " "took .* seconds$"
+            fmt % tuple(args), "^Executing <Task.*stop_loop_coro.*> took .* seconds$"
         )
 
 
 class RunningLoopTests(unittest.TestCase):
-
     def test_running_loop_within_a_loop(self):
         async def runner(loop):
             loop.run_forever()
@@ -2070,11 +2063,9 @@ class RunningLoopTests(unittest.TestCase):
 
 
 class BaseLoopSockSendfileTests(test_utils.TestCase):
-
     DATA = b"12345abcde" * 16 * 1024  # 160 KiB
 
     class MyProto(asyncio.Protocol):
-
         def __init__(self, loop):
             self.started = False
             self.closed = False

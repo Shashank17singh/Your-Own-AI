@@ -70,7 +70,6 @@ parse_qs_test_cases = [
 
 
 class UrlParseTestCase(unittest.TestCase):
-
     def checkRoundtrips(self, url, parsed, split):
         result = urllib.parse.urlparse(url)
         self.assertEqual(result, parsed)
@@ -1182,7 +1181,7 @@ class UrlParseTestCase(unittest.TestCase):
         # including under normalization.
         # Ensure that ALL of them are detected and cause an error
         illegal_chars = "/:#?@"
-        hex_chars = {"{:04X}".format(ord(c)) for c in illegal_chars}
+        hex_chars = {f"{ord(c):04X}" for c in illegal_chars}
         denorm_chars = [
             c
             for c in map(chr, range(128, sys.maxunicode))
@@ -1202,8 +1201,8 @@ class UrlParseTestCase(unittest.TestCase):
         for scheme in ["http", "https", "ftp"]:
             for netloc in ["netloc{}false.netloc", "n{}user@netloc"]:
                 for c in denorm_chars:
-                    url = "{}://{}/path".format(scheme, netloc.format(c))
-                    with self.subTest(url=url, char="{:04X}".format(ord(c))):
+                    url = f"{scheme}://{netloc.format(c)}/path"
+                    with self.subTest(url=url, char=f"{ord(c):04X}"):
                         with self.assertRaises(ValueError):
                             urllib.parse.urlsplit(url)
 
@@ -1381,7 +1380,6 @@ class Utility_Tests(unittest.TestCase):
 
 
 class DeprecationTest(unittest.TestCase):
-
     def test_splittype_deprecation(self):
         with self.assertWarns(DeprecationWarning) as cm:
             urllib.parse.splittype("")

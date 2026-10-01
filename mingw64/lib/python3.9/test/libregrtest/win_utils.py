@@ -5,6 +5,7 @@ import os
 import subprocess
 import uuid
 import winreg
+
 from test import support
 from test.libregrtest.utils import print_warning
 

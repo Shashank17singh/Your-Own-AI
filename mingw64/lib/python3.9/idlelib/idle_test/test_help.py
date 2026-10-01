@@ -1,7 +1,8 @@
 "Test help, coverage 87%."
 
-from idlelib import help
 import unittest
+from idlelib import help
+
 from test.support import requires
 
 requires("gui")
@@ -10,7 +11,6 @@ from tkinter import Tk
 
 
 class HelpFrameTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         "By itself, this tests that file parsed without exception."

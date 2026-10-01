@@ -161,9 +161,8 @@ def _write_u32(file, x):
 
 
 class Au_read:
-
     def __init__(self, f):
-        if type(f) == type(""):
+        if type(f) == str:
             import builtins
 
             f = builtins.open(f, "rb")
@@ -318,9 +317,8 @@ class Au_read:
 
 
 class Au_write:
-
     def __init__(self, f):
-        if type(f) == type(""):
+        if type(f) == str:
             import builtins
 
             f = builtins.open(f, "wb")

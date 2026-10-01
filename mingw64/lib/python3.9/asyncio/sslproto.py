@@ -6,9 +6,7 @@ try:
 except ImportError:  # pragma: no cover
     ssl = None
 
-from . import constants
-from . import protocols
-from . import transports
+from . import constants, protocols, transports
 from .log import logger
 
 
@@ -33,7 +31,7 @@ _WRAPPED = "WRAPPED"
 _SHUTDOWN = "SHUTDOWN"
 
 
-class _SSLPipe(object):
+class _SSLPipe:
     """An SSL "Pipe".
 
     An SSL pipe allows you to communicate with an SSL/TLS protocol instance
@@ -288,7 +286,6 @@ class _SSLPipe(object):
 
 
 class _SSLProtocolTransport(transports._FlowControlMixin, transports.Transport):
-
     _sendfile_compatible = constants._SendfileMode.FALLBACK
 
     def __init__(self, loop, ssl_protocol):
@@ -386,7 +383,7 @@ class _SSLProtocolTransport(transports._FlowControlMixin, transports.Transport):
         """
         if not isinstance(data, (bytes, bytearray, memoryview)):
             raise TypeError(
-                f"data: expecting a bytes-like instance, " f"got {type(data).__name__}"
+                f"data: expecting a bytes-like instance, got {type(data).__name__}"
             )
         if not data:
             return

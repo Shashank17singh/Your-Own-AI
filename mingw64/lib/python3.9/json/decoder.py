@@ -1,7 +1,6 @@
 """Implementation of JSONDecoder"""
 
 import re
-
 from json import scanner
 
 try:
@@ -9,7 +8,7 @@ try:
 except ImportError:
     c_scanstring = None
 
-__all__ = ["JSONDecoder", "JSONDecodeError"]
+__all__ = ["JSONDecodeError", "JSONDecoder"]
 
 FLAGS = re.VERBOSE | re.MULTILINE | re.DOTALL
 
@@ -104,7 +103,7 @@ def py_scanstring(s, end, strict=True, _b=BACKSLASH, _m=STRINGCHUNK.match):
         elif terminator != "\\":
             if strict:
                 # msg = "Invalid control character %r at" % (terminator,)
-                msg = "Invalid control character {0!r} at".format(terminator)
+                msg = f"Invalid control character {terminator!r} at"
                 raise JSONDecodeError(msg, s, end)
             else:
                 _append(terminator)
@@ -118,7 +117,7 @@ def py_scanstring(s, end, strict=True, _b=BACKSLASH, _m=STRINGCHUNK.match):
             try:
                 char = _b[esc]
             except KeyError:
-                msg = "Invalid \\escape: {0!r}".format(esc)
+                msg = f"Invalid \\escape: {esc!r}"
                 raise JSONDecodeError(msg, s, end)
             end += 1
         else:
@@ -270,7 +269,7 @@ def JSONArray(s_and_end, scan_once, _w=WHITESPACE.match, _ws=WHITESPACE_STR):
     return values, end
 
 
-class JSONDecoder(object):
+class JSONDecoder:
     """Simple JSON <http://json.org> decoder
 
     Performs the following translations in decoding by default:
@@ -308,7 +307,7 @@ class JSONDecoder(object):
         parse_int=None,
         parse_constant=None,
         strict=True,
-        object_pairs_hook=None
+        object_pairs_hook=None,
     ):
         """``object_hook``, if specified, will be called with the result
         of every JSON object decoded and its return value will be used in

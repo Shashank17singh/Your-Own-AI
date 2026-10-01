@@ -2,14 +2,14 @@ import fractions
 import operator
 import os
 import random
-import sys
 import struct
+import sys
 import time
 import unittest
+from math import copysign, isinf, isnan, ldexp
 
 from test import support
-from test.test_grammar import VALID_UNDERSCORE_LITERALS, INVALID_UNDERSCORE_LITERALS
-from math import isinf, isnan, copysign, ldexp
+from test.test_grammar import INVALID_UNDERSCORE_LITERALS, VALID_UNDERSCORE_LITERALS
 
 INF = float("inf")
 NAN = float("nan")
@@ -34,9 +34,8 @@ class OtherFloatSubclass(float):
 
 
 class GeneralFloatCases(unittest.TestCase):
-
     def test_float(self):
-        self.assertEqual(float(3.14), 3.14)
+        self.assertEqual(3.14, 3.14)
         self.assertEqual(float(314), 314.0)
         self.assertEqual(float("  3.14  "), 3.14)
         self.assertRaises(ValueError, float, "  0x3.1  ")
@@ -182,7 +181,7 @@ class GeneralFloatCases(unittest.TestCase):
 
     def test_floatconversion(self):
         # Make sure that calls to __float__() work properly
-        class Foo1(object):
+        class Foo1:
             def __float__(self):
                 return 42.0
 
@@ -276,16 +275,16 @@ class GeneralFloatCases(unittest.TestCase):
             self.assertEqual(float(n).__truediv__(d), f)
 
         R = fractions.Fraction
-        self.assertEqual(R(0, 1), R(*float(0.0).as_integer_ratio()))
-        self.assertEqual(R(5, 2), R(*float(2.5).as_integer_ratio()))
-        self.assertEqual(R(1, 2), R(*float(0.5).as_integer_ratio()))
+        self.assertEqual(R(0, 1), R(*(0.0).as_integer_ratio()))
+        self.assertEqual(R(5, 2), R(*(2.5).as_integer_ratio()))
+        self.assertEqual(R(1, 2), R(*(0.5).as_integer_ratio()))
         self.assertEqual(
-            R(4728779608739021, 2251799813685248), R(*float(2.1).as_integer_ratio())
+            R(4728779608739021, 2251799813685248), R(*(2.1).as_integer_ratio())
         )
         self.assertEqual(
-            R(-4728779608739021, 2251799813685248), R(*float(-2.1).as_integer_ratio())
+            R(-4728779608739021, 2251799813685248), R(*(-2.1).as_integer_ratio())
         )
-        self.assertEqual(R(-2100, 1), R(*float(-2100.0).as_integer_ratio()))
+        self.assertEqual(R(-2100, 1), R(*(-2100.0).as_integer_ratio()))
 
         self.assertRaises(OverflowError, float("inf").as_integer_ratio)
         self.assertRaises(OverflowError, float("-inf").as_integer_ratio)
@@ -307,7 +306,7 @@ class GeneralFloatCases(unittest.TestCase):
             self.assertTrue((f,) == (f,), "(%r,) != (%r,)" % (f, f))
             self.assertTrue({f} == {f}, "{%r} != {%r}" % (f, f))
             self.assertTrue(
-                {f: None} == {f: None}, "{%r : None} != " "{%r : None}" % (f, f)
+                {f: None} == {f: None}, "{%r : None} != {%r : None}" % (f, f)
             )
 
             # identical containers
@@ -324,29 +323,29 @@ class GeneralFloatCases(unittest.TestCase):
         self.assertEqual((a, copysign(1.0, a)), (b, copysign(1.0, b)))
 
     def test_float_floor(self):
-        self.assertIsInstance(float(0.5).__floor__(), int)
-        self.assertEqual(float(0.5).__floor__(), 0)
-        self.assertEqual(float(1.0).__floor__(), 1)
-        self.assertEqual(float(1.5).__floor__(), 1)
-        self.assertEqual(float(-0.5).__floor__(), -1)
-        self.assertEqual(float(-1.0).__floor__(), -1)
-        self.assertEqual(float(-1.5).__floor__(), -2)
-        self.assertEqual(float(1.23e167).__floor__(), 1.23e167)
-        self.assertEqual(float(-1.23e167).__floor__(), -1.23e167)
+        self.assertIsInstance((0.5).__floor__(), int)
+        self.assertEqual((0.5).__floor__(), 0)
+        self.assertEqual((1.0).__floor__(), 1)
+        self.assertEqual((1.5).__floor__(), 1)
+        self.assertEqual((-0.5).__floor__(), -1)
+        self.assertEqual((-1.0).__floor__(), -1)
+        self.assertEqual((-1.5).__floor__(), -2)
+        self.assertEqual((1.23e167).__floor__(), 1.23e167)
+        self.assertEqual((-1.23e167).__floor__(), -1.23e167)
         self.assertRaises(ValueError, float("nan").__floor__)
         self.assertRaises(OverflowError, float("inf").__floor__)
         self.assertRaises(OverflowError, float("-inf").__floor__)
 
     def test_float_ceil(self):
-        self.assertIsInstance(float(0.5).__ceil__(), int)
-        self.assertEqual(float(0.5).__ceil__(), 1)
-        self.assertEqual(float(1.0).__ceil__(), 1)
-        self.assertEqual(float(1.5).__ceil__(), 2)
-        self.assertEqual(float(-0.5).__ceil__(), 0)
-        self.assertEqual(float(-1.0).__ceil__(), -1)
-        self.assertEqual(float(-1.5).__ceil__(), -1)
-        self.assertEqual(float(1.23e167).__ceil__(), 1.23e167)
-        self.assertEqual(float(-1.23e167).__ceil__(), -1.23e167)
+        self.assertIsInstance((0.5).__ceil__(), int)
+        self.assertEqual((0.5).__ceil__(), 1)
+        self.assertEqual((1.0).__ceil__(), 1)
+        self.assertEqual((1.5).__ceil__(), 2)
+        self.assertEqual((-0.5).__ceil__(), 0)
+        self.assertEqual((-1.0).__ceil__(), -1)
+        self.assertEqual((-1.5).__ceil__(), -1)
+        self.assertEqual((1.23e167).__ceil__(), 1.23e167)
+        self.assertEqual((-1.23e167).__ceil__(), -1.23e167)
         self.assertRaises(ValueError, float("nan").__ceil__)
         self.assertRaises(OverflowError, float("inf").__ceil__)
         self.assertRaises(OverflowError, float("-inf").__ceil__)
@@ -575,7 +574,6 @@ class GeneralFloatCases(unittest.TestCase):
 
 @requires_setformat
 class FormatFunctionsTestCase(unittest.TestCase):
-
     def setUp(self):
         self.save_formats = {
             "double": float.__getformat__("double"),
@@ -674,7 +672,6 @@ class UnknownFormatTestCase(unittest.TestCase):
 
 
 class IEEEFormatTestCase(unittest.TestCase):
-
     @support.requires_IEEE_754
     def test_double_specials_do_unpack(self):
         for fmt, data in [
@@ -704,7 +701,6 @@ class IEEEFormatTestCase(unittest.TestCase):
 
 
 class FormatTestCase(unittest.TestCase):
-
     def test_format(self):
         # these should be rewritten to use both format(x, spec) and
         # x.__format__(spec)
@@ -868,7 +864,6 @@ class ReprTestCase(unittest.TestCase):
 
 @support.requires_IEEE_754
 class RoundTestCase(unittest.TestCase):
-
     def test_inf_nan(self):
         self.assertRaises(OverflowError, round, INF)
         self.assertRaises(OverflowError, round, -INF)

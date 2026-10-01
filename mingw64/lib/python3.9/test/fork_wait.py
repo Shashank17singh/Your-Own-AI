@@ -9,8 +9,12 @@ On some systems (e.g. Solaris without posix threads) we find that all
 active threads survive in the child after a fork(); this is an error.
 """
 
-import os, sys, time, unittest
+import os
+import sys
 import threading
+import time
+import unittest
+
 from test import support
 
 LONGSLEEP = 2
@@ -19,7 +23,6 @@ NUM_THREADS = 4
 
 
 class ForkWait(unittest.TestCase):
-
     def setUp(self):
         self._threading_key = support.threading_setup()
         self.alive = {}

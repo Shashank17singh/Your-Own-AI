@@ -6,9 +6,7 @@
     "version": {
       "type": "integer",
       "description": "The data version of snippet file to generate.",
-      "enum": [
-        1
-      ]
+      "enum": [1]
     },
     "callbacks": {
       "type": "array",

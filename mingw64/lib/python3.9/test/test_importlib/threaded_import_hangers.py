@@ -7,10 +7,9 @@
 
 TIMEOUT = 10
 
-import threading
-
-import tempfile
 import os.path
+import tempfile
+import threading
 
 errors = []
 
@@ -35,7 +34,6 @@ for name, func, args in [
     # The real cause for bug 147376:  ntpath.abspath() caused the hang.
     ("os.path.abspath", os.path.abspath, (".",)),
 ]:
-
     try:
         t = Worker(func, args)
         t.start()

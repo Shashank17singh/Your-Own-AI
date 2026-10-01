@@ -10,9 +10,9 @@ especially when debugging a test.
 """
 
 # Testing imports
-from . import support
-
 from lib2to3 import pytree
+
+from . import support
 
 try:
     sorted

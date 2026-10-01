@@ -10,20 +10,19 @@ import sys
 import threading
 import time
 import traceback
-from typing import NamedTuple, NoReturn, Literal, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal, NamedTuple, NoReturn
 
 from test import support
-
 from test.libregrtest.cmdline import Namespace
 from test.libregrtest.main import Regrtest
 from test.libregrtest.runtest import (
-    runtest,
-    is_failed,
-    TestResult,
-    Interrupted,
-    Timeout,
-    ChildError,
     PROGRESS_MIN_TIME,
+    ChildError,
+    Interrupted,
+    TestResult,
+    Timeout,
+    is_failed,
+    runtest,
 )
 from test.libregrtest.setup import setup_tests
 from test.libregrtest.utils import format_duration, print_warning
@@ -143,7 +142,7 @@ class ExitThread(Exception):
 
 
 class TestWorkerProcess(threading.Thread):
-    def __init__(self, worker_id: int, runner: "MultiprocessTestRunner") -> None:
+    def __init__(self, worker_id: int, runner: MultiprocessTestRunner) -> None:
         super().__init__()
         self.worker_id = worker_id
         self.pending = runner.pending
@@ -349,9 +348,7 @@ class TestWorkerProcess(threading.Thread):
             if not self.is_alive():
                 break
             dt = time.monotonic() - start_time
-            self.regrtest.log(
-                f"Waiting for {self} thread " f"for {format_duration(dt)}"
-            )
+            self.regrtest.log(f"Waiting for {self} thread for {format_duration(dt)}")
             if dt > JOIN_TIMEOUT:
                 print_warning(f"Failed to join {self} in {format_duration(dt)}")
                 break

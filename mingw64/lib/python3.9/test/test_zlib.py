@@ -1,11 +1,12 @@
-import unittest
-from test import support
 import binascii
 import copy
 import pickle
 import random
 import sys
-from test.support import bigmemtest, _1G, _4G
+import unittest
+
+from test import support
+from test.support import _1G, _4G, bigmemtest
 
 zlib = support.import_module("zlib")
 
@@ -18,7 +19,6 @@ requires_Decompress_copy = unittest.skipUnless(
 
 
 class VersionTestCase(unittest.TestCase):
-
     def test_library_version(self):
         # Test that the major version of the actual library in use matches the
         # major version that we were compiled against. We can't guarantee that
@@ -75,7 +75,6 @@ class ChecksumTestCase(unittest.TestCase):
 
 # Issue #10276 - check that inputs >=4 GiB are handled correctly.
 class ChecksumBigBufferTestCase(unittest.TestCase):
-
     @bigmemtest(size=_4G + 4, memuse=1, dry_run=False)
     def test_big_buffer(self, size):
         data = b"nyan" * (_1G + 1)
@@ -129,7 +128,7 @@ class ExceptionTestCase(unittest.TestCase):
             zlib.decompressobj().flush(sys.maxsize + 1)
 
 
-class BaseCompressTestCase(object):
+class BaseCompressTestCase:
     def check_big_compress_buffer(self, size, compress_func):
         _1M = 1024 * 1024
         # Generate 10 MiB worth of random, and expand it by repeating it.
@@ -466,12 +465,12 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
                     c = obj.compress(data[3000:])
                     d = obj.flush()
                 except:
-                    print("Error for flush mode={}, level={}".format(sync, level))
+                    print(f"Error for flush mode={sync}, level={level}")
                     raise
                 self.assertEqual(
                     zlib.decompress(b"".join([a, b, c, d])),
                     data,
-                    ("Decompress failed: flush " "mode=%i, level=%i") % (sync, level),
+                    ("Decompress failed: flush mode=%i, level=%i") % (sync, level),
                 )
                 del obj
 

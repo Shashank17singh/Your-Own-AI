@@ -198,9 +198,12 @@ function calls leading up to the error, in the order they occurred.</p>"""
                 dump.append(name + " <em>undefined</em>")
 
         rows.append("<tr><td>%s</td></tr>" % small(grey(", ".join(dump))))
-        frames.append("""
+        frames.append(
+            """
 <table width="100%%" cellspacing=0 cellpadding=0 border=0>
-%s</table>""" % "\n".join(rows))
+%s</table>"""
+            % "\n".join(rows)
+        )
 
     exception = [
         "<p>%s: %s"
@@ -212,7 +215,11 @@ function calls leading up to the error, in the order they occurred.</p>"""
         value = pydoc.html.repr(getattr(evalue, name))
         exception.append("\n<br>%s%s&nbsp;=\n%s" % (indent, name, value))
 
-    return head + "".join(frames) + "".join(exception) + """
+    return (
+        head
+        + "".join(frames)
+        + "".join(exception)
+        + """
 
 
 <!-- The above is a description of an error in a Python program, formatted
@@ -221,7 +228,9 @@ function calls leading up to the error, in the order they occurred.</p>"""
 
 %s
 -->
-""" % pydoc.html.escape("".join(traceback.format_exception(etype, evalue, etb)))
+"""
+        % pydoc.html.escape("".join(traceback.format_exception(etype, evalue, etb)))
+    )
 
 
 def text(einfo, context=5):
@@ -231,10 +240,13 @@ def text(einfo, context=5):
         etype = etype.__name__
     pyver = "Python " + sys.version.split()[0] + ": " + sys.executable
     date = time.ctime(time.time())
-    head = "%s\n%s\n%s\n" % (str(etype), pyver, date) + """
+    head = (
+        "%s\n%s\n%s\n" % (str(etype), pyver, date)
+        + """
 A problem occurred in a Python script.  Here is the sequence of
 function calls leading up to the error, in the order they occurred.
 """
+    )
 
     frames = []
     records = inspect.getinnerframes(etb, context)
@@ -294,13 +306,19 @@ function calls leading up to the error, in the order they occurred.
         value = pydoc.text.repr(getattr(evalue, name))
         exception.append("\n%s%s = %s" % (" " * 4, name, value))
 
-    return head + "".join(frames) + "".join(exception) + """
+    return (
+        head
+        + "".join(frames)
+        + "".join(exception)
+        + """
 
 The above is a description of an error in a Python program.  Here is
 the original traceback:
 
 %s
-""" % "".join(traceback.format_exception(etype, evalue, etb))
+"""
+        % "".join(traceback.format_exception(etype, evalue, etb))
+    )
 
 
 class Hook:

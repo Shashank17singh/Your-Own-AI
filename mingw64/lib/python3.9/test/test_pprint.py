@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
-
 import collections
 import io
 import itertools
 import pprint
 import random
-import test.support
-import test.test_set
 import types
 import unittest
+
+import test.support
+import test.test_set
 
 
 # list, tuple and dict subclasses that do or don't overwrite __repr__
@@ -90,7 +89,6 @@ class Orderable:
 
 
 class QueryTestCase(unittest.TestCase):
-
     def setUp(self):
         self.a = list(range(100))
         self.b = list(range(200))
@@ -181,7 +179,7 @@ class QueryTestCase(unittest.TestCase):
     def test_unreadable(self):
         # Not recursive but not readable anyway
         pp = pprint.PrettyPrinter()
-        for unreadable in type(3), pprint, pprint.isrecursive:
+        for unreadable in int, pprint, pprint.isrecursive:
             # module-level convenience functions
             self.assertFalse(
                 pprint.isrecursive(unreadable),
@@ -407,7 +405,7 @@ class QueryTestCase(unittest.TestCase):
         self.assertEqual(pprint.pformat(d, width=1), "OrderedDict()")
         d = collections.OrderedDict([])
         self.assertEqual(pprint.pformat(d, width=1), "OrderedDict()")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = collections.OrderedDict(zip(words, itertools.count()))
         self.assertEqual(
             pprint.pformat(d),
@@ -424,7 +422,7 @@ OrderedDict([('the', 0),
         )
 
     def test_mapping_proxy(self):
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = dict(zip(words, itertools.count()))
         m = types.MappingProxyType(d)
         self.assertEqual(
@@ -1133,7 +1131,7 @@ bytearray(b'\\x00\\x01\\x02\\x03'
     def test_default_dict(self):
         d = collections.defaultdict(int)
         self.assertEqual(pprint.pformat(d, width=1), "defaultdict(<class 'int'>, {})")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = collections.defaultdict(int, zip(words, itertools.count()))
         self.assertEqual(
             pprint.pformat(d),
@@ -1166,7 +1164,7 @@ Counter({'s': 6,
     def test_chainmap(self):
         d = collections.ChainMap()
         self.assertEqual(pprint.pformat(d, width=1), "ChainMap({})")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         items = list(zip(words, itertools.count()))
         d = collections.ChainMap(dict(items))
         self.assertEqual(
@@ -1211,7 +1209,7 @@ ChainMap({'a': 6,
         self.assertEqual(pprint.pformat(d, width=1), "deque([])")
         d = collections.deque(maxlen=7)
         self.assertEqual(pprint.pformat(d, width=1), "deque([], maxlen=7)")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = collections.deque(zip(words, itertools.count()))
         self.assertEqual(
             pprint.pformat(d),
@@ -1243,7 +1241,7 @@ deque([('brown', 2),
     def test_user_dict(self):
         d = collections.UserDict()
         self.assertEqual(pprint.pformat(d, width=1), "{}")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = collections.UserDict(zip(words, itertools.count()))
         self.assertEqual(
             pprint.pformat(d),
@@ -1262,7 +1260,7 @@ deque([('brown', 2),
     def test_user_list(self):
         d = collections.UserList()
         self.assertEqual(pprint.pformat(d, width=1), "[]")
-        words = "the quick brown fox jumped over a lazy dog".split()
+        words = ["the", "quick", "brown", "fox", "jumped", "over", "a", "lazy", "dog"]
         d = collections.UserList(zip(words, itertools.count()))
         self.assertEqual(
             pprint.pformat(d),
@@ -1300,7 +1298,6 @@ deque([('brown', 2),
 
 
 class DottedPrettyPrinter(pprint.PrettyPrinter):
-
     def format(self, object, context, maxlevels, level):
         if isinstance(object, str):
             if " " in object:

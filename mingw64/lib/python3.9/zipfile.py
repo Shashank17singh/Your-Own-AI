@@ -5,6 +5,7 @@ XXX references to utf-8 need further investigation.
 """
 
 import binascii
+import contextlib
 import importlib.util
 import io
 import itertools
@@ -16,7 +17,6 @@ import struct
 import sys
 import threading
 import time
-import contextlib
 
 try:
     import zlib  # We may need its compression method
@@ -37,19 +37,19 @@ except ImportError:
     lzma = None
 
 __all__ = [
+    "ZIP_BZIP2",
+    "ZIP_DEFLATED",
+    "ZIP_LZMA",
+    "ZIP_STORED",
     "BadZipFile",
     "BadZipfile",
-    "error",
-    "ZIP_STORED",
-    "ZIP_DEFLATED",
-    "ZIP_BZIP2",
-    "ZIP_LZMA",
-    "is_zipfile",
-    "ZipInfo",
-    "ZipFile",
-    "PyZipFile",
     "LargeZipFile",
     "Path",
+    "PyZipFile",
+    "ZipFile",
+    "ZipInfo",
+    "error",
+    "is_zipfile",
 ]
 
 
@@ -343,30 +343,30 @@ def _EndRecData(fpin):
     return None
 
 
-class ZipInfo(object):
+class ZipInfo:
     """Class with attributes describing each file in the ZIP archive."""
 
     __slots__ = (
-        "orig_filename",
-        "filename",
-        "date_time",
-        "compress_type",
+        "CRC",
         "_compresslevel",
+        "_raw_time",
         "comment",
-        "extra",
+        "compress_size",
+        "compress_type",
         "create_system",
         "create_version",
-        "extract_version",
-        "reserved",
-        "flag_bits",
-        "volume",
-        "internal_attr",
+        "date_time",
         "external_attr",
-        "header_offset",
-        "CRC",
-        "compress_size",
+        "extra",
+        "extract_version",
         "file_size",
-        "_raw_time",
+        "filename",
+        "flag_bits",
+        "header_offset",
+        "internal_attr",
+        "orig_filename",
+        "reserved",
+        "volume",
     )
 
     def __init__(self, filename="NoName", date_time=(1980, 1, 1, 0, 0, 0)):
@@ -523,7 +523,7 @@ class ZipInfo(object):
                         (self.header_offset,) = unpack("<Q", data[:8])
                 except struct.error:
                     raise BadZipFile(
-                        f"Corrupt zip64 extra field. " f"{field} not found."
+                        f"Corrupt zip64 extra field. {field} not found."
                     ) from None
 
             extra = extra[ln + 4 :]
@@ -635,7 +635,6 @@ def _ZipDecrypter(pwd):
 
 
 class LZMACompressor:
-
     def __init__(self):
         self._comp = None
 
@@ -659,7 +658,6 @@ class LZMACompressor:
 
 
 class LZMADecompressor:
-
     def __init__(self):
         self._decomp = None
         self._unconsumed = b""
@@ -1110,14 +1108,12 @@ class ZipExtFile(io.BufferedIOBase):
             new_pos = self._orig_file_size + offset
         else:
             raise ValueError(
-                "whence must be os.SEEK_SET (0), " "os.SEEK_CUR (1), or os.SEEK_END (2)"
+                "whence must be os.SEEK_SET (0), os.SEEK_CUR (1), or os.SEEK_END (2)"
             )
 
-        if new_pos > self._orig_file_size:
-            new_pos = self._orig_file_size
+        new_pos = min(new_pos, self._orig_file_size)
 
-        if new_pos < 0:
-            new_pos = 0
+        new_pos = max(new_pos, 0)
 
         read_offset = new_pos - curr_pos
         buff_offset = read_offset + self._offset
@@ -1317,7 +1313,7 @@ class ZipFile:
             filemode = modeDict[mode]
             while True:
                 try:
-                    self.fp = io.open(file, filemode)
+                    self.fp = open(file, filemode)
                 except OSError:
                     if filemode in modeDict:
                         filemode = modeDict[filemode]
@@ -1659,8 +1655,7 @@ class ZipFile:
                     pwd = self.pwd
                 if not pwd:
                     raise RuntimeError(
-                        "File %r is encrypted, password "
-                        "required for extraction" % name
+                        "File %r is encrypted, password required for extraction" % name
                     )
             else:
                 pwd = None
@@ -1907,9 +1902,8 @@ class ZipFile:
             zinfo._compresslevel = compresslevel
 
         zinfo.file_size = len(data)  # Uncompressed size
-        with self._lock:
-            with self.open(zinfo, mode="w") as dest:
-                dest.write(data)
+        with self._lock, self.open(zinfo, mode="w") as dest:
+            dest.write(data)
 
     def __del__(self):
         """Call the "close()" method in case the user forgot."""
@@ -2242,7 +2236,7 @@ class PyZipFile(ZipFile):
                 elif self._optimize == 2:
                     fname = pycache_opt2
                 else:
-                    msg = "invalid value for 'optimize': {!r}".format(self._optimize)
+                    msg = f"invalid value for 'optimize': {self._optimize!r}"
                     raise ValueError(msg)
             if not (
                 os.path.isfile(fname)
@@ -2322,7 +2316,7 @@ class CompleteDirs(ZipFile):
         return _dedupe(_difference(as_dirs, names))
 
     def namelist(self):
-        names = super(CompleteDirs, self).namelist()
+        names = super().namelist()
         return names + list(self._implied_dirs(names))
 
     def _name_set(self):
@@ -2368,13 +2362,13 @@ class FastLookup(CompleteDirs):
     def namelist(self):
         with contextlib.suppress(AttributeError):
             return self.__names
-        self.__names = super(FastLookup, self).namelist()
+        self.__names = super().namelist()
         return self.__names
 
     def _name_set(self):
         with contextlib.suppress(AttributeError):
             return self.__lookup
-        self.__lookup = super(FastLookup, self)._name_set()
+        self.__lookup = super()._name_set()
         return self.__lookup
 
 
@@ -2550,7 +2544,7 @@ def main(args=None):
         with ZipFile(src, "r") as zf:
             badfile = zf.testzip()
         if badfile:
-            print("The following enclosed file is corrupted: {!r}".format(badfile))
+            print(f"The following enclosed file is corrupted: {badfile!r}")
         print("Done testing")
 
     elif args.list is not None:

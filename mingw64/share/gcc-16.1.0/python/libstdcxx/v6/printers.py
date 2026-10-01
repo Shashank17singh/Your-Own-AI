@@ -1,9 +1,10 @@
-import gdb
+import datetime
+import errno
 import itertools
 import re
 import sys
-import errno
-import datetime
+
+import gdb
 
 if sys.version_info[0] > 2:
     Iterator = object
@@ -321,7 +322,7 @@ class UniquePointerPrinter(printer_base):
 
     def to_string(self):
         t = self._val.type.template_argument(0)
-        return "std::unique_ptr<{}>".format(str(t))
+        return f"std::unique_ptr<{t!s}>"
 
 
 def get_value_from_aligned_membuf(buf, valtype):
@@ -1284,10 +1285,10 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
             if not func:
                 raise ValueError("Invalid function pointer in %s" % (self._typename))
             rx = (
-                r"({0}::_Manager_\w+<.*>)::_S_manage\("
-                r"(enum )?{0}::_Op, (const {0}|{0} const) ?\*, "
-                r"(union )?{0}::_Arg ?\*\)"
-            ).format(typename)
+                rf"({typename}::_Manager_\w+<.*>)::_S_manage\("
+                rf"(enum )?{typename}::_Op, (const {typename}|{typename} const) ?\*, "
+                rf"(union )?{typename}::_Arg ?\*\)"
+            )
             m = re.match(rx, func)
             if not m:
                 raise ValueError("Unknown manager function in %s" % self._typename)
@@ -1302,7 +1303,7 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
                         pass
                 if len(mgrtypes) != 1:
                     raise ValueError(
-                        "Cannot uniquely determine std::string type " "used in std::any"
+                        "Cannot uniquely determine std::string type used in std::any"
                     )
                 mgrtype = mgrtypes[0]
             else:
@@ -1317,7 +1318,7 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
                 raise ValueError("Unknown manager function in %s" % self._typename)
             contained_value = valptr.cast(self._contained_type.pointer()).dereference()
             visualizer = gdb.default_visualizer(contained_value)
-        super(StdExpAnyPrinter, self).__init__(contained_value, visualizer)
+        super().__init__(contained_value, visualizer)
 
     def to_string(self):
         if self._contained_type is None:
@@ -1357,7 +1358,7 @@ class StdExpOptionalPrinter(SingleObjContainerPrinter):
         visualizer = gdb.default_visualizer(contained_value)
         if not engaged:
             contained_value = None
-        super(StdExpOptionalPrinter, self).__init__(contained_value, visualizer)
+        super().__init__(contained_value, visualizer)
 
     def to_string(self):
         if self._contained_value is None:
@@ -1383,7 +1384,7 @@ class StdVariantPrinter(SingleObjContainerPrinter):
             addr = val["_M_u"]["_M_first"]["_M_storage"].address
             contained_value = addr.cast(self._contained_type.pointer()).dereference()
             visualizer = gdb.default_visualizer(contained_value)
-        super(StdVariantPrinter, self).__init__(contained_value, visualizer, "array")
+        super().__init__(contained_value, visualizer, "array")
 
     def to_string(self):
         if self._contained_value is None:
@@ -1419,7 +1420,7 @@ class StdNodeHandlePrinter(SingleObjContainerPrinter):
             visualizer = None
         optalloc = val["_M_alloc"]
         self._alloc = optalloc["_M_payload"] if optalloc["_M_engaged"] else None
-        super(StdNodeHandlePrinter, self).__init__(contained_value, visualizer, "array")
+        super().__init__(contained_value, visualizer, "array")
 
     def to_string(self):
         desc = "node handle for "
@@ -1632,7 +1633,7 @@ class StdCmpCatPrinter(printer_base):
                 2: "unordered",
             }
             name = names[int(self._val)]
-        return "std::{}::{}".format(self._typename, name)
+        return f"std::{self._typename}::{name}"
 
 
 class StdErrorCodePrinter(printer_base):
@@ -1662,7 +1663,7 @@ class StdErrorCodePrinter(printer_base):
     def _find_standard_errc_enum(cls, name):
         for ns in ["", _versioned_namespace]:
             try:
-                qname = "std::{}{}".format(ns, name)
+                qname = f"std::{ns}{name}"
                 return cls._find_errc_enum(qname)
             except RuntimeError:
                 pass
@@ -1673,12 +1674,12 @@ class StdErrorCodePrinter(printer_base):
         for c in net_cats:
             func = c + "_category()"
             for ns in ["", _versioned_namespace]:
-                ns = "std::{}experimental::net::v1".format(ns)
-                sym = gdb.lookup_symbol("{}::{}::__c".format(ns, func))[0]
+                ns = f"std::{ns}experimental::net::v1"
+                sym = gdb.lookup_symbol(f"{ns}::{func}::__c")[0]
                 if sym is not None:
                     if cat == sym.value().address:
                         name = "net::" + func
-                        enum = cls._find_errc_enum("{}::{}_errc".format(ns, c))
+                        enum = cls._find_errc_enum(f"{ns}::{c}_errc")
                         return (name, enum)
         return (None, None)
 
@@ -1769,7 +1770,7 @@ class StdRegexStatePrinter(printer_base):
             "unknown": None,
         }
         v = variants[opcode]
-        s = "opcode={}, next={}".format(opcode, next_id)
+        s = f"opcode={opcode}, next={next_id}"
         if v is not None and self._val["_M_" + v] is not None:
             s = "{}, {}={}".format(s, v, self._val["_M_" + v])
         return "{%s}" % (s)
@@ -1923,14 +1924,14 @@ class StdChronoDurationPrinter(printer_base):
                 return "h"
             if num == 86400:
                 return "d"
-            return "[{}]s".format(num)
-        return "[{}/{}]s".format(num, den)
+            return f"[{num}]s"
+        return f"[{num}/{den}]s"
 
     def to_string(self):
         r = self._val["__r"]
         if r.type.strip_typedefs().code == gdb.TYPE_CODE_FLT:
             r = "%g" % r
-        return "std::chrono::duration = {{ {}{} }}".format(r, self._suffix())
+        return f"std::chrono::duration = {{ {r}{self._suffix()} }}"
 
 
 class StdChronoTimePointPrinter(printer_base):
@@ -1958,7 +1959,7 @@ class StdChronoTimePointPrinter(printer_base):
             return ("std::chrono::file_time", 6437664000)
         if name == "std::chrono::local_t":
             return ("std::chrono::local_time", 0)
-        return ("{} time_point".format(name), None)
+        return (f"{name} time_point", None)
 
     def to_string(self, abbrev=False):
         clock, offset = self._clock()
@@ -1972,7 +1973,7 @@ class StdChronoTimePointPrinter(printer_base):
             secs = (r * num / den) + offset
             try:
                 dt = datetime.datetime.fromtimestamp(secs, _utc_timezone)
-                time = " [{:%Y-%m-%d %H:%M:%S}]".format(dt)
+                time = f" [{dt:%Y-%m-%d %H:%M:%S}]"
             except:
                 pass
         s = "%d%s%s" % (r, suffix, time)
@@ -1993,7 +1994,7 @@ class StdChronoZonedTimePrinter(printer_base):
         time = self._val["_M_tp"]
         printer = StdChronoTimePointPrinter(time.type.name, time)
         time = printer.to_string(True)
-        return "std::chrono::zoned_time = {{ {} {} }}".format(zone, time)
+        return f"std::chrono::zoned_time = {{ {zone} {time} }}"
 
 
 months = [
@@ -2044,12 +2045,12 @@ class StdChronoCalendarPrinter(printer_base):
                 return "%d is not a valid month" % m
             return months[m]
         if typ == "std::chrono::year":
-            return "{}y".format(y)
+            return f"{y}y"
         if typ == "std::chrono::weekday":
             wd = val["_M_wd"]
             if wd < 0 or wd >= len(weekdays):
                 return "%d is not a valid weekday" % wd
-            return "{}".format(weekdays[wd])
+            return f"{weekdays[wd]}"
         if typ == "std::chrono::weekday_indexed":
             return "{}[{}]".format(val["_M_wd"], int(val["_M_index"]))
         if typ == "std::chrono::weekday_last":
@@ -2057,13 +2058,13 @@ class StdChronoCalendarPrinter(printer_base):
         if typ == "std::chrono::month_day":
             return "{}/{}".format(m, val["_M_d"])
         if typ == "std::chrono::month_day_last":
-            return "{}/last".format(m)
+            return f"{m}/last"
         if typ == "std::chrono::month_weekday":
             return "{}/{}".format(m, val["_M_wdi"])
         if typ == "std::chrono::month_weekday_last":
             return "{}/{}".format(m, val["_M_wdl"])
         if typ == "std::chrono::year_month":
-            return "{}/{}".format(y, m)
+            return f"{y}/{m}"
         if typ == "std::chrono::year_month_day":
             return "{}/{}/{}".format(y, m, val["_M_d"])
         if typ == "std::chrono::year_month_day_last":
@@ -2083,7 +2084,7 @@ class StdChronoCalendarPrinter(printer_base):
             s = int(val["_M_s"]["__r"])
             if val["_M_is_neg"]:
                 h = -h
-            return "{:02}:{:02}:{:02}{}".format(h, m, s, fract)
+            return f"{h:02}:{m:02}:{s:02}{fract}"
 
 
 class StdChronoTimeZonePrinter(printer_base):
@@ -2139,20 +2140,18 @@ class StdChronoTimeZoneRulePrinter(printer_base):
         day = on["day_of_month"]
         ordinal_day = "{}{}".format(day, suffixes.get(day, "th"))
         if kind == 0:  # DayOfMonth
-            start = "{} {}".format(month, ordinal_day)
+            start = f"{month} {ordinal_day}"
         else:
             weekday = weekdays[on["day_of_week"]]
             if kind == 1:  # LastWeekDay
-                start = "last {} in {}".format(weekday, month)
+                start = f"last {weekday} in {month}"
             else:
                 if kind == 2:  # LessEq
                     direction = ("last", "<=")
                 else:
                     direction = ("first", ">=")
                 day = on["day_of_month"]
-                start = "{} {} {} {} {}".format(
-                    direction[0], weekday, direction[1], month, ordinal_day
-                )
+                start = f"{direction[0]} {weekday} {direction[1]} {month} {ordinal_day}"
         return "time_zone rule {} from {} to {} starting on {}".format(
             self._val["name"], self._val["from"], self._val["to"], start
         )
@@ -2175,13 +2174,13 @@ class StdLocalePrinter(printer_base):
             ncat = gdb.parse_and_eval(self._typename + "::_S_categories_size")
             n = names[0].string()
             cat = cats[0].string()
-            name = "{}={}".format(cat, n)
+            name = f"{cat}={n}"
             cat_names = {cat: n}
             i = 1
             while i < ncat and names[i] != 0:
                 n = names[i].string()
                 cat = cats[i].string()
-                name = "{};{}={}".format(name, cat, n)
+                name = f"{name};{cat}={n}"
                 cat_names[cat] = n
                 i = i + 1
             uniq_names = set(cat_names.values())
@@ -2199,8 +2198,8 @@ class StdLocalePrinter(printer_base):
                     other = n2
                 if other is not None:
                     cat = next(c for c, n in cat_names.items() if n == other)
-                    mod = ' with "{}={}"'.format(cat, other)
-        return 'std::locale = "{}"{}'.format(name, mod)
+                    mod = f' with "{cat}={other}"'
+        return f'std::locale = "{name}"{mod}'
 
 
 class StdIntegralConstantPrinter(printer_base):
@@ -2219,7 +2218,7 @@ class StdIntegralConstantPrinter(printer_base):
             else:
                 return "std::false_type"
         typename = strip_versioned_namespace(self._typename)
-        return "{}<{}, {}>".format(typename, value_type, value)
+        return f"{typename}<{value_type}, {value}>"
 
 
 class StdTextEncodingPrinter(printer_base):
@@ -2250,7 +2249,7 @@ class StdStacktraceEntryPrinter(printer_base):
         if block is None or block.function is None:
             return "<unknown>"
         sym = block.function
-        return "{{{} at {}:{}}}".format(sym.print_name, sym.symtab.filename, sym.line)
+        return f"{{{sym.print_name} at {sym.symtab.filename}:{sym.line}}}"
 
 
 class StdStacktracePrinter(printer_base):
@@ -2271,9 +2270,9 @@ class StdStacktracePrinter(printer_base):
         return "array"
 
 
-class RxPrinter(object):
+class RxPrinter:
     def __init__(self, name, function):
-        super(RxPrinter, self).__init__()
+        super().__init__()
         self.name = name
         self._function = function
         self.enabled = True
@@ -2287,9 +2286,9 @@ class RxPrinter(object):
         return self._function(self.name, value)
 
 
-class Printer(object):
+class Printer:
     def __init__(self, name):
-        super(Printer, self).__init__()
+        super().__init__()
         self.name = name
         self._subprinters = []
         self._lookup = {}
@@ -2341,7 +2340,7 @@ class Printer(object):
 libstdcxx_printer = None
 
 
-class TemplateTypePrinter(object):
+class TemplateTypePrinter:
     """
     A type printer for class templates with default template arguments.
     Recognizes specializations of class templates and prints them without
@@ -2355,7 +2354,7 @@ class TemplateTypePrinter(object):
         self._defargs = defargs
         self.enabled = True
 
-    class _recognizer(object):
+    class _recognizer:
         """The recognizer class for TemplateTypePrinter."""
 
         def __init__(self, name, defargs):
@@ -2449,7 +2448,7 @@ def add_one_template_type_printer(obj, name, defargs):
         gdb.types.register_type_printer(obj, printer)
 
 
-class FilteringTypePrinter(object):
+class FilteringTypePrinter:
     """
     A type printer that uses typedef names for common template specializations.
     Args:
@@ -2473,7 +2472,7 @@ class FilteringTypePrinter(object):
         self._targ1 = targ1
         self.enabled = True
 
-    class _recognizer(object):
+    class _recognizer:
         """The recognizer class for FilteringTypePrinter."""
 
         def __init__(self, template, name, targ1):
@@ -2491,7 +2490,7 @@ class FilteringTypePrinter(object):
                 return None
             if self._type_obj is None:
                 if self._targ1 is not None:
-                    s = "{}<{}".format(self._template, self._targ1)
+                    s = f"{self._template}<{self._targ1}"
                     if not type_obj.tag.startswith(s):
                         return None
                 elif not type_obj.tag.startswith(self._template):

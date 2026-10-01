@@ -28,7 +28,6 @@ class ReceiveStuffProto(asyncio.BufferedProtocol):
 
 
 class BaseTestBufferedProtocol(func_tests.FunctionalTestCaseMixin):
-
     def new_loop(self):
         raise NotImplementedError
 
@@ -71,14 +70,12 @@ class BaseTestBufferedProtocol(func_tests.FunctionalTestCaseMixin):
 
 
 class BufferedProtocolSelectorTests(BaseTestBufferedProtocol, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.SelectorEventLoop()
 
 
 @unittest.skipUnless(hasattr(asyncio, "ProactorEventLoop"), "Windows only")
 class BufferedProtocolProactorTests(BaseTestBufferedProtocol, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.ProactorEventLoop()
 

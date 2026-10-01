@@ -1,16 +1,15 @@
 import sys
 import unittest
-
 from contextlib import ExitStack
+from importlib import resources
 from importlib.metadata import (
+    PackageNotFoundError,
     distribution,
+    distributions,
     entry_points,
     files,
-    PackageNotFoundError,
     version,
-    distributions,
 )
-from importlib import resources
 
 from test.support import requires_zlib
 

@@ -246,7 +246,6 @@ eval_tests = [
 
 
 class AST_Tests(unittest.TestCase):
-
     def _is_ast_node(self, name, node):
         if not isinstance(node, type):
             return False
@@ -1082,22 +1081,19 @@ Module(
     def test_recursion_direct(self):
         e = ast.UnaryOp(op=ast.Not(), lineno=0, col_offset=0)
         e.operand = e
-        with self.assertRaises(RecursionError):
-            with support.infinite_recursion():
-                compile(ast.Expression(e), "<test>", "eval")
+        with self.assertRaises(RecursionError), support.infinite_recursion():
+            compile(ast.Expression(e), "<test>", "eval")
 
     def test_recursion_indirect(self):
         e = ast.UnaryOp(op=ast.Not(), lineno=0, col_offset=0)
         f = ast.UnaryOp(op=ast.Not(), lineno=0, col_offset=0)
         e.operand = f
         f.operand = e
-        with self.assertRaises(RecursionError):
-            with support.infinite_recursion():
-                compile(ast.Expression(e), "<test>", "eval")
+        with self.assertRaises(RecursionError), support.infinite_recursion():
+            compile(ast.Expression(e), "<test>", "eval")
 
 
 class ASTValidatorTests(unittest.TestCase):
-
     def mod(self, mod, msg=None, mode="exec", *, exc=ValueError):
         mod.lineno = mod.col_offset = 0
         ast.fix_missing_locations(mod)
@@ -1583,7 +1579,7 @@ class ConstantTests(unittest.TestCase):
             compile(tree, "string", "exec")
         self.assertEqual(
             str(cm.exception),
-            "expression which can't be assigned " "to in Store context",
+            "expression which can't be assigned to in Store context",
         )
 
     def test_get_docstring(self):
@@ -1604,7 +1600,7 @@ class ConstantTests(unittest.TestCase):
     def test_load_const(self):
         consts = [None, True, False, 124, 2.0, 3j, "unicode", b"bytes", (1, 2, 3)]
 
-        code = "\n".join(["x={!r}".format(const) for const in consts])
+        code = "\n".join([f"x={const!r}" for const in consts])
         code += "\nx = ..."
         consts.extend((Ellipsis, None))
 
@@ -1956,7 +1952,7 @@ class EndPositionTests(unittest.TestCase):
                 def fun(self) -> None:
                     "ЖЖЖЖЖ"
         """).strip()
-        s_method = "    def fun(self) -> None:\n" '        "ЖЖЖЖЖ"'
+        s_method = '    def fun(self) -> None:\n        "ЖЖЖЖЖ"'
         cdef = ast.parse(s_orig).body[0]
         self.assertEqual(
             ast.get_source_segment(s_orig, cdef.body[0], padded=True), s_method
@@ -1977,7 +1973,7 @@ class EndPositionTests(unittest.TestCase):
               \t\f  def fun(self) -> None:
               \t\f      pass
         """).strip()
-        s_method = "  \t\f  def fun(self) -> None:\n" "  \t\f      pass"
+        s_method = "  \t\f  def fun(self) -> None:\n  \t\f      pass"
 
         cdef = ast.parse(s).body[0]
         self.assertEqual(ast.get_source_segment(s, cdef.body[0], padded=True), s_method)
@@ -2013,7 +2009,8 @@ class NodeVisitorTests(unittest.TestCase):
             def visit_Ellipsis(self, node):
                 log.append((node.lineno, "Ellipsis", ...))
 
-        mod = ast.parse(dedent("""\
+        mod = ast.parse(
+            dedent("""\
             i = 42
             f = 4.25
             c = 4.25j
@@ -2022,7 +2019,8 @@ class NodeVisitorTests(unittest.TestCase):
             t = True
             n = None
             e = ...
-            """))
+            """)
+        )
         visitor = Visitor()
         log = []
         with warnings.catch_warnings(record=True) as wlog:

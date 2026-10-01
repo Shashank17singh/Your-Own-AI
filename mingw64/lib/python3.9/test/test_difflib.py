@@ -1,8 +1,9 @@
 import difflib
-from test.support import run_unittest, findfile
-import unittest
 import doctest
 import sys
+import unittest
+
+from test.support import findfile, run_unittest
 
 
 class TestWithAscii(unittest.TestCase):
@@ -205,7 +206,6 @@ the end"""
 
 
 class TestSFpatches(unittest.TestCase):
-
     def test_html_diff(self):
         # Check SF patch 914575 for generating HTML differences
         f1a = (patch914575_from1 + "123\n" * 10) * 3
@@ -552,8 +552,7 @@ class TestJunkAPIs(unittest.TestCase):
 class TestFindLongest(unittest.TestCase):
     def longer_match_exists(self, a, b, n):
         return any(
-            b_part in a
-            for b_part in [b[i : i + n + 1] for i in range(0, len(b) - n - 1)]
+            b_part in a for b_part in [b[i : i + n + 1] for i in range(len(b) - n - 1)]
         )
 
     def test_default_args(self):

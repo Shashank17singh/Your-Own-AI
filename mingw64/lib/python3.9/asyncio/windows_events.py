@@ -10,23 +10,25 @@ import struct
 import time
 import weakref
 
-from . import events
-from . import base_subprocess
-from . import futures
-from . import exceptions
-from . import proactor_events
-from . import selector_events
-from . import tasks
-from . import windows_utils
+from . import (
+    base_subprocess,
+    events,
+    exceptions,
+    futures,
+    proactor_events,
+    selector_events,
+    tasks,
+    windows_utils,
+)
 from .log import logger
 
 __all__ = (
-    "SelectorEventLoop",
-    "ProactorEventLoop",
-    "IocpProactor",
     "DefaultEventLoopPolicy",
-    "WindowsSelectorEventLoopPolicy",
+    "IocpProactor",
+    "ProactorEventLoop",
+    "SelectorEventLoop",
     "WindowsProactorEventLoopPolicy",
+    "WindowsSelectorEventLoopPolicy",
 )
 
 
@@ -240,7 +242,7 @@ class _WaitHandleFuture(_BaseWaitHandleFuture):
         )
 
 
-class PipeServer(object):
+class PipeServer:
     """Class representing a pipe server.
 
     This is much like a bound, listening socket.
@@ -936,7 +938,6 @@ class IocpProactor:
 
 
 class _WindowsSubprocessTransport(base_subprocess.BaseSubprocessTransport):
-
     def _start(self, args, shell, stdin, stdout, stderr, bufsize, **kwargs):
         self._proc = windows_utils.Popen(
             args,

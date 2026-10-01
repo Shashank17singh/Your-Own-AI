@@ -61,14 +61,14 @@ SPECIAL demos, such as clock.py are those which run EVENTDRIVEN.
    a demo; it only acts in response to mouse clicks and movements.)
 """
 
-import sys
 import os
-from tkinter import *
+import sys
+import turtle
 from idlelib.colorizer import ColorDelegator, color_config
 from idlelib.percolator import Percolator
 from idlelib.textview import view_text
+from tkinter import *
 from turtledemo import __doc__ as about_turtledemo
-import turtle
 
 demo_dir = os.path.dirname(os.path.abspath(__file__))
 darwin = sys.platform == "darwin"
@@ -100,7 +100,7 @@ help_entries = (  # (help_label,  help_doc)
 )
 
 
-class DemoWindow(object):
+class DemoWindow:
     def __init__(self, filename=None):
         self.root = root = turtle._root = Tk()
         root.title("Python turtle-graphics examples")
@@ -115,7 +115,7 @@ class DemoWindow(object):
                     'tell application "System Events"',
                     "-e",
                     "set frontmost of the first process whose "
-                    "unix id is {} to true".format(os.getpid()),
+                    f"unix id is {os.getpid()} to true",
                     "-e",
                     "end tell",
                 ],

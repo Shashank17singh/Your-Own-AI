@@ -1,20 +1,21 @@
-from test.support import (
-    TESTFN,
-    import_module,
-    unlink,
-    requires,
-    _2G,
-    _4G,
-    gc_collect,
-    cpython_only,
-)
-import unittest
+import itertools
 import os
 import re
-import itertools
 import socket
 import sys
+import unittest
 import weakref
+
+from test.support import (
+    _2G,
+    _4G,
+    TESTFN,
+    cpython_only,
+    gc_collect,
+    import_module,
+    requires,
+    unlink,
+)
 
 # Skip test if we can't import mmap.
 mmap = import_module("mmap")
@@ -23,7 +24,6 @@ PAGESIZE = mmap.PAGESIZE
 
 
 class MmapTests(unittest.TestCase):
-
     def setUp(self):
         if os.path.exists(TESTFN):
             os.unlink(TESTFN)
@@ -284,7 +284,6 @@ class MmapTests(unittest.TestCase):
         # Do a tougher .find() test.  SF bug 515943 pointed out that, in 2.2,
         # searching for data with embedded \0 bytes didn't work.
         with open(TESTFN, "wb+") as f:
-
             data = b"aabaac\x00deef\x00\x00aa\x00"
             n = len(data)
             f.write(data)
@@ -375,7 +374,6 @@ class MmapTests(unittest.TestCase):
     def test_move(self):
         # make move works everywhere (64-bit format problem earlier)
         with open(TESTFN, "wb+") as f:
-
             f.write(b"ABCDEabcde")  # Arbitrary character
             f.flush()
 
@@ -722,9 +720,8 @@ class MmapTests(unittest.TestCase):
 
     def test_context_manager_exception(self):
         # Test that the OSError gets passed through
-        with self.assertRaises(Exception) as exc:
-            with mmap.mmap(-1, 10) as m:
-                raise OSError
+        with self.assertRaises(Exception) as exc, mmap.mmap(-1, 10) as m:
+            raise OSError
         self.assertIsInstance(
             exc.exception, OSError, "wrong exception raised in context manager"
         )
@@ -838,7 +835,6 @@ class MmapTests(unittest.TestCase):
 
 
 class LargeMmapTests(unittest.TestCase):
-
     def setUp(self):
         unlink(TESTFN)
 
@@ -865,11 +861,11 @@ class LargeMmapTests(unittest.TestCase):
         return f
 
     def test_large_offset(self):
-        with self._make_test_file(0x14FFFFFFF, b" ") as f:
-            with mmap.mmap(
-                f.fileno(), 0, offset=0x140000000, access=mmap.ACCESS_READ
-            ) as m:
-                self.assertEqual(m[0xFFFFFFF], 32)
+        with (
+            self._make_test_file(0x14FFFFFFF, b" ") as f,
+            mmap.mmap(f.fileno(), 0, offset=0x140000000, access=mmap.ACCESS_READ) as m,
+        ):
+            self.assertEqual(m[0xFFFFFFF], 32)
 
     def test_large_filesize(self):
         with self._make_test_file(0x17FFFFFFF, b" ") as f:

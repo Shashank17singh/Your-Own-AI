@@ -1,8 +1,9 @@
 from test import support
 
 gdbm = support.import_module("dbm.gnu")  # skip if not supported
-import unittest
 import os
+import unittest
+
 from test.support import TESTFN, TESTFN_NONASCII, unlink
 
 filename = TESTFN

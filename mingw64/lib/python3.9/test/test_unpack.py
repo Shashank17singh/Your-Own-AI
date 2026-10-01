@@ -144,8 +144,7 @@ __test__ = {"doctests": doctests}
 
 
 def test_main(verbose=False):
-    from test import support
-    from test import test_unpack
+    from test import support, test_unpack
 
     support.run_doctest(test_unpack, verbose)
 

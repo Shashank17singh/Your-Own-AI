@@ -7,10 +7,8 @@
 # data -- only char and entity references and end tags are special)
 # and CDATA (character data -- only end tags are special).
 
-
-import re
 import _markupbase
-
+import re
 from html import unescape
 
 __all__ = ["HTMLParser"]
@@ -123,7 +121,7 @@ class HTMLParser(_markupbase.ParserBase):
 
     def set_cdata_mode(self, elem):
         self.cdata_elem = elem.lower()
-        self.interesting = re.compile(r"</\s*%s\s*>" % self.cdata_elem, re.I)
+        self.interesting = re.compile(r"</\s*%s\s*>" % self.cdata_elem, re.IGNORECASE)
 
     def clear_cdata_mode(self):
         self.interesting = interesting_normal
@@ -256,9 +254,7 @@ class HTMLParser(_markupbase.ParserBase):
     # See also parse_declaration in _markupbase
     def parse_html_declaration(self, i):
         rawdata = self.rawdata
-        assert rawdata[i : i + 2] == "<!", (
-            "unexpected call to " "parse_html_declaration()"
-        )
+        assert rawdata[i : i + 2] == "<!", "unexpected call to parse_html_declaration()"
         if rawdata[i : i + 4] == "<!--":
             # this case is actually already handled in goahead()
             return self.parse_comment(i)
@@ -278,9 +274,7 @@ class HTMLParser(_markupbase.ParserBase):
     # see http://www.w3.org/TR/html5/tokenization.html#bogus-comment-state
     def parse_bogus_comment(self, i, report=1):
         rawdata = self.rawdata
-        assert rawdata[i : i + 2] in ("<!", "</"), (
-            "unexpected call to " "parse_comment()"
-        )
+        assert rawdata[i : i + 2] in ("<!", "</"), "unexpected call to parse_comment()"
         pos = rawdata.find(">", i + 2)
         if pos == -1:
             return -1
@@ -375,7 +369,7 @@ class HTMLParser(_markupbase.ParserBase):
             if next == "":
                 # end of input
                 return -1
-            if next in ("abcdefghijklmnopqrstuvwxyz=/" "ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+            if next in ("abcdefghijklmnopqrstuvwxyz=/ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
                 # end of input in or before attribute value, or we have the
                 # '/' from a '/>' ending
                 return -1

@@ -1,13 +1,12 @@
 import collections.abc
 import unittest
-from test import support
-
 import xmlrpc.client as xmlrpclib
+
+from test import support
 
 
 @unittest.skip("XXX: buildbot.python.org/all/xmlrpc/ is gone")
 class PythonBuildersTest(unittest.TestCase):
-
     def test_python_builders(self):
         # Get the list of builders from the XMLRPC buildbot interface at
         # python.org.

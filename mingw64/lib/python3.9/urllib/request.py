@@ -49,6 +49,7 @@ f = urllib.request.urlopen('https://www.python.org/')
 
 import base64
 import bisect
+import contextlib
 import email
 import hashlib
 import http.client
@@ -59,32 +60,31 @@ import re
 import socket
 import string
 import sys
-import time
 import tempfile
-import contextlib
+import time
 import warnings
-from urllib.error import URLError, HTTPError, ContentTooShortError
+from urllib.error import ContentTooShortError, HTTPError, URLError
 from urllib.parse import (
-    urlparse,
-    urlsplit,
-    urljoin,
-    unwrap,
+    _splitattr,
+    _splithost,
+    _splitpasswd,
+    _splitport,
+    _splitquery,
+    _splittag,
+    _splittype,
+    _splituser,
+    _splitvalue,
+    _to_bytes,
     quote,
     unquote,
-    _splittype,
-    _splithost,
-    _splitport,
-    _splituser,
-    _splitpasswd,
-    _splitattr,
-    _splitquery,
-    _splitvalue,
-    _splittag,
-    _to_bytes,
     unquote_to_bytes,
+    unwrap,
+    urljoin,
+    urlparse,
+    urlsplit,
     urlunparse,
 )
-from urllib.response import addinfourl, addclosehook
+from urllib.response import addclosehook, addinfourl
 
 try:
     import ssl
@@ -93,39 +93,39 @@ except ImportError:
 else:
     _have_ssl = True
 __all__ = [
-    "Request",
-    "OpenerDirector",
+    "AbstractBasicAuthHandler",
+    "AbstractDigestAuthHandler",
     "BaseHandler",
-    "HTTPDefaultErrorHandler",
-    "HTTPRedirectHandler",
+    "CacheFTPHandler",
+    "DataHandler",
+    "FTPHandler",
+    "FancyURLopener",
+    "FileHandler",
+    "HTTPBasicAuthHandler",
     "HTTPCookieProcessor",
-    "ProxyHandler",
+    "HTTPDefaultErrorHandler",
+    "HTTPDigestAuthHandler",
+    "HTTPErrorProcessor",
+    "HTTPHandler",
     "HTTPPasswordMgr",
     "HTTPPasswordMgrWithDefaultRealm",
     "HTTPPasswordMgrWithPriorAuth",
-    "AbstractBasicAuthHandler",
-    "HTTPBasicAuthHandler",
+    "HTTPRedirectHandler",
+    "OpenerDirector",
     "ProxyBasicAuthHandler",
-    "AbstractDigestAuthHandler",
-    "HTTPDigestAuthHandler",
     "ProxyDigestAuthHandler",
-    "HTTPHandler",
-    "FileHandler",
-    "FTPHandler",
-    "CacheFTPHandler",
-    "DataHandler",
+    "ProxyHandler",
+    "Request",
+    "URLopener",
     "UnknownHandler",
-    "HTTPErrorProcessor",
-    "urlopen",
-    "install_opener",
     "build_opener",
+    "getproxies",
+    "install_opener",
     "pathname2url",
     "url2pathname",
-    "getproxies",
-    "urlretrieve",
     "urlcleanup",
-    "URLopener",
-    "FancyURLopener",
+    "urlopen",
+    "urlretrieve",
 ]
 __version__ = "%d.%d" % sys.version_info[:2]
 _opener = None
@@ -139,7 +139,7 @@ def urlopen(
     cafile=None,
     capath=None,
     cadefault=False,
-    context=None
+    context=None,
 ):
     """Open the URL url, which can be either a string or a Request object.
     *data* must be an object specifying additional data to be sent to
@@ -189,8 +189,7 @@ def urlopen(
         )
         if context is not None:
             raise ValueError(
-                "You can't pass both context and any of cafile, capath, and "
-                "cadefault"
+                "You can't pass both context and any of cafile, capath, and cadefault"
             )
         if not _have_ssl:
             raise ValueError("SSL support not available")
@@ -324,7 +323,7 @@ class Request:
     @property
     def full_url(self):
         if self.fragment:
-            return "{}#{}".format(self._full_url, self.fragment)
+            return f"{self._full_url}#{self.fragment}"
         return self._full_url
 
     @full_url.setter
@@ -838,7 +837,7 @@ class AbstractBasicAuthHandler:
         "([^ \t,]+)"  # scheme like "Basic"
         "[ \t]+"  # mandatory whitespaces
         "realm=([\"']?)([^\"']*)\\2",
-        re.I,
+        re.IGNORECASE,
     )
 
     def __init__(self, password_mgr=None):
@@ -899,11 +898,9 @@ class AbstractBasicAuthHandler:
             return req
         if not req.has_header("Authorization"):
             user, passwd = self.passwd.find_user_password(None, req.full_url)
-            credentials = "{0}:{1}".format(user, passwd).encode()
+            credentials = f"{user}:{passwd}".encode()
             auth_str = base64.standard_b64encode(credentials).decode()
-            req.add_unredirected_header(
-                "Authorization", "Basic {}".format(auth_str.strip())
-            )
+            req.add_unredirected_header("Authorization", f"Basic {auth_str.strip()}")
         return req
 
     def http_response(self, req, response):
@@ -1023,7 +1020,7 @@ class AbstractDigestAuthHandler:
             respdig = KD(H(A1), noncebit)
         else:
             raise URLError("qop '%s' is not supported." % qop)
-        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' 'response="%s"' % (
+        base = 'username="%s", realm="%s", nonce="%s", uri="%s", response="%s"' % (
             user,
             realm,
             nonce,
@@ -1046,7 +1043,7 @@ class AbstractDigestAuthHandler:
             H = lambda x: hashlib.sha1(x.encode("ascii")).hexdigest()
         else:
             raise ValueError(
-                "Unsupported digest authentication " "algorithm %r" % algorithm
+                "Unsupported digest authentication algorithm %r" % algorithm
             )
         KD = lambda s, d: H("%s:%s" % (s, d))
         return H, KD
@@ -1460,7 +1457,7 @@ class DataHandler(BaseHandler):
 
 MAXFTPCACHE = 10  # Trim the ftp cache beyond this size
 if os.name == "nt":
-    from nturl2path import url2pathname, pathname2url
+    from nturl2path import pathname2url, url2pathname
 else:
 
     def url2pathname(pathname):
@@ -2346,7 +2343,7 @@ def _proxy_bypass_macosx_sysconf(host, proxy_settings):
 
 
 if sys.platform == "darwin":
-    from _scproxy import _get_proxy_settings, _get_proxies
+    from _scproxy import _get_proxies, _get_proxy_settings
 
     def proxy_bypass_macosx_sysconf(host):
         proxy_settings = _get_proxy_settings()
@@ -2460,7 +2457,7 @@ elif os.name == "nt":
             test = test.replace("*", r".*")  # change glob sequence
             test = test.replace("?", r".")  # change glob char
             for val in host:
-                if re.match(test, val, re.I):
+                if re.match(test, val, re.IGNORECASE):
                     return 1
         return 0
 

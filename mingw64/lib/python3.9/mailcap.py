@@ -3,7 +3,7 @@
 import os
 import warnings
 
-__all__ = ["getcaps", "findmatch"]
+__all__ = ["findmatch", "getcaps"]
 
 
 def lineno_sort_key(entry):

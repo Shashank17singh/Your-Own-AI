@@ -4,7 +4,6 @@ import unittest
 
 
 class UnaryOpTestCase(unittest.TestCase):
-
     def test_negative(self):
         self.assertTrue(-2 == 0 - 2)
         self.assertEqual(-0, 0)

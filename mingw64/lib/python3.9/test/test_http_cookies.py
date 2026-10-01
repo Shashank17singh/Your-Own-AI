@@ -1,14 +1,14 @@
 # Simple test suite for http/cookies.py
 
 import copy
-from test.support import run_unittest, run_doctest
+import pickle
 import unittest
 from http import cookies
-import pickle
+
+from test.support import run_doctest, run_unittest
 
 
 class CookieTests(unittest.TestCase):
-
     def test_basic(self):
         cases = [
             {
@@ -282,7 +282,7 @@ class MorselTests(unittest.TestCase):
         for i in M._reserved:
             # Test that valid key values come out fine
             self.assertEqual(M[i], "%s_value" % i)
-        for i in "the holy hand grenade".split():
+        for i in ["the", "holy", "hand", "grenade"]:
             # Test that invalid keys raise CookieError
             self.assertRaises(cookies.CookieError, M.__setitem__, i, "%s_value" % i)
 
@@ -294,7 +294,7 @@ class MorselTests(unittest.TestCase):
             self.assertRaises(
                 cookies.CookieError, M.set, i, "%s_value" % i, "%s_value" % i
             )
-        for i in "thou cast _the- !holy! ^hand| +*grenade~".split():
+        for i in ["thou", "cast", "_the-", "!holy!", "^hand|", "+*grenade~"]:
             # Try typical use case. Setting decent values.
             # Check output and js_output.
             M["path"] = "/foo"  # Try a reserved key as well

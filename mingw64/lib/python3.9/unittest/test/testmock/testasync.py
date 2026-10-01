@@ -3,19 +3,19 @@ import gc
 import inspect
 import re
 import unittest
+from asyncio import iscoroutinefunction, run
 from contextlib import contextmanager
-from asyncio import run, iscoroutinefunction
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import (
     ANY,
-    call,
     AsyncMock,
-    patch,
     MagicMock,
     Mock,
-    create_autospec,
-    sentinel,
     _CallList,
+    call,
+    create_autospec,
+    patch,
+    sentinel,
 )
 
 
@@ -59,7 +59,7 @@ def normal_func():
     pass
 
 
-class NormalClass(object):
+class NormalClass:
     def a(self):
         pass
 
@@ -673,7 +673,7 @@ class AsyncContextManagerTest(unittest.TestCase):
 
 
 class AsyncIteratorTest(unittest.TestCase):
-    class WithAsyncIterator(object):
+    class WithAsyncIterator:
         def __init__(self):
             self.items = ["foo", "NormalFoo", "baz"]
 
@@ -1016,9 +1016,7 @@ class AsyncMockAssert(unittest.TestCase):
         with self.assertRaisesRegex(
             AssertionError,
             "^{}$".format(
-                re.escape(
-                    "Awaits not found.\n" "Expected: [call()]\n" "Actual: [call(1)]"
-                )
+                re.escape("Awaits not found.\nExpected: [call()]\nActual: [call(1)]")
             ),
         ) as cm:
             self.mock.assert_has_awaits([call()])

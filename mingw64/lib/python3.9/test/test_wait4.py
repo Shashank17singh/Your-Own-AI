@@ -1,11 +1,12 @@
 """This test checks for correct wait4() behavior."""
 
 import os
-import time
 import sys
+import time
 import unittest
-from test.fork_wait import ForkWait
+
 from test import support
+from test.fork_wait import ForkWait
 
 # If either of these do not exist, skip this test.
 support.get_attribute(os, "fork")

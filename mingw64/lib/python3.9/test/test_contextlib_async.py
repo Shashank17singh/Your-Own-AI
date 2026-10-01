@@ -1,9 +1,9 @@
 import asyncio
-from contextlib import asynccontextmanager, AbstractAsyncContextManager, AsyncExitStack
 import functools
-from test import support
 import unittest
+from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager
 
+from test import support
 from test.test_contextlib import TestBaseExitStack
 
 
@@ -25,7 +25,6 @@ def _async_test(func):
 
 
 class TestAbstractAsyncContextManager(unittest.TestCase):
-
     @_async_test
     async def test_enter(self):
         class DefaultEnter(AbstractAsyncContextManager):
@@ -95,7 +94,6 @@ class TestAbstractAsyncContextManager(unittest.TestCase):
 
 
 class AsyncContextManagerTestCase(unittest.TestCase):
-
     @_async_test
     async def test_contextmanager_plain(self):
         state = []
@@ -406,7 +404,7 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
             self.assertIsNone(exc)
             self.assertIsNone(exc_tb)
 
-        class ExitCM(object):
+        class ExitCM:
             def __init__(self, check_exc):
                 self.check_exc = check_exc
 
@@ -435,7 +433,7 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
 
     @_async_test
     async def test_async_enter_context(self):
-        class TestCM(object):
+        class TestCM:
             async def __aenter__(self):
                 result.append(1)
 

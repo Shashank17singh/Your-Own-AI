@@ -14,9 +14,8 @@ import socket
 import sys
 import threading
 
-from . import process
+from . import process, util
 from .context import reduction
-from . import util
 
 __all__ = ["stop"]
 
@@ -24,7 +23,7 @@ __all__ = ["stop"]
 if sys.platform == "win32":
     __all__ += ["DupSocket"]
 
-    class DupSocket(object):
+    class DupSocket:
         """Picklable wrapper for a socket."""
 
         def __init__(self, sock):
@@ -45,7 +44,7 @@ if sys.platform == "win32":
 else:
     __all__ += ["DupFd"]
 
-    class DupFd(object):
+    class DupFd:
         """Wrapper for fd which can be used at any time."""
 
         def __init__(self, fd):
@@ -65,7 +64,7 @@ else:
                 return reduction.recv_handle(conn)
 
 
-class _ResourceSharer(object):
+class _ResourceSharer:
     """Manager for resources using background thread."""
 
     def __init__(self):
@@ -107,9 +106,7 @@ class _ResourceSharer(object):
                 c.close()
                 self._thread.join(timeout)
                 if self._thread.is_alive():
-                    util.sub_warning(
-                        "_ResourceSharer thread did " "not stop when asked"
-                    )
+                    util.sub_warning("_ResourceSharer thread did not stop when asked")
                 self._listener.close()
                 self._thread = None
                 self._address = None

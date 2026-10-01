@@ -1,20 +1,17 @@
 import os
 import sys
-from test.support import (
-    TESTFN,
-    TESTFN_UNICODE,
-    FS_NONASCII,
-    rmtree,
-    unlink,
-    captured_stdout,
-)
-from test.support.script_helper import assert_python_ok, assert_python_failure
 import textwrap
-import unittest
-
 import trace
+import unittest
 from trace import Trace
 
+from test.support import (
+    TESTFN,
+    captured_stdout,
+    rmtree,
+    unlink,
+)
+from test.support.script_helper import assert_python_failure, assert_python_ok
 from test.tracedmodules import testmod
 
 # ------------------------------- Utilities -----------------------------------#
@@ -118,7 +115,7 @@ def traced_decorated_function():
     func()
 
 
-class TracedClass(object):
+class TracedClass:
     def __init__(self, x):
         self.a = x
 
@@ -278,7 +275,7 @@ class TestRunExecCounts(unittest.TestCase):
         # the settrace of threading, which we ignore, just making sure that the
         # counts fo traced_func_loop were right.
         #
-        for k in expected.keys():
+        for k in expected:
             self.assertEqual(self.tracer.results().counts[k], expected[k])
 
 
@@ -443,7 +440,7 @@ class TestCoverage(unittest.TestCase):
         # Ensure that the module is executed in import
         if modname in sys.modules:
             del sys.modules[modname]
-        cmd = "import test.tracedmodules.testmod as t;" "t.func(0); t.func2();"
+        cmd = "import test.tracedmodules.testmod as t;t.func(0); t.func2();"
         with captured_stdout() as stdout:
             self._coverage(tracer, cmd)
         stdout.seek(0)
@@ -476,18 +473,19 @@ class Test_Ignore(unittest.TestCase):
 
 # Created for Issue 31908 -- CLI utility not writing cover files
 class TestCoverageCommandLineOutput(unittest.TestCase):
-
     codefile = "tmp.py"
     coverfile = "tmp.cover"
 
     def setUp(self):
         with open(self.codefile, "w", encoding="iso-8859-15") as f:
-            f.write(textwrap.dedent("""\
+            f.write(
+                textwrap.dedent("""\
                 # coding: iso-8859-15
                 x = 'spœm'
                 if []:
                     print('unreachable')
-            """))
+            """)
+            )
 
     def tearDown(self):
         unlink(self.codefile)
@@ -500,7 +498,7 @@ class TestCoverageCommandLineOutput(unittest.TestCase):
         tracecoverpath = os.path.join(tracedir, "trace.cover")
         unlink(tracecoverpath)
 
-        argv = "-m trace --count".split() + [self.codefile]
+        argv = ["-m", "trace", "--count"] + [self.codefile]
         status, stdout, stderr = assert_python_ok(*argv)
         self.assertEqual(stderr, b"")
         self.assertFalse(os.path.exists(tracecoverpath))
@@ -515,7 +513,7 @@ class TestCoverageCommandLineOutput(unittest.TestCase):
             )
 
     def test_cover_files_written_with_highlight(self):
-        argv = "-m trace --count --missing".split() + [self.codefile]
+        argv = ["-m", "trace", "--count", "--missing"] + [self.codefile]
         status, stdout, stderr = assert_python_ok(*argv)
         self.assertTrue(os.path.exists(self.coverfile))
         with open(self.coverfile, encoding="iso-8859-15") as f:
@@ -531,7 +529,6 @@ class TestCoverageCommandLineOutput(unittest.TestCase):
 
 
 class TestCommandLine(unittest.TestCase):
-
     def test_failures(self):
         _errors = (
             (b"progname is missing: required with the main options", "-l", "-T"),
@@ -583,7 +580,8 @@ class TestCommandLine(unittest.TestCase):
         with open(filename, "w", encoding="utf-8") as fd:
             self.addCleanup(unlink, filename)
             self.addCleanup(unlink, coverfilename)
-            fd.write(textwrap.dedent("""\
+            fd.write(
+                textwrap.dedent("""\
                 x = 1
                 y = 2
 
@@ -592,7 +590,8 @@ class TestCommandLine(unittest.TestCase):
 
                 for i in range(10):
                     f()
-            """))
+            """)
+            )
         status, stdout, _ = assert_python_ok(
             "-m", "trace", "-cs", filename, PYTHONIOENCODING="utf-8"
         )

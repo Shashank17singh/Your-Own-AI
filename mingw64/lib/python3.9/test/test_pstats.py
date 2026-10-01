@@ -1,11 +1,10 @@
+import cProfile
+import pstats
 import unittest
-
-from test import support
 from io import StringIO
 from pstats import SortKey
 
-import pstats
-import cProfile
+from test import support
 
 
 class AddCallersTestCase(unittest.TestCase):

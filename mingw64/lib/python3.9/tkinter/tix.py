@@ -2,7 +2,6 @@ import os
 import tkinter
 from tkinter import *
 from tkinter import _cnfmerge
-import _tkinter  # If this fails your Python may not be configured for Tk
 
 WINDOW = "window"
 TEXT = "text"
@@ -1668,8 +1667,6 @@ class CObjView(TixWidget):
     The scrollbars are adjusted so that the canvas is just large enough
     to see all the objects.
     """
-
-    pass
 
 
 class Grid(TixWidget, XView, YView):

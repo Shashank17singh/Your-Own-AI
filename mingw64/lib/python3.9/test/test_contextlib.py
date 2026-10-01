@@ -5,13 +5,13 @@ import sys
 import tempfile
 import threading
 import unittest
-from contextlib import *  # Tests __all__
-from test import support
 import weakref
+from contextlib import *  # Tests __all__
+
+from test import support
 
 
 class TestAbstractContextManager(unittest.TestCase):
-
     def test_enter(self):
         class DefaultEnter(AbstractContextManager):
             def __exit__(self, *args):
@@ -55,7 +55,6 @@ class TestAbstractContextManager(unittest.TestCase):
 
 
 class ContextManagerTestCase(unittest.TestCase):
-
     def test_contextmanager_plain(self):
         state = []
 
@@ -82,12 +81,11 @@ class ContextManagerTestCase(unittest.TestCase):
             finally:
                 state.append(999)
 
-        with self.assertRaises(ZeroDivisionError):
-            with woohoo() as x:
-                self.assertEqual(state, [1])
-                self.assertEqual(x, 42)
-                state.append(x)
-                raise ZeroDivisionError()
+        with self.assertRaises(ZeroDivisionError), woohoo() as x:
+            self.assertEqual(state, [1])
+            self.assertEqual(x, 42)
+            state.append(x)
+            raise ZeroDivisionError()
         self.assertEqual(state, [1, 42, 999])
 
     def test_contextmanager_no_reraise(self):
@@ -283,7 +281,6 @@ def woohoo():
 
 
 class ClosingTestCase(unittest.TestCase):
-
     @support.requires_docstrings
     def test_instance_docs(self):
         # Issue 19330: ensure context manager instances have good docstrings
@@ -313,10 +310,9 @@ class ClosingTestCase(unittest.TestCase):
 
         x = C()
         self.assertEqual(state, [])
-        with self.assertRaises(ZeroDivisionError):
-            with closing(x) as y:
-                self.assertEqual(x, y)
-                1 / 0
+        with self.assertRaises(ZeroDivisionError), closing(x) as y:
+            self.assertEqual(x, y)
+            1 / 0
         self.assertEqual(state, [1])
 
 
@@ -331,7 +327,6 @@ class NullcontextTestCase(unittest.TestCase):
 
 
 class FileContextTestCase(unittest.TestCase):
-
     def testWithOpen(self):
         tfn = tempfile.mktemp()
         try:
@@ -341,27 +336,24 @@ class FileContextTestCase(unittest.TestCase):
                 f.write("Booh\n")
             self.assertTrue(f.closed)
             f = None
-            with self.assertRaises(ZeroDivisionError):
-                with open(tfn, "r") as f:
-                    self.assertFalse(f.closed)
-                    self.assertEqual(f.read(), "Booh\n")
-                    1 / 0
+            with self.assertRaises(ZeroDivisionError), open(tfn, "r") as f:
+                self.assertFalse(f.closed)
+                self.assertEqual(f.read(), "Booh\n")
+                1 / 0
             self.assertTrue(f.closed)
         finally:
             support.unlink(tfn)
 
 
 class LockContextTestCase(unittest.TestCase):
-
     def boilerPlate(self, lock, locked):
         self.assertFalse(locked())
         with lock:
             self.assertTrue(locked())
         self.assertFalse(locked())
-        with self.assertRaises(ZeroDivisionError):
-            with lock:
-                self.assertTrue(locked())
-                1 / 0
+        with self.assertRaises(ZeroDivisionError), lock:
+            self.assertTrue(locked())
+            1 / 0
         self.assertFalse(locked())
 
     def testWithLock(self):
@@ -422,7 +414,6 @@ class mycontext(ContextDecorator):
 
 
 class TestContextDecorator(unittest.TestCase):
-
     @support.requires_docstrings
     def test_instance_docs(self):
         # Issue 19330: ensure context manager instances have good docstrings
@@ -441,9 +432,8 @@ class TestContextDecorator(unittest.TestCase):
     def test_contextdecorator_with_exception(self):
         context = mycontext()
 
-        with self.assertRaisesRegex(NameError, "foo"):
-            with context:
-                raise NameError("foo")
+        with self.assertRaisesRegex(NameError, "foo"), context:
+            raise NameError("foo")
         self.assertIsNotNone(context.exc)
         self.assertIs(context.exc[0], NameError)
 
@@ -482,8 +472,7 @@ class TestContextDecorator(unittest.TestCase):
     def test_decorating_method(self):
         context = mycontext()
 
-        class Test(object):
-
+        class Test:
             @context
             def method(self, a, b, c=None):
                 self.a = a
@@ -516,9 +505,8 @@ class TestContextDecorator(unittest.TestCase):
             def __exit__(self, *exc):
                 pass
 
-        with self.assertRaises(AttributeError):
-            with mycontext():
-                pass
+        with self.assertRaises(AttributeError), mycontext():
+            pass
 
     def test_typo_exit(self):
         class mycontext(ContextDecorator):
@@ -528,12 +516,11 @@ class TestContextDecorator(unittest.TestCase):
             def __uxit__(self, *exc):
                 pass
 
-        with self.assertRaises(AttributeError):
-            with mycontext():
-                pass
+        with self.assertRaises(AttributeError), mycontext():
+            pass
 
     def test_contextdecorator_as_mixin(self):
-        class somecontext(object):
+        class somecontext:
             started = False
             exc = None
 
@@ -651,7 +638,7 @@ class TestBaseExitStack:
             self.assertIsNone(exc)
             self.assertIsNone(exc_tb)
 
-        class ExitCM(object):
+        class ExitCM:
             def __init__(self, check_exc):
                 self.check_exc = check_exc
 
@@ -679,7 +666,7 @@ class TestBaseExitStack:
             1 / 0
 
     def test_enter_context(self):
-        class TestCM(object):
+        class TestCM:
             def __enter__(self):
                 result.append(1)
 
@@ -729,10 +716,9 @@ class TestBaseExitStack:
         self.assertEqual(result, [1, 2, 3])
 
     def test_exit_raise(self):
-        with self.assertRaises(ZeroDivisionError):
-            with self.exit_stack() as stack:
-                stack.push(lambda *exc: False)
-                1 / 0
+        with self.assertRaises(ZeroDivisionError), self.exit_stack() as stack:
+            stack.push(lambda *exc: False)
+            1 / 0
 
     def test_exit_suppress(self):
         with self.exit_stack() as stack:
@@ -918,7 +904,7 @@ class TestBaseExitStack:
             with self.exit_stack() as stack:
                 stack.push(suppress_exc)
                 1 / 0
-        except IndexError as exc:
+        except IndexError:
             self.fail("Expected no exception, got IndexError")
 
     def test_exit_exception_chaining_suppress(self):
@@ -934,7 +920,7 @@ class TestBaseExitStack:
                 stack.callback(int)
 
     def test_instance_bypass(self):
-        class Example(object):
+        class Example:
             pass
 
         cm = Example()
@@ -987,7 +973,6 @@ class TestExitStack(TestBaseExitStack, unittest.TestCase):
 
 
 class TestRedirectStream:
-
     redirect_stream = None
     orig_stream = None
 
@@ -1044,19 +1029,16 @@ class TestRedirectStream:
 
 
 class TestRedirectStdout(TestRedirectStream, unittest.TestCase):
-
     redirect_stream = redirect_stdout
     orig_stream = "stdout"
 
 
 class TestRedirectStderr(TestRedirectStream, unittest.TestCase):
-
     redirect_stream = redirect_stderr
     orig_stream = "stderr"
 
 
 class TestSuppress(unittest.TestCase):
-
     @support.requires_docstrings
     def test_instance_docs(self):
         # Issue 19330: ensure context manager instances have good docstrings
@@ -1081,14 +1063,12 @@ class TestSuppress(unittest.TestCase):
             "Hello"[50]
 
     def test_other_exception(self):
-        with self.assertRaises(ZeroDivisionError):
-            with suppress(TypeError):
-                1 / 0
+        with self.assertRaises(ZeroDivisionError), suppress(TypeError):
+            1 / 0
 
     def test_no_args(self):
-        with self.assertRaises(ZeroDivisionError):
-            with suppress():
-                1 / 0
+        with self.assertRaises(ZeroDivisionError), suppress():
+            1 / 0
 
     def test_multiple_exception_args(self):
         with suppress(ZeroDivisionError, TypeError):

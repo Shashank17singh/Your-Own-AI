@@ -19,51 +19,52 @@
 Copyright (C) 2001-2019 Vinay Sajip. All Rights Reserved.
 """
 
-import logging
-import logging.handlers
-import logging.config
-
+import asyncore
 import codecs
 import configparser
 import copy
 import datetime
+import gc
+import io
+import json
+import logging
+import logging.config
+import logging.handlers
+import os
 import pathlib
 import pickle
-import io
-import gc
-import json
-import os
 import queue
 import random
 import re
+import smtpd
 import socket
 import struct
 import sys
 import tempfile
-from test.support.script_helper import assert_python_ok, assert_python_failure
-from test import support
-from test.support import socket_helper
-from test.support.logging_helper import TestHandler
 import textwrap
 import threading
 import time
 import unittest
 import warnings
 import weakref
-
-import asyncore
-from http.server import HTTPServer, BaseHTTPRequestHandler
-import smtpd
-from urllib.parse import urlparse, parse_qs
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import (
-    ThreadingUDPServer,
     DatagramRequestHandler,
-    ThreadingTCPServer,
     StreamRequestHandler,
+    ThreadingTCPServer,
+    ThreadingUDPServer,
 )
+from urllib.parse import parse_qs, urlparse
+
+from test import support
+from test.support import socket_helper
+from test.support.logging_helper import TestHandler
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 try:
-    import win32evtlog, win32evtlogutil, pywintypes
+    import pywintypes
+    import win32evtlog
+    import win32evtlogutil
 except ImportError:
     win32evtlog = win32evtlogutil = pywintypes = None
 
@@ -771,7 +772,7 @@ class HandlerTest(BaseTest):
             support.wait_process(pid, exitcode=0)
 
 
-class BadStream(object):
+class BadStream:
     def write(self, data):
         raise RuntimeError("deliberate mistake")
 
@@ -781,7 +782,7 @@ class TestStreamHandler(logging.StreamHandler):
         self.error_record = record
 
 
-class StreamWithIntName(object):
+class StreamWithIntName:
     level = logging.NOTSET
     name = 2
 
@@ -906,7 +907,7 @@ class TestSMTPServer(smtpd.SMTPServer):
         asyncore.close_all(map=self._map, ignore_all=True)
 
 
-class ControlMixin(object):
+class ControlMixin:
     """
     This mixin is used to start a server on a separate thread, and
     shut it down programmatically. Request handling is simplified - instead
@@ -945,7 +946,7 @@ class ControlMixin(object):
         service loop.
         """
         self.ready.set()
-        super(ControlMixin, self).serve_forever(poll_interval)
+        super().serve_forever(poll_interval)
 
     def stop(self):
         """
@@ -1020,7 +1021,6 @@ class TestTCPServer(ControlMixin, ThreadingTCPServer):
 
     def __init__(self, addr, handler, poll_interval=0.5, bind_and_activate=True):
         class DelegatingTCPRequestHandler(StreamRequestHandler):
-
             def handle(self):
                 self.server._handler(self)
 
@@ -1030,7 +1030,7 @@ class TestTCPServer(ControlMixin, ThreadingTCPServer):
         ControlMixin.__init__(self, handler, poll_interval)
 
     def server_bind(self):
-        super(TestTCPServer, self).server_bind()
+        super().server_bind()
         self.port = self.socket.getsockname()[1]
 
 
@@ -1054,7 +1054,6 @@ class TestUDPServer(ControlMixin, ThreadingUDPServer):
 
     def __init__(self, addr, handler, poll_interval=0.5, bind_and_activate=True):
         class DelegatingUDPRequestHandler(DatagramRequestHandler):
-
             def handle(self):
                 self.server._handler(self)
 
@@ -1074,11 +1073,11 @@ class TestUDPServer(ControlMixin, ThreadingUDPServer):
         self._closed = False
 
     def server_bind(self):
-        super(TestUDPServer, self).server_bind()
+        super().server_bind()
         self.port = self.socket.getsockname()[1]
 
     def server_close(self):
-        super(TestUDPServer, self).server_close()
+        super().server_close()
         self._closed = True
 
 
@@ -2028,11 +2027,11 @@ class IPv6SysLogHandlerTest(SysLogHandlerTest):
 
     def setUp(self):
         self.server_class.address_family = socket.AF_INET6
-        super(IPv6SysLogHandlerTest, self).setUp()
+        super().setUp()
 
     def tearDown(self):
         self.server_class.address_family = socket.AF_INET
-        super(IPv6SysLogHandlerTest, self).tearDown()
+        super().tearDown()
 
 
 class HTTPHandlerTest(BaseTest):
@@ -2224,7 +2223,6 @@ class EncodingTest(BaseTest):
 
 
 class WarningsTest(BaseTest):
-
     def test_warnings(self):
         with warnings.catch_warnings():
             logging.captureWarnings(True)
@@ -3466,9 +3464,9 @@ class ConfigDictTest(BaseTest):
 
     def test_out_of_order_with_dollar_style(self):
         config = copy.deepcopy(self.out_of_order)
-        config["formatters"]["mySimpleFormatter"][
-            "format"
-        ] = "${asctime} (${name}) ${levelname}: ${message}"
+        config["formatters"]["mySimpleFormatter"]["format"] = (
+            "${asctime} (${name}) ${levelname}: ${message}"
+        )
 
         self.apply_config(config)
         handler = logging.getLogger("mymodule").handlers[0]
@@ -3599,7 +3597,6 @@ class DerivedLogRecord(logging.LogRecord):
 
 
 class LogRecordFactoryTest(BaseTest):
-
     def setUp(self):
         class CheckingFilter(logging.Filter):
             def __init__(self, cls):
@@ -4216,13 +4213,11 @@ class ExceptionTest(BaseTest):
         r.removeHandler(h)
         h.close()
         r = h.records[0]
+        self.assertTrue(r.exc_text.startswith("Traceback (most recent call last):\n"))
+        self.assertTrue(r.exc_text.endswith("\nRuntimeError: deliberate mistake"))
+        self.assertTrue(r.stack_info.startswith("Stack (most recent call last):\n"))
         self.assertTrue(
-            r.exc_text.startswith("Traceback (most recent " "call last):\n")
-        )
-        self.assertTrue(r.exc_text.endswith("\nRuntimeError: " "deliberate mistake"))
-        self.assertTrue(r.stack_info.startswith("Stack (most recent " "call last):\n"))
-        self.assertTrue(
-            r.stack_info.endswith("logging.exception('failed', " "stack_info=True)")
+            r.stack_info.endswith("logging.exception('failed', stack_info=True)")
         )
 
 
@@ -4266,22 +4261,20 @@ class LastResortTest(BaseTest):
 
 
 class FakeHandler:
-
     def __init__(self, identifier, called):
         for method in ("acquire", "flush", "close", "release"):
             setattr(self, method, self.record_call(identifier, method, called))
 
     def record_call(self, identifier, method_name, called):
         def inner():
-            called.append("{} - {}".format(identifier, method_name))
+            called.append(f"{identifier} - {method_name}")
 
         return inner
 
 
 class RecordingHandler(logging.NullHandler):
-
     def __init__(self, *args, **kwargs):
-        super(RecordingHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.records = []
 
     def handle(self, record):
@@ -4293,7 +4286,7 @@ class ShutdownTest(BaseTest):
     """Test suite for the shutdown method."""
 
     def setUp(self):
-        super(ShutdownTest, self).setUp()
+        super().setUp()
         self.called = []
 
         raise_exceptions = logging.raiseExceptions
@@ -4597,7 +4590,7 @@ class BasicConfigTest(unittest.TestCase):
     """Test suite for logging.basicConfig."""
 
     def setUp(self):
-        super(BasicConfigTest, self).setUp()
+        super().setUp()
         self.handlers = logging.root.handlers
         self.saved_handlers = logging._handlers.copy()
         self.saved_handler_list = logging._handlerList[:]
@@ -4609,10 +4602,10 @@ class BasicConfigTest(unittest.TestCase):
         for h in logging.root.handlers[:]:
             logging.root.removeHandler(h)
             h.close()
-        super(BasicConfigTest, self).tearDown()
+        super().tearDown()
 
     def cleanup(self):
-        setattr(logging.root, "handlers", self.handlers)
+        logging.root.handlers = self.handlers
         logging._handlers.clear()
         logging._handlers.update(self.saved_handlers)
         logging._handlerList[:] = self.saved_handler_list
@@ -4876,7 +4869,7 @@ class BasicConfigTest(unittest.TestCase):
             logging.debug("The Øresund Bridge joins Copenhagen to Malmö")
             self.assertTrue(message)
             self.assertIn(
-                "'ascii' codec can't encode " "character '\\xd8' in position 4:",
+                "'ascii' codec can't encode character '\\xd8' in position 4:",
                 message[0],
             )
         finally:
@@ -4932,7 +4925,7 @@ class BasicConfigTest(unittest.TestCase):
 
 class LoggerAdapterTest(unittest.TestCase):
     def setUp(self):
-        super(LoggerAdapterTest, self).setUp()
+        super().setUp()
         old_handler_list = logging._handlerList[:]
 
         self.recording = RecordingHandler()
@@ -5036,9 +5029,8 @@ class LoggerAdapterTest(unittest.TestCase):
 
 
 class LoggerTest(BaseTest):
-
     def setUp(self):
-        super(LoggerTest, self).setUp()
+        super().setUp()
         self.recording = RecordingHandler()
         self.logger = logging.Logger(name="blah")
         self.logger.addHandler(self.recording)

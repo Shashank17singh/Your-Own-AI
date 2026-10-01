@@ -8,41 +8,41 @@
 # regression test, the filterwarnings() call has been added to
 # regrtest.py.
 
-from test.support import run_unittest, check_syntax_error
-import unittest
 import sys
+import unittest
 
 # testing import *
 from sys import *
 
+from test.support import check_syntax_error, run_unittest
+
 
 class TokenTests(unittest.TestCase):
-
     def testBackslash(self):
         # Backslash means line continuation:
         x = 1 + 1
-        self.assertEquals(x, 2, "backslash for line continuation")
+        self.assertEqual(x, 2, "backslash for line continuation")
 
         # Backslash does not means continuation in comments :\
         x = 0
-        self.assertEquals(x, 0, "backslash ending comment")
+        self.assertEqual(x, 0, "backslash ending comment")
 
     def testPlainIntegers(self):
-        self.assertEquals(type(000), type(0))
-        self.assertEquals(0xFF, 255)
-        self.assertEquals(0o377, 255)
-        self.assertEquals(2147483647, 0o17777777777)
-        self.assertEquals(0b1001, 9)
+        self.assertEqual(int, int)
+        self.assertEqual(0xFF, 255)
+        self.assertEqual(0o377, 255)
+        self.assertEqual(2147483647, 0o17777777777)
+        self.assertEqual(0b1001, 9)
         # "0x" is not a valid literal
         self.assertRaises(SyntaxError, eval, "0x")
         from sys import maxsize
 
         if maxsize == 2147483647:
-            self.assertEquals(-2147483647 - 1, -0o20000000000)
+            self.assertEqual(-2147483647 - 1, -0o20000000000)
             # XXX -2147483648
-            self.assert_(0o37777777777 > 0)
-            self.assert_(0xFFFFFFFF > 0)
-            self.assert_(0b1111111111111111111111111111111 > 0)
+            self.assertTrue(0o37777777777 > 0)
+            self.assertTrue(0xFFFFFFFF > 0)
+            self.assertTrue(0b1111111111111111111111111111111 > 0)
             for s in (
                 "2147483648",
                 "0o40000000000",
@@ -54,10 +54,10 @@ class TokenTests(unittest.TestCase):
                 except OverflowError:
                     self.fail("OverflowError on huge integer literal %r" % s)
         elif maxsize == 9223372036854775807:
-            self.assertEquals(-9223372036854775807 - 1, -0o1000000000000000000000)
-            self.assert_(0o1777777777777777777777 > 0)
-            self.assert_(0xFFFFFFFFFFFFFFFF > 0)
-            self.assert_(
+            self.assertEqual(-9223372036854775807 - 1, -0o1000000000000000000000)
+            self.assertTrue(0o1777777777777777777777 > 0)
+            self.assertTrue(0xFFFFFFFFFFFFFFFF > 0)
+            self.assertTrue(
                 0b11111111111111111111111111111111111111111111111111111111111111 > 0
             )
             for s in (
@@ -122,19 +122,19 @@ class TokenTests(unittest.TestCase):
     def testStringLiterals(self):
         x = ""
         y = ""
-        self.assert_(len(x) == 0 and x == y)
+        self.assertTrue(len(x) == 0 and x == y)
         x = "'"
         y = "'"
-        self.assert_(len(x) == 1 and x == y and ord(x) == 39)
+        self.assertTrue(len(x) == 1 and x == y and ord(x) == 39)
         x = '"'
         y = '"'
-        self.assert_(len(x) == 1 and x == y and ord(x) == 34)
+        self.assertTrue(len(x) == 1 and x == y and ord(x) == 34)
         x = 'doesn\'t "shrink" does it'
         y = 'doesn\'t "shrink" does it'
-        self.assert_(len(x) == 24 and x == y)
+        self.assertTrue(len(x) == 24 and x == y)
         x = 'does "shrink" doesn\'t it'
         y = 'does "shrink" doesn\'t it'
-        self.assert_(len(x) == 24 and x == y)
+        self.assertTrue(len(x) == 24 and x == y)
         x = """
 The "quick"
 brown fox
@@ -142,40 +142,39 @@ jumps over
 the 'lazy' dog.
 """
         y = "\nThe \"quick\"\nbrown fox\njumps over\nthe 'lazy' dog.\n"
-        self.assertEquals(x, y)
+        self.assertEqual(x, y)
         y = """
 The "quick"
 brown fox
 jumps over
 the 'lazy' dog.
 """
-        self.assertEquals(x, y)
+        self.assertEqual(x, y)
         y = "\n\
 The \"quick\"\n\
 brown fox\n\
 jumps over\n\
 the 'lazy' dog.\n\
 "
-        self.assertEquals(x, y)
+        self.assertEqual(x, y)
         y = "\n\
 The \"quick\"\n\
 brown fox\n\
 jumps over\n\
 the 'lazy' dog.\n\
 "
-        self.assertEquals(x, y)
+        self.assertEqual(x, y)
         x = rf"hello \{True}"
         y = f"hello \\{True}"
-        self.assertEquals(x, y)
+        self.assertEqual(x, y)
 
     def testEllipsis(self):
         x = ...
-        self.assert_(x is Ellipsis)
+        self.assertTrue(x is Ellipsis)
         self.assertRaises(SyntaxError, eval, ".. .")
 
 
 class GrammarTests(unittest.TestCase):
-
     # single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
     # XXX can't test in a script -- this rule is only used when interactive
 
@@ -207,7 +206,7 @@ class GrammarTests(unittest.TestCase):
 
         f1()
         f1(*())
-        f1(*(), **{})
+        f1(*())
 
         def f2(one_argument):
             pass
@@ -215,8 +214,8 @@ class GrammarTests(unittest.TestCase):
         def f3(two, arguments):
             pass
 
-        self.assertEquals(f2.__code__.co_varnames, ("one_argument",))
-        self.assertEquals(f3.__code__.co_varnames, ("two", "arguments"))
+        self.assertEqual(f2.__code__.co_varnames, ("one_argument",))
+        self.assertEqual(f3.__code__.co_varnames, ("two", "arguments"))
 
         def a1(
             one_arg,
@@ -273,14 +272,14 @@ class GrammarTests(unittest.TestCase):
         d01()
         d01(1)
         d01(*(1,))
-        d01(**{"a": 2})
+        d01(a=2)
 
         def d11(a, b=1):
             pass
 
         d11(1)
         d11(1, 2)
-        d11(1, **{"b": 2})
+        d11(1, b=2)
 
         def d21(a, b, c=1):
             pass
@@ -290,7 +289,7 @@ class GrammarTests(unittest.TestCase):
         d21(*(1, 2, 3))
         d21(1, *(2, 3))
         d21(1, 2, *(3,))
-        d21(1, 2, **{"c": 3})
+        d21(1, 2, c=3)
 
         def d02(a=1, b=2):
             pass
@@ -300,8 +299,8 @@ class GrammarTests(unittest.TestCase):
         d02(1, 2)
         d02(*(1, 2))
         d02(1, *(2,))
-        d02(1, **{"b": 2})
-        d02(**{"a": 1, "b": 2})
+        d02(1, b=2)
+        d02(a=1, b=2)
 
         def d12(a, b=1, c=2):
             pass
@@ -325,7 +324,7 @@ class GrammarTests(unittest.TestCase):
         d01v(1, 2)
         d01v(*(1, 2, 3, 4))
         d01v(*(1,))
-        d01v(**{"a": 2})
+        d01v(a=2)
 
         def d11v(a, b=1, *rest):
             pass
@@ -341,7 +340,7 @@ class GrammarTests(unittest.TestCase):
         d21v(1, 2, 3)
         d21v(1, 2, 3, 4)
         d21v(*(1, 2, 3, 4))
-        d21v(1, 2, **{"c": 3})
+        d21v(1, 2, c=3)
 
         def d02v(a=1, b=2, *rest):
             pass
@@ -351,7 +350,7 @@ class GrammarTests(unittest.TestCase):
         d02v(1, 2)
         d02v(1, 2, 3)
         d02v(1, *(2, 3, 4))
-        d02v(**{"a": 1, "b": 2})
+        d02v(a=1, b=2)
 
         def d12v(a, b=1, c=2, *rest):
             pass
@@ -362,7 +361,7 @@ class GrammarTests(unittest.TestCase):
         d12v(1, 2, 3, 4)
         d12v(*(1, 2, 3, 4))
         d12v(1, 2, *(3, 4, 5))
-        d12v(1, *(2,), **{"c": 3})
+        d12v(1, *(2,), c=3)
 
         def d22v(a, b, c=1, d=2, *rest):
             pass
@@ -373,7 +372,7 @@ class GrammarTests(unittest.TestCase):
         d22v(1, 2, 3, 4, 5)
         d22v(*(1, 2, 3, 4))
         d22v(1, 2, *(3, 4, 5))
-        d22v(1, *(2, 3), **{"d": 4})
+        d22v(1, *(2, 3), d=4)
 
         # keyword argument type tests
         try:
@@ -406,7 +405,7 @@ class GrammarTests(unittest.TestCase):
         def f(*args, **kwargs):
             return args, kwargs
 
-        self.assertEquals(f(1, x=2, *[3, 4], y=5), ((1, 3, 4), {"x": 2, "y": 5}))
+        self.assertEqual(f(1, x=2, *[3, 4], y=5), ((1, 3, 4), {"x": 2, "y": 5}))
         self.assertRaises(SyntaxError, eval, "f(1, *(2,3), 4)")
         self.assertRaises(SyntaxError, eval, "f(1, x=2, *(3,4), x=5)")
 
@@ -414,44 +413,44 @@ class GrammarTests(unittest.TestCase):
         def f(x) -> list:
             pass
 
-        self.assertEquals(f.__annotations__, {"return": list})
+        self.assertEqual(f.__annotations__, {"return": list})
 
         def f(x: int):
             pass
 
-        self.assertEquals(f.__annotations__, {"x": int})
+        self.assertEqual(f.__annotations__, {"x": int})
 
         def f(*x: str):
             pass
 
-        self.assertEquals(f.__annotations__, {"x": str})
+        self.assertEqual(f.__annotations__, {"x": str})
 
         def f(**x: float):
             pass
 
-        self.assertEquals(f.__annotations__, {"x": float})
+        self.assertEqual(f.__annotations__, {"x": float})
 
         def f(x, y: 1 + 2):
             pass
 
-        self.assertEquals(f.__annotations__, {"y": 3})
+        self.assertEqual(f.__annotations__, {"y": 3})
 
         def f(a, b: 1, c: 2, d):
             pass
 
-        self.assertEquals(f.__annotations__, {"b": 1, "c": 2})
+        self.assertEqual(f.__annotations__, {"b": 1, "c": 2})
 
         def f(a, b: 1, c: 2, d, e: 3 = 4, f=5, *g: 6):
             pass
 
-        self.assertEquals(f.__annotations__, {"b": 1, "c": 2, "e": 3, "g": 6})
+        self.assertEqual(f.__annotations__, {"b": 1, "c": 2, "e": 3, "g": 6})
 
         def f(
             a, b: 1, c: 2, d, e: 3 = 4, f=5, *g: 6, h: 7, i=8, j: 9 = 10, **k: 11
         ) -> 12:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             f.__annotations__,
             {"b": 1, "c": 2, "e": 3, "g": 6, "h": 7, "j": 9, "k": 11, "return": 12},
         )
@@ -464,7 +463,7 @@ class GrammarTests(unittest.TestCase):
         def f(x) -> list:
             pass
 
-        self.assertEquals(f.__annotations__, {"return": list})
+        self.assertEqual(f.__annotations__, {"return": list})
 
         # test closures with a variety of oparg's
         closure = 1
@@ -488,20 +487,20 @@ class GrammarTests(unittest.TestCase):
     def testLambdef(self):
         ### lambdef: 'lambda' [varargslist] ':' test
         l1 = lambda: 0
-        self.assertEquals(l1(), 0)
+        self.assertEqual(l1(), 0)
         l2 = lambda: a[d]  # XXX just testing the expression
         l3 = lambda: [2 < x for x in [-1, 3, 0]]
-        self.assertEquals(l3(), [0, 1, 0])
+        self.assertEqual(l3(), [0, 1, 0])
         l4 = lambda x=lambda y=lambda z=1: z: y(): x()
-        self.assertEquals(l4(), 1)
+        self.assertEqual(l4(), 1)
         l5 = lambda x, y, z=2: x + y + z
-        self.assertEquals(l5(1, 2), 5)
-        self.assertEquals(l5(1, 2, 3), 6)
+        self.assertEqual(l5(1, 2), 5)
+        self.assertEqual(l5(1, 2, 3), 6)
         check_syntax_error(self, "lambda x: x = 2")
         check_syntax_error(self, "lambda (None,): None")
         l6 = lambda x, y, *, k=20: x + y + k
-        self.assertEquals(l6(1, 2), 1 + 2 + 20)
-        self.assertEquals(l6(1, 2, k=10), 1 + 2 + 10)
+        self.assertEqual(l6(1, 2), 1 + 2 + 20)
+        self.assertEqual(l6(1, 2, k=10), 1 + 2 + 10)
 
     ### stmt: simple_stmt | compound_stmt
     # Tested below
@@ -509,13 +508,11 @@ class GrammarTests(unittest.TestCase):
     def testSimpleStmt(self):
         ### simple_stmt: small_stmt (';' small_stmt)* [';']
         x = 1
-        pass
         del x
 
         def foo():
             # verify statements that end with semi-colons
             x = 1
-            pass
             del x
 
         foo()
@@ -662,21 +659,11 @@ class GrammarTests(unittest.TestCase):
 
     def testImport(self):
         # 'import' dotted_as_names
-        import sys
-        import time, sys
-
-        # 'from' dotted_name 'import' ('*' | '(' import_as_names ')' | import_as_names)
-        from time import time
-        from time import time
+        pass
 
         # not testable inside a function, but already done at top of the module
         # from sys import *
-        from sys import path, argv
-        from sys import path, argv
-        from sys import (
-            path,
-            argv,
-        )
+        # 'from' dotted_name 'import' ('*' | '(' import_as_names ')' | import_as_names)
 
     def testGlobal(self):
         # 'global' NAME (',' NAME)*
@@ -702,7 +689,7 @@ class GrammarTests(unittest.TestCase):
         try:
             assert 0, "msg"
         except AssertionError as e:
-            self.assertEquals(e.args[0], "msg")
+            self.assertEqual(e.args[0], "msg")
         else:
             if __debug__:
                 self.fail("AssertionError not raised by assert 0")
@@ -718,17 +705,9 @@ class GrammarTests(unittest.TestCase):
             pass
         else:
             pass
-        if 0:
+        if 0 or 0:
             pass
-        elif 0:
-            pass
-        if 0:
-            pass
-        elif 0:
-            pass
-        elif 0:
-            pass
-        elif 0:
+        if 0 or 0 or 0 or 0:
             pass
         else:
             pass
@@ -739,25 +718,20 @@ class GrammarTests(unittest.TestCase):
             pass
         while 0:
             pass
-        else:
-            pass
 
         # Issue1920: "while 0" is optimized away,
         # ensure that the "else" clause is still present.
         x = 0
         while 0:
             x = 1
-        else:
-            x = 2
-        self.assertEquals(x, 2)
+        x = 2
+        self.assertEqual(x, 2)
 
     def testFor(self):
         # 'for' exprlist 'in' exprlist ':' suite ['else' ':' suite]
         for i in 1, 2, 3:
             pass
         for i, j, k in ():
-            pass
-        else:
             pass
 
         class Squares:
@@ -802,9 +776,9 @@ class GrammarTests(unittest.TestCase):
             1 / 0
         except EOFError:
             pass
-        except TypeError as msg:
+        except TypeError:
             pass
-        except RuntimeError as msg:
+        except RuntimeError:
             pass
         except:
             pass
@@ -816,7 +790,7 @@ class GrammarTests(unittest.TestCase):
             pass
         try:
             1 / 0
-        except (EOFError, TypeError, ZeroDivisionError) as msg:
+        except (EOFError, TypeError, ZeroDivisionError):
             pass
         try:
             pass
@@ -830,14 +804,7 @@ class GrammarTests(unittest.TestCase):
         if 1:
             pass
         if 1:
-            #
-            #
-            #
             pass
-            pass
-            #
-            pass
-            #
 
     def testTest(self):
         ### and_test ('or' and_test)*
@@ -849,7 +816,7 @@ class GrammarTests(unittest.TestCase):
             pass
         if 1 or 1:
             pass
-        if not not not 1:
+        if not 1:
             pass
         if not 1 and 1 and 1:
             pass
@@ -874,15 +841,15 @@ class GrammarTests(unittest.TestCase):
             pass
         if 1 >= 1:
             pass
-        if 1 is 1:
+        if 1 == 1:
             pass
-        if 1 is not 1:
+        if 1 != 1:
             pass
         if 1 in ():
             pass
         if 1 not in ():
             pass
-        if 1 < 1 > 1 == 1 >= 1 <= 1 != 1 in 1 not in 1 is 1 is not 1:
+        if 1 < 1 > 1 == 1 >= 1 <= 1 != 1 in 1 not in 1 == 1 != 1:
             pass
 
     def testBinaryMaskOps(self):
@@ -918,7 +885,7 @@ class GrammarTests(unittest.TestCase):
         ### trailer: '(' [testlist] ')' | '[' subscript ']' | '.' NAME
         ### subscript: expr | [expr] ':' [expr]
 
-        import sys, time
+        import time
 
         c = sys.path[0]
         x = time.time()
@@ -943,7 +910,7 @@ class GrammarTests(unittest.TestCase):
         d[1, 2, 3] = 4
         L = list(d)
         L.sort(key=lambda x: x if isinstance(x, tuple) else ())
-        self.assertEquals(str(L), "[1, (1,), (1, 2), (1, 2, 3)]")
+        self.assertEqual(str(L), "[1, (1,), (1, 2), (1, 2, 3)]")
 
     def testAtoms(self):
         ### atom: '(' [testlist] ')' | '[' [testlist] ']' | '{' [dictsetmaker] '}' | NAME | NUMBER | STRING
@@ -1205,11 +1172,11 @@ class GrammarTests(unittest.TestCase):
         self.assertEqual(list(x for x in range(10) if x % 2 if x % 3), [1, 5, 7])
 
         # verify unpacking single element tuples in listcomp/genexp.
-        self.assertEqual([x for x, in [(4,), (5,), (6,)]], [4, 5, 6])
-        self.assertEqual(list(x for x, in [(7,), (8,), (9,)]), [7, 8, 9])
+        self.assertEqual([x for (x,) in [(4,), (5,), (6,)]], [4, 5, 6])
+        self.assertEqual(list(x for (x,) in [(7,), (8,), (9,)]), [7, 8, 9])
 
     def test_with_statement(self):
-        class manager(object):
+        class manager:
             def __enter__(self):
                 return (1, 2)
 

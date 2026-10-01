@@ -1,10 +1,10 @@
 # Test the module type
+import sys
 import unittest
 import weakref
+
 from test.support import gc_collect
 from test.support.script_helper import assert_python_ok
-
-import sys
 
 ModuleType = type(sys)
 
@@ -12,7 +12,7 @@ ModuleType = type(sys)
 class FullLoader:
     @classmethod
     def module_repr(cls, m):
-        return "<module '{}' (crafted)>".format(m.__name__)
+        return f"<module '{m.__name__}' (crafted)>"
 
 
 class BareLoader:
@@ -250,7 +250,7 @@ a = A(destroyed)"""
         # Yes, a class not an instance.
         m.__loader__ = BareLoader
         loader_repr = repr(BareLoader)
-        self.assertEqual(repr(m), "<module '?' ({})>".format(loader_repr))
+        self.assertEqual(repr(m), f"<module '?' ({loader_repr})>")
 
     def test_module_repr_with_full_loader_but_no_name(self):
         # m.__loader__.module_repr() will fail because the module has no
@@ -261,14 +261,14 @@ a = A(destroyed)"""
         # Yes, a class not an instance.
         m.__loader__ = FullLoader
         loader_repr = repr(FullLoader)
-        self.assertEqual(repr(m), "<module '?' ({})>".format(loader_repr))
+        self.assertEqual(repr(m), f"<module '?' ({loader_repr})>")
 
     def test_module_repr_with_bare_loader(self):
         m = ModuleType("foo")
         # Yes, a class not an instance.
         m.__loader__ = BareLoader
         module_repr = repr(BareLoader)
-        self.assertEqual(repr(m), "<module 'foo' ({})>".format(module_repr))
+        self.assertEqual(repr(m), f"<module 'foo' ({module_repr})>")
 
     def test_module_repr_with_full_loader(self):
         m = ModuleType("foo")
@@ -302,12 +302,12 @@ a = A(destroyed)"""
         self.assertEqual(
             r[: len(starts_with)],
             starts_with,
-            "{!r} does not start with {!r}".format(r, starts_with),
+            f"{r!r} does not start with {starts_with!r}",
         )
         self.assertEqual(
             r[-len(ends_with) :],
             ends_with,
-            "{!r} does not end with {!r}".format(r, ends_with),
+            f"{r!r} does not end with {ends_with!r}",
         )
 
     def test_module_finalization_at_shutdown(self):

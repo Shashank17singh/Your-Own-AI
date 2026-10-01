@@ -12,12 +12,13 @@ pressing the left mouse button with the
 mouse over the scrollbar of the canvas.
 """
 
-from turtle import Shape, Turtle, mainloop, Vec2D as Vec
+from turtle import Shape, Turtle, mainloop
+from turtle import Vec2D as Vec
 
 G = 8
 
 
-class GravSys(object):
+class GravSys:
     def __init__(self):
         self.planets = []
         self.t = 0

@@ -42,15 +42,14 @@ enumerate(iter('abc')).
 """
 
 import unittest
-from itertools import repeat
 from collections import deque
+from itertools import repeat
 from operator import length_hint
 
 n = 10
 
 
 class TestInvariantWithoutMutations:
-
     def test_invariant(self):
         it = self.it
         for i in reversed(range(1, n + 1)):
@@ -62,7 +61,6 @@ class TestInvariantWithoutMutations:
 
 
 class TestTemporarilyImmutable(TestInvariantWithoutMutations):
-
     def test_immutable_during_iteration(self):
         # objects such as deques, sets, and dictionaries enforce
         # length immutability  during iteration
@@ -80,25 +78,21 @@ class TestTemporarilyImmutable(TestInvariantWithoutMutations):
 
 
 class TestRepeat(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = repeat(None, n)
 
 
 class TestXrange(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = iter(range(n))
 
 
 class TestXrangeCustomReversed(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = reversed(range(n))
 
 
 class TestTuple(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = iter(tuple(range(n)))
 
@@ -107,7 +101,6 @@ class TestTuple(TestInvariantWithoutMutations, unittest.TestCase):
 
 
 class TestDeque(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = deque(range(n))
         self.it = iter(d)
@@ -115,7 +108,6 @@ class TestDeque(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestDequeReversed(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = deque(range(n))
         self.it = reversed(d)
@@ -123,7 +115,6 @@ class TestDequeReversed(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestDictKeys(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = dict.fromkeys(range(n))
         self.it = iter(d)
@@ -131,7 +122,6 @@ class TestDictKeys(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestDictItems(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = dict.fromkeys(range(n))
         self.it = iter(d.items())
@@ -139,7 +129,6 @@ class TestDictItems(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestDictValues(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = dict.fromkeys(range(n))
         self.it = iter(d.values())
@@ -147,7 +136,6 @@ class TestDictValues(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestSet(TestTemporarilyImmutable, unittest.TestCase):
-
     def setUp(self):
         d = set(range(n))
         self.it = iter(d)
@@ -158,7 +146,6 @@ class TestSet(TestTemporarilyImmutable, unittest.TestCase):
 
 
 class TestList(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = iter(range(n))
 
@@ -178,7 +165,6 @@ class TestList(TestInvariantWithoutMutations, unittest.TestCase):
 
 
 class TestListReversed(TestInvariantWithoutMutations, unittest.TestCase):
-
     def setUp(self):
         self.it = reversed(range(n))
 
@@ -200,7 +186,7 @@ class TestListReversed(TestInvariantWithoutMutations, unittest.TestCase):
 ## -- Check to make sure exceptions are not suppressed by __length_hint__()
 
 
-class BadLen(object):
+class BadLen:
     def __iter__(self):
         return iter(range(10))
 
@@ -208,7 +194,7 @@ class BadLen(object):
         raise RuntimeError("hello")
 
 
-class BadLengthHint(object):
+class BadLengthHint:
     def __iter__(self):
         return iter(range(10))
 
@@ -216,7 +202,7 @@ class BadLengthHint(object):
         raise RuntimeError("hello")
 
 
-class NoneLengthHint(object):
+class NoneLengthHint:
     def __iter__(self):
         return iter(range(10))
 
@@ -225,7 +211,6 @@ class NoneLengthHint(object):
 
 
 class TestLengthHintExceptions(unittest.TestCase):
-
     def test_issue1242657(self):
         self.assertRaises(RuntimeError, list, BadLen())
         self.assertRaises(RuntimeError, list, BadLengthHint())

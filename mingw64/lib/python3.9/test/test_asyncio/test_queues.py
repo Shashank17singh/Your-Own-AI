@@ -1,9 +1,9 @@
 """Tests for queues.py"""
 
+import asyncio
 import unittest
 from unittest import mock
 
-import asyncio
 from test.test_asyncio import utils as test_utils
 
 
@@ -12,14 +12,12 @@ def tearDownModule():
 
 
 class _QueueTestBase(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
 
 
 class QueueBasicTests(_QueueTestBase):
-
     def _test_repr_or_str(self, fn, expect_id):
         """Test Queue's repr or str.
 
@@ -165,7 +163,6 @@ class QueueBasicTests(_QueueTestBase):
 
 
 class QueueGetTests(_QueueTestBase):
-
     def test_blocking_get(self):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.Queue(loop=self.loop)
@@ -330,7 +327,6 @@ class QueueGetTests(_QueueTestBase):
 
 
 class QueuePutTests(_QueueTestBase):
-
     def test_blocking_put(self):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.Queue(loop=self.loop)
@@ -617,7 +613,6 @@ class QueuePutTests(_QueueTestBase):
 
 
 class LifoQueueTests(_QueueTestBase):
-
     def test_order(self):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.LifoQueue(loop=self.loop)
@@ -629,7 +624,6 @@ class LifoQueueTests(_QueueTestBase):
 
 
 class PriorityQueueTests(_QueueTestBase):
-
     def test_order(self):
         with self.assertWarns(DeprecationWarning):
             q = asyncio.PriorityQueue(loop=self.loop)
@@ -641,7 +635,6 @@ class PriorityQueueTests(_QueueTestBase):
 
 
 class _QueueJoinTestMixin:
-
     q_class = None
 
     def test_task_done_underflow(self):

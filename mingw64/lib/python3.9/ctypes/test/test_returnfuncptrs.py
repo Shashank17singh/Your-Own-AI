@@ -1,11 +1,9 @@
+import _ctypes_test
 import unittest
 from ctypes import *
 
-import _ctypes_test
-
 
 class ReturnFuncPtrTestCase(unittest.TestCase):
-
     def test_with_prototype(self):
         # The _ctypes_test shared lib/dll exports quite some functions for testing.
         # The get_strchr function returns a *pointer* to the C strchr function.

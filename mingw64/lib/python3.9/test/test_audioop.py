@@ -34,7 +34,6 @@ INVALID_DATA = [
 
 
 class TestAudioop(unittest.TestCase):
-
     def test_max(self):
         for w in 1, 2, 3, 4:
             self.assertEqual(audioop.max(b"", w), 0)

@@ -14,7 +14,7 @@ TYPE_ALTERNATIVES = -2
 TYPE_GROUP = -3
 
 
-class MinNode(object):
+class MinNode:
     """This class serves as an intermediate representation of the
     pattern tree during the conversion to sets of leaf-to-root
     subpatterns"""
@@ -133,7 +133,6 @@ def reduce_tree(node, parent=None):
                     new_node.children.append(reduced)
     elif node.type == syms.Alternative:
         if len(node.children) > 1:
-
             new_node = MinNode(type=TYPE_GROUP)
             for child in node.children:
                 reduced = reduce_tree(child, new_node)
@@ -222,7 +221,6 @@ def reduce_tree(node, parent=None):
             else:
                 # TODO: handle {min, max} repeaters
                 raise NotImplementedError
-                pass
 
         # add children
         if details_node and new_node is not None:

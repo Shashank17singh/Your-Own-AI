@@ -11,8 +11,8 @@ import types
 import unittest
 import warnings
 import weakref
-
 from copy import deepcopy
+
 from test import support
 
 try:
@@ -22,7 +22,6 @@ except ImportError:
 
 
 class OperatorsTest(unittest.TestCase):
-
     def __init__(self, *args, **kwargs):
         unittest.TestCase.__init__(self, *args, **kwargs)
         self.binops = {
@@ -309,7 +308,8 @@ class OperatorsTest(unittest.TestCase):
     @support.impl_detail("the module 'xxsubtype' is internal")
     def test_spam_lists(self):
         # Testing spamlist operations...
-        import copy, xxsubtype as spam
+        import copy
+        import xxsubtype as spam
 
         def spamlist(l, memo=None):
             import xxsubtype as spam
@@ -371,7 +371,8 @@ class OperatorsTest(unittest.TestCase):
     @support.impl_detail("the module 'xxsubtype' is internal")
     def test_spam_dicts(self):
         # Testing spamdict operations...
-        import copy, xxsubtype as spam
+        import copy
+        import xxsubtype as spam
 
         def spamdict(d, memo=None):
             import xxsubtype as spam
@@ -435,7 +436,6 @@ class OperatorsTest(unittest.TestCase):
 
 
 class ClassPropertiesAndMethods(unittest.TestCase):
-
     def assertHasAttr(self, obj, name):
         self.assertTrue(hasattr(obj, name), "%r has no attribute %r" % (obj, name))
 
@@ -468,7 +468,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
                 return self.get(key, 0)
 
             def __setitem__(self_local, key, value):
-                self.assertIsInstance(key, type(0))
+                self.assertIsInstance(key, int)
                 dict.__setitem__(self_local, key, value)
 
             def setstate(self, state):
@@ -520,7 +520,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
 
     def test_metaclass(self):
         # Testing metaclasses...
-        class C(metaclass=type):
+        class C:
             def __init__(self):
                 self.__state = 0
 
@@ -558,10 +558,10 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         c = C()
         self.assertEqual(c.__spam__, 1)
 
-        class _instance(object):
+        class _instance:
             pass
 
-        class M2(object):
+        class M2:
             @staticmethod
             def __new__(cls, name, bases, dict):
                 self = object.__new__(cls)
@@ -702,7 +702,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         self.assertEqual(type(a), C)
         self.assertEqual(T.counter, 1)
 
-        class C(object):
+        class C:
             pass
 
         c = C()
@@ -711,17 +711,17 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         except TypeError:
             pass
         else:
-            self.fail("calling object w/o call method should raise " "TypeError")
+            self.fail("calling object w/o call method should raise TypeError")
 
         # Testing code to find most derived baseclass
         class A(type):
             def __new__(*args, **kwargs):
                 return type.__new__(*args, **kwargs)
 
-        class B(object):
+        class B:
             pass
 
-        class C(object, metaclass=A):
+        class C(metaclass=A):
             pass
 
         # The most derived metaclass of D is A rather than type.
@@ -786,7 +786,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         self.assertIn("BMeta_was_here", C2.__dict__)
 
         # Check correct metaclass calculation when a metaclass is declared:
-        class D(C, metaclass=type):
+        class D(C):
             pass
 
         self.assertEqual(["BMeta", "AMeta"], new_calls)
@@ -810,7 +810,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         class X(metaclass=func):
             pass
 
-        class Y(object, metaclass=func):
+        class Y(metaclass=func):
             pass
 
         class Z(D, metaclass=func):
@@ -884,7 +884,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         # BNotMeta is neither a subclass, nor a superclass of type
         with self.assertRaises(TypeError):
 
-            class D(C, metaclass=type):
+            class D(C):
                 pass
 
         class E(C, metaclass=ANotMeta):
@@ -918,12 +918,12 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         # subclass, nor a superclass of int
         with self.assertRaises(TypeError):
 
-            class X(C, int()):
+            class X(C, 0):
                 pass
 
         with self.assertRaises(TypeError):
 
-            class X(int(), C):
+            class X(0, C):
                 pass
 
     def test_module_subclasses(self):
@@ -964,9 +964,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         except TypeError:
             pass
         else:
-            self.fail(
-                "inheriting from ModuleType and str at the same time " "should fail"
-            )
+            self.fail("inheriting from ModuleType and str at the same time should fail")
 
         # Issue 34805: Verify that definition order is retained
         def random_name():
@@ -980,7 +978,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
 
     def test_multiple_inheritance(self):
         # Testing multiple inheritance...
-        class C(object):
+        class C:
             def __init__(self):
                 self.__state = 0
 
@@ -1011,7 +1009,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
         self.assertEqual(D.__mro__, (D, dict, C, object))
 
         # SF bug #442833
-        class Node(object):
+        class Node:
             def __int__(self):
                 return int(self.foo())
 
@@ -1029,7 +1027,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
 
     def test_diamond_inheritance(self):
         # Testing multiple inheritance special cases...
-        class A(object):
+        class A:
             def spam(self):
                 return "A"
 
@@ -1088,13 +1086,13 @@ class ClassPropertiesAndMethods(unittest.TestCase):
     # see thread python-dev/2002-October/029035.html
     def test_ex5_from_c3_switch(self):
         # Testing ex5 from C3 switch discussion...
-        class A(object):
+        class A:
             pass
 
-        class B(object):
+        class B:
             pass
 
-        class C(object):
+        class C:
             pass
 
         class X(A):
@@ -1112,7 +1110,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
     # by Kim Barrett et al. (OOPSLA 1996)
     def test_monotonicity(self):
         # Testing MRO monotonicity...
-        class Boat(object):
+        class Boat:
             pass
 
         class DayBoat(Boat):
@@ -1163,13 +1161,13 @@ class ClassPropertiesAndMethods(unittest.TestCase):
     # by Kim Barrett et al. (OOPSLA 1996)
     def test_consistency_with_epg(self):
         # Testing consistency with EPG...
-        class Pane(object):
+        class Pane:
             pass
 
-        class ScrollingMixin(object):
+        class ScrollingMixin:
             pass
 
-        class EditingMixin(object):
+        class EditingMixin:
             pass
 
         class ScrollablePane(Pane, ScrollingMixin):
@@ -1210,13 +1208,13 @@ order (MRO) for bases """
             else:
                 self.fail("Expected %s" % exc)
 
-        class A(object):
+        class A:
             pass
 
         class B(A):
             pass
 
-        class C(object):
+        class C:
             pass
 
         # Test some very simple errors
@@ -1225,7 +1223,7 @@ order (MRO) for bases """
         raises(TypeError, mro_err_msg, type, "X", (A, C, B), {})
 
         # Test a slightly more complex error
-        class GridLayout(object):
+        class GridLayout:
             pass
 
         class HorizontalGrid(GridLayout):
@@ -1258,7 +1256,7 @@ order (MRO) for bases """
             self.fail("object() should not allow setting a foo attribute")
         self.assertNotHasAttr(object(), "__dict__")
 
-        class Cdict(object):
+        class Cdict:
             pass
 
         x = Cdict()
@@ -1337,14 +1335,14 @@ order (MRO) for bases """
 
     def test_slots(self):
         # Testing __slots__...
-        class C0(object):
+        class C0:
             __slots__ = []
 
         x = C0()
         self.assertNotHasAttr(x, "__dict__")
         self.assertNotHasAttr(x, "foo")
 
-        class C1(object):
+        class C1:
             __slots__ = ["a"]
 
         x = C1()
@@ -1357,7 +1355,7 @@ order (MRO) for bases """
         del x.a
         self.assertNotHasAttr(x, "a")
 
-        class C3(object):
+        class C3:
             __slots__ = ["a", "b", "c"]
 
         x = C3()
@@ -1372,7 +1370,7 @@ order (MRO) for bases """
         self.assertEqual(x.b, 2)
         self.assertEqual(x.c, 3)
 
-        class C4(object):
+        class C4:
             """Validate name mangling"""
 
             __slots__ = ["__a"]
@@ -1397,7 +1395,7 @@ order (MRO) for bases """
         # Make sure slot names are proper identifiers
         try:
 
-            class C(object):
+            class C:
                 __slots__ = [None]
 
         except TypeError:
@@ -1406,7 +1404,7 @@ order (MRO) for bases """
             self.fail("[None] slots not caught")
         try:
 
-            class C(object):
+            class C:
                 __slots__ = ["foo bar"]
 
         except TypeError:
@@ -1415,7 +1413,7 @@ order (MRO) for bases """
             self.fail("['foo bar'] slots not caught")
         try:
 
-            class C(object):
+            class C:
                 __slots__ = ["foo\0bar"]
 
         except TypeError:
@@ -1424,7 +1422,7 @@ order (MRO) for bases """
             self.fail("['foo\\0bar'] slots not caught")
         try:
 
-            class C(object):
+            class C:
                 __slots__ = ["1"]
 
         except TypeError:
@@ -1433,7 +1431,7 @@ order (MRO) for bases """
             self.fail("['1'] slots not caught")
         try:
 
-            class C(object):
+            class C:
                 __slots__ = [""]
 
         except TypeError:
@@ -1441,14 +1439,14 @@ order (MRO) for bases """
         else:
             self.fail("[''] slots not caught")
 
-        class C(object):
-            __slots__ = ["a", "a_b", "_a", "A0123456789Z"]
+        class C:
+            __slots__ = ["A0123456789Z", "_a", "a", "a_b"]
 
         # XXX(nnorwitz): was there supposed to be something tested
         # from the class above?
 
         # Test a single string is not expanded as a sequence.
-        class C(object):
+        class C:
             __slots__ = "abc"
 
         c = C()
@@ -1457,7 +1455,7 @@ order (MRO) for bases """
 
         # Test unicode slot names
         # Test a single unicode string is not expanded as a sequence.
-        class C(object):
+        class C:
             __slots__ = "abc"
 
         c = C()
@@ -1467,7 +1465,7 @@ order (MRO) for bases """
         # _unicode_to_string used to modify slots in certain circumstances
         slots = ("foo", "bar")
 
-        class C(object):
+        class C:
             __slots__ = slots
 
         x = C()
@@ -1477,7 +1475,7 @@ order (MRO) for bases """
         # this used to leak references
         try:
 
-            class C(object):
+            class C:
                 __slots__ = [chr(128)]
 
         except (TypeError, UnicodeEncodeError):
@@ -1486,7 +1484,7 @@ order (MRO) for bases """
             self.fail("[chr(128)] slots not caught")
 
         # Test leaks
-        class Counted(object):
+        class Counted:
             counter = 0  # counts the number of instances alive
 
             def __init__(self):
@@ -1495,7 +1493,7 @@ order (MRO) for bases """
             def __del__(self):
                 Counted.counter -= 1
 
-        class C(object):
+        class C:
             __slots__ = ["a", "b", "c"]
 
         x = C()
@@ -1531,7 +1529,7 @@ order (MRO) for bases """
         self.assertEqual(Counted.counter, 0)
 
         # Test cyclical leaks [SF bug 519621]
-        class F(object):
+        class F:
             __slots__ = ["a", "b"]
 
         s = F()
@@ -1544,7 +1542,7 @@ order (MRO) for bases """
         # Test lookup leaks [SF bug 572567]
         if hasattr(gc, "get_objects"):
 
-            class G(object):
+            class G:
                 def __eq__(self, other):
                     return False
 
@@ -1555,7 +1553,7 @@ order (MRO) for bases """
             new_objects = len(gc.get_objects())
             self.assertEqual(orig_objects, new_objects)
 
-        class H(object):
+        class H:
             __slots__ = ["a", "b"]
 
             def __init__(self):
@@ -1571,7 +1569,7 @@ order (MRO) for bases """
             del h
         self.assertEqual(s.getvalue(), "")
 
-        class X(object):
+        class X:
             __slots__ = "a"
 
         with self.assertRaises(AttributeError):
@@ -1579,7 +1577,7 @@ order (MRO) for bases """
 
     def test_slots_special(self):
         # Testing __dict__ and __weakref__ in __slots__...
-        class D(object):
+        class D:
             __slots__ = ["__dict__"]
 
         a = D()
@@ -1588,7 +1586,7 @@ order (MRO) for bases """
         a.foo = 42
         self.assertEqual(a.__dict__, {"foo": 42})
 
-        class W(object):
+        class W:
             __slots__ = ["__weakref__"]
 
         a = W()
@@ -1671,7 +1669,7 @@ order (MRO) for bases """
         class MyABC(metaclass=abc.ABCMeta):
             __slots__ = "a"
 
-        class Unrelated(object):
+        class Unrelated:
             pass
 
         MyABC.register(Unrelated)
@@ -1684,7 +1682,7 @@ order (MRO) for bases """
 
     def test_dynamics(self):
         # Testing class attribute propagation...
-        class D(object):
+        class D:
             pass
 
         class E(D):
@@ -1700,7 +1698,7 @@ order (MRO) for bases """
         self.assertEqual(F.foo, 1)
 
         # Test dynamic instances
-        class C(object):
+        class C:
             pass
 
         a = C()
@@ -1780,7 +1778,7 @@ order (MRO) for bases """
 
         try:
 
-            class C(object, None):
+            class C(None):
                 pass
 
         except TypeError:
@@ -1803,7 +1801,7 @@ order (MRO) for bases """
 
         try:
 
-            class C(object):
+            class C:
                 __slots__ = 1
 
         except TypeError:
@@ -1813,7 +1811,7 @@ order (MRO) for bases """
 
         try:
 
-            class C(object):
+            class C:
                 __slots__ = [1]
 
         except TypeError:
@@ -1827,10 +1825,10 @@ order (MRO) for bases """
         class M2(type):
             pass
 
-        class A1(object, metaclass=M1):
+        class A1(metaclass=M1):
             pass
 
-        class A2(object, metaclass=M2):
+        class A2(metaclass=M2):
             pass
 
         try:
@@ -1845,7 +1843,7 @@ order (MRO) for bases """
 
     def test_classmethods(self):
         # Testing class methods...
-        class C(object):
+        class C:
             def foo(*a):
                 return a
 
@@ -1943,8 +1941,7 @@ order (MRO) for bases """
             spam_cm()
         self.assertEqual(
             str(cm.exception),
-            "descriptor 'classmeth' of 'xxsubtype.spamlist' "
-            "object needs an argument",
+            "descriptor 'classmeth' of 'xxsubtype.spamlist' object needs an argument",
         )
 
         with self.assertRaises(TypeError) as cm:
@@ -1969,7 +1966,7 @@ order (MRO) for bases """
 
     def test_staticmethods(self):
         # Testing static methods...
-        class C(object):
+        class C:
             def foo(*a):
                 return a
 
@@ -2057,8 +2054,8 @@ order (MRO) for bases """
 
     def test_compattr(self):
         # Testing computed attributes...
-        class C(object):
-            class computed_attribute(object):
+        class C:
+            class computed_attribute:
                 def __init__(self, get, set=None, delete=None):
                     self.__get = get
                     self.__set = set
@@ -2127,7 +2124,7 @@ order (MRO) for bases """
         self.assertRaises(TypeError, list.__new__, object)
         self.assertRaises(TypeError, object.__new__, list)
 
-        class C(object):
+        class C:
             __new__ = list.__new__
 
         self.assertRaises(TypeError, C)
@@ -2138,7 +2135,7 @@ order (MRO) for bases """
         self.assertRaises(TypeError, C)
 
     def test_object_new(self):
-        class A(object):
+        class A:
             pass
 
         object.__new__(A)
@@ -2146,7 +2143,7 @@ order (MRO) for bases """
         object.__init__(A())
         self.assertRaises(TypeError, object.__init__, A(), 5)
 
-        class A(object):
+        class A:
             def __init__(self, foo):
                 self.foo = foo
 
@@ -2155,7 +2152,7 @@ order (MRO) for bases """
         object.__init__(A(3))
         self.assertRaises(TypeError, object.__init__, A(3), 5)
 
-        class A(object):
+        class A:
             def __new__(cls, foo):
                 return object.__new__(cls)
 
@@ -2164,7 +2161,7 @@ order (MRO) for bases """
         object.__init__(A(3))
         object.__init__(A(3), 5)
 
-        class A(object):
+        class A:
             def __new__(cls, foo):
                 return object.__new__(cls)
 
@@ -2178,7 +2175,7 @@ order (MRO) for bases """
 
     @unittest.expectedFailure
     def test_restored_object_new(self):
-        class A(object):
+        class A:
             def __new__(cls, *args, **kwargs):
                 raise AssertionError
 
@@ -2206,7 +2203,7 @@ order (MRO) for bases """
 
     def test_altmro(self):
         # Testing mro() and overriding it...
-        class A(object):
+        class A:
             def f(self):
                 return "A"
 
@@ -2248,7 +2245,7 @@ order (MRO) for bases """
                 def mro(self):
                     return [self, dict, object]
 
-            class X(object, metaclass=_metaclass):
+            class X(metaclass=_metaclass):
                 pass
 
             # In CPython, the class creation above already raises
@@ -2270,7 +2267,7 @@ order (MRO) for bases """
                 def mro(self):
                     return [1]
 
-            class X(object, metaclass=_metaclass):
+            class X(metaclass=_metaclass):
                 pass
 
         except TypeError:
@@ -2284,7 +2281,7 @@ order (MRO) for bases """
                 def mro(self):
                     return 1
 
-            class X(object, metaclass=_metaclass):
+            class X(metaclass=_metaclass):
                 pass
 
         except TypeError:
@@ -2295,7 +2292,7 @@ order (MRO) for bases """
     def test_overloading(self):
         # Testing operator overloading...
 
-        class B(object):
+        class B:
             "Intermediate class because object doesn't have a __setattr__"
 
         class C(B):
@@ -2347,7 +2344,7 @@ order (MRO) for bases """
 
     def test_methods(self):
         # Testing methods...
-        class C(object):
+        class C:
             def __init__(self, x):
                 self.x = x
 
@@ -2366,7 +2363,7 @@ order (MRO) for bases """
         self.assertEqual(d2.boo(), 2)
         self.assertEqual(d2.goo(), 1)
 
-        class E(object):
+        class E:
             foo = C.foo
 
         self.assertEqual(E().foo.__func__, C.foo)  # i.e., unbound
@@ -2477,16 +2474,16 @@ order (MRO) for bases """
             ("__round__", round, zero, set(), {}),
         ]
 
-        class Checker(object):
+        class Checker:
             def __getattr__(self, attr, test=self):
-                test.fail("__getattr__ called with {0}".format(attr))
+                test.fail(f"__getattr__ called with {attr}")
 
             def __getattribute__(self, attr, test=self):
                 if attr not in ok:
-                    test.fail("__getattribute__ called with {0}".format(attr))
+                    test.fail(f"__getattribute__ called with {attr}")
                 return object.__getattribute__(self, attr)
 
-        class SpecialDescr(object):
+        class SpecialDescr:
             def __init__(self, impl):
                 self.impl = impl
 
@@ -2497,7 +2494,7 @@ order (MRO) for bases """
         class MyException(Exception):
             pass
 
-        class ErrDescr(object):
+        class ErrDescr:
             def __get__(self, obj, owner):
                 raise MyException
 
@@ -2535,7 +2532,7 @@ order (MRO) for bases """
         # Test operators like __hash__ for which a built-in default exists
 
         # Test the default behavior for static classes
-        class C(object):
+        class C:
             def __getitem__(self, i):
                 if 0 <= i < 10:
                     return i
@@ -2561,7 +2558,7 @@ order (MRO) for bases """
         self.assertNotIn(10, c1)
 
         # Test the default behavior for dynamic classes
-        class D(object):
+        class D:
             def __getitem__(self, i):
                 if 0 <= i < 10:
                     return i
@@ -2587,12 +2584,12 @@ order (MRO) for bases """
         self.assertNotIn(10, d1)
 
         # Test overridden behavior
-        class Proxy(object):
+        class Proxy:
             def __init__(self, x):
                 self.x = x
 
             def __bool__(self):
-                return not not self.x
+                return bool(self.x)
 
             def __hash__(self):
                 return hash(self.x)
@@ -2650,7 +2647,7 @@ order (MRO) for bases """
         # Testing weak references...
         import weakref
 
-        class C(object):
+        class C:
             pass
 
         c = C()
@@ -2661,7 +2658,7 @@ order (MRO) for bases """
         self.assertEqual(r(), None)
         del r
 
-        class NoWeak(object):
+        class NoWeak:
             __slots__ = ["foo"]
 
         no = NoWeak()
@@ -2672,8 +2669,8 @@ order (MRO) for bases """
         else:
             self.fail("weakref.ref(no) should be illegal")
 
-        class Weak(object):
-            __slots__ = ["foo", "__weakref__"]
+        class Weak:
+            __slots__ = ["__weakref__", "foo"]
 
         yes = Weak()
         r = weakref.ref(yes)
@@ -2685,7 +2682,7 @@ order (MRO) for bases """
 
     def test_properties(self):
         # Testing property...
-        class C(object):
+        class C:
             def getx(self):
                 return self.__x
 
@@ -2742,7 +2739,7 @@ order (MRO) for bases """
         raw.__doc__ = 42
         self.assertEqual(raw.__doc__, 42)
 
-        class D(object):
+        class D:
             __getitem__ = property(lambda s: 1 / 0)
 
         d = D()
@@ -2758,14 +2755,13 @@ order (MRO) for bases """
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
     )
     def test_properties_doc_attrib(self):
-        class E(object):
+        class E:
             def getter(self):
                 "getter method"
                 return 0
 
             def setter(self_, value):
                 "setter method"
-                pass
 
             prop = property(getter)
             self.assertEqual(prop.__doc__, "getter method")
@@ -2781,11 +2777,11 @@ order (MRO) for bases """
             pass
         else:
 
-            class X(object):
+            class X:
                 p = property(_testcapi.test_with_docstring)
 
     def test_properties_plus(self):
-        class C(object):
+        class C:
             foo = property(doc="hello")
 
             @foo.getter
@@ -2825,7 +2821,7 @@ order (MRO) for bases """
         del d.foo
         del d.foo
 
-        class E(object):
+        class E:
             @property
             def foo(self):
                 return self._foo
@@ -2964,7 +2960,7 @@ order (MRO) for bases """
         def interesting(strings):
             return [s for s in strings if not s.startswith("_")]
 
-        class C(object):
+        class C:
             Cdata = 1
 
             def Cmethod(self):
@@ -3035,7 +3031,7 @@ order (MRO) for bases """
         self.assertEqual(dir(object()), dir(Ellipsis))
 
         # Nasty test case for proxied objects
-        class Wrapper(object):
+        class Wrapper:
             def __init__(self, obj):
                 self.__obj = obj
 
@@ -3051,7 +3047,7 @@ order (MRO) for bases """
             def __getattr__(self, name):
                 return Wrapper(getattr(self.__obj, name))
 
-        class C(object):
+        class C:
             def __getclass(self):
                 return Wrapper(type(self))
 
@@ -3062,7 +3058,7 @@ order (MRO) for bases """
     def test_supers(self):
         # Testing super...
 
-        class A(object):
+        class A:
             def meth(self, a):
                 return "A(%r)" % a
 
@@ -3145,7 +3141,7 @@ order (MRO) for bases """
         # Make sure data descriptors can be overridden and accessed via super
         # (new feature in Python 2.3)
 
-        class DDbase(object):
+        class DDbase:
             def getx(self):
                 return 42
 
@@ -3164,7 +3160,7 @@ order (MRO) for bases """
         # Ensure that super() lookup of descriptor from classmethod
         # works (SF ID# 743627)
 
-        class Base(object):
+        class Base:
             aProp = property(lambda self: "foo")
 
         class Sub(Base):
@@ -3778,7 +3774,7 @@ order (MRO) for bases """
     def test_doc_descriptor(self):
         # Testing __doc__ descriptor...
         # SF bug 542984
-        class DocDescr(object):
+        class DocDescr:
             def __get__(self, object, otype):
                 if object:
                     object = object.__class__.__name__ + " instance"
@@ -3789,7 +3785,7 @@ order (MRO) for bases """
         class OldClass:
             __doc__ = DocDescr()
 
-        class NewClass(object):
+        class NewClass:
             __doc__ = DocDescr()
 
         self.assertEqual(OldClass.__doc__, "object=None; type=OldClass")
@@ -3799,13 +3795,13 @@ order (MRO) for bases """
 
     def test_set_class(self):
         # Testing __class__ assignment...
-        class C(object):
+        class C:
             pass
 
-        class D(object):
+        class D:
             pass
 
-        class E(object):
+        class E:
             pass
 
         class F(D, E):
@@ -3846,23 +3842,23 @@ order (MRO) for bases """
         cant(True, int)
         cant(2, bool)
         o = object()
-        cant(o, type(1))
+        cant(o, int)
         cant(o, type(None))
         del o
 
-        class G(object):
+        class G:
             __slots__ = ["a", "b"]
 
-        class H(object):
-            __slots__ = ["b", "a"]
-
-        class I(object):
+        class H:
             __slots__ = ["a", "b"]
 
-        class J(object):
-            __slots__ = ["c", "b"]
+        class I:
+            __slots__ = ["a", "b"]
 
-        class K(object):
+        class J:
+            __slots__ = ["b", "c"]
+
+        class K:
             __slots__ = ["a", "b", "d"]
 
         class L(H):
@@ -3908,10 +3904,10 @@ order (MRO) for bases """
 
         # Issue5283: when __class__ changes in __del__, the wrong
         # type gets DECREF'd.
-        class O(object):
+        class O:
             pass
 
-        class A(object):
+        class A:
             def __del__(self):
                 self.__class__ = O
 
@@ -3920,7 +3916,7 @@ order (MRO) for bases """
 
     def test_set_dict(self):
         # Testing __dict__ assignment...
-        class C(object):
+        class C:
             pass
 
         a = C()
@@ -3940,7 +3936,7 @@ order (MRO) for bases """
         cant(a, 1)
         del a.__dict__  # Deleting __dict__ is allowed
 
-        class Base(object):
+        class Base:
             pass
 
         def verify_dict_readonly(x):
@@ -3969,10 +3965,10 @@ order (MRO) for bases """
         class Meta2(Base, type):
             pass
 
-        class D(object, metaclass=Meta1):
+        class D(metaclass=Meta1):
             pass
 
-        class E(object, metaclass=Meta2):
+        class E(metaclass=Meta2):
             pass
 
         for cls in C, D, E:
@@ -4058,7 +4054,7 @@ order (MRO) for bases """
 
     def test_subclass_propagation(self):
         # Testing propagation of slot functions to subclasses...
-        class A(object):
+        class A:
             pass
 
         class B(A):
@@ -4133,7 +4129,7 @@ order (MRO) for bases """
             self.fail("d.foo should be undefined now")
 
         # Test a nasty bug in recurse_down_subclasses()
-        class A(object):
+        class A:
             pass
 
         class B(A):
@@ -4210,7 +4206,7 @@ order (MRO) for bases """
 
     def test_recursive_call(self):
         # Testing recursive __call__() by setting to instance of class...
-        class A(object):
+        class A:
             pass
 
         A.__call__ = A()
@@ -4225,7 +4221,7 @@ order (MRO) for bases """
         # Testing __del__ hook...
         log = []
 
-        class C(object):
+        class C:
             def __del__(self):
                 log.append(1)
 
@@ -4235,7 +4231,7 @@ order (MRO) for bases """
         support.gc_collect()
         self.assertEqual(log, [1])
 
-        class D(object):
+        class D:
             pass
 
         d = D()
@@ -4280,7 +4276,7 @@ order (MRO) for bases """
             self.fail("'' + 5 doesn't raise TypeError")
 
         try:
-            "".split("")
+            ["", ""]
         except ValueError:
             pass
         else:
@@ -4373,7 +4369,7 @@ order (MRO) for bases """
 
     def test_funny_new(self):
         # Testing __new__ returning something unexpected...
-        class C(object):
+        class C:
             def __new__(cls, arg):
                 if isinstance(arg, str):
                     return [1, 2, 3]
@@ -4397,7 +4393,7 @@ order (MRO) for bases """
         self.assertIsInstance(d, D)
         self.assertEqual(d.foo, 1)
 
-        class C(object):
+        class C:
             @staticmethod
             def __new__(*args):
                 return args
@@ -4409,7 +4405,7 @@ order (MRO) for bases """
 
         self.assertEqual(D(1, 2), (D, 1, 2))
 
-        class C(object):
+        class C:
             @classmethod
             def __new__(*args):
                 return args
@@ -4424,7 +4420,7 @@ order (MRO) for bases """
     def test_imul_bug(self):
         # Testing for __imul__ problems...
         # SF bug 544647
-        class C(object):
+        class C:
             def __imul__(self, other):
                 return (self, other)
 
@@ -4452,7 +4448,7 @@ order (MRO) for bases """
         # Testing that copy.*copy() correctly uses __setstate__...
         import copy
 
-        class C(object):
+        class C:
             def __init__(self, foo=None):
                 self.foo = foo
                 self.__foo = foo
@@ -4534,7 +4530,7 @@ order (MRO) for bases """
     def test_subtype_resurrection(self):
         # Testing resurrection of new-style instance...
 
-        class C(object):
+        class C:
             container = []
 
             def __del__(self):
@@ -4559,7 +4555,7 @@ order (MRO) for bases """
     def test_slots_trash(self):
         # Testing slot trash...
         # Deallocating deeply nested slotted trash caused stack overflows
-        class trash(object):
+        class trash:
             __slots__ = ["x"]
 
             def __init__(self, x):
@@ -4572,10 +4568,10 @@ order (MRO) for bases """
 
     def test_slots_multiple_inheritance(self):
         # SF bug 575229, multiple inheritance w/ slots dumps core
-        class A(object):
+        class A:
             __slots__ = ()
 
-        class B(object):
+        class B:
             pass
 
         class C(A, B):
@@ -4590,7 +4586,7 @@ order (MRO) for bases """
     def test_rmul(self):
         # Testing correct invocation of __rmul__...
         # SF patch 592646
-        class C(object):
+        class C:
             def __mul__(self, other):
                 return "mul"
 
@@ -4606,7 +4602,7 @@ order (MRO) for bases """
     def test_ipow(self):
         # Testing correct invocation of __ipow__...
         # [SF bug 620179]
-        class C(object):
+        class C:
             def __ipow__(self, other):
                 pass
 
@@ -4617,10 +4613,10 @@ order (MRO) for bases """
         # Testing mutable bases...
 
         # stuff that should work:
-        class C(object):
+        class C:
             pass
 
-        class C2(object):
+        class C2:
             def __getattribute__(self, attr):
                 if attr == "a":
                     return 2
@@ -4697,7 +4693,7 @@ order (MRO) for bases """
         class L(list):
             pass
 
-        class C(object):
+        class C:
             pass
 
         class D(C):
@@ -4732,15 +4728,15 @@ order (MRO) for bases """
 
         with self.assertRaises(TypeError):
 
-            class X(object, type(None)):
+            class X(type(None)):
                 pass
 
         with self.assertRaises(TypeError):
 
-            class X(type(None), object):
+            class X(type(None)):
                 pass
 
-        class O(object):
+        class O:
             pass
 
         with self.assertRaises(TypeError):
@@ -4753,7 +4749,7 @@ order (MRO) for bases """
             class X(type(None), O):
                 pass
 
-        class X(object):
+        class X:
             pass
 
         with self.assertRaises(TypeError):
@@ -4789,10 +4785,10 @@ order (MRO) for bases """
                 # What's a good way to test for this?
                 return type.mro(self)
 
-        class C(object):
+        class C:
             pass
 
-        class C2(object):
+        class C2:
             pass
 
         class D(C):
@@ -4824,10 +4820,10 @@ order (MRO) for bases """
 
     def test_mutable_bases_catch_mro_conflict(self):
         # Testing mutable bases catch mro conflict...
-        class A(object):
+        class A:
             pass
 
-        class B(object):
+        class B:
             pass
 
         class C(A, B):
@@ -4848,7 +4844,7 @@ order (MRO) for bases """
 
     def test_mutable_names(self):
         # Testing mutable names...
-        class C(object):
+        class C:
             pass
 
         # C.__module__ could be 'test_descr' or '__main__'
@@ -4894,7 +4890,7 @@ order (MRO) for bases """
 
         # Case 2: subclass of object; this is just the baseline for case 3
 
-        class C(object):
+        class C:
             def __floordiv__(self, other):
                 return "C.__floordiv__"
 
@@ -4974,7 +4970,7 @@ order (MRO) for bases """
 
     def test_isinst_isclass(self):
         # Testing proxy isinstance() and isclass()...
-        class Proxy(object):
+        class Proxy:
             def __init__(self, obj):
                 self.__obj = obj
 
@@ -5003,7 +4999,7 @@ order (MRO) for bases """
         self.assertIsInstance(pa, C)  # Test
 
         # Test with a new-style class
-        class C(object):
+        class C:
             pass
 
         a = C()
@@ -5022,7 +5018,7 @@ order (MRO) for bases """
 
     def test_proxy_super(self):
         # Testing super() for a proxy object...
-        class Proxy(object):
+        class Proxy:
             def __init__(self, obj):
                 self.__obj = obj
 
@@ -5032,7 +5028,7 @@ order (MRO) for bases """
                 else:
                     return getattr(self.__obj, name)
 
-        class B(object):
+        class B:
             def f(self):
                 return "B.f"
 
@@ -5107,7 +5103,7 @@ order (MRO) for bases """
             def __del__(self):
                 x = self.ref()
 
-        class Oops(object):
+        class Oops:
             pass
 
         o = Oops()
@@ -5145,7 +5141,7 @@ order (MRO) for bases """
         # python-dev 2003-04-17, turned into an example & fixed by Michael
         # Hudson just less than four months later...
 
-        class Evil(object):
+        class Evil:
             def __hash__(self):
                 return hash("attr")
 
@@ -5157,11 +5153,11 @@ order (MRO) for bases """
                     pass
                 return 0
 
-        class Descr(object):
+        class Descr:
             def __get__(self, ob, type=None):
                 return 1
 
-        class C(object):
+        class C:
             attr = Descr()
 
         c = C()
@@ -5174,7 +5170,7 @@ order (MRO) for bases """
 
     def test_init(self):
         # SF 1155938
-        class Foo(object):
+        class Foo:
             def __init__(self):
                 return 10
 
@@ -5309,7 +5305,7 @@ order (MRO) for bases """
         # tp->tp_as_sequence->sq_slice instead of
         # tp->tp_as_sequence->sq_ass_slice
 
-        class C(object):
+        class C:
             def __setitem__(self, idx, value):
                 self.value = value
 
@@ -5320,8 +5316,7 @@ order (MRO) for bases """
     def test_set_and_no_get(self):
         # See
         # http://mail.python.org/pipermail/python-dev/2010-January/095637.html
-        class Descr(object):
-
+        class Descr:
             def __init__(self, name):
                 self.name = name
 
@@ -5330,7 +5325,7 @@ order (MRO) for bases """
 
         descr = Descr("a")
 
-        class X(object):
+        class X:
             a = descr
 
         x = X()
@@ -5352,7 +5347,7 @@ order (MRO) for bases """
     def test_getattr_hooks(self):
         # issue 4230
 
-        class Descriptor(object):
+        class Descriptor:
             counter = 0
 
             def __get__(self, obj, objtype=None):
@@ -5364,13 +5359,13 @@ order (MRO) for bases """
 
         descr = Descriptor()
 
-        class A(object):
+        class A:
             __getattribute__ = descr
 
-        class B(object):
+        class B:
             __getattr__ = descr
 
-        class C(object):
+        class C:
             __getattribute__ = descr
             __getattr__ = descr
 
@@ -5381,7 +5376,7 @@ order (MRO) for bases """
         self.assertRaises(AttributeError, getattr, C(), "attr")
         self.assertEqual(descr.counter, 4)
 
-        class EvilGetattribute(object):
+        class EvilGetattribute:
             # This used to segfault
             def __getattr__(self, name):
                 raise AttributeError(name)
@@ -5406,7 +5401,7 @@ order (MRO) for bases """
 
         self.assertRaises(AttributeError, getattr, meta, "__abstractmethods__")
 
-        class X(object):
+        class X:
             pass
 
         with self.assertRaises(AttributeError):
@@ -5672,7 +5667,7 @@ order (MRO) for bases """
 
 class DictProxyTests(unittest.TestCase):
     def setUp(self):
-        class C(object):
+        class C:
             def meth(self):
                 pass
 
@@ -5719,7 +5714,7 @@ class DictProxyTests(unittest.TestCase):
 
     def test_dict_type_with_metaclass(self):
         # Testing type of __dict__ when metaclass set...
-        class B(object):
+        class B:
             pass
 
         class M(type):
@@ -5739,7 +5734,7 @@ class DictProxyTests(unittest.TestCase):
         self.assertTrue(r.startswith("mappingproxy("), r)
         self.assertTrue(r.endswith(")"), r)
         for k, v in self.C.__dict__.items():
-            self.assertIn("{!r}: {!r}".format(k, v), r)
+            self.assertIn(f"{k!r}: {v!r}", r)
 
 
 class PTypesLongInitTest(unittest.TestCase):
@@ -5751,7 +5746,7 @@ class PTypesLongInitTest(unittest.TestCase):
         # but only when test_descr.py is run separately.
         # (That can't be helped -- as soon as PyType_Ready()
         # is called for PyLong_Type, the bug is gone.)
-        class UserLong(object):
+        class UserLong:
             def __pow__(self, *args):
                 pass
 
@@ -5770,18 +5765,18 @@ class MiscTests(unittest.TestCase):
         # Issue #14199: _PyType_Lookup() has to keep a strong reference to
         # the type MRO because it may be modified during the lookup, if
         # __bases__ is set during the lookup for example.
-        class MyKey(object):
+        class MyKey:
             def __hash__(self):
                 return hash("mykey")
 
             def __eq__(self, other):
                 X.__bases__ = (Base2,)
 
-        class Base(object):
+        class Base:
             mykey = "from Base"
             mykey2 = "from Base"
 
-        class Base2(object):
+        class Base2:
             mykey = "from Base2"
             mykey2 = "from Base2"
 
@@ -5793,7 +5788,6 @@ class MiscTests(unittest.TestCase):
 
 
 class PicklingTests(unittest.TestCase):
-
     def _check_reduce(
         self, proto, obj, args=(), kwargs={}, state=None, listitems=None, dictitems=None
     ):
@@ -5973,7 +5967,6 @@ class PicklingTests(unittest.TestCase):
             def __getattr__(self, attr):
                 if attr in ("__getnewargs__", "__getnewargs_ex__"):
                     raise AssertionError(attr)
-                return None
 
         for protocol in protocols:
             state = {} if protocol >= 2 else None
@@ -5982,7 +5975,7 @@ class PicklingTests(unittest.TestCase):
     def _assert_is_copy(self, obj, objcopy, msg=None):
         """Utility method to verify if two objects are copies of each others."""
         if msg is None:
-            msg = "{!r} is not a copy of {!r}".format(obj, objcopy)
+            msg = f"{obj!r} is not a copy of {objcopy!r}"
         if type(obj).__repr__ is object.__repr__:
             # We have this limitation for now because we use the object's repr
             # to help us verify that the two objects are copies. This allows
@@ -6025,13 +6018,7 @@ class PicklingTests(unittest.TestCase):
                 # We try to be as descriptive as possible here since this is
                 # the string which we will allow us to tell the pickle
                 # configuration we are using during debugging.
-                return "PickleCopier(proto={}, dumps={}.{}, loads={}.{})".format(
-                    self.proto,
-                    self.dumps.__module__,
-                    self.dumps.__qualname__,
-                    self.loads.__module__,
-                    self.loads.__qualname__,
-                )
+                return f"PickleCopier(proto={self.proto}, dumps={self.dumps.__module__}.{self.dumps.__qualname__}, loads={self.loads.__module__}.{self.loads.__qualname__})"
 
         return (
             PickleCopier(*args)
@@ -6087,8 +6074,6 @@ class PicklingTests(unittest.TestCase):
 
         class D(C):
             "A subclass of a class with slots."
-
-            pass
 
         global E
 
@@ -6305,7 +6290,6 @@ class PicklingTests(unittest.TestCase):
 
 
 class SharedKeyTests(unittest.TestCase):
-
     @support.cpython_only
     def test_subclasses(self):
         # Verify that subclasses can share keys (per PEP 412)

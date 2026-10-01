@@ -1,5 +1,3 @@
-from test import support
-from test.support.script_helper import assert_python_ok, assert_python_failure
 import builtins
 import codecs
 import gc
@@ -10,10 +8,13 @@ import struct
 import subprocess
 import sys
 import sysconfig
-import test.support
 import textwrap
 import unittest
 import warnings
+
+import test.support
+from test import support
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 # count the number of test runs, used to create unique
 # strings to intern in test_intern()
@@ -21,7 +22,6 @@ INTERN_NUMRUNS = 0
 
 
 class DisplayHookTest(unittest.TestCase):
-
     def test_original_displayhook(self):
         dh = sys.__displayhook__
 
@@ -68,11 +68,10 @@ class DisplayHookTest(unittest.TestCase):
 
 
 class ExceptHookTest(unittest.TestCase):
-
     def test_original_excepthook(self):
         try:
             raise ValueError(42)
-        except ValueError as exc:
+        except ValueError:
             with support.captured_stderr() as err:
                 sys.__excepthook__(*sys.exc_info())
 
@@ -88,7 +87,7 @@ class ExceptHookTest(unittest.TestCase):
 
             try:
                 raise SyntaxError("msg", (b"bytes_filename", 123, 0, "text"))
-            except SyntaxError as exc:
+            except SyntaxError:
                 with support.captured_stderr() as err:
                     sys.__excepthook__(*sys.exc_info())
 
@@ -110,7 +109,6 @@ class ExceptHookTest(unittest.TestCase):
 
 
 class SysModuleTest(unittest.TestCase):
-
     def tearDown(self):
         test.support.reap_children()
 
@@ -465,7 +463,7 @@ class SysModuleTest(unittest.TestCase):
             self.assertEqual(
                 pow(x, sys.hash_info.modulus - 1, sys.hash_info.modulus),
                 1,
-                "sys.hash_info.modulus {} is a non-prime".format(sys.hash_info.modulus),
+                f"sys.hash_info.modulus {sys.hash_info.modulus} is a non-prime",
             )
         self.assertIsInstance(sys.hash_info.inf, int)
         self.assertIsInstance(sys.hash_info.nan, int)
@@ -764,17 +762,17 @@ class SysModuleTest(unittest.TestCase):
         # replace the default error handler
         out = self.c_locale_get_error_handler(locale, encoding=":ignore")
         self.assertEqual(
-            out, "stdin: ignore\n" "stdout: ignore\n" "stderr: backslashreplace\n"
+            out, "stdin: ignore\nstdout: ignore\nstderr: backslashreplace\n"
         )
 
         # force the encoding
         out = self.c_locale_get_error_handler(locale, encoding="iso8859-1")
         self.assertEqual(
-            out, "stdin: strict\n" "stdout: strict\n" "stderr: backslashreplace\n"
+            out, "stdin: strict\nstdout: strict\nstderr: backslashreplace\n"
         )
         out = self.c_locale_get_error_handler(locale, encoding="iso8859-1:")
         self.assertEqual(
-            out, "stdin: strict\n" "stdout: strict\n" "stderr: backslashreplace\n"
+            out, "stdin: strict\nstdout: strict\nstderr: backslashreplace\n"
         )
 
         # have no any effect
@@ -848,7 +846,7 @@ class SysModuleTest(unittest.TestCase):
         else:
             try:
                 alloc_name = _testcapi.pymem_getallocatorsname()
-            except RuntimeError as exc:
+            except RuntimeError:
                 # "cannot get allocators name" (ex: tracemalloc is used)
                 with_pymalloc = True
             else:
@@ -1053,8 +1051,11 @@ class UnraisableHookTest(unittest.TestCase):
         for test_class in (BrokenDel, BrokenExceptionDel):
             with self.subTest(test_class):
                 obj = test_class()
-                with test.support.captured_stderr() as stderr, test.support.swap_attr(
-                    sys, "unraisablehook", sys.__unraisablehook__
+                with (
+                    test.support.captured_stderr() as stderr,
+                    test.support.swap_attr(
+                        sys, "unraisablehook", sys.__unraisablehook__
+                    ),
                 ):
                     # Trigger obj.__del__()
                     del obj
@@ -1089,7 +1090,13 @@ class UnraisableHookTest(unittest.TestCase):
         try:
             with test.support.swap_attr(sys, "unraisablehook", hook_func):
                 expected = self.write_unraisable_exc(ValueError(42), "custom hook", obj)
-                for attr in "exc_type exc_value exc_traceback err_msg object".split():
+                for attr in [
+                    "exc_type",
+                    "exc_value",
+                    "exc_traceback",
+                    "err_msg",
+                    "object",
+                ]:
                     self.assertEqual(
                         getattr(hook_args, attr),
                         getattr(expected, attr),
@@ -1109,16 +1116,13 @@ class UnraisableHookTest(unittest.TestCase):
                 self.write_unraisable_exc(ValueError(42), "custom hook fail", None)
 
         err = stderr.getvalue()
-        self.assertIn(
-            f"Exception ignored in sys.unraisablehook: " f"{hook_func!r}\n", err
-        )
+        self.assertIn(f"Exception ignored in sys.unraisablehook: {hook_func!r}\n", err)
         self.assertIn("Traceback (most recent call last):\n", err)
         self.assertIn("Exception: hook_func failed\n", err)
 
 
 @test.support.cpython_only
 class SizeofTest(unittest.TestCase):
-
     def setUp(self):
         self.P = struct.calcsize("P")
         self.longdigit = sys.int_info.sizeof_digit
@@ -1272,7 +1276,7 @@ class SizeofTest(unittest.TestCase):
         check(iter({}.items()), size("P2nPn"))
 
         # dictproxy
-        class C(object):
+        class C:
             pass
 
         check(C.__dict__, size("P"))
@@ -1287,7 +1291,8 @@ class SizeofTest(unittest.TestCase):
         # ellipses
         check(Ellipsis, size(""))
         # EncodingMap
-        import codecs, encodings.iso8859_3
+        import codecs
+        import encodings.iso8859_3
 
         x = codecs.charmap_build(encodings.iso8859_3.decoding_table)
         check(x, size("32B2iB"))
@@ -1370,7 +1375,7 @@ class SizeofTest(unittest.TestCase):
         check(object(), size(""))
 
         # property (descriptor object)
-        class C(object):
+        class C:
             def getx(self):
                 return self.__x
 
@@ -1437,7 +1442,7 @@ class SizeofTest(unittest.TestCase):
             "5P"
         )
 
-        class newstyleclass(object):
+        class newstyleclass:
             pass
 
         # Separate block for PyDictKeysObject with 8 keys and 5 entries

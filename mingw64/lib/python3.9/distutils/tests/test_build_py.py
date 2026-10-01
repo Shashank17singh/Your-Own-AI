@@ -3,19 +3,17 @@
 import os
 import sys
 import unittest
-
 from distutils.command.build_py import build_py
 from distutils.core import Distribution
 from distutils.errors import DistutilsFileError
-
 from distutils.tests import support
+
 from test.support import run_unittest
 
 
 class BuildPyTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
-
     def test_package_data(self):
         sources = self.mkdtemp()
         f = open(os.path.join(sources, "__init__.py"), "w")
@@ -119,7 +117,7 @@ class BuildPyTestCase(
         found = os.listdir(cmd.build_lib)
         self.assertEqual(sorted(found), ["__pycache__", "boiledeggs.py"])
         found = os.listdir(os.path.join(cmd.build_lib, "__pycache__"))
-        expect = "boiledeggs.{}.opt-1.pyc".format(sys.implementation.cache_tag)
+        expect = f"boiledeggs.{sys.implementation.cache_tag}.opt-1.pyc"
         self.assertEqual(sorted(found), [expect])
 
     def test_dir_in_package_data(self):

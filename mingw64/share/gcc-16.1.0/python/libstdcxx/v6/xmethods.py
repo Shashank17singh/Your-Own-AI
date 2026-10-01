@@ -1,6 +1,7 @@
+import re
+
 import gdb
 import gdb.xmethod
-import re
 
 matcher_name_prefix = "libstdc++::"
 

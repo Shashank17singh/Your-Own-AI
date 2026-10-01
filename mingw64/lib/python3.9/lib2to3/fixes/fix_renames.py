@@ -50,7 +50,7 @@ class FixRenames(fixer_base.BaseFix):
 
     # Don't match the node if it's within another match
     def match(self, node):
-        match = super(FixRenames, self).match
+        match = super().match
         results = match(node)
         if results:
             if any(match(obj) for obj in attr_chain(node, "parent")):

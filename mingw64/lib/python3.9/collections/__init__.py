@@ -29,7 +29,7 @@ __all__ = [
 import _collections_abc
 import heapq as _heapq
 import sys as _sys
-
+from _weakref import proxy as _proxy
 from itertools import chain as _chain
 from itertools import repeat as _repeat
 from itertools import starmap as _starmap
@@ -37,7 +37,6 @@ from keyword import iskeyword as _iskeyword
 from operator import eq as _eq
 from operator import itemgetter as _itemgetter
 from reprlib import recursive_repr as _recursive_repr
-from _weakref import proxy as _proxy
 
 try:
     from _collections import deque
@@ -78,27 +77,24 @@ def __getattr__(name):
 
 
 class _OrderedDictKeysView(_collections_abc.KeysView):
-
     def __reversed__(self):
         yield from reversed(self._mapping)
 
 
 class _OrderedDictItemsView(_collections_abc.ItemsView):
-
     def __reversed__(self):
         for key in reversed(self._mapping):
             yield (key, self._mapping[key])
 
 
 class _OrderedDictValuesView(_collections_abc.ValuesView):
-
     def __reversed__(self):
         for key in reversed(self._mapping):
             yield self._mapping[key]
 
 
-class _Link(object):
-    __slots__ = "prev", "next", "key", "__weakref__"
+class _Link:
+    __slots__ = "__weakref__", "key", "next", "prev"
 
 
 class OrderedDict(dict):
@@ -401,19 +397,17 @@ def namedtuple(typename, field_names, *, rename=False, defaults=None, module=Non
             raise TypeError("Type names and field names must be strings")
         if not name.isidentifier():
             raise ValueError(
-                "Type names and field names must be valid " f"identifiers: {name!r}"
+                f"Type names and field names must be valid identifiers: {name!r}"
             )
         if _iskeyword(name):
             raise ValueError(
-                "Type names and field names cannot be a " f"keyword: {name!r}"
+                f"Type names and field names cannot be a keyword: {name!r}"
             )
 
     seen = set()
     for name in field_names:
         if name.startswith("_") and not rename:
-            raise ValueError(
-                "Field names cannot start with an underscore: " f"{name!r}"
-            )
+            raise ValueError(f"Field names cannot start with an underscore: {name!r}")
         if name in seen:
             raise ValueError(f"Encountered duplicate field name: {name!r}")
         seen.add(name)
@@ -458,9 +452,7 @@ def namedtuple(typename, field_names, *, rename=False, defaults=None, module=Non
             raise TypeError(f"Expected {num_fields} arguments, got {len(result)}")
         return result
 
-    _make.__func__.__doc__ = (
-        f"Make a new {typename} object from a sequence " "or iterable"
-    )
+    _make.__func__.__doc__ = f"Make a new {typename} object from a sequence or iterable"
 
     def _replace(self, /, **kwds):
         result = self._make(_map(kwds.pop, field_names, self))
@@ -469,7 +461,7 @@ def namedtuple(typename, field_names, *, rename=False, defaults=None, module=Non
         return result
 
     _replace.__doc__ = (
-        f"Return a new {typename} object replacing specified " "fields with new values"
+        f"Return a new {typename} object replacing specified fields with new values"
     )
 
     def __repr__(self):
@@ -820,7 +812,7 @@ class Counter(dict):
         result = Counter()
         for elem, count in self.items():
             other_count = other[elem]
-            newcount = other_count if count < other_count else count
+            newcount = max(count, other_count)
             if newcount > 0:
                 result[elem] = newcount
         for elem, count in other.items():
@@ -840,7 +832,7 @@ class Counter(dict):
         result = Counter()
         for elem, count in self.items():
             other_count = other[elem]
-            newcount = count if count < other_count else other_count
+            newcount = min(other_count, count)
             if newcount > 0:
                 result[elem] = newcount
         return result
@@ -985,7 +977,7 @@ class ChainMap(_collections_abc.MutableMapping):
 
     @_recursive_repr()
     def __repr__(self):
-        return f'{self.__class__.__name__}({", ".join(map(repr, self.maps))})'
+        return f"{self.__class__.__name__}({', '.join(map(repr, self.maps))})"
 
     @classmethod
     def fromkeys(cls, iterable, *args):
@@ -1064,7 +1056,6 @@ class ChainMap(_collections_abc.MutableMapping):
 
 
 class UserDict(_collections_abc.MutableMapping):
-
     # Start by filling-out the abstract methods
     def __init__(self, dict=None, /, **kwargs):
         self.data = {}
@@ -1290,7 +1281,6 @@ class UserList(_collections_abc.MutableSequence):
 
 
 class UserString(_collections_abc.Sequence):
-
     def __init__(self, seq):
         if isinstance(seq, str):
             self.data = seq

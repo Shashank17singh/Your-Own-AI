@@ -1,11 +1,11 @@
 import unittest
 from email import _encoded_words as _ew
 from email import errors
+
 from test.test_email import TestEmailBase
 
 
 class TestDecodeQ(TestEmailBase):
-
     def _test(self, source, ex_result, ex_defects=[]):
         result, defects = _ew.decode_q(source)
         self.assertEqual(result, ex_result)
@@ -23,7 +23,6 @@ class TestDecodeQ(TestEmailBase):
 
 
 class TestDecodeB(TestEmailBase):
-
     def _test(self, source, ex_result, ex_defects=[]):
         result, defects = _ew.decode_b(source)
         self.assertEqual(result, ex_result)
@@ -53,7 +52,6 @@ class TestDecodeB(TestEmailBase):
 
 
 class TestDecode(TestEmailBase):
-
     def test_wrong_format_input_raises(self):
         with self.assertRaises(ValueError):
             _ew.decode("=?badone?=")
@@ -150,7 +148,6 @@ class TestDecode(TestEmailBase):
 
 
 class TestEncodeQ(TestEmailBase):
-
     def _test(self, src, expected):
         self.assertEqual(_ew.encode_q(src), expected)
 
@@ -165,7 +162,6 @@ class TestEncodeQ(TestEmailBase):
 
 
 class TestEncodeB(TestEmailBase):
-
     def test_simple(self):
         self.assertEqual(_ew.encode_b(b"foo"), "Zm9v")
 
@@ -174,7 +170,6 @@ class TestEncodeB(TestEmailBase):
 
 
 class TestEncode(TestEmailBase):
-
     def test_q(self):
         self.assertEqual(_ew.encode("foo", "utf-8", "q"), "=?utf-8?q?foo?=")
 

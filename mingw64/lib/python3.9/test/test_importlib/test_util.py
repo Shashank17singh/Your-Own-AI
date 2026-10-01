@@ -1,4 +1,4 @@
-﻿from . import util
+from . import util
 
 abc = util.import_importlib("importlib.abc")
 init = util.import_importlib("importlib")
@@ -10,15 +10,15 @@ import os
 import pathlib
 import string
 import sys
-from test import support
 import types
 import unittest
 import unittest.mock
 import warnings
 
+from test import support
+
 
 class DecodeSourceBytesTests:
-
     source = "string ='ü'"
 
     def test_ut8_default(self):
@@ -45,7 +45,6 @@ Frozen_DecodeSourceBytesTests, Source_DecodeSourceBytesTests = util.test_both(
 
 
 class ModuleFromSpecTests:
-
     def test_no_create_module(self):
         class Loader:
             def exec_module(self, module):
@@ -414,7 +413,6 @@ Frozen_ResolveNameTests, Source_ResolveNameTests = util.test_both(
 
 
 class FindSpecTests:
-
     class FakeMetaFinder:
         @staticmethod
         def find_spec(name, path=None, target=None):
@@ -550,7 +548,6 @@ Frozen_FindSpecTests, Source_FindSpecTests = util.test_both(
 
 
 class MagicNumberTests:
-
     def test_length(self):
         # Should be 4 bytes.
         self.assertEqual(len(self.util.MAGIC_NUMBER), 4)
@@ -578,9 +575,7 @@ class PEP3147Tests:
         # Given the path to a .py file, return the path to its PEP 3147
         # defined .pyc file (i.e. under __pycache__).
         path = os.path.join("foo", "bar", "baz", "qux.py")
-        expect = os.path.join(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
-        )
+        expect = os.path.join("foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc")
         self.assertEqual(self.util.cache_from_source(path, optimization=""), expect)
 
     def test_cache_from_source_no_cache_tag(self):
@@ -592,7 +587,7 @@ class PEP3147Tests:
     def test_cache_from_source_no_dot(self):
         # Directory with a dot, filename without dot.
         path = os.path.join("foo.bar", "file")
-        expect = os.path.join("foo.bar", "__pycache__", "file{}.pyc".format(self.tag))
+        expect = os.path.join("foo.bar", "__pycache__", f"file{self.tag}.pyc")
         self.assertEqual(self.util.cache_from_source(path, optimization=""), expect)
 
     def test_cache_from_source_debug_override(self):
@@ -618,7 +613,7 @@ class PEP3147Tests:
 
     def test_cache_from_source_cwd(self):
         path = "foo.py"
-        expect = os.path.join("__pycache__", "foo.{}.pyc".format(self.tag))
+        expect = os.path.join("__pycache__", f"foo.{self.tag}.pyc")
         self.assertEqual(self.util.cache_from_source(path, optimization=""), expect)
 
     def test_cache_from_source_override(self):
@@ -648,7 +643,7 @@ class PEP3147Tests:
     def test_cache_from_source_optimization_empty_string(self):
         # Setting 'optimization' to '' leads to no optimization tag (PEP 488).
         path = "foo.py"
-        expect = os.path.join("__pycache__", "foo.{}.pyc".format(self.tag))
+        expect = os.path.join("__pycache__", f"foo.{self.tag}.pyc")
         self.assertEqual(self.util.cache_from_source(path, optimization=""), expect)
 
     def test_cache_from_source_optimization_None(self):
@@ -656,13 +651,13 @@ class PEP3147Tests:
         # (PEP 488)
         path = "foo.py"
         optimization_level = sys.flags.optimize
-        almost_expect = os.path.join("__pycache__", "foo.{}".format(self.tag))
+        almost_expect = os.path.join("__pycache__", f"foo.{self.tag}")
         if optimization_level == 0:
             expect = almost_expect + ".pyc"
         elif optimization_level <= 2:
-            expect = almost_expect + ".opt-{}.pyc".format(optimization_level)
+            expect = almost_expect + f".opt-{optimization_level}.pyc"
         else:
-            msg = "{!r} is a non-standard optimization level".format(optimization_level)
+            msg = f"{optimization_level!r} is a non-standard optimization level"
             self.skipTest(msg)
         self.assertEqual(self.util.cache_from_source(path, optimization=None), expect)
 
@@ -671,10 +666,10 @@ class PEP3147Tests:
         # that passes str.alnum().
         path = "foo.py"
         valid_characters = string.ascii_letters + string.digits
-        almost_expect = os.path.join("__pycache__", "foo.{}".format(self.tag))
+        almost_expect = os.path.join("__pycache__", f"foo.{self.tag}")
         got = self.util.cache_from_source(path, optimization=valid_characters)
         # Test all valid characters are accepted.
-        self.assertEqual(got, almost_expect + ".opt-{}.pyc".format(valid_characters))
+        self.assertEqual(got, almost_expect + f".opt-{valid_characters}.pyc")
         # str() should be called on argument.
         self.assertEqual(
             self.util.cache_from_source(path, optimization=42),
@@ -699,7 +694,7 @@ class PEP3147Tests:
         # Windows path and PEP 3147 where sep is right of altsep.
         self.assertEqual(
             self.util.cache_from_source("\\foo\\bar\\baz/qux.py", optimization=""),
-            "\\foo\\bar\\baz\\__pycache__\\qux.{}.pyc".format(self.tag),
+            f"\\foo\\bar\\baz\\__pycache__\\qux.{self.tag}.pyc",
         )
 
     @unittest.skipIf(
@@ -708,9 +703,7 @@ class PEP3147Tests:
     )
     def test_cache_from_source_path_like_arg(self):
         path = pathlib.PurePath("foo", "bar", "baz", "qux.py")
-        expect = os.path.join(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
-        )
+        expect = os.path.join("foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc")
         self.assertEqual(self.util.cache_from_source(path, optimization=""), expect)
 
     @unittest.skipIf(
@@ -720,9 +713,7 @@ class PEP3147Tests:
     def test_source_from_cache(self):
         # Given the path to a PEP 3147 defined .pyc file, return the path to
         # its source.  This tests the good path.
-        path = os.path.join(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
-        )
+        path = os.path.join("foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc")
         expect = os.path.join("foo", "bar", "baz", "qux.py")
         self.assertEqual(self.util.source_from_cache(path), expect)
 
@@ -770,12 +761,12 @@ class PEP3147Tests:
 
     def test_source_from_cache_optimized_bytecode(self):
         # Optimized bytecode is not an issue.
-        path = os.path.join("__pycache__", "foo.{}.opt-1.pyc".format(self.tag))
+        path = os.path.join("__pycache__", f"foo.{self.tag}.opt-1.pyc")
         self.assertEqual(self.util.source_from_cache(path), "foo.py")
 
     def test_source_from_cache_missing_optimization(self):
         # An empty optimization level is a no-no.
-        path = os.path.join("__pycache__", "foo.{}.opt-.pyc".format(self.tag))
+        path = os.path.join("__pycache__", f"foo.{self.tag}.opt-.pyc")
         with self.assertRaises(ValueError):
             self.util.source_from_cache(path)
 
@@ -785,7 +776,7 @@ class PEP3147Tests:
     )
     def test_source_from_cache_path_like_arg(self):
         path = pathlib.PurePath(
-            "foo", "bar", "baz", "__pycache__", "qux.{}.pyc".format(self.tag)
+            "foo", "bar", "baz", "__pycache__", f"qux.{self.tag}.pyc"
         )
         expect = os.path.join("foo", "bar", "baz", "qux.py")
         self.assertEqual(self.util.source_from_cache(path), expect)
@@ -812,7 +803,7 @@ class PEP3147Tests:
             with self.subTest(path=pycache_prefix):
                 path = drive + os.path.join(os.path.sep, "foo", "bar", "baz", "qux.py")
                 expect = os.path.join(
-                    pycache_prefix, "foo", "bar", "baz", "qux.{}.pyc".format(self.tag)
+                    pycache_prefix, "foo", "bar", "baz", f"qux.{self.tag}.pyc"
                 )
                 with util.temporary_pycache_prefix(pycache_prefix):
                     self.assertEqual(

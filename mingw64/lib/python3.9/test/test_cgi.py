@@ -4,7 +4,8 @@ import sys
 import tempfile
 import unittest
 from collections import namedtuple
-from io import StringIO, BytesIO
+from io import BytesIO, StringIO
+
 from test import support
 
 
@@ -127,7 +128,6 @@ def gen_result(data, environ):
 
 
 class CgiTests(unittest.TestCase):
-
     def test_parse_multipart(self):
         fp = BytesIO(POSTDATA.encode("latin1"))
         env = {"boundary": BOUNDARY.encode("latin1"), "CONTENT-LENGTH": "558"}
@@ -301,7 +301,7 @@ Content-Length: 3
         # Test basic FieldStorage multipart parsing
         env = {
             "REQUEST_METHOD": "POST",
-            "CONTENT_TYPE": "multipart/form-data; boundary={}".format(BOUNDARY),
+            "CONTENT_TYPE": f"multipart/form-data; boundary={BOUNDARY}",
             "CONTENT_LENGTH": "558",
         }
         fp = BytesIO(POSTDATA.encode("latin-1"))
@@ -321,7 +321,7 @@ Content-Length: 3
     def test_fieldstorage_multipart_leading_whitespace(self):
         env = {
             "REQUEST_METHOD": "POST",
-            "CONTENT_TYPE": "multipart/form-data; boundary={}".format(BOUNDARY),
+            "CONTENT_TYPE": f"multipart/form-data; boundary={BOUNDARY}",
             "CONTENT_LENGTH": "560",
         }
         # Add some leading whitespace to our post data that will cause the
@@ -344,7 +344,7 @@ Content-Length: 3
         # Test basic FieldStorage multipart parsing
         env = {
             "REQUEST_METHOD": "POST",
-            "CONTENT_TYPE": "multipart/form-data; boundary={}".format(BOUNDARY),
+            "CONTENT_TYPE": f"multipart/form-data; boundary={BOUNDARY}",
             "CONTENT_LENGTH": "558",
         }
         for encoding in ["iso-8859-1", "utf-8"]:
@@ -363,13 +363,16 @@ Content-Length: 3
         self.maxDiff = None
 
         def check(content):
-            data = """---123
+            data = (
+                """---123
 Content-Disposition: form-data; name="upload"; filename="fake.txt"
 Content-Type: text/plain
 
 %s
 ---123--
-""".replace("\n", "\r\n") % content
+""".replace("\n", "\r\n")
+                % content
+            )
             environ = {
                 "CONTENT_LENGTH": str(len(data)),
                 "CONTENT_TYPE": "multipart/form-data; boundary=-123",
@@ -387,7 +390,7 @@ Content-Type: text/plain
         # Test basic FieldStorage multipart parsing (W3C sample)
         env = {
             "REQUEST_METHOD": "POST",
-            "CONTENT_TYPE": "multipart/form-data; boundary={}".format(BOUNDARY_W3),
+            "CONTENT_TYPE": f"multipart/form-data; boundary={BOUNDARY_W3}",
             "CONTENT_LENGTH": str(len(POSTDATA_W3)),
         }
         fp = BytesIO(POSTDATA_W3.encode("latin-1"))
@@ -425,7 +428,7 @@ Larry
 --JfISa01"""
         env = {
             "REQUEST_METHOD": "POST",
-            "CONTENT_TYPE": "multipart/form-data; boundary={}".format(BOUNDARY),
+            "CONTENT_TYPE": f"multipart/form-data; boundary={BOUNDARY}",
             "CONTENT_LENGTH": str(len(POSTDATA)),
         }
         fp = BytesIO(POSTDATA.encode("latin-1"))

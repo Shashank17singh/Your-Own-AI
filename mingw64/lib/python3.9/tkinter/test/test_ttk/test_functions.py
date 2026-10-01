@@ -12,7 +12,7 @@ class MockTkApp:
         return True
 
 
-class MockTclObj(object):
+class MockTclObj:
     typename = "test"
 
     def __init__(self, val):
@@ -22,7 +22,7 @@ class MockTclObj(object):
         return str(self.val)
 
 
-class MockStateSpec(object):
+class MockStateSpec:
     typename = "StateSpec"
 
     def __init__(self, *args):
@@ -281,8 +281,7 @@ class InternalFunctionsTest(unittest.TestCase):
         image["thing"]["element create"].append({"opt": 30})
         self.assertEqual(
             ttk._script_from_settings(image),
-            "ttk::style element create thing image {name {state1 state2} val} "
-            "-opt 30",
+            "ttk::style element create thing image {name {state1 state2} val} -opt 30",
         )
         image["thing"]["element create"][-1]["opt"] = [MockTclObj(3), MockTclObj("2m")]
         self.assertEqual(

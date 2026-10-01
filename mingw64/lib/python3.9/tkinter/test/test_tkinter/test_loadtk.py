@@ -1,8 +1,9 @@
 import os
 import sys
 import unittest
-import test.support as test_support
 from tkinter import Tcl, TclError
+
+import test.support as test_support
 
 test_support.requires("gui")
 

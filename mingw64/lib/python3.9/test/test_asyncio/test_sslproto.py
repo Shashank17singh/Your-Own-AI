@@ -2,10 +2,11 @@
 
 import logging
 import socket
-from test import support
 import unittest
 import weakref
 from unittest import mock
+
+from test import support
 
 try:
     import ssl
@@ -13,12 +14,10 @@ except ImportError:
     ssl = None
 
 import asyncio
-from asyncio import log
-from asyncio import protocols
-from asyncio import sslproto
-from test import support
-from test.test_asyncio import utils as test_utils
+from asyncio import log, protocols, sslproto
+
 from test.test_asyncio import functional as func_tests
+from test.test_asyncio import utils as test_utils
 
 
 def tearDownModule():
@@ -27,7 +26,6 @@ def tearDownModule():
 
 @unittest.skipIf(ssl is None, "No ssl module")
 class SslProtoHandshakeTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = asyncio.new_event_loop()
@@ -167,7 +165,6 @@ class SslProtoHandshakeTests(test_utils.TestCase):
 
 
 class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
-
     PAYLOAD_SIZE = 1024 * 100
     TIMEOUT = support.LONG_TIMEOUT
 
@@ -177,7 +174,6 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
     def test_buf_feed_data(self):
 
         class Proto(asyncio.BufferedProtocol):
-
             def __init__(self, bufsize, usemv):
                 self.buf = bytearray(bufsize)
                 self.mv = memoryview(self.buf)
@@ -634,13 +630,12 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                     *addr,
                     ssl=client_sslctx,
                     server_hostname="",
-                    ssl_handshake_timeout=support.SHORT_TIMEOUT
+                    ssl_handshake_timeout=support.SHORT_TIMEOUT,
                 ),
                 0.5,
             )
 
         with self.tcp_server(server, max_clients=1, backlog=1) as srv:
-
             with self.assertRaises(asyncio.TimeoutError):
                 self.loop.run_until_complete(client(srv.addr))
 
@@ -677,15 +672,13 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                     ssl=client_sslctx,
                     server_hostname="",
                     loop=self.loop,
-                    ssl_handshake_timeout=1.0
+                    ssl_handshake_timeout=1.0,
                 )
 
         with self.tcp_server(server, max_clients=1, backlog=1) as srv:
-
             with self.assertRaisesRegex(
                 ConnectionAbortedError, r"SSL handshake.*is taking longer"
             ):
-
                 self.loop.run_until_complete(client(srv.addr))
 
         self.assertEqual(messages, [])
@@ -713,11 +706,10 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                     ssl=client_sslctx,
                     server_hostname="",
                     loop=self.loop,
-                    ssl_handshake_timeout=support.LOOPBACK_TIMEOUT
+                    ssl_handshake_timeout=support.LOOPBACK_TIMEOUT,
                 )
 
         with self.tcp_server(server, max_clients=1, backlog=1) as srv:
-
             with self.assertRaises(ssl.SSLCertVerificationError):
                 self.loop.run_until_complete(client(srv.addr))
 
@@ -755,7 +747,6 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
             return "OK"
 
         with self.tcp_server(server, max_clients=1, backlog=1) as srv:
-
             res = self.loop.run_until_complete(client(srv.addr))
 
         self.assertEqual(res, "OK")
@@ -763,7 +754,6 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
 
 @unittest.skipIf(ssl is None, "No ssl module")
 class SelectorStartTLSTests(BaseStartTLS, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.SelectorEventLoop()
 
@@ -771,7 +761,6 @@ class SelectorStartTLSTests(BaseStartTLS, unittest.TestCase):
 @unittest.skipIf(ssl is None, "No ssl module")
 @unittest.skipUnless(hasattr(asyncio, "ProactorEventLoop"), "Windows only")
 class ProactorStartTLSTests(BaseStartTLS, unittest.TestCase):
-
     def new_loop(self):
         return asyncio.ProactorEventLoop()
 

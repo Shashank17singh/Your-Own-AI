@@ -1,10 +1,9 @@
 import io
 import unittest
 import xml.sax
-
-from xml.sax.xmlreader import AttributesImpl
-from xml.sax.handler import feature_external_ges
 from xml.dom import pulldom
+from xml.sax.handler import feature_external_ges
+from xml.sax.xmlreader import AttributesImpl
 
 from test.support import findfile
 
@@ -22,7 +21,6 @@ SMALL_SAMPLE = """<?xml version="1.0"?>
 
 
 class PullDOMTestCase(unittest.TestCase):
-
     def test_parse(self):
         """Minimal test of DOMEventStream.parse()"""
 
@@ -242,7 +240,7 @@ class ThoroughTestCase(unittest.TestCase):
         self.assertEqual(pulldom.END_DOCUMENT, evt)
 
 
-class SAXExerciser(object):
+class SAXExerciser:
     """A fake sax parser that calls some of the harder-to-reach sax methods to
     ensure it emits the correct events"""
 
@@ -271,7 +269,6 @@ class SAXExerciser(object):
 
     def stub(self, *args, **kwargs):
         """Stub method. Does nothing."""
-        pass
 
     setProperty = stub
     setFeature = stub
@@ -305,7 +302,6 @@ class SAX2DOMTestHelper(pulldom.DOMEventStream):
 
 
 class SAX2DOMTestCase(unittest.TestCase):
-
     def confirm(self, test, testname="Test"):
         self.assertTrue(test, testname)
 

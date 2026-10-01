@@ -6,32 +6,32 @@
 __author__ = "Brian Quinlan (brian@sweetapp.com)"
 
 from concurrent.futures._base import (
+    ALL_COMPLETED,
     FIRST_COMPLETED,
     FIRST_EXCEPTION,
-    ALL_COMPLETED,
-    CancelledError,
-    TimeoutError,
-    InvalidStateError,
     BrokenExecutor,
-    Future,
+    CancelledError,
     Executor,
-    wait,
+    Future,
+    InvalidStateError,
+    TimeoutError,
     as_completed,
+    wait,
 )
 
 __all__ = (
+    "ALL_COMPLETED",
     "FIRST_COMPLETED",
     "FIRST_EXCEPTION",
-    "ALL_COMPLETED",
-    "CancelledError",
-    "TimeoutError",
     "BrokenExecutor",
-    "Future",
+    "CancelledError",
     "Executor",
-    "wait",
-    "as_completed",
+    "Future",
     "ProcessPoolExecutor",
     "ThreadPoolExecutor",
+    "TimeoutError",
+    "as_completed",
+    "wait",
 )
 
 

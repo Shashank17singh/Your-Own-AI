@@ -2,23 +2,23 @@ import inspect
 import time
 import types
 import unittest
-from unittest.mock import (
-    call,
-    _Call,
-    create_autospec,
-    MagicMock,
-    Mock,
-    ANY,
-    _CallList,
-    patch,
-    PropertyMock,
-    _callable,
-)
 from datetime import datetime
 from functools import partial
+from unittest.mock import (
+    ANY,
+    MagicMock,
+    Mock,
+    PropertyMock,
+    _Call,
+    _callable,
+    _CallList,
+    call,
+    create_autospec,
+    patch,
+)
 
 
-class SomeClass(object):
+class SomeClass:
     def one(self, a, b):
         pass
 
@@ -51,7 +51,7 @@ class AnyTest(unittest.TestCase):
     def test_any_mock_calls_comparison_order(self):
         mock = Mock()
 
-        class Foo(object):
+        class Foo:
             def __eq__(self, other):
                 pass
 
@@ -375,7 +375,7 @@ class SpecSignatureTest(unittest.TestCase):
         mock = create_autospec(f, return_value="foo")
         self.assertEqual(mock(), "foo")
 
-        class Foo(object):
+        class Foo:
             pass
 
         mock = create_autospec(Foo, return_value="foo")
@@ -388,7 +388,7 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertEqual(m.__int__.call_count, 0)
 
     def test_mocking_unbound_methods(self):
-        class Foo(object):
+        class Foo:
             def foo(self, foo):
                 pass
 
@@ -398,7 +398,7 @@ class SpecSignatureTest(unittest.TestCase):
         mock_foo.assert_called_with(1)
 
     def test_create_autospec_keyword_arguments(self):
-        class Foo(object):
+        class Foo:
             a = 3
 
         m = create_autospec(Foo, a="3")
@@ -432,7 +432,7 @@ class SpecSignatureTest(unittest.TestCase):
         mock.append.assert_called_with("foo")
         self.assertRaises(AttributeError, getattr, mock, "foo")
 
-        class Foo(object):
+        class Foo:
             foo = []
 
         mock = create_autospec(Foo)
@@ -449,12 +449,12 @@ class SpecSignatureTest(unittest.TestCase):
             self._check_someclass_mock(mock)
 
     def test_spec_has_descriptor_returning_function(self):
-        class CrazyDescriptor(object):
+        class CrazyDescriptor:
             def __get__(self, obj, type_):
                 if obj is None:
                     return lambda x: None
 
-        class MyClass(object):
+        class MyClass:
             some_attr = CrazyDescriptor()
 
         mock = create_autospec(MyClass)
@@ -465,7 +465,7 @@ class SpecSignatureTest(unittest.TestCase):
             mock.some_attr(1, 2)
 
     def test_spec_has_function_not_in_bases(self):
-        class CrazyClass(object):
+        class CrazyClass:
             def __dir__(self):
                 return super(CrazyClass, self).__dir__() + ["crazy"]
 
@@ -547,7 +547,7 @@ class SpecSignatureTest(unittest.TestCase):
             self.assertRaises(AttributeError, setattr, mock.attr, "foo", "bar")
 
     def test_descriptors(self):
-        class Foo(object):
+        class Foo:
             @classmethod
             def f(cls, a, b):
                 pass
@@ -570,7 +570,7 @@ class SpecSignatureTest(unittest.TestCase):
             mock.g.assert_called_once_with(3, 4)
 
     def test_recursive(self):
-        class A(object):
+        class A:
             def a(self):
                 pass
 
@@ -590,11 +590,11 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertRaises(AssertionError, mock.bar.lower.assert_called_with)
 
     def test_spec_inheritance_for_classes(self):
-        class Foo(object):
+        class Foo:
             def a(self, x):
                 pass
 
-            class Bar(object):
+            class Bar:
                 def f(self, y):
                     pass
 
@@ -623,7 +623,7 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertRaises(AttributeError, getattr, instance_mock.Bar(), "g")
 
     def test_inherit(self):
-        class Foo(object):
+        class Foo:
             a = 3
 
         Foo.Foo = Foo
@@ -674,12 +674,12 @@ class SpecSignatureTest(unittest.TestCase):
         mock.f.assert_called_with(a=3, b=4)
 
     def test_skip_attributeerrors(self):
-        class Raiser(object):
+        class Raiser:
             def __get__(self, obj, type=None):
                 if obj is None:
                     raise AttributeError("Can only be accessed via an instance")
 
-        class RaiserClass(object):
+        class RaiserClass:
             raiser = Raiser()
 
             @staticmethod
@@ -695,7 +695,7 @@ class SpecSignatureTest(unittest.TestCase):
         obj.foo, obj.bar
 
     def test_signature_class(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, a, b=3):
                 pass
 
@@ -711,13 +711,13 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertRaises(AssertionError, mock.assert_called_with, a=5, b=4)
 
     def test_class_with_no_init(self):
-        class Foo(object):
+        class Foo:
             pass
 
         create_autospec(Foo)
 
     def test_signature_callable(self):
-        class Callable(object):
+        class Callable:
             def __init__(self, x, y):
                 pass
 
@@ -745,7 +745,7 @@ class SpecSignatureTest(unittest.TestCase):
         mock.assert_called_with("a")
 
     def test_signature_noncallable(self):
-        class NonCallable(object):
+        class NonCallable:
             def __init__(self):
                 pass
 
@@ -760,7 +760,7 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertRaises(TypeError, mock, "a")
 
     def test_create_autospec_none(self):
-        class Foo(object):
+        class Foo:
             bar = None
 
         mock = create_autospec(Foo)
@@ -770,7 +770,7 @@ class SpecSignatureTest(unittest.TestCase):
         none.foo.assert_called_once_with()
 
     def test_autospec_functions_with_self_in_odd_place(self):
-        class Foo(object):
+        class Foo:
             def f(a, self):
                 pass
 
@@ -783,7 +783,7 @@ class SpecSignatureTest(unittest.TestCase):
         a.f.assert_called_with(self=10)
 
     def test_autospec_data_descriptor(self):
-        class Descriptor(object):
+        class Descriptor:
             def __init__(self, value):
                 self.value = value
 
@@ -796,7 +796,7 @@ class SpecSignatureTest(unittest.TestCase):
         class MyProperty(property):
             pass
 
-        class Foo(object):
+        class Foo:
             __slots__ = ["slot"]
 
             @property

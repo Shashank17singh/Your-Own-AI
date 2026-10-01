@@ -11,18 +11,22 @@ FUNCTIONS:
 
 """
 
-import time
-import locale
 import calendar
-from re import compile as re_compile
-from re import IGNORECASE
-from re import escape as re_escape
+import locale
+import time
+from _thread import allocate_lock as _thread_allocate_lock
 from datetime import (
     date as datetime_date,
+)
+from datetime import (
     timedelta as datetime_timedelta,
+)
+from datetime import (
     timezone as datetime_timezone,
 )
-from _thread import allocate_lock as _thread_allocate_lock
+from re import IGNORECASE
+from re import compile as re_compile
+from re import escape as re_escape
 
 __all__ = []
 
@@ -32,7 +36,7 @@ def _getlang():
     return locale.getlocale(locale.LC_TIME)
 
 
-class LocaleTime(object):
+class LocaleTime:
     """Stores and handles locale-specific information related to time.
 
     ATTRIBUTES:

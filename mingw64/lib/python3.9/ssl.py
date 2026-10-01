@@ -90,26 +90,20 @@ ALERT_DESCRIPTION_BAD_CERTIFICATE_HASH_VALUE
 ALERT_DESCRIPTION_UNKNOWN_PSK_IDENTITY
 """
 
-import sys
-import os
-from collections import namedtuple
-from enum import Enum as _Enum, IntEnum as _IntEnum, IntFlag as _IntFlag
-
 import _ssl  # if we can't import it, let the error propagate
-
-from _ssl import OPENSSL_VERSION_NUMBER, OPENSSL_VERSION_INFO, OPENSSL_VERSION
-from _ssl import _SSLContext, MemoryBIO, SSLSession
+import os
+import sys
 from _ssl import (
-    SSLError,
-    SSLZeroReturnError,
-    SSLWantReadError,
-    SSLWantWriteError,
-    SSLSyscallError,
-    SSLEOFError,
     SSLCertVerificationError,
+    SSLError,
+    _SSLContext,
 )
-from _ssl import txt2obj as _txt2obj, nid2obj as _nid2obj
-from _ssl import RAND_status, RAND_add, RAND_bytes, RAND_pseudo_bytes
+from _ssl import nid2obj as _nid2obj
+from _ssl import txt2obj as _txt2obj
+from collections import namedtuple
+from enum import Enum as _Enum
+from enum import IntEnum as _IntEnum
+from enum import IntFlag as _IntFlag
 
 try:
     from _ssl import RAND_egd
@@ -119,18 +113,8 @@ except ImportError:
 
 
 from _ssl import (
-    HAS_SNI,
-    HAS_ECDH,
-    HAS_NPN,
-    HAS_ALPN,
-    HAS_SSLv2,
-    HAS_SSLv3,
-    HAS_TLSv1,
-    HAS_TLSv1_1,
-    HAS_TLSv1_2,
-    HAS_TLSv1_3,
+    _DEFAULT_CIPHERS,
 )
-from _ssl import _DEFAULT_CIPHERS, _OPENSSL_API_VERSION
 
 _IntEnum._convert_(
     "_SSLMethod",
@@ -266,14 +250,13 @@ class _TLSMessageType(_IntEnum):
 
 
 if sys.platform == "win32" and sys.version.find("GCC") == -1:
-    from _ssl import enum_certificates, enum_crls
+    from _ssl import enum_certificates
 
-from socket import socket, SOCK_STREAM, create_connection
-from socket import SOL_SOCKET, SO_TYPE
-import socket as _socket
 import base64  # for DER-to-PEM translation
 import errno
+import socket as _socket
 import warnings
+from socket import SO_TYPE, SOCK_STREAM, SOL_SOCKET, create_connection, socket
 
 socket_error = OSError  # keep that public name in module namespace
 
@@ -306,29 +289,26 @@ def _dnsname_match(dn, hostname):
         return dn.lower() == hostname.lower()
 
     if wildcards > 1:
-        raise CertificateError(
-            "too many wildcards in certificate DNS name: {!r}.".format(dn)
-        )
+        raise CertificateError(f"too many wildcards in certificate DNS name: {dn!r}.")
 
     dn_leftmost, sep, dn_remainder = dn.partition(".")
 
     if "*" in dn_remainder:
         # Only match wildcard in leftmost segment.
         raise CertificateError(
-            "wildcard can only be present in the leftmost label: " "{!r}.".format(dn)
+            f"wildcard can only be present in the leftmost label: {dn!r}."
         )
 
     if not sep:
         # no right side
         raise CertificateError(
-            "sole wildcard without additional labels are not support: "
-            "{!r}.".format(dn)
+            f"sole wildcard without additional labels are not support: {dn!r}."
         )
 
     if dn_leftmost != "*":
         # no partial wildcard matching
         raise CertificateError(
-            "partial wildcards in leftmost label are not supported: " "{!r}.".format(dn)
+            f"partial wildcards in leftmost label are not supported: {dn!r}."
         )
 
     hostname_leftmost, sep, hostname_remainder = hostname.partition(".")
@@ -357,19 +337,17 @@ def _inet_paton(ipname):
             return addr
         else:
             # refuse for short IPv4 notation and additional trailing data
-            raise ValueError("{!r} is not a quad-dotted IPv4 address.".format(ipname))
+            raise ValueError(f"{ipname!r} is not a quad-dotted IPv4 address.")
 
     try:
         return _socket.inet_pton(_socket.AF_INET6, ipname)
     except OSError:
-        raise ValueError(
-            "{!r} is neither an IPv4 nor an IP6 " "address.".format(ipname)
-        )
+        raise ValueError(f"{ipname!r} is neither an IPv4 nor an IP6 address.")
     except AttributeError:
         # AF_INET6 not available
         pass
 
-    raise ValueError("{!r} is not an IPv4 address.".format(ipname))
+    raise ValueError(f"{ipname!r} is not an IPv4 address.")
 
 
 def _ipaddress_match(cert_ipaddress, host_ip):
@@ -436,19 +414,16 @@ def match_hostname(cert, hostname):
             "doesn't match either of %s" % (hostname, ", ".join(map(repr, dnsnames)))
         )
     elif len(dnsnames) == 1:
-        raise CertificateError(
-            "hostname %r " "doesn't match %r" % (hostname, dnsnames[0])
-        )
+        raise CertificateError("hostname %r doesn't match %r" % (hostname, dnsnames[0]))
     else:
         raise CertificateError(
-            "no appropriate commonName or " "subjectAltName fields were found"
+            "no appropriate commonName or subjectAltName fields were found"
         )
 
 
 DefaultVerifyPaths = namedtuple(
     "DefaultVerifyPaths",
-    "cafile capath openssl_cafile_env openssl_cafile openssl_capath_env "
-    "openssl_capath",
+    "cafile capath openssl_cafile_env openssl_cafile openssl_capath_env openssl_capath",
 )
 
 
@@ -1052,11 +1027,9 @@ class SSLSocket(socket):
             raise NotImplementedError("only stream sockets are supported")
         if server_side:
             if server_hostname:
-                raise ValueError(
-                    "server_hostname can only be specified " "in client mode"
-                )
+                raise ValueError("server_hostname can only be specified in client mode")
             if session is not None:
-                raise ValueError("session can only be specified in " "client mode")
+                raise ValueError("session can only be specified in client mode")
         if context.check_hostname and not server_hostname:
             raise ValueError("check_hostname requires server_hostname")
 
@@ -1336,7 +1309,7 @@ class SSLSocket(socket):
 
     def recvmsg_into(self, *args, **kwargs):
         raise NotImplementedError(
-            "recvmsg_into not allowed on instances of " "%s" % self.__class__
+            "recvmsg_into not allowed on instances of %s" % self.__class__
         )
 
     @_sslcopydoc
@@ -1438,9 +1411,7 @@ class SSLSocket(socket):
             return self._sslobj.get_channel_binding(cb_type)
         else:
             if cb_type not in CHANNEL_BINDING_TYPES:
-                raise ValueError(
-                    "{0} channel binding type not implemented".format(cb_type)
-                )
+                raise ValueError(f"{cb_type} channel binding type not implemented")
             return None
 
     @_sslcopydoc
@@ -1470,7 +1441,7 @@ def wrap_socket(
 ):
 
     if server_side and not certfile:
-        raise ValueError("certfile must be specified for server-side " "operations")
+        raise ValueError("certfile must be specified for server-side operations")
     if keyfile and not certfile:
         raise ValueError("certfile must be specified")
     context = SSLContext(ssl_version)
@@ -1502,8 +1473,8 @@ def cert_time_to_seconds(cert_time):
     Month is one of: Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
     UTC should be specified as GMT (see ASN1_TIME_print())
     """
-    from time import strptime
     from calendar import timegm
+    from time import strptime
 
     months = (
         "Jan",
@@ -1524,7 +1495,7 @@ def cert_time_to_seconds(cert_time):
         month_number = months.index(cert_time[:3].title()) + 1
     except ValueError:
         raise ValueError(
-            "time data %r does not match " 'format "%%b%s"' % (cert_time, time_format)
+            'time data %r does not match format "%%b%s"' % (cert_time, time_format)
         )
     else:
         # found valid month
@@ -1573,9 +1544,8 @@ def get_server_certificate(addr, ssl_version=PROTOCOL_TLS, ca_certs=None):
     else:
         cert_reqs = CERT_NONE
     context = _create_stdlib_context(ssl_version, cert_reqs=cert_reqs, cafile=ca_certs)
-    with create_connection(addr) as sock:
-        with context.wrap_socket(sock) as sslsock:
-            dercert = sslsock.getpeercert(True)
+    with create_connection(addr) as sock, context.wrap_socket(sock) as sslsock:
+        dercert = sslsock.getpeercert(True)
     return DER_cert_to_PEM_cert(dercert)
 
 

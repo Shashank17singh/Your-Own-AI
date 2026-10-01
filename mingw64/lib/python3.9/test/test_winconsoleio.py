@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+
 from test import support
 
 if sys.platform != "win32":
@@ -156,7 +157,7 @@ class WindowsConsoleIOTests(unittest.TestCase):
         # Test that reading less than 1 full character works when stdin
         # contains multibyte UTF-8 sequences
         source = "ϼўТλФЙ\r\n".encode("utf-16-le")
-        expected = "ϼўТλФЙ\r\n".encode("utf-8")
+        expected = "ϼўТλФЙ\r\n".encode()
         for read_count in range(1, 16):
             with open("CONIN$", "rb", buffering=0) as stdin:
                 write_input(stdin, source)
@@ -166,7 +167,7 @@ class WindowsConsoleIOTests(unittest.TestCase):
                     b = stdin.read(read_count)
                     actual += b
 
-                self.assertEqual(actual, expected, "stdin.read({})".format(read_count))
+                self.assertEqual(actual, expected, f"stdin.read({read_count})")
 
     # bpo-38325
     @unittest.skipIf(True, "Handling Non-BMP characters is broken")
@@ -185,12 +186,12 @@ class WindowsConsoleIOTests(unittest.TestCase):
                     b = stdin.read(read_count)
                     actual += b
 
-                self.assertEqual(actual, expected, "stdin.read({})".format(read_count))
+                self.assertEqual(actual, expected, f"stdin.read({read_count})")
 
     def test_ctrl_z(self):
         with open("CONIN$", "rb", buffering=0) as stdin:
             source = "\xc4\x1a\r\n".encode("utf-16-le")
-            expected = "\xc4".encode("utf-8")
+            expected = "\xc4".encode()
             write_input(stdin, source)
             a, b = stdin.read(1), stdin.readall()
             self.assertEqual(expected[0:1], a)

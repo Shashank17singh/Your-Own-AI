@@ -136,11 +136,11 @@ try:
 except ImportError:
     ctypes = None
 from test.support import (
+    check_impl_detail,
+    cpython_only,
+    gc_collect,
     run_doctest,
     run_unittest,
-    cpython_only,
-    check_impl_detail,
-    gc_collect,
 )
 
 
@@ -179,7 +179,6 @@ def external_getitem(self, i):
 
 
 class CodeTest(unittest.TestCase):
-
     @cpython_only
     def test_newempty(self):
         import _testcapi
@@ -297,7 +296,6 @@ def isinterned(s):
 
 
 class CodeConstsTest(unittest.TestCase):
-
     def find_const(self, consts, value):
         for v in consts:
             if v == value:
@@ -346,7 +344,6 @@ class CodeConstsTest(unittest.TestCase):
 
 
 class CodeWeakRefTest(unittest.TestCase):
-
     def test_basic(self):
         # Create a code object in a clean environment so that we know we have
         # the only reference to it left.

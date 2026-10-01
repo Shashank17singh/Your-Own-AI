@@ -2,17 +2,18 @@
 # csv package unit tests
 
 import copy
-import sys
-import unittest
-from io import StringIO
-from tempfile import TemporaryFile
 import csv
 import gc
 import pickle
-from test import support
-from itertools import permutations
-from textwrap import dedent
+import sys
+import unittest
 from collections import OrderedDict
+from io import StringIO
+from itertools import permutations
+from tempfile import TemporaryFile
+from textwrap import dedent
+
+from test import support
 
 
 class BadIterable:
@@ -437,7 +438,6 @@ class TestDialectRegistry(unittest.TestCase):
     def compare_dialect_123(self, expected, *writeargs, **kwwriteargs):
 
         with TemporaryFile("w+", newline="", encoding="utf-8") as fileobj:
-
             writer = csv.writer(fileobj, *writeargs, **kwwriteargs)
             writer.writerow([1, 2, 3])
             fileobj.seek(0)
@@ -800,7 +800,7 @@ class TestDictFields(unittest.TestCase):
             fileobj.write("1,2,abc,4,5,6\r\n1,2,abc\r\n")
             fileobj.seek(0)
             reader = csv.DictReader(
-                fileobj, fieldnames="1 2 3 4 5 6".split(), restval="DEFAULT"
+                fileobj, fieldnames=["1", "2", "3", "4", "5", "6"], restval="DEFAULT"
             )
             self.assertEqual(
                 next(reader),
@@ -825,7 +825,7 @@ class TestDictFields(unittest.TestCase):
             "47483648,43.0,170,abc,def\r\n",
         ]
 
-        reader = csv.DictReader(sample, fieldnames="i1 float i2 s1 s2".split())
+        reader = csv.DictReader(sample, fieldnames=["i1", "float", "i2", "s1", "s2"])
         self.assertEqual(
             next(reader),
             {
@@ -840,7 +840,7 @@ class TestDictFields(unittest.TestCase):
     def test_read_with_blanks(self):
         reader = csv.DictReader(
             ["1,2,abc,4,5,6\r\n", "\r\n", "1,2,abc,4,5,6\r\n"],
-            fieldnames="1 2 3 4 5 6".split(),
+            fieldnames=["1", "2", "3", "4", "5", "6"],
         )
         self.assertEqual(
             next(reader), {"1": "1", "2": "2", "3": "abc", "4": "4", "5": "5", "6": "6"}
@@ -851,7 +851,9 @@ class TestDictFields(unittest.TestCase):
 
     def test_read_semi_sep(self):
         reader = csv.DictReader(
-            ["1;2;abc;4;5;6\r\n"], fieldnames="1 2 3 4 5 6".split(), delimiter=";"
+            ["1;2;abc;4;5;6\r\n"],
+            fieldnames=["1", "2", "3", "4", "5", "6"],
+            delimiter=";",
         )
         self.assertEqual(
             next(reader), {"1": "1", "2": "2", "3": "abc", "4": "4", "5": "5", "6": "6"}
@@ -897,7 +899,8 @@ class TestArrayWrites(unittest.TestCase):
             self.assertEqual(fileobj.read(), expected)
 
     def test_char_write(self):
-        import array, string
+        import array
+        import string
 
         a = array.array("u", string.ascii_letters)
 
@@ -1211,7 +1214,6 @@ class TestLeaks(unittest.TestCase):
 
 
 class TestUnicode(unittest.TestCase):
-
     names = [
         "Martin von Löwis",
         "Marc André Lemburg",
@@ -1236,7 +1238,6 @@ class TestUnicode(unittest.TestCase):
 
 
 class KeyOrderingTest(unittest.TestCase):
-
     def test_ordering_for_the_dict_reader_and_writer(self):
         resultset = set()
         for keys in permutations("abcde"):

@@ -46,26 +46,25 @@ many of the difficult problems for you, making the task of building
 sophisticated high-performance network servers and clients a snap.
 """
 
+import os
 import select
 import socket
 import sys
 import time
 import warnings
-
-import os
 from errno import (
+    EAGAIN,
     EALREADY,
-    EINPROGRESS,
-    EWOULDBLOCK,
-    ECONNRESET,
-    EINVAL,
-    ENOTCONN,
-    ESHUTDOWN,
-    EISCONN,
     EBADF,
     ECONNABORTED,
+    ECONNRESET,
+    EINPROGRESS,
+    EINVAL,
+    EISCONN,
+    ENOTCONN,
     EPIPE,
-    EAGAIN,
+    ESHUTDOWN,
+    EWOULDBLOCK,
     errorcode,
 )
 
@@ -233,7 +232,6 @@ def loop(timeout=30.0, use_poll=False, map=None, count=None):
 
 
 class dispatcher:
-
     debug = False
     connected = False
     accepting = False
@@ -530,7 +528,6 @@ class dispatcher:
 
 
 class dispatcher_with_send(dispatcher):
-
     def __init__(self, sock=None, map=None):
         dispatcher.__init__(self, sock, map)
         self.out_buffer = b""
@@ -637,9 +634,7 @@ if os.name == "posix":
         def getsockopt(self, level, optname, buflen=None):
             if level == socket.SOL_SOCKET and optname == socket.SO_ERROR and not buflen:
                 return 0
-            raise NotImplementedError(
-                "Only asyncore specific behaviour " "implemented."
-            )
+            raise NotImplementedError("Only asyncore specific behaviour implemented.")
 
         read = recv
         write = send
@@ -655,7 +650,6 @@ if os.name == "posix":
             return self.fd
 
     class file_dispatcher(dispatcher):
-
         def __init__(self, fd, map=None):
             dispatcher.__init__(self, None, map)
             self.connected = True

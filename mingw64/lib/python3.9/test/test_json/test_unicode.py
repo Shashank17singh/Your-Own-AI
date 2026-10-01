@@ -1,6 +1,7 @@
 import codecs
 from collections import OrderedDict
-from test.test_json import PyTest, CTest
+
+from test.test_json import CTest, PyTest
 
 
 class TestUnicode:
@@ -17,12 +18,12 @@ class TestUnicode:
     def test_encoding5(self):
         u = "\N{GREEK SMALL LETTER ALPHA}\N{GREEK CAPITAL LETTER OMEGA}"
         j = self.dumps(u, ensure_ascii=False)
-        self.assertEqual(j, '"{0}"'.format(u))
+        self.assertEqual(j, f'"{u}"')
 
     def test_encoding6(self):
         u = "\N{GREEK SMALL LETTER ALPHA}\N{GREEK CAPITAL LETTER OMEGA}"
         j = self.dumps([u], ensure_ascii=False)
-        self.assertEqual(j, '["{0}"]'.format(u))
+        self.assertEqual(j, f'["{u}"]')
 
     def test_big_unicode_encode(self):
         u = "\U0001d120"
@@ -35,9 +36,9 @@ class TestUnicode:
         self.assertEqual(self.loads('"z\\ud834\\udd20x"'), u)
 
     def test_unicode_decode(self):
-        for i in range(0, 0xD7FF):
+        for i in range(0xD7FF):
             u = chr(i)
-            s = '"\\u{0:04x}"'.format(i)
+            s = f'"\\u{i:04x}"'
             self.assertEqual(self.loads(s), u)
 
     def test_unicode_preservation(self):

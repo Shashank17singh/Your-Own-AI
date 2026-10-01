@@ -1,14 +1,14 @@
 "Test runscript, coverage 16%."
 
-from idlelib import runscript
 import unittest
-from test.support import requires
-from tkinter import Tk
+from idlelib import runscript
 from idlelib.editor import EditorWindow
+from tkinter import Tk
+
+from test.support import requires
 
 
 class ScriptBindingTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

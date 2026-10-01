@@ -1,15 +1,14 @@
 """Tests for distutils.extension."""
 
-import unittest
 import os
+import unittest
 import warnings
+from distutils.extension import Extension, read_setup_file
 
 from test.support import check_warnings, run_unittest
-from distutils.extension import read_setup_file, Extension
 
 
 class ExtensionTestCase(unittest.TestCase):
-
     def test_read_setup_file(self):
         # trying to read a Setup file
         # (sample extracted from the PyGame project)

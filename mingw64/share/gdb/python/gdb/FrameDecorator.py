@@ -1,7 +1,7 @@
 import gdb
 
 
-class _FrameDecoratorBase(object):
+class _FrameDecoratorBase:
     """Base class of frame decorators."""
 
     def __init__(self, base):
@@ -172,7 +172,7 @@ class DAPFrameDecorator(_FrameDecoratorBase):
         return args.fetch_frame_locals(True)
 
 
-class SymValueWrapper(object):
+class SymValueWrapper:
     """A container class conforming to the Symbol/Value interface
     which holds frame locals or frame arguments."""
 
@@ -192,7 +192,7 @@ class SymValueWrapper(object):
         return self.sym
 
 
-class FrameVars(object):
+class FrameVars:
     """Utility class to fetch and store frame local variables, or
     frame arguments."""
 
@@ -217,9 +217,7 @@ class FrameVars(object):
                 if sym.is_argument:
                     if not traversed_link:
                         continue
-                elif not sym.is_variable:
-                    continue
-                elif sym.is_artificial:
+                elif not sym.is_variable or sym.is_artificial:
                     continue
                 lvars.append(SymValueWrapper(frame, sym))
             if block.function is not None:

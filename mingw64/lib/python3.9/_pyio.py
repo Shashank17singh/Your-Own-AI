@@ -2,10 +2,10 @@
 Python implementation of the io module.
 """
 
-import os
 import abc
 import codecs
 import errno
+import os
 import stat
 import sys
 
@@ -18,7 +18,7 @@ else:
     _setmode = None
 
 import io
-from io import __all__, SEEK_SET, SEEK_CUR, SEEK_END
+from io import SEEK_CUR, SEEK_END, SEEK_SET
 
 valid_seek_flags = {0, 1, 2}  # Hardwired values
 if hasattr(os, "SEEK_HOLE"):
@@ -895,9 +895,9 @@ class _BufferedIOMixin(BufferedIOBase):
         try:
             name = self.name
         except AttributeError:
-            return "<{}.{}>".format(modname, clsname)
+            return f"<{modname}.{clsname}>"
         else:
-            return "<{}.{} name={!r}>".format(modname, clsname, name)
+            return f"<{modname}.{clsname} name={name!r}>"
 
     ### Lower-level APIs ###
 
@@ -1194,7 +1194,6 @@ class BufferedReader(_BufferedIOMixin):
         written = 0
         with self._read_lock:
             while written < len(buf):
-
                 # First try to read from internal buffer
                 avail = min(len(self._read_buf) - self._read_pos, len(buf))
                 if avail:
@@ -2129,20 +2128,20 @@ class TextIOWrapper(TextIOBase):
     #   - "chars_..." for integer variables that count decoded characters
 
     def __repr__(self):
-        result = "<{}.{}".format(self.__class__.__module__, self.__class__.__qualname__)
+        result = f"<{self.__class__.__module__}.{self.__class__.__qualname__}"
         try:
             name = self.name
         except AttributeError:
             pass
         else:
-            result += " name={0!r}".format(name)
+            result += f" name={name!r}"
         try:
             mode = self.mode
         except AttributeError:
             pass
         else:
-            result += " mode={0!r}".format(mode)
-        return result + " encoding={0!r}>".format(self.encoding)
+            result += f" mode={mode!r}"
+        return result + f" encoding={self.encoding!r}>"
 
     @property
     def encoding(self):
@@ -2704,7 +2703,7 @@ class StringIO(TextIOWrapper):
     """
 
     def __init__(self, initial_value="", newline="\n"):
-        super(StringIO, self).__init__(
+        super().__init__(
             BytesIO(), encoding="utf-8", errors="surrogatepass", newline=newline
         )
         # Issue #5645: make universal newlines semantics the same as in the
@@ -2714,9 +2713,7 @@ class StringIO(TextIOWrapper):
         if initial_value is not None:
             if not isinstance(initial_value, str):
                 raise TypeError(
-                    "initial_value must be str or None, not {0}".format(
-                        type(initial_value).__name__
-                    )
+                    f"initial_value must be str or None, not {type(initial_value).__name__}"
                 )
             self.write(initial_value)
             self.seek(0)

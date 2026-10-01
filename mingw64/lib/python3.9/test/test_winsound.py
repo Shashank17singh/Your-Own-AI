@@ -36,7 +36,6 @@ safe_PlaySound = sound_func(winsound.PlaySound)
 
 
 class BeepTest(unittest.TestCase):
-
     def test_errors(self):
         self.assertRaises(TypeError, winsound.Beep)
         self.assertRaises(ValueError, winsound.Beep, 36, 75)
@@ -55,7 +54,6 @@ class BeepTest(unittest.TestCase):
 
 
 class MessageBeepTest(unittest.TestCase):
-
     def tearDown(self):
         time.sleep(0.5)
 
@@ -84,7 +82,6 @@ class MessageBeepTest(unittest.TestCase):
 
 
 class PlaySoundTest(unittest.TestCase):
-
     def test_errors(self):
         self.assertRaises(TypeError, winsound.PlaySound)
         self.assertRaises(TypeError, winsound.PlaySound, "bad", "bad")

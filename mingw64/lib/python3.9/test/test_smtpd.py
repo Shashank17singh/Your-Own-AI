@@ -1,11 +1,12 @@
-import unittest
-import textwrap
-from test import support, mock_socket
-from test.support import socket_helper
-import socket
+import asyncore
 import io
 import smtpd
-import asyncore
+import socket
+import textwrap
+import unittest
+
+from test import mock_socket, support
+from test.support import socket_helper
 
 
 class DummyServer(smtpd.SMTPServer):
@@ -69,7 +70,6 @@ class SMTPDServerTest(unittest.TestCase):
 
 
 class DebuggingServerTest(unittest.TestCase):
-
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
 
@@ -197,7 +197,7 @@ class TestFamilyDetection(unittest.TestCase):
 
 
 class TestRcptOptionParsing(unittest.TestCase):
-    error_response = b"555 RCPT TO parameters not recognized or not " b"implemented\r\n"
+    error_response = b"555 RCPT TO parameters not recognized or not implemented\r\n"
 
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
@@ -233,9 +233,7 @@ class TestRcptOptionParsing(unittest.TestCase):
 
 
 class TestMailOptionParsing(unittest.TestCase):
-    error_response = (
-        b"555 MAIL FROM parameters not recognized or not " b"implemented\r\n"
-    )
+    error_response = b"555 MAIL FROM parameters not recognized or not implemented\r\n"
 
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
@@ -365,9 +363,7 @@ class SMTPDChannelTest(unittest.TestCase):
     def test_HELO(self):
         name = smtpd.socket.getfqdn()
         self.write_line(b"HELO example")
-        self.assertEqual(
-            self.channel.socket.last, "250 {}\r\n".format(name).encode("ascii")
-        )
+        self.assertEqual(self.channel.socket.last, f"250 {name}\r\n".encode("ascii"))
 
     def test_HELO_EHLO_duplicate(self):
         self.write_line(b"HELO example")
@@ -808,7 +804,6 @@ class SMTPDChannelIPv6Test(SMTPDChannelTest):
 
 
 class SMTPDChannelWithDataSizeLimitTest(unittest.TestCase):
-
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
         self.old_debugstream = smtpd.DEBUGSTREAM
@@ -868,7 +863,6 @@ class SMTPDChannelWithDataSizeLimitTest(unittest.TestCase):
 
 
 class SMTPDChannelWithDecodeDataFalse(unittest.TestCase):
-
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
         self.old_debugstream = smtpd.DEBUGSTREAM
@@ -905,12 +899,11 @@ class SMTPDChannelWithDecodeDataFalse(unittest.TestCase):
         self.write_line(b".")
         self.assertEqual(
             self.channel.received_data,
-            b"utf8 enriched text: \xc5\xbc\xc5\xba\xc4\x87\n" b"and some plain ascii",
+            b"utf8 enriched text: \xc5\xbc\xc5\xba\xc4\x87\nand some plain ascii",
         )
 
 
 class SMTPDChannelWithDecodeDataTrue(unittest.TestCase):
-
     def setUp(self):
         smtpd.socket = asyncore.socket = mock_socket
         self.old_debugstream = smtpd.DEBUGSTREAM
@@ -974,7 +967,7 @@ class SMTPDChannelTestWithEnableSMTPUTF8True(unittest.TestCase):
     def test_MAIL_command_accepts_SMTPUTF8_when_announced(self):
         self.write_line(b"EHLO example")
         self.write_line(
-            "MAIL from: <naïve@example.com> BODY=8BITMIME SMTPUTF8".encode("utf-8")
+            "MAIL from: <naïve@example.com> BODY=8BITMIME SMTPUTF8".encode()
         )
         self.assertEqual(self.channel.socket.last, b"250 OK\r\n")
 
@@ -997,11 +990,9 @@ class SMTPDChannelTestWithEnableSMTPUTF8True(unittest.TestCase):
 
     def test_utf8_data(self):
         self.write_line(b"EHLO example")
-        self.write_line(
-            "MAIL From: naïve@examplé BODY=8BITMIME SMTPUTF8".encode("utf-8")
-        )
+        self.write_line("MAIL From: naïve@examplé BODY=8BITMIME SMTPUTF8".encode())
         self.assertEqual(self.channel.socket.last[0:3], b"250")
-        self.write_line("RCPT To:späm@examplé".encode("utf-8"))
+        self.write_line("RCPT To:späm@examplé".encode())
         self.assertEqual(self.channel.socket.last[0:3], b"250")
         self.write_line(b"DATA")
         self.assertEqual(self.channel.socket.last[0:3], b"354")

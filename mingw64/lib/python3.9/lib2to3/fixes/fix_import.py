@@ -11,8 +11,9 @@ Becomes:
 """
 
 # Local imports
+from os.path import dirname, exists, join, sep
+
 from .. import fixer_base
-from os.path import dirname, join, exists, sep
 from ..fixer_util import FromImport, syms, token
 
 
@@ -45,7 +46,7 @@ class FixImport(fixer_base.BaseFix):
     """
 
     def start_tree(self, tree, name):
-        super(FixImport, self).start_tree(tree, name)
+        super().start_tree(tree, name)
         self.skip = "absolute_import" in tree.future_features
 
     def transform(self, node, results):

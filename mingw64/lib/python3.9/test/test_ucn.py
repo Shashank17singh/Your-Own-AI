@@ -7,11 +7,11 @@ Modified for Python 2.0 by Fredrik Lundh (fredrik@pythonware.com)
 
 """  # "
 
-import unittest
 import unicodedata
+import unittest
+from http.client import HTTPException
 
 from test import support
-from http.client import HTTPException
 
 try:
     from _testcapi import INT_MAX, PY_SSIZE_T_MAX, UINT_MAX
@@ -20,7 +20,6 @@ except ImportError:
 
 
 class UnicodeNamesTest(unittest.TestCase):
-
     def checkletter(self, name, code):
         # Helper that put all \N escapes inside eval'd raw strings,
         # to make sure this script runs even if the compiler

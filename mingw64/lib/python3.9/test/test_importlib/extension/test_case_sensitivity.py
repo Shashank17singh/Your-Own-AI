@@ -1,7 +1,8 @@
-from importlib import _bootstrap_external
-from test import support
-import unittest
 import sys
+import unittest
+
+from test import support
+
 from .. import util
 
 importlib = util.import_importlib("importlib")
@@ -11,7 +12,6 @@ machinery = util.import_importlib("importlib.machinery")
 @unittest.skipIf(util.EXTENSIONS.filename is None, "_testcapi not available")
 @util.case_insensitive_tests
 class ExtensionModuleCaseSensitivityTest(util.CASEOKTestBase):
-
     def find_module(self):
         good_name = util.EXTENSIONS.name
         bad_name = good_name.upper()

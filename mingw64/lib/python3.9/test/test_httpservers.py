@@ -4,36 +4,36 @@ Written by Cody A.W. Somerville <cody-somerville@ubuntu.com>,
 Josip Dzolonga, and Michael Otteneder for the 2007/08 GHOP contest.
 """
 
-from collections import OrderedDict
-from http.server import (
-    BaseHTTPRequestHandler,
-    HTTPServer,
-    SimpleHTTPRequestHandler,
-    CGIHTTPRequestHandler,
-)
-from http import server, HTTPStatus
-
-import os
-import socket
-import sys
-import re
 import base64
-import ntpath
-import pathlib
-import shutil
+import datetime
 import email.message
 import email.utils
 import html
-import http, http.client
-import urllib.parse
+import http
+import http.client
+import ntpath
+import os
+import pathlib
+import re
+import shutil
+import socket
+import sys
 import tempfile
-import time
-import datetime
 import threading
-from unittest import mock
-from io import BytesIO
-
+import time
 import unittest
+import urllib.parse
+from collections import OrderedDict
+from http import HTTPStatus, server
+from http.server import (
+    BaseHTTPRequestHandler,
+    CGIHTTPRequestHandler,
+    HTTPServer,
+    SimpleHTTPRequestHandler,
+)
+from io import BytesIO
+from unittest import mock
+
 from test import support
 
 
@@ -244,7 +244,7 @@ class BaseHTTPServerTestCase(BaseTestCase):
         )
         res = self.con.getresponse()
         self.assertEqual(res.getheader("X-Special"), "Dängerous Mind")
-        self.assertEqual(res.read(), "Ärger mit Unicode".encode("utf-8"))
+        self.assertEqual(res.read(), "Ärger mit Unicode".encode())
 
     def test_error_content_length(self):
         # Issue #16088: standard error responses should have a content-length
@@ -267,7 +267,7 @@ class BaseHTTPServerTestCase(BaseTestCase):
             HTTPStatus.RESET_CONTENT,
             HTTPStatus.SWITCHING_PROTOCOLS,
         ):
-            self.con.request("SEND_ERROR", "/{}".format(code))
+            self.con.request("SEND_ERROR", f"/{code}")
             res = self.con.getresponse()
             self.assertEqual(code, res.status)
             self.assertEqual(None, res.getheader("Content-Length"))
@@ -290,7 +290,7 @@ class BaseHTTPServerTestCase(BaseTestCase):
             HTTPStatus.RESET_CONTENT,
             HTTPStatus.SWITCHING_PROTOCOLS,
         ):
-            self.con.request("HEAD", "/{}".format(code))
+            self.con.request("HEAD", f"/{code}")
             res = self.con.getresponse()
             self.assertEqual(code, res.status)
             if code == HTTPStatus.OK:
@@ -557,7 +557,7 @@ class SimpleHTTPServerTestCase(BaseTestCase):
             open(fullpath, "w").close()
         except OSError:
             raise unittest.SkipTest(
-                "Can not create file %s on current file " "system" % filename
+                "Can not create file %s on current file system" % filename
             )
 
         try:
@@ -919,7 +919,6 @@ class RejectingSocketlessRequestHandler(SocketlessRequestHandler):
 
 
 class AuditableBytesIO:
-
     def __init__(self):
         self.datas = []
 
@@ -997,7 +996,7 @@ class BaseHTTPRequestHandlerTestCase(unittest.TestCase):
 
     def test_extra_space(self):
         result = self.send_typical_request(
-            b"GET /spaced out HTTP/1.1\r\n" b"Host: dummy\r\n" b"\r\n"
+            b"GET /spaced out HTTP/1.1\r\nHost: dummy\r\n\r\n"
         )
         self.assertTrue(result[0].startswith(b"HTTP/1.1 400 "))
         self.verify_expected_headers(result[1 : result.index(b"\r\n")])
@@ -1285,7 +1284,6 @@ class MiscTestCase(unittest.TestCase):
 
 
 class ScriptTestCase(unittest.TestCase):
-
     def mock_server_class(self):
         return mock.MagicMock(
             return_value=mock.MagicMock(

@@ -8,6 +8,7 @@ cppcheck addon for threadsafety detection.
 
 import re
 import sys
+
 import cppcheckdata
 
 id_MTunsafe_full = {
@@ -259,11 +260,11 @@ id_MTunsafe_full = {
 id_MTunsafe = [re.sub("^.*:", "", re.sub("/.*$", "", x)) for x in id_MTunsafe_full]
 
 
-def reportError(token, severity, msg, errid):  # noqa: D103
+def reportError(token, severity, msg, errid):
     cppcheckdata.reportError(token, severity, msg, "threadsafety", errid)
 
 
-def checkstatic(data):  # noqa: D103
+def checkstatic(data):
     for var in data.variables:
         if var.isStatic and var.isLocal:
             vartype = None

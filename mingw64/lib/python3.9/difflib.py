@@ -27,22 +27,22 @@ Class HtmlDiff:
 """
 
 __all__ = [
+    "IS_CHARACTER_JUNK",
+    "IS_LINE_JUNK",
+    "Differ",
+    "HtmlDiff",
+    "Match",
+    "SequenceMatcher",
+    "context_diff",
+    "diff_bytes",
     "get_close_matches",
     "ndiff",
     "restore",
-    "SequenceMatcher",
-    "Differ",
-    "IS_CHARACTER_JUNK",
-    "IS_LINE_JUNK",
-    "context_diff",
     "unified_diff",
-    "diff_bytes",
-    "HtmlDiff",
-    "Match",
 ]
 
-from heapq import nlargest as _nlargest
 from collections import namedtuple as _namedtuple
+from heapq import nlargest as _nlargest
 from types import GenericAlias
 
 Match = _namedtuple("Match", "a b size")
@@ -329,7 +329,7 @@ class SequenceMatcher:
         self.bjunk = junk = set()
         isjunk = self.isjunk
         if isjunk:
-            for elt in b2j.keys():
+            for elt in b2j:
                 if isjunk(elt):
                     junk.add(elt)
             for elt in junk:  # separate loop avoids separate list of keys
@@ -1157,10 +1157,10 @@ def _format_range_unified(start, stop):
     beginning = start + 1  # lines start numbering with one
     length = stop - start
     if length == 1:
-        return "{}".format(beginning)
+        return f"{beginning}"
     if not length:
         beginning -= 1  # empty ranges begin at line just before the range
-    return "{},{}".format(beginning, length)
+    return f"{beginning},{length}"
 
 
 def unified_diff(
@@ -1210,15 +1210,15 @@ def unified_diff(
     for group in SequenceMatcher(None, a, b).get_grouped_opcodes(n):
         if not started:
             started = True
-            fromdate = "\t{}".format(fromfiledate) if fromfiledate else ""
-            todate = "\t{}".format(tofiledate) if tofiledate else ""
-            yield "--- {}{}{}".format(fromfile, fromdate, lineterm)
-            yield "+++ {}{}{}".format(tofile, todate, lineterm)
+            fromdate = f"\t{fromfiledate}" if fromfiledate else ""
+            todate = f"\t{tofiledate}" if tofiledate else ""
+            yield f"--- {fromfile}{fromdate}{lineterm}"
+            yield f"+++ {tofile}{todate}{lineterm}"
 
         first, last = group[0], group[-1]
         file1_range = _format_range_unified(first[1], last[2])
         file2_range = _format_range_unified(first[3], last[4])
-        yield "@@ -{} +{} @@{}".format(file1_range, file2_range, lineterm)
+        yield f"@@ -{file1_range} +{file2_range} @@{lineterm}"
 
         for tag, i1, i2, j1, j2 in group:
             if tag == "equal":
@@ -1246,8 +1246,8 @@ def _format_range_context(start, stop):
     if not length:
         beginning -= 1  # empty ranges begin at line just before the range
     if length <= 1:
-        return "{}".format(beginning)
-    return "{},{}".format(beginning, beginning + length - 1)
+        return f"{beginning}"
+    return f"{beginning},{beginning + length - 1}"
 
 
 # See http://www.unix.org/single_unix_specification/
@@ -1302,16 +1302,16 @@ def context_diff(
     for group in SequenceMatcher(None, a, b).get_grouped_opcodes(n):
         if not started:
             started = True
-            fromdate = "\t{}".format(fromfiledate) if fromfiledate else ""
-            todate = "\t{}".format(tofiledate) if tofiledate else ""
-            yield "*** {}{}{}".format(fromfile, fromdate, lineterm)
-            yield "--- {}{}{}".format(tofile, todate, lineterm)
+            fromdate = f"\t{fromfiledate}" if fromfiledate else ""
+            todate = f"\t{tofiledate}" if tofiledate else ""
+            yield f"*** {fromfile}{fromdate}{lineterm}"
+            yield f"--- {tofile}{todate}{lineterm}"
 
         first, last = group[0], group[-1]
         yield "***************" + lineterm
 
         file1_range = _format_range_context(first[1], last[2])
-        yield "*** {} ****{}".format(file1_range, lineterm)
+        yield f"*** {file1_range} ****{lineterm}"
 
         if any(tag in {"replace", "delete"} for tag, _, _, _, _ in group):
             for tag, i1, i2, _, _ in group:
@@ -1320,7 +1320,7 @@ def context_diff(
                         yield prefix[tag] + line
 
         file2_range = _format_range_context(first[3], last[4])
-        yield "--- {} ----{}".format(file2_range, lineterm)
+        yield f"--- {file2_range} ----{lineterm}"
 
         if any(tag in {"replace", "insert"} for tag, _, _, _, _ in group):
             for tag, _, _, j1, j2 in group:
@@ -1756,7 +1756,7 @@ _legend = """
     </table>"""
 
 
-class HtmlDiff(object):
+class HtmlDiff:
     """For producing HTML side by side comparison with change highlights.
 
     This class can be used to create an HTML table (or a complete HTML file
@@ -2187,7 +2187,8 @@ def restore(delta, which):
 
 
 def _test():
-    import doctest, difflib
+    import difflib
+    import doctest
 
     return doctest.testmod(difflib)
 

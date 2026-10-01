@@ -9,9 +9,10 @@ import struct
 import sys
 import unittest
 from subprocess import PIPE, Popen
+
 from test import support
 from test.support import _4G, bigmemtest
-from test.support.script_helper import assert_python_ok, assert_python_failure
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 gzip = support.import_module("gzip")
 
@@ -189,7 +190,7 @@ class TestGzip(BaseTest):
         # works.
         with gzip.GzipFile(self.filename, "wb", 9) as f:
             f.write(b"a")
-        for i in range(0, 200):
+        for i in range(200):
             with gzip.GzipFile(self.filename, "ab", 9) as f:  # append
                 f.write(b"a")
 
@@ -216,9 +217,8 @@ class TestGzip(BaseTest):
         # performance.
         self.test_write()
 
-        with gzip.GzipFile(self.filename, "rb") as f:
-            with io.BufferedReader(f) as r:
-                lines = [line for line in r]
+        with gzip.GzipFile(self.filename, "rb") as f, io.BufferedReader(f) as r:
+            lines = [line for line in r]
 
         self.assertEqual(lines, 50 * data1.splitlines(keepends=True))
 
@@ -477,9 +477,8 @@ class TestGzip(BaseTest):
         # Issue #13781: Opening a GzipFile for writing fails when using a
         # fileobj created with os.fdopen().
         fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT)
-        with os.fdopen(fd, "wb") as f:
-            with gzip.GzipFile(fileobj=f, mode="w") as g:
-                pass
+        with os.fdopen(fd, "wb") as f, gzip.GzipFile(fileobj=f, mode="w") as g:
+            pass
 
     def test_fileobj_mode(self):
         gzip.GzipFile(self.filename, "wb").close()

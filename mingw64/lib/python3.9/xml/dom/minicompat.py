@@ -3,7 +3,7 @@ This module contains internal implementation details and
 should not be imported; use xml.dom.minidom instead.
 """
 
-__all__ = ["NodeList", "EmptyNodeList", "StringTypes", "defproperty"]
+__all__ = ["EmptyNodeList", "NodeList", "StringTypes", "defproperty"]
 import xml.dom
 
 StringTypes = (str,)

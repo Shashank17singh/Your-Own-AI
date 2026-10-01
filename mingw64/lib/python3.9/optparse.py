@@ -24,23 +24,23 @@ Simple usage example:
 __version__ = "1.5.3"
 
 __all__ = [
-    "Option",
-    "make_option",
     "SUPPRESS_HELP",
     "SUPPRESS_USAGE",
-    "Values",
-    "OptionContainer",
-    "OptionGroup",
-    "OptionParser",
+    "BadOptionError",
     "HelpFormatter",
     "IndentedHelpFormatter",
-    "TitledHelpFormatter",
     "OptParseError",
-    "OptionError",
+    "Option",
     "OptionConflictError",
+    "OptionContainer",
+    "OptionError",
+    "OptionGroup",
+    "OptionParser",
     "OptionValueError",
-    "BadOptionError",
+    "TitledHelpFormatter",
+    "Values",
     "check_choice",
+    "make_option",
 ]
 
 __copyright__ = """
@@ -75,7 +75,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import sys, os
+import os
+import sys
 import textwrap
 
 
@@ -695,7 +696,6 @@ class Option:
         # self.type check is for callbacks that take a value.
         takes_value = self.action in self.STORE_ACTIONS or self.type is not None
         if self.dest is None and takes_value:
-
             # Glean a destination from the first long option string,
             # or from the first short option string if no long options.
             if self._long_opts:
@@ -846,7 +846,6 @@ SUPPRESS_USAGE = "SUPPRESS" + "USAGE"
 
 
 class Values:
-
     def __init__(self, defaults=None):
         if defaults:
             for attr, val in defaults.items():
@@ -1093,7 +1092,6 @@ class OptionContainer:
 
 
 class OptionGroup(OptionContainer):
-
     def __init__(self, parser, title, description=None):
         self.parser = parser
         OptionContainer.__init__(

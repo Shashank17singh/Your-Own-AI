@@ -6,7 +6,8 @@ import os
 import random
 import select
 import unittest
-from test.support import run_unittest, cpython_only
+
+from test.support import cpython_only, run_unittest
 
 if not hasattr(select, "devpoll"):
     raise unittest.SkipTest("test works only on Solaris OS family")
@@ -21,7 +22,6 @@ def find_ready_matching(ready, flag):
 
 
 class DevPollTests(unittest.TestCase):
-
     def test_devpoll1(self):
         # Basic functional test of poll object
         # Create a bunch of pipe and test that poll works with them.

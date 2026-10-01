@@ -1,13 +1,14 @@
 """Test suite for the code in fixer_util"""
 
 # Testing imports
-from . import support
+from lib2to3 import fixer_util
+from lib2to3.fixer_util import Attr, Call, Comma, Name
+from lib2to3.pgen2 import token
 
 # Local imports
-from lib2to3.pytree import Node, Leaf
-from lib2to3 import fixer_util
-from lib2to3.fixer_util import Attr, Name, Call, Comma
-from lib2to3.pgen2 import token
+from lib2to3.pytree import Leaf, Node
+
+from . import support
 
 
 def parse(code, strip_levels=0):
@@ -561,7 +562,6 @@ class Test_find_binding(support.TestCase):
 
 
 class Test_touch_import(support.TestCase):
-
     def test_after_docstring(self):
         node = parse('"""foo"""\nbar()')
         fixer_util.touch_import(None, "foo", node)
@@ -589,7 +589,6 @@ class Test_touch_import(support.TestCase):
 
 
 class Test_find_indentation(support.TestCase):
-
     def test_nothing(self):
         fi = fixer_util.find_indentation
         node = parse("node()")

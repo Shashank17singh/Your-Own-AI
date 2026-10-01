@@ -9,8 +9,7 @@ try:
     from tkinter import *
 except ImportError:
     print(
-        "** IDLE can't import Tkinter.\n"
-        "Your Python may not be configured for Tk. **",
+        "** IDLE can't import Tkinter.\nYour Python may not be configured for Tk. **",
         file=sys.__stderr__,
     )
     raise SystemExit(1)
@@ -41,30 +40,27 @@ if TkVersion < 8.5:
     )
     raise SystemExit(1)
 
-from code import InteractiveInterpreter
 import linecache
 import os
 import os.path
-from platform import python_version
 import re
 import socket
 import subprocess
-from textwrap import TextWrapper
 import threading
 import time
 import tokenize
 import warnings
-
+from code import InteractiveInterpreter
+from idlelib import debugger, debugger_r, rpc
 from idlelib.colorizer import ColorDelegator
 from idlelib.config import idleConf
-from idlelib import debugger
-from idlelib import debugger_r
 from idlelib.editor import EditorWindow, fixwordbreaks
 from idlelib.filelist import FileList
 from idlelib.outwin import OutputWindow
-from idlelib import rpc
-from idlelib.run import idle_formatwarning, StdInputFile, StdOutputFile
+from idlelib.run import StdInputFile, StdOutputFile, idle_formatwarning
 from idlelib.undo import UndoDelegator
+from platform import python_version
+from textwrap import TextWrapper
 
 HOST = "127.0.0.1"  # python execution server on localhost loopback
 PORT = 0  # someday pass in host, port for remote debug capability
@@ -398,7 +394,6 @@ class ModifiedUndoDelegator(UndoDelegator):
 
 
 class MyRPCClient(rpc.RPCClient):
-
     def handle_EOF(self):
         "Override the base class - just re-raise EOFError"
         raise EOFError
@@ -413,13 +408,12 @@ def restart_line(width, filename):  # See bpo-38141.
     tag = f"= RESTART: {filename or 'Shell'} ="
     if width >= len(tag):
         div, mod = divmod((width - len(tag)), 2)
-        return f"{(div+mod)*'='}{tag}{div*'='}"
+        return f"{(div + mod) * '='}{tag}{div * '='}"
     else:
         return tag[:-2]  # Remove ' ='.
 
 
 class ModifiedInterpreter(InteractiveInterpreter):
-
     def __init__(self, tkconsole):
         self.tkconsole = tkconsole
         locals = sys.modules["__main__"].__dict__
@@ -480,7 +474,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         self.rpcclt.listening_sock.settimeout(10)
         try:
             self.rpcclt.accept()
-        except socket.timeout:
+        except TimeoutError:
             self.display_no_subprocess_error()
             return None
         self.rpcclt.register("console", self.tkconsole)
@@ -515,7 +509,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         self.spawn_subprocess()
         try:
             self.rpcclt.accept()
-        except socket.timeout:
+        except TimeoutError:
             self.display_no_subprocess_error()
             return None
         self.transfer_path(with_cwd=with_cwd)
@@ -579,11 +573,14 @@ class ModifiedInterpreter(InteractiveInterpreter):
         else:
             path = sys.path
 
-        self.runcommand("""if 1:
+        self.runcommand(
+            """if 1:
         import sys as _sys
         _sys.path = %r
         del _sys
-        \n""" % (path,))
+        \n"""
+            % (path,)
+        )
 
     active_seq = None
 
@@ -645,7 +642,6 @@ class ModifiedInterpreter(InteractiveInterpreter):
 
         """
         self.tkconsole.text.after(300, self.remote_stack_viewer)
-        return
 
     def remote_stack_viewer(self):
         from idlelib import debugobj_r
@@ -689,8 +685,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         except (OverflowError, SyntaxError):
             self.tkconsole.resetoutput()
             print(
-                "*** Error in script or command!\n"
-                "Traceback (most recent call last):",
+                "*** Error in script or command!\nTraceback (most recent call last):",
                 file=self.tkconsole.stderr,
             )
             InteractiveInterpreter.showsyntaxerror(self, filename)
@@ -717,7 +712,8 @@ class ModifiedInterpreter(InteractiveInterpreter):
 
     def prepend_syspath(self, filename):
         "Prepend sys.path with file's directory if not already included"
-        self.runcommand("""if 1:
+        self.runcommand(
+            """if 1:
             _filename = %r
             import sys as _sys
             from os.path import dirname as _dirname
@@ -725,7 +721,9 @@ class ModifiedInterpreter(InteractiveInterpreter):
             if not _dir in _sys.path:
                 _sys.path.insert(0, _dir)
             del _filename, _sys, _dirname, _dir
-            \n""" % (filename,))
+            \n"""
+            % (filename,)
+        )
 
     def showsyntaxerror(self, filename=None):
         """Override Interactive Interpreter method: Use Colorizing
@@ -858,7 +856,6 @@ class ModifiedInterpreter(InteractiveInterpreter):
 
 
 class PyShell(OutputWindow):
-
     shell_title = "IDLE Shell " + python_version()
 
     # Override classes
@@ -944,9 +941,7 @@ class PyShell(OutputWindow):
         except:
             sys.stderr = sys.__stderr__
             raise
-        #
         self.history = self.History(self.text)
-        #
         self.pollinterval = 50  # millisec
 
     def get_standard_extension_names(self):
@@ -984,7 +979,7 @@ class PyShell(OutputWindow):
 
     def set_debugger_indicator(self):
         db = self.interp.getdebugger()
-        self.setvar("<<toggle-debugger>>", not not db)
+        self.setvar("<<toggle-debugger>>", bool(db))
 
     def toggle_jit_stack_viewer(self, event=None):
         pass  # All we need is the variable
@@ -1292,7 +1287,7 @@ class PyShell(OutputWindow):
         except:
             messagebox.showerror(
                 "No stack trace",
-                "There is no stack trace yet.\n" "(sys.last_traceback is not defined)",
+                "There is no stack trace yet.\n(sys.last_traceback is not defined)",
                 parent=self.text,
             )
             return
@@ -1430,9 +1425,11 @@ echo "import sys; print(sys.argv)" | idle - "foobar"
 
 def main():
     import getopt
+    from idlelib import (
+        macosx,
+        testing,  # bool value
+    )
     from platform import system
-    from idlelib import testing  # bool value
-    from idlelib import macosx
 
     global flist, root, use_subprocess
 
@@ -1576,11 +1573,14 @@ def main():
         if filename and os.path.isfile(filename):
             shell.interp.execfile(filename)
     if cmd or script:
-        shell.interp.runcommand("""if 1:
+        shell.interp.runcommand(
+            """if 1:
             import sys as _sys
             _sys.argv = %r
             del _sys
-            \n""" % (sys.argv,))
+            \n"""
+            % (sys.argv,)
+        )
         if cmd:
             shell.interp.execsource(cmd)
         elif script:

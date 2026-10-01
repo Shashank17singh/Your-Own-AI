@@ -103,14 +103,13 @@ __all__ = [
 import math
 import numbers
 import random
-
-from fractions import Fraction
-from decimal import Decimal
-from itertools import groupby
 from bisect import bisect_left, bisect_right
-from math import hypot, sqrt, fabs, exp, erf, tau, log, fsum
-from operator import itemgetter
 from collections import Counter
+from decimal import Decimal
+from fractions import Fraction
+from itertools import groupby
+from math import erf, exp, fabs, fsum, hypot, log, sqrt, tau
+from operator import itemgetter
 
 # === Exceptions ===
 
@@ -373,8 +372,7 @@ def geometric_mean(data):
         return exp(fmean(map(log, data)))
     except ValueError:
         raise StatisticsError(
-            "geometric mean requires a non-empty dataset "
-            " containing positive numbers"
+            "geometric mean requires a non-empty dataset  containing positive numbers"
         ) from None
 
 
@@ -666,7 +664,7 @@ def quantiles(data, *, n=4, method="exclusive"):
         result = []
         for i in range(1, n):
             j = i * m // n  # rescale i to m/n
-            j = 1 if j < 1 else ld - 1 if j > ld - 1 else j  # clamp to 1 .. ld-1
+            j = 1 if j < 1 else min(j, ld - 1)  # clamp to 1 .. ld-1
             delta = i * m - j * n  # exact integer math
             interpolated = (data[j - 1] * (n - delta) + data[j] * delta) / n
             result.append(interpolated)

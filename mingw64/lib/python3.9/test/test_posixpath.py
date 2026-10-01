@@ -1,10 +1,11 @@
 import os
 import posixpath
 import unittest
-from posixpath import realpath, abspath, dirname, basename
+from posixpath import abspath, basename, dirname, realpath
+from unittest import mock
+
 from test import support, test_genericpath
 from test.support import FakePath
-from unittest import mock
 
 try:
     import posix
@@ -37,7 +38,6 @@ def safe_rmdir(dirname):
 
 
 class PosixPathTest(unittest.TestCase):
-
     def setUp(self):
         self.tearDown()
 
@@ -292,9 +292,10 @@ class PosixPathTest(unittest.TestCase):
             # user (current identifier or name in the path) doesn't exist in
             # the password database (pwd.getuid() or pwd.getpwnam() fail),
             # expanduser() must return the path unchanged.
-            with mock.patch.object(
-                pwd, "getpwuid", side_effect=KeyError
-            ), mock.patch.object(pwd, "getpwnam", side_effect=KeyError):
+            with (
+                mock.patch.object(pwd, "getpwuid", side_effect=KeyError),
+                mock.patch.object(pwd, "getpwnam", side_effect=KeyError),
+            ):
                 for path in ("~", "~/.local", "~vstinner/"):
                     self.assertEqual(posixpath.expanduser(path), path)
 
@@ -633,7 +634,6 @@ class PosixCommonTest(test_genericpath.CommonTest, unittest.TestCase):
 
 
 class PathLikeTests(unittest.TestCase):
-
     path = posixpath
 
     def setUp(self):

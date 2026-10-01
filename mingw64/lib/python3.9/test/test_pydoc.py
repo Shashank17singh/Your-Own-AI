@@ -1,18 +1,17 @@
-import os
-import sys
+import _pickle
 import contextlib
 import importlib.util
 import inspect
-import pydoc
-import py_compile
 import keyword
-import _pickle
+import os
 import pkgutil
+import py_compile
+import pydoc
 import re
 import stat
-import string
+import sys
 import tempfile
-import test.support
+import textwrap
 import time
 import types
 import typing
@@ -20,28 +19,27 @@ import unittest
 import urllib.parse
 import xml.etree
 import xml.etree.ElementTree
-import textwrap
-from io import StringIO
 from collections import namedtuple
-from test.support.script_helper import assert_python_ok
+from io import StringIO
+
+import test.support
+from test import pydoc_mod
 from test.support import (
     TESTFN,
-    rmtree,
+    captured_output,
+    captured_stderr,
+    captured_stdout,
     reap_children,
     reap_threads,
-    captured_output,
-    captured_stdout,
-    captured_stderr,
-    unlink,
     requires_docstrings,
+    rmtree,
+    unlink,
 )
-from test import pydoc_mod
+from test.support.script_helper import assert_python_ok
 
 
 class nonascii:
     "Це не латиниця"
-
-    pass
 
 
 if test.support.HAVE_DOCSTRINGS:
@@ -401,7 +399,6 @@ def get_html_title(text):
 
 
 class PydocBaseTest(unittest.TestCase):
-
     def _restricted_walk_packages(self, walk_packages, path=None):
         """
         A version of pkgutil.walk_packages() that will restrict itself to
@@ -696,7 +693,7 @@ class PydocDocTest(unittest.TestCase):
         # Helper.help should be redirected
         old_pattern = expected_text_pattern
         getpager_old = pydoc.getpager
-        getpager_new = lambda: (lambda x: x)
+        getpager_new = lambda: lambda x: x
         self.maxDiff = None
 
         buf = StringIO()
@@ -750,7 +747,7 @@ class PydocDocTest(unittest.TestCase):
         for encoding in ("ISO-8859-1", "UTF-8"):
             with open(TESTFN, "w", encoding=encoding) as script:
                 if encoding != "UTF-8":
-                    print("#coding: {}".format(encoding), file=script)
+                    print(f"#coding: {encoding}", file=script)
                 print('"""line 1: h\xe9', file=script)
                 print('line 2: hi"""', file=script)
             synopsis = pydoc.synopsis(TESTFN, {})
@@ -801,7 +798,7 @@ class PydocDocTest(unittest.TestCase):
         # but I can't think of a better way to do it without duplicating the
         # logic of the function under test.
 
-        class TestClass(object):
+        class TestClass:
             def method_returning_true(self):
                 return True
 
@@ -879,7 +876,8 @@ class B(A)
  |\x20\x20
  |  __weakref__
  |      list of weak references to the object (if defined)
-""" % __name__,
+"""
+            % __name__,
         )
 
         doc = pydoc.render_doc(B, renderer=pydoc.HTMLDoc())
@@ -925,12 +923,12 @@ Data descriptors inherited from A:<br>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 </td></tr></table>\
-""" % __name__,
+"""
+            % __name__,
         )
 
 
 class PydocImportTest(PydocBaseTest):
-
     def setUp(self):
         self.test_dir = os.mkdir(TESTFN)
         self.addCleanup(rmtree, TESTFN)
@@ -945,14 +943,14 @@ class PydocImportTest(PydocBaseTest):
             ("i_am_not_here", "i_am_not_here"),
             ("test.i_am_not_here_either", "test.i_am_not_here_either"),
             ("test.i_am_not_here.neither_am_i", "test.i_am_not_here"),
-            ("i_am_not_here.{}".format(modname), "i_am_not_here"),
-            ("test.{}".format(modname), "test.{}".format(modname)),
+            (f"i_am_not_here.{modname}", "i_am_not_here"),
+            (f"test.{modname}", f"test.{modname}"),
         )
 
         sourcefn = os.path.join(TESTFN, modname) + os.extsep + "py"
         for importstring, expectedinmsg in testpairs:
             with open(sourcefn, "w") as f:
-                f.write("import {}\n".format(importstring))
+                f.write(f"import {importstring}\n")
             result = run_pydoc(modname, PYTHONPATH=TESTFN).decode("ascii")
             expected = badimport_pattern % (modname, expectedinmsg)
             self.assertEqual(expected, result)
@@ -965,16 +963,14 @@ class PydocImportTest(PydocBaseTest):
         with open(badsyntax, "w") as f:
             f.write("invalid python syntax = $1\n")
         with self.restrict_walk_packages(path=[TESTFN]):
-            with captured_stdout() as out:
-                with captured_stderr() as err:
-                    pydoc.apropos("xyzzy")
+            with captured_stdout() as out, captured_stderr() as err:
+                pydoc.apropos("xyzzy")
             # No result, no error
             self.assertEqual(out.getvalue(), "")
             self.assertEqual(err.getvalue(), "")
             # The package name is still matched
-            with captured_stdout() as out:
-                with captured_stderr() as err:
-                    pydoc.apropos("syntaxerr")
+            with captured_stdout() as out, captured_stderr() as err:
+                pydoc.apropos("syntaxerr")
             self.assertEqual(out.getvalue().strip(), "syntaxerr")
             self.assertEqual(err.getvalue(), "")
 
@@ -1003,9 +999,10 @@ class PydocImportTest(PydocBaseTest):
         current_mode = stat.S_IMODE(os.stat(pkgdir).st_mode)
         try:
             os.chmod(pkgdir, current_mode & ~stat.S_IEXEC)
-            with self.restrict_walk_packages(
-                path=[TESTFN]
-            ), captured_stdout() as stdout:
+            with (
+                self.restrict_walk_packages(path=[TESTFN]),
+                captured_stdout() as stdout,
+            ):
                 pydoc.apropos("")
             self.assertIn("walkpkg", stdout.getvalue())
         finally:
@@ -1024,12 +1021,12 @@ class PydocImportTest(PydocBaseTest):
             sys.path.insert(0, TESTFN)
             try:
                 with self.assertRaisesRegex(ValueError, "ouch"):
-                    import test_error_package  # Sanity check
+                    pass  # Sanity check
 
                 text = self.call_url_handler(
                     "search?key=test_error_package", "Pydoc: Search Results"
                 )
-                found = '<a href="test_error_package.html">' "test_error_package</a>"
+                found = '<a href="test_error_package.html">test_error_package</a>'
                 self.assertIn(found, text)
             finally:
                 sys.path[:] = saved_paths
@@ -1085,7 +1082,6 @@ class PydocImportTest(PydocBaseTest):
 
 
 class TestDescriptions(unittest.TestCase):
-
     def test_module(self):
         # Check that pydocfodder module can be described
         from test import pydocfodder
@@ -1106,8 +1102,8 @@ class TestDescriptions(unittest.TestCase):
 
     def test_typing_pydoc(self):
         def foo(
-            data: typing.List[typing.Any], x: int
-        ) -> typing.Iterator[typing.Tuple[int, typing.Any]]: ...
+            data: list[typing.Any], x: int
+        ) -> typing.Iterator[tuple[int, typing.Any]]: ...
 
         T = typing.TypeVar("T")
 
@@ -1115,8 +1111,7 @@ class TestDescriptions(unittest.TestCase):
 
         self.assertEqual(
             pydoc.render_doc(foo).splitlines()[-1],
-            "f\x08fo\x08oo\x08o(data: List[Any], x: int)"
-            " -> Iterator[Tuple[int, Any]]",
+            "f\x08fo\x08oo\x08o(data: List[Any], x: int) -> Iterator[Tuple[int, Any]]",
         )
         self.assertEqual(
             pydoc.render_doc(C).splitlines()[2],
@@ -1131,7 +1126,7 @@ class TestDescriptions(unittest.TestCase):
             try:
                 pydoc.render_doc(name)
             except ImportError:
-                self.fail("finding the doc of {!r} failed".format(name))
+                self.fail(f"finding the doc of {name!r} failed")
 
         for name in (
             "notbuiltins",
@@ -1216,7 +1211,6 @@ class TestDescriptions(unittest.TestCase):
             @staticmethod
             def sm(x, y):
                 """A static method"""
-                ...
 
         self.assertEqual(
             self._get_summary_lines(X.__dict__["sm"]), "<staticmethod object>"
@@ -1244,7 +1238,6 @@ sm(x, y)
             @classmethod
             def cm(cls, x):
                 """A class method"""
-                ...
 
         self.assertEqual(
             self._get_summary_lines(X.__dict__["cm"]), "<classmethod object>"
@@ -1431,7 +1424,6 @@ foo
     def test_html_for_https_links(self):
         def a_fn_with_https_link():
             """a link https://localhost/"""
-            pass
 
         html = pydoc.HTMLDoc().document(a_fn_with_https_link)
         self.assertIn('<a href="https://localhost/">https://localhost/</a>', html)
@@ -1585,13 +1577,11 @@ class PydocWithMetaClasses(unittest.TestCase):
 
         class Meta3(Meta1, Meta2):
             def __dir__(cls):
-                return list(
-                    sorted(
-                        set(
-                            ["__class__", "__module__", "__name__", "three"]
-                            + Meta1.__dir__(cls)
-                            + Meta2.__dir__(cls)
-                        )
+                return sorted(
+                    set(
+                        ["__class__", "__module__", "__name__", "three"]
+                        + Meta1.__dir__(cls)
+                        + Meta2.__dir__(cls)
                     )
                 )
 
@@ -1652,7 +1642,6 @@ class PydocWithMetaClasses(unittest.TestCase):
 
 
 class TestInternalUtilities(unittest.TestCase):
-
     def setUp(self):
         tmpdir = tempfile.TemporaryDirectory()
         self.argv0dir = tmpdir.name

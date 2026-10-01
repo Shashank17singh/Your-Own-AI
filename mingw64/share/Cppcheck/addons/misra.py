@@ -1,13 +1,13 @@
-from __future__ import print_function
-import cppcheckdata
+import argparse
+import copy
 import itertools
 import json
-import sys
-import re
 import os
-import argparse
+import re
 import string
-import copy
+import sys
+
+import cppcheckdata
 
 try:
     from itertools import izip as zip
@@ -1316,7 +1316,7 @@ def is_errno_setting_function(function_name):
         "fgetpos",
         "fsetpos",
         "fgetwc",
-        "fputwc" "strtoimax",
+        "fputwcstrtoimax",
         "strtoumax",
         "strtol",
         "strtoul",
@@ -1324,7 +1324,7 @@ def is_errno_setting_function(function_name):
         "strtoull",
         "strtof",
         "strtod",
-        "strtold" "wcstoimax",
+        "strtoldwcstoimax",
         "wcstoumax",
         "wcstol",
         "wcstoul",
@@ -1332,7 +1332,7 @@ def is_errno_setting_function(function_name):
         "wcstoull",
         "wcstof",
         "wcstod",
-        "wcstold" "wcrtomb",
+        "wcstoldwcrtomb",
         "wcsrtombs",
         "mbrtowc",
     )
@@ -1760,9 +1760,7 @@ def getForLoopCounterVariables(forToken, cfg):
                 if var_token is None or var_token.variable is None:
                     continue
                 changed = False
-                if function_scope is None:
-                    changed = True
-                elif tn.function is None:
+                if function_scope is None or tn.function is None:
                     changed = True
                 else:
                     function_body_start = function_scope.bodyStart
@@ -2182,7 +2180,7 @@ class Define:
         attrs = ["name", "args", "expansionList"]
         return "{}({})".format(
             "Define",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -2328,7 +2326,7 @@ class Rule:
 class MisraSettings:
     """Hold settings for misra.py script."""
 
-    __slots__ = ["verify", "quiet", "show_summary"]
+    __slots__ = ["quiet", "show_summary", "verify"]
 
     def __init__(self, args):
         """
@@ -2351,7 +2349,7 @@ class MisraSettings:
         attrs = ["verify", "quiet", "show_summary", "verify"]
         return "{}({})".format(
             "MisraSettings",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -2393,7 +2391,7 @@ class MisraChecker:
         ]
         return "{}({})".format(
             "MisraChecker",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def get_num_significant_naming_chars(self, cfg):
@@ -2532,10 +2530,10 @@ class MisraChecker:
 
     def misra_1_2(self, cfg):
         for token in cfg.tokenlist:
-            if simpleMatch(token, "? :"):
-                self.reportError(token, 1, 2)
-            elif simpleMatch(token, "( {") and simpleMatch(
-                token.next.link.previous, "; } )"
+            if (
+                simpleMatch(token, "? :")
+                or simpleMatch(token, "( {")
+                and simpleMatch(token.next.link.previous, "; } )")
             ):
                 self.reportError(token, 1, 2)
 
@@ -3337,9 +3335,11 @@ class MisraChecker:
                 if not e1 or not e2:
                     continue
                 if token.str in ("<<", ">>"):
-                    if not isUnsignedType(e1):
-                        self.reportError(token, 10, 1)
-                    elif not isUnsignedType(e2) and not token.astOperand2.isNumber:
+                    if (
+                        not isUnsignedType(e1)
+                        or not isUnsignedType(e2)
+                        and not token.astOperand2.isNumber
+                    ):
                         self.reportError(token, 10, 1)
                 elif token.str in ("~", "&", "|", "^"):
                     e1_et = getEssentialType(token.astOperand1)
@@ -3684,12 +3684,11 @@ class MisraChecker:
                 continue
             if to_pointer_type_token.str == from_pointer_type_token.str:
                 continue
-            if from_pointer_type_token.typeScope is None and (
-                from_pointer_type_token.str in incomplete_types
-            ):
-                self.reportError(token, 11, 2)
-            elif to_pointer_type_token.typeScope is None and (
-                to_pointer_type_token.str in incomplete_types
+            if (
+                from_pointer_type_token.typeScope is None
+                and (from_pointer_type_token.str in incomplete_types)
+                or to_pointer_type_token.typeScope is None
+                and (to_pointer_type_token.str in incomplete_types)
             ):
                 self.reportError(token, 11, 2)
 
@@ -3709,9 +3708,7 @@ class MisraChecker:
                 and vt2.pointer > 0
                 and vt2.type == "record"
                 and vt1.typeScopeId != vt2.typeScopeId
-            ):
-                self.reportError(token, 11, 3)
-            elif (
+            ) or (
                 vt1.pointer == vt2.pointer
                 and vt1.pointer > 0
                 and vt1.type != vt2.type
@@ -3817,9 +3814,7 @@ class MisraChecker:
                 and vt1.type == "void"
                 and vt2.pointer == 0
                 and token.astOperand1.getKnownIntValue() != 0
-            ):
-                self.reportError(token, 11, 6)
-            elif (
+            ) or (
                 vt1.pointer == 0
                 and vt1.type != "void"
                 and vt2.pointer == 1
@@ -3843,9 +3838,7 @@ class MisraChecker:
                 and not vt1.isIntegral()
                 and not vt1.isEnum()
                 and vt1.type != "void"
-            ):
-                self.reportError(token, 11, 7)
-            elif (
+            ) or (
                 vt1.pointer > 0
                 and vt2.pointer == 0
                 and not vt2.isIntegral()
@@ -4018,11 +4011,14 @@ class MisraChecker:
         max_value = (1 << bits) - 1
         if not is_constant_integer_expression(expr):
             return
-        if expr.str == "+" and op1 + op2 > max_value:
-            self.reportError(expr, 12, 4)
-        elif expr.str == "-" and op1 - op2 < 0:
-            self.reportError(expr, 12, 4)
-        elif expr.str == "*" and op1 * op2 > max_value:
+        if (
+            expr.str == "+"
+            and op1 + op2 > max_value
+            or expr.str == "-"
+            and op1 - op2 < 0
+            or expr.str == "*"
+            and op1 * op2 > max_value
+        ):
             self.reportError(expr, 12, 4)
 
     def misra_12_4(self, cfg):
@@ -4487,15 +4483,18 @@ class MisraChecker:
 
     def misra_17_1(self, data):
         for token in data.tokenlist:
-            if isFunctionCall(token, data.standards.c) and token.astOperand1.str in (
-                "va_list",
-                "va_arg",
-                "va_start",
-                "va_end",
-                "va_copy",
+            if (
+                isFunctionCall(token, data.standards.c)
+                and token.astOperand1.str
+                in (
+                    "va_list",
+                    "va_arg",
+                    "va_start",
+                    "va_end",
+                    "va_copy",
+                )
+                or token.str == "va_list"
             ):
-                self.reportError(token, 17, 1)
-            elif token.str == "va_list":
                 self.reportError(token, 17, 1)
 
     def misra_17_2(self, data):
@@ -4594,9 +4593,7 @@ class MisraChecker:
                                 unknown_constant = True
                                 self.report_config_error(
                                     tok,
-                                    "Unknown constant {}, please review configuration".format(
-                                        t.str
-                                    ),
+                                    f"Unknown constant {t.str}, please review configuration",
                                 )
                             if t.isArithmeticalOp:
                                 tokens += [t.astOperand1, t.astOperand2]
@@ -4685,9 +4682,7 @@ class MisraChecker:
                 continue
             vt1 = token.astOperand1.valueType
             vt2 = token.astOperand2.valueType
-            if vt1 and vt1.pointer > 0:
-                self.reportError(token, 18, 4)
-            elif vt2 and vt2.pointer > 0:
+            if vt1 and vt1.pointer > 0 or vt2 and vt2.pointer > 0:
                 self.reportError(token, 18, 4)
 
     def misra_18_5(self, data):
@@ -4818,9 +4813,7 @@ class MisraChecker:
                     elif word in directive_args:
                         skip_next = True
                         break
-                elif exp[pos_search] == " ":
-                    pos_search += 1
-                elif state_in_string:
+                elif exp[pos_search] == " " or state_in_string:
                     pos_search += 1
                 else:
                     need_check = True
@@ -5357,9 +5350,12 @@ class MisraChecker:
                 tok = token.next
                 while tok and tok.str not in ("{", "}", ";", "errno"):
                     tok = tok.next
-                if tok is None or tok.str != "errno":
-                    self.reportError(token, 22, 9)
-                elif (tok.astParent is None) or (not tok.astParent.isComparisonOp):
+                if (
+                    tok is None
+                    or tok.str != "errno"
+                    or (tok.astParent is None)
+                    or (not tok.astParent.isComparisonOp)
+                ):
                     self.reportError(token, 22, 9)
 
     def misra_22_10(self, cfg):
@@ -5380,9 +5376,9 @@ class MisraChecker:
                 and token.astParent
                 and token.astParent.isComparisonOp
             ):
-                if last_function_call is None:
-                    self.reportError(token, 22, 10)
-                elif not is_errno_setting_function(last_function_call):
+                if last_function_call is None or not is_errno_setting_function(
+                    last_function_call
+                ):
                     self.reportError(token, 22, 10)
 
     def get_verify_expected(self):
@@ -5611,8 +5607,8 @@ class MisraChecker:
                 )
             if self.severity:
                 cppcheck_severity = self.severity
-            this_violation = "{}-{}-{}-{}".format(
-                location.file, location.linenr, location.column, ruleNum
+            this_violation = (
+                f"{location.file}-{location.linenr}-{location.column}-{ruleNum}"
             )
             if this_violation not in self.existing_violations:
                 self.existing_violations.add(this_violation)
@@ -6020,8 +6016,9 @@ class MisraChecker:
                     if summary_type == "MisraExternalIdentifiers":
                         for s in sorted(
                             summary_data,
-                            key=lambda d: "%s %s %s"
-                            % (d["file"], d["line"], d["column"]),
+                            key=lambda d: (
+                                "%s %s %s" % (d["file"], d["line"], d["column"])
+                            ),
                         ):
                             is_declaration = s["decl"]
                             if is_declaration:

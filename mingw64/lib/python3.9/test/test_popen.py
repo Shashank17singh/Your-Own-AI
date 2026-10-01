@@ -3,9 +3,11 @@
 Particularly useful for platforms that fake popen.
 """
 
+import os
+import sys
 import unittest
+
 from test import support
-import os, sys
 
 # Test that command-lines get down as we expect.
 # To do this we execute:
@@ -18,7 +20,6 @@ if " " in python:
 
 
 class PopenTest(unittest.TestCase):
-
     def _do_test_commandline(self, cmdline, expected):
         cmd = '%s -c "import sys; print(sys.argv)" %s'
         cmd = cmd % (python, cmdline)

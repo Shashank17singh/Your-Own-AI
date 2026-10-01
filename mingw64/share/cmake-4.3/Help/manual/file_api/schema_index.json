@@ -1,31 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": [
-    "cmake",
-    "objects",
-    "reply"
-  ],
+  "required": ["cmake", "objects", "reply"],
   "properties": {
     "cmake": {
       "type": "object",
       "description": "High level details about CMake itself and the CMake generator used",
-      "required": [
-        "version",
-        "paths",
-        "generator"
-      ],
+      "required": ["version", "paths", "generator"],
       "properties": {
         "version": {
           "description": "Full version details of the CMake used to produce the replies",
           "type": "object",
-          "required": [
-            "major",
-            "minor",
-            "patch",
-            "string",
-            "isDirty"
-          ],
+          "required": ["major", "minor", "patch", "string", "isDirty"],
           "properties": {
             "major": {
               "type": "integer",
@@ -57,12 +43,7 @@
         "paths": {
           "description": "Absolute paths to tools and locations within the CMake installation",
           "type": "object",
-          "required": [
-            "cmake",
-            "ctest",
-            "cpack",
-            "root"
-          ],
+          "required": ["cmake", "ctest", "cpack", "root"],
           "properties": {
             "cmake": {
               "description": "Absolute path to the cmake executable",
@@ -86,10 +67,7 @@
         "generator": {
           "description": "Details for the CMake generator used",
           "type": "object",
-          "required": [
-            "multiConfig",
-            "name"
-          ],
+          "required": ["multiConfig", "name"],
           "properties": {
             "multiConfig": {
               "description": "True for multi-configuration generators, false for single-configuration generators",
@@ -198,21 +176,14 @@
   "definitions": {
     "kindJsonFile": {
       "type": "object",
-      "required": [
-        "kind",
-        "version",
-        "jsonFile"
-      ],
+      "required": ["kind", "version", "jsonFile"],
       "properties": {
         "kind": {
           "type": "string"
         },
         "version": {
           "type": "object",
-          "required": [
-            "major",
-            "minor"
-          ],
+          "required": ["major", "minor"],
           "properties": {
             "major": {
               "type": "integer",
@@ -234,9 +205,7 @@
     },
     "replyError": {
       "type": "object",
-      "required": [
-        "error"
-      ],
+      "required": ["error"],
       "properties": {
         "error": {
           "type": "string"

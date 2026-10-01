@@ -2,12 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for the CMake codemodel object kind",
   "type": "object",
-  "required": [
-    "kind",
-    "version",
-    "paths",
-    "configurations"
-  ],
+  "required": ["kind", "version", "paths", "configurations"],
   "oneOf": [
     {
       "$ref": "#/definitions/codemodelV2_0"
@@ -27,10 +22,7 @@
     },
     "versionV2_0": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -46,10 +38,7 @@
     },
     "versionV2_3": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -65,10 +54,7 @@
     },
     "versionV2_9": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -83,10 +69,7 @@
     },
     "paths": {
       "type": "object",
-      "required": [
-        "source",
-        "build"
-      ],
+      "required": ["source", "build"],
       "properties": {
         "source": {
           "type": "string",
@@ -143,9 +126,7 @@
     },
     "configurationDirectoryItemMinimumCMakeVersion": {
       "type": "object",
-      "required": [
-        "string"
-      ],
+      "required": ["string"],
       "properties": {
         "string": {
           "type": "string",
@@ -168,11 +149,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "source",
-          "build",
-          "projectIndex"
-        ],
+        "required": ["source", "build", "projectIndex"],
         "properties": {
           "source": {
             "$ref": "#/definitions/configurationDirectoryItemSource"
@@ -206,11 +183,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "source",
-          "build",
-          "projectIndex"
-        ],
+        "required": ["source", "build", "projectIndex"],
         "properties": {
           "source": {
             "$ref": "#/definitions/configurationDirectoryItemSource"
@@ -247,11 +220,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "source",
-          "build",
-          "projectIndex"
-        ],
+        "required": ["source", "build", "projectIndex"],
         "properties": {
           "source": {
             "$ref": "#/definitions/configurationDirectoryItemSource"
@@ -295,10 +264,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "directoryIndexes"
-        ],
+        "required": ["name", "directoryIndexes"],
         "properties": {
           "name": {
             "type": "string",
@@ -340,10 +306,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "directoryIndexes"
-        ],
+        "required": ["name", "directoryIndexes"],
         "properties": {
           "name": {
             "type": "string",
@@ -393,12 +356,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "directoryIndex",
-          "projectIndex",
-          "jsonFile"
-        ],
+        "required": ["name", "directoryIndex", "projectIndex", "jsonFile"],
         "properties": {
           "name": {
             "type": "string",
@@ -429,12 +387,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "directories",
-          "projects",
-          "targets"
-        ],
+        "required": ["name", "directories", "projects", "targets"],
         "properties": {
           "name": {
             "$ref": "#/definitions/configurationName"
@@ -456,12 +409,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "directories",
-          "projects",
-          "targets"
-        ],
+        "required": ["name", "directories", "projects", "targets"],
         "properties": {
           "name": {
             "$ref": "#/definitions/configurationName"

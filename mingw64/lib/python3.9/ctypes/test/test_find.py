@@ -1,10 +1,11 @@
-import unittest
-import unittest.mock
 import os.path
 import sys
-import test.support
+import unittest
+import unittest.mock
 from ctypes import *
 from ctypes.util import find_library
+
+import test.support
 
 
 # On some systems, loading the OpenGL libraries needs the RTLD_GLOBAL mode.
@@ -124,9 +125,10 @@ class FindLibraryLinux(unittest.TestCase):
             self.assertNotEqual(find_library("c"), None)
 
     def test_find_library_with_ld(self):
-        with unittest.mock.patch(
-            "ctypes.util._findSoname_ldconfig", lambda *args: None
-        ), unittest.mock.patch("ctypes.util._findLib_gcc", lambda *args: None):
+        with (
+            unittest.mock.patch("ctypes.util._findSoname_ldconfig", lambda *args: None),
+            unittest.mock.patch("ctypes.util._findLib_gcc", lambda *args: None),
+        ):
             self.assertNotEqual(find_library("c"), None)
 
 

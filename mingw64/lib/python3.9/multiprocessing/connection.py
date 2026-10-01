@@ -9,35 +9,29 @@
 
 __all__ = ["Client", "Listener", "Pipe", "wait"]
 
+import _multiprocessing
 import io
+import itertools
 import os
-import sys
 import socket
 import struct
-import time
+import sys
 import tempfile
-import itertools
+import time
 
-import _multiprocessing
-
-from . import util
-
-from . import AuthenticationError, BufferTooShort
+from . import AuthenticationError, BufferTooShort, util
 from .context import reduction
 
 _ForkingPickler = reduction.ForkingPickler
 
 try:
     import _winapi
-    from _winapi import WAIT_OBJECT_0, WAIT_ABANDONED_0, WAIT_TIMEOUT, INFINITE
+    from _winapi import INFINITE, WAIT_ABANDONED_0, WAIT_OBJECT_0, WAIT_TIMEOUT
 except ImportError:
     if sys.platform == "win32":
         raise
     _winapi = None
 
-#
-#
-#
 
 BUFSIZE = 8192
 # A very generous timeout when it comes to local connections...
@@ -63,11 +57,6 @@ def _init_timeout(timeout=CONNECTION_TIMEOUT):
 
 def _check_timeout(t):
     return time.monotonic() > t
-
-
-#
-#
-#
 
 
 def arbitrary_address(family):
@@ -447,7 +436,7 @@ class Connection(_ConnectionBase):
 #
 
 
-class Listener(object):
+class Listener:
     """
     Returns a listener object.
 
@@ -605,7 +594,7 @@ else:
 #
 
 
-class SocketListener(object):
+class SocketListener:
     """
     Representation of a socket which is bound to an address and listening
     """
@@ -666,7 +655,7 @@ def SocketClient(address):
 
 if sys.platform == "win32":
 
-    class PipeListener(object):
+    class PipeListener:
         """
         Representation of a named pipe
         """
@@ -776,7 +765,7 @@ def deliver_challenge(connection, authkey):
     import hmac
 
     if not isinstance(authkey, bytes):
-        raise ValueError("Authkey must be bytes, not {0!s}".format(type(authkey)))
+        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")
     message = os.urandom(MESSAGE_LENGTH)
     connection.send_bytes(CHALLENGE + message)
     digest = hmac.new(authkey, message, "md5").digest()
@@ -792,7 +781,7 @@ def answer_challenge(connection, authkey):
     import hmac
 
     if not isinstance(authkey, bytes):
-        raise ValueError("Authkey must be bytes, not {0!s}".format(type(authkey)))
+        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")
     message = connection.recv_bytes(256)  # reject large message
     assert message[: len(CHALLENGE)] == CHALLENGE, "message = %r" % message
     message = message[len(CHALLENGE) :]
@@ -808,7 +797,7 @@ def answer_challenge(connection, authkey):
 #
 
 
-class ConnectionWrapper(object):
+class ConnectionWrapper:
     def __init__(self, conn, dumps, loads):
         self._conn = conn
         self._dumps = dumps
@@ -901,7 +890,7 @@ if sys.platform == "win32":
         try:
             for o in object_list:
                 try:
-                    fileno = getattr(o, "fileno")
+                    fileno = o.fileno
                 except AttributeError:
                     waithandle_to_obj[o.__index__()] = o
                 else:
@@ -958,7 +947,6 @@ if sys.platform == "win32":
         return [o for o in object_list if o in ready_objects]
 
 else:
-
     import selectors
 
     # poll/select have the advantage of not requiring any extra file

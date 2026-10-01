@@ -3,12 +3,10 @@ An auto-completion window for IDLE, used by the autocomplete extension
 """
 
 import platform
-
+from idlelib.autocomplete import ATTRS, FILES
+from idlelib.multicall import MC_SHIFT
 from tkinter import *
 from tkinter.ttk import Scrollbar
-
-from idlelib.autocomplete import FILES, ATTRS
-from idlelib.multicall import MC_SHIFT
 
 HIDE_VIRTUAL_EVENT_NAME = "<<autocompletewindow-hide>>"
 HIDE_FOCUS_OUT_SEQUENCE = "<FocusOut>"
@@ -37,7 +35,6 @@ DOUBLECLICK_SEQUENCE = "<B1-Double-ButtonRelease>"
 
 
 class AutoCompleteWindow:
-
     def __init__(self, widget):
         # The widget (Text) on which we place the AutoCompleteWindow
         self.widget = widget

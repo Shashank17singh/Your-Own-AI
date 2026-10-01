@@ -3,9 +3,10 @@ import os
 import threading
 import unittest
 import urllib.robotparser
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 from test import support
 from test.support import socket_helper
-from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 class BaseRobotTest:
@@ -311,7 +312,6 @@ Disallow: /cyberworld/map/\
 
 
 class RobotHandler(BaseHTTPRequestHandler):
-
     def do_GET(self):
         self.send_error(403, "Forbidden access")
 
@@ -320,7 +320,6 @@ class RobotHandler(BaseHTTPRequestHandler):
 
 
 class PasswordProtectedSiteTestCase(unittest.TestCase):
-
     def setUp(self):
         # clear _opener global variable
         self.addCleanup(urllib.request.urlcleanup)
@@ -355,9 +354,8 @@ class PasswordProtectedSiteTestCase(unittest.TestCase):
 
 
 class NetworkTestCase(unittest.TestCase):
-
     base_url = "http://www.pythontest.net/"
-    robots_txt = "{}elsewhere/robots.txt".format(base_url)
+    robots_txt = f"{base_url}elsewhere/robots.txt"
 
     @classmethod
     def setUpClass(cls):

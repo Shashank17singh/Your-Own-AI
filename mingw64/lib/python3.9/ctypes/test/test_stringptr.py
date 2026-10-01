@@ -1,14 +1,13 @@
+import _ctypes_test
 import unittest
-from test import support
 from ctypes import *
 
-import _ctypes_test
+from test import support
 
 lib = CDLL(_ctypes_test.__file__)
 
 
 class StringPtrTestCase(unittest.TestCase):
-
     @support.refcount_test
     def test__POINTER_c_char(self):
         class X(Structure):

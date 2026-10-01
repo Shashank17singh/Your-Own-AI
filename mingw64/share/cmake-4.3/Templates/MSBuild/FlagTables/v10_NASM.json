@@ -144,58 +144,41 @@
     "switch": "l",
     "comment": "Assembled Code Listing File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "ErrorReporting",
     "switch": "Z",
     "comment": "Redirect Error Messages to File",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "IncludePaths",
     "switch": "I",
     "comment": "Include Paths",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "PreprocessorDefinitions",
     "switch": "D",
     "comment": "Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "UndefinePreprocessorDefinitions",
     "switch": "U",
     "comment": "Undefine Preprocessor Definitions",
     "value": "",
-    "flags": [
-      "UserValue",
-      "SemicolonAppendable"
-    ]
+    "flags": ["UserValue", "SemicolonAppendable"]
   },
   {
     "name": "OutputFormat",
     "switch": "o",
     "comment": "Output File Name",
     "value": "",
-    "flags": [
-      "UserValue"
-    ]
+    "flags": ["UserValue"]
   }
 ]

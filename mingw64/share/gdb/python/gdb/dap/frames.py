@@ -1,13 +1,14 @@
 import itertools
-from typing import Dict
+
 import gdb
 from gdb.frames import frame_iterator
+
 from .startup import in_gdb_thread
 from .state import set_thread
 
 _all_frames = []
 _iter_map = {}
-thread_ids: Dict[int, int] = {}
+thread_ids: dict[int, int] = {}
 
 
 @in_gdb_thread

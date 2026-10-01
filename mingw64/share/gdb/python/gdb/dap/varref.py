@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from contextlib import contextmanager
+
 import gdb
 import gdb.printing
+
 from .server import client_bool_capability
 from .startup import DAPException, in_gdb_thread
 

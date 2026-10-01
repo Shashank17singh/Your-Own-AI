@@ -125,7 +125,7 @@ class _ModuleLock:
                     self.wakeup.release()
 
     def __repr__(self):
-        return "_ModuleLock({!r}) at {}".format(self.name, id(self))
+        return f"_ModuleLock({self.name!r}) at {id(self)}"
 
 
 class _DummyModuleLock:
@@ -146,11 +146,10 @@ class _DummyModuleLock:
         self.count -= 1
 
     def __repr__(self):
-        return "_DummyModuleLock({!r}) at {}".format(self.name, id(self))
+        return f"_DummyModuleLock({self.name!r}) at {id(self)}"
 
 
 class _ModuleLockManager:
-
     def __init__(self, name):
         self._name = name
         self._lock = None
@@ -245,9 +244,7 @@ def _requires_builtin(fxn):
 
     def _requires_builtin_wrapper(self, fullname):
         if fullname not in sys.builtin_module_names:
-            raise ImportError(
-                "{!r} is not a built-in module".format(fullname), name=fullname
-            )
+            raise ImportError(f"{fullname!r} is not a built-in module", name=fullname)
         return fxn(self, fullname)
 
     _wrap(_requires_builtin_wrapper, fxn)
@@ -259,9 +256,7 @@ def _requires_frozen(fxn):
 
     def _requires_frozen_wrapper(self, fullname):
         if not _imp.is_frozen(fullname):
-            raise ImportError(
-                "{!r} is not a frozen module".format(fullname), name=fullname
-            )
+            raise ImportError(f"{fullname!r} is not a frozen module", name=fullname)
         return fxn(self, fullname)
 
     _wrap(_requires_frozen_wrapper, fxn)
@@ -316,11 +311,11 @@ def _module_repr(module):
         filename = module.__file__
     except AttributeError:
         if loader is None:
-            return "<module {!r}>".format(name)
+            return f"<module {name!r}>"
         else:
-            return "<module {!r} ({!r})>".format(name, loader)
+            return f"<module {name!r} ({loader!r})>"
     else:
-        return "<module {!r} from {!r}>".format(name, filename)
+        return f"<module {name!r} from {filename!r}>"
 
 
 class ModuleSpec:
@@ -374,13 +369,11 @@ class ModuleSpec:
         self._cached = None
 
     def __repr__(self):
-        args = ["name={!r}".format(self.name), "loader={!r}".format(self.loader)]
+        args = [f"name={self.name!r}", f"loader={self.loader!r}"]
         if self.origin is not None:
-            args.append("origin={!r}".format(self.origin))
+            args.append(f"origin={self.origin!r}")
         if self.submodule_search_locations is not None:
-            args.append(
-                "submodule_search_locations={}".format(self.submodule_search_locations)
-            )
+            args.append(f"submodule_search_locations={self.submodule_search_locations}")
         return "{}({})".format(self.__class__.__name__, ", ".join(args))
 
     def __eq__(self, other):
@@ -581,7 +574,7 @@ def module_from_spec(spec):
         module = spec.loader.create_module(spec)
     elif hasattr(spec.loader, "exec_module"):
         raise ImportError(
-            "loaders that define exec_module() " "must also define create_module()"
+            "loaders that define exec_module() must also define create_module()"
         )
     if module is None:
         module = _new_module(spec.name)
@@ -595,14 +588,14 @@ def _module_repr_from_spec(spec):
     name = "?" if spec.name is None else spec.name
     if spec.origin is None:
         if spec.loader is None:
-            return "<module {!r}>".format(name)
+            return f"<module {name!r}>"
         else:
-            return "<module {!r} ({!r})>".format(name, spec.loader)
+            return f"<module {name!r} ({spec.loader!r})>"
     else:
         if spec.has_location:
-            return "<module {!r} from {!r}>".format(name, spec.origin)
+            return f"<module {name!r} from {spec.origin!r}>"
         else:
-            return "<module {!r} ({})>".format(spec.name, spec.origin)
+            return f"<module {spec.name!r} ({spec.origin})>"
 
 
 # Used by importlib.reload() and _load_module_shim().
@@ -611,7 +604,7 @@ def _exec(spec, module):
     name = spec.name
     with _ModuleLockManager(name):
         if sys.modules.get(name) is not module:
-            msg = "module {!r} not in sys.modules".format(name)
+            msg = f"module {name!r} not in sys.modules"
             raise ImportError(msg, name=name)
         try:
             if spec.loader is None:
@@ -777,9 +770,7 @@ class BuiltinImporter:
     def create_module(self, spec):
         """Create a built-in module"""
         if spec.name not in sys.builtin_module_names:
-            raise ImportError(
-                "{!r} is not a built-in module".format(spec.name), name=spec.name
-            )
+            raise ImportError(f"{spec.name!r} is not a built-in module", name=spec.name)
         return _call_with_frames_removed(_imp.create_builtin, spec)
 
     @classmethod
@@ -791,13 +782,13 @@ class BuiltinImporter:
     @_requires_builtin
     def get_code(cls, fullname):
         """Return None as built-in modules do not have code objects."""
-        return None
+        return
 
     @classmethod
     @_requires_builtin
     def get_source(cls, fullname):
         """Return None as built-in modules do not have source code."""
-        return None
+        return
 
     @classmethod
     @_requires_builtin
@@ -825,7 +816,7 @@ class FrozenImporter:
         The method is deprecated.  The import machinery does the job itself.
 
         """
-        return "<module {!r} ({})>".format(m.__name__, FrozenImporter._ORIGIN)
+        return f"<module {m.__name__!r} ({FrozenImporter._ORIGIN})>"
 
     @classmethod
     def find_spec(cls, fullname, path=None, target=None):
@@ -851,7 +842,7 @@ class FrozenImporter:
     def exec_module(module):
         name = module.__spec__.name
         if not _imp.is_frozen(name):
-            raise ImportError("{!r} is not a frozen module".format(name), name=name)
+            raise ImportError(f"{name!r} is not a frozen module", name=name)
         code = _call_with_frames_removed(_imp.get_frozen_object, name)
         exec(code, module.__dict__)
 
@@ -874,7 +865,7 @@ class FrozenImporter:
     @_requires_frozen
     def get_source(cls, fullname):
         """Return None as frozen modules do not have source code."""
-        return None
+        return
 
     @classmethod
     @_requires_frozen
@@ -904,7 +895,7 @@ def _resolve_name(name, package, level):
     if len(bits) < level:
         raise ImportError("attempted relative import beyond top-level package")
     base = bits[0]
-    return "{}.{}".format(base, name) if name else base
+    return f"{base}.{name}" if name else base
 
 
 def _find_spec_legacy(finder, name, path):
@@ -921,7 +912,7 @@ def _find_spec(name, path, target=None):
     meta_path = sys.meta_path
     if meta_path is None:
         # PyImport_Cleanup() is running or has been called.
-        raise ImportError("sys.meta_path is None, Python is likely " "shutting down")
+        raise ImportError("sys.meta_path is None, Python is likely shutting down")
 
     if not meta_path:
         _warnings.warn("sys.meta_path is empty", ImportWarning)
@@ -958,23 +949,20 @@ def _find_spec(name, path, target=None):
                         return __spec__
             else:
                 return spec
-    else:
-        return None
+    return None
 
 
 def _sanity_check(name, package, level):
     """Verify arguments are "sane"."""
     if not isinstance(name, str):
-        raise TypeError("module name must be str, not {}".format(type(name)))
+        raise TypeError(f"module name must be str, not {type(name)}")
     if level < 0:
         raise ValueError("level must be >= 0")
     if level > 0:
         if not isinstance(package, str):
             raise TypeError("__package__ not set to a string")
         elif not package:
-            raise ImportError(
-                "attempted relative import with no known parent " "package"
-            )
+            raise ImportError("attempted relative import with no known parent package")
     if not name and level == 0:
         raise ValueError("Empty module name")
 
@@ -1026,7 +1014,7 @@ def _find_and_load(name, import_):
             return _find_and_load_unlocked(name, import_)
 
     if module is None:
-        message = "import of {} halted; " "None in sys.modules".format(name)
+        message = f"import of {name} halted; None in sys.modules"
         raise ModuleNotFoundError(message, name=name)
 
     _lock_unlock_module(name)
@@ -1064,12 +1052,12 @@ def _handle_fromlist(module, fromlist, import_, *, recursive=False):
                 where = module.__name__ + ".__all__"
             else:
                 where = "``from list''"
-            raise TypeError(f"Item in {where} must be str, " f"not {type(x).__name__}")
+            raise TypeError(f"Item in {where} must be str, not {type(x).__name__}")
         elif x == "*":
             if not recursive and hasattr(module, "__all__"):
                 _handle_fromlist(module, module.__all__, import_, recursive=True)
         elif not hasattr(module, x):
-            from_name = "{}.{}".format(module.__name__, x)
+            from_name = f"{module.__name__}.{x}"
             try:
                 _call_with_frames_removed(import_, from_name)
             except ModuleNotFoundError as exc:
@@ -1097,7 +1085,7 @@ def _calc___package__(globals):
     if package is not None:
         if spec is not None and package != spec.parent:
             _warnings.warn(
-                "__package__ != __spec__.parent " f"({package!r} != {spec.parent!r})",
+                f"__package__ != __spec__.parent ({package!r} != {spec.parent!r})",
                 ImportWarning,
                 stacklevel=3,
             )

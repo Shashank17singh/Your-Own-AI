@@ -8,8 +8,8 @@ r"""Fixer for unicode.
 
 """
 
-from ..pgen2 import token
 from .. import fixer_base
+from ..pgen2 import token
 
 _mapping = {"unichr": "chr", "unicode": "str"}
 
@@ -19,7 +19,7 @@ class FixUnicode(fixer_base.BaseFix):
     PATTERN = "STRING | 'unicode' | 'unichr'"
 
     def start_tree(self, tree, filename):
-        super(FixUnicode, self).start_tree(tree, filename)
+        super().start_tree(tree, filename)
         self.unicode_literals = "unicode_literals" in tree.future_features
 
     def transform(self, node, results):

@@ -1,13 +1,12 @@
 import sys
 import unittest
 import uuid
-
-from . import data01
-from . import zipdata01, zipdata02
-from . import util
-from importlib import resources, import_module
+from importlib import import_module, resources
 from pathlib import Path
+
 from test import support
+
+from . import data01, util, zipdata01, zipdata02
 
 
 class ResourceTests:
@@ -193,7 +192,7 @@ class DeletingZipsTest(unittest.TestCase):
         data_path = Path(self.ZIP_MODULE.__file__)
         data_dir = data_path.parent
         self.source_zip_path = data_dir / "ziptestdata.zip"
-        self.zip_path = Path.cwd() / "{}.zip".format(uuid.uuid4())
+        self.zip_path = Path.cwd() / f"{uuid.uuid4()}.zip"
         self.zip_path.write_bytes(self.source_zip_path.read_bytes())
         sys.path.append(str(self.zip_path))
         self.data = import_module("ziptestdata")

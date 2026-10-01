@@ -1,5 +1,4 @@
 import unittest
-
 from ctypes import *
 from ctypes.test import need_symbol
 
@@ -13,7 +12,6 @@ class CHECKED(c_int):
 
 
 class Test(unittest.TestCase):
-
     def test_checkretval(self):
 
         import _ctypes_test

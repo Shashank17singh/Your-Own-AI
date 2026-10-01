@@ -6,6 +6,7 @@ be run.
 """
 
 import distutils.tests
+
 import test.support
 
 

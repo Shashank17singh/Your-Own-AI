@@ -2,16 +2,16 @@
 
 import sys
 import unittest
-from textwrap import dedent
 from contextlib import ExitStack
+from textwrap import dedent
 from unittest import mock
+
 from test import support
 
 code = support.import_module("code")
 
 
 class TestInteractiveConsole(unittest.TestCase):
-
     def setUp(self):
         self.console = code.InteractiveConsole()
         self.mock_sys()

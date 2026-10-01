@@ -8,8 +8,9 @@ importlib = util.import_importlib("importlib")
 machinery = util.import_importlib("importlib.machinery")
 
 import os
-from test import support as test_support
 import unittest
+
+from test import support as test_support
 
 
 @util.case_insensitive_tests
@@ -30,8 +31,8 @@ class CaseSensitivityTest(util.CASEOKTestBase):
 
     def sensitivity_test(self):
         """Look for a module with matching and non-matching sensitivity."""
-        sensitive_pkg = "sensitive.{0}".format(self.name)
-        insensitive_pkg = "insensitive.{0}".format(self.name.lower())
+        sensitive_pkg = f"sensitive.{self.name}"
+        insensitive_pkg = f"insensitive.{self.name.lower()}"
         context = util.create_modules(insensitive_pkg, sensitive_pkg)
         with context as mapping:
             sensitive_path = os.path.join(mapping[".root"], "sensitive")

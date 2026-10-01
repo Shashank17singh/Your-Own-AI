@@ -182,7 +182,7 @@ if __name__ == "__main__":
     try:
         L = []
         _curses.initscr()
-        for key in _capability_names.keys():
+        for key in _capability_names:
             system = _curses.has_key(key)
             python = has_key(key)
             if system != python:

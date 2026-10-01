@@ -1,14 +1,14 @@
 import unittest
-from unittest.test.testmock.support import is_instance, X, SomeClass
 from unittest.mock import (
-    Mock,
+    CallableMixin,
     MagicMock,
+    Mock,
     NonCallableMagicMock,
     NonCallableMock,
-    patch,
     create_autospec,
-    CallableMixin,
+    patch,
 )
+from unittest.test.testmock.support import SomeClass, X, is_instance
 
 
 class TestCallable(unittest.TestCase):

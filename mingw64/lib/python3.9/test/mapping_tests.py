@@ -1,7 +1,7 @@
 # tests common to dict and UserDict
-import unittest
 import collections
 import sys
+import unittest
 
 
 class BasicTestMappingProtocol(unittest.TestCase):
@@ -277,7 +277,7 @@ class BasicTestMappingProtocol(unittest.TestCase):
 
         d = self._empty_mapping()
 
-        class badseq(object):
+        class badseq:
             def __iter__(self):
                 return self
 
@@ -491,7 +491,7 @@ class TestMappingProtocol(BasicTestMappingProtocol):
 
         self.assertRaises(Exc, baddict1.fromkeys, [1])
 
-        class BadSeq(object):
+        class BadSeq:
             def __iter__(self):
                 return self
 
@@ -573,14 +573,13 @@ class TestMappingProtocol(BasicTestMappingProtocol):
 
 
 class TestHashMappingProtocol(TestMappingProtocol):
-
     def test_getitem(self):
         TestMappingProtocol.test_getitem(self)
 
         class Exc(Exception):
             pass
 
-        class BadEq(object):
+        class BadEq:
             def __eq__(self, other):
                 raise Exc()
 
@@ -591,7 +590,7 @@ class TestHashMappingProtocol(TestMappingProtocol):
         d[BadEq()] = 42
         self.assertRaises(KeyError, d.__getitem__, 23)
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):
@@ -623,7 +622,7 @@ class TestHashMappingProtocol(TestMappingProtocol):
         class Exc(Exception):
             pass
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):
@@ -663,7 +662,7 @@ class TestHashMappingProtocol(TestMappingProtocol):
         class Exc(Exception):
             pass
 
-        class BadRepr(object):
+        class BadRepr:
             def __repr__(self):
                 raise Exc()
 
@@ -685,7 +684,7 @@ class TestHashMappingProtocol(TestMappingProtocol):
         class Exc(Exception):
             pass
 
-        class BadCmp(object):
+        class BadCmp:
             def __eq__(self, other):
                 raise Exc()
 
@@ -703,7 +702,7 @@ class TestHashMappingProtocol(TestMappingProtocol):
         class Exc(Exception):
             pass
 
-        class BadHash(object):
+        class BadHash:
             fail = False
 
             def __hash__(self):

@@ -3,12 +3,12 @@ Tests for fileinput module.
 Nick Mathewson
 """
 
-import os
-import sys
-import re
-import fileinput
-import collections
 import builtins
+import collections
+import fileinput
+import os
+import re
+import sys
 import tempfile
 import unittest
 
@@ -21,14 +21,14 @@ try:
 except ImportError:
     gzip = None
 
-from io import BytesIO, StringIO
 from fileinput import FileInput, hook_encoded
+from io import BytesIO, StringIO
 from pathlib import Path
-
-from test.support import verbose, TESTFN, check_warnings
-from test.support import unlink as safe_unlink
-from test import support
 from unittest import mock
+
+from test import support
+from test.support import TESTFN, check_warnings, verbose
+from test.support import unlink as safe_unlink
 
 # The fileinput module has 2 interfaces: the FileInput class which does
 # all the work, and a few functions (input, etc.) that use a global _state
@@ -47,7 +47,6 @@ class BaseTests:
 
 
 class LineReader:
-
     def __init__(self):
         self._linesread = []
 
@@ -178,7 +177,6 @@ class UnconditionallyRaise:
 
 
 class FileInputTests(BaseTests, unittest.TestCase):
-
     def test_zero_byte_files(self):
         t1 = self.writeTmp("")
         t2 = self.writeTmp("")
@@ -374,20 +372,19 @@ class FileInputTests(BaseTests, unittest.TestCase):
 
     def test__getitem___deprecation(self):
         t = self.writeTmp("line1\nline2\n")
-        with self.assertWarnsRegex(
-            DeprecationWarning, r"Use iterator protocol instead"
+        with (
+            self.assertWarnsRegex(DeprecationWarning, r"Use iterator protocol instead"),
+            FileInput(files=[t]) as fi,
         ):
-            with FileInput(files=[t]) as fi:
-                self.assertEqual(fi[0], "line1\n")
+            self.assertEqual(fi[0], "line1\n")
 
     @support.ignore_warnings(category=DeprecationWarning)
     def test__getitem__invalid_key(self):
         """Tests invoking FileInput.__getitem__() with an index unequal to
         the line number"""
         t = self.writeTmp("line1\nline2\n")
-        with FileInput(files=[t]) as fi:
-            with self.assertRaises(RuntimeError) as cm:
-                fi[1]
+        with FileInput(files=[t]) as fi, self.assertRaises(RuntimeError) as cm:
+            fi[1]
         self.assertEqual(cm.exception.args, ("accessing lines out of order",))
 
     @support.ignore_warnings(category=DeprecationWarning)
@@ -395,9 +392,8 @@ class FileInputTests(BaseTests, unittest.TestCase):
         """Tests invoking FileInput.__getitem__() with the line number but at
         end-of-input"""
         t = self.writeTmp("")
-        with FileInput(files=[t]) as fi:
-            with self.assertRaises(IndexError) as cm:
-                fi[0]
+        with FileInput(files=[t]) as fi, self.assertRaises(IndexError) as cm:
+            fi[0]
         self.assertEqual(cm.exception.args, ("end of input reached",))
 
     def test_nextfile_oserror_deleting_backup(self):
@@ -1017,7 +1013,6 @@ class Test_hook_encoded(unittest.TestCase):
 
 
 class MiscTest(unittest.TestCase):
-
     def test_all(self):
         support.check__all__(self, fileinput)
 

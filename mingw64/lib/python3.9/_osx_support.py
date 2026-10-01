@@ -6,8 +6,8 @@ import sys
 
 __all__ = [
     "compiler_fixup",
-    "customize_config_vars",
     "customize_compiler",
+    "customize_config_vars",
     "get_platform_osx",
 ]
 
