@@ -1,13 +1,14 @@
 """Loading unittests."""
 
+import functools
 import os
 import re
 import sys
 import traceback
 import types
-import functools
 import warnings
 from fnmatch import fnmatch, fnmatchcase
+
 from . import case, suite, util
 
 __unittest = True
@@ -19,11 +20,11 @@ class _FailedTest(case.TestCase):
 
     def __init__(self, method_name, exception):
         self._exception = exception
-        super(_FailedTest, self).__init__(method_name)
+        super().__init__(method_name)
 
     def __getattr__(self, name):
         if name != self._testMethodName:
-            return super(_FailedTest, self).__getattr__(name)
+            return super().__getattr__(name)
 
         def testFailure():
             raise self._exception
@@ -62,7 +63,7 @@ def _jython_aware_splitext(path):
     return os.path.splitext(path)[0]
 
 
-class TestLoader(object):
+class TestLoader:
     """
     This class is responsible for loading tests according to various criteria
     and returning them wrapped in a TestSuite
@@ -75,7 +76,7 @@ class TestLoader(object):
     _top_level_dir = None
 
     def __init__(self):
-        super(TestLoader, self).__init__()
+        super().__init__()
         self.errors = []
         self._loading_packages = set()
 
@@ -103,16 +104,12 @@ class TestLoader(object):
         if len(args) > 1:
             complaint = len(args) + 1
             raise TypeError(
-                "loadTestsFromModule() takes 1 positional argument but {} were given".format(
-                    complaint
-                )
+                f"loadTestsFromModule() takes 1 positional argument but {complaint} were given"
             )
         if len(kws) != 0:
             complaint = sorted(kws)[0]
             raise TypeError(
-                "loadTestsFromModule() got an unexpected keyword argument '{}'".format(
-                    complaint
-                )
+                f"loadTestsFromModule() got an unexpected keyword argument '{complaint}'"
             )
         tests = []
         for name in dir(module):
@@ -219,7 +216,7 @@ class TestLoader(object):
             testFunc = getattr(testCaseClass, attrname)
             if not callable(testFunc):
                 return False
-            fullName = f"%s.%s.%s" % (
+            fullName = "%s.%s.%s" % (
                 testCaseClass.__module__,
                 testCaseClass.__qualname__,
                 attrname,
@@ -284,7 +281,7 @@ class TestLoader(object):
                 the_module = sys.modules[start_dir]
                 top_part = start_dir.split(".")[0]
                 try:
-                    start_dir = os.path.abspath(os.path.dirname((the_module.__file__)))
+                    start_dir = os.path.abspath(os.path.dirname(the_module.__file__))
                 except AttributeError:
                     try:
                         spec = the_module.__spec__
@@ -306,11 +303,11 @@ class TestLoader(object):
                                 )
                     elif the_module.__name__ in sys.builtin_module_names:
                         raise TypeError(
-                            "Can not use builtin modules " "as dotted module names"
+                            "Can not use builtin modules as dotted module names"
                         ) from None
                     else:
                         raise TypeError(
-                            "don't know how to discover from {!r}".format(the_module)
+                            f"don't know how to discover from {the_module!r}"
                         ) from None
                 if set_implicit_top:
                     if not is_namespace:

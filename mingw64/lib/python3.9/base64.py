@@ -6,9 +6,9 @@
 # Modified 30-Dec-2003 by Barry Warsaw to add full RFC 3548 support
 # Modified 22-May-2007 by Guido van Rossum to use bytes everywhere
 
+import binascii
 import re
 import struct
-import binascii
 
 __all__ = [
     # Legacy interface exports traditional RFC 2045 Base64 encodings
@@ -392,7 +392,7 @@ def a85decode(b, *, foldspaces=False, adobe=False, ignorechars=b" \t\n\r\v"):
     if adobe:
         if not b.endswith(_A85END):
             raise ValueError(
-                "Ascii85 encoded byte sequences must end " "with {!r}".format(_A85END)
+                f"Ascii85 encoded byte sequences must end with {_A85END!r}"
             )
         if b.startswith(_A85START):
             b = b[2:-2]  # Strip off start/end markers
@@ -585,17 +585,21 @@ def decodebytes(s):
 # Usable as a script...
 def main():
     """Small main program"""
-    import sys, getopt
+    import getopt
+    import sys
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "deut")
     except getopt.error as msg:
         sys.stdout = sys.stderr
         print(msg)
-        print("""usage: %s [-d|-e|-u|-t] [file|-]
+        print(
+            """usage: %s [-d|-e|-u|-t] [file|-]
         -d, -u: decode
         -e: encode (default)
-        -t: encode and decode string 'Aladdin:open sesame'""" % sys.argv[0])
+        -t: encode and decode string 'Aladdin:open sesame'"""
+            % sys.argv[0]
+        )
         sys.exit(2)
     func = encode
     for o, a in opts:

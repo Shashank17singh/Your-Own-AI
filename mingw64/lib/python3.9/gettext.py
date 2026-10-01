@@ -45,33 +45,32 @@ internationalized, to the local language and cultural habits.
 # - Support Solaris .mo file formats.  Unfortunately, we've been unable to
 #   find this format documented anywhere.
 
-
 import os
 import re
 import sys
 
 __all__ = [
-    "NullTranslations",
-    "GNUTranslations",
     "Catalog",
-    "find",
-    "translation",
-    "install",
-    "textdomain",
-    "bindtextdomain",
+    "GNUTranslations",
+    "NullTranslations",
     "bind_textdomain_codeset",
+    "bindtextdomain",
     "dgettext",
     "dngettext",
+    "dnpgettext",
+    "dpgettext",
+    "find",
     "gettext",
-    "lgettext",
+    "install",
     "ldgettext",
     "ldngettext",
+    "lgettext",
     "lngettext",
     "ngettext",
-    "pgettext",
-    "dpgettext",
     "npgettext",
-    "dnpgettext",
+    "pgettext",
+    "textdomain",
+    "translation",
 ]
 
 _default_localedir = os.path.join(sys.base_prefix, "share", "locale")
@@ -230,7 +229,8 @@ def c2py(plural):
                 if not isinstance(n, int):
                     n = _as_int(n)
                 return int(%s)
-            """ % result,
+            """
+            % result,
             ns,
         )
         return ns["func"]
@@ -451,7 +451,7 @@ class GNUTranslations(NullTranslations):
 
         # Now put all messages from the .mo file buffer into the catalog
         # dictionary.
-        for i in range(0, msgcount):
+        for i in range(msgcount):
             mlen, moff = unpack(ii, buf[masteridx : masteridx + 8])
             mend = moff + mlen
             tlen, toff = unpack(ii, buf[transidx : transidx + 8])

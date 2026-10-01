@@ -3,10 +3,14 @@
 #   Unit test for multibytecodec itself
 #
 
+import _multibytecodec
+import codecs
+import io
+import sys
+import unittest
+
 from test import support
 from test.support import TESTFN
-import unittest, io, codecs, sys
-import _multibytecodec
 
 ALL_CJKENCODINGS = [
     # _codecs_cn
@@ -43,7 +47,6 @@ ALL_CJKENCODINGS = [
 
 
 class Test_MultibyteCodec(unittest.TestCase):
-
     def test_nullcoding(self):
         for enc in ALL_CJKENCODINGS:
             self.assertEqual(b"".decode(enc), "")
@@ -70,7 +73,7 @@ class Test_MultibyteCodec(unittest.TestCase):
     def test_codingspec(self):
         try:
             for enc in ALL_CJKENCODINGS:
-                code = "# coding: {}\n".format(enc)
+                code = f"# coding: {enc}\n"
                 exec(code)
         finally:
             support.unlink(TESTFN)
@@ -87,7 +90,6 @@ class Test_MultibyteCodec(unittest.TestCase):
 
 
 class Test_IncrementalEncoder(unittest.TestCase):
-
     def test_stateless(self):
         # cp949 encoder isn't stateful at all.
         encoder = codecs.getincrementalencoder("cp949")()
@@ -178,9 +180,7 @@ class Test_IncrementalEncoder(unittest.TestCase):
         buffer_state_encoder.encode("\u00e6")
         self.assertEqual(
             buffer_state_encoder.getstate(),
-            int.from_bytes(
-                b"\x02" b"\xc3\xa6" b"\x00\x00\x00\x00\x00\x00\x00\x00", "little"
-            ),
+            int.from_bytes(b"\x02\xc3\xa6\x00\x00\x00\x00\x00\x00\x00\x00", "little"),
         )
         buffer_state_encoder.encode("\u0300")
         self.assertEqual(buffer_state_encoder.getstate(), 0)
@@ -189,20 +189,18 @@ class Test_IncrementalEncoder(unittest.TestCase):
         non_buffer_state_encoder = codecs.getincrementalencoder("iso2022_jp")()
         self.assertEqual(
             non_buffer_state_encoder.getstate(),
-            int.from_bytes(b"\x00" b"\x42\x42\x00\x00\x00\x00\x00\x00", "little"),
+            int.from_bytes(b"\x00\x42\x42\x00\x00\x00\x00\x00\x00", "little"),
         )
         non_buffer_state_encoder.encode("\u3042")
         self.assertEqual(
             non_buffer_state_encoder.getstate(),
-            int.from_bytes(b"\x00" b"\xc2\x42\x00\x00\x00\x00\x00\x00", "little"),
+            int.from_bytes(b"\x00\xc2\x42\x00\x00\x00\x00\x00\x00", "little"),
         )
 
     def test_setstate_validates_input_size(self):
         encoder = codecs.getincrementalencoder("euc_jp")()
         pending_size_nine = int.from_bytes(
-            b"\x09"
-            b"\x00\x00\x00\x00\x00\x00\x00\x00"
-            b"\x00\x00\x00\x00\x00\x00\x00\x00",
+            b"\x09\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             "little",
         )
         self.assertRaises(UnicodeError, encoder.setstate, pending_size_nine)
@@ -210,7 +208,7 @@ class Test_IncrementalEncoder(unittest.TestCase):
     def test_setstate_validates_input_bytes(self):
         encoder = codecs.getincrementalencoder("euc_jp")()
         invalid_utf8 = int.from_bytes(
-            b"\x01" b"\xff" b"\x00\x00\x00\x00\x00\x00\x00\x00", "little"
+            b"\x01\xff\x00\x00\x00\x00\x00\x00\x00\x00", "little"
         )
         self.assertRaises(UnicodeDecodeError, encoder.setstate, invalid_utf8)
 
@@ -221,7 +219,6 @@ class Test_IncrementalEncoder(unittest.TestCase):
 
 
 class Test_IncrementalDecoder(unittest.TestCase):
-
     def test_dbcs(self):
         # cp949 decoder is simple with only 1 or 2 bytes sequences.
         decoder = codecs.getincrementaldecoder("cp949")()
@@ -334,7 +331,7 @@ class Test_StreamWriter(unittest.TestCase):
         c.write("\U00012345")
         self.assertEqual(s.getvalue(), b"123\xf0\x92\x8d\x85")
         c.write("\uac00\u00ac")
-        self.assertEqual(s.getvalue(), b"123\xf0\x92\x8d\x85" b"\xea\xb0\x80\xc2\xac")
+        self.assertEqual(s.getvalue(), b"123\xf0\x92\x8d\x85\xea\xb0\x80\xc2\xac")
 
     def test_streamwriter_strwrite(self):
         s = io.BytesIO()

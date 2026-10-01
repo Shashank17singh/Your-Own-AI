@@ -1,15 +1,14 @@
+import asyncio
 import os
 import signal
 import sys
 import unittest
 import warnings
+from asyncio import base_subprocess, subprocess
 from unittest import mock
 
-import asyncio
-from asyncio import base_subprocess
-from asyncio import subprocess
-from test.test_asyncio import utils as test_utils
 from test import support
+from test.test_asyncio import utils as test_utils
 
 if sys.platform != "win32":
     from asyncio import unix_events
@@ -102,7 +101,6 @@ class SubprocessTransportTests(test_utils.TestCase):
 
 
 class SubprocessMixin:
-
     def test_stdin_stdout(self):
         args = PROGRAM_CAT
 
@@ -676,7 +674,6 @@ class SubprocessMixin:
 if sys.platform != "win32":
     # Unix
     class SubprocessWatcherMixin(SubprocessMixin):
-
         Watcher = None
 
         def setUp(self):
@@ -698,21 +695,19 @@ if sys.platform != "win32":
             watcher.close()
 
     class SubprocessThreadedWatcherTests(SubprocessWatcherMixin, test_utils.TestCase):
-
         Watcher = unix_events.ThreadedChildWatcher
 
-    @unittest.skip("bpo-38323: MultiLoopChildWatcher has a race condition \
-                    and these tests can hang the test suite")
+    @unittest.skip(
+        "bpo-38323: MultiLoopChildWatcher has a race condition \
+                    and these tests can hang the test suite"
+    )
     class SubprocessMultiLoopWatcherTests(SubprocessWatcherMixin, test_utils.TestCase):
-
         Watcher = unix_events.MultiLoopChildWatcher
 
     class SubprocessSafeWatcherTests(SubprocessWatcherMixin, test_utils.TestCase):
-
         Watcher = unix_events.SafeChildWatcher
 
     class SubprocessFastWatcherTests(SubprocessWatcherMixin, test_utils.TestCase):
-
         Watcher = unix_events.FastChildWatcher
 
     def has_pidfd_support():
@@ -734,7 +729,6 @@ if sys.platform != "win32":
 else:
     # Windows
     class SubprocessProactorTests(SubprocessMixin, test_utils.TestCase):
-
         def setUp(self):
             super().setUp()
             self.loop = asyncio.ProactorEventLoop()
@@ -742,7 +736,6 @@ else:
 
 
 class GenericWatcherTests:
-
     def test_create_subprocess_fails_with_inactive_watcher(self):
 
         async def execute():

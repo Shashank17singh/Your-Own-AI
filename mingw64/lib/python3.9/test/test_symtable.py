@@ -49,7 +49,6 @@ def find_block(block, name):
 
 
 class SymtableTest(unittest.TestCase):
-
     top = symtable.symtable(TEST_CODE, "?", "exec")
     # These correspond to scopes in TEST_CODE
     Mine = find_block(top, "Mine")
@@ -187,11 +186,7 @@ class SymtableTest(unittest.TestCase):
         # Test that annotations for nonlocals are valid after the
         # variable is declared as nonlocal.
         st6 = symtable.symtable(
-            "def g():\n"
-            "    x = 2\n"
-            "    def f():\n"
-            "        nonlocal x\n"
-            "    x: int",
+            "def g():\n    x = 2\n    def f():\n        nonlocal x\n    x: int",
             "test",
             "exec",
         )

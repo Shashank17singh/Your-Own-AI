@@ -54,9 +54,9 @@ of 'x' ('_b_base_' is either None, or the root object owning the memory block):
 
 """
 
-import unittest, doctest
-
 import ctypes.test.test_objects
+import doctest
+import unittest
 
 
 class TestCase(unittest.TestCase):

@@ -1,11 +1,12 @@
-from ctypes import *
 import os
 import shutil
 import subprocess
 import sys
 import unittest
-import test.support
+from ctypes import *
 from ctypes.util import find_library
+
+import test.support
 
 libc_name = None
 
@@ -24,7 +25,6 @@ def setUpModule():
 
 
 class LoaderTest(unittest.TestCase):
-
     unknowndll = "xxrandomnamexx"
 
     def test_load(self):
@@ -87,7 +87,7 @@ class LoaderTest(unittest.TestCase):
 
     @unittest.skipUnless(os.name == "nt", "Windows-specific test")
     def test_1703286_A(self):
-        from _ctypes import LoadLibrary, FreeLibrary
+        from _ctypes import FreeLibrary, LoadLibrary
 
         # On winXP 64-bit, advapi32 loads at an address that does
         # NOT fit into a 32-bit integer.  FreeLibrary must be able

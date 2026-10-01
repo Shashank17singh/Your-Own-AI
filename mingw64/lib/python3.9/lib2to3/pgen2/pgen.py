@@ -9,8 +9,7 @@ class PgenGrammar(grammar.Grammar):
     pass
 
 
-class ParserGenerator(object):
-
+class ParserGenerator:
     def __init__(self, filename, stream=None):
         close_stream = None
         if stream is None:
@@ -342,8 +341,7 @@ class ParserGenerator(object):
         raise SyntaxError(msg, (self.filename, self.end[0], self.end[1], self.line))
 
 
-class NFAState(object):
-
+class NFAState:
     def __init__(self):
         self.arcs = []  # list of (label, NFAState) pairs
 
@@ -353,8 +351,7 @@ class NFAState(object):
         self.arcs.append((label, next))
 
 
-class DFAState(object):
-
+class DFAState:
     def __init__(self, nfaset, final):
         assert isinstance(nfaset, dict)
         assert isinstance(next(iter(nfaset)), NFAState)

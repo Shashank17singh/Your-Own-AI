@@ -1,9 +1,10 @@
 """Test the binascii C module."""
 
-import unittest
-import binascii
 import array
+import binascii
 import re
+import unittest
+
 from test import support
 
 # Note: "*_hex" functions are aliases for "(un)hexlify"
@@ -29,7 +30,6 @@ all_functions = a2b_functions + b2a_functions + ["crc32", "crc_hqx"]
 
 
 class BinASCIITest(unittest.TestCase):
-
     type2test = bytes
     # Create binary test data
     rawdata = b"The quick brown fox jumps over the lazy dog.\r\n"
@@ -63,13 +63,11 @@ class BinASCIITest(unittest.TestCase):
                 a = b2a(self.type2test(raw))
                 res = a2b(self.type2test(a))
             except Exception as err:
-                self.fail("{}/{} conversion raises {!r}".format(fb, fa, err))
+                self.fail(f"{fb}/{fa} conversion raises {err!r}")
             if fb == "b2a_hqx":
                 # b2a_hqx returns a tuple
                 res, _ = res
-            self.assertEqual(
-                res, raw, "{}/{} conversion: " "{!r} != {!r}".format(fb, fa, res, raw)
-            )
+            self.assertEqual(res, raw, f"{fb}/{fa} conversion: {res!r} != {raw!r}")
             self.assertIsInstance(res, bytes)
             self.assertIsInstance(a, bytes)
             self.assertLess(max(a), 128)
@@ -84,7 +82,7 @@ class BinASCIITest(unittest.TestCase):
             b = self.type2test(self.rawdata[i : i + MAX_BASE64])
             a = binascii.b2a_base64(b)
             lines.append(a)
-        res = bytes()
+        res = b""
         for line in lines:
             a = self.type2test(line)
             b = binascii.a2b_base64(a)
@@ -170,7 +168,7 @@ class BinASCIITest(unittest.TestCase):
                 b = self.type2test(self.rawdata[i : i + MAX_UU])
                 a = binascii.b2a_uu(b, backtick=backtick)
                 lines.append(a)
-            res = bytes()
+            res = b""
             for line in lines:
                 a = self.type2test(line)
                 b = binascii.a2b_uu(a)
@@ -388,7 +386,7 @@ class BinASCIITest(unittest.TestCase):
             try:
                 f(empty)
             except Exception as err:
-                self.fail("{}({!r}) raises {!r}".format(func, empty, err))
+                self.fail(f"{func}({empty!r}) raises {err!r}")
 
     def test_unicode_b2a(self):
         # Unicode strings are not accepted by b2a_* functions.
@@ -396,7 +394,7 @@ class BinASCIITest(unittest.TestCase):
             try:
                 self.assertRaises(TypeError, getattr(binascii, func), "test")
             except Exception as err:
-                self.fail('{}("test") raises {!r}'.format(func, err))
+                self.fail(f'{func}("test") raises {err!r}')
         # crc_hqx needs 2 arguments
         self.assertRaises(TypeError, binascii.crc_hqx, "test", 0)
 
@@ -417,14 +415,12 @@ class BinASCIITest(unittest.TestCase):
                 a = a.decode("ascii")
                 res = a2b(a)
             except Exception as err:
-                self.fail("{}/{} conversion raises {!r}".format(fb, fa, err))
+                self.fail(f"{fb}/{fa} conversion raises {err!r}")
             if fb == "b2a_hqx":
                 # b2a_hqx returns a tuple
                 res, _ = res
                 binary_res, _ = binary_res
-            self.assertEqual(
-                res, raw, "{}/{} conversion: " "{!r} != {!r}".format(fb, fa, res, raw)
-            )
+            self.assertEqual(res, raw, f"{fb}/{fa} conversion: {res!r} != {raw!r}")
             self.assertEqual(res, binary_res)
             self.assertIsInstance(res, bytes)
             # non-ASCII string

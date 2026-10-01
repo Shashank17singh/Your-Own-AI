@@ -30,7 +30,6 @@ import unittest
 # '/System/Library/Frameworks/IOKit.framework/Versions/A/IOKit'
 #
 # -bob
-
 from ctypes.macholib.dyld import dyld_find
 
 

@@ -1,13 +1,12 @@
 import string
 import unittest
 from email import _header_value_parser as parser
-from email import errors
-from email import policy
+from email import errors, policy
+
 from test.test_email import TestEmailBase, parameterize
 
 
 class TestTokens(TestEmailBase):
-
     # EWWhiteSpaceTerminal
 
     def test_EWWhiteSpaceTerminal(self):
@@ -19,7 +18,6 @@ class TestTokens(TestEmailBase):
 
 
 class TestParserMixin:
-
     def _assert_results(
         self, tl, rest, string, value, defects, remainder, comments=None
     ):
@@ -44,7 +42,6 @@ class TestParserMixin:
 
 
 class TestParser(TestParserMixin, TestEmailBase):
-
     # _wsp_splitter
 
     rfc_printable_ascii = bytes(range(33, 127)).decode("ascii")
@@ -321,7 +318,7 @@ class TestParser(TestParserMixin, TestEmailBase):
     def test_get_unstructured_undecodable_bytes_in_EW(self):
         self._test_get_x(
             self._get_unst,
-            (b"=?us-ascii?q?=20test?=   =?us-ascii?q?=20\xacfoo?=" b"  val").decode(
+            (b"=?us-ascii?q?=20test?=   =?us-ascii?q?=20\xacfoo?=  val").decode(
                 "ascii", "surrogateescape"
             ),
             " test \udcacfoo  val",
@@ -3186,7 +3183,6 @@ class TestParser(TestParserMixin, TestEmailBase):
 
 @parameterize
 class Test_parse_mime_parameters(TestParserMixin, TestEmailBase):
-
     def mime_parameters_as_value(self, value, tl_str, tl_value, params, defects):
         mime_parameters = self._test_parse_x(
             parser.parse_mime_parameters, value, tl_str, tl_value, defects
@@ -3296,7 +3292,6 @@ class Test_parse_mime_parameters(TestParserMixin, TestEmailBase):
 
 @parameterize
 class Test_parse_mime_version(TestParserMixin, TestEmailBase):
-
     def mime_version_as_value(self, value, tl_str, tl_value, major, minor, defects):
         mime_version = self._test_parse_x(
             parser.parse_mime_version, value, tl_str, tl_value, defects
@@ -3335,7 +3330,6 @@ class Test_parse_mime_version(TestParserMixin, TestEmailBase):
 
 
 class TestFolding(TestEmailBase):
-
     policy = policy.default
 
     def _test(self, tl, folded, policy=policy):
@@ -3377,9 +3371,7 @@ class TestFolding(TestEmailBase):
     def test_ews_combined_before_wrap(self):
         self._test(
             parser.get_unstructured(
-                "Mein Kaktus ist hübsch.  "
-                "Es beißt mich.  "
-                "And that's all I'm sayin."
+                "Mein Kaktus ist hübsch.  Es beißt mich.  And that's all I'm sayin."
             ),
             "Mein Kaktus ist =?utf-8?q?h=C3=BCbsch=2E__Es_bei=C3=9Ft?= "
             "mich.  And that's\n"
@@ -3412,8 +3404,7 @@ class TestFolding(TestEmailBase):
     def test_address_list_with_unicode_names(self):
         self._test(
             parser.get_address_list(
-                "Hübsch Kaktus <beautiful@example.com>, "
-                "beißt beißt <biter@example.com>"
+                "Hübsch Kaktus <beautiful@example.com>, beißt beißt <biter@example.com>"
             )[0],
             "=?utf-8?q?H=C3=BCbsch?= Kaktus <beautiful@example.com>,\n"
             " =?utf-8?q?bei=C3=9Ft_bei=C3=9Ft?= <biter@example.com>\n",

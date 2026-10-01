@@ -6,22 +6,24 @@ proactor is only implemented on Windows with IOCP.
 
 __all__ = ("BaseProactorEventLoop",)
 
+import collections
 import io
 import os
-import socket
-import warnings
 import signal
+import socket
 import threading
-import collections
+import warnings
 
-from . import base_events
-from . import constants
-from . import futures
-from . import exceptions
-from . import protocols
-from . import sslproto
-from . import transports
-from . import trsock
+from . import (
+    base_events,
+    constants,
+    exceptions,
+    futures,
+    protocols,
+    sslproto,
+    transports,
+    trsock,
+)
 from .log import logger
 
 
@@ -30,14 +32,14 @@ def _set_socket_extra(transport, sock):
 
     try:
         transport._extra["sockname"] = sock.getsockname()
-    except socket.error:
+    except OSError:
         if transport._loop.get_debug():
             logger.warning("getsockname() failed on %r", sock, exc_info=True)
 
     if "peername" not in transport._extra:
         try:
             transport._extra["peername"] = sock.getpeername()
-        except socket.error:
+        except OSError:
             # UDP sockets may not have a peer name
             transport._extra["peername"] = None
 
@@ -259,7 +261,7 @@ class _ProactorReadPipeTransport(_ProactorBasePipeTransport, transports.ReadTran
                 raise
             except BaseException as exc:
                 self._fatal_error(
-                    exc, "Fatal error: protocol.buffer_updated() " "call failed."
+                    exc, "Fatal error: protocol.buffer_updated() call failed."
                 )
                 return
         else:
@@ -331,8 +333,7 @@ class _ProactorBaseWritePipeTransport(
     def write(self, data):
         if not isinstance(data, (bytes, bytearray, memoryview)):
             raise TypeError(
-                f"data argument must be a bytes-like object, "
-                f"not {type(data).__name__}"
+                f"data argument must be a bytes-like object, not {type(data).__name__}"
             )
         if self._eof_written:
             raise RuntimeError("write_eof() already called")
@@ -613,7 +614,6 @@ class _ProactorSocketTransport(
 
 
 class BaseProactorEventLoop(base_events.BaseEventLoop):
-
     def __init__(self, proactor):
         super().__init__()
         logger.debug("Using proactor: %s", proactor.__class__.__name__)
@@ -712,7 +712,7 @@ class BaseProactorEventLoop(base_events.BaseEventLoop):
     async def _sock_sendfile_native(self, sock, file, offset, count):
         try:
             fileno = file.fileno()
-        except (AttributeError, io.UnsupportedOperation) as err:
+        except (AttributeError, io.UnsupportedOperation):
             raise exceptions.SendfileNotAvailableError("not a regular file")
         try:
             fsize = os.fstat(fileno).st_size
@@ -813,7 +813,7 @@ class BaseProactorEventLoop(base_events.BaseEventLoop):
         except OSError:
             if self._debug:
                 logger.debug(
-                    "Fail to write a null byte into the " "self-pipe socket",
+                    "Fail to write a null byte into the self-pipe socket",
                     exc_info=True,
                 )
 

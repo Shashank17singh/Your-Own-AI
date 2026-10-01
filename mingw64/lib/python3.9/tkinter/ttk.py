@@ -18,12 +18,14 @@ __all__ = [
     "Entry",
     "Frame",
     "Label",
-    "Labelframe",
     "LabelFrame",
+    "LabeledScale",
+    "Labelframe",
     "Menubutton",
     "Notebook",
-    "Panedwindow",
+    "OptionMenu",
     "PanedWindow",
+    "Panedwindow",
     "Progressbar",
     "Radiobutton",
     "Scale",
@@ -33,13 +35,11 @@ __all__ = [
     "Spinbox",
     "Style",
     "Treeview",
-    "LabeledScale",
-    "OptionMenu",
-    "tclobjs_to_py",
     "setup_master",
+    "tclobjs_to_py",
 ]
 import tkinter
-from tkinter import _flatten, _join, _stringify, _splitdict
+from tkinter import _flatten, _join, _splitdict, _stringify
 
 _REQUIRE_TILE = True if tkinter.TkVersion < 8.5 else False
 
@@ -50,7 +50,7 @@ def _load_tile(master):
 
         tilelib = os.environ.get("TILE_LIBRARY")
         if tilelib:
-            master.tk.eval("global auto_path; " "lappend auto_path {%s}" % tilelib)
+            master.tk.eval("global auto_path; lappend auto_path {%s}" % tilelib)
         master.tk.eval("package require tile")  # TclError may be raised here
         master._tile_loaded = True
 
@@ -312,7 +312,7 @@ def setup_master(master=None):
     return master
 
 
-class Style(object):
+class Style:
     """Manipulate style database."""
 
     _name = "ttk::style"

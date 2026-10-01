@@ -269,7 +269,6 @@ class async_chat(asyncore.dispatcher):
 
 
 class simple_producer:
-
     def __init__(self, data, buffer_size=512):
         self.data = data
         self.buffer_size = buffer_size

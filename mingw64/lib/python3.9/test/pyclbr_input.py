@@ -5,7 +5,7 @@ def f():
     pass
 
 
-class Other(object):
+class Other:
     @classmethod
     def foo(c):
         pass
@@ -14,7 +14,7 @@ class Other(object):
         pass
 
 
-class B(object):
+class B:
     def bm(self):
         pass
 

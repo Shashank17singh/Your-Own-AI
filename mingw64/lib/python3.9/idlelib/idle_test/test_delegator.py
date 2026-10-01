@@ -1,11 +1,10 @@
 "Test delegator, coverage 100%."
 
-from idlelib.delegator import Delegator
 import unittest
+from idlelib.delegator import Delegator
 
 
 class DelegatorTest(unittest.TestCase):
-
     def test_mydel(self):
         # Test a simple use scenario.
 

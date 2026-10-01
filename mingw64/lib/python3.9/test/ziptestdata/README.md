@@ -1,7 +1,7 @@
 # Test data for `test_zipfile`
 
 The test executables in this directory are created manually from header.sh and
-the `testdata_module_inside_zip.py` file.  You must have infozip's zip utility
+the `testdata_module_inside_zip.py` file. You must have infozip's zip utility
 installed (`apt install zip` on Debian).
 
 ## Purpose
@@ -13,7 +13,7 @@ zipimport machinery (that'd look for `__main__.py`) is not being used.
 ## Updating the test executables
 
 If you update header.sh or the testdata_module_inside_zip.py file, rerun the
-commands below.  These are expected to be rarely changed, if ever.
+commands below. These are expected to be rarely changed, if ever.
 
 ### Standard old format (2.0) zip file
 
@@ -32,4 +32,3 @@ zip -0 <testdata_module_inside_zip.py >zip64.zip
 cat header.sh zip64.zip >exe_with_z64
 rm zip64.zip
 ```
-

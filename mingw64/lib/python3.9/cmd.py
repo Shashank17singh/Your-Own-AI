@@ -42,7 +42,8 @@ listings of documented functions, miscellaneous topics, and undocumented
 functions respectively.
 """
 
-import string, sys
+import string
+import sys
 
 __all__ = ["Cmd"]
 
@@ -163,14 +164,12 @@ class Cmd:
 
     def preloop(self):
         """Hook method executed once when the cmdloop() method is called."""
-        pass
 
     def postloop(self):
         """Hook method executed once when the cmdloop() method is about to
         return.
 
         """
-        pass
 
     def parseline(self, line):
         """Parse the line into a command name and a string containing

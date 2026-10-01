@@ -10,14 +10,12 @@ __all__ = [
     "make_header",
 ]
 
-import re
 import binascii
-
-import email.quoprimime
 import email.base64mime
-
-from email.errors import HeaderParseError
+import email.quoprimime
+import re
 from email import charset as _charset
+from email.errors import HeaderParseError
 
 Charset = _charset.Charset
 
@@ -55,11 +53,11 @@ fcre = re.compile(r"[\041-\176]+:$")
 # header injection attack.
 _embedded_header = re.compile(r"\n[^ \t]+:")
 
-
+
 # Helpers
 _max_append = email.quoprimime._max_append
 
-
+
 def decode_header(header):
     """Decode a message header value without converting charset.
 
@@ -155,7 +153,7 @@ def decode_header(header):
     collapsed.append((last_word, last_charset))
     return collapsed
 
-
+
 def make_header(decoded_seq, maxlinelen=None, header_name=None, continuation_ws=" "):
     """Create a Header from a sequence of pairs as returned by decode_header()
 
@@ -177,7 +175,7 @@ def make_header(decoded_seq, maxlinelen=None, header_name=None, continuation_ws=
         h.append(s, charset)
     return h
 
-
+
 class Header:
     def __init__(
         self,
@@ -394,8 +392,7 @@ class Header:
         value = formatter._str(linesep)
         if _embedded_header.search(value):
             raise HeaderParseError(
-                "header value appears to contain "
-                "an embedded header: {!r}".format(value)
+                f"header value appears to contain an embedded header: {value!r}"
             )
         return value
 
@@ -417,7 +414,7 @@ class Header:
             chunks.append((SPACE.join(last_chunk), last_charset))
         self._chunks = chunks
 
-
+
 class _ValueFormatter:
     def __init__(self, headerlen, maxlen, continuation_ws, splitchars):
         self._maxlen = maxlen
@@ -547,7 +544,6 @@ class _ValueFormatter:
 
 
 class _Accumulator(list):
-
     def __init__(self, initial_size=0):
         self._initial_size = initial_size
         super().__init__()

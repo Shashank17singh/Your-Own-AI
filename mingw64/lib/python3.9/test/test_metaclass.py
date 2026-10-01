@@ -258,8 +258,7 @@ else:
 
 
 def test_main(verbose=False):
-    from test import support
-    from test import test_metaclass
+    from test import support, test_metaclass
 
     support.run_doctest(test_metaclass, verbose)
 

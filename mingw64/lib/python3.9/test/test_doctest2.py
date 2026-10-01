@@ -13,13 +13,14 @@ the example.  It should be ignored:
 
 import sys
 import unittest
+
 from test import support
 
 if sys.flags.optimize >= 2:
     raise unittest.SkipTest("Cannot test docstrings with -O2")
 
 
-class C(object):
+class C:
     """Class C.
 
     >>> print(C())  # 2
@@ -47,7 +48,7 @@ class C(object):
         """
         return "42"
 
-    class D(object):
+    class D:
         """A nested D class.
 
         >>> print("In D!")   # 5

@@ -1,9 +1,10 @@
 """Test that sys.modules is used properly by import."""
 
-from .. import util
 import sys
-from types import MethodType
 import unittest
+from types import MethodType
+
+from .. import util
 
 
 class UseCache:
@@ -43,7 +44,6 @@ Frozen_UseCache, Source_UseCache = util.test_both(UseCache, __import__=util.__im
 
 
 class ImportlibUseCache(UseCache, unittest.TestCase):
-
     # Pertinent only to PEP 302; exec_module() doesn't return a module.
 
     __import__ = util.__import__["Source"]

@@ -82,7 +82,7 @@ def deep_items(type_):
                 yield i
 
 
-class TypePrinter(object):
+class TypePrinter:
     """The base class for type printers.
     Instances of this type can be used to substitute type names during
     'ptype'.
@@ -108,7 +108,6 @@ def _get_some_type_recognizers(result, plist):
             inst = printer.instantiate()
             if inst is not None:
                 result.append(inst)
-    return None
 
 
 def get_type_recognizers():

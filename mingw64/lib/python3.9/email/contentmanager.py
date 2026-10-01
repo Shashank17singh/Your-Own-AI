@@ -1,12 +1,11 @@
 import binascii
 import email.charset
-import email.message
 import email.errors
+import email.message
 from email import quoprimime
 
 
 class ContentManager:
-
     def __init__(self):
         self.get_handlers = {}
         self.set_handlers = {}
@@ -75,7 +74,7 @@ def get_non_text_content(msg):
     return msg.get_payload(decode=True)
 
 
-for maintype in "audio image video application".split():
+for maintype in ["audio", "image", "video", "application"]:
     raw_data_manager.add_get_handler(maintype, get_non_text_content)
 
 
@@ -83,7 +82,7 @@ def get_message_content(msg):
     return msg.get_payload(0)
 
 
-for subtype in "rfc822 external-body".split():
+for subtype in ["rfc822", "external-body"]:
     raw_data_manager.add_get_handler("message/" + subtype, get_message_content)
 
 
@@ -116,7 +115,7 @@ def _prepare_set(msg, maintype, subtype, headers):
                 msg[header.name] = header
         except email.errors.HeaderDefect as exc:
             raise ValueError(
-                "Invalid header: {}".format(header.fold(policy=msg.policy))
+                f"Invalid header: {header.fold(policy=msg.policy)}"
             ) from exc
 
 
@@ -189,7 +188,7 @@ def _encode_text(string, charset, cte, policy):
     elif cte == "base64":
         data = _encode_base64(embedded_body(lines), policy.max_line_length)
     else:
-        raise ValueError("Unknown content transfer encoding {}".format(cte))
+        raise ValueError(f"Unknown content transfer encoding {cte}")
     return cte, data
 
 
@@ -232,7 +231,7 @@ def set_message_content(
     if subtype == "rfc822":
         if cte not in (None, "7bit", "8bit", "binary"):
             # http://tools.ietf.org/html/rfc2046#section-5.2.1 mandate.
-            raise ValueError("message/rfc822 parts do not support cte={}".format(cte))
+            raise ValueError(f"message/rfc822 parts do not support cte={cte}")
         # 8bit will get coerced on serialization if policy.cte_type='7bit'.  We
         # may end up claiming 8bit when it isn't needed, but the only negative
         # result of that should be a gateway that needs to coerce to 7bit
@@ -242,9 +241,7 @@ def set_message_content(
     elif subtype == "external-body":
         if cte not in (None, "7bit"):
             # http://tools.ietf.org/html/rfc2046#section-5.2.3 mandate.
-            raise ValueError(
-                "message/external-body parts do not support cte={}".format(cte)
-            )
+            raise ValueError(f"message/external-body parts do not support cte={cte}")
         cte = "7bit"
     elif cte is None:
         # http://tools.ietf.org/html/rfc2046#section-5.2.4 says all future

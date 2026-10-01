@@ -1,14 +1,13 @@
 from test import support
 
 support.import_module("dbm.ndbm")  # skip if not supported
+import dbm.ndbm
 import os
 import unittest
-import dbm.ndbm
 from dbm.ndbm import error
 
 
 class DbmTestCase(unittest.TestCase):
-
     def setUp(self):
         self.filename = support.TESTFN
         self.d = dbm.ndbm.open(self.filename, "c")
@@ -41,7 +40,7 @@ class DbmTestCase(unittest.TestCase):
     def test_empty_value(self):
         if dbm.ndbm.library == "Berkeley DB":
             self.skipTest(
-                "Berkeley DB doesn't distinguish the empty value " "from the absent one"
+                "Berkeley DB doesn't distinguish the empty value from the absent one"
             )
         self.d = dbm.ndbm.open(self.filename, "c")
         self.assertEqual(self.d.keys(), [])

@@ -1,9 +1,10 @@
-from test.support import verbose, TestFailed
 import locale
-import sys
 import re
-import test.support as support
+import sys
 import unittest
+
+from test import support
+from test.support import TestFailed, verbose
 
 maxsize = support.MAX_Py_ssize_t
 
@@ -16,9 +17,9 @@ maxsize = support.MAX_Py_ssize_t
 def testformat(formatstr, args, output=None, limit=None, overflowok=False):
     if verbose:
         if output:
-            print("{!a} % {!a} =? {!a} ...".format(formatstr, args, output), end=" ")
+            print(f"{formatstr!a} % {args!a} =? {output!a} ...", end=" ")
         else:
-            print("{!a} % {!a} works? ...".format(formatstr, args), end=" ")
+            print(f"{formatstr!a} % {args!a} works? ...", end=" ")
     try:
         result = formatstr % args
     except OverflowError:
@@ -106,7 +107,6 @@ def test_exc_common(formatstr, args, exception, excmsg):
 
 
 class FormatTest(unittest.TestCase):
-
     def test_common_format(self):
         # test the format identifiers that work the same across
         # str, bytes, and bytearrays (integer, float, oct, hex)
@@ -366,7 +366,7 @@ class FormatTest(unittest.TestCase):
 
         # %b will insert a series of bytes, either from a type that supports
         # the Py_buffer protocol, or something that has a __bytes__ method
-        class FakeBytes(object):
+        class FakeBytes:
             def __bytes__(self):
                 return b"123"
 
@@ -493,7 +493,7 @@ class FormatTest(unittest.TestCase):
             oldloc = locale.setlocale(locale.LC_ALL)
             locale.setlocale(locale.LC_ALL, "")
         except locale.Error as err:
-            self.skipTest("Cannot set locale: {}".format(err))
+            self.skipTest(f"Cannot set locale: {err}")
         try:
             localeconv = locale.localeconv()
             sep = localeconv["thousands_sep"]
@@ -523,12 +523,12 @@ class FormatTest(unittest.TestCase):
         self.assertIs("%1s" % text, text)
         self.assertIs("%5s" % text, text)
 
-        self.assertIs("{0}".format(text), text)
-        self.assertIs("{0:s}".format(text), text)
-        self.assertIs("{0:.5s}".format(text), text)
-        self.assertIs("{0:.10s}".format(text), text)
-        self.assertIs("{0:1s}".format(text), text)
-        self.assertIs("{0:5s}".format(text), text)
+        self.assertIs(f"{text}", text)
+        self.assertIs(f"{text:s}", text)
+        self.assertIs(f"{text:.5s}", text)
+        self.assertIs(f"{text:.10s}", text)
+        self.assertIs(f"{text:1s}", text)
+        self.assertIs(f"{text:5s}", text)
 
         self.assertIs(text % (), text)
         self.assertIs(text.format(), text)
@@ -572,22 +572,22 @@ class FormatTest(unittest.TestCase):
     def test_with_two_commas_in_format_specifier(self):
         error_msg = re.escape("Cannot specify ',' with ','.")
         with self.assertRaisesRegex(ValueError, error_msg):
-            "{:,,}".format(1)
+            f"{1:,,}"
 
     def test_with_two_underscore_in_format_specifier(self):
         error_msg = re.escape("Cannot specify '_' with '_'.")
         with self.assertRaisesRegex(ValueError, error_msg):
-            "{:__}".format(1)
+            f"{1:__}"
 
     def test_with_a_commas_and_an_underscore_in_format_specifier(self):
         error_msg = re.escape("Cannot specify both ',' and '_'.")
         with self.assertRaisesRegex(ValueError, error_msg):
-            "{:,_}".format(1)
+            f"{1:,_}"
 
     def test_with_an_underscore_and_a_comma_in_format_specifier(self):
         error_msg = re.escape("Cannot specify both ',' and '_'.")
         with self.assertRaisesRegex(ValueError, error_msg):
-            "{:_,}".format(1)
+            f"{1:_,}"
 
 
 if __name__ == "__main__":

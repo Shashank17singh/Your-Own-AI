@@ -1,8 +1,9 @@
-from ctypes import *
 import contextlib
-from test import support
-import unittest
 import sys
+import unittest
+from ctypes import *
+
+from test import support
 
 
 def callback_func(arg):
@@ -52,7 +53,7 @@ class CallbackTracbackTestCase(unittest.TestCase):
                 self.assertEqual(str(cm.unraisable.exc_value), exc_msg)
             self.assertEqual(
                 cm.unraisable.err_msg,
-                "Exception ignored on calling ctypes " "callback function",
+                "Exception ignored on calling ctypes callback function",
             )
             self.assertIs(cm.unraisable.object, callback_func)
 

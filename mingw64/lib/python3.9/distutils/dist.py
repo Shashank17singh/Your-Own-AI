@@ -4,9 +4,9 @@ Provides the Distribution class, which represents the module distribution
 being built/installed/distributed.
 """
 
-import sys
 import os
 import re
+import sys
 from email import message_from_file
 
 try:
@@ -14,11 +14,11 @@ try:
 except ImportError:
     warnings = None
 
-from distutils.errors import *
-from distutils.fancy_getopt import FancyGetopt, translate_longopt
-from distutils.util import check_environ, strtobool, rfc822_escape
 from distutils import log
 from distutils.debug import DEBUG
+from distutils.errors import *
+from distutils.fancy_getopt import FancyGetopt, translate_longopt
+from distutils.util import check_environ, rfc822_escape, strtobool
 
 # Regex to define acceptable Distutils command names.  This is not *quite*
 # the same as a Python NAME -- I don't allow leading underscores.  The fact
@@ -633,8 +633,8 @@ Common commands: (see '--help-commands' for more)
         in 'commands'.
         """
         # late import because of mutual dependence between these modules
-        from distutils.core import gen_usage
         from distutils.cmd import Command
+        from distutils.core import gen_usage
 
         if global_options:
             if display_options:
@@ -643,7 +643,7 @@ Common commands: (see '--help-commands' for more)
                 options = self.global_options
             parser.set_option_table(options)
             parser.print_help(self.common_usage + "\nGlobal options:")
-            print("")
+            print()
 
         if display_options:
             parser.set_option_table(self.display_options)
@@ -651,7 +651,7 @@ Common commands: (see '--help-commands' for more)
                 "Information display options (just display "
                 + "information, ignore any commands)"
             )
-            print("")
+            print()
 
         for command in self.commands:
             if isinstance(command, type) and issubclass(command, Command):
@@ -665,7 +665,7 @@ Common commands: (see '--help-commands' for more)
             else:
                 parser.set_option_table(klass.user_options)
             parser.print_help("Options for '%s' command:" % klass.__name__)
-            print("")
+            print()
 
         print(gen_usage(self.script_name))
 
@@ -682,7 +682,7 @@ Common commands: (see '--help-commands' for more)
         # we ignore "foo bar").
         if self.help_commands:
             self.print_commands()
-            print("")
+            print()
             print(gen_usage(self.script_name))
             return 1
 
@@ -747,8 +747,7 @@ Common commands: (see '--help-commands' for more)
 
         max_length = 0
         for cmd in std_commands + extra_commands:
-            if len(cmd) > max_length:
-                max_length = len(cmd)
+            max_length = max(max_length, len(cmd))
 
         self.print_command_list(std_commands, "Standard commands", max_length)
         if extra_commands:

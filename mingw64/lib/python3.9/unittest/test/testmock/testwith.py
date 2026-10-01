@@ -1,7 +1,7 @@
 import unittest
-from warnings import catch_warnings
+from unittest.mock import MagicMock, Mock, call, mock_open, patch, sentinel
 from unittest.test.testmock.support import is_instance
-from unittest.mock import MagicMock, Mock, patch, sentinel, mock_open, call
+from warnings import catch_warnings
 
 something = sentinel.Something
 something_else = sentinel.SomethingElse
@@ -33,7 +33,7 @@ class WithTest(unittest.TestCase):
         self.assertEqual(something, sentinel.Something)
 
     def test_patch_object_with_statement(self):
-        class Foo(object):
+        class Foo:
             something = "foo"
 
         original = Foo.something
@@ -43,9 +43,10 @@ class WithTest(unittest.TestCase):
 
     def test_with_statement_nested(self):
         with catch_warnings(record=True):
-            with patch("%s.something" % __name__) as mock_something, patch(
-                "%s.something_else" % __name__
-            ) as mock_something_else:
+            with (
+                patch("%s.something" % __name__) as mock_something,
+                patch("%s.something_else" % __name__) as mock_something_else,
+            ):
                 self.assertEqual(something, mock_something, "unpatched")
                 self.assertEqual(something_else, mock_something_else, "unpatched")
         self.assertEqual(something, sentinel.Something)
@@ -69,9 +70,8 @@ class WithTest(unittest.TestCase):
 
     def test_context_manager_with_magic_mock(self):
         mock = MagicMock()
-        with self.assertRaises(TypeError):
-            with mock:
-                "foo" + 3
+        with self.assertRaises(TypeError), mock:
+            "foo" + 3
         mock.__enter__.assert_called_with()
         self.assertTrue(mock.__exit__.called)
 
@@ -96,10 +96,9 @@ class WithTest(unittest.TestCase):
         with patch.dict(foo, {"a": "b"}):
             self.assertEqual(foo, {"a": "b"})
         self.assertEqual(foo, {})
-        with self.assertRaises(NameError):
-            with patch.dict(foo, {"a": "b"}):
-                self.assertEqual(foo, {"a": "b"})
-                raise NameError("Konrad")
+        with self.assertRaises(NameError), patch.dict(foo, {"a": "b"}):
+            self.assertEqual(foo, {"a": "b"})
+            raise NameError("Konrad")
         self.assertEqual(foo, {})
 
     def test_double_patch_instance_method(self):
@@ -128,9 +127,8 @@ class TestMockOpen(unittest.TestCase):
     def test_mock_open_context_manager(self):
         mock = mock_open()
         handle = mock.return_value
-        with patch("%s.open" % __name__, mock, create=True):
-            with open("foo") as f:
-                f.read()
+        with patch("%s.open" % __name__, mock, create=True), open("foo") as f:
+            f.read()
         expected_calls = [
             call("foo"),
             call().__enter__(),

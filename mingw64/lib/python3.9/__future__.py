@@ -79,7 +79,6 @@ CO_FUTURE_ANNOTATIONS = 0x1000000  # annotations become strings at runtime
 
 
 class _Feature:
-
     def __init__(self, optionalRelease, mandatoryRelease, compiler_flag):
         self.optional = optionalRelease
         self.mandatory = mandatoryRelease

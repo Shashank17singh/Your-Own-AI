@@ -76,7 +76,6 @@ LOCALHOST = "127.0.0.1"
 
 
 class RPCServer(socketserver.TCPServer):
-
     def __init__(self, addr, handlerclass=None):
         if handlerclass is None:
             handlerclass = RPCHandler
@@ -84,7 +83,6 @@ class RPCServer(socketserver.TCPServer):
 
     def server_bind(self):
         "Override TCPServer method, no bind() phase for connecting entity"
-        pass
 
     def server_activate(self):
         """Override TCPServer method, connect() instead of listen()
@@ -132,7 +130,6 @@ response_queue = queue.Queue(0)
 
 
 class SocketIO:
-
     nextseq = 0
 
     def __init__(self, sock, objtable=None, debugging=None):
@@ -490,7 +487,6 @@ class SocketIO:
 
     def EOFhook(self):
         "Classes using rpc client/server can override to augment EOF action"
-        pass
 
 
 # ----------------- end class SocketIO --------------------
@@ -508,13 +504,11 @@ def remoteref(obj):
 
 
 class RemoteProxy:
-
     def __init__(self, oid):
         self.oid = oid
 
 
 class RPCHandler(socketserver.BaseRequestHandler, SocketIO):
-
     debugging = False
     location = "#S"  # Server
 
@@ -532,7 +526,6 @@ class RPCHandler(socketserver.BaseRequestHandler, SocketIO):
 
 
 class RPCClient(SocketIO):
-
     debugging = False
     location = "#C"  # Client
 
@@ -558,7 +551,6 @@ class RPCClient(SocketIO):
 
 
 class RPCProxy:
-
     __methods = None
     __attributes = None
 
@@ -606,7 +598,6 @@ def _getattributes(obj, attributes):
 
 
 class MethodProxy:
-
     def __init__(self, sockio, oid, name):
         self.sockio = sockio
         self.oid = oid

@@ -1,15 +1,17 @@
 import os
-import sys
-import ssl
 import pprint
+import ssl
+import sys
 import threading
 import urllib.parse
+from http.server import (
+    BaseHTTPRequestHandler,
+    SimpleHTTPRequestHandler,
+)
 
 # Rename HTTPServer to _HTTPServer so as to avoid confusion with HTTPSServer.
 from http.server import (
     HTTPServer as _HTTPServer,
-    SimpleHTTPRequestHandler,
-    BaseHTTPRequestHandler,
 )
 
 from test import support
@@ -24,7 +26,6 @@ CERTFILE = os.path.join(here, "keycert.pem")
 
 
 class HTTPSServer(_HTTPServer):
-
     def __init__(self, server_address, handler_class, context):
         _HTTPServer.__init__(self, server_address, handler_class)
         self.context = context
@@ -129,7 +130,6 @@ class StatsRequestHandler(BaseHTTPRequestHandler):
 
 
 class HTTPSServerThread(threading.Thread):
-
     def __init__(self, context, host=HOST, handler_class=None):
         self.flag = None
         self.server = HTTPSServer(
@@ -248,5 +248,5 @@ if __name__ == "__main__":
 
     server = HTTPSServer(("", args.port), handler_class, context)
     if args.verbose:
-        print("Listening on https://localhost:{0.port}".format(args))
+        print(f"Listening on https://localhost:{args.port}")
     server.serve_forever(0.1)

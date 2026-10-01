@@ -22,51 +22,51 @@ defpath = "/bin:/usr/bin"
 altsep = None
 devnull = "/dev/null"
 
-import os
-import sys
-import stat
 import genericpath
+import os
+import stat
+import sys
 from genericpath import *
 
 __all__ = [
-    "normcase",
-    "isabs",
-    "join",
-    "splitdrive",
-    "split",
-    "splitext",
+    "abspath",
+    "altsep",
     "basename",
-    "dirname",
+    "commonpath",
     "commonprefix",
-    "getsize",
-    "getmtime",
-    "getatime",
-    "getctime",
-    "islink",
+    "curdir",
+    "defpath",
+    "devnull",
+    "dirname",
     "exists",
-    "lexists",
-    "isdir",
-    "isfile",
-    "ismount",
     "expanduser",
     "expandvars",
+    "extsep",
+    "getatime",
+    "getctime",
+    "getmtime",
+    "getsize",
+    "isabs",
+    "isdir",
+    "isfile",
+    "islink",
+    "ismount",
+    "join",
+    "lexists",
+    "normcase",
     "normpath",
-    "abspath",
+    "pardir",
+    "pathsep",
+    "realpath",
+    "relpath",
     "samefile",
     "sameopenfile",
     "samestat",
-    "curdir",
-    "pardir",
     "sep",
-    "pathsep",
-    "defpath",
-    "altsep",
-    "extsep",
-    "devnull",
-    "realpath",
+    "split",
+    "splitdrive",
+    "splitext",
     "supports_unicode_filenames",
-    "relpath",
-    "commonpath",
 ]
 
 

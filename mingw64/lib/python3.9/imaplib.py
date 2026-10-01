@@ -22,8 +22,16 @@ Public functions:       Internaldate2tuple
 
 __version__ = "2.58"
 
-import binascii, errno, random, re, socket, subprocess, sys, time, calendar
-from datetime import datetime, timezone, timedelta
+import binascii
+import calendar
+import errno
+import random
+import re
+import socket
+import subprocess
+import sys
+import time
+from datetime import datetime, timedelta, timezone
 from io import DEFAULT_BUFFER_SIZE
 
 try:
@@ -36,8 +44,8 @@ except ImportError:
 __all__ = [
     "IMAP4",
     "IMAP4_stream",
-    "Internaldate2tuple",
     "Int2AP",
+    "Internaldate2tuple",
     "ParseFlags",
     "Time2Internaldate",
 ]
@@ -1073,7 +1081,6 @@ class IMAP4:
             # Is there a literal to come?
 
             while self._match(self.Literal, dat):
-
                 # Read literal direct from connection.
 
                 size = int(self.mo.group("size"))
@@ -1131,7 +1138,7 @@ class IMAP4:
 
             try:
                 self._get_response()
-            except self.abort as val:
+            except self.abort:
                 if __debug__:
                     if self.debug >= 1:
                         self.print_log()
@@ -1268,11 +1275,11 @@ if HAVE_SSL:
         ):
             if ssl_context is not None and keyfile is not None:
                 raise ValueError(
-                    "ssl_context and keyfile arguments are mutually " "exclusive"
+                    "ssl_context and keyfile arguments are mutually exclusive"
                 )
             if ssl_context is not None and certfile is not None:
                 raise ValueError(
-                    "ssl_context and certfile arguments are mutually " "exclusive"
+                    "ssl_context and certfile arguments are mutually exclusive"
                 )
             if keyfile is not None or certfile is not None:
                 import warnings
@@ -1405,7 +1412,21 @@ class _Authenticator:
         return binascii.a2b_base64(inp)
 
 
-Months = " Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")
+Months = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+]
 Mon2num = {s.encode(): n + 1 for n, s in enumerate(Months[1:])}
 
 
@@ -1499,21 +1520,21 @@ def Time2Internaldate(date_time):
         return date_time  # Assume in correct format
     else:
         raise ValueError("date_time not of a known type")
-    fmt = '"%d-{}-%Y %H:%M:%S %z"'.format(Months[dt.month])
+    fmt = f'"%d-{Months[dt.month]}-%Y %H:%M:%S %z"'
     return dt.strftime(fmt)
 
 
 if __name__ == "__main__":
-
     # To test: invoke either as 'python imaplib.py [IMAP4_server_hostname]'
     # or 'python imaplib.py -s "rsh IMAP4_server_hostname exec /etc/rimapd"'
     # to test the IMAP4_stream class
 
-    import getopt, getpass
+    import getopt
+    import getpass
 
     try:
         optlist, args = getopt.getopt(sys.argv[1:], "d:s:")
-    except getopt.error as val:
+    except getopt.error:
         optlist, args = (), ()
 
     stream_command = None
@@ -1619,9 +1640,12 @@ if __name__ == "__main__":
         print("\nTests failed.")
 
         if not Debug:
-            print("""
+            print(
+                """
 If you would like to see debugging output,
 try: %s -d5
-""" % sys.argv[0])
+"""
+                % sys.argv[0]
+            )
 
         raise

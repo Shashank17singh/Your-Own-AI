@@ -1,6 +1,7 @@
-import sndhdr
 import pickle
+import sndhdr
 import unittest
+
 from test.support import findfile
 
 

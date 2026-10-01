@@ -24,10 +24,7 @@
   "definitions": {
     "codemodelVersionV2_9": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -42,19 +39,13 @@
     },
     "backtraceGraph": {
       "type": "object",
-      "required": [
-        "nodes",
-        "commands",
-        "files"
-      ],
+      "required": ["nodes", "commands", "files"],
       "properties": {
         "nodes": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "file"
-            ],
+            "required": ["file"],
             "properties": {
               "file": {
                 "type": "integer",
@@ -99,10 +90,7 @@
     },
     "paths": {
       "type": "object",
-      "required": [
-        "source",
-        "build"
-      ],
+      "required": ["source", "build"],
       "properties": {
         "source": {
           "type": "string",
@@ -144,10 +132,7 @@
                 "description": "Path to which the file/directory is installed under the destination"
               }
             },
-            "required": [
-              "from",
-              "to"
-            ]
+            "required": ["from", "to"]
           }
         ]
       }
@@ -167,15 +152,11 @@
     },
     "installerItemTypesV2_4": {
       "type": "string",
-      "enum": [
-        "fileSet"
-      ]
+      "enum": ["fileSet"]
     },
     "installerItemTypesV2_5": {
       "type": "string",
-      "enum": [
-        "cxxModuleBmi"
-      ]
+      "enum": ["cxxModuleBmi"]
     },
     "installerTypeV2_0": {
       "$ref": "#/definitions/installerItemTypesV2_0",
@@ -233,10 +214,7 @@
     },
     "installerTargetInstallNamelink": {
       "type": "string",
-      "enum": [
-        "skip",
-        "only"
-      ],
+      "enum": ["skip", "only"],
       "description": "How to handle symlinks for VERSION/SOVERSION target properties"
     },
     "installerExportName": {
@@ -259,10 +237,7 @@
           }
         },
         "additionalProperties": false,
-        "required": [
-          "id",
-          "index"
-        ]
+        "required": ["id", "index"]
       }
     },
     "installerRuntimeDependencySetName": {
@@ -271,10 +246,7 @@
     },
     "installerRuntimeDependencySetType": {
       "type": "string",
-      "enum": [
-        "library",
-        "framework"
-      ],
+      "enum": ["library", "framework"],
       "description": "Type of runtime dependency set"
     },
     "installerScriptFile": {
@@ -303,10 +275,7 @@
     },
     "installerFileSetTargetV2_4": {
       "type": "object",
-      "required": [
-        "id",
-        "index"
-      ],
+      "required": ["id", "index"],
       "properties": {
         "id": {
           "type": "string",
@@ -337,10 +306,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "component",
-          "type"
-        ],
+        "required": ["component", "type"],
         "properties": {
           "component": {
             "$ref": "#/definitions/installerComponent"
@@ -401,10 +367,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "component",
-          "type"
-        ],
+        "required": ["component", "type"],
         "properties": {
           "component": {
             "$ref": "#/definitions/installerComponent"
@@ -477,10 +440,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "component",
-          "type"
-        ],
+        "required": ["component", "type"],
         "properties": {
           "component": {
             "$ref": "#/definitions/installerComponent"
@@ -553,11 +513,7 @@
       }
     },
     "codemodelV2_0": {
-      "required": [
-        "backtraceGraph",
-        "paths",
-        "installers"
-      ],
+      "required": ["backtraceGraph", "paths", "installers"],
       "properties": {
         "backtraceGraph": {
           "$ref": "#/definitions/backtraceGraph"
@@ -572,11 +528,7 @@
       "additionalProperties": false
     },
     "codemodelV2_4": {
-      "required": [
-        "backtraceGraph",
-        "paths",
-        "installers"
-      ],
+      "required": ["backtraceGraph", "paths", "installers"],
       "properties": {
         "backtraceGraph": {
           "$ref": "#/definitions/backtraceGraph"
@@ -591,11 +543,7 @@
       "additionalProperties": false
     },
     "codemodelV2_5": {
-      "required": [
-        "backtraceGraph",
-        "paths",
-        "installers"
-      ],
+      "required": ["backtraceGraph", "paths", "installers"],
       "properties": {
         "backtraceGraph": {
           "$ref": "#/definitions/backtraceGraph"
@@ -610,12 +558,7 @@
       "additionalProperties": false
     },
     "codemodelV2_9": {
-      "required": [
-        "codemodelVersion",
-        "backtraceGraph",
-        "paths",
-        "installers"
-      ],
+      "required": ["codemodelVersion", "backtraceGraph", "paths", "installers"],
       "properties": {
         "codemodelVersion": {
           "$ref": "#/definitions/codemodelVersionV2_9"

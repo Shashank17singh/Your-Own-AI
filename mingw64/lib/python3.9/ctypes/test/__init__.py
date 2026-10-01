@@ -1,5 +1,6 @@
 import os
 import unittest
+
 from test import support
 
 # skip tests if _ctypes was not built
@@ -8,7 +9,7 @@ ctypes_symbols = dir(ctypes)
 
 
 def need_symbol(name):
-    return unittest.skipUnless(name in ctypes_symbols, "{!r} is required".format(name))
+    return unittest.skipUnless(name in ctypes_symbols, f"{name!r} is required")
 
 
 def load_tests(*args):

@@ -1,8 +1,7 @@
 import linecache
 import traceback
 
-from . import base_futures
-from . import coroutines
+from . import base_futures, coroutines
 
 
 def _task_repr_info(task):

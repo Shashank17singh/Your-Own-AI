@@ -6,7 +6,6 @@ import codecs
 
 
 class Codec(codecs.Codec):
-
     def encode(self, input, errors="strict"):
         return codecs.charmap_encode(input, errors, encoding_map)
 

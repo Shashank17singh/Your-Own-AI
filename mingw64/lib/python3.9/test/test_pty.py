@@ -1,16 +1,16 @@
-from test.support import verbose, import_module, reap_children
+from test.support import import_module, reap_children, verbose
 
 # Skip these tests if termios is not available
 import_module("termios")
 
 import errno
-import pty
+import io  # readline
 import os
-import sys
+import pty
 import select
 import signal
 import socket
-import io  # readline
+import sys
 import unittest
 
 TEST_STRING_1 = b"I wish to buy a fish license.\n"
@@ -157,11 +157,9 @@ class PtyTest(unittest.TestCase):
             except OSError:
                 # Good, we already were session leader
                 debug("Good: OSError was raised.")
-                pass
             except AttributeError:
                 # Have pty, but not setsid()?
                 debug("No setsid() available?")
-                pass
             except:
                 # We don't want this error to propagate, escaping the call to
                 # os._exit() and causing very peculiar behavior in the calling

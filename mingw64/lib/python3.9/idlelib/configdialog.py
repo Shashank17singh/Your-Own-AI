@@ -11,71 +11,67 @@ Refer to comments in EditorWindow autoindent code for details.
 """
 
 import re
-
+import tkinter.font as tkfont
+from idlelib import macosx
+from idlelib.autocomplete import AutoComplete
+from idlelib.codecontext import CodeContext
+from idlelib.config import ConfigChanges, idleConf
+from idlelib.config_key import GetKeysDialog
+from idlelib.dynoption import DynOptionMenu
+from idlelib.format import FormatParagraph
+from idlelib.parenmatch import ParenMatch
+from idlelib.query import HelpSource, SectionName
+from idlelib.squeezer import Squeezer
+from idlelib.textview import ScrollableTextFrame, view_text
 from tkinter import (
-    Toplevel,
-    Listbox,
-    Scale,
-    Canvas,
-    StringVar,
-    BooleanVar,
-    IntVar,
-    TRUE,
-    FALSE,
-    TOP,
-    BOTTOM,
-    RIGHT,
-    LEFT,
-    SOLID,
-    GROOVE,
-    NONE,
+    ACTIVE,
+    ANCHOR,
     BOTH,
-    X,
-    Y,
-    W,
-    E,
+    BOTTOM,
+    END,
     EW,
+    FALSE,
+    GROOVE,
+    HORIZONTAL,
+    LEFT,
+    NONE,
     NS,
     NSEW,
     NW,
-    HORIZONTAL,
+    RIGHT,
+    SOLID,
+    TOP,
+    TRUE,
     VERTICAL,
-    ANCHOR,
-    ACTIVE,
-    END,
+    BooleanVar,
+    Canvas,
+    E,
+    IntVar,
+    Listbox,
+    StringVar,
     TclError,
+    Toplevel,
+    W,
+    X,
+    Y,
+    colorchooser,
+    messagebox,
 )
 from tkinter.ttk import (
-    Frame,
-    LabelFrame,
     Button,
     Checkbutton,
+    Combobox,
     Entry,
+    Frame,
     Label,
-    OptionMenu,
+    LabelFrame,
     Notebook,
+    OptionMenu,
     Radiobutton,
     Scrollbar,
-    Style,
     Spinbox,
-    Combobox,
+    Style,
 )
-from tkinter import colorchooser
-import tkinter.font as tkfont
-from tkinter import messagebox
-
-from idlelib.config import idleConf, ConfigChanges
-from idlelib.config_key import GetKeysDialog
-from idlelib.dynoption import DynOptionMenu
-from idlelib import macosx
-from idlelib.query import SectionName, HelpSource
-from idlelib.textview import view_text
-from idlelib.autocomplete import AutoComplete
-from idlelib.codecontext import CodeContext
-from idlelib.parenmatch import ParenMatch
-from idlelib.format import FormatParagraph
-from idlelib.squeezer import Squeezer
-from idlelib.textview import ScrollableTextFrame
 
 changes = ConfigChanges()
 # Reload changed options in the following classes.
@@ -330,7 +326,6 @@ font_sample_text = (
 
 
 class FontPage(Frame):
-
     def __init__(self, master, highpage):
         super().__init__(master)
         self.highlight_sample = highpage.highlight_sample
@@ -522,7 +517,6 @@ class FontPage(Frame):
 
 
 class HighPage(Frame):
-
     def __init__(self, master, extpage):
         super().__init__(master)
         self.extpage = extpage
@@ -1223,7 +1217,6 @@ class HighPage(Frame):
 
 
 class KeysPage(Frame):
-
     def __init__(self, master, extpage):
         super().__init__(master)
         self.extpage = extpage
@@ -1670,7 +1663,6 @@ class KeysPage(Frame):
 
 
 class WinPage(Frame):
-
     def __init__(self, master):
         super().__init__(master)
 
@@ -1848,7 +1840,7 @@ class WinPage(Frame):
         frame_paren2 = Frame(frame_window, borderwidth=0)
         paren_time_title = Label(
             frame_paren2,
-            text="Time Match Displayed (milliseconds)\n" "(0 is until next input)",
+            text="Time Match Displayed (milliseconds)\n(0 is until next input)",
         )
         self.paren_flash_time = Entry(
             frame_paren2,
@@ -1937,7 +1929,6 @@ class WinPage(Frame):
 
 
 class ShedPage(Frame):
-
     def __init__(self, master):
         super().__init__(master)
 
@@ -2256,7 +2247,6 @@ class ExtPage(Frame):
                 Entry(entry_area, textvariable=var, width=15).grid(
                     row=row, column=1, sticky=NSEW, padx=7
                 )
-        return
 
     def set_extension_value(self, section, opt):
         """Return True if the configuration was added or changed.
@@ -2295,7 +2285,6 @@ class ExtPage(Frame):
 
 
 class HelpFrame(LabelFrame):
-
     def __init__(self, master, **cfg):
         super().__init__(master, **cfg)
         self.create_frame_help()
@@ -2629,8 +2618,6 @@ class VerticalScrolledFrame(Frame):
                 canvas.itemconfigure(interior_id, width=canvas.winfo_width())
 
         canvas.bind("<Configure>", _configure_canvas)
-
-        return
 
 
 if __name__ == "__main__":

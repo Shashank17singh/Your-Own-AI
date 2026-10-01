@@ -13,15 +13,15 @@ xmlreader -- Base classes and constants which define the SAX 2 API for
 expatreader -- Driver that allows use of the Expat parser with SAX.
 """
 
-from .xmlreader import InputSource
-from .handler import ContentHandler, ErrorHandler
 from ._exceptions import (
     SAXException,
     SAXNotRecognizedException,
-    SAXParseException,
     SAXNotSupportedException,
+    SAXParseException,
     SAXReaderNotAvailable,
 )
+from .handler import ContentHandler, ErrorHandler
+from .xmlreader import InputSource
 
 
 def parse(source, handler, errorHandler=ErrorHandler()):
@@ -51,7 +51,8 @@ default_parser_list = ["xml.sax.expatreader"]
 _false = 0
 if _false:
     import xml.sax.expatreader
-import os, sys
+import os
+import sys
 
 if not sys.flags.ignore_environment and "PY_SAX_PARSER" in os.environ:
     default_parser_list = os.environ["PY_SAX_PARSER"].split(",")

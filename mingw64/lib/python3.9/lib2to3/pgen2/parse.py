@@ -30,7 +30,7 @@ class ParseError(Exception):
         return type(self), (self.msg, self.type, self.value, self.context)
 
 
-class Parser(object):
+class Parser:
     """Parser engine.
 
     The proper usage sequence is:

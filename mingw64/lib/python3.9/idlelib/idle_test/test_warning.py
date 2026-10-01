@@ -6,11 +6,12 @@ Revise if output destination changes (http://bugs.python.org/issue18318).
 Make sure warnings module is left unaltered (http://bugs.python.org/issue18081).
 """
 
-from idlelib import run
-from idlelib import pyshell as shell
 import unittest
-from test.support import captured_stderr
 import warnings
+from idlelib import pyshell as shell
+from idlelib import run
+
+from test.support import captured_stderr
 
 # Try to capture default showwarning before Idle modules are imported.
 showwarning = warnings.showwarning
@@ -30,7 +31,6 @@ shellmsg = idlemsg + ">>> "
 
 
 class RunWarnTest(unittest.TestCase):
-
     @unittest.skipIf(running_in_idle, "Does not work when run within Idle.")
     def test_showwarnings(self):
         self.assertIs(warnings.showwarning, showwarning)
@@ -49,7 +49,6 @@ class RunWarnTest(unittest.TestCase):
 
 
 class ShellWarnTest(unittest.TestCase):
-
     @unittest.skipIf(running_in_idle, "Does not work when run within Idle.")
     def test_showwarnings(self):
         self.assertIs(warnings.showwarning, showwarning)

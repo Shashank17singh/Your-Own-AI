@@ -1,7 +1,6 @@
-import unittest
-
-from ctypes import *
 import _ctypes_test
+import unittest
+from ctypes import *
 
 lib = CDLL(_ctypes_test.__file__)
 

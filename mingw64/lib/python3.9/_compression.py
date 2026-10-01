@@ -23,11 +23,11 @@ class BaseStream(io.BufferedIOBase):
     def _check_can_seek(self):
         if not self.readable():
             raise io.UnsupportedOperation(
-                "Seeking is only supported " "on files open for reading"
+                "Seeking is only supported on files open for reading"
             )
         if not self.seekable():
             raise io.UnsupportedOperation(
-                "The underlying file object " "does not support seeking"
+                "The underlying file object does not support seeking"
             )
 
 
@@ -131,7 +131,7 @@ class DecompressReader(io.RawIOBase):
                     pass
             offset = self._size + offset
         else:
-            raise ValueError("Invalid value for whence: {}".format(whence))
+            raise ValueError(f"Invalid value for whence: {whence}")
 
         # Make it so that offset is the number of bytes to skip forward.
         if offset < self._pos:

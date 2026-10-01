@@ -128,8 +128,8 @@ affects what we see:
 >>> del mydata
 """
 
-from weakref import ref
 from contextlib import contextmanager
+from weakref import ref
 
 __all__ = ["local"]
 
@@ -147,7 +147,7 @@ __all__ = ["local"]
 class _localimpl:
     """A class managing thread-local dicts"""
 
-    __slots__ = "key", "dicts", "localargs", "locallock", "__weakref__"
+    __slots__ = "__weakref__", "dicts", "key", "localargs", "locallock"
 
     def __init__(self):
         # The key used in the Thread objects' attribute dicts.
@@ -207,7 +207,7 @@ def _patch(self):
 
 
 class local:
-    __slots__ = "_local__impl", "__dict__"
+    __slots__ = "__dict__", "_local__impl"
 
     def __new__(cls, /, *args, **kw):
         if (args or kw) and (cls.__init__ is object.__init__):
@@ -244,4 +244,4 @@ class local:
             return object.__delattr__(self, name)
 
 
-from threading import current_thread, RLock
+from threading import RLock, current_thread

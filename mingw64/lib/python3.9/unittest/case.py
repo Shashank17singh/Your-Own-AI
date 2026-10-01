@@ -1,27 +1,28 @@
 """Test case implementation"""
 
-import sys
-import functools
-import difflib
-import pprint
-import re
-import warnings
 import collections
 import contextlib
+import difflib
+import functools
+import pprint
+import re
+import sys
 import traceback
 import types
+import warnings
+
 from . import result
 from .util import (
-    strclass,
-    safe_repr,
+    _common_shorten_repr,
     _count_diff_all_purpose,
     _count_diff_hashable,
-    _common_shorten_repr,
+    safe_repr,
+    strclass,
 )
 
 __unittest = True
 _subtest_msg_sentinel = object()
-DIFF_OMITTED = "\nDiff is %s characters long. " "Set self.maxDiff to None to see it."
+DIFF_OMITTED = "\nDiff is %s characters long. Set self.maxDiff to None to see it."
 
 
 class SkipTest(Exception):
@@ -44,7 +45,7 @@ class _UnexpectedSuccess(Exception):
     """
 
 
-class _Outcome(object):
+class _Outcome:
     def __init__(self, result=None):
         self.expecting_failure = False
         self.result = result
@@ -227,11 +228,9 @@ class _AssertRaisesContext(_AssertRaisesBaseContext):
             except AttributeError:
                 exc_name = str(self.expected)
             if self.obj_name:
-                self._raiseFailure(
-                    "{} not raised by {}".format(exc_name, self.obj_name)
-                )
+                self._raiseFailure(f"{exc_name} not raised by {self.obj_name}")
             else:
-                self._raiseFailure("{} not raised".format(exc_name))
+                self._raiseFailure(f"{exc_name} not raised")
         else:
             traceback.clear_frames(tb)
         if not issubclass(exc_type, self.expected):
@@ -242,9 +241,7 @@ class _AssertRaisesContext(_AssertRaisesBaseContext):
         expected_regex = self.expected_regex
         if not expected_regex.search(str(exc_value)):
             self._raiseFailure(
-                '"{}" does not match "{}"'.format(
-                    expected_regex.pattern, str(exc_value)
-                )
+                f'"{expected_regex.pattern}" does not match "{exc_value!s}"'
             )
         return True
 
@@ -291,14 +288,12 @@ class _AssertWarnsContext(_AssertRaisesBaseContext):
             return
         if first_matching is not None:
             self._raiseFailure(
-                '"{}" does not match "{}"'.format(
-                    self.expected_regex.pattern, str(first_matching)
-                )
+                f'"{self.expected_regex.pattern}" does not match "{first_matching!s}"'
             )
         if self.obj_name:
-            self._raiseFailure("{} not triggered by {}".format(exc_name, self.obj_name))
+            self._raiseFailure(f"{exc_name} not triggered by {self.obj_name}")
         else:
-            self._raiseFailure("{} not triggered".format(exc_name))
+            self._raiseFailure(f"{exc_name} not triggered")
 
 
 class _OrderedChainMap(collections.ChainMap):
@@ -311,7 +306,7 @@ class _OrderedChainMap(collections.ChainMap):
                     yield k
 
 
-class TestCase(object):
+class TestCase:
     """A class whose instances are single test cases.
     By default, the test code itself should be placed in a method named
     'runTest'.
@@ -401,11 +396,9 @@ class TestCase(object):
 
     def setUp(self):
         "Hook method for setting up the test fixture before exercising it."
-        pass
 
     def tearDown(self):
         "Hook method for deconstructing the test fixture after testing it."
-        pass
 
     @classmethod
     def setUpClass(cls):
@@ -919,7 +912,7 @@ class TestCase(object):
                 if len1 == len2 and seq_type is None and type(seq1) != type(seq2):
                     return
             if len1 > len2:
-                differing += "\nFirst %s contains %d additional " "elements.\n" % (
+                differing += "\nFirst %s contains %d additional elements.\n" % (
                     seq_type_name,
                     len1 - len2,
                 )
@@ -929,12 +922,12 @@ class TestCase(object):
                         safe_repr(seq1[len2]),
                     )
                 except (TypeError, IndexError, NotImplementedError):
-                    differing += "Unable to index element %d " "of first %s\n" % (
+                    differing += "Unable to index element %d of first %s\n" % (
                         len2,
                         seq_type_name,
                     )
             elif len1 < len2:
-                differing += "\nSecond %s contains %d additional " "elements.\n" % (
+                differing += "\nSecond %s contains %d additional elements.\n" % (
                     seq_type_name,
                     len2 - len1,
                 )
@@ -944,7 +937,7 @@ class TestCase(object):
                         safe_repr(seq2[len1]),
                     )
                 except (TypeError, IndexError, NotImplementedError):
-                    differing += "Unable to index element %d " "of second %s\n" % (
+                    differing += "Unable to index element %d of second %s\n" % (
                         len1,
                         seq_type_name,
                     )
@@ -1248,7 +1241,7 @@ class TestCase(object):
     def _deprecate(original_func):
         def deprecated_func(*args, **kwargs):
             warnings.warn(
-                "Please use {0} instead.".format(original_func.__name__),
+                f"Please use {original_func.__name__} instead.",
                 DeprecationWarning,
                 2,
             )
@@ -1277,7 +1270,7 @@ class FunctionTestCase(TestCase):
     """
 
     def __init__(self, testFunc, setUp=None, tearDown=None, description=None):
-        super(FunctionTestCase, self).__init__()
+        super().__init__()
         self._setUpFunc = setUp
         self._tearDownFunc = tearDown
         self._testFunc = testFunc
@@ -1345,16 +1338,14 @@ class _SubTest(TestCase):
     def _subDescription(self):
         parts = []
         if self._message is not _subtest_msg_sentinel:
-            parts.append("[{}]".format(self._message))
+            parts.append(f"[{self._message}]")
         if self.params:
-            params_desc = ", ".join(
-                "{}={!r}".format(k, v) for (k, v) in self.params.items()
-            )
-            parts.append("({})".format(params_desc))
+            params_desc = ", ".join(f"{k}={v!r}" for (k, v) in self.params.items())
+            parts.append(f"({params_desc})")
         return " ".join(parts) or "(<subtest>)"
 
     def id(self):
-        return "{} {}".format(self.test_case.id(), self._subDescription())
+        return f"{self.test_case.id()} {self._subDescription()}"
 
     def shortDescription(self):
         """Returns a one-line description of the subtest, or None if no
@@ -1363,4 +1354,4 @@ class _SubTest(TestCase):
         return self.test_case.shortDescription()
 
     def __str__(self):
-        return "{} {}".format(self.test_case, self._subDescription())
+        return f"{self.test_case} {self._subDescription()}"

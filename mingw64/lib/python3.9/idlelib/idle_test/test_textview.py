@@ -7,16 +7,17 @@ information about calls.
 """
 
 from idlelib import textview as tv
+
 from test.support import requires
 
 requires("gui")
 
 import os
 import unittest
-from tkinter import Tk, TclError, CHAR, NONE, WORD
-from tkinter.ttk import Button
 from idlelib.idle_test.mock_idle import Func
 from idlelib.idle_test.mock_tk import Mbox_func
+from tkinter import CHAR, NONE, WORD, TclError, Tk
+from tkinter.ttk import Button
 
 
 def setUpModule():
@@ -45,7 +46,6 @@ class VW(tv.ViewWindow):  # Used in ViewWindowTest.
 
 # Call wrapper class VW with mock wait_window.
 class ViewWindowTest(unittest.TestCase):
-
     def setUp(self):
         VW.transient.__init__()
         VW.grab_set.__init__()
@@ -83,7 +83,6 @@ class AutoHideScrollbarTest(unittest.TestCase):
 
 
 class ScrollableTextFrameTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = root = Tk()
@@ -129,7 +128,6 @@ class ScrollableTextFrameTest(unittest.TestCase):
 
 
 class ViewFrameTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.root = root = Tk()
@@ -150,7 +148,6 @@ class ViewFrameTest(unittest.TestCase):
 
 # Call ViewWindow with modal=False.
 class ViewFunctionTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.orig_error = tv.showerror
@@ -196,7 +193,6 @@ class ViewFunctionTest(unittest.TestCase):
 
 # Call ViewWindow with _utest=True.
 class ButtonClickTest(unittest.TestCase):
-
     def setUp(self):
         self.view = None
         self.called = False

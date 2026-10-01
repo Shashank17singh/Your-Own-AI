@@ -16,7 +16,6 @@ import codecs
 
 
 class Codec(codecs.Codec):
-
     def encode(self, input, errors="strict"):
         raise UnicodeError("undefined encoding")
 

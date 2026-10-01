@@ -1,9 +1,9 @@
-from xmlrpc.server import DocXMLRPCServer
 import http.client
 import re
 import sys
 import threading
 import unittest
+from xmlrpc.server import DocXMLRPCServer
 
 
 def make_request_and_skipIf(condition, reason):
@@ -36,7 +36,7 @@ def make_server():
         )
 
         # Create and register classes and functions
-        class TestClass(object):
+        class TestClass:
             def test_method(self, arg):
                 """Test method's docs. This method truly does very little."""
                 self.arg = arg

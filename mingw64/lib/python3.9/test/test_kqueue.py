@@ -23,7 +23,7 @@ class TestKQueue(unittest.TestCase):
         self.assertRaises(ValueError, kq.fileno)
 
     def test_create_event(self):
-        from operator import lt, le, gt, ge
+        from operator import ge, gt, le, lt
 
         fd = os.open(os.devnull, os.O_WRONLY)
         self.addCleanup(os.close, fd)

@@ -53,9 +53,8 @@ class BackupTests(unittest.TestCase):
             self.assertEqual(str(cm.exception), "target is in transaction")
 
     def test_keyword_only_args(self):
-        with self.assertRaises(TypeError):
-            with sqlite.connect(":memory:") as bck:
-                self.cx.backup(bck, 1)
+        with self.assertRaises(TypeError), sqlite.connect(":memory:") as bck:
+            self.cx.backup(bck, 1)
 
     def test_simple(self):
         with sqlite.connect(":memory:") as bck:
@@ -122,7 +121,7 @@ class BackupTests(unittest.TestCase):
             self.verify_backup(bck)
 
             result = bck.execute(
-                "SELECT key FROM foo" " WHERE key >= 1000" " ORDER BY key"
+                "SELECT key FROM foo WHERE key >= 1000 ORDER BY key"
             ).fetchall()
             self.assertEqual(result[0][0], 1001)
 

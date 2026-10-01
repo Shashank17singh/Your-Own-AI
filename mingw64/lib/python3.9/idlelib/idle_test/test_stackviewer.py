@@ -1,16 +1,15 @@
 "Test stackviewer, coverage 63%."
 
-from idlelib import stackviewer
+import sys
 import unittest
-from test.support import requires
+from idlelib import stackviewer
+from idlelib.tree import ScrolledCanvas, TreeNode
 from tkinter import Tk
 
-from idlelib.tree import TreeNode, ScrolledCanvas
-import sys
+from test.support import requires
 
 
 class StackBrowserTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         svs = stackviewer.sys

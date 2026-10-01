@@ -3,6 +3,7 @@
 if __name__ != "test.support":
     raise ImportError("support must be imported from the test package")
 
+import _thread
 import collections.abc
 import contextlib
 import errno
@@ -19,7 +20,6 @@ import struct
 import subprocess
 import sys
 import sysconfig
-import _thread
 import threading
 import time
 import types
@@ -631,7 +631,7 @@ def _is_gui_available():
         # process not running under the same user id as the current console
         # user.  To avoid that, raise an exception if the window manager
         # connection is not available.
-        from ctypes import cdll, c_int, pointer, Structure
+        from ctypes import Structure, c_int, cdll, pointer
         from ctypes.util import find_library
 
         app_services = cdll.LoadLibrary(find_library("ApplicationServices"))
@@ -663,7 +663,7 @@ def _is_gui_available():
             err_string = str(e)
             if len(err_string) > 50:
                 err_string = err_string[:50] + " [...]"
-            reason = "Tk unavailable due to {}: {}".format(type(e).__name__, err_string)
+            reason = f"Tk unavailable due to {type(e).__name__}: {err_string}"
 
     _is_gui_available.reason = reason
     _is_gui_available.result = not reason
@@ -713,8 +713,7 @@ def _requires_unix_version(sysname, min_version):
 
     return unittest.skipIf(
         skip,
-        f"{sysname} version {min_version_txt} or higher required, not "
-        f"{version_txt}",
+        f"{sysname} version {min_version_txt} or higher required, not {version_txt}",
     )
 
 
@@ -780,7 +779,7 @@ def system_must_validate_cert(f):
         except OSError as e:
             if "CERTIFICATE_VERIFY_FAILED" in str(e):
                 raise unittest.SkipTest(
-                    "system does not contain " "necessary certificates"
+                    "system does not contain necessary certificates"
                 )
             raise
 
@@ -857,7 +856,7 @@ else:
 
 # Disambiguate TESTFN for parallel testing, while letting it remain a valid
 # module name.
-TESTFN_ASCII = "{}_{}_tmp".format(TESTFN_ASCII, os.getpid())
+TESTFN_ASCII = f"{TESTFN_ASCII}_{os.getpid()}_tmp"
 
 # Define the URL of a dedicated HTTP server for the network tests.
 # The URL must use clear-text HTTP: no redirection to encrypted HTTPS.
@@ -1033,8 +1032,7 @@ def temp_dir(path=None, quiet=False):
             if not quiet:
                 raise
             warnings.warn(
-                f"tests may fail, unable to create "
-                f"temporary directory {path!r}: {exc}",
+                f"tests may fail, unable to create temporary directory {path!r}: {exc}",
                 RuntimeWarning,
                 stacklevel=3,
             )
@@ -1228,7 +1226,8 @@ def check_syntax_warning(testcase, statement, errtext="", *, lineno=1, offset=No
 
 
 def open_urlresource(url, *args, **kw):
-    import urllib.request, urllib.parse
+    import urllib.parse
+    import urllib.request
 
     try:
         import gzip
@@ -1282,7 +1281,7 @@ def open_urlresource(url, *args, **kw):
     raise TestFailed("invalid resource %r" % fn)
 
 
-class WarningsRecorder(object):
+class WarningsRecorder:
     """Convenience wrapper for the warnings list returned on
     entry to the warnings.catch_warnings() context manager.
     """
@@ -1331,7 +1330,9 @@ def _filterwarnings(filters, quiet=False):
         for w in reraise[:]:
             warning = w.message
             # Filter out the matching messages
-            if re.match(msg, str(warning), re.I) and issubclass(warning.__class__, cat):
+            if re.match(msg, str(warning), re.IGNORECASE) and issubclass(
+                warning.__class__, cat
+            ):
                 seen = True
                 reraise.remove(w)
         if not seen and not quiet:
@@ -1407,7 +1408,7 @@ def check_no_resource_warning(testcase):
         yield
 
 
-class CleanImport(object):
+class CleanImport:
     """Context manager to force import to return a new module reference.
 
     This is useful for testing module-level behaviours, such as
@@ -1491,7 +1492,7 @@ class EnvironmentVarGuard(collections.abc.MutableMapping):
         os.environ = self._environ
 
 
-class DirsOnSysPath(object):
+class DirsOnSysPath:
     """Context manager to temporarily add directories to sys.path.
 
     This makes a copy of sys.path, appends any directories given
@@ -1516,7 +1517,7 @@ class DirsOnSysPath(object):
         sys.path[:] = self.original_value
 
 
-class TransientResource(object):
+class TransientResource:
     """Raise ResourceDenied if an exception is raised while the context manager
     is in effect that matches the specified exception and attributes."""
 
@@ -1778,8 +1779,7 @@ def set_memlimit(limit):
         raise ValueError("Invalid memory limit %r" % (limit,))
     memlimit = int(float(m.group(1)) * sizes[m.group(3).lower()])
     real_max_memuse = memlimit
-    if memlimit > MAX_Py_ssize_t:
-        memlimit = MAX_Py_ssize_t
+    memlimit = min(memlimit, MAX_Py_ssize_t)
     if memlimit < _2G - 1:
         raise ValueError("Memory limit %r too low to be useful" % (limit,))
     max_memuse = memlimit
@@ -1791,14 +1791,14 @@ class _MemoryWatchdog:
     """
 
     def __init__(self):
-        self.procfile = "/proc/{pid}/statm".format(pid=os.getpid())
+        self.procfile = f"/proc/{os.getpid()}/statm"
         self.started = False
 
     def start(self):
         try:
             f = open(self.procfile, "r")
         except OSError as e:
-            warnings.warn("/proc not available for stats: {}".format(e), RuntimeWarning)
+            warnings.warn(f"/proc not available for stats: {e}", RuntimeWarning)
             sys.stderr.flush()
             return
 
@@ -1847,9 +1847,7 @@ def bigmemtest(size, memuse, dry_run=True):
             if real_max_memuse and verbose:
                 print()
                 print(
-                    " ... expected peak memory use: {peak:.1f}G".format(
-                        peak=size * memuse / (1024**3)
-                    )
+                    f" ... expected peak memory use: {size * memuse / (1024**3):.1f}G"
                 )
                 watchdog = _MemoryWatchdog()
                 watchdog.start()
@@ -1908,7 +1906,7 @@ def requires_resource(resource):
     if is_resource_enabled(resource):
         return _id
     else:
-        return unittest.skip("resource {0!r} is not enabled".format(resource))
+        return unittest.skip(f"resource {resource!r} is not enabled")
 
 
 def cpython_only(test):
@@ -2479,8 +2477,7 @@ def optim_args_from_interpreter_flags():
     return subprocess._optim_args_from_interpreter_flags()
 
 
-class Matcher(object):
-
+class Matcher:
     _partial_matches = ("msg", "message")
 
     def matches(self, d, **kwargs):
@@ -2625,9 +2622,9 @@ class PythonSymlink:
         for link in self._linked:
             try:
                 os.remove(link)
-            except IOError as ex:
+            except OSError as ex:
                 if verbose:
-                    print("failed to clean up {}: {}".format(link, ex))
+                    print(f"failed to clean up {link}: {ex}")
 
     def _call(self, python, args, env, returncode):
         cmd = [python, *args]
@@ -2640,7 +2637,7 @@ class PythonSymlink:
                 print(repr(r[0]))
                 print(repr(r[1]), file=sys.stderr)
             raise RuntimeError(
-                "unexpected return code: {0} (0x{0:08X})".format(p.returncode)
+                f"unexpected return code: {p.returncode} (0x{p.returncode:08X})"
             )
         return r
 
@@ -2896,7 +2893,7 @@ class SuppressCrashReport:
                     stdout = proc.communicate()[0]
                 if stdout.strip() == b"developer":
                     print(
-                        "this test triggers the Crash Reporter, " "that is intentional",
+                        "this test triggers the Crash Reporter, that is intentional",
                         end="",
                         flush=True,
                     )
@@ -3010,7 +3007,7 @@ def missing_compiler_executable(cmd_names=[]):
     missing.
 
     """
-    from distutils import ccompiler, sysconfig, spawn, errors
+    from distutils import ccompiler, errors, spawn, sysconfig
 
     compiler = ccompiler.new_compiler()
     sysconfig.customize_compiler(compiler)
@@ -3441,7 +3438,7 @@ def wait_process(pid, *, exitcode, timeout=None):
                     pass
 
                 raise AssertionError(
-                    f"process {pid} is still running " f"after {dt:.1f} seconds"
+                    f"process {pid} is still running after {dt:.1f} seconds"
                 )
 
             sleep = min(sleep * 2, max_sleep)

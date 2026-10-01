@@ -1,19 +1,19 @@
 # Copyright (C) 2003-2013 Python Software Foundation
+import binascii
+import codecs
+import collections
 import copy
+import datetime
 import operator
+import os
 import pickle
+import plistlib
 import struct
 import unittest
-import plistlib
-import os
-import datetime
-import codecs
-import binascii
-import collections
-from test import support
 from io import BytesIO
-
 from plistlib import UID
+
+from test import support
 
 ALL_FORMATS = (plistlib.FMT_XML, plistlib.FMT_BINARY)
 
@@ -437,7 +437,6 @@ INVALID_BINARY_PLISTS = [
 
 
 class TestPlistlib(unittest.TestCase):
-
     def tearDown(self):
         try:
             os.unlink(support.TESTFN)
@@ -886,7 +885,6 @@ class TestPlistlib(unittest.TestCase):
             # (b'utf-32', 'utf-32-le', codecs.BOM_UTF32_LE),
             # (b'utf-32', 'utf-32-be', codecs.BOM_UTF32_BE),
         ]:
-
             pl = self._create(fmt=plistlib.FMT_XML)
             with self.subTest(encoding=encoding):
                 data = base.replace(b"UTF-8", xml_encoding)
@@ -922,7 +920,6 @@ class TestPlistlib(unittest.TestCase):
 
 
 class TestBinaryPlistlib(unittest.TestCase):
-
     @staticmethod
     def decode(*objects, offset_size=1, ref_size=1):
         data = [b"bplist00"]

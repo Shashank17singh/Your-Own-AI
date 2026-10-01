@@ -2,11 +2,10 @@
 A number of functions that enhance IDLE on macOS.
 """
 
-from os.path import expanduser
 import plistlib
-from sys import platform  # Used in _init_tk_type, changed by test.
-
 import tkinter
+from os.path import expanduser
+from sys import platform  # Used in _init_tk_type, changed by test.
 
 ## Define functions that query the Mac graphics type.
 ## _tk_type and its initializer are private to this section.
@@ -87,10 +86,10 @@ def tkVersionWarning(root):
         if patchlevel not in ("8.5.7", "8.5.9"):
             return False
         return (
-            "WARNING: The version of Tcl/Tk ({0}) in use may"
+            f"WARNING: The version of Tcl/Tk ({patchlevel}) in use may"
             " be unstable.\n"
             "Visit https://www.python.org/download/mac/tcltk/"
-            " for current information.".format(patchlevel)
+            " for current information."
         )
     else:
         return False
@@ -172,9 +171,8 @@ def overrideRootMenu(root, flist):
     #
     # Due to a (mis-)feature of TkAqua the user will also see an empty Help
     # menu.
+    from idlelib import mainmenu, window
     from tkinter import Menu
-    from idlelib import mainmenu
-    from idlelib import window
 
     closeItem = mainmenu.menudefs[0][1][-2]
 

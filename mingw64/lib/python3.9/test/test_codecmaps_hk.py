@@ -3,8 +3,9 @@
 #   Codec mapping tests for HongKong encodings
 #
 
-from test import multibytecodec_support
 import unittest
+
+from test import multibytecodec_support
 
 
 class TestBig5HKSCSMap(multibytecodec_support.TestBase_Mapping, unittest.TestCase):

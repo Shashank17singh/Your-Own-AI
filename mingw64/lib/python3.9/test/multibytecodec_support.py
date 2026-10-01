@@ -9,8 +9,9 @@ import re
 import sys
 import unittest
 from http.client import HTTPException
-from test import support
 from io import BytesIO
+
+from test import support
 
 
 class TestBase:

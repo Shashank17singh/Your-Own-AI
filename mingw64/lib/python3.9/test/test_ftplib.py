@@ -3,13 +3,13 @@
 # Modified by Giampaolo Rodola' to test FTP class, IPv6 and TLS
 # environment
 
-import ftplib
-import asyncore
 import asynchat
-import socket
-import io
+import asyncore
 import errno
+import ftplib
+import io
 import os
+import socket
 import threading
 import time
 
@@ -19,6 +19,7 @@ except ImportError:
     ssl = None
 
 from unittest import TestCase, skipUnless
+
 from test import support
 from test.support import socket_helper
 from test.support.socket_helper import HOST, HOSTv6
@@ -79,14 +80,13 @@ class DummyDTPHandler(asynchat.async_chat):
             self.baseclass.next_data = None
         if not what:
             return self.close_when_done()
-        super(DummyDTPHandler, self).push(what.encode(self.encoding))
+        super().push(what.encode(self.encoding))
 
     def handle_error(self):
         raise Exception
 
 
 class DummyFTPHandler(asynchat.async_chat):
-
     dtp_handler = DummyDTPHandler
 
     def __init__(self, conn, encoding=DEFAULT_ENCODING):
@@ -266,7 +266,6 @@ class DummyFTPHandler(asynchat.async_chat):
 
 
 class DummyFTPServer(asyncore.dispatcher, threading.Thread):
-
     handler = DummyFTPHandler
 
     def __init__(self, address, af=socket.AF_INET, encoding=DEFAULT_ENCODING):
@@ -318,7 +317,6 @@ class DummyFTPServer(asyncore.dispatcher, threading.Thread):
 
 
 if ssl is not None:
-
     CERTFILE = os.path.join(os.path.dirname(__file__), "keycert3.pem")
     CAFILE = os.path.join(os.path.dirname(__file__), "pycacert.pem")
 
@@ -347,10 +345,10 @@ if ssl is not None:
             except ssl.SSLError as err:
                 if err.args[0] in (ssl.SSL_ERROR_WANT_READ, ssl.SSL_ERROR_WANT_WRITE):
                     return
-                elif err.args[0] == ssl.SSL_ERROR_EOF:
-                    return self.handle_close()
-                # TODO: SSLError does not expose alert information
-                elif "SSLV3_ALERT_BAD_CERTIFICATE" in err.args[1]:
+                elif (
+                    err.args[0] == ssl.SSL_ERROR_EOF
+                    or "SSLV3_ALERT_BAD_CERTIFICATE" in err.args[1]
+                ):
                     return self.handle_close()
                 raise
             except OSError as err:
@@ -374,7 +372,7 @@ if ssl is not None:
                 pass
             self._ssl_closing = False
             if getattr(self, "_ccc", False) is False:
-                super(SSLConnection, self).close()
+                super().close()
             else:
                 pass
 
@@ -384,7 +382,7 @@ if ssl is not None:
             elif self._ssl_closing:
                 self._do_ssl_shutdown()
             else:
-                super(SSLConnection, self).handle_read_event()
+                super().handle_read_event()
 
         def handle_write_event(self):
             if self._ssl_accepting:
@@ -392,11 +390,11 @@ if ssl is not None:
             elif self._ssl_closing:
                 self._do_ssl_shutdown()
             else:
-                super(SSLConnection, self).handle_write_event()
+                super().handle_write_event()
 
         def send(self, data):
             try:
-                return super(SSLConnection, self).send(data)
+                return super().send(data)
             except ssl.SSLError as err:
                 if err.args[0] in (
                     ssl.SSL_ERROR_EOF,
@@ -409,7 +407,7 @@ if ssl is not None:
 
         def recv(self, buffer_size):
             try:
-                return super(SSLConnection, self).recv(buffer_size)
+                return super().recv(buffer_size)
             except ssl.SSLError as err:
                 if err.args[0] in (ssl.SSL_ERROR_WANT_READ, ssl.SSL_ERROR_WANT_WRITE):
                     return b""
@@ -428,7 +426,7 @@ if ssl is not None:
             ):
                 self._do_ssl_shutdown()
             else:
-                super(SSLConnection, self).close()
+                super().close()
 
     class DummyTLS_DTPHandler(SSLConnection, DummyDTPHandler):
         """A DummyDTPHandler subclass supporting TLS/SSL."""
@@ -482,7 +480,6 @@ if ssl is not None:
 
 
 class TestFTPClass(TestCase):
-
     def setUp(self, encoding=DEFAULT_ENCODING):
         self.server = DummyFTPServer((HOST, 0), encoding=encoding)
         self.server.start()
@@ -861,7 +858,6 @@ class TestFTPClass(TestCase):
 
 @skipUnless(socket_helper.IPV6_ENABLED, "IPv6 not enabled")
 class TestIPv6Environment(TestCase):
-
     def setUp(self):
         self.server = DummyFTPServer(
             (HOSTv6, 0), af=socket.AF_INET6, encoding=DEFAULT_ENCODING
@@ -1042,7 +1038,6 @@ class TestTLS_FTPClass(TestCase):
 
 
 class TestTimeouts(TestCase):
-
     def setUp(self):
         self.evt = threading.Event()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -1073,7 +1068,7 @@ class TestTimeouts(TestCase):
         self.evt.set()
         try:
             conn, addr = self.sock.accept()
-        except socket.timeout:
+        except TimeoutError:
             pass
         else:
             conn.sendall(b"1 Hola mundo\n")

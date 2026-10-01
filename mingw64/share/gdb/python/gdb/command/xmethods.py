@@ -1,4 +1,5 @@
 import re
+
 import gdb
 
 """GDB commands for working with xmethods."""
@@ -166,7 +167,7 @@ class InfoXMethod(gdb.Command):
     matcher-name-regexp;xmethod-name-regexp."""
 
     def __init__(self):
-        super(InfoXMethod, self).__init__("info xmethod", gdb.COMMAND_DATA)
+        super().__init__("info xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         locus_re, matcher_re, name_re = parse_xm_command_args(arg)
@@ -198,7 +199,7 @@ class EnableXMethod(gdb.Command):
     specified as matcher-name-regexp;xmethod-name-regexp."""
 
     def __init__(self):
-        super(EnableXMethod, self).__init__("enable xmethod", gdb.COMMAND_DATA)
+        super().__init__("enable xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         set_xm_status(arg, True)
@@ -220,7 +221,7 @@ class DisableXMethod(gdb.Command):
     can be specified as matcher-name-regexp;xmethod-name-regexp."""
 
     def __init__(self):
-        super(DisableXMethod, self).__init__("disable xmethod", gdb.COMMAND_DATA)
+        super().__init__("disable xmethod", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         set_xm_status(arg, False)

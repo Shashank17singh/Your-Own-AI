@@ -8,12 +8,12 @@ tests themselves don't suffer from bitrot.  To run them for real, pass a
 high memory limit to regrtest, with the -M option.
 """
 
-from test import support
-from test.support import bigmemtest, _1G, _2G, _4G
-
-import unittest
 import operator
 import sys
+import unittest
+
+from test import support
+from test.support import _1G, _2G, _4G, bigmemtest
 
 # These tests all use one of the bigmemtest decorators to indicate how much
 # memory they use and how much memory they need to be even meaningful.  The
@@ -68,7 +68,6 @@ pointer_size = 4 if sys.maxsize < 2**32 else 8
 
 
 class BaseStrTest:
-
     def _test_capitalize(self, size):
         _ = self.from_latin1
         SUBSTR = self.from_latin1(" abc def ghi")
@@ -560,7 +559,6 @@ class BaseStrTest:
 
 
 class StrTest(unittest.TestCase, BaseStrTest):
-
     def from_latin1(self, s):
         return s
 
@@ -751,7 +749,6 @@ class StrTest(unittest.TestCase, BaseStrTest):
 
 
 class BytesTest(unittest.TestCase, BaseStrTest):
-
     def from_latin1(self, s):
         return s.encode("latin-1")
 
@@ -774,7 +771,6 @@ class BytesTest(unittest.TestCase, BaseStrTest):
 
 
 class BytearrayTest(unittest.TestCase, BaseStrTest):
-
     def from_latin1(self, s):
         return bytearray(s.encode("latin-1"))
 
@@ -800,7 +796,6 @@ class BytearrayTest(unittest.TestCase, BaseStrTest):
 
 
 class TupleTest(unittest.TestCase):
-
     # Tuples have a small, fixed-sized head and an array of pointers to
     # data.  Since we're testing 64-bit addressing, we can assume that the
     # pointers are 8 bytes, and that thus that the tuples take up 8 bytes
@@ -935,7 +930,6 @@ class TupleTest(unittest.TestCase):
 
 
 class ListTest(unittest.TestCase):
-
     # Like tuples, lists have a small, fixed-sized head and an array of
     # pointers to data, so 8 bytes per size. Also like tuples, we make the
     # lists hold references to various objects to test their refcount

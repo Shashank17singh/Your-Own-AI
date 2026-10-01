@@ -4,9 +4,8 @@ After tooltip.py, which uses ideas gleaned from PySol.
 Used by calltip.py.
 """
 
-from tkinter import Label, LEFT, SOLID, TclError
-
 from idlelib.tooltip import TooltipBase
+from tkinter import LEFT, SOLID, Label, TclError
 
 HIDE_EVENT = "<<calltipwindow-hide>>"
 HIDE_SEQUENCES = ("<Key-Escape>", "<FocusOut>")
@@ -26,7 +25,7 @@ class CalltipWindow(TooltipBase):
         text_widget: a Text widget with code for which call-tips are desired
         """
         # Note: The Text widget will be accessible as self.anchor_widget
-        super(CalltipWindow, self).__init__(text_widget)
+        super().__init__(text_widget)
 
         self.label = self.text = None
         self.parenline = self.parencol = self.lastline = None
@@ -55,7 +54,7 @@ class CalltipWindow(TooltipBase):
             return
         self.lastline = curline
         self.anchor_widget.see("insert")
-        super(CalltipWindow, self).position_window()
+        super().position_window()
 
     def showtip(self, text, parenleft, parenright):
         """Show the call-tip, bind events which will close it and reposition it.
@@ -75,7 +74,7 @@ class CalltipWindow(TooltipBase):
             int, self.anchor_widget.index(parenleft).split(".")
         )
 
-        super(CalltipWindow, self).showtip()
+        super().showtip()
 
         self._bind_events()
 
@@ -154,7 +153,7 @@ class CalltipWindow(TooltipBase):
             # ValueError may be raised by MultiCall
             pass
 
-        super(CalltipWindow, self).hidetip()
+        super().hidetip()
 
     def _bind_events(self):
         """Bind event handlers."""
@@ -181,7 +180,7 @@ class CalltipWindow(TooltipBase):
 
 
 def _calltip_window(parent):  # htest #
-    from tkinter import Toplevel, Text, LEFT, BOTH
+    from tkinter import BOTH, LEFT, Text, Toplevel
 
     top = Toplevel(parent)
     top.title("Test call-tips")

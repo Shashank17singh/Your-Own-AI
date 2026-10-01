@@ -9,7 +9,6 @@ std_c_errors = frozenset(["EDOM", "ERANGE"])
 
 
 class ErrnoAttributeTests(unittest.TestCase):
-
     def test_for_improper_attributes(self):
         # No unexpected attributes should be on the module.
         for error_code in std_c_errors:
@@ -24,7 +23,6 @@ class ErrnoAttributeTests(unittest.TestCase):
 
 
 class ErrorcodeTests(unittest.TestCase):
-
     def test_attributes_in_errorcode(self):
         for attribute in errno.__dict__.keys():
             if attribute.isupper():

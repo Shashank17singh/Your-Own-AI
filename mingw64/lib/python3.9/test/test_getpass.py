@@ -3,6 +3,7 @@ import os
 import unittest
 from io import BytesIO, StringIO, TextIOWrapper
 from unittest import mock
+
 from test import support
 
 try:
@@ -17,7 +18,6 @@ except ImportError:
 
 @mock.patch("os.environ")
 class GetpassGetuserTest(unittest.TestCase):
-
     def test_username_takes_username_from_env(self, environ):
         expected_name = "some_name"
         environ.get.return_value = expected_name
@@ -48,7 +48,6 @@ class GetpassGetuserTest(unittest.TestCase):
 
 
 class GetpassRawinputTest(unittest.TestCase):
-
     def test_flushes_stream_after_prompt(self):
         # see issue 1703
         stream = mock.Mock(spec=StringIO)
@@ -93,11 +92,12 @@ class GetpassRawinputTest(unittest.TestCase):
 # Some of these might run on platforms without termios, but play it safe.
 @unittest.skipUnless(termios, "tests require system with termios")
 class UnixGetpassTest(unittest.TestCase):
-
     def test_uses_tty_directly(self):
-        with mock.patch("os.open") as open, mock.patch(
-            "io.FileIO"
-        ) as fileio, mock.patch("io.TextIOWrapper") as textio:
+        with (
+            mock.patch("os.open") as open,
+            mock.patch("io.FileIO") as fileio,
+            mock.patch("io.TextIOWrapper") as textio,
+        ):
             # By setting open's return value to None the implementation will
             # skip code we don't care about in this test.  We can mock this out
             # fully if an alternate implementation works differently.
@@ -108,11 +108,13 @@ class UnixGetpassTest(unittest.TestCase):
             textio.assert_called_once_with(fileio.return_value)
 
     def test_resets_termios(self):
-        with mock.patch("os.open") as open, mock.patch("io.FileIO"), mock.patch(
-            "io.TextIOWrapper"
-        ), mock.patch("termios.tcgetattr") as tcgetattr, mock.patch(
-            "termios.tcsetattr"
-        ) as tcsetattr:
+        with (
+            mock.patch("os.open") as open,
+            mock.patch("io.FileIO"),
+            mock.patch("io.TextIOWrapper"),
+            mock.patch("termios.tcgetattr") as tcgetattr,
+            mock.patch("termios.tcsetattr") as tcsetattr,
+        ):
             open.return_value = 3
             fake_attrs = [255, 255, 255, 255, 255]
             tcgetattr.return_value = list(fake_attrs)
@@ -120,15 +122,14 @@ class UnixGetpassTest(unittest.TestCase):
             tcsetattr.assert_called_with(3, mock.ANY, fake_attrs)
 
     def test_falls_back_to_fallback_if_termios_raises(self):
-        with mock.patch("os.open") as open, mock.patch(
-            "io.FileIO"
-        ) as fileio, mock.patch("io.TextIOWrapper") as textio, mock.patch(
-            "termios.tcgetattr"
-        ), mock.patch(
-            "termios.tcsetattr"
-        ) as tcsetattr, mock.patch(
-            "getpass.fallback_getpass"
-        ) as fallback:
+        with (
+            mock.patch("os.open") as open,
+            mock.patch("io.FileIO") as fileio,
+            mock.patch("io.TextIOWrapper") as textio,
+            mock.patch("termios.tcgetattr"),
+            mock.patch("termios.tcsetattr") as tcsetattr,
+            mock.patch("getpass.fallback_getpass") as fallback,
+        ):
             open.return_value = 3
             fileio.return_value = BytesIO()
             tcsetattr.side_effect = termios.error
@@ -137,18 +138,23 @@ class UnixGetpassTest(unittest.TestCase):
 
     def test_flushes_stream_after_input(self):
         # issue 7208
-        with mock.patch("os.open") as open, mock.patch("io.FileIO"), mock.patch(
-            "io.TextIOWrapper"
-        ), mock.patch("termios.tcgetattr"), mock.patch("termios.tcsetattr"):
+        with (
+            mock.patch("os.open") as open,
+            mock.patch("io.FileIO"),
+            mock.patch("io.TextIOWrapper"),
+            mock.patch("termios.tcgetattr"),
+            mock.patch("termios.tcsetattr"),
+        ):
             open.return_value = 3
             mock_stream = mock.Mock(spec=StringIO)
             getpass.unix_getpass(stream=mock_stream)
             mock_stream.flush.assert_called_with()
 
     def test_falls_back_to_stdin(self):
-        with mock.patch("os.open") as os_open, mock.patch(
-            "sys.stdin", spec=StringIO
-        ) as stdin:
+        with (
+            mock.patch("os.open") as os_open,
+            mock.patch("sys.stdin", spec=StringIO) as stdin,
+        ):
             os_open.side_effect = IOError
             stdin.fileno.side_effect = AttributeError
             with support.captured_stderr() as stderr:

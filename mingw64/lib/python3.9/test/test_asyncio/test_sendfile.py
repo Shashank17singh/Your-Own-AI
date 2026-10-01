@@ -6,9 +6,9 @@ import socket
 import sys
 import tempfile
 import unittest
-from asyncio import base_events
-from asyncio import constants
+from asyncio import base_events, constants
 from unittest import mock
+
 from test import support
 from test.support import socket_helper
 from test.test_asyncio import utils as test_utils
@@ -24,7 +24,6 @@ def tearDownModule():
 
 
 class MySendfileProto(asyncio.Protocol):
-
     def __init__(self, loop=None, close_after=0):
         self.transport = None
         self.state = "INITIAL"
@@ -62,7 +61,6 @@ class MySendfileProto(asyncio.Protocol):
 
 
 class MyProto(asyncio.Protocol):
-
     def __init__(self, loop):
         self.started = False
         self.closed = False
@@ -86,7 +84,6 @@ class MyProto(asyncio.Protocol):
 
 
 class SendfileBase:
-
     # 128 KiB plus small unaligned to buffer chunk
     DATA = b"SendfileBaseData" * (1024 * 8 + 1)
 
@@ -128,7 +125,6 @@ class SendfileBase:
 
 
 class SockSendfileMixin(SendfileBase):
-
     @classmethod
     def setUpClass(cls):
         cls.__old_bufsize = constants.SENDFILE_FALLBACK_READBUFFER_SIZE
@@ -234,7 +230,6 @@ class SockSendfileMixin(SendfileBase):
 
 
 class SendfileMixin(SendfileBase):
-
     # Note: sendfile via SSL transport is equal to sendfile fallback
 
     def prepare_sendfile(self, *, is_ssl=False, close_after=0):
@@ -509,12 +504,10 @@ class SendfileTestsBase(SendfileMixin, SockSendfileMixin):
 if sys.platform == "win32":
 
     class SelectEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop()
 
     class ProactorEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.ProactorEventLoop()
 
@@ -524,26 +517,22 @@ else:
     if hasattr(selectors, "KqueueSelector"):
 
         class KqueueEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.KqueueSelector())
 
     if hasattr(selectors, "EpollSelector"):
 
         class EPollEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.EpollSelector())
 
     if hasattr(selectors, "PollSelector"):
 
         class PollEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
             def create_event_loop(self):
                 return asyncio.SelectorEventLoop(selectors.PollSelector())
 
     # Should always exist.
     class SelectEventLoopTests(SendfileTestsBase, test_utils.TestCase):
-
         def create_event_loop(self):
             return asyncio.SelectorEventLoop(selectors.SelectSelector())

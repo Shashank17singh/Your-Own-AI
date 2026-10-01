@@ -5,9 +5,10 @@ show how the type behave.
 Later...
 """
 
+import sys
+import unittest
 from ctypes import *
 from ctypes.test import need_symbol
-import sys, unittest
 
 try:
     WINFUNCTYPE
@@ -31,7 +32,6 @@ class RECT(Structure):
 
 
 class FunctionTestCase(unittest.TestCase):
-
     def test_mro(self):
         # in Python 2.3, this raises TypeError: MRO conflict among bases classes,
         # in Python 2.2 it works.
@@ -42,7 +42,7 @@ class FunctionTestCase(unittest.TestCase):
 
         try:
 
-            class X(object, Array):
+            class X(Array):
                 _length_ = 5
                 _type_ = "i"
 
@@ -53,7 +53,7 @@ class FunctionTestCase(unittest.TestCase):
 
         try:
 
-            class X(object, _Pointer):
+            class X(_Pointer):
                 pass
 
         except TypeError:
@@ -63,7 +63,7 @@ class FunctionTestCase(unittest.TestCase):
 
         try:
 
-            class X(object, _SimpleCData):
+            class X(_SimpleCData):
                 _type_ = "i"
 
         except TypeError:
@@ -71,7 +71,7 @@ class FunctionTestCase(unittest.TestCase):
 
         try:
 
-            class X(object, Structure):
+            class X(Structure):
                 _fields_ = []
 
         except TypeError:

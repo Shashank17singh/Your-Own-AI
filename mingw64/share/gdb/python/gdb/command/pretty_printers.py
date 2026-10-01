@@ -2,6 +2,7 @@
 
 import copy
 import re
+
 import gdb
 
 
@@ -69,7 +70,7 @@ class InfoPrettyPrinter(gdb.Command):
     printer-name;subprinter-name."""
 
     def __init__(self):
-        super(InfoPrettyPrinter, self).__init__("info pretty-printer", gdb.COMMAND_DATA)
+        super().__init__("info pretty-printer", gdb.COMMAND_DATA)
 
     @staticmethod
     def enabled_string(printer):
@@ -282,9 +283,7 @@ class EnablePrettyPrinter(gdb.Command):
     printer-name;subprinter-name."""
 
     def __init__(self):
-        super(EnablePrettyPrinter, self).__init__(
-            "enable pretty-printer", gdb.COMMAND_DATA
-        )
+        super().__init__("enable pretty-printer", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""
@@ -302,9 +301,7 @@ class DisablePrettyPrinter(gdb.Command):
     printer-name;subprinter-name."""
 
     def __init__(self):
-        super(DisablePrettyPrinter, self).__init__(
-            "disable pretty-printer", gdb.COMMAND_DATA
-        )
+        super().__init__("disable pretty-printer", gdb.COMMAND_DATA)
 
     def invoke(self, arg, from_tty):
         """GDB calls this to perform the command."""

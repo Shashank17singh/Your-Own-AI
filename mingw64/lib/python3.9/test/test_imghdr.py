@@ -4,7 +4,8 @@ import os
 import pathlib
 import unittest
 import warnings
-from test.support import findfile, TESTFN, unlink
+
+from test.support import TESTFN, findfile, unlink
 
 TEST_FILES = (
     ("python.png", "png"),
@@ -86,9 +87,8 @@ class TestImghdr(unittest.TestCase):
             imghdr.what(self.testfile, 1)
         with self.assertRaises(AttributeError):
             imghdr.what(os.fsencode(self.testfile))
-        with open(self.testfile, "rb") as f:
-            with self.assertRaises(AttributeError):
-                imghdr.what(f.fileno())
+        with open(self.testfile, "rb") as f, self.assertRaises(AttributeError):
+            imghdr.what(f.fileno())
 
     def test_invalid_headers(self):
         for header in (

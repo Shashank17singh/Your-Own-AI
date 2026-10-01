@@ -8,27 +8,27 @@ class C:
     pass
 
 
-class WithoutSlots(object):
+class WithoutSlots:
     pass
 
 
-class WithWeakref(object):
+class WithWeakref:
     __slots__ = ("__weakref__",)
 
 
-class WithPrivate(object):
+class WithPrivate:
     __slots__ = ("__spam",)
 
 
-class _WithLeadingUnderscoreAndPrivate(object):
+class _WithLeadingUnderscoreAndPrivate:
     __slots__ = ("__spam",)
 
 
-class ___(object):
+class ___:
     __slots__ = ("__spam",)
 
 
-class WithSingleString(object):
+class WithSingleString:
     __slots__ = "spam"
 
 
@@ -37,15 +37,14 @@ class WithInherited(WithSingleString):
 
 
 class CopyRegTestCase(unittest.TestCase):
-
     def test_class(self):
         self.assertRaises(TypeError, copyreg.pickle, C, None, None)
 
     def test_noncallable_reduce(self):
-        self.assertRaises(TypeError, copyreg.pickle, type(1), "not a callable")
+        self.assertRaises(TypeError, copyreg.pickle, int, "not a callable")
 
     def test_noncallable_constructor(self):
-        self.assertRaises(TypeError, copyreg.pickle, type(1), int, "not a callable")
+        self.assertRaises(TypeError, copyreg.pickle, int, int, "not a callable")
 
     def test_bool(self):
         import copy

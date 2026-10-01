@@ -20,10 +20,9 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
+import collections.abc
 import datetime
 import time
-import collections.abc
-
 from _sqlite3 import *
 
 paramstyle = "qmark"
@@ -74,7 +73,7 @@ def register_adapters_and_converters():
         timepart_full = timepart.split(b".")
         hours, minutes, seconds = map(int, timepart_full[0].split(b":"))
         if len(timepart_full) == 2:
-            microseconds = int("{:0<6.6}".format(timepart_full[1].decode()))
+            microseconds = int(f"{timepart_full[1].decode():0<6.6}")
         else:
             microseconds = 0
 

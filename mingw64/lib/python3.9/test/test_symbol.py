@@ -1,9 +1,10 @@
-import unittest
-from test import support
 import os
+import subprocess
 import sys
 import sysconfig
-import subprocess
+import unittest
+
+from test import support
 
 SYMBOL_FILE = support.findfile("symbol.py")
 GEN_SYMBOL_FILE = os.path.join(
@@ -16,7 +17,6 @@ TEST_PY_FILE = "symbol_test.py"
 
 
 class TestSymbolGeneration(unittest.TestCase):
-
     def _copy_file_without_generated_symbols(self, source_file, dest_file):
         with open(source_file) as fp:
             lines = fp.readlines()

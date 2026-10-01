@@ -2,17 +2,17 @@
 Roger E. Masse
 """
 
-import unittest
-from test import support
-from test.support import _2G
-import weakref
-import pickle
+import array
 import operator
+import pickle
 import struct
 import sys
-
-import array
+import unittest
+import weakref
 from array import _array_reconstructor as array_reconstructor
+
+from test import support
+from test.support import _2G
 
 sizeof_wchar = array.array("u").itemsize
 
@@ -30,7 +30,6 @@ typecodes = "ubBhHiIlLfdqQ"
 
 
 class MiscTest(unittest.TestCase):
-
     def test_bad_constructor(self):
         self.assertRaises(TypeError, array.array)
         self.assertRaises(TypeError, array.array, spam=42)
@@ -78,7 +77,6 @@ UTF32_BE = 21
 
 
 class ArrayReconstructorTest(unittest.TestCase):
-
     def test_error(self):
         self.assertRaises(TypeError, array_reconstructor, "", "b", 0, b"")
         self.assertRaises(TypeError, array_reconstructor, str, "b", 0, b"")
@@ -178,9 +176,7 @@ class ArrayReconstructorTest(unittest.TestCase):
                 except OverflowError:
                     continue  # Skip this test case.
                 b = array_reconstructor(array.array, typecode, mformat_code, arraystr)
-                self.assertEqual(
-                    a, b, msg="{0!r} != {1!r}; testcase={2!r}".format(a, b, testcase)
-                )
+                self.assertEqual(a, b, msg=f"{a!r} != {b!r}; testcase={testcase!r}")
 
     def test_unicode(self):
         teststr = "Bonne Journ\xe9e \U0002030a\U00020347"
@@ -196,9 +192,7 @@ class ArrayReconstructorTest(unittest.TestCase):
             b = array_reconstructor(
                 array.array, "u", mformat_code, teststr.encode(encoding)
             )
-            self.assertEqual(
-                a, b, msg="{0!r} != {1!r}; testcase={2!r}".format(a, b, testcase)
-            )
+            self.assertEqual(a, b, msg=f"{a!r} != {b!r}; testcase={testcase!r}")
 
 
 class BaseTest:
@@ -993,7 +987,6 @@ class BaseTest:
 
 
 class StringTest(BaseTest):
-
     def test_setitem(self):
         super().test_setitem()
         a = array.array(self.typecode, self.example)
@@ -1005,7 +998,7 @@ class UnicodeTest(StringTest, unittest.TestCase):
     example = "\x01\u263a\x00\ufeff"
     smallerexample = "\x01\u263a\x00\ufefe"
     biggerexample = "\x01\u263a\x01\ufeff"
-    outside = str("\x33")
+    outside = "\x33"
     minitemsize = 2
 
     def test_unicode(self):
@@ -1042,7 +1035,6 @@ class UnicodeTest(StringTest, unittest.TestCase):
 
 
 class NumberTest(BaseTest):
-
     def test_extslice(self):
         a = array.array(self.typecode, range(5))
         self.assertEqual(a[::], a)

@@ -6,11 +6,11 @@ that name.
 """
 
 import functools
-import sys
 import os
+import sys
 import tokenize
 
-__all__ = ["getline", "clearcache", "checkcache", "lazycache"]
+__all__ = ["checkcache", "clearcache", "getline", "lazycache"]
 
 
 # The cache. Maps filenames to either a thunk which will provide source code,

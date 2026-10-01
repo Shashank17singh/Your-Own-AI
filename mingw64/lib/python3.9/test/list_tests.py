@@ -2,16 +2,15 @@
 Tests common to list and UserList.UserList
 """
 
-import sys
 import os
+import sys
 from functools import cmp_to_key
 
-from test import support, seq_tests
+from test import seq_tests, support
 from test.support import ALWAYS_EQ, NEVER_EQ
 
 
 class CommonTest(seq_tests.CommonTest):
-
     def test_init(self):
         # Iterable arg is optional
         self.assertEqual(self.type2test([]), self.type2test())
@@ -572,7 +571,7 @@ class CommonTest(seq_tests.CommonTest):
 
     def test_constructor_exception_handling(self):
         # Bug #1242657
-        class F(object):
+        class F:
             def __iter__(self):
                 raise KeyboardInterrupt
 

@@ -261,8 +261,7 @@ def indexOf(a, b):
     for i, j in enumerate(a):
         if j is b or j == b:
             return i
-    else:
-        raise ValueError("sequence.index(x): x not in sequence")
+    raise ValueError("sequence.index(x): x not in sequence")
 
 
 def setitem(a, b, c):
@@ -365,7 +364,7 @@ class itemgetter:
     After g = itemgetter(2, 5, 3), the call g(r) returns (r[2], r[5], r[3])
     """
 
-    __slots__ = ("_items", "_call")
+    __slots__ = ("_call", "_items")
 
     def __init__(self, item, *items):
         if not items:
@@ -405,7 +404,7 @@ class methodcaller:
     r.name('date', foo=1).
     """
 
-    __slots__ = ("_name", "_args", "_kwargs")
+    __slots__ = ("_args", "_kwargs", "_name")
 
     def __init__(self, name, /, *args, **kwargs):
         self._name = name
@@ -531,7 +530,7 @@ try:
 except ImportError:
     pass
 else:
-    from _operator import __doc__
+    pass
 
 # All of these "__func__ = func" assignments have to happen after importing
 # from _operator to make sure they're set to the right function

@@ -1,13 +1,13 @@
 """Thread module emulating a subset of Java's threading model."""
 
-import os as _os
-import sys as _sys
 import _thread
 import functools
-
-from time import monotonic as _time
+import os as _os
+import sys as _sys
 from _weakrefset import WeakSet
-from itertools import islice as _islice, count as _count
+from itertools import count as _count
+from itertools import islice as _islice
+from time import monotonic as _time
 
 try:
     from _collections import deque as _deque
@@ -25,29 +25,29 @@ except ImportError:
 # Java inspired names.
 
 __all__ = [
-    "get_ident",
-    "active_count",
-    "Condition",
-    "current_thread",
-    "enumerate",
-    "main_thread",
     "TIMEOUT_MAX",
+    "Barrier",
+    "BoundedSemaphore",
+    "BrokenBarrierError",
+    "Condition",
     "Event",
+    "ExceptHookArgs",
     "Lock",
     "RLock",
     "Semaphore",
-    "BoundedSemaphore",
     "Thread",
-    "Barrier",
-    "BrokenBarrierError",
-    "Timer",
     "ThreadError",
+    "Timer",
+    "active_count",
+    "current_thread",
+    "enumerate",
+    "excepthook",
+    "get_ident",
+    "local",
+    "main_thread",
     "setprofile",
     "settrace",
-    "local",
     "stack_size",
-    "excepthook",
-    "ExceptHookArgs",
 ]
 
 # Rename some stuff so "from threading import *" is safe
@@ -1196,11 +1196,12 @@ class Thread:
 
 
 try:
-    from _thread import _excepthook as excepthook, _ExceptHookArgs as ExceptHookArgs
+    from _thread import _excepthook as excepthook
+    from _thread import _ExceptHookArgs as ExceptHookArgs
 except ImportError:
     # Simple Python implementation if _thread._excepthook() is not available
-    from traceback import print_exception as _print_exception
     from collections import namedtuple
+    from traceback import print_exception as _print_exception
 
     _ExceptHookArgs = namedtuple(
         "ExceptHookArgs", "exc_type exc_value exc_traceback thread"
@@ -1323,7 +1324,6 @@ class Timer(Thread):
 
 
 class _MainThread(Thread):
-
     def __init__(self):
         Thread.__init__(self, name="MainThread", daemon=False)
         self._set_tstate_lock()
@@ -1345,7 +1345,6 @@ class _MainThread(Thread):
 
 
 class _DummyThread(Thread):
-
     def __init__(self):
         Thread.__init__(self, name=_newname("Dummy-%d"), daemon=True)
 

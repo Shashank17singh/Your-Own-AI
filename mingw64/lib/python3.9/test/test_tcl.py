@@ -1,18 +1,18 @@
-import unittest
-import locale
+import os
 import re
 import subprocess
 import sys
-import os
+import unittest
 import warnings
+
 from test import support
 
 # Skip this test if the _tkinter module wasn't built.
 _tkinter = support.import_module("_tkinter")
 
 import tkinter
-from tkinter import Tcl
 from _tkinter import TclError
+from tkinter import Tcl
 
 try:
     from _testcapi import INT_MAX, PY_SSIZE_T_MAX
@@ -41,7 +41,6 @@ def get_tk_patchlevel():
 
 
 class TkinterTest(unittest.TestCase):
-
     def testFlattenLen(self):
         # Object without length.
         self.assertRaises(TypeError, _tkinter._flatten, True)
@@ -54,7 +53,6 @@ class TkinterTest(unittest.TestCase):
 
 
 class TclTest(unittest.TestCase):
-
     def setUp(self):
         self.interp = Tcl()
         self.wantobjects = self.interp.tk.wantobjects()
@@ -265,7 +263,7 @@ class TclTest(unittest.TestCase):
         filename = "doesnotexists"
         try:
             os.remove(filename)
-        except Exception as e:
+        except Exception:
             pass
         self.assertRaises(TclError, tcl.evalfile, filename)
 
@@ -824,7 +822,6 @@ class TclTest(unittest.TestCase):
 
 
 class BigmemTclTest(unittest.TestCase):
-
     def setUp(self):
         self.interp = Tcl()
 

@@ -1,7 +1,7 @@
-from __future__ import print_function
-import cppcheckdata
-import sys
 import re
+import sys
+
+import cppcheckdata
 
 Y2038_SAFE_TIME_BITS = 64
 Y2038_SAFE_FILE_OFFSET_BITS = 64
@@ -25,7 +25,7 @@ re_flag_file_offset_bits_64 = re.compile(
 )
 re_flag_file_offset_bits = re.compile(r"_FILE_OFFSET_BITS=(\d+)")
 id_Y2038 = {
-    "time_t" "lastlog",
+    "time_tlastlog",
     "msqid_ds",
     "semid_ds",
     "timeb",

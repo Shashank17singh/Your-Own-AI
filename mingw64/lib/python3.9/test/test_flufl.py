@@ -1,10 +1,11 @@
 import __future__
+
 import unittest
+
 from test import support
 
 
 class FLUFLTests(unittest.TestCase):
-
     def test_barry_as_bdfl(self):
         code = "from __future__ import barry_as_FLUFL\n2 {0} 3"
         compile(

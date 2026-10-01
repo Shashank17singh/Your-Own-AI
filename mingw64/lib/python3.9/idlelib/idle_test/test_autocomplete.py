@@ -1,16 +1,17 @@
 "Test autocomplete, coverage 93%."
 
-import unittest
-from unittest.mock import Mock, patch
-from test.support import requires
-from tkinter import Tk, Text
-import os
-import __main__
-
 import idlelib.autocomplete as ac
 import idlelib.autocomplete_w as acw
+import os
+import unittest
 from idlelib.idle_test.mock_idle import Func
 from idlelib.idle_test.mock_tk import Event
+from tkinter import Text, Tk
+from unittest.mock import Mock, patch
+
+from test.support import requires
+
+import __main__
 
 
 class DummyEditwin:
@@ -23,7 +24,6 @@ class DummyEditwin:
 
 
 class AutoCompleteTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -290,9 +290,8 @@ class AutoCompleteTest(unittest.TestCase):
             Equal(acp.get_entity("d"), di)
 
         # Test name not in namespace.
-        with patch.dict("__main__.__dict__", {}):
-            with self.assertRaises(NameError):
-                acp.get_entity("not_exist")
+        with patch.dict("__main__.__dict__", {}), self.assertRaises(NameError):
+            acp.get_entity("not_exist")
 
 
 if __name__ == "__main__":

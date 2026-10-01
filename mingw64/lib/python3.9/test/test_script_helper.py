@@ -1,15 +1,15 @@
 """Unittests for test.support.script_helper.  Who tests the test helper?"""
 
+import os
 import subprocess
 import sys
-import os
-from test.support import script_helper
 import unittest
 from unittest import mock
 
+from test.support import script_helper
+
 
 class TestScriptHelper(unittest.TestCase):
-
     def test_assert_python_ok(self):
         t = script_helper.assert_python_ok("-c", "import sys; sys.exit(0)")
         self.assertEqual(0, t[0], "return code was not 0")

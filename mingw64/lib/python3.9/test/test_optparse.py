@@ -6,32 +6,30 @@
 # $Id$
 #
 
-import sys
+import copy
+import optparse
 import os
 import re
-import copy
+import sys
 import unittest
-
 from io import StringIO
-from test import support
-
-
-import optparse
 from optparse import (
-    make_option,
-    Option,
-    TitledHelpFormatter,
-    OptionParser,
-    OptionGroup,
     SUPPRESS_USAGE,
-    OptionError,
-    OptionConflictError,
     BadOptionError,
+    Option,
+    OptionConflictError,
+    OptionError,
+    OptionGroup,
+    OptionParser,
     OptionValueError,
+    TitledHelpFormatter,
     Values,
+    _match_abbrev,
+    _parse_num,
+    make_option,
 )
-from optparse import _match_abbrev
-from optparse import _parse_num
+
+from test import support
 
 
 class InterceptedError(Exception):
@@ -75,7 +73,8 @@ class BaseTest(unittest.TestCase):
             """
 Options are %(optdict)s.
 Should be %(expected_opts)s.
-Args were %(args)s.""" % locals(),
+Args were %(args)s."""
+            % locals(),
         )
 
         self.assertEqual(
@@ -84,7 +83,8 @@ Args were %(args)s.""" % locals(),
             """
 Positional arguments are %(positional_args)s.
 Should be %(expected_positional_args)s.
-Args were %(args)s.""" % locals(),
+Args were %(args)s."""
+            % locals(),
         )
 
         return (options, positional_args)
@@ -122,7 +122,8 @@ expected exception message pattern:
 /%s/
 actual exception message:
 '''%s'''
-""" % (expected_message.pattern, actual_message),
+"""
+                    % (expected_message.pattern, actual_message),
                 )
             else:
                 self.assertEqual(
@@ -133,16 +134,20 @@ expected exception message:
 '''%s'''
 actual exception message:
 '''%s'''
-""" % (expected_message, actual_message),
+"""
+                    % (expected_message, actual_message),
                 )
 
             return err
         else:
-            self.fail("""expected exception %(expected_exception)s not raised
+            self.fail(
+                """expected exception %(expected_exception)s not raised
 called %(func)r
 with args %(args)r
 and kwargs %(kwargs)r
-""" % locals())
+"""
+                % locals()
+            )
 
     # -- Assertions used in more than one class --------------------
 
@@ -271,13 +276,13 @@ class TestOptionChecks(BaseTest):
 
     def test_no_choices_list(self):
         self.assertOptionError(
-            "option -b/--bad: must supply a list of " "choices for type 'choice'",
+            "option -b/--bad: must supply a list of choices for type 'choice'",
             ["-b", "--bad"],
             {"type": "choice"},
         )
 
     def test_bad_choices_list(self):
-        typename = type("").__name__
+        typename = str.__name__
         self.assertOptionError(
             "option -b/--bad: choices must be a list of "
             "strings ('%s' supplied)" % typename,
@@ -318,14 +323,14 @@ class TestOptionChecks(BaseTest):
 
     def test_callback_args_no_tuple(self):
         self.assertOptionError(
-            "option -b: callback_args, if supplied, " "must be a tuple: not 'foo'",
+            "option -b: callback_args, if supplied, must be a tuple: not 'foo'",
             ["-b"],
             {"action": "callback", "callback": self.dummy, "callback_args": "foo"},
         )
 
     def test_callback_kwargs_no_dict(self):
         self.assertOptionError(
-            "option -b: callback_kwargs, if supplied, " "must be a dict: not 'foo'",
+            "option -b: callback_kwargs, if supplied, must be a dict: not 'foo'",
             ["-b"],
             {"action": "callback", "callback": self.dummy, "callback_kwargs": "foo"},
         )
@@ -793,11 +798,13 @@ class TestStandard(BaseTest):
         )
 
     def test_short_option_joined_and_separator(self):
-        self.assertParseOK(
-            ["-ab", "--", "--foo", "bar"],
-            {"a": "b", "boo": None, "foo": None},
-            ["--foo", "bar"],
-        ),
+        (
+            self.assertParseOK(
+                ["-ab", "--", "--foo", "bar"],
+                {"a": "b", "boo": None, "foo": None},
+                ["--foo", "bar"],
+            ),
+        )
 
     def test_hyphen_becomes_positional_arg(self):
         self.assertParseOK(
@@ -861,7 +868,7 @@ class TestChoice(BaseTest):
     def test_invalid_choice(self):
         self.assertParseFail(
             ["-c", "four", "abc"],
-            "option -c: invalid choice: 'four' " "(choose from 'one', 'two', 'three')",
+            "option -c: invalid choice: 'four' (choose from 'one', 'two', 'three')",
         )
 
     def test_add_choice_option(self):
@@ -948,7 +955,7 @@ class TestMultipleArgs(BaseTest):
     def test_nargs_invalid_float_value(self):
         self.assertParseFail(
             ["-p", "1.0", "2x", "3.5"],
-            "option -p: " "invalid floating-point value: '2x'",
+            "option -p: invalid floating-point value: '2x'",
         )
 
     def test_nargs_required_values(self):
@@ -1207,7 +1214,7 @@ class TestCallback(BaseTest):
             help="foo",
         )
 
-        expected_help = "Options:\n" "  -t TEST, --test=TEST  foo\n"
+        expected_help = "Options:\n  -t TEST, --test=TEST  foo\n"
         self.assertHelp(parser, expected_help)
 
 

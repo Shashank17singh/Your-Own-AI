@@ -1,6 +1,6 @@
-import unittest
 import pickle
 import sys
+import unittest
 
 from test import support
 
@@ -28,7 +28,7 @@ class Seq1:
         return other * self.lst
 
 
-class Seq2(object):
+class Seq2:
     def __init__(self, lst):
         self.lst = lst
 
@@ -79,7 +79,7 @@ class OperatorTestCase:
     def test_eq(self):
         operator = self.module
 
-        class C(object):
+        class C:
             def __eq__(self, other):
                 raise SyntaxError
 
@@ -95,7 +95,7 @@ class OperatorTestCase:
     def test_ne(self):
         operator = self.module
 
-        class C(object):
+        class C:
             def __ne__(self, other):
                 raise SyntaxError
 
@@ -313,7 +313,7 @@ class OperatorTestCase:
     def test_truth(self):
         operator = self.module
 
-        class C(object):
+        class C:
             def __bool__(self):
                 raise SyntaxError
 
@@ -372,7 +372,7 @@ class OperatorTestCase:
         self.assertEqual(operator.attrgetter("x", "z", "y")(record), ("X", "Z", "Y"))
         self.assertRaises(TypeError, operator.attrgetter, ("x", (), "y"))
 
-        class C(object):
+        class C:
             def __getattr__(self, name):
                 raise SyntaxError
 
@@ -413,7 +413,7 @@ class OperatorTestCase:
         f = operator.itemgetter(10)
         self.assertRaises(IndexError, f, a)
 
-        class C(object):
+        class C:
             def __getitem__(self, name):
                 raise SyntaxError
 
@@ -451,8 +451,6 @@ class OperatorTestCase:
         # interesting sequences
         class T(tuple):
             "Tuple subclass"
-
-            pass
 
         self.assertEqual(operator.itemgetter(0)(T("abc")), "a")
         self.assertEqual(operator.itemgetter(0)(["a", "b", "c"]), "a")
@@ -492,7 +490,7 @@ class OperatorTestCase:
     def test_inplace(self):
         operator = self.module
 
-        class C(object):
+        class C:
             def __iadd__(self, other):
                 return "iadd"
 
@@ -554,7 +552,7 @@ class OperatorTestCase:
     def test_length_hint(self):
         operator = self.module
 
-        class X(object):
+        class X:
             def __init__(self, value):
                 self.value = value
 

@@ -16,18 +16,16 @@ for older versions in distutils.msvc9compiler and distutils.msvccompiler.
 import os
 import subprocess
 import winreg
-
+from distutils import log
+from distutils.ccompiler import CCompiler, gen_lib_options
 from distutils.errors import (
+    CompileError,
     DistutilsExecError,
     DistutilsPlatformError,
-    CompileError,
     LibError,
     LinkError,
 )
-from distutils.ccompiler import CCompiler, gen_lib_options
-from distutils import log
 from distutils.util import get_platform
-
 from itertools import count
 
 
@@ -139,12 +137,12 @@ def _get_vc_env(plat_spec):
 
     try:
         out = subprocess.check_output(
-            'cmd /u /c "{}" {} && set'.format(vcvarsall, plat_spec),
+            f'cmd /u /c "{vcvarsall}" {plat_spec} && set',
             stderr=subprocess.STDOUT,
         ).decode("utf-16le", errors="replace")
     except subprocess.CalledProcessError as exc:
         log.error(exc.output)
-        raise DistutilsPlatformError("Error executing {}".format(exc.cmd))
+        raise DistutilsPlatformError(f"Error executing {exc.cmd}")
 
     env = {
         key.lower(): value
@@ -227,7 +225,7 @@ class MSVCCompiler(CCompiler):
         # sanity check for platforms to prevent obscure errors later.
         if plat_name not in PLAT_TO_VCVARS:
             raise DistutilsPlatformError(
-                "--plat-name must be one of {}".format(tuple(PLAT_TO_VCVARS))
+                f"--plat-name must be one of {tuple(PLAT_TO_VCVARS)}"
             )
 
         # Get the vcvarsall.bat spec for the requested platform.
@@ -236,7 +234,7 @@ class MSVCCompiler(CCompiler):
         vc_env = _get_vc_env(plat_spec)
         if not vc_env:
             raise DistutilsPlatformError(
-                "Unable to find a compatible " "Visual Studio installation."
+                "Unable to find a compatible Visual Studio installation."
             )
 
         self._paths = vc_env.get("path", "")
@@ -336,7 +334,7 @@ class MSVCCompiler(CCompiler):
                 # Better to raise an exception instead of silently continuing
                 # and later complain about sources and targets having
                 # different lengths
-                raise CompileError("Don't know how to compile {}".format(p))
+                raise CompileError(f"Don't know how to compile {p}")
 
         return list(map(make_out_path, source_filenames))
 
@@ -420,9 +418,7 @@ class MSVCCompiler(CCompiler):
                 continue
             else:
                 # how to handle this file?
-                raise CompileError(
-                    "Don't know how to compile {} to {}".format(src, obj)
-                )
+                raise CompileError(f"Don't know how to compile {src} to {obj}")
 
             args = [self.cc] + compile_opts + pp_opts
             if add_cpp_opts:
@@ -562,6 +558,5 @@ class MSVCCompiler(CCompiler):
                 libfile = os.path.join(dir, self.library_filename(name))
                 if os.path.isfile(libfile):
                     return libfile
-        else:
-            # Oops, didn't find it in *any* of 'dirs'
-            return None
+        # Oops, didn't find it in *any* of 'dirs'
+        return None

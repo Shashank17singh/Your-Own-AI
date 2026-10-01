@@ -7,22 +7,18 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["BaseProcess", "current_process", "active_children", "parent_process"]
+__all__ = ["BaseProcess", "active_children", "current_process", "parent_process"]
 
 #
 # Imports
 #
 
-import os
-import sys
-import signal
 import itertools
+import os
+import signal
+import sys
 import threading
 from _weakrefset import WeakSet
-
-#
-#
-#
 
 try:
     ORIGINAL_DIR = os.path.abspath(os.getcwd())
@@ -56,11 +52,6 @@ def parent_process():
     return _parent_process
 
 
-#
-#
-#
-
-
 def _cleanup():
     # check for processes which have finished
     for p in list(_children):
@@ -73,7 +64,7 @@ def _cleanup():
 #
 
 
-class BaseProcess(object):
+class BaseProcess:
     """
     Process objects represent activity that is run in a separate process
 
@@ -121,12 +112,12 @@ class BaseProcess(object):
         """
         self._check_closed()
         assert self._popen is None, "cannot start a process twice"
-        assert (
-            self._parent_pid == os.getpid()
-        ), "can only start a process object created by current process"
-        assert not _current_process._config.get(
-            "daemon"
-        ), "daemonic processes are not allowed to have children"
+        assert self._parent_pid == os.getpid(), (
+            "can only start a process object created by current process"
+        )
+        assert not _current_process._config.get("daemon"), (
+            "daemonic processes are not allowed to have children"
+        )
         _cleanup()
         self._popen = self._Popen(self)
         self._sentinel = self._popen.sentinel
@@ -300,7 +291,7 @@ class BaseProcess(object):
     ##
 
     def _bootstrap(self, parent_sentinel=None):
-        from . import util, context
+        from . import context, util
 
         global _current_process, _parent_process, _process_counter, _children
 
@@ -375,7 +366,6 @@ class AuthenticationString(bytes):
 
 
 class _ParentProcess(BaseProcess):
-
     def __init__(self, name, pid, sentinel):
         self._identity = ()
         self._name = name
@@ -412,7 +402,6 @@ class _ParentProcess(BaseProcess):
 
 
 class _MainProcess(BaseProcess):
-
     def __init__(self):
         self._identity = ()
         self._name = "MainProcess"

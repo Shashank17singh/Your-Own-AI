@@ -82,7 +82,7 @@ def check_output(cmd, **kwargs):
         exitcode = os.waitstatus_to_exitcode(status)
         if exitcode:
             raise ValueError(
-                f"Command {cmd!r} returned non-zero " f"exit status {exitcode!r}"
+                f"Command {cmd!r} returned non-zero exit status {exitcode!r}"
             )
 
         try:

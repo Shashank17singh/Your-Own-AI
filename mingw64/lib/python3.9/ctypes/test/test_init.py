@@ -1,5 +1,5 @@
-from ctypes import *
 import unittest
+from ctypes import *
 
 
 class X(Structure):

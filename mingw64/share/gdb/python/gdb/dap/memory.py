@@ -1,5 +1,7 @@
 import base64
+
 import gdb
+
 from .server import capability, request
 from .startup import DAPException
 

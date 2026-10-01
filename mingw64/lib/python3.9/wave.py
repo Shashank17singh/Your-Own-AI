@@ -71,14 +71,14 @@ The close() method is called automatically when the class instance
 is destroyed.
 """
 
-from chunk import Chunk
-from collections import namedtuple
 import audioop
 import builtins
 import struct
 import sys
+from chunk import Chunk
+from collections import namedtuple
 
-__all__ = ["open", "Error", "Wave_read", "Wave_write"]
+__all__ = ["Error", "Wave_read", "Wave_write", "open"]
 
 
 class Error(Exception):

@@ -1,12 +1,14 @@
 """Test Tools/scripts/fixcid.py."""
 
-from io import StringIO
-import os, os.path
+import os
+import os.path
 import runpy
 import sys
-from test import support
-from test.test_tools import skip_if_missing, scriptsdir
 import unittest
+from io import StringIO
+
+from test import support
+from test.test_tools import scriptsdir, skip_if_missing
 
 skip_if_missing()
 
@@ -20,24 +22,17 @@ class Test(unittest.TestCase):
         new2 = "int yy = 'x\\'xx' + yy;\n"
         self.assertMultiLineEqual(
             output,
-            "1\n"
-            "< {old1}"
-            "> {new1}"
-            "{new1}"
-            "2\n"
-            "< {old2}"
-            "> {new2}"
-            "{new2}".format(old1=old1, old2=old2, new1=new1, new2=new2),
+            f"1\n< {old1}> {new1}{new1}2\n< {old2}> {new2}{new2}",
         )
 
     def test_alter_comments(self):
         output = self.run_script(
-            substfile="xx yy\n" "*aa bb\n",
+            substfile="xx yy\n*aa bb\n",
             args=(
                 "-c",
                 "-",
             ),
-            input="/* xx altered */\n" "int xx;\n" "/* aa unaltered */\n" "int aa;\n",
+            input="/* xx altered */\nint xx;\n/* aa unaltered */\nint aa;\n",
         )
         self.assertMultiLineEqual(
             output,
@@ -66,9 +61,7 @@ class Test(unittest.TestCase):
             file.write("xx = 'unaltered'\n")
         script = os.path.join(scriptsdir, "fixcid.py")
         output = self.run_script(args=(support.TESTFN,))
-        self.assertMultiLineEqual(
-            output, "{}:\n" "1\n" "< int xx;\n" "> int yy;\n".format(c_filename)
-        )
+        self.assertMultiLineEqual(output, f"{c_filename}:\n1\n< int xx;\n> int yy;\n")
 
     def run_script(self, input="", *, args=("-",), substfile="xx yy\n"):
         substfilename = support.TESTFN + ".subst"
@@ -77,9 +70,12 @@ class Test(unittest.TestCase):
         self.addCleanup(support.unlink, substfilename)
         argv = ["fixcid.py", "-s", substfilename] + list(args)
         script = os.path.join(scriptsdir, "fixcid.py")
-        with support.swap_attr(sys, "argv", argv), support.swap_attr(
-            sys, "stdin", StringIO(input)
-        ), support.captured_stdout() as output, support.captured_stderr():
+        with (
+            support.swap_attr(sys, "argv", argv),
+            support.swap_attr(sys, "stdin", StringIO(input)),
+            support.captured_stdout() as output,
+            support.captured_stderr(),
+        ):
             try:
                 runpy.run_path(script, run_name="__main__")
             except SystemExit as exit:

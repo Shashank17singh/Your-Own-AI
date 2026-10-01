@@ -1,40 +1,41 @@
 # regression test for SAX 2.0
 # $Id$
 
-from xml.sax import (
-    make_parser,
-    ContentHandler,
-    SAXException,
-    SAXReaderNotAvailable,
-    SAXParseException,
-)
 import unittest
 from unittest import mock
+from xml.sax import (
+    ContentHandler,
+    SAXException,
+    SAXParseException,
+    SAXReaderNotAvailable,
+    make_parser,
+)
 
 try:
     make_parser()
 except SAXReaderNotAvailable:
     # don't try to test this module if we cannot create a parser
     raise unittest.SkipTest("no XML parsers available")
-from xml.sax.saxutils import (
-    XMLGenerator,
-    escape,
-    unescape,
-    quoteattr,
-    XMLFilterBase,
-    prepare_input_source,
-)
-from xml.sax.expatreader import create_parser
-from xml.sax.handler import feature_namespaces, feature_external_ges
-from xml.sax.xmlreader import InputSource, AttributesImpl, AttributesNSImpl
-from io import BytesIO, StringIO
 import codecs
 import os.path
 import shutil
-from urllib.error import URLError
 import urllib.request
+from io import BytesIO, StringIO
+from urllib.error import URLError
+from xml.sax.expatreader import create_parser
+from xml.sax.handler import feature_external_ges, feature_namespaces
+from xml.sax.saxutils import (
+    XMLFilterBase,
+    XMLGenerator,
+    escape,
+    prepare_input_source,
+    quoteattr,
+    unescape,
+)
+from xml.sax.xmlreader import AttributesImpl, AttributesNSImpl, InputSource
+
 from test import support
-from test.support import findfile, run_unittest, FakePath, TESTFN
+from test.support import TESTFN, FakePath, findfile, run_unittest
 
 TEST_XMLFILE = findfile("test.xml", subdir="xmltestdata")
 TEST_XMLFILE_OUT = findfile("test.xml.out", subdir="xmltestdata")
@@ -201,9 +202,8 @@ class ParseTest(unittest.TestCase):
         make_xml_file(self.data, "iso-8859-1", None)
         with self.assertRaises(SAXException):
             self.check_parse(TESTFN)
-        with open(TESTFN, "rb") as f:
-            with self.assertRaises(SAXException):
-                self.check_parse(f)
+        with open(TESTFN, "rb") as f, self.assertRaises(SAXException):
+            self.check_parse(f)
 
     def test_parse_path_object(self):
         make_xml_file(self.data, "utf-8", None)
@@ -383,7 +383,6 @@ class SaxutilsTest(unittest.TestCase):
 
 
 class PrepareInputSourceTest(unittest.TestCase):
-
     def setUp(self):
         self.file = support.TESTFN
         with open(self.file, "w") as tmp:
@@ -958,7 +957,6 @@ with open(TEST_XMLFILE_OUT, "rb") as f:
 
 
 class ExpatReaderTest(XmlTestBase):
-
     # ===== XMLReader support
 
     def test_expat_binary_file(self):
@@ -1025,7 +1023,6 @@ class ExpatReaderTest(XmlTestBase):
     # ===== DTDHandler support
 
     class TestDTDHandler:
-
         def __init__(self):
             self._notations = []
             self._entities = []
@@ -1099,7 +1096,6 @@ class ExpatReaderTest(XmlTestBase):
     # ===== EntityResolver support
 
     class TestEntityResolver:
-
         def resolveEntity(self, publicId, systemId):
             inpsrc = InputSource()
             inpsrc.setByteStream(BytesIO(b"<entity/>"))
@@ -1138,7 +1134,6 @@ class ExpatReaderTest(XmlTestBase):
     # ===== Attributes support
 
     class AttrGatherer(ContentHandler):
-
         def startElement(self, name, attrs):
             self._attrs = attrs
 
@@ -1187,7 +1182,7 @@ class ExpatReaderTest(XmlTestBase):
 
         self.assertEqual(attrs.getLength(), 1)
         self.assertEqual(attrs.getNames(), [(ns_uri, "attr")])
-        self.assertTrue((attrs.getQNames() == [] or attrs.getQNames() == ["ns:attr"]))
+        self.assertTrue(attrs.getQNames() == [] or attrs.getQNames() == ["ns:attr"])
         self.assertEqual(len(attrs), 1)
         self.assertIn((ns_uri, "attr"), attrs)
         self.assertEqual(attrs.get((ns_uri, "attr")), "val")
@@ -1405,7 +1400,6 @@ class ErrorReportingTest(unittest.TestCase):
 
 
 class XmlReaderTest(XmlTestBase):
-
     # ===== AttributesImpl
     def test_attrs_empty(self):
         self.verify_empty_attrs(AttributesImpl({}))

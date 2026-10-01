@@ -5,13 +5,14 @@ import selectors
 import signal
 import socket
 import sys
-from test import support
-from test.support import socket_helper
-from time import sleep
+import tempfile
 import unittest
 import unittest.mock
-import tempfile
 from time import monotonic as time
+from time import sleep
+
+from test import support
+from test.support import socket_helper
 
 try:
     import resource
@@ -51,7 +52,6 @@ def find_ready_matching(ready, flag):
 
 
 class BaseSelectorTestCase(unittest.TestCase):
-
     def make_socketpair(self):
         rd, wr = socketpair()
         self.addCleanup(rd.close)
@@ -438,7 +438,6 @@ class BaseSelectorTestCase(unittest.TestCase):
 
 
 class ScalableSelectorMixIn:
-
     # see issue #18963 for why it's skipped on older OS X versions
     @support.requires_mac_ver(10, 5)
     @unittest.skipUnless(resource, "Test needs resource module")
@@ -490,12 +489,10 @@ class ScalableSelectorMixIn:
 
 
 class DefaultSelectorTestCase(BaseSelectorTestCase):
-
     SELECTOR = selectors.DefaultSelector
 
 
 class SelectSelectorTestCase(BaseSelectorTestCase):
-
     SELECTOR = selectors.SelectSelector
 
 
@@ -503,7 +500,6 @@ class SelectSelectorTestCase(BaseSelectorTestCase):
     hasattr(selectors, "PollSelector"), "Test needs selectors.PollSelector"
 )
 class PollSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
-
     SELECTOR = getattr(selectors, "PollSelector", None)
 
 
@@ -511,7 +507,6 @@ class PollSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
     hasattr(selectors, "EpollSelector"), "Test needs selectors.EpollSelector"
 )
 class EpollSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
-
     SELECTOR = getattr(selectors, "EpollSelector", None)
 
     def test_register_file(self):
@@ -529,7 +524,6 @@ class EpollSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
     hasattr(selectors, "KqueueSelector"), "Test needs selectors.KqueueSelector)"
 )
 class KqueueSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
-
     SELECTOR = getattr(selectors, "KqueueSelector", None)
 
     def test_register_bad_fd(self):
@@ -562,7 +556,6 @@ class KqueueSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
     hasattr(selectors, "DevpollSelector"), "Test needs selectors.DevpollSelector"
 )
 class DevpollSelectorTestCase(BaseSelectorTestCase, ScalableSelectorMixIn):
-
     SELECTOR = getattr(selectors, "DevpollSelector", None)
 
 

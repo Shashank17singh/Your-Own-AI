@@ -47,25 +47,25 @@ Parse Plist example:
 """
 
 __all__ = [
-    "InvalidFileException",
-    "FMT_XML",
     "FMT_BINARY",
-    "load",
-    "dump",
-    "loads",
-    "dumps",
+    "FMT_XML",
     "UID",
+    "InvalidFileException",
+    "dump",
+    "dumps",
+    "load",
+    "loads",
 ]
 
 import binascii
 import codecs
 import datetime
 import enum
-from io import BytesIO
 import itertools
 import os
 import re
 import struct
+from io import BytesIO
 from xml.parsers.expat import ParserCreate
 
 PlistFormat = enum.Enum("PlistFormat", "FMT_XML FMT_BINARY", module=__name__)
@@ -172,9 +172,7 @@ def _date_to_string(d):
 def _escape(text):
     m = _controlCharPat.search(text)
     if m is not None:
-        raise ValueError(
-            "strings can't contains control characters; " "use bytes instead"
-        )
+        raise ValueError("strings can't contains control characters; use bytes instead")
     text = text.replace("\r\n", "\n")  # convert DOS line endings
     text = text.replace("\r", "\n")  # convert Mac line endings
     text = text.replace("&", "&amp;")  # escape '&'
@@ -674,7 +672,7 @@ def _count_to_size(count):
 _scalars = (str, int, float, datetime.datetime, bytes)
 
 
-class _BinaryPlistWriter(object):
+class _BinaryPlistWriter:
     def __init__(self, fp, sort_keys, skipkeys):
         self._fp = fp
         self._sort_keys = sort_keys

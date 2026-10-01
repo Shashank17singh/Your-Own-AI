@@ -1,8 +1,8 @@
 """TestSuite"""
 
 import sys
-from . import case
-from . import util
+
+from . import case, util
 
 __unittest = True
 
@@ -12,7 +12,7 @@ def _call_if_exists(parent, attr):
     func()
 
 
-class BaseTestSuite(object):
+class BaseTestSuite:
     """A simple test suite that doesn't provide class or module shared fixtures."""
 
     _cleanup = True
@@ -42,7 +42,7 @@ class BaseTestSuite(object):
 
     def addTest(self, test):
         if not callable(test):
-            raise TypeError("{} is not callable".format(repr(test)))
+            raise TypeError(f"{test!r} is not callable")
         if isinstance(test, type) and issubclass(test, (case.TestCase, TestSuite)):
             raise TypeError(
                 "TestCases and TestSuites must be instantiated "
@@ -300,7 +300,7 @@ class TestSuite(BaseTestSuite):
             _call_if_exists(result, "_restoreStdout")
 
 
-class _ErrorHolder(object):
+class _ErrorHolder:
     """
     Placeholder for a TestCase inside a result. As far as a TestResult
     is concerned, this looks exactly like a unit test. Used to insert
@@ -343,7 +343,7 @@ def _isnotsuite(test):
     return False
 
 
-class _DebugResult(object):
+class _DebugResult:
     "Used by the TestSuite to hold previous class when running in debug."
 
     _previousTestClass = None

@@ -1,13 +1,12 @@
 """Tests for distutils.version."""
 
 import unittest
-from distutils.version import LooseVersion
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion, StrictVersion
+
 from test.support import run_unittest
 
 
 class VersionTestCase(unittest.TestCase):
-
     def test_prerelease(self):
         version = StrictVersion("1.2.3a1")
         self.assertEqual(version.version, (1, 2, 3))
@@ -44,7 +43,7 @@ class VersionTestCase(unittest.TestCase):
                     continue
                 else:
                     raise AssertionError(
-                        ("cmp(%s, %s) " "shouldn't raise ValueError") % (v1, v2)
+                        ("cmp(%s, %s) shouldn't raise ValueError") % (v1, v2)
                     )
             self.assertEqual(
                 res, wanted, "cmp(%s, %s) should be %s, got %s" % (v1, v2, wanted, res)

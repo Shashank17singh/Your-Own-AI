@@ -1,5 +1,5 @@
-import os
 import copy
+import os
 import pickle
 import platform
 import subprocess
@@ -456,9 +456,10 @@ class PlatformTest(unittest.TestCase):
             "i386",
         )
         arch = ("64bit", "")
-        with mock.patch.object(
-            platform, "uname", return_value=uname
-        ), mock.patch.object(platform, "architecture", return_value=arch):
+        with (
+            mock.patch.object(platform, "uname", return_value=uname),
+            mock.patch.object(platform, "architecture", return_value=arch),
+        ):
             for mac_ver, expected_terse, expected in [
                 # darwin: mac_ver() returns empty strings
                 (("", "", ""), "Darwin-17.7.0", "Darwin-17.7.0-x86_64-i386-64bit"),

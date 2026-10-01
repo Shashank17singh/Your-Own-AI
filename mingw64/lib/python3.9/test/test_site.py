@@ -5,11 +5,6 @@ executing have not been removed.
 
 """
 
-import unittest
-import test.support
-from test import support
-from test.support import socket_helper
-from test.support import captured_stderr, TESTFN, EnvironmentVarGuard, change_cwd
 import builtins
 import encodings
 import glob
@@ -20,10 +15,20 @@ import subprocess
 import sys
 import sysconfig
 import tempfile
+import unittest
 import urllib.error
 import urllib.request
-from unittest import mock
 from copy import copy
+from unittest import mock
+
+import test.support
+from test import support
+from test.support import (
+    TESTFN,
+    EnvironmentVarGuard,
+    captured_stderr,
+    socket_helper,
+)
 
 # These tests are not particularly useful if Python was invoked with -S.
 # If you add tests that are useful under -S, this skip should be moved
@@ -203,7 +208,7 @@ class HelperFunctionsTests(unittest.TestCase):
 
     @unittest.skipUnless(
         site.ENABLE_USER_SITE,
-        "requires access to PEP 370 " "user-site (site.ENABLE_USER_SITE)",
+        "requires access to PEP 370 user-site (site.ENABLE_USER_SITE)",
     )
     def test_s_option(self):
         # (ncoghlan) Change this to use script_helper...
@@ -318,10 +323,10 @@ class HelperFunctionsTests(unittest.TestCase):
         site.USER_SITE = None
         site.USER_BASE = None
 
-        with EnvironmentVarGuard() as environ, mock.patch(
-            "os.path.expanduser", lambda path: path
+        with (
+            EnvironmentVarGuard() as environ,
+            mock.patch("os.path.expanduser", lambda path: path),
         ):
-
             del environ["PYTHONUSERBASE"]
             del environ["APPDATA"]
 
@@ -331,14 +336,11 @@ class HelperFunctionsTests(unittest.TestCase):
             user_site = site.getusersitepackages()
             self.assertTrue(user_site.startswith(user_base), user_site)
 
-        with mock.patch(
-            "os.path.isdir", return_value=False
-        ) as mock_isdir, mock.patch.object(
-            site, "addsitedir"
-        ) as mock_addsitedir, support.swap_attr(
-            site, "ENABLE_USER_SITE", True
+        with (
+            mock.patch("os.path.isdir", return_value=False) as mock_isdir,
+            mock.patch.object(site, "addsitedir") as mock_addsitedir,
+            support.swap_attr(site, "ENABLE_USER_SITE", True),
         ):
-
             # addusersitepackages() must not add user_site to sys.path
             # if it is not an existing directory
             known_paths = set()
@@ -349,7 +351,7 @@ class HelperFunctionsTests(unittest.TestCase):
             self.assertFalse(known_paths)
 
 
-class PthFile(object):
+class PthFile:
     """Helper class for handling testing of .pth files"""
 
     def __init__(
@@ -506,7 +508,6 @@ class ImportSideEffectTests(unittest.TestCase):
 
 
 class StartupImportTests(unittest.TestCase):
-
     def test_startup_imports(self):
         # Get sys.path in isolated mode (python3 -I)
         popen = subprocess.Popen(
@@ -602,7 +603,6 @@ class StartupImportTests(unittest.TestCase):
 
 @unittest.skipUnless(sys.platform == "win32", "only supported on Windows")
 class _pthFileTests(unittest.TestCase):
-
     def _create_underpth_exe(self, lines, exe_pth=True):
         import _winapi
 

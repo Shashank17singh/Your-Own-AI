@@ -755,7 +755,6 @@ from test import support
 
 
 class SyntaxTestCase(unittest.TestCase):
-
     def _check_error(
         self,
         code,
@@ -918,13 +917,13 @@ class SyntaxTestCase(unittest.TestCase):
     def test_kwargs_last2(self):
         self._check_error(
             "int(**{'base': 10}, '2')",
-            "positional argument follows " "keyword argument unpacking",
+            "positional argument follows keyword argument unpacking",
         )
 
     def test_kwargs_last3(self):
         self._check_error(
             "int(**{'base': 10}, *['2'])",
-            "iterable argument unpacking follows " "keyword argument unpacking",
+            "iterable argument unpacking follows keyword argument unpacking",
         )
 
     def test_empty_line_after_linecont(self):
@@ -944,10 +943,10 @@ pass
     def test_nested_named_except_blocks(self):
         code = ""
         for i in range(12):
-            code += f"{'    '*i}try:\n"
-            code += f"{'    '*(i+1)}raise Exception\n"
-            code += f"{'    '*i}except Exception as e:\n"
-        code += f"{' '*4*12}pass"
+            code += f"{'    ' * i}try:\n"
+            code += f"{'    ' * (i + 1)}raise Exception\n"
+            code += f"{'    ' * i}except Exception as e:\n"
+        code += f"{' ' * 4 * 12}pass"
         self._check_error(code, "too many statically nested blocks")
 
     def test_barry_as_flufl_with_syntax_errors(self):

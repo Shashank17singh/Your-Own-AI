@@ -24,35 +24,35 @@ This module also provides some data items to the user:
 """
 
 __all__ = [
+    "TMP_MAX",
     "NamedTemporaryFile",
-    "TemporaryFile",  # high level safe interfaces
     "SpooledTemporaryFile",
     "TemporaryDirectory",
-    "mkstemp",
-    "mkdtemp",  # low level safe interfaces
-    "mktemp",  # deprecated unsafe interface
-    "TMP_MAX",
-    "gettempprefix",  # constants
-    "tempdir",
+    "TemporaryFile",  # high level safe interfaces
     "gettempdir",
-    "gettempprefixb",
     "gettempdirb",
+    "gettempprefix",  # constants
+    "gettempprefixb",
+    "mkdtemp",  # low level safe interfaces
+    "mkstemp",
+    "mktemp",  # deprecated unsafe interface
+    "tempdir",
 ]
 
 
 # Imports.
 
+import _thread
+import errno as _errno
 import functools as _functools
-import warnings as _warnings
 import io as _io
 import os as _os
 import shutil as _shutil
-import errno as _errno
-from random import Random as _Random
 import sys as _sys
 import types as _types
+import warnings as _warnings
 import weakref as _weakref
-import _thread
+from random import Random as _Random
 
 _allocate_lock = _thread.allocate_lock
 
@@ -97,11 +97,11 @@ def _infer_return_type(*args):
             continue
         if isinstance(arg, bytes):
             if return_type is str:
-                raise TypeError("Can't mix bytes and non-bytes in " "path components.")
+                raise TypeError("Can't mix bytes and non-bytes in path components.")
             return_type = bytes
         else:
             if return_type is bytes:
-                raise TypeError("Can't mix bytes and non-bytes in " "path components.")
+                raise TypeError("Can't mix bytes and non-bytes in path components.")
             return_type = str
     if return_type is None:
         return str  # tempfile APIs return a str by default.
@@ -213,7 +213,7 @@ def _get_default_tempdir():
                 fd = _os.open(filename, _bin_openflags, 0o600)
                 try:
                     try:
-                        with _io.open(fd, "wb", closefd=False) as fp:
+                        with open(fd, "wb", closefd=False) as fp:
                             fp.write(b"blat")
                     finally:
                         _os.close(fd)
@@ -545,7 +545,7 @@ def NamedTemporaryFile(
     dir=None,
     delete=True,
     *,
-    errors=None
+    errors=None,
 ):
     """Create and return a temporary file.
     Arguments:
@@ -574,7 +574,7 @@ def NamedTemporaryFile(
 
     fd, name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)
     try:
-        file = _io.open(
+        file = open(
             fd,
             mode,
             buffering=buffering,
@@ -610,7 +610,7 @@ else:
         prefix=None,
         dir=None,
         *,
-        errors=None
+        errors=None,
     ):
         """Create and return a temporary file.
         Arguments:
@@ -652,7 +652,7 @@ else:
                 pass
             else:
                 try:
-                    return _io.open(
+                    return open(
                         fd,
                         mode,
                         buffering=buffering,
@@ -668,7 +668,7 @@ else:
         fd, name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)
         try:
             _os.unlink(name)
-            return _io.open(
+            return open(
                 fd,
                 mode,
                 buffering=buffering,
@@ -700,7 +700,7 @@ class SpooledTemporaryFile:
         prefix=None,
         dir=None,
         *,
-        errors=None
+        errors=None,
     ):
         if "b" in mode:
             self._file = _io.BytesIO()
@@ -843,7 +843,7 @@ class SpooledTemporaryFile:
         return rv
 
 
-class TemporaryDirectory(object):
+class TemporaryDirectory:
     """Create and return a temporary directory.  This has the same
     behavior as mkdtemp but can be used as a context manager.  For
     example:
@@ -861,7 +861,7 @@ class TemporaryDirectory(object):
             self,
             self._cleanup,
             self.name,
-            warn_message="Implicitly cleaning up {!r}".format(self),
+            warn_message=f"Implicitly cleaning up {self!r}",
         )
 
     @classmethod
@@ -901,7 +901,7 @@ class TemporaryDirectory(object):
         _warnings.warn(warn_message, ResourceWarning)
 
     def __repr__(self):
-        return "<{} {!r}>".format(self.__class__.__name__, self.name)
+        return f"<{self.__class__.__name__} {self.name!r}>"
 
     def __enter__(self):
         return self.name

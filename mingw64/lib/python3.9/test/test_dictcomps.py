@@ -5,7 +5,6 @@ g = "Global variable"
 
 
 class DictComprehensionTest(unittest.TestCase):
-
     def test_basics(self):
         expected = {
             0: 10,

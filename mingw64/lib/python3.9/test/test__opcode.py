@@ -1,13 +1,13 @@
 import dis
-from test.support import import_module
 import unittest
+
+from test.support import import_module
 
 _opcode = import_module("_opcode")
 from _opcode import stack_effect
 
 
 class OpcodeTests(unittest.TestCase):
-
     def test_stack_effect(self):
         self.assertEqual(stack_effect(dis.opmap["POP_TOP"]), -1)
         self.assertEqual(stack_effect(dis.opmap["DUP_TOP_TWO"]), 2)

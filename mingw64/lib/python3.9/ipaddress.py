@@ -860,8 +860,7 @@ class _BaseNetwork(_IPAddressBase):
         else:
             # If we got here, there's a bug somewhere.
             raise AssertionError(
-                "Error performing exclusion: "
-                "s1: %s s2: %s other: %s" % (s1, s2, other)
+                "Error performing exclusion: s1: %s s2: %s other: %s" % (s1, s2, other)
             )
 
     def compare_networks(self, other):
@@ -1041,9 +1040,7 @@ class _BaseNetwork(_IPAddressBase):
                 and b.broadcast_address >= a.broadcast_address
             )
         except AttributeError:
-            raise TypeError(
-                f"Unable to test subnet containment " f"between {a} and {b}"
-            )
+            raise TypeError(f"Unable to test subnet containment between {a} and {b}")
 
     def subnet_of(self, other):
         """Return True if this network is a subnet of other."""
@@ -1267,7 +1264,7 @@ class _BaseV4:
 class IPv4Address(_BaseV4, _BaseAddress):
     """Represent and manipulate single IPv4 Addresses."""
 
-    __slots__ = ("_ip", "__weakref__")
+    __slots__ = ("__weakref__", "_ip")
 
     def __init__(self, address):
         """
@@ -1320,7 +1317,7 @@ class IPv4Address(_BaseV4, _BaseAddress):
         return self in self._constants._reserved_network
 
     @property
-    @functools.lru_cache()
+    @functools.lru_cache
     def is_private(self):
         """Test if this address is allocated for private networks.
 
@@ -1332,7 +1329,7 @@ class IPv4Address(_BaseV4, _BaseAddress):
         return any(self in net for net in self._constants._private_networks)
 
     @property
-    @functools.lru_cache()
+    @functools.lru_cache
     def is_global(self):
         return self not in self._constants._public_network and not self.is_private
 
@@ -1380,7 +1377,6 @@ class IPv4Address(_BaseV4, _BaseAddress):
 
 
 class IPv4Interface(IPv4Address):
-
     def __init__(self, address):
         addr, mask = self._split_addr_prefix(address)
 
@@ -1512,7 +1508,7 @@ class IPv4Network(_BaseV4, _BaseNetwork):
             self.hosts = lambda: [IPv4Address(addr)]
 
     @property
-    @functools.lru_cache()
+    @functools.lru_cache
     def is_global(self):
         """Test if this address is allocated for public networks.
 
@@ -1871,7 +1867,7 @@ class _BaseV6:
 class IPv6Address(_BaseV6, _BaseAddress):
     """Represent and manipulate single IPv6 Addresses."""
 
-    __slots__ = ("_ip", "_scope_id", "__weakref__")
+    __slots__ = ("__weakref__", "_ip", "_scope_id")
 
     def __init__(self, address):
         """Instantiate a new IPv6 address object.
@@ -1992,7 +1988,7 @@ class IPv6Address(_BaseV6, _BaseAddress):
         return self in self._constants._sitelocal_network
 
     @property
-    @functools.lru_cache()
+    @functools.lru_cache
     def is_private(self):
         """Test if this address is allocated for private networks.
 
@@ -2081,7 +2077,6 @@ class IPv6Address(_BaseV6, _BaseAddress):
 
 
 class IPv6Interface(IPv6Address):
-
     def __init__(self, address):
         addr, mask = self._split_addr_prefix(address)
 
@@ -2246,7 +2241,6 @@ class IPv6Network(_BaseV6, _BaseNetwork):
 
 
 class _IPv6Constants:
-
     _linklocal_network = IPv6Network("fe80::/10")
 
     _multicast_network = IPv6Network("ff00::/8")

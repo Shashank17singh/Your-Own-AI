@@ -5,6 +5,7 @@ import functools
 import re
 import weakref
 from datetime import datetime, timedelta, tzinfo
+
 from . import _common, _tzpath
 
 EPOCH = datetime(1970, 1, 1)
@@ -282,7 +283,7 @@ class ZoneInfo(tzinfo):
 
 
 class _ttinfo:
-    __slots__ = ["utcoff", "dstoff", "tzname"]
+    __slots__ = ["dstoff", "tzname", "utcoff"]
 
     def __init__(self, utcoff, dstoff, tzname):
         self.utcoff = utcoff
@@ -308,13 +309,13 @@ _NO_TTINFO = _ttinfo(None, None, None)
 
 class _TZStr:
     __slots__ = (
-        "std",
         "dst",
-        "start",
+        "dst_diff",
         "end",
         "get_trans_info",
         "get_trans_info_fromutc",
-        "dst_diff",
+        "start",
+        "std",
     )
 
     def __init__(
@@ -378,7 +379,7 @@ def _post_epoch_days_before_year(year):
 
 
 class _DayOffset:
-    __slots__ = ["d", "julian", "hour", "minute", "second"]
+    __slots__ = ["d", "hour", "julian", "minute", "second"]
 
     def __init__(self, d, julian, hour=2, minute=0, second=0):
         if not (0 + julian) <= d <= 365:
@@ -401,7 +402,7 @@ class _DayOffset:
 
 
 class _CalendarOffset:
-    __slots__ = ["m", "w", "d", "hour", "minute", "second"]
+    __slots__ = ["d", "hour", "m", "minute", "second", "w"]
     _DAYS_BEFORE_MONTH = (
         -1,
         0,

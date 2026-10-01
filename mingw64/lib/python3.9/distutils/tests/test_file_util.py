@@ -1,19 +1,18 @@
 """Tests for distutils.file_util."""
 
-import unittest
-import os
 import errno
+import os
+import unittest
+from distutils import log
+from distutils.errors import DistutilsFileError
+from distutils.file_util import copy_file, move_file
+from distutils.tests import support
 from unittest.mock import patch
 
-from distutils.file_util import move_file, copy_file
-from distutils import log
-from distutils.tests import support
-from distutils.errors import DistutilsFileError
 from test.support import run_unittest, unlink
 
 
 class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
-
     def _log(self, msg, *args):
         if len(args) > 0:
             self._logs.append(msg % args)
@@ -21,7 +20,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
             self._logs.append(msg)
 
     def setUp(self):
-        super(FileUtilTestCase, self).setUp()
+        super().setUp()
         self._logs = []
         self.old_log = log.info
         log.info = self._log
@@ -32,7 +31,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
 
     def tearDown(self):
         log.info = self.old_log
-        super(FileUtilTestCase, self).tearDown()
+        super().tearDown()
 
     def test_move_file_verbosity(self):
         f = open(self.source, "w")
@@ -64,8 +63,9 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
 
     def test_move_file_exception_unpacking_rename(self):
         # see issue 22182
-        with patch("os.rename", side_effect=OSError("wrong", 1)), self.assertRaises(
-            DistutilsFileError
+        with (
+            patch("os.rename", side_effect=OSError("wrong", 1)),
+            self.assertRaises(DistutilsFileError),
         ):
             with open(self.source, "w") as fobj:
                 fobj.write("spam eggs")
@@ -73,9 +73,11 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
 
     def test_move_file_exception_unpacking_unlink(self):
         # see issue 22182
-        with patch("os.rename", side_effect=OSError(errno.EXDEV, "wrong")), patch(
-            "os.unlink", side_effect=OSError("wrong", 1)
-        ), self.assertRaises(DistutilsFileError):
+        with (
+            patch("os.rename", side_effect=OSError(errno.EXDEV, "wrong")),
+            patch("os.unlink", side_effect=OSError("wrong", 1)),
+            self.assertRaises(DistutilsFileError),
+        ):
             with open(self.source, "w") as fobj:
                 fobj.write("spam eggs")
             move_file(self.source, self.target, verbose=0)

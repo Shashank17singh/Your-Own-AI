@@ -61,7 +61,7 @@ if not sysconfig.is_python_build():
 
 if "Clang" in platform.python_compiler() and sys.platform == "darwin":
     raise unittest.SkipTest(
-        "test_gdb doesn't work correctly when python is" " built with LLVM clang"
+        "test_gdb doesn't work correctly when python is built with LLVM clang"
     )
 
 if (sysconfig.get_config_var("PGO_PROF_USE_FLAG") or "xxx") in (
@@ -372,7 +372,7 @@ class PrettyPrintTests(DebuggerTests):
         self.assertGdbRepr(b"And now for something hopefully the same")
         self.assertGdbRepr(b"string with embedded NUL here \0 and then some more text")
         self.assertGdbRepr(
-            b"this is a tab:\t" b" this is a slash-N:\n" b" this is a slash-R:\r"
+            b"this is a tab:\t this is a slash-N:\n this is a slash-R:\r"
         )
 
         self.assertGdbRepr(b"this is byte 255:\xff and byte 128:\x80")

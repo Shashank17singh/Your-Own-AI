@@ -1,13 +1,14 @@
 # Test case for the os.poll() function
 
 import os
-import subprocess
 import random
 import select
+import subprocess
 import threading
 import time
 import unittest
-from test.support import TESTFN, run_unittest, reap_threads, cpython_only
+
+from test.support import TESTFN, cpython_only, reap_threads, run_unittest
 
 try:
     select.poll
@@ -24,7 +25,6 @@ def find_ready_matching(ready, flag):
 
 
 class PollTests(unittest.TestCase):
-
     def test_poll1(self):
         # Basic functional test of poll object
         # Create a bunch of pipe and test that poll works with them.
@@ -167,7 +167,7 @@ class PollTests(unittest.TestCase):
 
     @cpython_only
     def test_poll_c_limits(self):
-        from _testcapi import USHRT_MAX, INT_MAX, UINT_MAX
+        from _testcapi import INT_MAX, UINT_MAX, USHRT_MAX
 
         pollster = select.poll()
         pollster.register(1)

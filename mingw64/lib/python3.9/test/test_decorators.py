@@ -9,7 +9,7 @@ def funcattrs(**kwds):
     return decorate
 
 
-class MiscDecorators(object):
+class MiscDecorators:
     @staticmethod
     def author(name):
         def decorate(func):
@@ -92,9 +92,8 @@ def memoize(func):
 
 
 class TestDecorators(unittest.TestCase):
-
     def test_single(self):
-        class C(object):
+        class C:
             @staticmethod
             def foo():
                 return 42
@@ -125,7 +124,7 @@ class TestDecorators(unittest.TestCase):
 
         def noteargs(*args, **kwds):
             def decorate(func):
-                setattr(func, "dbval", (args, kwds))
+                func.dbval = args, kwds
                 return func
 
             return decorate
@@ -241,7 +240,7 @@ class TestDecorators(unittest.TestCase):
             compile(f"@{expr}\ndef f(): pass", "test", "exec")
 
     def test_double(self):
-        class C(object):
+        class C:
             @funcattrs(abc=1, xyz="haha")
             @funcattrs(booh=42)
             def foo(self):
@@ -296,7 +295,7 @@ class TestDecorators(unittest.TestCase):
 
             return decorate
 
-        class NameLookupTracer(object):
+        class NameLookupTracer:
             def __init__(self, index):
                 self.index = index
 
@@ -392,14 +391,13 @@ class TestDecorators(unittest.TestCase):
 
 
 class TestClassDecorators(unittest.TestCase):
-
     def test_simple(self):
         def plain(x):
             x.extra = "Hello"
             return x
 
         @plain
-        class C(object):
+        class C:
             pass
 
         self.assertEqual(C.extra, "Hello")
@@ -415,7 +413,7 @@ class TestClassDecorators(unittest.TestCase):
 
         @add_five
         @ten
-        class C(object):
+        class C:
             pass
 
         self.assertEqual(C.extra, 15)
@@ -431,7 +429,7 @@ class TestClassDecorators(unittest.TestCase):
 
         @applied_second
         @applied_first
-        class C(object):
+        class C:
             pass
 
         self.assertEqual(C.extra, "second")

@@ -20,7 +20,7 @@ import os
 import sys
 import warnings
 
-__all__ = ["getpass", "getuser", "GetPassWarning"]
+__all__ = ["GetPassWarning", "getpass", "getuser"]
 
 
 class GetPassWarning(UserWarning):

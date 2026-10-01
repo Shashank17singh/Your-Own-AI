@@ -7,7 +7,7 @@ TODO: Fill out more detailed documentation on the operators."""
 
 from abc import ABCMeta, abstractmethod
 
-__all__ = ["Number", "Complex", "Real", "Rational", "Integral"]
+__all__ = ["Complex", "Integral", "Number", "Rational", "Real"]
 
 
 class Number(metaclass=ABCMeta):

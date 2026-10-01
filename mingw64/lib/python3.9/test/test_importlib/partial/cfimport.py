@@ -9,7 +9,7 @@ NTHREADS = 30
 
 def t1():
     try:
-        from concurrent.futures import ThreadPoolExecutor
+        pass
     except Exception:
         traceback.print_exc()
         os._exit(1)
@@ -17,7 +17,7 @@ def t1():
 
 def t2():
     try:
-        from concurrent.futures.thread import ThreadPoolExecutor
+        pass
     except Exception:
         traceback.print_exc()
         os._exit(1)

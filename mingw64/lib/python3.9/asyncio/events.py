@@ -1,21 +1,21 @@
 """Event loop and event loop policy."""
 
 __all__ = (
-    "AbstractEventLoopPolicy",
     "AbstractEventLoop",
+    "AbstractEventLoopPolicy",
     "AbstractServer",
     "Handle",
     "TimerHandle",
-    "get_event_loop_policy",
-    "set_event_loop_policy",
-    "get_event_loop",
-    "set_event_loop",
-    "new_event_loop",
-    "get_child_watcher",
-    "set_child_watcher",
-    "_set_running_loop",
-    "get_running_loop",
     "_get_running_loop",
+    "_set_running_loop",
+    "get_child_watcher",
+    "get_event_loop",
+    "get_event_loop_policy",
+    "get_running_loop",
+    "new_event_loop",
+    "set_child_watcher",
+    "set_event_loop",
+    "set_event_loop_policy",
 )
 
 import contextvars
@@ -32,14 +32,14 @@ class Handle:
     """Object returned by callback registration methods."""
 
     __slots__ = (
-        "_callback",
-        "_args",
-        "_cancelled",
-        "_loop",
-        "_source_traceback",
-        "_repr",
         "__weakref__",
+        "_args",
+        "_callback",
+        "_cancelled",
         "_context",
+        "_loop",
+        "_repr",
+        "_source_traceback",
     )
 
     def __init__(self, callback, args, loop, context=None):
@@ -857,8 +857,8 @@ try:
     from _asyncio import (
         _get_running_loop,
         _set_running_loop,
-        get_running_loop,
         get_event_loop,
+        get_running_loop,
     )
 except ImportError:
     pass

@@ -1,11 +1,9 @@
 import linecache
 import os
 import sys
-
 import tkinter as tk
-
 from idlelib.debugobj import ObjectTreeItem, make_objecttreeitem
-from idlelib.tree import TreeNode, TreeItem, ScrolledCanvas
+from idlelib.tree import ScrolledCanvas, TreeItem, TreeNode
 
 
 def StackBrowser(root, flist=None, tb=None, top=None):
@@ -20,7 +18,6 @@ def StackBrowser(root, flist=None, tb=None, top=None):
 
 
 class StackTreeItem(TreeItem):
-
     def __init__(self, flist=None, tb=None):
         self.flist = flist
         self.stack = self.get_stack(tb)
@@ -59,7 +56,6 @@ class StackTreeItem(TreeItem):
 
 
 class FrameTreeItem(TreeItem):
-
     def __init__(self, info, flist):
         self.info = info
         self.flist = flist
@@ -100,7 +96,6 @@ class FrameTreeItem(TreeItem):
 
 
 class VariablesTreeItem(ObjectTreeItem):
-
     def GetText(self):
         return self.labeltext
 

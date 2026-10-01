@@ -1,8 +1,7 @@
-import unittest
-import ctypes
-from ctypes.test import need_symbol
-
 import _ctypes_test
+import ctypes
+import unittest
+from ctypes.test import need_symbol
 
 
 @need_symbol("c_wchar")

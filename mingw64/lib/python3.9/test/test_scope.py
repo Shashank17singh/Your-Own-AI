@@ -1,12 +1,10 @@
 import unittest
 import weakref
 
-from test.support import check_syntax_error, cpython_only
-from test.support import gc_collect
+from test.support import check_syntax_error, cpython_only, gc_collect
 
 
 class ScopeTests(unittest.TestCase):
-
     def testSimpleNesting(self):
 
         def make_adder(x):
@@ -158,7 +156,7 @@ class ScopeTests(unittest.TestCase):
                     return method_and_var
 
                 def actual_global(self):
-                    return str("global")
+                    return "global"
 
                 def str(self):
                     return str(self)
@@ -181,7 +179,7 @@ class ScopeTests(unittest.TestCase):
                 return method_and_var
 
             def actual_global(self):
-                return str("global")
+                return "global"
 
             def str(self):
                 return str(self)

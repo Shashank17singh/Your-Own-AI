@@ -8,15 +8,12 @@ and will probably change some before that happens.
 
 """
 
-from types import MappingProxyType
-
-from email import utils
-from email import errors
 from email import _header_value_parser as parser
+from email import errors, utils
+from types import MappingProxyType
 
 
 class Address:
-
     def __init__(self, display_name="", username="", domain="", addr_spec=None):
         """Create an object representing a full email address.
 
@@ -45,13 +42,13 @@ class Address:
         if addr_spec is not None:
             if username or domain:
                 raise TypeError(
-                    "addrspec specified when username and/or " "domain also specified"
+                    "addrspec specified when username and/or domain also specified"
                 )
             a_s, rest = parser.get_addr_spec(addr_spec)
             if rest:
                 raise ValueError(
-                    "Invalid addr_spec; only '{}' "
-                    "could be parsed from '{}'".format(a_s, addr_spec)
+                    f"Invalid addr_spec; only '{a_s}' "
+                    f"could be parsed from '{addr_spec}'"
                 )
             if a_s.all_defects:
                 raise a_s.all_defects[0]
@@ -88,9 +85,7 @@ class Address:
         return lp
 
     def __repr__(self):
-        return "{}(display_name={!r}, username={!r}, domain={!r})".format(
-            self.__class__.__name__, self.display_name, self.username, self.domain
-        )
+        return f"{self.__class__.__name__}(display_name={self.display_name!r}, username={self.username!r}, domain={self.domain!r})"
 
     def __str__(self):
         disp = self.display_name
@@ -98,7 +93,7 @@ class Address:
             disp = parser.quote_string(disp)
         if disp:
             addr_spec = "" if self.addr_spec == "<>" else self.addr_spec
-            return "{} <{}>".format(disp, addr_spec)
+            return f"{disp} <{addr_spec}>"
         return self.addr_spec
 
     def __eq__(self, other):
@@ -112,7 +107,6 @@ class Address:
 
 
 class Group:
-
     def __init__(self, display_name=None, addresses=None):
         """Create an object representing an address group.
 
@@ -140,9 +134,7 @@ class Group:
         return self._addresses
 
     def __repr__(self):
-        return "{}(display_name={!r}, addresses={!r}".format(
-            self.__class__.__name__, self.display_name, self.addresses
-        )
+        return f"{self.__class__.__name__}(display_name={self.display_name!r}, addresses={self.addresses!r}"
 
     def __str__(self):
         if self.display_name is None and len(self.addresses) == 1:
@@ -152,7 +144,7 @@ class Group:
             disp = parser.quote_string(disp)
         adrstr = ", ".join(str(x) for x in self.addresses)
         adrstr = " " + adrstr if adrstr else adrstr
-        return "{}:{};".format(disp, adrstr)
+        return f"{disp}:{adrstr};"
 
     def __eq__(self, other):
         if not isinstance(other, Group):
@@ -275,7 +267,6 @@ def _reconstruct_header(cls_name, bases, value):
 
 
 class UnstructuredHeader:
-
     max_count = None
     value_parser = staticmethod(parser.get_unstructured)
 
@@ -286,7 +277,6 @@ class UnstructuredHeader:
 
 
 class UniqueUnstructuredHeader(UnstructuredHeader):
-
     max_count = 1
 
 
@@ -329,12 +319,10 @@ class DateHeader:
 
 
 class UniqueDateHeader(DateHeader):
-
     max_count = 1
 
 
 class AddressHeader:
-
     max_count = None
 
     @staticmethod
@@ -399,30 +387,24 @@ class AddressHeader:
 
 
 class UniqueAddressHeader(AddressHeader):
-
     max_count = 1
 
 
 class SingleAddressHeader(AddressHeader):
-
     @property
     def address(self):
         if len(self.addresses) != 1:
             raise ValueError(
-                ("value of single address header {} is not " "a single address").format(
-                    self.name
-                )
+                f"value of single address header {self.name} is not a single address"
             )
         return self.addresses[0]
 
 
 class UniqueSingleAddressHeader(SingleAddressHeader):
-
     max_count = 1
 
 
 class MIMEVersionHeader:
-
     max_count = 1
 
     value_parser = staticmethod(parser.parse_mime_version)
@@ -459,7 +441,6 @@ class MIMEVersionHeader:
 
 
 class ParameterizedMIMEHeader:
-
     # Mixin that handles the params dict.  Must be subclassed and
     # a property value_parser for the specific header provided.
 
@@ -489,7 +470,6 @@ class ParameterizedMIMEHeader:
 
 
 class ContentTypeHeader(ParameterizedMIMEHeader):
-
     value_parser = staticmethod(parser.parse_content_type_header)
 
     def init(self, *args, **kw):
@@ -511,7 +491,6 @@ class ContentTypeHeader(ParameterizedMIMEHeader):
 
 
 class ContentDispositionHeader(ParameterizedMIMEHeader):
-
     value_parser = staticmethod(parser.parse_content_disposition_header)
 
     def init(self, *args, **kw):
@@ -525,7 +504,6 @@ class ContentDispositionHeader(ParameterizedMIMEHeader):
 
 
 class ContentTransferEncodingHeader:
-
     max_count = 1
 
     value_parser = staticmethod(parser.parse_content_transfer_encoding_header)
@@ -546,7 +524,6 @@ class ContentTransferEncodingHeader:
 
 
 class MessageIDHeader:
-
     max_count = 1
     value_parser = staticmethod(parser.parse_message_id)
 

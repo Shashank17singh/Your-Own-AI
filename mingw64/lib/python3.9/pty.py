@@ -6,12 +6,12 @@
 #       UNIX Environment.  Chapter 19.
 # Author: Steen Lumholt -- with additions by Guido.
 
-from select import select
 import os
 import sys
 import tty
+from select import select
 
-__all__ = ["openpty", "fork", "spawn"]
+__all__ = ["fork", "openpty", "spawn"]
 
 STDIN_FILENO = 0
 STDOUT_FILENO = 1
@@ -71,7 +71,7 @@ def slave_open(tty_name):
 
     result = os.open(tty_name, os.O_RDWR)
     try:
-        from fcntl import ioctl, I_PUSH
+        from fcntl import I_PUSH, ioctl
     except ImportError:
         return result
     try:
@@ -159,7 +159,7 @@ def _copy(master_fd, master_read=_read, stdin_read=_read):
 
 def spawn(argv, master_read=_read, stdin_read=_read):
     """Create a spawned process."""
-    if type(argv) == type(""):
+    if type(argv) == str:
         argv = (argv,)
     sys.audit("pty.spawn", argv)
     pid, master_fd = fork()

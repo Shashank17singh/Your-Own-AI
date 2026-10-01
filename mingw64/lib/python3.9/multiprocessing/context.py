@@ -2,8 +2,7 @@ import os
 import sys
 import threading
 
-from . import process
-from . import reduction
+from . import process, reduction
 
 __all__ = ()
 
@@ -33,8 +32,7 @@ class AuthenticationError(ProcessError):
 #
 
 
-class BaseContext(object):
-
+class BaseContext:
     ProcessError = ProcessError
     BufferTooShort = BufferTooShort
     TimeoutError = TimeoutError
@@ -199,7 +197,6 @@ class BaseContext(object):
         """
         # This is undocumented.  In previous versions of multiprocessing
         # its only effect was to make socket objects inheritable on Windows.
-        from . import connection
 
     def set_executable(self, executable):
         """Sets the path to a python.exe or pythonw.exe binary used to run

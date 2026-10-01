@@ -5,10 +5,9 @@ proper indentation of code.  HyperParser gives additional information on
 the structure of code.
 """
 
-from keyword import iskeyword
 import string
-
 from idlelib import pyparse
+from keyword import iskeyword
 
 # all ASCII chars that may be in an identifier
 _ASCII_ID_CHARS = frozenset(string.ascii_letters + string.digits + "_")
@@ -237,7 +236,7 @@ class HyperParser:
         """
         if not self.is_in_code():
             raise ValueError(
-                "get_expression should only be called " "if index is inside a code."
+                "get_expression should only be called if index is inside a code."
             )
 
         rawtext = self.rawtext

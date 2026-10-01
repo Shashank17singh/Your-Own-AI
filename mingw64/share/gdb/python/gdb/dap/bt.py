@@ -1,5 +1,5 @@
-from typing import Optional
 import gdb
+
 from .frames import dap_frame_generator
 from .modules import module_id
 from .scopes import symbol_value
@@ -76,15 +76,15 @@ def _backtrace(thread_id, levels, startFrame, stack_format):
 @type_check
 def check_stack_frame(
     *,
-    hex: Optional[bool] = False,
-    parameters: Optional[bool] = False,
-    parameterTypes: Optional[bool] = False,
-    parameterNames: Optional[bool] = False,
-    parameterValues: Optional[bool] = False,
-    line: Optional[bool] = False,
-    module: Optional[bool] = False,
-    includeAll: Optional[bool] = False,
-    **rest
+    hex: bool | None = False,
+    parameters: bool | None = False,
+    parameterTypes: bool | None = False,
+    parameterNames: bool | None = False,
+    parameterValues: bool | None = False,
+    line: bool | None = False,
+    module: bool | None = False,
+    includeAll: bool | None = False,
+    **rest,
 ):
     return {
         "hex": hex,

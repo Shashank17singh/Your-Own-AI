@@ -44,11 +44,11 @@ def _iterdump(connection):
         #        qtable,
         #        sql.replace("''")))
         else:
-            yield ("{0};".format(sql))
+            yield (f"{sql};")
 
         # Build the insert statement for each row of the current table
         table_name_ident = table_name.replace('"', '""')
-        res = cu.execute('PRAGMA table_info("{0}")'.format(table_name_ident))
+        res = cu.execute(f'PRAGMA table_info("{table_name_ident}")')
         column_names = [str(table_info[1]) for table_info in res.fetchall()]
         q = """SELECT 'INSERT INTO "{0}" VALUES({1})' FROM "{0}";""".format(
             table_name_ident,
@@ -59,7 +59,7 @@ def _iterdump(connection):
         )
         query_res = cu.execute(q)
         for row in query_res:
-            yield ("{0};".format(row[0]))
+            yield (f"{row[0]};")
 
     # Now when the type is 'index', 'trigger', or 'view'
     q = """
@@ -70,6 +70,6 @@ def _iterdump(connection):
         """
     schema_res = cu.execute(q)
     for name, type, sql in schema_res.fetchall():
-        yield ("{0};".format(sql))
+        yield (f"{sql};")
 
     yield ("COMMIT;")

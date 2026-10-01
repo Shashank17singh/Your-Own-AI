@@ -1,42 +1,40 @@
-import unittest
-import sys
+import _osx_support
 import os
-import subprocess
 import shutil
-from copy import copy
-
-from test.support import (
-    import_module,
-    TESTFN,
-    unlink,
-    check_warnings,
-    captured_stdout,
-    skip_unless_symlink,
-    change_cwd,
-    PythonSymlink,
-)
-
+import subprocess
+import sys
 import sysconfig
+import unittest
+from copy import copy
 from sysconfig import (
-    get_paths,
-    get_platform,
+    _INSTALL_SCHEMES,
+    _expand_vars,
+    _get_default_scheme,
+    _main,
+    get_config_var,
     get_config_vars,
     get_path,
     get_path_names,
-    _INSTALL_SCHEMES,
-    _get_default_scheme,
-    _expand_vars,
+    get_paths,
+    get_platform,
     get_scheme_names,
-    get_config_var,
-    _main,
 )
-import _osx_support
+
+from test.support import (
+    TESTFN,
+    PythonSymlink,
+    captured_stdout,
+    change_cwd,
+    check_warnings,
+    import_module,
+    skip_unless_symlink,
+    unlink,
+)
 
 
 class TestSysConfig(unittest.TestCase):
-
     def setUp(self):
-        super(TestSysConfig, self).setUp()
+        super().setUp()
         self.sys_path = sys.path[:]
         # patching os.uname
         if hasattr(os, "uname"):
@@ -85,7 +83,7 @@ class TestSysConfig(unittest.TestCase):
         for var in self._added_envvars:
             os.environ.pop(var, None)
 
-        super(TestSysConfig, self).tearDown()
+        super().tearDown()
 
     def _set_uname(self, uname):
         self._uname = os.uname_result(uname)
@@ -125,17 +123,13 @@ class TestSysConfig(unittest.TestCase):
     def test_get_platform(self):
         # windows XP, 32bits
         os.name = "nt"
-        sys.version = (
-            "2.4.4 (#71, Oct 18 2006, 08:34:43) " "[MSC v.1310 32 bit (Intel)]"
-        )
+        sys.version = "2.4.4 (#71, Oct 18 2006, 08:34:43) [MSC v.1310 32 bit (Intel)]"
         sys.platform = "win32"
         self.assertEqual(get_platform(), "win32")
 
         # windows XP, amd64
         os.name = "nt"
-        sys.version = (
-            "2.4.4 (#71, Oct 18 2006, 08:34:43) " "[MSC v.1310 32 bit (Amd64)]"
-        )
+        sys.version = "2.4.4 (#71, Oct 18 2006, 08:34:43) [MSC v.1310 32 bit (Amd64)]"
         sys.platform = "win32"
         self.assertEqual(get_platform(), "win-amd64")
 
@@ -163,7 +157,7 @@ class TestSysConfig(unittest.TestCase):
         get_config_vars()["MACOSX_DEPLOYMENT_TARGET"] = "10.3"
 
         get_config_vars()["CFLAGS"] = (
-            "-fno-strict-aliasing -DNDEBUG -g " "-fwrapv -O3 -Wall -Wstrict-prototypes"
+            "-fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes"
         )
 
         maxint = sys.maxsize
@@ -192,7 +186,7 @@ class TestSysConfig(unittest.TestCase):
         get_config_vars()["MACOSX_DEPLOYMENT_TARGET"] = "10.3"
 
         get_config_vars()["CFLAGS"] = (
-            "-fno-strict-aliasing -DNDEBUG -g " "-fwrapv -O3 -Wall -Wstrict-prototypes"
+            "-fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes"
         )
         maxint = sys.maxsize
         try:
@@ -452,7 +446,8 @@ class TestSysConfig(unittest.TestCase):
     )
     def test_triplet_in_ext_suffix(self):
         ctypes = import_module("ctypes")
-        import platform, re
+        import platform
+        import re
 
         machine = platform.machine()
         suffix = sysconfig.get_config_var("EXT_SUFFIX")
@@ -475,7 +470,6 @@ class TestSysConfig(unittest.TestCase):
 
 
 class MakefileTests(unittest.TestCase):
-
     @unittest.skipIf(sys.platform.startswith("win"), "Test is not Windows compatible")
     def test_get_makefile_filename(self):
         makefile = sysconfig.get_makefile_filename()
@@ -490,7 +484,7 @@ class MakefileTests(unittest.TestCase):
             print("var4=$/invalid", file=makefile)
             print("var5=dollar$$5", file=makefile)
             print(
-                "var6=${var3}/lib/python3.5/config-$(VAR2)$(var5)" "-x86_64-linux-gnu",
+                "var6=${var3}/lib/python3.5/config-$(VAR2)$(var5)-x86_64-linux-gnu",
                 file=makefile,
             )
         vars = sysconfig._parse_makefile(TESTFN)

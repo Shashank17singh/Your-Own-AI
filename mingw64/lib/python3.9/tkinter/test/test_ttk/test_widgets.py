@@ -1,25 +1,25 @@
-import unittest
-import tkinter
-from tkinter import ttk, TclError
-from test.support import requires, gc_collect
 import sys
-from tkinter.test.test_ttk.test_functions import MockTclObj
+import tkinter
+import unittest
+from tkinter import TclError, ttk
 from tkinter.test.support import (
+    AbstractDefaultRootTest,
     AbstractTkTest,
-    tcl_version,
     get_tk_patchlevel,
     simulate_mouse_click,
-    AbstractDefaultRootTest,
+    tcl_version,
 )
+from tkinter.test.test_ttk.test_functions import MockTclObj
 from tkinter.test.widget_tests import (
-    add_standard_options,
-    noconv,
     AbstractWidgetTest,
-    StandardOptionsTests,
     IntegerSizeTests,
     PixelSizeTests,
-    setUpModule,
+    StandardOptionsTests,
+    add_standard_options,
+    noconv,
 )
+
+from test.support import gc_collect, requires
 
 requires("gui")
 
@@ -50,11 +50,10 @@ class StandardTtkOptionsTests(StandardOptionsTests):
         self.assertEqual(widget["style"], "")
         errmsg = "Layout Foo not found"
         if hasattr(self, "default_orient"):
-            errmsg = "Layout %s.Foo not found" % getattr(self, "default_orient").title()
+            errmsg = "Layout %s.Foo not found" % self.default_orient.title()
         self.checkInvalidParam(widget, "style", "Foo", errmsg=errmsg)
         widget2 = self.create(class_="Foo")
         self.assertEqual(widget2["class"], "Foo")
-        pass
 
 
 class WidgetTest(AbstractTkTest, unittest.TestCase):
@@ -93,7 +92,7 @@ class WidgetTest(AbstractTkTest, unittest.TestCase):
             return arg1, kw
 
         self.assertEqual(
-            self.widget.instate(["!disabled"], test_cb, "hi", **{"msg": "there"}),
+            self.widget.instate(["!disabled"], test_cb, "hi", msg="there"),
             ("hi", {"msg": "there"}),
         )
         currstate = self.widget.state()
@@ -1499,18 +1498,14 @@ class TreeviewTest(AbstractWidgetTest, unittest.TestCase):
         self.tv.update()
         simulate_heading_click(5, 5)
         if not success:
-            self.fail(
-                "The command associated to the treeview heading wasn't " "invoked."
-            )
+            self.fail("The command associated to the treeview heading wasn't invoked.")
         success = []
         commands = self.tv.master._tclCommands
         self.tv.heading("#0", command=str(self.tv.heading("#0", command=None)))
         self.assertEqual(commands, self.tv.master._tclCommands)
         simulate_heading_click(5, 5)
         if not success:
-            self.fail(
-                "The command associated to the treeview heading wasn't " "invoked."
-            )
+            self.fail("The command associated to the treeview heading wasn't invoked.")
 
     def test_index(self):
         self.assertRaises(tkinter.TclError, self.tv.index, "what")

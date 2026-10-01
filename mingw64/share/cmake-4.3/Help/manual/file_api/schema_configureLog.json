@@ -2,12 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for the CMake configureLog object kind",
   "type": "object",
-  "required": [
-    "kind",
-    "version",
-    "path",
-    "eventKindNames"
-  ],
+  "required": ["kind", "version", "path", "eventKindNames"],
   "properties": {
     "kind": {
       "type": "string",
@@ -15,10 +10,7 @@
     },
     "version": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",

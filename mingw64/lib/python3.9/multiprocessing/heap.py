@@ -8,15 +8,15 @@
 #
 
 import bisect
-from collections import defaultdict
 import mmap
 import os
 import sys
 import tempfile
 import threading
+from collections import defaultdict
 
-from .context import reduction, assert_spawning
 from . import util
+from .context import assert_spawning, reduction
 
 __all__ = ["BufferWrapper"]
 
@@ -25,10 +25,9 @@ __all__ = ["BufferWrapper"]
 #
 
 if sys.platform == "win32":
-
     import _winapi
 
-    class Arena(object):
+    class Arena:
         """
         A shared memory area backed by anonymous memory (Windows).
         """
@@ -64,7 +63,7 @@ if sys.platform == "win32":
 
 else:
 
-    class Arena(object):
+    class Arena:
         """
         A shared memory area backed by a temporary file (POSIX).
         """
@@ -100,8 +99,7 @@ else:
     def reduce_arena(a):
         if a.fd == -1:
             raise ValueError(
-                "Arena is unpicklable because "
-                "forking was enabled when it was created"
+                "Arena is unpicklable because forking was enabled when it was created"
             )
         return rebuild_arena, (a.size, reduction.DupFd(a.fd))
 
@@ -115,8 +113,7 @@ else:
 #
 
 
-class Heap(object):
-
+class Heap:
     # Minimum malloc() alignment
     _alignment = 8
 
@@ -280,9 +277,7 @@ class Heap(object):
         # strictly thread-safe but under CPython it's atomic thanks to the GIL).
         if os.getpid() != self._lastpid:
             raise ValueError(
-                "My pid ({0:n}) is not last pid {1:n}".format(
-                    os.getpid(), self._lastpid
-                )
+                f"My pid ({os.getpid():n}) is not last pid {self._lastpid:n}"
             )
         if not self._lock.acquire(False):
             # can't acquire the lock right now, add the block to the list of
@@ -301,9 +296,9 @@ class Heap(object):
     def malloc(self, size):
         # return a block of right size (possibly rounded up)
         if size < 0:
-            raise ValueError("Size {0:n} out of range".format(size))
+            raise ValueError(f"Size {size:n} out of range")
         if sys.maxsize <= size:
-            raise OverflowError("Size {0:n} too large".format(size))
+            raise OverflowError(f"Size {size:n} too large")
         if os.getpid() != self._lastpid:
             self.__init__()  # reinitialize after fork
         with self._lock:
@@ -326,15 +321,14 @@ class Heap(object):
 #
 
 
-class BufferWrapper(object):
-
+class BufferWrapper:
     _heap = Heap()
 
     def __init__(self, size):
         if size < 0:
-            raise ValueError("Size {0:n} out of range".format(size))
+            raise ValueError(f"Size {size:n} out of range")
         if sys.maxsize <= size:
-            raise OverflowError("Size {0:n} too large".format(size))
+            raise OverflowError(f"Size {size:n} too large")
         block = BufferWrapper._heap.malloc(size)
         self._state = (block, size)
         util.Finalize(self, BufferWrapper._heap.free, args=(block,))

@@ -1,15 +1,16 @@
 """Tests for distutils.core."""
 
-import io
 import distutils.core
+import io
 import os
 import shutil
 import sys
+import unittest
+from distutils import log
+from distutils.tests import support
+
 import test.support
 from test.support import captured_stdout, run_unittest
-import unittest
-from distutils.tests import support
-from distutils import log
 
 # setup script that uses __file__
 setup_using___file__ = """\
@@ -47,9 +48,8 @@ setup(cmdclass={'install': install})
 
 
 class CoreTestCase(support.EnvironGuard, unittest.TestCase):
-
     def setUp(self):
-        super(CoreTestCase, self).setUp()
+        super().setUp()
         self.old_stdout = sys.stdout
         self.cleanup_testfn()
         self.old_argv = sys.argv, sys.argv[:]
@@ -60,7 +60,7 @@ class CoreTestCase(support.EnvironGuard, unittest.TestCase):
         self.cleanup_testfn()
         sys.argv = self.old_argv[0]
         sys.argv[:] = self.old_argv[1]
-        super(CoreTestCase, self).tearDown()
+        super().tearDown()
 
     def cleanup_testfn(self):
         path = test.support.TESTFN
@@ -108,8 +108,7 @@ class CoreTestCase(support.EnvironGuard, unittest.TestCase):
         distutils.core.run_setup(self.write_setup(setup_prints_cwd, path=setup_py))
 
         output = sys.stdout.getvalue()
-        if output.endswith("\n"):
-            output = output[:-1]
+        output = output.removesuffix("\n")
         self.assertEqual(cwd, output)
 
     def test_debug_mode(self):

@@ -2,18 +2,19 @@
 
 import functools
 import unittest
+
 from test import support
 from test.support import socket_helper
 
 # This requires the 'network' resource as given on the regrtest command line.
 skip_expected = not support.is_resource_enabled("network")
 
-import time
 import errno
 import socket
+import time
 
 
-@functools.lru_cache()
+@functools.lru_cache
 def resolve_address(host, port):
     """Resolve an (host, port) to an address.
 
@@ -53,10 +54,10 @@ class CreationTestCase(unittest.TestCase):
     def testReturnType(self):
         # Test return type of gettimeout()
         self.sock.settimeout(1)
-        self.assertEqual(type(self.sock.gettimeout()), type(1.0))
+        self.assertEqual(type(self.sock.gettimeout()), float)
 
         self.sock.settimeout(3.9)
-        self.assertEqual(type(self.sock.gettimeout()), type(1.0))
+        self.assertEqual(type(self.sock.gettimeout()), float)
 
     def testTypeCheck(self):
         # Test type checking by settimeout()
@@ -131,7 +132,7 @@ class TimeoutTestCase(unittest.TestCase):
             t1 = time.monotonic()
             try:
                 method(*args)
-            except socket.timeout as e:
+            except TimeoutError:
                 delta = time.monotonic() - t1
                 break
         else:
@@ -203,8 +204,8 @@ class TCPTimeoutTestCase(TimeoutTestCase):
         timeout = support.LOOPBACK_TIMEOUT
         sock.settimeout(timeout)
         try:
-            sock.connect((whitehole))
-        except socket.timeout:
+            sock.connect(whitehole)
+        except TimeoutError:
             pass
         except OSError as err:
             if err.errno == errno.ECONNREFUSED:
@@ -216,15 +217,9 @@ class TCPTimeoutTestCase(TimeoutTestCase):
         if skip:
             self.skipTest(
                 "We didn't receive a connection reset (RST) packet from "
-                "{}:{} within {} seconds, so we're unable to test connect "
-                "timeout against the corresponding {}:{} (which is "
-                "configured to silently drop packets).".format(
-                    whitehole[0],
-                    whitehole[1],
-                    timeout,
-                    blackhole[0],
-                    blackhole[1],
-                )
+                f"{whitehole[0]}:{whitehole[1]} within {timeout} seconds, so we're unable to test connect "
+                f"timeout against the corresponding {blackhole[0]}:{blackhole[1]} (which is "
+                "configured to silently drop packets)."
             )
 
         # All that hard work just to test if connect times out in 0.001s ;-)

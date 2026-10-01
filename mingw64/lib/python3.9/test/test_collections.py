@@ -6,25 +6,50 @@ import doctest
 import inspect
 import operator
 import pickle
-from random import choice, randrange
 import string
 import sys
-from test import support
 import types
 import unittest
+from collections import (
+    ChainMap,
+    Counter,
+    OrderedDict,
+    UserDict,
+    UserList,
+    UserString,
+    _count_elements,
+    deque,
+    namedtuple,
+)
+from collections.abc import (
+    AsyncGenerator,
+    AsyncIterable,
+    AsyncIterator,
+    Awaitable,
+    ByteString,
+    Callable,
+    Collection,
+    Container,
+    Coroutine,
+    Generator,
+    Hashable,
+    ItemsView,
+    Iterable,
+    Iterator,
+    KeysView,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    MutableSet,
+    Reversible,
+    Sequence,
+    Set,
+    Sized,
+    ValuesView,
+)
+from random import choice, randrange
 
-from collections import namedtuple, Counter, OrderedDict, _count_elements
-from collections import UserDict, UserString, UserList
-from collections import ChainMap
-from collections import deque
-from collections.abc import Awaitable, Coroutine
-from collections.abc import AsyncIterator, AsyncIterable, AsyncGenerator
-from collections.abc import Hashable, Iterable, Iterator, Generator, Reversible
-from collections.abc import Sized, Container, Callable, Collection
-from collections.abc import Set, MutableSet
-from collections.abc import Mapping, MutableMapping, KeysView, ItemsView, ValuesView
-from collections.abc import Sequence, MutableSequence
-from collections.abc import ByteString
+from test import support
 
 
 class TestUserObjects(unittest.TestCase):
@@ -32,10 +57,7 @@ class TestUserObjects(unittest.TestCase):
         self.assertGreaterEqual(
             set(dir(a)),
             set(dir(b)),
-            "{a} should have all the methods of {b}".format(
-                a=a.__name__,
-                b=b.__name__,
-            ),
+            f"{a.__name__} should have all the methods of {b.__name__}",
         )
 
     def _copy_test(self, obj):
@@ -77,7 +99,6 @@ class TestUserObjects(unittest.TestCase):
 
 
 class TestChainMap(unittest.TestCase):
-
     def test_basics(self):
         c = ChainMap()
         c["a"] = 1
@@ -327,7 +348,6 @@ TestNT = namedtuple("TestNT", "x y z")  # type used for pickle tests
 
 
 class TestNamedTuple(unittest.TestCase):
-
     def test_factory(self):
         Point = namedtuple("Point", "x y")
         self.assertEqual(Point.__name__, "Point")
@@ -611,8 +631,8 @@ class TestNamedTuple(unittest.TestCase):
     def test_pickle(self):
         p = TestNT(x=10, y=20, z=30)
         for module in (pickle,):
-            loads = getattr(module, "loads")
-            dumps = getattr(module, "dumps")
+            loads = module.loads
+            dumps = module.dumps
             for protocol in range(-1, module.HIGHEST_PROTOCOL + 1):
                 q = loads(dumps(p, protocol))
                 self.assertEqual(p, q)
@@ -909,7 +929,6 @@ class TestNamedTuple(unittest.TestCase):
 
 
 class ABCTestCase(unittest.TestCase):
-
     def validate_abstract_methods(self, abc, *names):
         methodstubs = dict.fromkeys(names, lambda s, *args: 0)
 
@@ -977,7 +996,6 @@ def _test_gen():
 
 
 class TestOneTrickPonyABCs(ABCTestCase):
-
     def test_Awaitable(self):
         def gen():
             yield
@@ -1003,7 +1021,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
             def __await__(self):
                 yield
 
-        non_samples = [None, int(), gen(), object()]
+        non_samples = [None, 0, gen(), object()]
         for x in non_samples:
             self.assertNotIsInstance(x, Awaitable)
             self.assertFalse(issubclass(type(x), Awaitable), repr(type(x)))
@@ -1057,7 +1075,7 @@ class TestOneTrickPonyABCs(ABCTestCase):
             def __await__(self):
                 yield
 
-        non_samples = [None, int(), gen(), object(), Bar()]
+        non_samples = [None, 0, gen(), object(), Bar()]
         for x in non_samples:
             self.assertNotIsInstance(x, Coroutine)
             self.assertFalse(issubclass(type(x), Coroutine), repr(type(x)))
@@ -1115,17 +1133,17 @@ class TestOneTrickPonyABCs(ABCTestCase):
         # Check some hashables
         samples = [
             None,
-            int(),
-            float(),
-            complex(),
-            str(),
+            0,
+            0.0,
+            0j,
+            "",
             tuple(),
             frozenset(),
             int,
             list,
             object,
             type,
-            bytes(),
+            b"",
         ]
         for x in samples:
             self.assertIsInstance(x, Hashable)
@@ -1189,8 +1207,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertFalse(issubclass(type(x), Iterable), repr(type(x)))
         # Check some iterables
         samples = [
-            bytes(),
-            str(),
+            b"",
+            "",
             tuple(),
             list(),
             set(),
@@ -1242,8 +1260,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertFalse(issubclass(type(x), Reversible), repr(type(x)))
         # Check some reversible iterables
         samples = [
-            bytes(),
-            str(),
+            b"",
+            "",
             tuple(),
             list(),
             OrderedDict(),
@@ -1330,8 +1348,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             set(),
             frozenset(),
             dict(),
-            bytes(),
-            str(),
+            b"",
+            "",
             tuple(),
             list(),
             dict().keys(),
@@ -1451,8 +1469,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertNotIsInstance(x, Iterator)
             self.assertFalse(issubclass(type(x), Iterator), repr(type(x)))
         samples = [
-            iter(bytes()),
-            iter(str()),
+            iter(b""),
+            iter(""),
             iter(tuple()),
             iter(list()),
             iter(dict()),
@@ -1473,7 +1491,6 @@ class TestOneTrickPonyABCs(ABCTestCase):
         class NextOnly:
             def __next__(self):
                 yield 1
-                return
 
         self.assertNotIsInstance(NextOnly(), Iterator)
 
@@ -1741,8 +1758,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertNotIsInstance(x, Sized)
             self.assertFalse(issubclass(type(x), Sized), repr(type(x)))
         samples = [
-            bytes(),
-            str(),
+            b"",
+            "",
             tuple(),
             list(),
             set(),
@@ -1771,8 +1788,8 @@ class TestOneTrickPonyABCs(ABCTestCase):
             self.assertNotIsInstance(x, Container)
             self.assertFalse(issubclass(type(x), Container), repr(type(x)))
         samples = [
-            bytes(),
-            str(),
+            b"",
+            "",
             tuple(),
             list(),
             set(),
@@ -1841,7 +1858,6 @@ class TestOneTrickPonyABCs(ABCTestCase):
 
 
 class WithSet(MutableSet):
-
     def __init__(self, it=()):
         self.data = set(it)
 
@@ -1862,7 +1878,6 @@ class WithSet(MutableSet):
 
 
 class TestCollectionABCs(ABCTestCase):
-
     # XXX For now, we only test some virtual inheritance properties.
     # We should also test the proper behavior of the collection ABCs
     # as real base classes or mix-in classes.
@@ -2020,7 +2035,7 @@ class TestCollectionABCs(ABCTestCase):
         items = [5, 43, 2, 1]
         s = MySet(items)
         r = s.pop()
-        self.assertEquals(len(s), len(items) - 1)
+        self.assertEqual(len(s), len(items) - 1)
         self.assertNotIn(r, s)
         self.assertIn(r, items)
 
@@ -2109,7 +2124,7 @@ class TestCollectionABCs(ABCTestCase):
         class SetUsingInstanceFromIterable(MutableSet):
             def __init__(self, values, created_by):
                 if not created_by:
-                    raise ValueError(f"created_by must be specified")
+                    raise ValueError("created_by must be specified")
                 self.created_by = created_by
                 self._values = set(values)
 
@@ -2179,7 +2194,7 @@ class TestCollectionABCs(ABCTestCase):
                 return len(self.data)
 
             def __repr__(self):
-                return "Set({!r})".format(self.data)
+                return f"Set({self.data!r})"
 
         r1 = set("abc")
         r2 = set("bcd")
@@ -2553,7 +2568,6 @@ class CounterSubclassWithGet(Counter):
 
 
 class TestCounter(unittest.TestCase):
-
     def test_basics(self):
         c = Counter("abcaba")
         self.assertEqual(c, Counter({"a": 3, "b": 2, "c": 1}))
@@ -2723,7 +2737,7 @@ class TestCounter(unittest.TestCase):
     def test_copying(self):
         # Check that counters are copyable, deepcopyable, picklable, and
         # have a repr/eval round-trip
-        words = Counter("which witch had which witches wrist watch".split())
+        words = Counter(["which", "witch", "had", "which", "witches", "wrist", "watch"])
 
         def check(dup):
             msg = "\ncopy: %s\nwords: %s" % (dup, words)

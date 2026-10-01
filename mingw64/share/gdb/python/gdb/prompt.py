@@ -1,6 +1,7 @@
 """Extended prompt library functions."""
 
 import os
+
 import gdb
 
 

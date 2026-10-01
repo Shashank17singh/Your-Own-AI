@@ -1,9 +1,10 @@
 """Tests for the pdeps script in the Tools directory."""
 
 import os
-import unittest
 import tempfile
-from test.test_tools import skip_if_missing, import_tool
+import unittest
+
+from test.test_tools import import_tool, skip_if_missing
 
 skip_if_missing()
 

@@ -3,13 +3,14 @@
 import sys
 import time
 import warnings
+
 from . import result
 from .signals import registerResult
 
 __unittest = True
 
 
-class _WritelnDecorator(object):
+class _WritelnDecorator:
     """Used to decorate file-like objects with a handy 'writeln' method"""
 
     def __init__(self, stream):
@@ -35,7 +36,7 @@ class TextTestResult(result.TestResult):
     separator2 = "-" * 70
 
     def __init__(self, stream, descriptions, verbosity):
-        super(TextTestResult, self).__init__(stream, descriptions, verbosity)
+        super().__init__(stream, descriptions, verbosity)
         self.stream = stream
         self.showAll = verbosity > 1
         self.dots = verbosity == 1
@@ -49,14 +50,14 @@ class TextTestResult(result.TestResult):
             return str(test)
 
     def startTest(self, test):
-        super(TextTestResult, self).startTest(test)
+        super().startTest(test)
         if self.showAll:
             self.stream.write(self.getDescription(test))
             self.stream.write(" ... ")
             self.stream.flush()
 
     def addSuccess(self, test):
-        super(TextTestResult, self).addSuccess(test)
+        super().addSuccess(test)
         if self.showAll:
             self.stream.writeln("ok")
         elif self.dots:
@@ -64,7 +65,7 @@ class TextTestResult(result.TestResult):
             self.stream.flush()
 
     def addError(self, test, err):
-        super(TextTestResult, self).addError(test, err)
+        super().addError(test, err)
         if self.showAll:
             self.stream.writeln("ERROR")
         elif self.dots:
@@ -72,7 +73,7 @@ class TextTestResult(result.TestResult):
             self.stream.flush()
 
     def addFailure(self, test, err):
-        super(TextTestResult, self).addFailure(test, err)
+        super().addFailure(test, err)
         if self.showAll:
             self.stream.writeln("FAIL")
         elif self.dots:
@@ -80,15 +81,15 @@ class TextTestResult(result.TestResult):
             self.stream.flush()
 
     def addSkip(self, test, reason):
-        super(TextTestResult, self).addSkip(test, reason)
+        super().addSkip(test, reason)
         if self.showAll:
-            self.stream.writeln("skipped {0!r}".format(reason))
+            self.stream.writeln(f"skipped {reason!r}")
         elif self.dots:
             self.stream.write("s")
             self.stream.flush()
 
     def addExpectedFailure(self, test, err):
-        super(TextTestResult, self).addExpectedFailure(test, err)
+        super().addExpectedFailure(test, err)
         if self.showAll:
             self.stream.writeln("expected failure")
         elif self.dots:
@@ -96,7 +97,7 @@ class TextTestResult(result.TestResult):
             self.stream.flush()
 
     def addUnexpectedSuccess(self, test):
-        super(TextTestResult, self).addUnexpectedSuccess(test)
+        super().addUnexpectedSuccess(test)
         if self.showAll:
             self.stream.writeln("unexpected success")
         elif self.dots:
@@ -117,7 +118,7 @@ class TextTestResult(result.TestResult):
             self.stream.writeln("%s" % err)
 
 
-class TextTestRunner(object):
+class TextTestRunner:
     """A test runner class that displays results in textual form.
     It prints out the names of tests as they are run, errors as they
     occur, and a summary of the results at the end of the test run.
@@ -135,7 +136,7 @@ class TextTestRunner(object):
         resultclass=None,
         warnings=None,
         *,
-        tb_locals=False
+        tb_locals=False,
     ):
         """Construct a TextTestRunner.
         Subclasses should accept **kwargs to ensure compatibility as the

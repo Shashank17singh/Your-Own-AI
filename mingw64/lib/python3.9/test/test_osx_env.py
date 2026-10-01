@@ -2,11 +2,12 @@
 Test suite for OS X interpreter environment variables.
 """
 
-from test.support import EnvironmentVarGuard
 import subprocess
 import sys
 import sysconfig
 import unittest
+
+from test.support import EnvironmentVarGuard
 
 
 @unittest.skipUnless(

@@ -50,11 +50,11 @@ Functions:
 """
 
 import gc
+import itertools
 import sys
 import time
-import itertools
 
-__all__ = ["Timer", "timeit", "repeat", "default_timer"]
+__all__ = ["Timer", "default_timer", "repeat", "timeit"]
 
 dummy_src_name = "<timeit-src>"
 default_number = 1000000
@@ -151,7 +151,8 @@ class Timer:
         The optional file argument directs where the traceback is
         sent; it defaults to sys.stderr.
         """
-        import linecache, traceback
+        import linecache
+        import traceback
 
         if self.src is not None:
             linecache.cache[dummy_src_name] = (

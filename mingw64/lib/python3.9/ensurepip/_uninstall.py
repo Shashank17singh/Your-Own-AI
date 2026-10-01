@@ -10,7 +10,7 @@ def _main(argv=None):
     parser.add_argument(
         "--version",
         action="version",
-        version="pip {}".format(ensurepip.version()),
+        version=f"pip {ensurepip.version()}",
         help="Show the version of pip this will attempt to uninstall.",
     )
     parser.add_argument(
@@ -19,9 +19,7 @@ def _main(argv=None):
         action="count",
         default=0,
         dest="verbosity",
-        help=(
-            "Give more output. Option is additive, and can be used up to 3 " "times."
-        ),
+        help=("Give more output. Option is additive, and can be used up to 3 times."),
     )
 
     args = parser.parse_args(argv)

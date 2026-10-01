@@ -13,7 +13,6 @@ import codecs
 
 
 class Codec(codecs.Codec):
-
     # Note: Binding these as C functions will result in the class not
     # converting them to methods. This is intended.
     encode = codecs.ascii_encode
@@ -39,7 +38,6 @@ class StreamReader(Codec, codecs.StreamReader):
 
 
 class StreamConverter(StreamWriter, StreamReader):
-
     encode = codecs.ascii_decode
     decode = codecs.ascii_encode
 

@@ -8,8 +8,10 @@ additional features:
   * options set attributes of a passed-in object
 """
 
-import sys, string, re
 import getopt
+import re
+import string
+import sys
 from distutils.errors import *
 
 # Much like command_re in distutils.core, this is close to but not quite
@@ -114,12 +116,11 @@ class FancyGetopt:
         for alias, opt in aliases.items():
             if alias not in self.option_index:
                 raise DistutilsGetoptError(
-                    ("invalid %s '%s': " "option '%s' not defined")
-                    % (what, alias, alias)
+                    ("invalid %s '%s': option '%s' not defined") % (what, alias, alias)
                 )
             if opt not in self.option_index:
                 raise DistutilsGetoptError(
-                    ("invalid %s '%s': " "aliased option '%s' not defined")
+                    ("invalid %s '%s': aliased option '%s' not defined")
                     % (what, alias, opt)
                 )
 
@@ -160,14 +161,12 @@ class FancyGetopt:
             # Type- and value-check the option names
             if not isinstance(long, str) or len(long) < 2:
                 raise DistutilsGetoptError(
-                    ("invalid long option '%s': " "must be a string of length >= 2")
-                    % long
+                    ("invalid long option '%s': must be a string of length >= 2") % long
                 )
 
             if not ((short is None) or (isinstance(short, str) and len(short) == 1)):
                 raise DistutilsGetoptError(
-                    "invalid short option '%s': "
-                    "must a single character or None" % short
+                    "invalid short option '%s': must a single character or None" % short
                 )
 
             self.repeat[long] = repeat
@@ -306,8 +305,7 @@ class FancyGetopt:
                 l = l - 1
             if short is not None:
                 l = l + 5  # " (-x)" where short == 'x'
-            if l > max_opt:
-                max_opt = l
+            max_opt = max(max_opt, l)
 
         opt_width = max_opt + 2 + 2 + 2  # room for indent + dashes + gutter
 

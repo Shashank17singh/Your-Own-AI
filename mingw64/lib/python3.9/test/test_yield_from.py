@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 Test suite for PEP 380 implementation
 
@@ -7,11 +5,11 @@ adapted from original tests written by Greg Ewing
 see <http://www.cosc.canterbury.ac.nz/greg.ewing/python/yield-from/YieldFrom-Python3.1.2-rev5.zip>
 """
 
-import unittest
 import inspect
+import unittest
 
-from test.support import captured_stderr, disable_gc, gc_collect
 from test import support
+from test.support import captured_stderr, disable_gc, gc_collect
 
 
 class TestPEP380Operation(unittest.TestCase):
@@ -1089,7 +1087,7 @@ class TestPEP380Operation(unittest.TestCase):
             pass
 
         # Check with close
-        class MyIt(object):
+        class MyIt:
             def __iter__(self):
                 return self
 
@@ -1198,7 +1196,6 @@ class TestPEP380Operation(unittest.TestCase):
             def send(self, what):
                 nonlocal v
                 v = what
-                return None
 
         def outer():
             v = yield from MyGen()

@@ -2,47 +2,38 @@
 # Contact: email-sig@python.org
 # email package unit tests
 
-import re
-import time
 import base64
-import unittest
+import email
+import email.policy
+import re
 import textwrap
+import time
+import unittest
+from email import base64mime, encoders, errors, iterators, quoprimime, utils
+from email.charset import Charset
+from email.generator import BytesGenerator, DecodedGenerator, Generator
+from email.header import Header, decode_header, make_header
+from email.message import Message
+from email.mime.application import MIMEApplication
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.message import MIMEMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.nonmultipart import MIMENonMultipart
+from email.mime.text import MIMEText
 
-from io import StringIO, BytesIO
+# These imports are documented to work, but we are testing them using a
+# different path, so we import them here just to make sure they are importable.
+from email.parser import FeedParser, HeaderParser, Parser
+from io import BytesIO, StringIO
 from itertools import chain
 from random import choice
 from threading import Thread
 from unittest.mock import patch
 
-import email
-import email.policy
-
-from email.charset import Charset
-from email.header import Header, decode_header, make_header
-from email.parser import Parser, HeaderParser
-from email.generator import Generator, DecodedGenerator, BytesGenerator
-from email.message import Message
-from email.mime.application import MIMEApplication
-from email.mime.audio import MIMEAudio
-from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
-from email.mime.base import MIMEBase
-from email.mime.message import MIMEMessage
-from email.mime.multipart import MIMEMultipart
-from email.mime.nonmultipart import MIMENonMultipart
-from email import utils
-from email import errors
-from email import encoders
-from email import iterators
-from email import base64mime
-from email import quoprimime
-
-from test.support import unlink, start_threads
-from test.test_email import openfile, TestEmailBase
-
-# These imports are documented to work, but we are testing them using a
-# different path, so we import them here just to make sure they are importable.
-from email.parser import FeedParser, BytesFeedParser
+from test.support import start_threads, unlink
+from test.test_email import TestEmailBase, openfile
 
 NL = "\n"
 EMPTYSTRING = ""
@@ -687,7 +678,7 @@ class TestMessageAPI(TestEmailBase):
         msg.set_payload(x)
         self.assertEqual(
             msg.get_payload(decode=True),
-            (b"\x03\x00\xe9\xd0\xfe\xff\xff.\x8b\xc0" b"\xa1\x00p\xf6\xbf\xe9\x0f"),
+            (b"\x03\x00\xe9\xd0\xfe\xff\xff.\x8b\xc0\xa1\x00p\xf6\xbf\xe9\x0f"),
         )
         self.assertIsInstance(msg.defects[0], errors.InvalidBase64CharactersDefect)
 
@@ -704,7 +695,7 @@ class TestMessageAPI(TestEmailBase):
     def test_questionable_bytes_payload(self):
         # This test improves coverage but is not a compliance test,
         # since it involves poking inside the black box.
-        x = "this is a quéstionable thing to do".encode("utf-8")
+        x = "this is a quéstionable thing to do".encode()
         msg = Message()
         msg["content-type"] = 'text/plain; charset="utf-8"'
         msg["content-transfer-encoding"] = "8bit"
@@ -853,7 +844,6 @@ class TestMessageAPI(TestEmailBase):
 
 # Test the email.encoders module
 class TestEncoders(unittest.TestCase):
-
     def test_EncodersEncode_base64(self):
         with openfile("PyBanner048.gif", "rb") as fp:
             bindata = fp.read()
@@ -929,7 +919,6 @@ class TestEncoders(unittest.TestCase):
 
 # Test long header wrapping
 class TestLongHeaders(TestEmailBase):
-
     maxDiff = None
 
     def test_split_long_continuation(self):
@@ -989,9 +978,7 @@ bug demonstration
             b"Wandgem\xe4lden vorbei, gegen die rotierenden Klingen "
             b"bef\xf6rdert. "
         )
-        cz_head = (
-            b"Finan\xe8ni metropole se hroutily pod tlakem jejich " b"d\xf9vtipu.. "
-        )
+        cz_head = b"Finan\xe8ni metropole se hroutily pod tlakem jejich d\xf9vtipu.. "
         utf8_head = (
             "\u6b63\u78ba\u306b\u8a00\u3046\u3068\u7ffb\u8a33\u306f"
             "\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002\u4e00"
@@ -1671,7 +1658,8 @@ List: List-Unsubscribe:
             =?utf-8?q?We=27re_going_to_pretend_this_header_is_in_a_non-ascii_chara?=
              =?utf-8?q?cter_set?=
              =?utf-8?q?_to_see_if_line_wrapping_with_encoded_words_and_embedded?=
-             =?utf-8?q?_folding_white_space_works?=""") + "\n",
+             =?utf-8?q?_folding_white_space_works?=""")
+            + "\n",
         )
 
 
@@ -1716,7 +1704,8 @@ Blah blah blah
     def test_mangle_from_in_preamble_and_epilog(self):
         s = StringIO()
         g = Generator(s, mangle_from_=True)
-        msg = email.message_from_string(textwrap.dedent("""\
+        msg = email.message_from_string(
+            textwrap.dedent("""\
             From: foo@bar.com
             Mime-Version: 1.0
             Content-Type: multipart/mixed; boundary=XXX
@@ -1731,7 +1720,8 @@ Blah blah blah
             --XXX--
 
             From somewhere unknowable
-            """))
+            """)
+        )
         g.flatten(msg)
         self.assertEqual(
             len([1 for x in s.getvalue().split("\n") if x.startswith(">From ")]), 2
@@ -1991,9 +1981,7 @@ class TestMIMEText(unittest.TestCase):
         eq(msg["content-type"], 'text/plain; charset="utf-8"')
         eq(msg.get_payload(decode=True), teststr.encode("utf-8"))
 
-    @unittest.skip(
-        "can't fix because of backward compat in email5, " "will fix in email6"
-    )
+    @unittest.skip("can't fix because of backward compat in email5, will fix in email6")
     def test_utf8_input_no_charset(self):
         teststr = "\u043a\u0438\u0440\u0438\u043b\u0438\u0446\u0430"
         self.assertRaises(UnicodeEncodeError, MIMEText, teststr)
@@ -2415,7 +2403,6 @@ YXNkZg==
 
 # Test some badly formatted messages
 class TestNonConformant(TestEmailBase):
-
     def test_parse_missing_minor_type(self):
         eq = self.assertEqual
         msg = self._msgobj("msg_14.txt")
@@ -2482,7 +2469,7 @@ class TestNonConformant(TestEmailBase):
     def test_multipart_valid_cte_no_defect(self):
         for cte in ("7bit", "8bit", "BINary"):
             msg = self._str_msg(
-                self.multipart_msg.format("\nContent-Transfer-Encoding: {}".format(cte))
+                self.multipart_msg.format(f"\nContent-Transfer-Encoding: {cte}")
             )
             self.assertEqual(len(msg.defects), 0)
 
@@ -3092,7 +3079,6 @@ message 2
 # should be identical.  Note: that we ignore the Unix-From since that may
 # contain a changed date.
 class TestIdempotent(TestEmailBase):
-
     linesep = "\n"
 
     def _msgobj(self, filename):
@@ -3590,7 +3576,7 @@ class TestMiscellaneous(TestEmailBase):
 
     def test_formataddr_does_not_quote_parens_in_quoted_string(self):
         addr = ("'foo@example.com' (foo@example.com)", "foo@example.com")
-        addrstr = "\"'foo@example.com' " '(foo@example.com)" <foo@example.com>'
+        addrstr = "\"'foo@example.com' (foo@example.com)\" <foo@example.com>"
         self.assertEqual(utils.parseaddr(addrstr), addr)
         self.assertEqual(utils.formataddr(addr), addrstr)
 
@@ -3947,7 +3933,6 @@ Do you like this message?
 
 
 class TestFeedParsers(TestEmailBase):
-
     def parse(self, chunks):
         feedparser = FeedParser()
         for chunk in chunks:
@@ -3995,7 +3980,6 @@ class TestFeedParsers(TestEmailBase):
 
 
 class TestParsers(TestEmailBase):
-
     def test_header_parser(self):
         eq = self.assertEqual
         # Parse only the headers of a complex multipart MIME document
@@ -4227,7 +4211,7 @@ class Test8BitBytesHandling(TestEmailBase):
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
         self.assertEqual(msg.get_payload(), "pöstal\n")
-        self.assertEqual(msg.get_payload(decode=True), "pöstal\n".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "pöstal\n".encode())
 
     def test_unknown_8bit_CTE(self):
         m = self.bodytest_msg.format(
@@ -4235,7 +4219,7 @@ class Test8BitBytesHandling(TestEmailBase):
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
         self.assertEqual(msg.get_payload(), "p\ufffd\ufffdstal\n")
-        self.assertEqual(msg.get_payload(decode=True), "pöstal\n".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "pöstal\n".encode())
 
     def test_8bit_in_quopri_body(self):
         # This is non-RFC compliant data...without 'decode' the library code
@@ -4252,7 +4236,7 @@ class Test8BitBytesHandling(TestEmailBase):
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
         self.assertEqual(msg.get_payload(), "p=C3=B6stál\n")
-        self.assertEqual(msg.get_payload(decode=True), "pöstál\n".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "pöstál\n".encode())
 
     def test_invalid_8bit_in_non_8bit_cte_uses_replace(self):
         # This is similar to the previous test, but proves that if the 8bit
@@ -4266,7 +4250,7 @@ class Test8BitBytesHandling(TestEmailBase):
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
         self.assertEqual(msg.get_payload(), "p=C3=B6st\ufffd\ufffdl\n")
-        self.assertEqual(msg.get_payload(decode=True), "pöstál\n".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "pöstál\n".encode())
 
     # test_defect_handling:test_invalid_chars_in_base64_payload
     def test_8bit_in_base64_body(self):
@@ -4277,7 +4261,7 @@ class Test8BitBytesHandling(TestEmailBase):
             charset="utf-8", cte="base64", bodyline="cMO2c3RhbAá="
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
-        self.assertEqual(msg.get_payload(decode=True), "pöstal".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "pöstal".encode())
         self.assertIsInstance(msg.defects[0], errors.InvalidBase64CharactersDefect)
 
     def test_8bit_in_uuencode_body(self):
@@ -4287,7 +4271,7 @@ class Test8BitBytesHandling(TestEmailBase):
             charset="utf-8", cte="uuencode", bodyline="<,.V<W1A; á "
         ).encode("utf-8")
         msg = email.message_from_bytes(m)
-        self.assertEqual(msg.get_payload(decode=True), "<,.V<W1A; á \n".encode("utf-8"))
+        self.assertEqual(msg.get_payload(decode=True), "<,.V<W1A; á \n".encode())
 
     headertest_headers = (
         ("From: foo@bar.com", ("From", "foo@bar.com")),
@@ -4371,9 +4355,11 @@ class Test8BitBytesHandling(TestEmailBase):
         )
 
     def test_get_content_type_with_8bit(self):
-        msg = email.message_from_bytes(textwrap.dedent("""\
+        msg = email.message_from_bytes(
+            textwrap.dedent("""\
             Content-Type: text/pl\xa7in; charset=utf-8
-            """).encode("latin-1"))
+            """).encode("latin-1")
+        )
         self.assertEqual(msg.get_content_type(), "text/pl\ufffdin")
         self.assertEqual(msg.get_content_maintype(), "text")
         self.assertEqual(msg.get_content_subtype(), "pl\ufffdin")
@@ -4393,35 +4379,43 @@ class Test8BitBytesHandling(TestEmailBase):
 
     # test_headerregistry.TestContentTypeHeader.non_ascii_in_rfc2231_value
     def test_get_rfc2231_params_with_8bit(self):
-        msg = email.message_from_bytes(textwrap.dedent("""\
+        msg = email.message_from_bytes(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset=us-ascii;
-             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1"))
+             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1")
+        )
         self.assertEqual(
             msg.get_param("title"), ("us-ascii", "en", "This is not f\ufffdn")
         )
 
     def test_set_rfc2231_params_with_8bit(self):
-        msg = email.message_from_bytes(textwrap.dedent("""\
+        msg = email.message_from_bytes(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset=us-ascii;
-             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1"))
+             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1")
+        )
         msg.set_param("title", "test")
         self.assertEqual(msg.get_param("title"), "test")
 
     def test_del_rfc2231_params_with_8bit(self):
-        msg = email.message_from_bytes(textwrap.dedent("""\
+        msg = email.message_from_bytes(
+            textwrap.dedent("""\
             Content-Type: text/plain; charset=us-ascii;
-             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1"))
+             title*=us-ascii'en'This%20is%20not%20f\xa7n""").encode("latin-1")
+        )
         msg.del_param("title")
         self.assertEqual(msg.get_param("title"), None)
         self.assertEqual(msg.get_content_maintype(), "text")
 
     def test_get_payload_with_8bit_cte_header(self):
-        msg = email.message_from_bytes(textwrap.dedent("""\
+        msg = email.message_from_bytes(
+            textwrap.dedent("""\
             Content-Transfer-Encoding: b\xa7se64
             Content-Type: text/plain; charset=latin-1
 
             payload
-            """).encode("latin-1"))
+            """).encode("latin-1")
+        )
         self.assertEqual(msg.get_payload(), "payload\n")
         self.assertEqual(msg.get_payload(decode=True), b"payload\n")
 
@@ -4631,7 +4625,6 @@ class Test8BitBytesHandling(TestEmailBase):
 
 
 class BaseTestBytesGeneratorIdempotent:
-
     maxDiff = None
 
     def _msgobj(self, filename):
@@ -4782,7 +4775,8 @@ class TestQuopri(unittest.TestCase):
         # RFC 2047 chrome is not included in header_length().
         eq(
             len(quoprimime.header_encode(b"hello", charset="xxx")),
-            quoprimime.header_length(b"hello") +
+            quoprimime.header_length(b"hello")
+            +
             # =?xxx?q?...?= means 10 extra characters
             10,
         )
@@ -4790,7 +4784,8 @@ class TestQuopri(unittest.TestCase):
         # RFC 2047 chrome is not included in header_length().
         eq(
             len(quoprimime.header_encode(b"h@e@l@l@o@", charset="xxx")),
-            quoprimime.header_length(b"h@e@l@l@o@") +
+            quoprimime.header_length(b"h@e@l@l@o@")
+            +
             # =?xxx?q?...?= means 10 extra characters
             10,
         )
@@ -5174,9 +5169,7 @@ class TestHeader(TestEmailBase):
             b"an s\xfcdl\xfcndischen Wandgem\xe4lden vorbei, "
             b"gegen die rotierenden Klingen bef\xf6rdert. "
         )
-        cz_head = (
-            b"Finan\xe8ni metropole se hroutily pod tlakem jejich " b"d\xf9vtipu.. "
-        )
+        cz_head = b"Finan\xe8ni metropole se hroutily pod tlakem jejich d\xf9vtipu.. "
         utf8_head = (
             "\u6b63\u78ba\u306b\u8a00\u3046\u3068\u7ffb\u8a33\u306f"
             "\u3055\u308c\u3066\u3044\u307e\u305b\u3093\u3002\u4e00"
@@ -5539,7 +5532,6 @@ A very long line that must get split to something other than at the
 
 # Test RFC 2231 header parameters (en/de)coding
 class TestRFC2231(TestEmailBase):
-
     # test_headerregistry.TestContentTypeHeader.rfc2231_encoded_with_double_quotes
     # test_headerregistry.TestContentTypeHeader.rfc2231_single_quote_inside_double_quotes
     def test_get_param(self):
@@ -5989,7 +5981,6 @@ Content-Transfer-Encoding: 8bit
 # required by RFC1847 section 2.1.  Note that these are incomplete, because the
 # email package does not currently always preserve the body.  See issue 1670765.
 class TestSigned(TestEmailBase):
-
     def _msg_and_obj(self, filename):
         with openfile(filename) as fp:
             original = fp.read()
@@ -6000,7 +5991,7 @@ class TestSigned(TestEmailBase):
         # Extract the first mime part of each message
         import re
 
-        repart = re.compile(r"^--([^\n]+)\n(.*?)\n--\1$", re.S | re.M)
+        repart = re.compile(r"^--([^\n]+)\n(.*?)\n--\1$", re.DOTALL | re.MULTILINE)
         inpart = repart.search(original).group(2)
         outpart = repart.search(result).group(2)
         self.assertEqual(outpart, inpart)

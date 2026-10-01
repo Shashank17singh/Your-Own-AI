@@ -2,8 +2,9 @@
 
 import os
 import unittest
-from distutils.text_file import TextFile
 from distutils.tests import support
+from distutils.text_file import TextFile
+
 from test.support import run_unittest
 
 TEST_DATA = """# test file
@@ -15,7 +16,6 @@ line 3 \\
 
 
 class TextFileTestCase(support.TempdirManager, unittest.TestCase):
-
     def test_class(self):
         # old tests moved from text_file.__main__
         # so they are really called by the buildbots

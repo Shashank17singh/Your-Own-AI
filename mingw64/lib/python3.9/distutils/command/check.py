@@ -8,13 +8,11 @@ from distutils.errors import DistutilsSetupError
 
 try:
     # docutils is installed
-    from docutils.utils import Reporter
+    from docutils import frontend, nodes
     from docutils.parsers.rst import Parser
-    from docutils import frontend
-    from docutils import nodes
+    from docutils.utils import Reporter
 
     class SilentReporter(Reporter):
-
         def __init__(
             self,
             source,
@@ -59,10 +57,7 @@ class check(Command):
         (
             "restructuredtext",
             "r",
-            (
-                "Checks if long string meta-data syntax "
-                "are reStructuredText-compliant"
-            ),
+            ("Checks if long string meta-data syntax are reStructuredText-compliant"),
         ),
         ("strict", "s", "Will exit with an error if a check fails"),
     ]

@@ -1,31 +1,32 @@
-from _compat_pickle import (
-    IMPORT_MAPPING,
-    REVERSE_IMPORT_MAPPING,
-    NAME_MAPPING,
-    REVERSE_NAME_MAPPING,
-)
 import builtins
-import pickle
-import io
 import collections
+import io
+import pickle
 import struct
 import sys
+import unittest
 import warnings
 import weakref
+from _compat_pickle import (
+    IMPORT_MAPPING,
+    NAME_MAPPING,
+    REVERSE_IMPORT_MAPPING,
+    REVERSE_NAME_MAPPING,
+)
 
-import unittest
 from test import support
-
-from test.pickletester import AbstractHookTests
-from test.pickletester import AbstractUnpickleTests
-from test.pickletester import AbstractPickleTests
-from test.pickletester import AbstractPickleModuleTests
-from test.pickletester import AbstractPersistentPicklerTests
-from test.pickletester import AbstractIdentityPersistentPicklerTests
-from test.pickletester import AbstractPicklerUnpicklerObjectTests
-from test.pickletester import AbstractDispatchTableTests
-from test.pickletester import AbstractCustomPicklerClass
-from test.pickletester import BigmemPickleTests
+from test.pickletester import (
+    AbstractCustomPicklerClass,
+    AbstractDispatchTableTests,
+    AbstractHookTests,
+    AbstractIdentityPersistentPicklerTests,
+    AbstractPersistentPicklerTests,
+    AbstractPickleModuleTests,
+    AbstractPicklerUnpicklerObjectTests,
+    AbstractPickleTests,
+    AbstractUnpickleTests,
+    BigmemPickleTests,
+)
 
 try:
     import _pickle
@@ -45,7 +46,6 @@ class PyPickleTests(AbstractPickleModuleTests):
 
 
 class PyUnpicklerTests(AbstractUnpickleTests):
-
     unpickler = pickle._Unpickler
     bad_stack_errors = (IndexError,)
     truncated_errors = (
@@ -65,7 +65,6 @@ class PyUnpicklerTests(AbstractUnpickleTests):
 
 
 class PyPicklerTests(AbstractPickleTests):
-
     pickler = pickle._Pickler
     unpickler = pickle._Unpickler
 
@@ -85,7 +84,6 @@ class PyPicklerTests(AbstractPickleTests):
 class InMemoryPickleTests(
     AbstractPickleTests, AbstractUnpickleTests, BigmemPickleTests
 ):
-
     bad_stack_errors = (pickle.UnpicklingError, IndexError)
     truncated_errors = (
         pickle.UnpicklingError,
@@ -106,8 +104,7 @@ class InMemoryPickleTests(
     test_framed_write_sizes_with_delayed_writer = None
 
 
-class PersistentPicklerUnpicklerMixin(object):
-
+class PersistentPicklerUnpicklerMixin:
     def dumps(self, arg, proto=None):
         class PersPickler(self.pickler):
             def persistent_id(subself, obj):
@@ -131,7 +128,6 @@ class PersistentPicklerUnpicklerMixin(object):
 class PyPersPicklerTests(
     AbstractPersistentPicklerTests, PersistentPicklerUnpicklerMixin
 ):
-
     pickler = pickle._Pickler
     unpickler = pickle._Unpickler
 
@@ -139,7 +135,6 @@ class PyPersPicklerTests(
 class PyIdPersPicklerTests(
     AbstractIdentityPersistentPicklerTests, PersistentPicklerUnpicklerMixin
 ):
-
     pickler = pickle._Pickler
     unpickler = pickle._Unpickler
 
@@ -211,13 +206,11 @@ class PyIdPersPicklerTests(
 
 
 class PyPicklerUnpicklerObjectTests(AbstractPicklerUnpicklerObjectTests):
-
     pickler_class = pickle._Pickler
     unpickler_class = pickle._Unpickler
 
 
 class PyDispatchTableTests(AbstractDispatchTableTests):
-
     pickler_class = pickle._Pickler
 
     def get_dispatch_table(self):
@@ -225,7 +218,6 @@ class PyDispatchTableTests(AbstractDispatchTableTests):
 
 
 class PyChainDispatchTableTests(AbstractDispatchTableTests):
-
     pickler_class = pickle._Pickler
 
     def get_dispatch_table(self):
@@ -242,7 +234,7 @@ class PyPicklerHookTests(AbstractHookTests):
 if has_c_implementation:
 
     class CPickleTests(AbstractPickleModuleTests):
-        from _pickle import dump, dumps, load, loads, Pickler, Unpickler
+        from _pickle import Pickler, Unpickler, dump, dumps, load, loads
 
     class CUnpicklerTests(PyUnpicklerTests):
         unpickler = _pickle.Unpickler
@@ -322,7 +314,10 @@ if has_c_implementation:
                 p.dump(chr(i))
             check(
                 p,
-                basesize + MT_size + 32 * ME_size +  # Size of memo table required to
+                basesize
+                + MT_size
+                + 32 * ME_size  # Size of memo table required to
+                +
                 # save references to 6 objects.
                 0,
             )  # Write buffer is cleared after every dump().

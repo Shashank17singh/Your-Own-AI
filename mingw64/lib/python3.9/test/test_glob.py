@@ -6,15 +6,14 @@ import unittest
 
 from test.support import (
     TESTFN,
-    skip_unless_symlink,
     can_symlink,
-    create_empty_file,
     change_cwd,
+    create_empty_file,
+    skip_unless_symlink,
 )
 
 
 class GlobTests(unittest.TestCase):
-
     def norm(self, *parts):
         return os.path.normpath(os.path.join(self.tempdir, *parts))
 
@@ -324,7 +323,6 @@ class GlobTests(unittest.TestCase):
 
 @skip_unless_symlink
 class SymlinkLoopGlobTests(unittest.TestCase):
-
     def test_selflink(self):
         tempdir = TESTFN + "_dir"
         os.makedirs(tempdir)

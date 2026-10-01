@@ -1,13 +1,13 @@
+import os
+import socket
+import sys
 import unittest
+import urllib.error
+import urllib.request
+
 from test import support
 from test.support import socket_helper
 from test.test_urllib2 import sanepathname2url
-
-import os
-import socket
-import urllib.error
-import urllib.request
-import sys
 
 support.requires("network")
 
@@ -32,7 +32,7 @@ def _wrap_with_retry_thrice(func, exc):
 # bpo-35411: FTP tests of test_urllib2net randomly fail
 # with "425 Security: Bad IP connecting" on Travis CI
 skip_ftp_test_on_travis = unittest.skipIf(
-    "TRAVIS" in os.environ, "bpo-35411: skip FTP test " "on Travis CI"
+    "TRAVIS" in os.environ, "bpo-35411: skip FTP test on Travis CI"
 )
 
 
@@ -84,7 +84,6 @@ class AuthTests(unittest.TestCase):
 
 
 class CloseSocketTest(unittest.TestCase):
-
     def test_close(self):
         # clear _opener global variable
         self.addCleanup(urllib.request.urlcleanup)
@@ -202,8 +201,10 @@ class OtherNetworkTests(unittest.TestCase):
                 with urllib.request.urlopen(URL) as res:
                     pass
             except ValueError:
-                self.fail("urlopen failed for site not sending \
-                           Connection:close")
+                self.fail(
+                    "urlopen failed for site not sending \
+                           Connection:close"
+                )
             else:
                 self.assertTrue(res)
 
@@ -212,8 +213,8 @@ class OtherNetworkTests(unittest.TestCase):
             self.assertTrue(res)
 
     def _test_urls(self, urls, handlers, retry=True):
-        import time
         import logging
+        import time
 
         debug = logging.getLogger("test_urllib2").debug
 
@@ -243,10 +244,14 @@ class OtherNetworkTests(unittest.TestCase):
                             raise
                     else:
                         try:
-                            with support.time_out, support.socket_peer_reset, support.ioerror_peer_reset:
+                            with (
+                                support.time_out,
+                                support.socket_peer_reset,
+                                support.ioerror_peer_reset,
+                            ):
                                 buf = f.read()
                                 debug("read %d bytes" % len(buf))
-                        except socket.timeout:
+                        except TimeoutError:
                             print("<timeout: %s>" % url, file=sys.stderr)
                         f.close()
                 time.sleep(0.1)

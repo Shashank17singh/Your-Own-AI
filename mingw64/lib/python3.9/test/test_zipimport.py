@@ -1,23 +1,21 @@
-import sys
-import os
-import marshal
+import doctest
 import importlib
 import importlib.util
+import inspect
+import io
+import linecache
+import marshal
+import os
 import struct
+import sys
 import time
 import unittest
 import unittest.mock
+import zipimport
+from traceback import extract_stack, extract_tb, print_tb
+from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile, ZipInfo
 
 from test import support
-
-from zipfile import ZipFile, ZipInfo, ZIP_STORED, ZIP_DEFLATED
-
-import zipimport
-import linecache
-import doctest
-import inspect
-import io
-from traceback import extract_tb, extract_stack, print_tb
 
 try:
     import zlib
@@ -63,7 +61,6 @@ pyc_ext = ".pyc"
 
 
 class ImportHooksBaseTestCase(unittest.TestCase):
-
     def setUp(self):
         self.path = sys.path[:]
         self.meta_path = sys.meta_path[:]
@@ -80,7 +77,6 @@ class ImportHooksBaseTestCase(unittest.TestCase):
 
 
 class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
-
     compression = ZIP_STORED
 
     def setUp(self):

@@ -1,17 +1,16 @@
 import os
-import sys
+import random
 import shutil
 import string
-import random
+import sys
 import tempfile
 import unittest
-
 from importlib.util import cache_from_source
+
 from test.support import create_empty_file
 
 
 class TestImport(unittest.TestCase):
-
     def __init__(self, *args, **kw):
         self.package_name = "PACKAGE_"
         while self.package_name in sys.modules:

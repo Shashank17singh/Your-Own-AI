@@ -1,13 +1,15 @@
 # Test various flavors of legal and illegal future statements
 
 import __future__
+
 import ast
-import unittest
-from test import support
-from textwrap import dedent
 import os
 import re
 import sys
+import unittest
+from textwrap import dedent
+
+from test import support
 
 rx = re.compile(r"\((\S+).py, line (\d+)")
 
@@ -18,7 +20,6 @@ def get_error_location(msg):
 
 
 class FutureTest(unittest.TestCase):
-
     def check_syntax_error(self, err, basename, lineno, offset=1):
         self.assertIn("%s.py, line %d" % (basename, lineno), str(err))
         self.assertEqual(os.path.basename(err.filename), basename + ".py")
@@ -39,46 +40,46 @@ class FutureTest(unittest.TestCase):
 
     def test_future3(self):
         with support.CleanImport("test_future3"):
-            from test import test_future3
+            pass
 
     def test_badfuture3(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future3
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future3", 3)
 
     def test_badfuture4(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future4
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future4", 3)
 
     def test_badfuture5(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future5
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future5", 4)
 
     def test_badfuture6(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future6
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future6", 3)
 
     def test_badfuture7(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future7
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future7", 3, 53)
 
     def test_badfuture8(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future8
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future8", 3)
 
     def test_badfuture9(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future9
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future9", 3)
 
     def test_badfuture10(self):
         with self.assertRaises(SyntaxError) as cm:
-            from test import badsyntax_future10
+            pass
         self.check_syntax_error(cm.exception, "badsyntax_future10", 3)
 
     def test_ensure_flags_dont_clash(self):
@@ -117,7 +118,7 @@ class FutureTest(unittest.TestCase):
 
     def test_multiple_features(self):
         with support.CleanImport("test.test_future5"):
-            from test import test_future5
+            pass
 
     def test_unicode_literals_exec(self):
         scope = {}

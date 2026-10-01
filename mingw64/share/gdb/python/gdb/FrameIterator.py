@@ -1,4 +1,4 @@
-class FrameIterator(object):
+class FrameIterator:
     """A gdb.Frame iterator.  Iterates over gdb.Frames or objects that
     conform to that interface."""
 
@@ -6,7 +6,7 @@ class FrameIterator(object):
         """Initialize a FrameIterator.
         Arguments:
             frame_obj the starting frame."""
-        super(FrameIterator, self).__init__()
+        super().__init__()
         self.frame = frame_obj
 
     def __iter__(self):

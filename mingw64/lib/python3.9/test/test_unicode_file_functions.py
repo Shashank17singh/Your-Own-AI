@@ -5,6 +5,7 @@ import sys
 import unittest
 import warnings
 from unicodedata import normalize
+
 from test import support
 
 filenames = [
@@ -54,7 +55,7 @@ if not os.path.supports_unicode_filenames:
             name.encode(fsencoding)
     except UnicodeEncodeError:
         raise unittest.SkipTest(
-            "only NT+ and systems with " "Unicode-friendly filesystem encoding"
+            "only NT+ and systems with Unicode-friendly filesystem encoding"
         )
 
 

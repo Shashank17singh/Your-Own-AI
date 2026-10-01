@@ -1,6 +1,6 @@
 """HTML character entity references."""
 
-__all__ = ["html5", "name2codepoint", "codepoint2name", "entitydefs"]
+__all__ = ["codepoint2name", "entitydefs", "html5", "name2codepoint"]
 
 
 # maps the HTML entity name to the Unicode code point

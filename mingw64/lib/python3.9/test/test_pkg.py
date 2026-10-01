@@ -1,7 +1,7 @@
 # Test packages (dotted-name import)
 
-import sys
 import os
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -45,7 +45,6 @@ def fixdir(lst):
 
 
 class TestPkg(unittest.TestCase):
-
     def setUp(self):
         self.root = None
         self.pkgname = None
@@ -94,7 +93,6 @@ class TestPkg(unittest.TestCase):
     def test_1(self):
         hier = [("t1", None), ("t1 __init__.py", "")]
         self.mkhier(hier)
-        import t1
 
     def test_2(self):
         hier = [
@@ -125,7 +123,6 @@ class TestPkg(unittest.TestCase):
 
         from t2 import sub
         from t2.sub import subsub
-        from t2.sub.subsub import spam
 
         self.assertEqual(sub.__name__, "t2.sub")
         self.assertEqual(subsub.__name__, "t2.sub.subsub")
@@ -199,8 +196,6 @@ class TestPkg(unittest.TestCase):
             self.assertEqual(dir(), ['foo', 'self', 'string', 't5'])
             """
         self.run_code(s)
-
-        import t5
 
         self.assertEqual(
             fixdir(dir(t5)),

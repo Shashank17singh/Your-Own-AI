@@ -4,6 +4,7 @@ import sys
 import threading
 import traceback
 from enum import IntEnum, auto
+
 import gdb
 
 if sys.version_info[0] == 3 and sys.version_info[1] <= 6:

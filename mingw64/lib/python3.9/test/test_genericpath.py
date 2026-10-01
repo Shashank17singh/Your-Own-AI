@@ -7,9 +7,10 @@ import os
 import sys
 import unittest
 import warnings
+
 from test import support
-from test.support.script_helper import assert_python_ok
 from test.support import FakePath
+from test.support.script_helper import assert_python_ok
 
 
 def create_file(filename, data=b"foo"):
@@ -35,9 +36,7 @@ class GenericTest:
             with self.assertRaises(TypeError):
                 getattr(self.pathmodule, attr)()
                 raise self.fail(
-                    "{}.{}() did not raise a TypeError".format(
-                        self.pathmodule.__name__, attr
-                    )
+                    f"{self.pathmodule.__name__}.{attr}() did not raise a TypeError"
                 )
 
     def test_commonprefix(self):
@@ -384,7 +383,7 @@ class CommonTest(GenericTest):
         self.assertEqual(normcase(b""), b"")
 
         # check that normcase raises a TypeError for invalid types
-        for path in (None, True, 0, 2.5, [], bytearray(b""), {"o", "o"}):
+        for path in (None, True, 0, 2.5, [], bytearray(b""), {"o"}):
             self.assertRaises(TypeError, normcase, path)
 
     def test_splitdrive(self):
@@ -566,7 +565,6 @@ class CommonTest(GenericTest):
 
 
 class PathLikeTests(unittest.TestCase):
-
     def setUp(self):
         self.file_name = support.TESTFN
         self.file_path = FakePath(support.TESTFN)

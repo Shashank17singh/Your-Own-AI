@@ -1,9 +1,10 @@
 "Test autoexpand, coverage 100%."
 
-from idlelib.autoexpand import AutoExpand
 import unittest
-from test.support import requires
+from idlelib.autoexpand import AutoExpand
 from tkinter import Text, Tk
+
+from test.support import requires
 
 
 class DummyEditwin:
@@ -13,7 +14,6 @@ class DummyEditwin:
 
 
 class AutoExpandTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

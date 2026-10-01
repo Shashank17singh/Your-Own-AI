@@ -1,4 +1,5 @@
 import re
+
 import gdb
 
 
@@ -15,7 +16,7 @@ class CallerIs(gdb.Function):
       True if the function's name at the specified frame is equal to NAME."""
 
     def __init__(self):
-        super(CallerIs, self).__init__("_caller_is")
+        super().__init__("_caller_is")
 
     def invoke(self, name, nframes=1):
         if nframes < 0:
@@ -42,7 +43,7 @@ class CallerMatches(gdb.Function):
       True if the function's name at the specified frame matches REGEX."""
 
     def __init__(self):
-        super(CallerMatches, self).__init__("_caller_matches")
+        super().__init__("_caller_matches")
 
     def invoke(self, name, nframes=1):
         if nframes < 0:
@@ -69,7 +70,7 @@ class AnyCallerIs(gdb.Function):
       True if any function's name is equal to NAME."""
 
     def __init__(self):
-        super(AnyCallerIs, self).__init__("_any_caller_is")
+        super().__init__("_any_caller_is")
 
     def invoke(self, name, nframes=1):
         if nframes < 0:
@@ -98,7 +99,7 @@ class AnyCallerMatches(gdb.Function):
       True if any function's name matches REGEX."""
 
     def __init__(self):
-        super(AnyCallerMatches, self).__init__("_any_caller_matches")
+        super().__init__("_any_caller_matches")
 
     def invoke(self, name, nframes=1):
         if nframes < 0:

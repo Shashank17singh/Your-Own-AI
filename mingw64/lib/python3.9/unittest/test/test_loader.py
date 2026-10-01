@@ -1,8 +1,8 @@
 import functools
 import sys
 import types
-import warnings
 import unittest
+import warnings
 
 
 def warningregistry(func):
@@ -113,7 +113,7 @@ class Test_TestLoader(unittest.TestCase):
             def test(self):
                 pass
 
-        class NotAModule(object):
+        class NotAModule:
             test_2 = MyTestCase
 
         loader = unittest.TestLoader()
@@ -218,9 +218,10 @@ class Test_TestLoader(unittest.TestCase):
 
         m.load_tests = load_tests
         loader = unittest.TestLoader()
-        with self.assertRaises(TypeError) as cm, warnings.catch_warnings(
-            record=True
-        ) as w:
+        with (
+            self.assertRaises(TypeError) as cm,
+            warnings.catch_warnings(record=True) as w,
+        ):
             warnings.simplefilter("always")
             loader.loadTestsFromModule(m, False, "testme.*")
         self.assertIs(w[-1].category, DeprecationWarning)
@@ -376,7 +377,7 @@ class Test_TestLoader(unittest.TestCase):
             def test(self):
                 pass
 
-        class NotAModule(object):
+        class NotAModule:
             test_2 = MyTestCase
 
         loader = unittest.TestLoader()
@@ -641,7 +642,7 @@ class Test_TestLoader(unittest.TestCase):
             def test(self):
                 pass
 
-        class NotAModule(object):
+        class NotAModule:
             test_2 = MyTestCase
 
         loader = unittest.TestLoader()
@@ -1192,7 +1193,7 @@ class Test_TestLoader(unittest.TestCase):
         class Foo(unittest.TestCase):
             pass
 
-        setattr(Foo, "test_partial", functools.partial(noop, None))
+        Foo.test_partial = functools.partial(noop, None)
         loader = unittest.TestLoader()
         test_names = ["test_partial"]
         self.assertEqual(loader.getTestCaseNames(Foo), test_names)

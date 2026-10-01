@@ -7,8 +7,8 @@ and time
   ------------------------------------
 """
 
-from turtle import *
 from datetime import datetime
+from turtle import *
 
 
 def jump(distanz, winkel=0):

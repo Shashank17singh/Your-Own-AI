@@ -1,9 +1,10 @@
-from .. import util
 import importlib._bootstrap
 import sys
-from types import MethodType
 import unittest
 import warnings
+from types import MethodType
+
+from .. import util
 
 
 class CallingOrder:

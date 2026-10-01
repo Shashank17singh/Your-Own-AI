@@ -1,9 +1,14 @@
-import netrc, os, unittest, sys, tempfile, textwrap
+import netrc
+import os
+import sys
+import tempfile
+import textwrap
+import unittest
+
 from test import support
 
 
 class NetrcTestCase(unittest.TestCase):
-
     def make_nrc(self, test_data):
         test_data = textwrap.dedent(test_data)
         mode = "w"

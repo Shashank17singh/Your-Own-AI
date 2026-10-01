@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+
 from test import support
 
 USAGE = """\
@@ -181,7 +182,6 @@ class Namespace(argparse.Namespace):
 
 
 class _ArgParser(argparse.ArgumentParser):
-
     def error(self, message):
         super().error(message + "\nPass -h or --help for complete help.")
 
@@ -218,7 +218,7 @@ def _create_parser():
     group.add_argument(
         "--wait",
         action="store_true",
-        help="wait for user input, e.g., allow a debugger " "to be attached",
+        help="wait for user input, e.g., allow a debugger to be attached",
     )
     group.add_argument("--worker-args", metavar="ARGS")
     group.add_argument(
@@ -273,7 +273,7 @@ def _create_parser():
         metavar="SEED",
         dest="random_seed",
         type=int,
-        help="pass a random seed to reproduce a previous " "random run",
+        help="pass a random seed to reproduce a previous random run",
     )
     group.add_argument(
         "-f",
@@ -317,8 +317,7 @@ def _create_parser():
         "--ignorefile",
         metavar="FILENAME",
         dest="ignore_filename",
-        help="similar to --matchfile but it receives patterns "
-        "from text file to ignore",
+        help="similar to --matchfile but it receives patterns from text file to ignore",
     )
     group.add_argument(
         "-G",
@@ -332,7 +331,7 @@ def _create_parser():
         metavar="RES1,RES2,...",
         action="append",
         type=resources_list,
-        help="specify which special resource intensive tests " "to run." + more_details,
+        help="specify which special resource intensive tests to run." + more_details,
     )
     group.add_argument(
         "-M",
@@ -384,7 +383,7 @@ def _create_parser():
         "--coverage",
         action="store_true",
         dest="trace",
-        help="turn on code coverage tracing using the trace " "module",
+        help="turn on code coverage tracing using the trace module",
     )
     group.add_argument(
         "-D",
@@ -424,13 +423,12 @@ def _create_parser():
     group.add_argument(
         "--list-tests",
         action="store_true",
-        help="only write the name of tests that will be run, " "don't execute them",
+        help="only write the name of tests that will be run, don't execute them",
     )
     group.add_argument(
         "--list-cases",
         action="store_true",
-        help="only write the name of test cases that will be run"
-        " , don't execute them",
+        help="only write the name of test cases that will be run , don't execute them",
     )
     group.add_argument(
         "-P",
@@ -447,14 +445,14 @@ def _create_parser():
     group.add_argument(
         "--fail-env-changed",
         action="store_true",
-        help="if a test file alters the environment, mark " "the test as failed",
+        help="if a test file alters the environment, mark the test as failed",
     )
 
     group.add_argument(
         "--junit-xml",
         dest="xmlpath",
         metavar="FILENAME",
-        help="writes JUnit-style XML results to the specified " "file",
+        help="writes JUnit-style XML results to the specified file",
     )
     group.add_argument(
         "--tempdir",
@@ -500,9 +498,7 @@ def _parse_args(args, **kwargs):
     ns = Namespace()
     for k, v in kwargs.items():
         if not hasattr(ns, k):
-            raise TypeError(
-                "%r is an invalid keyword argument " "for this function" % k
-            )
+            raise TypeError("%r is an invalid keyword argument for this function" % k)
         setattr(ns, k, v)
     if ns.use_resources is None:
         ns.use_resources = []

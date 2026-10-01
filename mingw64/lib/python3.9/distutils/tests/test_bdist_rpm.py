@@ -1,14 +1,14 @@
 """Tests for distutils.command.bdist_rpm."""
 
-import unittest
-import sys
 import os
-from test.support import run_unittest, requires_zlib
-
-from distutils.core import Distribution
+import sys
+import unittest
 from distutils.command.bdist_rpm import bdist_rpm
-from distutils.tests import support
+from distutils.core import Distribution
 from distutils.spawn import find_executable
+from distutils.tests import support
+
+from test.support import requires_zlib, run_unittest
 
 SETUP_PY = """\
 from distutils.core import setup
@@ -26,14 +26,13 @@ class BuildRpmTestCase(
     support.LoggingSilencer,
     unittest.TestCase,
 ):
-
     def setUp(self):
         try:
             sys.executable.encode("UTF-8")
         except UnicodeEncodeError:
             raise unittest.SkipTest("sys.executable is not encodable to UTF-8")
 
-        super(BuildRpmTestCase, self).setUp()
+        super().setUp()
         self.old_location = os.getcwd()
         self.old_sys_argv = sys.argv, sys.argv[:]
 
@@ -41,7 +40,7 @@ class BuildRpmTestCase(
         os.chdir(self.old_location)
         sys.argv = self.old_sys_argv[0]
         sys.argv[:] = self.old_sys_argv[1]
-        super(BuildRpmTestCase, self).tearDown()
+        super().tearDown()
 
     # XXX I am unable yet to make this test work without
     # spurious sdtout/stderr output under Mac OS X

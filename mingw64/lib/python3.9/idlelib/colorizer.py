@@ -2,7 +2,6 @@ import builtins
 import keyword
 import re
 import time
-
 from idlelib.config import idleConf
 from idlelib.delegator import Delegator
 
@@ -34,8 +33,8 @@ def make_pat():
     )
 
 
-prog = re.compile(make_pat(), re.S)
-idprog = re.compile(r"\s+(\w+)", re.S)
+prog = re.compile(make_pat(), re.DOTALL)
+idprog = re.compile(r"\s+(\w+)", re.DOTALL)
 
 
 def color_config(text):
@@ -314,8 +313,8 @@ class ColorDelegator(Delegator):
 
 
 def _color_delegator(parent):  # htest #
-    from tkinter import Toplevel, Text
     from idlelib.percolator import Percolator
+    from tkinter import Text, Toplevel
 
     top = Toplevel(parent)
     top.title("Test ColorDelegator")

@@ -7,17 +7,15 @@
 # Licensed to PSF under a Contributor Agreement.
 #
 
-__all__ = ["Lock", "RLock", "Semaphore", "BoundedSemaphore", "Condition", "Event"]
+__all__ = ["BoundedSemaphore", "Condition", "Event", "Lock", "RLock", "Semaphore"]
 
-import threading
+import _multiprocessing
 import sys
 import tempfile
-import _multiprocessing
+import threading
 import time
 
-from . import context
-from . import process
-from . import util
+from . import context, process, util
 
 # Try to import the mp.synchronize module cleanly, if it fails
 # raise ImportError for platforms lacking a working sem_open implementation.
@@ -44,8 +42,7 @@ SEM_VALUE_MAX = _multiprocessing.SemLock.SEM_VALUE_MAX
 #
 
 
-class SemLock(object):
-
+class SemLock:
     _rand = tempfile._RandomNameSequence()
 
     def __init__(self, kind, value, maxvalue, *, ctx):
@@ -129,7 +126,6 @@ class SemLock(object):
 
 
 class Semaphore(SemLock):
-
     def __init__(self, value=1, *, ctx):
         SemLock.__init__(self, SEMAPHORE, value, SEM_VALUE_MAX, ctx=ctx)
 
@@ -150,7 +146,6 @@ class Semaphore(SemLock):
 
 
 class BoundedSemaphore(Semaphore):
-
     def __init__(self, value=1, *, ctx):
         SemLock.__init__(self, SEMAPHORE, value, value, ctx=ctx)
 
@@ -172,7 +167,6 @@ class BoundedSemaphore(Semaphore):
 
 
 class Lock(SemLock):
-
     def __init__(self, *, ctx):
         SemLock.__init__(self, SEMAPHORE, 1, 1, ctx=ctx)
 
@@ -199,7 +193,6 @@ class Lock(SemLock):
 
 
 class RLock(SemLock):
-
     def __init__(self, *, ctx):
         SemLock.__init__(self, RECURSIVE_MUTEX, 1, 1, ctx=ctx)
 
@@ -226,8 +219,7 @@ class RLock(SemLock):
 #
 
 
-class Condition(object):
-
+class Condition:
     def __init__(self, lock=None, *, ctx):
         self._lock = lock or ctx.RLock()
         self._sleeping_count = ctx.Semaphore(0)
@@ -271,9 +263,9 @@ class Condition(object):
         return "<%s(%s, %s)>" % (self.__class__.__name__, self._lock, num_waiters)
 
     def wait(self, timeout=None):
-        assert (
-            self._lock._semlock._is_mine()
-        ), "must acquire() condition before using wait()"
+        assert self._lock._semlock._is_mine(), (
+            "must acquire() condition before using wait()"
+        )
 
         # indicate that this thread is going to sleep
         self._sleeping_count.release()
@@ -348,8 +340,7 @@ class Condition(object):
 #
 
 
-class Event(object):
-
+class Event:
     def __init__(self, *, ctx):
         self._cond = ctx.Condition(ctx.Lock())
         self._flag = ctx.Semaphore(0)
@@ -390,9 +381,9 @@ class Event(object):
 
 
 class Barrier(threading.Barrier):
-
     def __init__(self, parties, action=None, timeout=None, *, ctx):
         import struct
+
         from .heap import BufferWrapper
 
         wrapper = BufferWrapper(struct.calcsize("i") * 2)

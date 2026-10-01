@@ -1,7 +1,7 @@
-import unittest, sys
-
-from ctypes import *
 import _ctypes_test
+import sys
+import unittest
+from ctypes import *
 
 ctype_types = [
     c_byte,
@@ -21,7 +21,6 @@ python_types = [int, int, int, int, int, int, int, int, int, int, float, float]
 
 
 class PointersTestCase(unittest.TestCase):
-
     def test_pointer_crash(self):
 
         class A(POINTER(c_ulong)):

@@ -9,50 +9,49 @@ container formats, as well as raw compressed data streams.
 """
 
 __all__ = [
-    "CHECK_NONE",
     "CHECK_CRC32",
     "CHECK_CRC64",
-    "CHECK_SHA256",
     "CHECK_ID_MAX",
+    "CHECK_NONE",
+    "CHECK_SHA256",
     "CHECK_UNKNOWN",
-    "FILTER_LZMA1",
-    "FILTER_LZMA2",
-    "FILTER_DELTA",
-    "FILTER_X86",
-    "FILTER_IA64",
     "FILTER_ARM",
     "FILTER_ARMTHUMB",
+    "FILTER_DELTA",
+    "FILTER_IA64",
+    "FILTER_LZMA1",
+    "FILTER_LZMA2",
     "FILTER_POWERPC",
     "FILTER_SPARC",
-    "FORMAT_AUTO",
-    "FORMAT_XZ",
+    "FILTER_X86",
     "FORMAT_ALONE",
+    "FORMAT_AUTO",
     "FORMAT_RAW",
-    "MF_HC3",
-    "MF_HC4",
+    "FORMAT_XZ",
     "MF_BT2",
     "MF_BT3",
     "MF_BT4",
+    "MF_HC3",
+    "MF_HC4",
     "MODE_FAST",
     "MODE_NORMAL",
     "PRESET_DEFAULT",
     "PRESET_EXTREME",
     "LZMACompressor",
     "LZMADecompressor",
-    "LZMAFile",
     "LZMAError",
-    "open",
+    "LZMAFile",
     "compress",
     "decompress",
     "is_check_supported",
+    "open",
 ]
 
+import _compression
 import builtins
 import io
 import os
 from _lzma import *
-from _lzma import _encode_filter_properties, _decode_filter_properties
-import _compression
 
 _MODE_CLOSED = 0
 _MODE_READ = 1
@@ -78,7 +77,7 @@ class LZMAFile(_compression.BaseStream):
         format=None,
         check=-1,
         preset=None,
-        filters=None
+        filters=None,
     ):
         """Open an LZMA-compressed file in binary mode.
 
@@ -129,8 +128,7 @@ class LZMAFile(_compression.BaseStream):
         if mode in ("r", "rb"):
             if check != -1:
                 raise ValueError(
-                    "Cannot specify an integrity check "
-                    "when opening a file for reading"
+                    "Cannot specify an integrity check when opening a file for reading"
                 )
             if preset is not None:
                 raise ValueError(
@@ -149,7 +147,7 @@ class LZMAFile(_compression.BaseStream):
             )
             self._pos = 0
         else:
-            raise ValueError("Invalid mode: {!r}".format(mode))
+            raise ValueError(f"Invalid mode: {mode!r}")
 
         if isinstance(filename, (str, bytes, os.PathLike)):
             if "b" not in mode:
@@ -320,7 +318,7 @@ def open(
     filters=None,
     encoding=None,
     errors=None,
-    newline=None
+    newline=None,
 ):
     """Open an LZMA-compressed file in binary or text mode.
 
@@ -400,7 +398,7 @@ def decompress(data, format=FORMAT_AUTO, memlimit=None, filters=None):
         results.append(res)
         if not decomp.eof:
             raise LZMAError(
-                "Compressed data ended before the " "end-of-stream marker was reached"
+                "Compressed data ended before the end-of-stream marker was reached"
             )
         data = decomp.unused_data
         if not data:

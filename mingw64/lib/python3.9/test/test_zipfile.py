@@ -11,25 +11,23 @@ import subprocess
 import sys
 import time
 import unittest
-import unittest.mock as mock
 import zipfile
-
-
+from random import randbytes, randint, random
 from tempfile import TemporaryFile
-from random import randint, random, randbytes
+from unittest import mock
 
-from test.support import script_helper
 from test.support import (
     TESTFN,
+    captured_stdout,
     findfile,
-    unlink,
-    rmtree,
-    temp_dir,
-    temp_cwd,
-    requires_zlib,
     requires_bz2,
     requires_lzma,
-    captured_stdout,
+    requires_zlib,
+    rmtree,
+    script_helper,
+    temp_cwd,
+    temp_dir,
+    unlink,
 )
 
 TESTFN2 = TESTFN + "2"
@@ -256,11 +254,10 @@ class AbstractTestsWithSourceFile:
         self.make_test_archive(f, compression)
 
         # Read the ZIP archive
-        with zipfile.ZipFile(f, "r") as zipfp:
-            with zipfp.open(TESTFN) as zipopen:
-                for line in self.line_gen:
-                    linedata = zipopen.readline()
-                    self.assertEqual(linedata, line)
+        with zipfile.ZipFile(f, "r") as zipfp, zipfp.open(TESTFN) as zipopen:
+            for line in self.line_gen:
+                linedata = zipopen.readline()
+                self.assertEqual(linedata, line)
 
     def test_readline(self):
         for f in get_files(self):
@@ -284,10 +281,9 @@ class AbstractTestsWithSourceFile:
         self.make_test_archive(f, compression)
 
         # Read the ZIP archive
-        with zipfile.ZipFile(f, "r") as zipfp:
-            with zipfp.open(TESTFN) as zipopen:
-                for line, zipline in zip(self.line_gen, zipopen):
-                    self.assertEqual(zipline, line)
+        with zipfile.ZipFile(f, "r") as zipfp, zipfp.open(TESTFN) as zipopen:
+            for line, zipline in zip(self.line_gen, zipopen):
+                self.assertEqual(zipline, line)
 
     def test_iterlines(self):
         for f in get_files(self):
@@ -348,27 +344,24 @@ class AbstractTestsWithSourceFile:
         zipfiledata = fp.getvalue()
 
         fp = io.BytesIO(zipfiledata)
-        with zipfile.ZipFile(fp) as zipf:
-            with zipf.open("strfile") as zipopen:
-                fp.truncate(end_offset - 20)
-                with self.assertRaises(EOFError):
-                    zipopen.read()
+        with zipfile.ZipFile(fp) as zipf, zipf.open("strfile") as zipopen:
+            fp.truncate(end_offset - 20)
+            with self.assertRaises(EOFError):
+                zipopen.read()
 
         fp = io.BytesIO(zipfiledata)
-        with zipfile.ZipFile(fp) as zipf:
-            with zipf.open("strfile") as zipopen:
-                fp.truncate(end_offset - 20)
-                with self.assertRaises(EOFError):
-                    while zipopen.read(100):
-                        pass
+        with zipfile.ZipFile(fp) as zipf, zipf.open("strfile") as zipopen:
+            fp.truncate(end_offset - 20)
+            with self.assertRaises(EOFError):
+                while zipopen.read(100):
+                    pass
 
         fp = io.BytesIO(zipfiledata)
-        with zipfile.ZipFile(fp) as zipf:
-            with zipf.open("strfile") as zipopen:
-                fp.truncate(end_offset - 20)
-                with self.assertRaises(EOFError):
-                    while zipopen.read1(100):
-                        pass
+        with zipfile.ZipFile(fp) as zipf, zipf.open("strfile") as zipopen:
+            fp.truncate(end_offset - 20)
+            with self.assertRaises(EOFError):
+                while zipopen.read1(100):
+                    pass
 
     def test_repr(self):
         fname = "file.name"
@@ -684,7 +677,7 @@ class AbstractTestZip64InSmallFiles:
     def setUpClass(cls):
         line_gen = (
             bytes("Test of zipfile line %d." % i, "ascii")
-            for i in range(0, FIXEDTEST_SIZE)
+            for i in range(FIXEDTEST_SIZE)
         )
         cls.data = b"\n".join(line_gen)
 
@@ -1102,7 +1095,6 @@ class LzmaTestZip64InSmallFiles(AbstractTestZip64InSmallFiles, unittest.TestCase
 
 
 class AbstractWriterTests:
-
     def tearDown(self):
         unlink(TESTFN2)
 
@@ -1218,7 +1210,6 @@ class PyZipFileTests(unittest.TestCase):
         self.requiresWriteAccess(packagedir)
 
         with TemporaryFile() as t, zipfile.PyZipFile(t, "w") as zipfp:
-
             # first make sure that the test folder gives error messages
             # (on the badsyntax_... files)
             with captured_stdout() as reportSIO:
@@ -1251,9 +1242,10 @@ class PyZipFileTests(unittest.TestCase):
         optlevel = 1 if __debug__ else 0
         ext = ".pyc"
 
-        with TemporaryFile() as t, zipfile.PyZipFile(
-            t, "w", optimize=optlevel
-        ) as zipfp:
+        with (
+            TemporaryFile() as t,
+            zipfile.PyZipFile(t, "w", optimize=optlevel) as zipfp,
+        ):
             zipfp.writepy(packagedir)
 
             names = zipfp.namelist()
@@ -1346,7 +1338,6 @@ class PyZipFileTests(unittest.TestCase):
 
 
 class ExtractTests(unittest.TestCase):
-
     def make_test_file(self):
         with zipfile.ZipFile(TESTFN2, "w", zipfile.ZIP_STORED) as zipfp:
             for fpath, fdata in SMALL_TEST_DATA:
@@ -2058,9 +2049,8 @@ class OtherTests(unittest.TestCase):
         zip_file = io.BytesIO(data)
         with zipfile.ZipFile(zip_file, "w", compression=zipfile.ZIP_BZIP2) as zf:
             zf.writestr("a.txt", b"a")
-        with mock.patch("zipfile.bz2", None):
-            with zipfile.ZipFile(zip_file) as zf:
-                self.assertRaises(RuntimeError, zf.extract, "a.txt")
+        with mock.patch("zipfile.bz2", None), zipfile.ZipFile(zip_file) as zf:
+            self.assertRaises(RuntimeError, zf.extract, "a.txt")
 
     def tearDown(self):
         unlink(TESTFN)
@@ -2696,7 +2686,6 @@ class ZipInfoTests(unittest.TestCase):
 
 
 class CommandLineTest(unittest.TestCase):
-
     def zipfilecmd(self, *args, **kwargs):
         rc, out, err = script_helper.assert_python_ok("-m", "zipfile", *args, **kwargs)
         return out.replace(os.linesep.encode(), b"\n")

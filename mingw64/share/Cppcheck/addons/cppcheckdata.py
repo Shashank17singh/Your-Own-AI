@@ -7,8 +7,8 @@ License: No restrictions, use this as you need.
 import argparse
 import json
 import os
-import sys
 import subprocess
+import sys
 
 try:
     import pathlib
@@ -30,8 +30,8 @@ except ImportError:
     else:
         sys.stderr.write("%s [%s]\n" % (message, error_id))
     sys.exit(1)
-from xml.etree import ElementTree
 from fnmatch import fnmatch
+from xml.etree import ElementTree
 
 EXIT_CODE = 0
 current_dumpfile_suppressions = []
@@ -89,7 +89,7 @@ class Directive:
         attrs = ["str", "file", "linenr"]
         return "{}({})".format(
             "Directive",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -133,7 +133,7 @@ class MacroUsage:
         ]
         return "{}({})".format(
             "MacroUsage",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -160,7 +160,7 @@ class PreprocessorIfCondition:
         attrs = ["file", "linenr", "column", "E", "result"]
         return "{}({})".format(
             "PreprocessorIfCondition",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -210,7 +210,7 @@ class ValueType:
         ]
         return "{}({})".format(
             "ValueType",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def setId(self, IdMap):
@@ -482,7 +482,7 @@ class Token:
         ]
         return "{}({})".format(
             "Token",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def setId(self, IdMap):
@@ -659,7 +659,7 @@ class Scope:
         ]
         return "{}({})".format(
             "Scope",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def setId(self, IdMap):
@@ -749,7 +749,7 @@ class Function:
         ]
         return "{}({})".format(
             "Function",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def setId(self, IdMap):
@@ -854,7 +854,7 @@ class Variable:
         ]
         return "{}({})".format(
             "Variable",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def setId(self, IdMap):
@@ -989,7 +989,7 @@ class Value:
         ]
         return "{}({})".format(
             "Value",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -1015,7 +1015,7 @@ class ValueFlow:
         attrs = ["Id", "values"]
         return "{}({})".format(
             "ValueFlow",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -1062,7 +1062,7 @@ class Suppression:
         ]
         return "{}({})".format(
             "Suppression",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
     def isMatch(self, file, line, message, errorId):
@@ -1259,7 +1259,7 @@ class Platform:
         ]
         return "{}({})".format(
             "Platform",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -1290,7 +1290,7 @@ class Standards:
         attrs = ["c", "cpp", "posix"]
         return "{}({})".format(
             "Standards",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -1494,7 +1494,7 @@ class CppcheckData:
         attrs = ["configurations", "platform"]
         return "{}({})".format(
             "CppcheckData",
-            ", ".join(("{}={}".format(a, repr(getattr(self, a))) for a in attrs)),
+            ", ".join(f"{a}={getattr(self, a)!r}" for a in attrs),
         )
 
 
@@ -1596,7 +1596,7 @@ def get_files(args):
     all_files = args.dumpfile
     if args.file_list:
         with open(args.file_list, "rt") as f:
-            for line in f.readlines():
+            for line in f:
                 all_files.append(line.rstrip())
     dump_files = []
     ctu_info_files = []
@@ -1678,7 +1678,7 @@ class MatchResult:
 
     def __getattr__(self, k):
         if k in self._keys:
-            return None
+            return
         raise AttributeError
 
 

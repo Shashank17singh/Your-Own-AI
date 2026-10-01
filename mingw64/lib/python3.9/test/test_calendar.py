@@ -1,13 +1,13 @@
 import calendar
+import datetime
+import locale
+import os
+import sys
+import time
 import unittest
 
 from test import support
-from test.support.script_helper import assert_python_ok, assert_python_failure
-import time
-import locale
-import sys
-import datetime
-import os
+from test.support.script_helper import assert_python_failure, assert_python_ok
 
 # From https://en.wikipedia.org/wiki/Leap_year_starting_on_Saturday
 result_0_02_text = """\
@@ -479,8 +479,7 @@ class OutputTestCase(unittest.TestCase):
                 [
                     [
                         " ".join(
-                            "{:02d}/{:02d}/{}".format(d.month, d.day, str(d.year)[-2:])
-                            for d in z
+                            f"{d.month:02d}/{d.day:02d}/{str(d.year)[-2:]}" for d in z
                         )
                         for z in y
                     ]
@@ -504,7 +503,7 @@ class OutputTestCase(unittest.TestCase):
     def test_formatweekheader_long(self):
         self.assertEqual(
             calendar.TextCalendar().formatweekheader(9),
-            "  Monday   Tuesday  Wednesday  Thursday " "  Friday   Saturday   Sunday ",
+            "  Monday   Tuesday  Wednesday  Thursday   Friday   Saturday   Sunday ",
         )
 
     def test_formatmonth(self):
@@ -977,7 +976,7 @@ class CommandLineTestCase(unittest.TestCase):
         self.assertFailure("-t", "html", "--css")
         stdout = self.run_ok("-t", "html", "--css", "custom.css", "2004")
         self.assertIn(
-            b'<link rel="stylesheet" type="text/css" ' b'href="custom.css" />', stdout
+            b'<link rel="stylesheet" type="text/css" href="custom.css" />', stdout
         )
 
 
@@ -1010,7 +1009,6 @@ class MiscTestCase(unittest.TestCase):
 
 
 class TestSubClassingCase(unittest.TestCase):
-
     def setUp(self):
 
         class CustomHTMLCal(calendar.HTMLCalendar):

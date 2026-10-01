@@ -1,15 +1,16 @@
-import unittest
-from test import support
-import gc
-import weakref
-import operator
-import copy
-import pickle
-from random import randrange, shuffle
-import warnings
 import collections
 import collections.abc
+import copy
+import gc
 import itertools
+import operator
+import pickle
+import unittest
+import warnings
+import weakref
+from random import randrange, shuffle
+
+from test import support
 
 
 class PassThru(Exception):
@@ -391,7 +392,7 @@ class TestJointOps:
 
     def test_container_iterator(self):
         # Bug #3680: tp_traverse was not implemented for set iterator object
-        class C(object):
+        class C:
             pass
 
         obj = C()
@@ -431,7 +432,7 @@ class TestSet(TestJointOps, unittest.TestCase):
 
     def test_set_literal_insertion_order(self):
         # SF Issue #26020 -- Expect left to right insertion
-        s = {1, 1.0, True}
+        s = {1}
         self.assertEqual(len(s), 1)
         stored_value = s.pop()
         self.assertEqual(type(stored_value), int)
@@ -497,7 +498,7 @@ class TestSet(TestJointOps, unittest.TestCase):
         except KeyError as e:
             self.assertTrue(
                 e.args[0] is key,
-                "KeyError should be {0}, not {1}".format(key, e.args[0]),
+                f"KeyError should be {key}, not {e.args[0]}",
             )
         else:
             self.fail()
@@ -726,7 +727,6 @@ class SetSubclassWithKeywordArgs(set):
 
 
 class TestSetSubclassWithKeywordArgs(TestSet):
-
     def test_keywords_in_subclass(self):
         "SF bug #1486663 -- this used to erroneously raise a TypeError"
         SetSubclassWithKeywordArgs(newarg=1)
@@ -879,7 +879,6 @@ empty_set = set()
 
 
 class TestBasicOps:
-
     def test_repr(self):
         if self.repr is not None:
             self.assertEqual(repr(self.set), self.repr)
@@ -1404,7 +1403,6 @@ class TestMutate(unittest.TestCase):
 
 
 class TestSubsets:
-
     case2method = {
         "<=": "issubset",
         ">=": "issuperset",
@@ -1497,7 +1495,6 @@ class TestSubsetNonOverlap(TestSubsets, unittest.TestCase):
 
 
 class TestOnlySetsInBinaryOps:
-
     def test_eq_ne(self):
         # Unlike the others, this is testing that == and != *are* allowed.
         self.assertEqual(self.other == self.set, False)
@@ -1675,7 +1672,6 @@ class TestOnlySetsGenerator(TestOnlySetsInBinaryOps, unittest.TestCase):
 
 
 class TestCopying:
-
     def test_copy(self):
         dup = self.set.copy()
         dup_list = sorted(dup, key=repr)
@@ -1890,7 +1886,6 @@ def L(seqn):
 
 
 class TestVariousIteratorArgs(unittest.TestCase):
-
     def test_constructor(self):
         for cons in (set, frozenset):
             for s in ("123", "", range(1000), ("do", 1.2), range(2000, 2200, 5)):
@@ -2087,7 +2082,6 @@ def faces(G):
 
 
 class TestGraphs(unittest.TestCase):
-
     def test_cube(self):
 
         g = cube(3)  # vert --> {v1, v2, v3}

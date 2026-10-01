@@ -1,9 +1,10 @@
 import ast
-import _peg_parser as peg_parser
 import unittest
-from typing import Any, Union, Iterable, Tuple
+from collections.abc import Iterable
 from textwrap import dedent
-from test import support
+from typing import Any
+
+import _peg_parser as peg_parser
 
 TEST_CASES = [
     ("annotated_assignment", "x: int = 42"),
@@ -839,8 +840,8 @@ def cleanup_source(source: Any) -> str:
 
 
 def prepare_test_cases(
-    test_cases: Iterable[Tuple[str, Union[str, Iterable[str]]]],
-) -> Tuple[Iterable[str], Iterable[str]]:
+    test_cases: Iterable[tuple[str, str | Iterable[str]]],
+) -> tuple[Iterable[str], Iterable[str]]:
 
     test_ids, _test_sources = zip(*test_cases)
     test_sources = list(_test_sources)

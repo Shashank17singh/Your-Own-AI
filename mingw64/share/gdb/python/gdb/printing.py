@@ -2,11 +2,12 @@
 
 import itertools
 import re
+
 import gdb
 import gdb.types
 
 
-class PrettyPrinter(object):
+class PrettyPrinter:
     """A basic pretty-printer.
     Attributes:
         name: A unique string among all printers for the context in which
@@ -31,7 +32,7 @@ class PrettyPrinter(object):
         raise NotImplementedError("PrettyPrinter __call__")
 
 
-class SubPrettyPrinter(object):
+class SubPrettyPrinter:
     """Baseclass for sub-pretty-printers.
     Sub-pretty-printers needn't use this, but it formalizes what's needed.
     Attributes:
@@ -118,13 +119,13 @@ class RegexpCollectionPrettyPrinter(PrettyPrinter):
 
     class RegexpSubprinter(SubPrettyPrinter):
         def __init__(self, name, regexp, gen_printer):
-            super(RegexpCollectionPrettyPrinter.RegexpSubprinter, self).__init__(name)
+            super().__init__(name)
             self.regexp = regexp
             self.gen_printer = gen_printer
             self.compiled_re = re.compile(regexp)
 
     def __init__(self, name):
-        super(RegexpCollectionPrettyPrinter, self).__init__(name, [])
+        super().__init__(name, [])
 
     def add_printer(self, name, regexp, gen_printer):
         """Add a printer to the list.
@@ -181,7 +182,7 @@ class FlagEnumerationPrinter(PrettyPrinter):
     this case, but this printer will attempt to."""
 
     def __init__(self, enum_type):
-        super(FlagEnumerationPrinter, self).__init__(enum_type)
+        super().__init__(enum_type)
         self.initialized = False
 
     def __call__(self, val):
@@ -217,11 +218,14 @@ class NoOpStringPrinter(gdb.ValuePrinter):
 
     def to_string(self):
         code = self.__ty.code
-        if code == gdb.TYPE_CODE_ARRAY and not self.__value.is_lazy:
-            return self.__value
-        elif code == gdb.TYPE_CODE_PTR and self.__value == 0:
-            return self.__value
-        elif code != gdb.TYPE_CODE_PTR and code != gdb.TYPE_CODE_ARRAY:
+        if (
+            code == gdb.TYPE_CODE_ARRAY
+            and not self.__value.is_lazy
+            or code == gdb.TYPE_CODE_PTR
+            and self.__value == 0
+            or code != gdb.TYPE_CODE_PTR
+            and code != gdb.TYPE_CODE_ARRAY
+        ):
             return self.__value
         else:
             return self.__value.lazy_string()

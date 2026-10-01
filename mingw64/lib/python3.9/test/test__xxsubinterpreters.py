@@ -1,13 +1,13 @@
-from collections import namedtuple
 import contextlib
 import itertools
 import os
 import pickle
 import sys
-from textwrap import dedent
 import threading
 import time
 import unittest
+from collections import namedtuple
+from textwrap import dedent
 
 from test import support
 from test.support import script_helper
@@ -104,7 +104,6 @@ def _run_interp(id, source, shared, _mainns={}):
 
 
 class Interpreter(namedtuple("Interpreter", "name id")):
-
     @classmethod
     def from_raw(cls, raw):
         if isinstance(raw, cls):
@@ -120,9 +119,7 @@ class Interpreter(namedtuple("Interpreter", "name id")):
             if not name:
                 name = "main"
             elif name != "main":
-                raise ValueError(
-                    'name mismatch (expected "main", got "{}")'.format(name)
-                )
+                raise ValueError(f'name mismatch (expected "main", got "{name}")')
             id = main
         elif id is not None:
             if not name:
@@ -154,7 +151,6 @@ def expect_channel_closed():
 
 
 class ChannelAction(namedtuple("ChannelAction", "action end interp")):
-
     def __new__(cls, action, end=None, interp=None):
         if not end:
             end = "both"
@@ -205,7 +201,6 @@ class ChannelAction(namedtuple("ChannelAction", "action end interp")):
 
 
 class ChannelState(namedtuple("ChannelState", "pending closed")):
-
     def __new__(cls, pending=0, *, closed=False):
         self = super().__new__(cls, pending, closed)
         return self
@@ -299,7 +294,6 @@ def clean_up_channels():
 
 
 class TestBase(unittest.TestCase):
-
     def tearDown(self):
         clean_up_interpreters()
         clean_up_channels()
@@ -310,7 +304,6 @@ class TestBase(unittest.TestCase):
 
 
 class IsShareableTests(unittest.TestCase):
-
     def test_default_shareables(self):
         shareables = [
             # singletons
@@ -359,7 +352,6 @@ class IsShareableTests(unittest.TestCase):
 
 
 class ShareableTypeTests(unittest.TestCase):
-
     def setUp(self):
         super().setUp()
         self.cid = interpreters.channel_create()
@@ -417,9 +409,8 @@ class ShareableTypeTests(unittest.TestCase):
             2**1000,
         ]
         for i in ints:
-            with self.subTest(i):
-                with self.assertRaises(OverflowError):
-                    interpreters.channel_send(self.cid, i)
+            with self.subTest(i), self.assertRaises(OverflowError):
+                interpreters.channel_send(self.cid, i)
 
 
 ##################################
@@ -427,7 +418,6 @@ class ShareableTypeTests(unittest.TestCase):
 
 
 class ListAllTests(TestBase):
-
     def test_initial(self):
         main = interpreters.get_main()
         ids = interpreters.list_all()
@@ -450,7 +440,6 @@ class ListAllTests(TestBase):
 
 
 class GetCurrentTests(TestBase):
-
     def test_main(self):
         main = interpreters.get_main()
         cur = interpreters.get_current()
@@ -476,7 +465,6 @@ class GetCurrentTests(TestBase):
 
 
 class GetMainTests(TestBase):
-
     def test_from_main(self):
         [expected] = interpreters.list_all()
         main = interpreters.get_main()
@@ -500,7 +488,6 @@ class GetMainTests(TestBase):
 
 
 class IsRunningTests(TestBase):
-
     def test_main(self):
         main = interpreters.get_main()
         self.assertTrue(interpreters.is_running(main))
@@ -543,7 +530,6 @@ class IsRunningTests(TestBase):
 
 
 class InterpreterIDTests(TestBase):
-
     def test_with_int(self):
         id = interpreters.InterpreterID(10, force=True)
 
@@ -602,7 +588,6 @@ class InterpreterIDTests(TestBase):
 
 
 class CreateTests(TestBase):
-
     def test_in_main(self):
         id = interpreters.create()
         self.assertIsInstance(id, interpreters.InterpreterID)
@@ -703,7 +688,6 @@ class CreateTests(TestBase):
 
 
 class DestroyTests(TestBase):
-
     def test_one(self):
         id1 = interpreters.create()
         id2 = interpreters.create()
@@ -806,7 +790,6 @@ class DestroyTests(TestBase):
 
 
 class RunStringTests(TestBase):
-
     SCRIPT = dedent("""
         with open('{}', 'w') as out:
             out.write('{}')
@@ -886,9 +869,8 @@ class RunStringTests(TestBase):
             self.assertEqual(content, expected)
 
     def test_already_running(self):
-        with _running(self.id):
-            with self.assertRaises(RuntimeError):
-                interpreters.run_string(self.id, 'print("spam")')
+        with _running(self.id), self.assertRaises(RuntimeError):
+            interpreters.run_string(self.id, 'print("spam")')
 
     def test_does_not_exist(self):
         id = 0
@@ -920,7 +902,7 @@ class RunStringTests(TestBase):
         if msg is None:
             self.assertEqual(str(caught.exception).split(":")[0], str(exctype))
         else:
-            self.assertEqual(str(caught.exception), "{}: {}".format(exctype, msg))
+            self.assertEqual(str(caught.exception), f"{exctype}: {msg}")
 
     def test_invalid_syntax(self):
         with self.assert_run_failed(SyntaxError):
@@ -993,7 +975,7 @@ class RunStringTests(TestBase):
         )
 
         shared = {"spam": b"ham"}
-        script = dedent(f"""
+        script = dedent("""
             ns2 = dict(vars())
             del ns2['__builtins__']
         """)
@@ -1106,7 +1088,7 @@ class RunStringTests(TestBase):
     # XXX Fix this test!
     @unittest.skip("blocking forever")
     def test_still_running_at_exit(self):
-        script = dedent(f"""
+        script = dedent("""
         from textwrap import dedent
         import threading
         import _xxsubinterpreters as _interpreters
@@ -1134,7 +1116,6 @@ class RunStringTests(TestBase):
 
 
 class ChannelIDTests(TestBase):
-
     def test_default_kwargs(self):
         cid = interpreters._channel_id(10, force=True)
 
@@ -1223,7 +1204,6 @@ class ChannelIDTests(TestBase):
 
 
 class ChannelTests(TestBase):
-
     def test_create_cid(self):
         cid = interpreters.channel_create()
         self.assertIsInstance(cid, interpreters.ChannelID)
@@ -1854,7 +1834,6 @@ class ChannelTests(TestBase):
 
 
 class ChannelReleaseTests(TestBase):
-
     # XXX Add more test coverage a la the tests for close().
 
     """
@@ -2036,7 +2015,6 @@ class ChannelReleaseTests(TestBase):
 class ChannelCloseFixture(
     namedtuple("ChannelCloseFixture", "end interp other extra creator")
 ):
-
     # Set this to True to avoid creating interpreters, e.g. when
     # scanning through test permutations without running them.
     QUICK = False
@@ -2341,9 +2319,9 @@ class ExhaustiveChannelTests(TestBase):
                 f"""
                 result = helpers.run_action(
                     {fix.cid},
-                    {repr(action.action)},
-                    {repr(end)},
-                    {repr(fix.state)},
+                    {action.action!r},
+                    {end!r},
+                    {fix.state!r},
                     hideclosed={hideclosed},
                     )
                 interpreters.channel_send({_cid}, result.pending.to_bytes(1, 'little'))
@@ -2391,28 +2369,28 @@ class ExhaustiveChannelTests(TestBase):
         else:
             run_interp(
                 interp.id,
-                f"""
+                """
                 with helpers.expect_channel_closed():
                     interpreters.channel_recv(cid)
                 """,
             )
             run_interp(
                 interp.id,
-                f"""
+                """
                 with helpers.expect_channel_closed():
                     interpreters.channel_send(cid, b'spam')
                 """,
             )
             run_interp(
                 interp.id,
-                f"""
+                """
                 with helpers.expect_channel_closed():
                     interpreters.channel_close(cid)
                 """,
             )
             run_interp(
                 interp.id,
-                f"""
+                """
                 with helpers.expect_channel_closed():
                     interpreters.channel_close(cid, force=True)
                 """,
@@ -2445,7 +2423,7 @@ class ExhaustiveChannelTests(TestBase):
                 if verbose:
                     if (i - 1) % 6 == 0:
                         print()
-                    print(i, fix, "({} actions)".format(len(actions)))
+                    print(i, fix, f"({len(actions)} actions)")
                 else:
                     if (i - 1) % 6 == 0:
                         print(" ", end="")
@@ -2464,7 +2442,7 @@ class ExhaustiveChannelTests(TestBase):
 
     def test_close(self):
         for i, fix, actions in self._iter_close_tests():
-            with self.subTest("{} {}  {}".format(i, fix, actions)):
+            with self.subTest(f"{i} {fix}  {actions}"):
                 fix.prep_interpreter(fix.interp)
                 self.run_actions(fix, actions)
 
@@ -2476,7 +2454,7 @@ class ExhaustiveChannelTests(TestBase):
 
     def test_force_close(self):
         for i, fix, actions in self._iter_close_tests():
-            with self.subTest("{} {}  {}".format(i, fix, actions)):
+            with self.subTest(f"{i} {fix}  {actions}"):
                 fix.prep_interpreter(fix.interp)
                 self.run_actions(fix, actions)
 

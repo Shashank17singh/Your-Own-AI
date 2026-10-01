@@ -1,8 +1,9 @@
-from test.support import verbose, is_android, check_warnings
-import unittest
+import codecs
 import locale
 import sys
-import codecs
+import unittest
+
+from test.support import check_warnings, is_android, verbose
 
 
 class BaseLocalizedTest(unittest.TestCase):
@@ -35,7 +36,7 @@ class BaseLocalizedTest(unittest.TestCase):
                 break
             else:
                 raise unittest.SkipTest(
-                    "Test locale not supported " "(tried %s)" % (", ".join(tlocs))
+                    "Test locale not supported (tried %s)" % (", ".join(tlocs))
                 )
             cls.enUS_locale = tloc
         finally:
@@ -137,7 +138,7 @@ class FrFRCookedTest(BaseCookedTest):
     }
 
 
-class BaseFormattingTest(object):
+class BaseFormattingTest:
     #
     # Utility functions for formatting tests
     #
@@ -610,7 +611,6 @@ class TestMiscellaneous(unittest.TestCase):
 
 
 class BaseDelocalizeTest(BaseLocalizedTest):
-
     def _test_delocalize(self, value, out):
         self.assertEqual(locale.delocalize(value), out)
 
@@ -622,7 +622,6 @@ class BaseDelocalizeTest(BaseLocalizedTest):
 
 
 class TestEnUSDelocalize(EnUSCookedTest, BaseDelocalizeTest):
-
     def test_delocalize(self):
         self._test_delocalize("50000.00", "50000.00")
         self._test_delocalize("50,000.00", "50000.00")
@@ -637,7 +636,6 @@ class TestEnUSDelocalize(EnUSCookedTest, BaseDelocalizeTest):
 
 
 class TestCDelocalizeTest(CCookedTest, BaseDelocalizeTest):
-
     def test_delocalize(self):
         self._test_delocalize("50000.00", "50000.00")
 
@@ -649,7 +647,6 @@ class TestCDelocalizeTest(CCookedTest, BaseDelocalizeTest):
 
 
 class TestfrFRDelocalizeTest(FrFRCookedTest, BaseDelocalizeTest):
-
     def test_delocalize(self):
         self._test_delocalize("50000,00", "50000.00")
         self._test_delocalize("50 000,00", "50000.00")

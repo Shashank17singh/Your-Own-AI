@@ -21,9 +21,9 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
+import sqlite3 as sqlite
 import unittest
 import unittest.mock
-import sqlite3 as sqlite
 
 
 def func_returntext():
@@ -75,7 +75,7 @@ def func_isfloat(v):
 
 
 def func_isnone(v):
-    return type(v) is type(None)
+    return v is None
 
 
 def func_isblob(v):
@@ -306,7 +306,7 @@ class FunctionTests(unittest.TestCase):
 
     def CheckParamString(self):
         cur = self.con.cursor()
-        for text in ["foo", str()]:
+        for text in ["foo", ""]:
             with self.subTest(text=text):
                 cur.execute("select isstring(?)", (text,))
                 val = cur.fetchone()[0]
@@ -486,7 +486,7 @@ class AggregateTests(unittest.TestCase):
 
     def CheckAggrCheckParamStr(self):
         cur = self.con.cursor()
-        cur.execute("select checkTypes('str', ?, ?)", ("foo", str()))
+        cur.execute("select checkTypes('str', ?, ?)", ("foo", ""))
         val = cur.fetchone()[0]
         self.assertEqual(val, 2)
 

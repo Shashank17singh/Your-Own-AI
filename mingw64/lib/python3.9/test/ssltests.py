@@ -2,8 +2,8 @@
 # standard library.
 
 import ssl
-import sys
 import subprocess
+import sys
 
 TESTS = [
     "test_asyncio",

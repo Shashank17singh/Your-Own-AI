@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import codecs
 import io
 import logging
@@ -8,7 +7,6 @@ import shutil
 import sys
 import tempfile
 import unittest
-
 from lib2to3 import main
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -16,7 +14,6 @@ PY2_TEST_MODULE = os.path.join(TEST_DATA_DIR, "py2_test_grammar.py")
 
 
 class TestMain(unittest.TestCase):
-
     def setUp(self):
         self.temp_dir = None  # tearDown() will rmtree this directory if set.
 
@@ -50,7 +47,7 @@ class TestMain(unittest.TestCase):
         output = out.getvalue().decode("ascii")
         self.assertIn("-print 'nothing'", output)
         self.assertIn(
-            "WARNING: couldn't encode <stdin>'s diff for " "your terminal",
+            "WARNING: couldn't encode <stdin>'s diff for your terminal",
             err.getvalue(),
         )
 

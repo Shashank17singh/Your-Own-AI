@@ -7,11 +7,10 @@
 __all__ = ["MIMEImage"]
 
 import imghdr
-
 from email import encoders
 from email.mime.nonmultipart import MIMENonMultipart
 
-
+
 class MIMEImage(MIMENonMultipart):
     """Class for generating image/* type MIME documents."""
 
@@ -22,7 +21,7 @@ class MIMEImage(MIMENonMultipart):
         _encoder=encoders.encode_base64,
         *,
         policy=None,
-        **_params
+        **_params,
     ):
         """Create an image/* type MIME document.
 

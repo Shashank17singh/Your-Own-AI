@@ -1,5 +1,4 @@
 class Delegator:
-
     def __init__(self, delegate=None):
         self.delegate = delegate
         self.__cache = set()

@@ -98,20 +98,21 @@ Using json.tool from the shell to validate and pretty-print::
 
 __version__ = "2.0.9"
 __all__ = [
+    "JSONDecodeError",
+    "JSONDecoder",
+    "JSONEncoder",
     "dump",
     "dumps",
     "load",
     "loads",
-    "JSONDecoder",
-    "JSONDecodeError",
-    "JSONEncoder",
 ]
 
 __author__ = "Bob Ippolito <bob@redivi.com>"
 
-from .decoder import JSONDecoder, JSONDecodeError
-from .encoder import JSONEncoder
 import codecs
+
+from .decoder import JSONDecodeError, JSONDecoder
+from .encoder import JSONEncoder
 
 _default_encoder = JSONEncoder(
     skipkeys=False,

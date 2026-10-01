@@ -24,8 +24,8 @@ read_mime_types(file) -- parse one file, return a dictionary or None
 """
 
 import os
-import sys
 import posixpath
+import sys
 import urllib.parse
 
 try:
@@ -34,19 +34,19 @@ except ImportError:
     _winreg = None
 
 __all__ = [
-    "knownfiles",
-    "inited",
     "MimeTypes",
-    "guess_type",
+    "add_type",
+    "common_types",
+    "encodings_map",
     "guess_all_extensions",
     "guess_extension",
-    "add_type",
+    "guess_type",
     "init",
+    "inited",
+    "knownfiles",
     "read_mime_types",
     "suffix_map",
-    "encodings_map",
     "types_map",
-    "common_types",
 ]
 
 knownfiles = [

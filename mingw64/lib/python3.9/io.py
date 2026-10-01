@@ -45,46 +45,43 @@ __author__ = (
 )
 
 __all__ = [
+    "SEEK_CUR",
+    "SEEK_END",
+    "SEEK_SET",
     "BlockingIOError",
-    "open",
-    "open_code",
-    "IOBase",
-    "RawIOBase",
-    "FileIO",
-    "BytesIO",
-    "StringIO",
     "BufferedIOBase",
-    "BufferedReader",
-    "BufferedWriter",
     "BufferedRWPair",
     "BufferedRandom",
+    "BufferedReader",
+    "BufferedWriter",
+    "BytesIO",
+    "FileIO",
+    "IOBase",
+    "RawIOBase",
+    "StringIO",
     "TextIOBase",
     "TextIOWrapper",
     "UnsupportedOperation",
-    "SEEK_SET",
-    "SEEK_CUR",
-    "SEEK_END",
+    "open",
+    "open_code",
 ]
 
 
 import _io
 import abc
-
 from _io import (
-    DEFAULT_BUFFER_SIZE,
     BlockingIOError,
+    BufferedRandom,
+    BufferedReader,
+    BufferedRWPair,
+    BufferedWriter,
+    BytesIO,
+    FileIO,
+    StringIO,
+    TextIOWrapper,
     UnsupportedOperation,
     open,
     open_code,
-    FileIO,
-    BytesIO,
-    StringIO,
-    BufferedReader,
-    BufferedWriter,
-    BufferedRWPair,
-    BufferedRandom,
-    IncrementalNewlineDecoder,
-    TextIOWrapper,
 )
 
 OpenWrapper = _io.open  # for compatibility with _pyio

@@ -3,7 +3,6 @@ import contextlib
 import filecmp
 import importlib.util
 import io
-import itertools
 import os
 import pathlib
 import py_compile
@@ -11,11 +10,11 @@ import shutil
 import struct
 import sys
 import tempfile
-import test.test_importlib.util
 import time
 import unittest
-
 from unittest import mock, skipUnless
+
+import test.test_importlib.util
 
 try:
     from concurrent.futures import ProcessPoolExecutor
@@ -27,8 +26,7 @@ except ImportError:
 from test import support
 from test.support import script_helper
 
-from .test_py_compile import without_source_date_epoch
-from .test_py_compile import SourceDateEpochTestMeta
+from .test_py_compile import SourceDateEpochTestMeta, without_source_date_epoch
 
 
 def get_pyc(script, opt):
@@ -50,7 +48,6 @@ def is_hardlink(filename1, filename2):
 
 
 class CompileallTestsBase:
-
     def setUp(self):
         self.directory = tempfile.mkdtemp()
         self.source_path = os.path.join(self.directory, "_test.py")
@@ -788,7 +785,7 @@ class CommandLineTestsBase:
         bar2fn = script_helper.make_script(self.directory, "bar2", "")
         files = []
         for suffix in range(5):
-            pkgdir = os.path.join(self.directory, "foo{}".format(suffix))
+            pkgdir = os.path.join(self.directory, f"foo{suffix}")
             os.mkdir(pkgdir)
             fn = script_helper.make_script(pkgdir, "__init__", "")
             files.append(script_helper.make_script(pkgdir, "bar2", ""))
@@ -992,15 +989,14 @@ class HardlinkDedupTestsBase:
     def test_only_two_levels(self):
         # Don't build the 3 optimization levels, but only 2
         for opts in ((0, 1), (1, 2), (0, 2)):
-            with self.subTest(opts=opts):
-                with self.temporary_directory():
-                    # code with no dostring and no assertion:
-                    # same bytecode for all optimization levels
-                    script = self.make_script(self.create_code())
-                    self.compile_dir(optimize=opts)
-                    pyc1 = get_pyc(script, opts[0])
-                    pyc2 = get_pyc(script, opts[1])
-                    self.assertTrue(is_hardlink(pyc1, pyc2))
+            with self.subTest(opts=opts), self.temporary_directory():
+                # code with no dostring and no assertion:
+                # same bytecode for all optimization levels
+                script = self.make_script(self.create_code())
+                self.compile_dir(optimize=opts)
+                pyc1 = get_pyc(script, opts[0])
+                pyc2 = get_pyc(script, opts[1])
+                self.assertTrue(is_hardlink(pyc1, pyc2))
 
     def test_duplicated_levels(self):
         # compile_dir() must not fail if optimize contains duplicated

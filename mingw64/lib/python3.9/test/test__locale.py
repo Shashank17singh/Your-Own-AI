@@ -1,4 +1,4 @@
-from _locale import setlocale, LC_ALL, LC_CTYPE, LC_NUMERIC, localeconv, Error
+from _locale import LC_ALL, LC_CTYPE, LC_NUMERIC, Error, localeconv, setlocale
 
 try:
     from _locale import RADIXCHAR, THOUSEP, nl_langinfo
@@ -151,7 +151,6 @@ if sys.platform == "win32":
 
 
 class _LocaleTests(unittest.TestCase):
-
     def setUp(self):
         self.oldlocale = setlocale(LC_ALL)
 

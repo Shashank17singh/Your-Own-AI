@@ -52,7 +52,7 @@ def ignore_warnings(*, category):
     return decorator
 
 
-class WarningsRecorder(object):
+class WarningsRecorder:
     """Convenience wrapper for the warnings list returned on
     entry to the warnings.catch_warnings() context manager.
     """
@@ -167,7 +167,9 @@ def _filterwarnings(filters, quiet=False):
         for w in reraise[:]:
             warning = w.message
             # Filter out the matching messages
-            if re.match(msg, str(warning), re.I) and issubclass(warning.__class__, cat):
+            if re.match(msg, str(warning), re.IGNORECASE) and issubclass(
+                warning.__class__, cat
+            ):
                 seen = True
                 reraise.remove(w)
         if not seen and not quiet:

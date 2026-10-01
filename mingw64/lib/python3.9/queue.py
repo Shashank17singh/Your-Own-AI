@@ -3,7 +3,7 @@
 import threading
 import types
 from collections import deque
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from time import monotonic as time
 
 try:
@@ -11,7 +11,7 @@ try:
 except ImportError:
     SimpleQueue = None
 
-__all__ = ["Empty", "Full", "Queue", "PriorityQueue", "LifoQueue", "SimpleQueue"]
+__all__ = ["Empty", "Full", "LifoQueue", "PriorityQueue", "Queue", "SimpleQueue"]
 
 
 try:
@@ -21,13 +21,9 @@ except ImportError:
     class Empty(Exception):
         "Exception raised by Queue.get(block=0)/get_nowait()."
 
-        pass
-
 
 class Full(Exception):
     "Exception raised by Queue.put(block=0)/put_nowait()."
-
-    pass
 
 
 class Queue:

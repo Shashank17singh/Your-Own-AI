@@ -1,11 +1,11 @@
 import unittest
+
 from test.support import use_old_parser
 
 GLOBAL_VAR = None
 
 
 class NamedExpressionInvalidTest(unittest.TestCase):
-
     def test_named_expression_invalid_01(self):
         code = """x := 0"""
 
@@ -277,7 +277,6 @@ class NamedExpressionInvalidTest(unittest.TestCase):
 
 
 class NamedExpressionAssignmentTest(unittest.TestCase):
-
     def test_named_expression_assignment_01(self):
         (a := 10)
 
@@ -386,7 +385,6 @@ class NamedExpressionAssignmentTest(unittest.TestCase):
 
 
 class NamedExpressionScopeTest(unittest.TestCase):
-
     def test_named_expression_scope_01(self):
         code = """def spam():
     (a := 5)
@@ -495,7 +493,7 @@ print(a)"""
         def spam(a):
             return a
 
-        res = spam((b := 2))
+        res = spam(b := 2)
 
         self.assertEqual(res, 2)
         self.assertEqual(b, 2)

@@ -2,11 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Schema for the CMake toolchains object kind",
   "type": "object",
-  "required": [
-    "kind",
-    "version",
-    "toolchains"
-  ],
+  "required": ["kind", "version", "toolchains"],
   "oneOf": [
     {
       "$ref": "#/definitions/toolchainsObjV1_0"
@@ -23,10 +19,7 @@
     },
     "versionV1_0": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -41,10 +34,7 @@
     },
     "versionV1_1": {
       "type": "object",
-      "required": [
-        "major",
-        "minor"
-      ],
+      "required": ["major", "minor"],
       "properties": {
         "major": {
           "type": "integer",
@@ -181,10 +171,7 @@
           "description": "Array of toolchain configurations per language",
           "items": {
             "type": "object",
-            "required": [
-              "language",
-              "compiler"
-            ],
+            "required": ["language", "compiler"],
             "properties": {
               "language": {
                 "$ref": "#/definitions/language"
@@ -216,10 +203,7 @@
           "description": "Array of toolchain configurations per language",
           "items": {
             "type": "object",
-            "required": [
-              "language",
-              "compiler"
-            ],
+            "required": ["language", "compiler"],
             "properties": {
               "language": {
                 "$ref": "#/definitions/language"

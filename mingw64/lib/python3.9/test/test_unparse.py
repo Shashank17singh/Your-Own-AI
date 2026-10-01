@@ -1,11 +1,12 @@
 """Tests for the unparse.py script in the Tools/parser directory."""
 
-import unittest
-import test.support
+import ast
 import pathlib
 import random
 import tokenize
-import ast
+import unittest
+
+import test.support
 
 
 def read_pyfile(filename):
@@ -545,7 +546,6 @@ class DirectoryTestCase(ASTTestCase):
 
         # Test limited subset of files unless the 'cpu' resource is specified.
         if not test.support.is_resource_enabled("cpu"):
-
             tests_to_run_always = {
                 item for item in items if item.name in cls.run_always_files
             }

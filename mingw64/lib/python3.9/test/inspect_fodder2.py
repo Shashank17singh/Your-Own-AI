@@ -186,7 +186,6 @@ class cls149:
 
 # line 148
 class cls149:
-
     def func151(self):
         pass
 
@@ -199,7 +198,6 @@ class cls160:
 
 # line 159
 class cls160:
-
     def func162(self):
         pass
 
@@ -214,7 +212,6 @@ class cls166:
 
 # line 172
 class cls173:
-
     class cls175:
         pass
 
@@ -226,9 +223,7 @@ class cls179:
 
 # line 182
 class cls183:
-
     class cls185:
-
         def func186(self):
             pass
 
@@ -241,7 +236,6 @@ def class_decorator(cls):
 @class_decorator
 @class_decorator
 class cls196:
-
     @class_decorator
     @class_decorator
     class cls200:
@@ -303,8 +297,6 @@ else:
     class cls238:
         class cls239:
             """else clause 239"""
-
-            pass
 
 
 # line 247

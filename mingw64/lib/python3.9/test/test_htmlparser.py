@@ -6,7 +6,6 @@ import unittest
 
 
 class EventCollector(html.parser.HTMLParser):
-
     def __init__(self, *args, **kw):
         self.events = []
         self.append = self.events.append
@@ -63,14 +62,12 @@ class EventCollector(html.parser.HTMLParser):
 
 
 class EventCollectorExtra(EventCollector):
-
     def handle_starttag(self, tag, attrs):
         EventCollector.handle_starttag(self, tag, attrs)
         self.append(("starttag_text", self.get_starttag_text()))
 
 
 class EventCollectorCharrefs(EventCollector):
-
     def handle_charref(self, data):
         self.fail("This should never be called with convert_charrefs=True")
 
@@ -79,7 +76,6 @@ class EventCollectorCharrefs(EventCollector):
 
 
 class TestCaseBase(unittest.TestCase):
-
     def get_collector(self):
         return EventCollector(convert_charrefs=False)
 
@@ -107,7 +103,6 @@ class TestCaseBase(unittest.TestCase):
 
 
 class HTMLParserTestCase(TestCaseBase):
-
     def test_processing_instruction_only(self):
         self._run_check(
             "<?processing instruction>",
@@ -348,9 +343,7 @@ text
         for content in contents:
             for element in elements:
                 element_lower = element.lower()
-                s = "<{element}>{content}</{element}>".format(
-                    element=element, content=content
-                )
+                s = f"<{element}>{content}</{element}>"
                 self._run_check(
                     s,
                     [
@@ -381,7 +374,7 @@ text
             "\nscript\n",
         ]:
             element_lower = element.lower().strip()
-            s = "<script>{content}</{element}>".format(element=element, content=content)
+            s = f"<script>{content}</{element}>"
             self._run_check(
                 s,
                 [
@@ -439,7 +432,7 @@ text
         ]
         for charref in charrefs:
             self._run_check(
-                '<a href="foo{0}zar">a{0}z</a>'.format(charref),
+                f'<a href="foo{charref}zar">a{charref}z</a>',
                 expected,
                 collector=collector(),
             )
@@ -453,7 +446,8 @@ text
         ]
         for charref in charrefs:
             self._run_check(
-                '{0}<a x="{0}" y="{0}X" z="X{0}">' "{0}</a>{0}".format(charref),
+                f'{charref}<a x="{charref}" y="{charref}X" z="X{charref}">'
+                f"{charref}</a>{charref}",
                 expected,
                 collector=collector(),
             )
@@ -472,8 +466,8 @@ text
                 ("data", '"'),
             ]
             self._run_check(
-                "{1}<script>{0}</script>{1}"
-                "<style>{0}</style>{1}".format(text, charref),
+                f"{charref}<script>{text}</script>{charref}"
+                f"<style>{text}</style>{charref}",
                 expected,
                 collector=collector(),
             )
@@ -490,8 +484,7 @@ text
     # the default), and check various kind of broken markup
     def test_tolerant_parsing(self):
         self._run_check(
-            "<html <html>te>>xt&a<<bc</a></html>\n"
-            '<img src="URL><//img></html</html>',
+            '<html <html>te>>xt&a<<bc</a></html>\n<img src="URL><//img></html</html>',
             [
                 ("starttag", "html", [("<html", None)]),
                 ("data", "te>>xt"),
@@ -548,14 +541,14 @@ text
             )
         ]
         self._run_check(html, expected)
-        html = "<a / /foo/ / /=/ / /bar/ / />" "<a / /foo/ / /=/ / /bar/ / >"
+        html = "<a / /foo/ / /=/ / /bar/ / /><a / /foo/ / /=/ / /bar/ / >"
         expected = [
             ("startendtag", "a", [("foo", None), ("=", None), ("bar", None)]),
             ("starttag", "a", [("foo", None), ("=", None), ("bar", None)]),
         ]
         self._run_check(html, expected)
         # see issue #14538
-        html = "<meta><meta / ><meta // ><meta / / >" "<meta/><meta /><meta //><meta//>"
+        html = "<meta><meta / ><meta // ><meta / / ><meta/><meta /><meta //><meta//>"
         expected = [
             ("starttag", "meta", []),
             ("starttag", "meta", []),
@@ -742,7 +735,6 @@ text
 
 
 class AttributesTestCase(TestCaseBase):
-
     def test_attr_syntax(self):
         output = [("starttag", "a", [("b", "v"), ("c", "v"), ("d", "v"), ("e", None)])]
         self._run_check("""<a b='v' c="v" d=v e>""", output)

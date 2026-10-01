@@ -1,15 +1,14 @@
+import array
 import errno
-from http import client, HTTPStatus
 import io
 import itertools
 import os
-import array
 import re
 import socket
 import threading
-import warnings
-
 import unittest
+import warnings
+from http import HTTPStatus, client
 from unittest import mock
 
 TestCase = unittest.TestCase
@@ -83,7 +82,6 @@ class FakeSocket:
 
 
 class EPipeSocket(FakeSocket):
-
     def __init__(self, text, pipe_trigger):
         # When sendall() is called with pipe_trigger, raise EPIPE.
         FakeSocket.__init__(self, text)
@@ -192,7 +190,7 @@ class HeaderTests(TestCase):
             self.assertEqual(
                 conn._buffer.content_length,
                 b"0",
-                "Header Content-Length incorrect on {}".format(method),
+                f"Header Content-Length incorrect on {method}",
             )
 
         # For these methods, we make sure that content-length is not set when
@@ -214,7 +212,7 @@ class HeaderTests(TestCase):
             self.assertEqual(
                 conn._buffer.content_length,
                 None,
-                "Header Content-Length set for empty body on {}".format(method),
+                f"Header Content-Length set for empty body on {method}",
             )
 
         # If the body is set to '', that's considered to be "present but
@@ -228,7 +226,7 @@ class HeaderTests(TestCase):
             self.assertEqual(
                 conn._buffer.content_length,
                 b"0",
-                "Header Content-Length incorrect on {}".format(method),
+                f"Header Content-Length incorrect on {method}",
             )
 
         # If the body is set, make sure Content-Length is set.
@@ -240,7 +238,7 @@ class HeaderTests(TestCase):
             self.assertEqual(
                 conn._buffer.content_length,
                 b"1",
-                "Header Content-Length incorrect on {}".format(method),
+                f"Header Content-Length incorrect on {method}",
             )
 
     def test_putheader(self):
@@ -371,12 +369,7 @@ class HeaderTests(TestCase):
                     conn.putheader(name, value)
 
     def test_headers_debuglevel(self):
-        body = (
-            b"HTTP/1.1 200 OK\r\n"
-            b"First: val\r\n"
-            b"Second: val1\r\n"
-            b"Second: val2\r\n"
-        )
+        body = b"HTTP/1.1 200 OK\r\nFirst: val\r\nSecond: val1\r\nSecond: val2\r\n"
         sock = FakeSocket(body)
         resp = client.HTTPResponse(sock, debuglevel=1)
         with support.captured_stdout() as output:
@@ -742,7 +735,7 @@ class BasicTest(TestCase):
         # Test that the library doesn't attempt to read any data
         # from a HEAD request.  (Tickles SF bug #622042.)
         sock = FakeSocket(
-            "HTTP/1.1 200 OK\r\n" "Content-Length: 14432\r\n" "\r\n", NoEOFBytesIO
+            "HTTP/1.1 200 OK\r\nContent-Length: 14432\r\n\r\n", NoEOFBytesIO
         )
         resp = client.HTTPResponse(sock, method="HEAD")
         resp.begin()
@@ -753,7 +746,7 @@ class BasicTest(TestCase):
         # Test that the library doesn't attempt to read any data
         # from a HEAD request.  (Tickles SF bug #622042.)
         sock = FakeSocket(
-            "HTTP/1.1 200 OK\r\n" "Content-Length: 14432\r\n" "\r\n", NoEOFBytesIO
+            "HTTP/1.1 200 OK\r\nContent-Length: 14432\r\n\r\n", NoEOFBytesIO
         )
         resp = client.HTTPResponse(sock, method="HEAD")
         resp.begin()
@@ -1036,12 +1029,12 @@ class BasicTest(TestCase):
         self.assertRaises((client.LineTooLong, client.BadStatusLine), resp.begin)
 
     def test_overflowing_header_line(self):
-        body = "HTTP/1.1 200 OK\r\n" "X-Foo: bar" + "r" * 65536 + "\r\n\r\n"
+        body = "HTTP/1.1 200 OK\r\nX-Foo: bar" + "r" * 65536 + "\r\n\r\n"
         resp = client.HTTPResponse(FakeSocket(body))
         self.assertRaises(client.LineTooLong, resp.begin)
 
     def test_overflowing_header_limit_after_100(self):
-        body = "HTTP/1.1 100 OK\r\n" "r\n" * 32768
+        body = "HTTP/1.1 100 OK\r\nr\n" * 32768
         resp = client.HTTPResponse(FakeSocket(body))
         with self.assertRaises(client.HTTPException) as cm:
             resp.begin()
@@ -1637,7 +1630,6 @@ class TimeoutTest(TestCase):
 
 
 class PersistenceTest(TestCase):
-
     def test_reuse_reconnect(self):
         # Should reuse or reconnect depending on header from server
         tests = (
@@ -1651,12 +1643,12 @@ class PersistenceTest(TestCase):
         for version, header, reuse in tests:
             with self.subTest(version=version, header=header):
                 msg = (
-                    "HTTP/{} 200 OK\r\n"
-                    "{}"
+                    f"HTTP/{version} 200 OK\r\n"
+                    f"{header}"
                     "Content-Length: 12\r\n"
                     "\r\n"
                     "Dummy body\r\n"
-                ).format(version, header)
+                )
                 conn = FakeSocketHTTPConnection(msg)
                 self.assertIsNone(conn.sock)
                 conn.request("GET", "/open-connection")
@@ -1699,8 +1691,7 @@ class PersistenceTest(TestCase):
 
     def test_100_close(self):
         conn = FakeSocketHTTPConnection(
-            b"HTTP/1.1 100 Continue\r\n"
-            b"\r\n"
+            b"HTTP/1.1 100 Continue\r\n\r\n"
             # Missing final response
         )
         conn.request("GET", "/", headers={"Expect": "100-continue"})
@@ -1711,7 +1702,6 @@ class PersistenceTest(TestCase):
 
 
 class HTTPSTest(TestCase):
-
     def setUp(self):
         if not hasattr(client, "HTTPSConnection"):
             self.skipTest("ssl support required")
@@ -2032,7 +2022,6 @@ class RequestBodyTest(TestCase):
 
 
 class HTTPResponseTest(TestCase):
-
     def setUp(self):
         body = "HTTP/1.1 200 Ok\r\nMy-Header: first-value\r\nMy-Header: \
                 second-value\r\n\r\nText"
@@ -2147,7 +2136,7 @@ class TunnelTests(TestCase):
 
     def test_tunnel_debuglog(self):
         expected_header = "X-Dummy: 1"
-        response_text = "HTTP/1.0 200 OK\r\n{}\r\n\r\n".format(expected_header)
+        response_text = f"HTTP/1.0 200 OK\r\n{expected_header}\r\n\r\n"
 
         self.conn.set_debuglevel(1)
         self.conn._create_connection = self._create_connection(response_text)
@@ -2156,7 +2145,7 @@ class TunnelTests(TestCase):
         with support.captured_stdout() as output:
             self.conn.request("PUT", "/", "")
         lines = output.getvalue().splitlines()
-        self.assertIn("header: {}".format(expected_header), lines)
+        self.assertIn(f"header: {expected_header}", lines)
 
 
 if __name__ == "__main__":

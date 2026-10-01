@@ -5,8 +5,9 @@ lives, like test_tkinter.
 Extensions also should live in packages following the same rule as above.
 """
 
-import os
 import importlib
+import os
+
 import test.support
 
 this_dir_path = os.path.abspath(os.path.dirname(__file__))

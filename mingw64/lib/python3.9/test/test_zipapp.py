@@ -8,9 +8,9 @@ import tempfile
 import unittest
 import zipapp
 import zipfile
-from test.support import requires_zlib
-
 from unittest.mock import patch
+
+from test.support import requires_zlib
 
 
 class ZipAppTest(unittest.TestCase):

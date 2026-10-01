@@ -1,16 +1,16 @@
 """PyUnit testing against strptime"""
 
-import unittest
-import time
+import _strptime
 import locale
-import re
 import os
+import re
 import sys
-from test import support
-from test.support import skip_if_buggy_ucrt_strfptime
+import time
+import unittest
 from datetime import date as datetime_date
 
-import _strptime
+from test import support
+from test.support import skip_if_buggy_ucrt_strfptime
 
 
 class getlang_Tests(unittest.TestCase):
@@ -126,7 +126,7 @@ class LocaleTime_Tests(unittest.TestCase):
         LT = _strptime.LocaleTime()
         LT.am_pm = ("", "")
         self.assertTrue(
-            LT.LC_time, "LocaleTime's LC directives cannot handle " "empty strings"
+            LT.LC_time, "LocaleTime's LC directives cannot handle empty strings"
         )
 
     def test_lang(self):
@@ -260,7 +260,7 @@ class TimeRETests(unittest.TestCase):
         time_re = _strptime.TimeRE(locale_time)
         self.assertTrue(
             time_re.compile("%Z").match("Tokyo (standard time)"),
-            "locale data that contains regex metacharacters is not" " properly escaped",
+            "locale data that contains regex metacharacters is not properly escaped",
         )
 
     def test_whitespace_substitution(self):
@@ -308,7 +308,7 @@ class StrptimeTests(unittest.TestCase):
         # 3. ISO year (%G) and weekday are specified, but ISO week (%V) is not
         for w in ("A", "a", "w", "u"):
             with self.assertRaises(ValueError):
-                _strptime._strptime("1999 51", "%G %{}".format(w))
+                _strptime._strptime("1999 51", f"%G %{w}")
         # 4. ISO year is specified alone (e.g. time.strptime('2015', '%G'))
         with self.assertRaises(ValueError):
             _strptime._strptime("2015", "%G")
@@ -487,9 +487,11 @@ class StrptimeTests(unittest.TestCase):
         if tz_name.upper() in ("UTC", "GMT"):
             self.skipTest("need non-UTC/GMT timezone")
 
-        with support.swap_attr(time, "tzname", (tz_name, tz_name)), support.swap_attr(
-            time, "daylight", 1
-        ), support.swap_attr(time, "tzset", lambda: None):
+        with (
+            support.swap_attr(time, "tzname", (tz_name, tz_name)),
+            support.swap_attr(time, "daylight", 1),
+            support.swap_attr(time, "tzset", lambda: None),
+        ):
             time.tzname = (tz_name, tz_name)
             time.daylight = 1
             tz_value = _strptime._strptime_time(tz_name, "%Z")[8]
@@ -508,7 +510,7 @@ class StrptimeTests(unittest.TestCase):
 
     def test_date(self):
         # Test %x directive
-        for position in range(0, 3):
+        for position in range(3):
             self.helper("x", position)
 
     def test_time(self):
@@ -693,12 +695,12 @@ class CalculationTests(unittest.TestCase):
         test_helper((1905, 12, 31), "Dec 31 on Sunday")
         test_helper((1906, 12, 31), "Dec 31 on Monday")
         test_helper((2008, 12, 29), "Monday in the last week of the year")
-        test_helper((2008, 12, 22), "Monday in the second-to-last week of the " "year")
+        test_helper((2008, 12, 22), "Monday in the second-to-last week of the year")
         test_helper((1978, 10, 23), "randomly chosen date")
         test_helper((2004, 12, 18), "randomly chosen date")
         test_helper(
             (1978, 10, 23),
-            "year starting and ending on Monday while " "date not on Sunday or Monday",
+            "year starting and ending on Monday while date not on Sunday or Monday",
         )
         test_helper(
             (1917, 12, 17),
@@ -708,7 +710,7 @@ class CalculationTests(unittest.TestCase):
         )
         test_helper(
             (1917, 12, 31),
-            "Dec 31 on Monday with year starting and " "ending on Monday",
+            "Dec 31 on Monday with year starting and ending on Monday",
         )
         test_helper((2007, 1, 7), "First Sunday of 2007")
         test_helper((2007, 1, 14), "Second Sunday of 2007")

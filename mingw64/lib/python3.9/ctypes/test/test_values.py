@@ -2,15 +2,13 @@
 A testcase which accesses *values* in a dll.
 """
 
-import unittest
-import sys
-from ctypes import *
-
 import _ctypes_test
+import sys
+import unittest
+from ctypes import *
 
 
 class ValuesTestCase(unittest.TestCase):
-
     def test_an_integer(self):
         # This test checks and changes an integer stored inside the
         # _ctypes_test dll/shared lib.
@@ -77,7 +75,7 @@ class PythonValuesTestCase(unittest.TestCase):
             if entry.name in bootstrap_expected:
                 bootstrap_seen.append(entry.name)
                 self.assertTrue(
-                    entry.size, "{!r} was reported as having no size".format(entry.name)
+                    entry.size, f"{entry.name!r} was reported as having no size"
                 )
                 continue
             items.append((entry.name.decode("ascii"), entry.size))

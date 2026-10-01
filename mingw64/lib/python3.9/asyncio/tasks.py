@@ -1,25 +1,25 @@
 """Support for tasks, coroutines and the scheduler."""
 
 __all__ = (
-    "Task",
-    "create_task",
+    "ALL_COMPLETED",
     "FIRST_COMPLETED",
     "FIRST_EXCEPTION",
-    "ALL_COMPLETED",
-    "wait",
-    "wait_for",
-    "as_completed",
-    "sleep",
-    "gather",
-    "shield",
-    "ensure_future",
-    "run_coroutine_threadsafe",
-    "current_task",
-    "all_tasks",
-    "_register_task",
-    "_unregister_task",
+    "Task",
     "_enter_task",
     "_leave_task",
+    "_register_task",
+    "_unregister_task",
+    "all_tasks",
+    "as_completed",
+    "create_task",
+    "current_task",
+    "ensure_future",
+    "gather",
+    "run_coroutine_threadsafe",
+    "shield",
+    "sleep",
+    "wait",
+    "wait_for",
 )
 
 import concurrent.futures
@@ -31,11 +31,7 @@ import types
 import warnings
 import weakref
 
-from . import base_tasks
-from . import coroutines
-from . import events
-from . import exceptions
-from . import futures
+from . import base_tasks, coroutines, events, exceptions, futures
 from .coroutines import _is_coroutine
 
 # Helper to generate new task names
@@ -705,7 +701,7 @@ def ensure_future(coro_or_future, *, loop=None):
     elif inspect.isawaitable(coro_or_future):
         return ensure_future(_wrap_awaitable(coro_or_future), loop=loop)
     else:
-        raise TypeError("An asyncio.Future, a coroutine or an awaitable is " "required")
+        raise TypeError("An asyncio.Future, a coroutine or an awaitable is required")
 
 
 @types.coroutine
@@ -994,8 +990,7 @@ def _leave_task(loop, task):
     current_task = _current_tasks.get(loop)
     if current_task is not task:
         raise RuntimeError(
-            f"Leaving task {task!r} does not match "
-            f"the current task {current_task!r}."
+            f"Leaving task {task!r} does not match the current task {current_task!r}."
         )
     del _current_tasks[loop]
 
@@ -1013,12 +1008,12 @@ _py_leave_task = _leave_task
 
 try:
     from _asyncio import (
-        _register_task,
-        _unregister_task,
-        _enter_task,
-        _leave_task,
         _all_tasks,
         _current_tasks,
+        _enter_task,
+        _leave_task,
+        _register_task,
+        _unregister_task,
     )
 except ImportError:
     pass

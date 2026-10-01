@@ -154,7 +154,7 @@ class OriginalCommand:
 
 
 def _widget_redirector(parent):  # htest #
-    from tkinter import Toplevel, Text
+    from tkinter import Text, Toplevel
 
     top = Toplevel(parent)
     top.title("Test WidgetRedirector")

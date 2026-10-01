@@ -1,12 +1,13 @@
 """PyUnit testing that threads honor our signal semantics"""
 
-import unittest
-import signal
-import os
-import sys
-from test import support
 import _thread as thread
+import os
+import signal
+import sys
 import time
+import unittest
+
+from test import support
 
 if sys.platform[:3] == "win":
     raise unittest.SkipTest("Can't test signal on %s" % sys.platform)
@@ -41,7 +42,6 @@ def send_signals():
 
 
 class ThreadSignals(unittest.TestCase):
-
     def test_signals(self):
         with support.wait_threads_exit():
             # Test signal handling semantics of threads.
@@ -89,7 +89,7 @@ class ThreadSignals(unittest.TestCase):
     )
     @unittest.skipIf(
         sys.platform.startswith("linux") and not sys.thread_info.version,
-        "Issue 34004: musl does not allow interruption of locks " "by signals.",
+        "Issue 34004: musl does not allow interruption of locks by signals.",
     )
     # Issue #20564: sem_timedwait() cannot be interrupted on OpenBSD
     @unittest.skipIf(
@@ -122,7 +122,7 @@ class ThreadSignals(unittest.TestCase):
     )
     @unittest.skipIf(
         sys.platform.startswith("linux") and not sys.thread_info.version,
-        "Issue 34004: musl does not allow interruption of locks " "by signals.",
+        "Issue 34004: musl does not allow interruption of locks by signals.",
     )
     # Issue #20564: sem_timedwait() cannot be interrupted on OpenBSD
     @unittest.skipIf(

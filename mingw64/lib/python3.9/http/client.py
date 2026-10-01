@@ -68,34 +68,34 @@ Req-started-unread-response    _CS_REQ_STARTED    <response_class>
 Req-sent-unread-response       _CS_REQ_SENT       <response_class>
 """
 
-import email.parser
+import collections.abc
 import email.message
+import email.parser
 import http
 import io
 import re
 import socket
-import collections.abc
 from urllib.parse import urlsplit
 
 # HTTPMessage, parse_headers(), and the HTTP status code constants are
 # intentionally omitted for simplicity
 __all__ = [
-    "HTTPResponse",
+    "BadStatusLine",
+    "CannotSendHeader",
+    "CannotSendRequest",
     "HTTPConnection",
     "HTTPException",
-    "NotConnected",
-    "UnknownProtocol",
-    "UnknownTransferEncoding",
-    "UnimplementedFileMode",
+    "HTTPResponse",
+    "ImproperConnectionState",
     "IncompleteRead",
     "InvalidURL",
-    "ImproperConnectionState",
-    "CannotSendRequest",
-    "CannotSendHeader",
-    "ResponseNotReady",
-    "BadStatusLine",
     "LineTooLong",
+    "NotConnected",
     "RemoteDisconnected",
+    "ResponseNotReady",
+    "UnimplementedFileMode",
+    "UnknownProtocol",
+    "UnknownTransferEncoding",
     "error",
     "responses",
 ]
@@ -254,7 +254,6 @@ def parse_headers(fp, _class=HTTPMessage):
 
 
 class HTTPResponse(io.BufferedIOBase):
-
     # See RFC 2616 sec 19.6 and RFC 1945 sec 6 for details.
 
     # The bytes from the socket object are iso-8859-1 strings.
@@ -301,7 +300,7 @@ class HTTPResponse(io.BufferedIOBase):
         if not line:
             # Presumably, the server closed the connection before
             # sending a valid response.
-            raise RemoteDisconnected("Remote end closed connection without" " response")
+            raise RemoteDisconnected("Remote end closed connection without response")
         try:
             version, status, reason = line.split(None, 2)
         except ValueError:
@@ -809,7 +808,6 @@ class HTTPResponse(io.BufferedIOBase):
 
 
 class HTTPConnection:
-
     _http_vsn = 11
     _http_vsn_str = "HTTP/1.1"
 
@@ -1061,7 +1059,6 @@ class HTTPConnection:
         self.send(msg)
 
         if message_body is not None:
-
             # create a consistent interface to message_body
             if hasattr(message_body, "read"):
                 # Let file-like take precedence over byte-like.  This
@@ -1444,9 +1441,7 @@ else:
             check_hostname=None,
             blocksize=8192,
         ):
-            super(HTTPSConnection, self).__init__(
-                host, port, timeout, source_address, blocksize=blocksize
-            )
+            super().__init__(host, port, timeout, source_address, blocksize=blocksize)
             if (
                 key_file is not None
                 or cert_file is not None

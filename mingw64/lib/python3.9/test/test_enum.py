@@ -2,15 +2,16 @@ import enum
 import inspect
 import pydoc
 import sys
-import unittest
 import threading
+import unittest
 from collections import OrderedDict
-from enum import Enum, IntEnum, EnumMeta, Flag, IntFlag, unique, auto
+from datetime import timedelta
+from enum import Enum, EnumMeta, Flag, IntEnum, IntFlag, auto, unique
 from io import StringIO
-from pickle import dumps, loads, PicklingError, HIGHEST_PROTOCOL
+from pickle import HIGHEST_PROTOCOL, PicklingError, dumps, loads
+
 from test import support
 from test.support import ALWAYS_EQ
-from datetime import timedelta
 
 # for pickle tests
 try:
@@ -165,7 +166,6 @@ class TestHelpers(unittest.TestCase):
 
 
 class classproperty:
-
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
         self.fget = fget
         self.fset = fset
@@ -182,7 +182,6 @@ class classproperty:
 
 
 class TestEnum(unittest.TestCase):
-
     def setUp(self):
         class Season(Enum):
             SPRING = 1
@@ -314,7 +313,7 @@ class TestEnum(unittest.TestCase):
             [Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER], lst
         )
 
-        for i, season in enumerate("SPRING SUMMER AUTUMN WINTER".split(), 1):
+        for i, season in enumerate(["SPRING", "SUMMER", "AUTUMN", "WINTER"], 1):
             e = Season(i)
             self.assertEqual(e, getattr(Season, season))
             self.assertEqual(e.value, i)
@@ -326,7 +325,7 @@ class TestEnum(unittest.TestCase):
             self.assertEqual(str(e), "Season." + season)
             self.assertEqual(
                 repr(e),
-                "<Season.{0}: {1}>".format(season, i),
+                f"<Season.{season}: {i}>",
             )
 
     def test_value_name(self):
@@ -542,20 +541,12 @@ class TestEnum(unittest.TestCase):
 
     def test_format_enum(self):
         Season = self.Season
-        self.assertEqual("{}".format(Season.SPRING), "{}".format(str(Season.SPRING)))
-        self.assertEqual("{:}".format(Season.SPRING), "{:}".format(str(Season.SPRING)))
-        self.assertEqual(
-            "{:20}".format(Season.SPRING), "{:20}".format(str(Season.SPRING))
-        )
-        self.assertEqual(
-            "{:^20}".format(Season.SPRING), "{:^20}".format(str(Season.SPRING))
-        )
-        self.assertEqual(
-            "{:>20}".format(Season.SPRING), "{:>20}".format(str(Season.SPRING))
-        )
-        self.assertEqual(
-            "{:<20}".format(Season.SPRING), "{:<20}".format(str(Season.SPRING))
-        )
+        self.assertEqual(f"{Season.SPRING}", f"{Season.SPRING!s}")
+        self.assertEqual(f"{Season.SPRING}", f"{Season.SPRING!s}")
+        self.assertEqual(f"{Season.SPRING:20}", f"{Season.SPRING!s:20}")
+        self.assertEqual(f"{Season.SPRING:^20}", f"{Season.SPRING!s:^20}")
+        self.assertEqual(f"{Season.SPRING:>20}", f"{Season.SPRING!s:>20}")
+        self.assertEqual(f"{Season.SPRING:<20}", f"{Season.SPRING!s:<20}")
 
     def test_str_override_enum(self):
         class EnumWithStrOverrides(Enum):
@@ -566,7 +557,7 @@ class TestEnum(unittest.TestCase):
                 return "Str!"
 
         self.assertEqual(str(EnumWithStrOverrides.one), "Str!")
-        self.assertEqual("{}".format(EnumWithStrOverrides.one), "Str!")
+        self.assertEqual(f"{EnumWithStrOverrides.one}", "Str!")
 
     def test_format_override_enum(self):
         class EnumWithFormatOverride(Enum):
@@ -577,7 +568,7 @@ class TestEnum(unittest.TestCase):
                 return "Format!!"
 
         self.assertEqual(str(EnumWithFormatOverride.one), "EnumWithFormatOverride.one")
-        self.assertEqual("{}".format(EnumWithFormatOverride.one), "Format!!")
+        self.assertEqual(f"{EnumWithFormatOverride.one}", "Format!!")
 
     def test_str_and_format_override_enum(self):
         class EnumWithStrFormatOverrides(Enum):
@@ -591,7 +582,7 @@ class TestEnum(unittest.TestCase):
                 return "Format!"
 
         self.assertEqual(str(EnumWithStrFormatOverrides.one), "Str!")
-        self.assertEqual("{}".format(EnumWithStrFormatOverrides.one), "Format!")
+        self.assertEqual(f"{EnumWithStrFormatOverrides.one}", "Format!")
 
     def test_str_override_mixin(self):
         class MixinEnumWithStrOverride(float, Enum):
@@ -602,7 +593,7 @@ class TestEnum(unittest.TestCase):
                 return "Overridden!"
 
         self.assertEqual(str(MixinEnumWithStrOverride.one), "Overridden!")
-        self.assertEqual("{}".format(MixinEnumWithStrOverride.one), "Overridden!")
+        self.assertEqual(f"{MixinEnumWithStrOverride.one}", "Overridden!")
 
     def test_str_and_format_override_mixin(self):
         class MixinWithStrFormatOverrides(float, Enum):
@@ -616,7 +607,7 @@ class TestEnum(unittest.TestCase):
                 return "Format!"
 
         self.assertEqual(str(MixinWithStrFormatOverrides.one), "Str!")
-        self.assertEqual("{}".format(MixinWithStrFormatOverrides.one), "Format!")
+        self.assertEqual(f"{MixinWithStrFormatOverrides.one}", "Format!")
 
     def test_format_override_mixin(self):
         class TestFloat(float, Enum):
@@ -627,7 +618,7 @@ class TestEnum(unittest.TestCase):
                 return "TestFloat success!"
 
         self.assertEqual(str(TestFloat.one), "TestFloat.one")
-        self.assertEqual("{}".format(TestFloat.one), "TestFloat success!")
+        self.assertEqual(f"{TestFloat.one}", "TestFloat success!")
 
     def assertFormatIsValue(self, spec, member):
         self.assertEqual(spec.format(member), spec.format(member.value))
@@ -704,7 +695,6 @@ class TestEnum(unittest.TestCase):
         self.assertEqual(str(Test1Enum.One), "MyStr")
         self.assertEqual(format(Test1Enum.One, ""), "MyStr")
 
-        #
         class Test2Enum(MyStrEnum, MyMethodEnum):
             One = 1
             Two = 2
@@ -731,10 +721,8 @@ class TestEnum(unittest.TestCase):
         test_pickle_dump_load(self.assertIs, MyEnum.A)
         test_pickle_dump_load(self.assertIs, MyEnum)
 
-        #
         class SillyInt(HexInt):
             __qualname__ = "SillyInt"
-            pass
 
         class MyOtherEnum(SillyInt, enum.Enum):
             __qualname__ = "MyOtherEnum"
@@ -748,7 +736,6 @@ class TestEnum(unittest.TestCase):
         test_pickle_dump_load(self.assertIs, MyOtherEnum.E)
         test_pickle_dump_load(self.assertIs, MyOtherEnum)
 
-        #
         class BrokenInt(int):
             __qualname__ = "BrokenInt"
 
@@ -986,12 +973,12 @@ class TestEnum(unittest.TestCase):
             night = 4
 
         self.assertIs(Period(2), Period.noon)
-        self.assertIs(getattr(Period, "night"), Period.night)
+        self.assertIs(Period.night, Period.night)
         self.assertIs(Period["morning"], Period.morning)
 
     def test_getattr_dunder(self):
         Season = self.Season
-        self.assertTrue(getattr(Season, "__eq__"))
+        self.assertTrue(Season.__eq__)
 
     def test_iteration_order(self):
         class Season(Enum):
@@ -1025,7 +1012,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1042,7 +1029,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 10):
+        for i, month in enumerate(["june", "july", "august"], 10):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1059,7 +1046,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1076,7 +1063,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 20):
+        for i, month in enumerate(["june", "july", "august"], 20):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1093,7 +1080,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1112,7 +1099,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(int(e.value), i)
             self.assertNotEqual(e, i)
@@ -1129,7 +1116,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(e, i)
             self.assertEqual(e.name, month)
@@ -1145,7 +1132,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 30):
+        for i, month in enumerate(["june", "july", "august"], 30):
             e = SummerMonth(i)
             self.assertEqual(e, i)
             self.assertEqual(e.name, month)
@@ -1161,7 +1148,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 1):
+        for i, month in enumerate(["june", "july", "august"], 1):
             e = SummerMonth(i)
             self.assertEqual(e, i)
             self.assertEqual(e.name, month)
@@ -1177,7 +1164,7 @@ class TestEnum(unittest.TestCase):
             [SummerMonth.june, SummerMonth.july, SummerMonth.august],
             lst,
         )
-        for i, month in enumerate("june july august".split(), 40):
+        for i, month in enumerate(["june", "july", "august"], 40):
             e = SummerMonth(i)
             self.assertEqual(e, i)
             self.assertEqual(e.name, month)
@@ -1189,7 +1176,7 @@ class TestEnum(unittest.TestCase):
             raise Name
         self.assertEqual(Name.BDFL, "Guido van Rossum")
         self.assertTrue(Name.BDFL, Name("Guido van Rossum"))
-        self.assertIs(Name.BDFL, getattr(Name, "BDFL"))
+        self.assertIs(Name.BDFL, Name.BDFL)
         test_pickle_dump_load(self.assertIs, Name.BDFL)
 
     def test_extending(self):
@@ -1419,9 +1406,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1436,9 +1421,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -1481,9 +1464,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1498,9 +1479,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -1543,9 +1522,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1560,9 +1537,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -1605,9 +1580,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1622,9 +1595,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -1664,9 +1635,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1681,9 +1650,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -1722,9 +1689,7 @@ class TestEnum(unittest.TestCase):
 
             def __repr__(self):
                 # repr() is updated to include the name and type info
-                return "{}({!r}, {})".format(
-                    type(self).__name__, self.__name__, int.__repr__(self)
-                )
+                return f"{type(self).__name__}({self.__name__!r}, {int.__repr__(self)})"
 
             def __str__(self):
                 # str() is unchanged, even if it relies on the repr() fallback
@@ -1739,9 +1704,7 @@ class TestEnum(unittest.TestCase):
             def __add__(self, other):
                 temp = int(self) + int(other)
                 if isinstance(self, NamedInt) and isinstance(other, NamedInt):
-                    return NamedInt(
-                        "({0} + {1})".format(self.__name__, other.__name__), temp
-                    )
+                    return NamedInt(f"({self.__name__} + {other.__name__})", temp)
                 else:
                     return temp
 
@@ -2203,12 +2166,10 @@ class TestEnum(unittest.TestCase):
         import gc
         import weakref
 
-        #
         class TestEnum(enum.Enum):
             VAL1 = "val1"
             VAL2 = "val2"
 
-        #
         class Class1:
             def __init__(self):
                 # Gracefully handle an exception of our own making
@@ -2217,7 +2178,6 @@ class TestEnum(unittest.TestCase):
                 except ValueError:
                     pass
 
-        #
         class Class2:
             def __init__(self):
                 # Gracefully handle an exception of Enum's making
@@ -2417,7 +2377,6 @@ class TestEnum(unittest.TestCase):
                         return member
                 return super()._missing_(value)
 
-        #
         class LenientStrEnum(str, Enum):
             def __init__(self, *args):
                 self._valid = True
@@ -2438,13 +2397,11 @@ class TestEnum(unittest.TestCase):
             def valid(self):
                 return self._valid
 
-        #
         class JobStatus(CaseInsensitiveStrEnum, LenientStrEnum):
             ACTIVE = "active"
             PENDING = "pending"
             TERMINATED = "terminated"
 
-        #
         JS = JobStatus
         self.assertEqual(list(JobStatus), [JS.ACTIVE, JS.PENDING, JS.TERMINATED])
         self.assertEqual(JS.ACTIVE, "active")
@@ -2491,7 +2448,6 @@ class TestEnum(unittest.TestCase):
 
 
 class TestOrder(unittest.TestCase):
-
     def test_same_members(self):
         class Color(Enum):
             _order_ = "red green blue"
@@ -2709,7 +2665,7 @@ class TestFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -2724,7 +2680,7 @@ class TestFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 8 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -2739,7 +2695,7 @@ class TestFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -2754,7 +2710,7 @@ class TestFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << (2 * i + 1)
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -2769,7 +2725,7 @@ class TestFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << (2 * i + 1)
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -2964,7 +2920,6 @@ class TestFlag(unittest.TestCase):
                 self.assertFalse(cls.__dict__.get("_test", False))
                 cls._test1 = "MyEnum"
 
-        #
         class TheirEnum(MyEnum):
             def __init_subclass__(cls, **kwds):
                 super(TheirEnum, cls).__init_subclass__(**kwds)
@@ -2983,7 +2938,6 @@ class TestFlag(unittest.TestCase):
         self.assertFalse(NoEnum.__dict__.get("_test1", False))
         self.assertFalse(NoEnum.__dict__.get("_test2", False))
 
-        #
         class OurEnum(MyEnum):
             def __init_subclass__(cls, **kwds):
                 cls._test2 = "OurEnum"
@@ -3204,7 +3158,7 @@ class TestIntFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -3220,7 +3174,7 @@ class TestIntFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 8 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -3236,7 +3190,7 @@ class TestIntFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << i
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -3252,7 +3206,7 @@ class TestIntFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << (2 * i + 1)
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -3268,7 +3222,7 @@ class TestIntFlag(unittest.TestCase):
         self.assertEqual(len(lst), len(Perm))
         self.assertEqual(len(Perm), 3, Perm)
         self.assertEqual(lst, [Perm.R, Perm.W, Perm.X])
-        for i, n in enumerate("R W X".split()):
+        for i, n in enumerate(["R", "W", "X"]):
             v = 1 << (2 * i + 1)
             e = Perm(v)
             self.assertEqual(e.value, v)
@@ -3435,24 +3389,22 @@ class TestIntFlag(unittest.TestCase):
 
 
 class TestEmptyAndNonLatinStrings(unittest.TestCase):
-
     def test_empty_string(self):
         with self.assertRaises(ValueError):
             empty_abc = Enum("empty_abc", ("", "B", "C"))
 
     def test_non_latin_character_string(self):
         greek_abc = Enum("greek_abc", ("\u03b1", "B", "C"))
-        item = getattr(greek_abc, "\u03b1")
+        item = greek_abc.α
         self.assertEqual(item.value, 1)
 
     def test_non_latin_number_string(self):
         hebrew_123 = Enum("hebrew_123", ("\u05d0", "2", "3"))
-        item = getattr(hebrew_123, "\u05d0")
+        item = hebrew_123.א
         self.assertEqual(item.value, 1)
 
 
 class TestUnique(unittest.TestCase):
-
     def test_unique_clean(self):
         @unique
         class Clean(Enum):
@@ -3574,7 +3526,6 @@ class Color(enum.Enum)
 
 
 class TestStdLib(unittest.TestCase):
-
     maxDiff = None
 
     class Color(Enum):
@@ -3611,13 +3562,12 @@ class TestStdLib(unittest.TestCase):
         result = dict(inspect.getmembers(self.Color))
         self.assertEqual(values.keys(), result.keys())
         failed = False
-        for k in values.keys():
+        for k in values:
             if result[k] != values[k]:
                 print()
                 print(
                     "\n%s\n     key: %s\n  result: %s\nexpected: %s\n%s\n"
-                    % ("=" * 75, k, result[k], values[k], "=" * 75),
-                    sep="",
+                    % ("=" * 75, k, result[k], values[k], "=" * 75)
                 )
                 failed = True
         if failed:
@@ -3686,7 +3636,7 @@ class TestStdLib(unittest.TestCase):
         failed = False
         for v, r in zip(values, result):
             if r != v:
-                print("\n%s\n%s\n%s\n%s\n" % ("=" * 75, r, v, "=" * 75), sep="")
+                print("\n%s\n%s\n%s\n%s\n" % ("=" * 75, r, v, "=" * 75))
                 failed = True
         if failed:
             self.fail("result does not equal expected, see print above")

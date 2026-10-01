@@ -4,7 +4,6 @@ Includes BaseSideBar which can be extended for other sidebar based extensions
 
 import functools
 import itertools
-
 import tkinter as tk
 from idlelib.config import idleConf
 from idlelib.delegator import Delegator
@@ -242,8 +241,8 @@ class LineNumbers(BaseSideBar):
             # select the entire line
             lineno = int(float(self.sidebar_text.index(f"@0,{event.y}")))
             self.text.tag_remove("sel", "1.0", "end")
-            self.text.tag_add("sel", f"{lineno}.0", f"{lineno+1}.0")
-            self.text.mark_set("insert", f"{lineno+1}.0")
+            self.text.tag_add("sel", f"{lineno}.0", f"{lineno + 1}.0")
+            self.text.mark_set("insert", f"{lineno + 1}.0")
 
             # remember this line in case this is the beginning of dragging
             nonlocal start_line
@@ -268,7 +267,7 @@ class LineNumbers(BaseSideBar):
             lineno = int(float(self.sidebar_text.index(f"@0,{y_coord}")))
             a, b = sorted([start_line, lineno])
             self.text.tag_remove("sel", "1.0", "end")
-            self.text.tag_add("sel", f"{a}.0", f"{b+1}.0")
+            self.text.tag_add("sel", f"{a}.0", f"{b + 1}.0")
             self.text.mark_set("insert", f"{lineno if lineno == a else lineno + 1}.0")
 
         # Special handling of dragging with mouse button 1.  In "normal" text
@@ -333,9 +332,9 @@ class LineNumbers(BaseSideBar):
                     map(str, range(self.prev_end + 1, end + 1)),
                 )
             )
-            self.sidebar_text.insert(f"end -1c", new_text, "linenumber")
+            self.sidebar_text.insert("end -1c", new_text, "linenumber")
         else:
-            self.sidebar_text.delete(f"{end+1}.0 -1c", "end -1c")
+            self.sidebar_text.delete(f"{end + 1}.0 -1c", "end -1c")
         self.sidebar_text.config(state=tk.DISABLED)
 
         self.prev_end = end

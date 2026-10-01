@@ -4,9 +4,10 @@
 # If a crasher is fixed, it should be moved elsewhere in the test suite to
 # ensure it continues to work correctly.
 
-import unittest
 import glob
 import os.path
+import unittest
+
 import test.support
 from test.support.script_helper import assert_python_failure
 
@@ -17,7 +18,6 @@ infinite_loops = ["infinite_loop_re.py", "nasty_eq_vs_dict.py"]
 
 
 class CrasherTest(unittest.TestCase):
-
     @unittest.skip("these tests are too fragile")
     @test.support.cpython_only
     def test_crashers_crash(self):

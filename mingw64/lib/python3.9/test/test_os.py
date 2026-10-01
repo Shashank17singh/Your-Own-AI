@@ -29,9 +29,10 @@ import types
 import unittest
 import uuid
 import warnings
+from platform import win32_is_iot
+
 from test import support
 from test.support import socket_helper
-from platform import win32_is_iot
 
 try:
     import resource
@@ -56,8 +57,8 @@ try:
 except ImportError:
     INT_MAX = PY_SSIZE_T_MAX = sys.maxsize
 
+from test.support import FakePath, unix_shell
 from test.support.script_helper import assert_python_ok
-from test.support import unix_shell, FakePath
 
 root_in_posix = False
 if hasattr(os, "geteuid"):
@@ -118,7 +119,7 @@ class MiscTests(unittest.TestCase):
                     need = min_len - (len(cwd) + len(os.path.sep))
                     if need <= 0:
                         break
-                    if len(dirname) > need and need > 0:
+                    if len(dirname) > need > 0:
                         dirname = dirname[:need]
 
                     path = os.path.join(path, dirname)
@@ -329,7 +330,7 @@ class FileTests(unittest.TestCase):
         else:
             # The number of copied bytes can be less than
             # the number of bytes originally requested.
-            self.assertIn(i, range(0, 6))
+            self.assertIn(i, range(6))
 
             with open(TESTFN2, "rb") as in_file:
                 self.assertEqual(in_file.read(), data[:i])
@@ -370,7 +371,7 @@ class FileTests(unittest.TestCase):
         else:
             # The number of copied bytes can be less than
             # the number of bytes originally requested.
-            self.assertIn(i, range(0, bytes_to_copy + 1))
+            self.assertIn(i, range(bytes_to_copy + 1))
 
             with open(TESTFN4, "rb") as in_file:
                 read = in_file.read()
@@ -417,7 +418,7 @@ class StatAttributeTests(unittest.TestCase):
 
         # Make sure that the st_?time and st_?time_ns fields roughly agree
         # (they should always agree up to around tens-of-microseconds)
-        for name in "st_atime st_mtime st_ctime".split():
+        for name in ["st_atime", "st_mtime", "st_ctime"]:
             floaty = int(getattr(result, name) * 100000)
             nanosecondy = getattr(result, name + "_ns") // 10000
             self.assertAlmostEqual(floaty, nanosecondy, delta=2)
@@ -555,7 +556,7 @@ class StatAttributeTests(unittest.TestCase):
             os.stat(r"c:\pagefile.sys")
         except FileNotFoundError:
             self.skipTest(r"c:\pagefile.sys does not exist")
-        except OSError as e:
+        except OSError:
             self.fail("Could not stat pagefile.sys")
 
     @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
@@ -714,7 +715,7 @@ class UtimeTests(unittest.TestCase):
 
     @unittest.skipUnless(
         os.utime in os.supports_follow_symlinks,
-        "follow_symlinks support for utime required " "for this test.",
+        "follow_symlinks support for utime required for this test.",
     )
     def test_utime_nofollow_symlinks(self):
         def set_time(filename, ns):
@@ -933,7 +934,7 @@ class EnvironTests(mapping_tests.BasicTestMappingProtocol):
         self.assertEqual(
             repr(env),
             "environ({{{}}})".format(
-                ", ".join("{!r}: {!r}".format(key, value) for key, value in env.items())
+                ", ".join(f"{key!r}: {value!r}" for key, value in env.items())
             ),
         )
 
@@ -1565,7 +1566,6 @@ class MakedirTests(unittest.TestCase):
 
 @unittest.skipUnless(hasattr(os, "chown"), "Test needs chown")
 class ChownFileTests(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         os.mkdir(support.TESTFN)
@@ -1809,7 +1809,7 @@ class URandomFDTests(unittest.TestCase):
         self.addCleanup(support.unlink, support.TESTFN)
         create_file(support.TESTFN, b"x" * 256)
 
-        code = """if 1:
+        code = f"""if 1:
             import os
             import sys
             import test.support
@@ -1824,7 +1824,7 @@ class URandomFDTests(unittest.TestCase):
                         # Found the urandom fd (XXX hopefully)
                         break
                 os.closerange(3, 256)
-            with open({TESTFN!r}, 'rb') as f:
+            with open({support.TESTFN!r}, 'rb') as f:
                 new_fd = f.fileno()
                 # Issue #26935: posix allows new_fd and fd to be equal but
                 # some libc implementations have dup2 return an error in this
@@ -1833,7 +1833,7 @@ class URandomFDTests(unittest.TestCase):
                     os.dup2(new_fd, fd)
                 sys.stdout.buffer.write(os.urandom(4))
                 sys.stdout.buffer.write(os.urandom(4))
-            """.format(TESTFN=support.TESTFN)
+            """
         rc, out, err = assert_python_ok("-Sc", code)
         self.assertEqual(len(out), 8)
         self.assertNotEqual(out[0:4], out[4:8])
@@ -2323,8 +2323,8 @@ class Win32KillTests(unittest.TestCase):
         # becomes ready, send *sig* via os.kill to the subprocess and check
         # that the return code is equal to *sig*.
         import ctypes
-        from ctypes import wintypes
         import msvcrt
+        from ctypes import wintypes
 
         # Since we can't access the contents of the process' stdout until the
         # process has exited, use PeekNamedPipe to see what's inside stdout
@@ -2345,10 +2345,7 @@ class Win32KillTests(unittest.TestCase):
             [
                 sys.executable,
                 "-c",
-                "import sys;"
-                "sys.stdout.write('{}');"
-                "sys.stdout.flush();"
-                "input()".format(msg),
+                f"import sys;sys.stdout.write('{msg}');sys.stdout.flush();input()",
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -2423,12 +2420,12 @@ class Win32KillTests(unittest.TestCase):
         if not proc.poll():
             # Forcefully kill the process if we weren't able to signal it.
             os.kill(proc.pid, signal.SIGINT)
-            self.fail("subprocess did not stop on {}".format(name))
+            self.fail(f"subprocess did not stop on {name}")
 
     @unittest.skip("subprocesses aren't inheriting Ctrl+C property")
     def test_CTRL_C_EVENT(self):
-        from ctypes import wintypes
         import ctypes
+        from ctypes import wintypes
 
         # Make a NULL value by creating a pointer with no argument.
         NULL = ctypes.POINTER(ctypes.c_int)()
@@ -2823,7 +2820,6 @@ class Win32NtTests(unittest.TestCase):
 
 @support.skip_unless_symlink
 class NonLocalSymlinkTests(unittest.TestCase):
-
     def setUp(self):
         r"""
         Create this structure:
@@ -2869,7 +2865,6 @@ class FSEncodingTests(unittest.TestCase):
 
 
 class DeviceEncodingTests(unittest.TestCase):
-
     def test_bad_fd(self):
         # Return None when an fd doesn't actually exist.
         self.assertIsNone(os.device_encoding(123456))
@@ -3180,9 +3175,7 @@ class ProgramPriorityTests(unittest.TestCase):
 
 
 class SendfileTestServer(asyncore.dispatcher, threading.Thread):
-
     class Handler(asynchat.async_chat):
-
         def __init__(self, conn):
             asynchat.async_chat.__init__(self, conn)
             self.in_buffer = []
@@ -3268,7 +3261,6 @@ class SendfileTestServer(asyncore.dispatcher, threading.Thread):
 
 @unittest.skipUnless(hasattr(os, "sendfile"), "test needs os.sendfile()")
 class TestSendfile(unittest.TestCase):
-
     DATA = b"12345abcde" * 16 * 1024  # 160 KiB
     SUPPORT_HEADERS_TRAILERS = (
         not sys.platform.startswith("linux")
@@ -3499,7 +3491,6 @@ def supports_extended_attributes():
 # Kernels < 2.6.39 don't respect setxattr flags.
 @support.requires_linux_version(2, 6, 39)
 class ExtendedAttributeTests(unittest.TestCase):
-
     def _check_xattrs_str(
         self, s, getxattr, setxattr, removexattr, listxattr, **kwargs
     ):
@@ -3545,7 +3536,7 @@ class ExtendedAttributeTests(unittest.TestCase):
         setxattr(fn, s("user.test"), b"a" * 1024, **kwargs)
         self.assertEqual(getxattr(fn, s("user.test"), **kwargs), b"a" * 1024)
         removexattr(fn, s("user.test"), **kwargs)
-        many = sorted("user.test{}".format(i) for i in range(100))
+        many = sorted(f"user.test{i}" for i in range(100))
         for thing in many:
             setxattr(fn, thing, b"x", **kwargs)
         self.assertEqual(set(listxattr(fn)), set(init_xattr) | set(many))
@@ -3782,7 +3773,7 @@ class OSErrorTests(unittest.TestCase):
                 except UnicodeDecodeError:
                     pass
                 else:
-                    self.fail("No exception thrown by {}".format(func))
+                    self.fail(f"No exception thrown by {func}")
 
 
 class CPUCountTests(unittest.TestCase):
@@ -4367,7 +4358,6 @@ class TestScandir(unittest.TestCase):
 
 
 class TestPEP519(unittest.TestCase):
-
     # Abstracted so it can be overridden to test pure Python implementation
     # if a C version is provided.
     fspath = staticmethod(os.fspath)

@@ -3,7 +3,6 @@ from idlelib.redirector import WidgetRedirector
 
 
 class Percolator:
-
     def __init__(self, text):
         # XXX would be nice to inherit from Delegator
         self.text = text

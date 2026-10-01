@@ -1,12 +1,11 @@
 "Test pyparse, coverage 96%."
 
-from idlelib import pyparse
 import unittest
 from collections import namedtuple
+from idlelib import pyparse
 
 
 class ParseMapTest(unittest.TestCase):
-
     def test_parsemap(self):
         keepwhite = {ord(c): ord(c) for c in " \t\n\r"}
         mapping = pyparse.ParseMap(keepwhite)
@@ -23,7 +22,6 @@ class ParseMapTest(unittest.TestCase):
 
 
 class PyParseTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.parser = pyparse.Parser(indentwidth=4, tabwidth=4)

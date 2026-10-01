@@ -3,18 +3,18 @@ import test.support
 # Skip test if _sqlite3 module not installed
 test.support.import_module("_sqlite3")
 
-import unittest
 import sqlite3
+import unittest
 from sqlite3.test import (
+    backup,
     dbapi,
-    types,
-    userfunctions,
+    dump,
     factory,
-    transactions,
     hooks,
     regression,
-    dump,
-    backup,
+    transactions,
+    types,
+    userfunctions,
 )
 
 
@@ -22,7 +22,7 @@ def load_tests(*args):
     if test.support.verbose:
         print(
             "test_sqlite: testing with version",
-            "{!r}, sqlite_version {!r}".format(sqlite3.version, sqlite3.sqlite_version),
+            f"{sqlite3.version!r}, sqlite_version {sqlite3.sqlite_version!r}",
         )
     return unittest.TestSuite(
         [

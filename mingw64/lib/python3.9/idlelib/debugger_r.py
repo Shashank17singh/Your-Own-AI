@@ -59,7 +59,6 @@ def wrap_info(info):
 
 
 class GUIProxy:
-
     def __init__(self, conn, gui_adap_oid):
         self.conn = conn
         self.oid = gui_adap_oid
@@ -73,7 +72,6 @@ class GUIProxy:
 
 
 class IdbAdapter:
-
     def __init__(self, idb):
         self.idb = idb
 
@@ -207,7 +205,6 @@ def start_debugger(rpchandler, gui_adap_oid):
 
 
 class FrameProxy:
-
     def __init__(self, conn, fid):
         self._conn = conn
         self._fid = fid
@@ -246,7 +243,6 @@ class FrameProxy:
 
 
 class CodeProxy:
-
     def __init__(self, conn, oid, cid):
         self._conn = conn
         self._oid = oid
@@ -260,7 +256,6 @@ class CodeProxy:
 
 
 class DictProxy:
-
     def __init__(self, conn, oid, did):
         self._conn = conn
         self._oid = oid
@@ -282,7 +277,6 @@ class DictProxy:
 
 
 class GUIAdapter:
-
     def __init__(self, conn, gui):
         self.conn = conn
         self.gui = gui
@@ -294,7 +288,6 @@ class GUIAdapter:
 
 
 class IdbProxy:
-
     def __init__(self, conn, shell, oid):
         self.oid = oid
         self.conn = conn

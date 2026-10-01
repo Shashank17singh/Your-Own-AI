@@ -2,13 +2,14 @@
 
 import gc
 import os
-import queue
 import pickle
+import queue
 import socket
 import sys
 import threading
 import unittest
 from unittest import mock
+
 from test.support import socket_helper
 
 try:
@@ -17,6 +18,7 @@ except ImportError:
     ssl = None
 
 import asyncio
+
 from test.test_asyncio import utils as test_utils
 
 
@@ -25,7 +27,6 @@ def tearDownModule():
 
 
 class StreamTests(test_utils.TestCase):
-
     DATA = b"line1\nline2\nline3\n"
 
     def setUp(self):
@@ -584,7 +585,6 @@ class StreamTests(test_utils.TestCase):
     def test_start_server(self):
 
         class MyServer:
-
             def __init__(self, loop):
                 self.server = None
                 self.loop = loop
@@ -662,7 +662,6 @@ class StreamTests(test_utils.TestCase):
     def test_start_unix_server(self):
 
         class MyServer:
-
             def __init__(self, loop, path):
                 self.server = None
                 self.loop = loop

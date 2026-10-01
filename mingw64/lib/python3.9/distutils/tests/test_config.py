@@ -2,13 +2,10 @@
 
 import os
 import unittest
-
-from distutils.core import PyPIRCCommand
-from distutils.core import Distribution
-from distutils.log import set_threshold
-from distutils.log import WARN
-
+from distutils.core import Distribution, PyPIRCCommand
+from distutils.log import WARN, set_threshold
 from distutils.tests import support
+
 from test.support import run_unittest
 
 PYPIRC = """\
@@ -57,10 +54,9 @@ class BasePyPIRCCommandTestCase(
     support.EnvironGuard,
     unittest.TestCase,
 ):
-
     def setUp(self):
         """Patches the environment."""
-        super(BasePyPIRCCommandTestCase, self).setUp()
+        super().setUp()
         self.tmp_dir = self.mkdtemp()
         os.environ["HOME"] = self.tmp_dir
         os.environ["USERPROFILE"] = self.tmp_dir
@@ -82,11 +78,10 @@ class BasePyPIRCCommandTestCase(
     def tearDown(self):
         """Removes the patch."""
         set_threshold(self.old_threshold)
-        super(BasePyPIRCCommandTestCase, self).tearDown()
+        super().tearDown()
 
 
 class PyPIRCCommandTestCase(BasePyPIRCCommandTestCase):
-
     def test_server_registration(self):
         # This test makes sure PyPIRCCommand knows how to:
         # 1. handle several sections in .pypirc
@@ -97,7 +92,7 @@ class PyPIRCCommandTestCase(BasePyPIRCCommandTestCase):
         cmd = self._cmd(self.dist)
         config = cmd._read_pypirc()
 
-        config = list(sorted(config.items()))
+        config = sorted(config.items())
         waited = [
             ("password", "secret"),
             ("realm", "pypi"),
@@ -110,7 +105,7 @@ class PyPIRCCommandTestCase(BasePyPIRCCommandTestCase):
         # old format
         self.write_file(self.rc, PYPIRC_OLD)
         config = cmd._read_pypirc()
-        config = list(sorted(config.items()))
+        config = sorted(config.items())
         waited = [
             ("password", "secret"),
             ("realm", "pypi"),
@@ -140,7 +135,7 @@ class PyPIRCCommandTestCase(BasePyPIRCCommandTestCase):
         cmd.repository = "server3"
         config = cmd._read_pypirc()
 
-        config = list(sorted(config.items()))
+        config = sorted(config.items())
         waited = [
             ("password", "yh^%#rest-of-my-password"),
             ("realm", "pypi"),

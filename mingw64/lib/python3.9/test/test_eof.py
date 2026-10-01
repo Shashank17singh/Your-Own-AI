@@ -1,9 +1,10 @@
 """test script for a few new invalid token catches"""
 
 import sys
+import unittest
+
 from test import support
 from test.support import script_helper
-import unittest
 
 
 class EOFTestCase(unittest.TestCase):
@@ -18,7 +19,7 @@ class EOFTestCase(unittest.TestCase):
             raise support.TestFailed
 
     def test_EOFS(self):
-        expect = "EOF while scanning triple-quoted string literal " "(<string>, line 1)"
+        expect = "EOF while scanning triple-quoted string literal (<string>, line 1)"
         try:
             eval("""'''this is a test""")
         except SyntaxError as msg:

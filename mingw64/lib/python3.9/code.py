@@ -2,16 +2,15 @@
 
 # Inspired by similar code by Jeff Epler and Fredrik Lundh.
 
-
 import sys
 import traceback
 from codeop import CommandCompiler, compile_command
 
 __all__ = [
-    "InteractiveInterpreter",
     "InteractiveConsole",
-    "interact",
+    "InteractiveInterpreter",
     "compile_command",
+    "interact",
 ]
 
 

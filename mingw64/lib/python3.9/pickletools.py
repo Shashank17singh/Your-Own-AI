@@ -172,7 +172,7 @@ TAKEN_FROM_ARGUMENT4U = -4  # num bytes is 4-byte unsigned little-endian int
 TAKEN_FROM_ARGUMENT8U = -5  # num bytes is 8-byte unsigned little-endian int
 
 
-class ArgumentDescriptor(object):
+class ArgumentDescriptor:
     __slots__ = (
         # name of descriptor record, also a module global name; a string
         "name",
@@ -361,7 +361,7 @@ def read_stringnl(f, decode=True, stripquotes=True):
             if data.startswith(q):
                 if not data.endswith(q):
                     raise ValueError(
-                        "strinq quote %r not found at both " "ends of %r" % (q, data)
+                        "strinq quote %r not found at both ends of %r" % (q, data)
                     )
                 data = data[1:-1]
                 break
@@ -649,7 +649,7 @@ def read_unicodestringnl(f):
 
     data = f.readline()
     if not data.endswith(b"\n"):
-        raise ValueError("no newline found when trying to read " "unicodestringnl")
+        raise ValueError("no newline found when trying to read unicodestringnl")
     data = data[:-1]  # lose the newline
     return str(data, "raw-unicode-escape")
 
@@ -691,7 +691,7 @@ def read_unicodestring1(f):
     if len(data) == n:
         return str(data, "utf-8", "surrogatepass")
     raise ValueError(
-        "expected %d bytes in a unicodestring1, but only %d " "remain" % (n, len(data))
+        "expected %d bytes in a unicodestring1, but only %d remain" % (n, len(data))
     )
 
 
@@ -735,7 +735,7 @@ def read_unicodestring4(f):
     if len(data) == n:
         return str(data, "utf-8", "surrogatepass")
     raise ValueError(
-        "expected %d bytes in a unicodestring4, but only %d " "remain" % (n, len(data))
+        "expected %d bytes in a unicodestring4, but only %d remain" % (n, len(data))
     )
 
 
@@ -779,7 +779,7 @@ def read_unicodestring8(f):
     if len(data) == n:
         return str(data, "utf-8", "surrogatepass")
     raise ValueError(
-        "expected %d bytes in a unicodestring8, but only %d " "remain" % (n, len(data))
+        "expected %d bytes in a unicodestring8, but only %d remain" % (n, len(data))
     )
 
 
@@ -1009,7 +1009,7 @@ long4 = ArgumentDescriptor(
 # appear on the stack.
 
 
-class StackObject(object):
+class StackObject:
     __slots__ = (
         # name of descriptor record, for info only
         "name",
@@ -1117,8 +1117,7 @@ topmost markobject too).
 # Descriptors for pickle opcodes.
 
 
-class OpcodeInfo(object):
-
+class OpcodeInfo:
     __slots__ = (
         # symbolic name of opcode; a string
         "name",
@@ -2303,10 +2302,8 @@ def assure_pickle_consistency(verbose=False):
         if not isinstance(picklecode, bytes) or len(picklecode) != 1:
             if verbose:
                 print(
-                    (
-                        "skipping %r: value %r doesn't look like a pickle "
-                        "code" % (name, picklecode)
-                    )
+                    "skipping %r: value %r doesn't look like a pickle "
+                    "code" % (name, picklecode)
                 )
             continue
         picklecode = picklecode.decode("latin-1")
@@ -2427,13 +2424,11 @@ def optimize(p):
         elif "FRAME" in opcode.name:
             pass
         elif "GET" in opcode.name:
-            if opcode.proto > proto:
-                proto = opcode.proto
+            proto = max(proto, opcode.proto)
             newids[arg] = None
             opcodes.append((get, arg))
         elif opcode.name == "PROTO":
-            if arg > proto:
-                proto = arg
+            proto = max(proto, arg)
             if pos == 0:
                 protoheader = p[pos:end_pos]
             else:

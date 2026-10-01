@@ -1,7 +1,7 @@
 """Test where byte objects are accepted"""
 
-import unittest
 import sys
+import unittest
 from ctypes import *
 
 

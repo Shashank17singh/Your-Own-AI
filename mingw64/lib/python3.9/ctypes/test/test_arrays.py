@@ -1,9 +1,9 @@
-import unittest
-from test.support import bigmemtest, _2G
 import sys
+import unittest
 from ctypes import *
-
 from ctypes.test import need_symbol
+
+from test.support import _2G, bigmemtest
 
 formats = "bBhHiIlLqQfd"
 

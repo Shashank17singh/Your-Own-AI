@@ -9,32 +9,28 @@ __all__ = [
     "decode_params",
     "decode_rfc2231",
     "encode_rfc2231",
+    "format_datetime",
     "formataddr",
     "formatdate",
-    "format_datetime",
     "getaddresses",
     "make_msgid",
     "mktime_tz",
     "parseaddr",
     "parsedate",
-    "parsedate_tz",
     "parsedate_to_datetime",
+    "parsedate_tz",
     "unquote",
 ]
 
-import os
-import re
-import time
-import random
-import socket
 import datetime
+import os
+import random
+import re
+import socket
+import time
 import urllib.parse
-
-from email._parseaddr import quote
 from email._parseaddr import AddressList as _AddressList
-from email._parseaddr import mktime_tz
-
-from email._parseaddr import parsedate, parsedate_tz, _parsedate_tz
+from email._parseaddr import _parsedate_tz, mktime_tz, parsedate, parsedate_tz, quote
 
 # Intrapackage imports
 from email.charset import Charset

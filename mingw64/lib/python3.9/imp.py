@@ -8,15 +8,9 @@ functionality over this module.
 
 # (Probably) need to stay in _imp
 from _imp import (
-    lock_held,
-    acquire_lock,
-    release_lock,
-    get_frozen_object,
-    is_frozen_package,
     init_frozen,
     is_builtin,
     is_frozen,
-    _fix_co_filename,
 )
 
 try:
@@ -25,17 +19,15 @@ except ImportError:
     # Platform doesn't support dynamic loading.
     create_dynamic = None
 
-from importlib._bootstrap import _ERR_MSG, _exec, _load, _builtin_from_name
-from importlib._bootstrap_external import SourcelessFileLoader
-
-from importlib import machinery
-from importlib import util
 import importlib
 import os
 import sys
 import tokenize
 import types
 import warnings
+from importlib import machinery, util
+from importlib._bootstrap import _ERR_MSG, _builtin_from_name, _exec, _load
+from importlib._bootstrap_external import SourcelessFileLoader
 
 warnings.warn(
     "the imp module is deprecated in favour of importlib; "
@@ -138,7 +130,7 @@ class NullImporter:
 
     def find_module(self, fullname):
         """Always returns None."""
-        return None
+        return
 
 
 class _HackedGetData:
@@ -214,7 +206,7 @@ def load_package(name, path):
                 path = init_path
                 break
         else:
-            raise ValueError("{!r} is not a package".format(path))
+            raise ValueError(f"{path!r} is not a package")
     spec = util.spec_from_file_location(name, path, submodule_search_locations=[])
     if name in sys.modules:
         return _exec(spec, sys.modules[name])
@@ -232,9 +224,9 @@ def load_module(name, file, filename, details):
     """
     suffix, mode, type_ = details
     if mode and (not mode.startswith(("r", "U")) or "+" in mode):
-        raise ValueError("invalid file open mode {!r}".format(mode))
+        raise ValueError(f"invalid file open mode {mode!r}")
     elif file is None and type_ in {PY_SOURCE, PY_COMPILED}:
-        msg = "file object required for import (type code {})".format(type_)
+        msg = f"file object required for import (type code {type_})"
         raise ValueError(msg)
     elif type_ == PY_SOURCE:
         return load_source(name, filename, file)
@@ -253,7 +245,7 @@ def load_module(name, file, filename, details):
     elif type_ == PY_FROZEN:
         return init_frozen(name)
     else:
-        msg = "Don't know how to import {} (type code {})".format(name, type_)
+        msg = f"Don't know how to import {name} (type code {type_})"
         raise ImportError(msg, name=name)
 
 
@@ -269,12 +261,10 @@ def find_module(name, path=None):
 
     """
     if not isinstance(name, str):
-        raise TypeError("'name' must be a str, not {}".format(type(name)))
+        raise TypeError(f"'name' must be a str, not {type(name)}")
     elif not isinstance(path, (type(None), list)):
         # Backwards-compatibility
-        raise RuntimeError(
-            "'path' must be None or a list, " "not {}".format(type(path))
-        )
+        raise RuntimeError(f"'path' must be None or a list, not {type(path)}")
 
     if path is None:
         if is_builtin(name):

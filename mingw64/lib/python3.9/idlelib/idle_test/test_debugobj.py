@@ -1,11 +1,10 @@
 "Test debugobj, coverage 40%."
 
-from idlelib import debugobj
 import unittest
+from idlelib import debugobj
 
 
 class ObjectTreeItemTest(unittest.TestCase):
-
     def test_init(self):
         ti = debugobj.ObjectTreeItem("label", 22)
         self.assertEqual(ti.labeltext, "label")
@@ -14,21 +13,18 @@ class ObjectTreeItemTest(unittest.TestCase):
 
 
 class ClassTreeItemTest(unittest.TestCase):
-
     def test_isexpandable(self):
         ti = debugobj.ClassTreeItem("label", 0)
         self.assertTrue(ti.IsExpandable())
 
 
 class AtomicObjectTreeItemTest(unittest.TestCase):
-
     def test_isexpandable(self):
         ti = debugobj.AtomicObjectTreeItem("label", 0)
         self.assertFalse(ti.IsExpandable())
 
 
 class SequenceTreeItemTest(unittest.TestCase):
-
     def test_isexpandable(self):
         ti = debugobj.SequenceTreeItem("label", ())
         self.assertFalse(ti.IsExpandable())
@@ -41,7 +37,6 @@ class SequenceTreeItemTest(unittest.TestCase):
 
 
 class DictTreeItemTest(unittest.TestCase):
-
     def test_isexpandable(self):
         ti = debugobj.DictTreeItem("label", {})
         self.assertFalse(ti.IsExpandable())

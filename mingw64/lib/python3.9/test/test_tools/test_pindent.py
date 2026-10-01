@@ -1,10 +1,11 @@
 """Tests for the pindent script in the Tools directory."""
 
 import os
-import sys
-import unittest
 import subprocess
+import sys
 import textwrap
+import unittest
+
 from test import support
 from test.support.script_helper import assert_python_ok
 from test.test_tools import scriptsdir, skip_if_missing

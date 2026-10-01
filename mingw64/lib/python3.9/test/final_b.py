@@ -3,6 +3,7 @@ Fodder for module finalization tests in test_module.
 """
 
 import shutil
+
 import test.final_a
 
 x = "b"

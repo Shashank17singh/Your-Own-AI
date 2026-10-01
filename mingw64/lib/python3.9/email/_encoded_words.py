@@ -39,22 +39,22 @@ to a public API if there is demand.
 # select the shortest possible encoding.  See their docstrings below for
 # details.
 
-import re
 import base64
 import binascii
 import functools
-from string import ascii_letters, digits
+import re
 from email import errors
+from string import ascii_letters, digits
 
 __all__ = [
-    "decode_q",
-    "encode_q",
-    "decode_b",
-    "encode_b",
-    "len_q",
-    "len_b",
     "decode",
+    "decode_b",
+    "decode_q",
     "encode",
+    "encode_b",
+    "encode_q",
+    "len_b",
+    "len_q",
 ]
 
 #
@@ -74,14 +74,13 @@ def decode_q(encoded):
 
 # dict mapping bytes to their encoded form
 class _QByteMap(dict):
-
     safe = b"-!*+/" + ascii_letters.encode("ascii") + digits.encode("ascii")
 
     def __missing__(self, key):
         if key in self.safe:
             self[key] = chr(key)
         else:
-            self[key] = "={:02X}".format(key)
+            self[key] = f"={key:02X}"
         return self[key]
 
 
@@ -194,8 +193,7 @@ def decode(ew):
     except UnicodeError:
         defects.append(
             errors.UndecodableBytesDefect(
-                "Encoded word "
-                "contains bytes not decodable using {} charset".format(charset)
+                f"Encoded word contains bytes not decodable using {charset} charset"
             )
         )
         string = bstring.decode(charset, "surrogateescape")
@@ -204,8 +202,8 @@ def decode(ew):
         if charset.lower() != "unknown-8bit":
             defects.append(
                 errors.CharsetError(
-                    "Unknown charset {} "
-                    "in encoded word; decoded as unknown bytes".format(charset)
+                    f"Unknown charset {charset} "
+                    "in encoded word; decoded as unknown bytes"
                 )
             )
     return string, charset, lang, defects
@@ -251,4 +249,4 @@ def encode(string, charset="utf-8", encoding=None, lang=""):
     encoded = _cte_encoders[encoding](bstring)
     if lang:
         lang = "*" + lang
-    return "=?{}{}?{}?{}?=".format(charset, lang, encoding, encoded)
+    return f"=?{charset}{lang}?{encoding}?{encoded}?="

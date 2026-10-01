@@ -15,12 +15,10 @@
 # - optimize tree redraw after expand of subnode
 
 import os
-
+from idlelib import zoomheight
+from idlelib.config import idleConf
 from tkinter import *
 from tkinter.ttk import Frame, Scrollbar
-
-from idlelib.config import idleConf
-from idlelib import zoomheight
 
 ICONDIR = "Icons"
 
@@ -84,7 +82,6 @@ def wheel_event(event, widget=None):
 
 
 class TreeNode:
-
     def __init__(self, canvas, parent, item):
         self.canvas = canvas
         self.parent = parent
@@ -444,7 +441,6 @@ class FileTreeItem(TreeItem):
 
 
 class ScrolledCanvas:
-
     def __init__(self, master, **opts):
         if "yscrollincrement" not in opts:
             opts["yscrollincrement"] = 17

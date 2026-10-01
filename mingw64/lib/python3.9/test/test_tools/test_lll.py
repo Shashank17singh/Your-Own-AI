@@ -2,9 +2,10 @@
 
 import os
 import tempfile
-from test import support
-from test.test_tools import skip_if_missing, import_tool
 import unittest
+
+from test import support
+from test.test_tools import import_tool, skip_if_missing
 
 skip_if_missing()
 
@@ -15,7 +16,10 @@ class lllTests(unittest.TestCase):
 
     @support.skip_unless_symlink
     def test_lll_multiple_dirs(self):
-        with tempfile.TemporaryDirectory() as dir1, tempfile.TemporaryDirectory() as dir2:
+        with (
+            tempfile.TemporaryDirectory() as dir1,
+            tempfile.TemporaryDirectory() as dir2,
+        ):
             fn1 = os.path.join(dir1, "foo1")
             fn2 = os.path.join(dir2, "foo2")
             for fn, dir in (fn1, dir1), (fn2, dir2):

@@ -4,11 +4,11 @@ import posixpath
 
 __all__ = [
     "FileWrapper",
-    "guess_scheme",
     "application_uri",
+    "guess_scheme",
     "request_uri",
-    "shift_path_info",
     "setup_testing_defaults",
+    "shift_path_info",
 ]
 
 
@@ -107,8 +107,7 @@ def shift_path_info(environ):
     del path_parts[1]
     script_name = environ.get("SCRIPT_NAME", "")
     script_name = posixpath.normpath(script_name + "/" + name)
-    if script_name.endswith("/"):
-        script_name = script_name[:-1]
+    script_name = script_name.removesuffix("/")
     if not name and not script_name.endswith("/"):
         script_name += "/"
     environ["SCRIPT_NAME"] = script_name
@@ -139,7 +138,7 @@ def setup_testing_defaults(environ):
     environ.setdefault("wsgi.run_once", 0)
     environ.setdefault("wsgi.multithread", 0)
     environ.setdefault("wsgi.multiprocess", 0)
-    from io import StringIO, BytesIO
+    from io import BytesIO, StringIO
 
     environ.setdefault("wsgi.input", BytesIO())
     environ.setdefault("wsgi.errors", StringIO())

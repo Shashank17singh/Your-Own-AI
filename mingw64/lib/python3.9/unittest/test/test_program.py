@@ -1,10 +1,11 @@
 import io
 import os
-import sys
 import subprocess
-from test import support
+import sys
 import unittest
 import unittest.test
+
+from test import support
 
 
 class Test_TestProgram(unittest.TestCase):
@@ -28,7 +29,7 @@ class Test_TestProgram(unittest.TestCase):
         result = object()
         test = object()
 
-        class FakeRunner(object):
+        class FakeRunner:
             def run(self, test):
                 self.test = test
                 return result
@@ -73,7 +74,7 @@ class Test_TestProgram(unittest.TestCase):
             )
 
     def test_defaultTest_with_string(self):
-        class FakeRunner(object):
+        class FakeRunner:
             def run(self, test):
                 self.test = test
                 return True
@@ -91,7 +92,7 @@ class Test_TestProgram(unittest.TestCase):
         self.assertEqual(("unittest.test",), program.testNames)
 
     def test_defaultTest_with_iterable(self):
-        class FakeRunner(object):
+        class FakeRunner:
             def run(self, test):
                 self.test = test
                 return True
@@ -156,7 +157,7 @@ class InitialisableProgram(unittest.TestProgram):
 RESULT = object()
 
 
-class FakeRunner(object):
+class FakeRunner:
     initArgs = None
     test = None
     raiseError = 0
@@ -216,15 +217,17 @@ class TestCommandLineArgs(unittest.TestCase):
                 program.parseArgs([None, opt])
                 self.assertIs(getattr(program, attr), True)
                 setattr(program, attr, False)
-                with support.captured_stderr() as stderr, self.assertRaises(
-                    SystemExit
-                ) as cm:
+                with (
+                    support.captured_stderr() as stderr,
+                    self.assertRaises(SystemExit) as cm,
+                ):
                     program.parseArgs([None, opt])
                 self.assertEqual(cm.exception.args, (2,))
                 setattr(program, attr, True)
-                with support.captured_stderr() as stderr, self.assertRaises(
-                    SystemExit
-                ) as cm:
+                with (
+                    support.captured_stderr() as stderr,
+                    self.assertRaises(SystemExit) as cm,
+                ):
                     program.parseArgs([None, opt])
                 self.assertEqual(cm.exception.args, (2,))
 

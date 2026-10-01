@@ -2,11 +2,11 @@
 
 __all__ = (
     "CancelledError",
-    "InvalidStateError",
-    "TimeoutError",
     "IncompleteReadError",
+    "InvalidStateError",
     "LimitOverrunError",
     "SendfileNotAvailableError",
+    "TimeoutError",
 )
 
 
@@ -41,7 +41,7 @@ class IncompleteReadError(EOFError):
     def __init__(self, partial, expected):
         r_expected = "undefined" if expected is None else repr(expected)
         super().__init__(
-            f"{len(partial)} bytes read on a total of " f"{r_expected} expected bytes"
+            f"{len(partial)} bytes read on a total of {r_expected} expected bytes"
         )
         self.partial = partial
         self.expected = expected

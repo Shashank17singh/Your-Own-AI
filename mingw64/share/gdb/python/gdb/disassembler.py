@@ -1,13 +1,14 @@
 """Disassembler related module."""
 
 import _gdb.disassembler
-from _gdb.disassembler import *  # noqa: F401,F403
+from _gdb.disassembler import *
+
 import gdb
 
 _disassemblers_dict = {}
 
 
-class Disassembler(object):
+class Disassembler:
     """A base class from which all user implemented disassemblers must
     inherit."""
 
@@ -89,8 +90,7 @@ class maint_info_py_disassemblers_cmd(gdb.Command):
         for architecture in _disassemblers_dict:
             if architecture is not None:
                 name = _disassemblers_dict[architecture].name
-                if len(name) > longest_arch_name:
-                    longest_arch_name = len(name)
+                longest_arch_name = max(longest_arch_name, len(name))
         curr_arch = ""
         if gdb.selected_inferior() is not None:
             curr_arch = gdb.selected_inferior().architecture().name()

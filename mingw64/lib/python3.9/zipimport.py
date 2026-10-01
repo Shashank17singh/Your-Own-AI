@@ -14,14 +14,14 @@ to Zip archives.
 
 # from importlib import _bootstrap_external
 # from importlib import _bootstrap  # for _verbose_message
-import _frozen_importlib_external as _bootstrap_external
-from _frozen_importlib_external import _unpack_uint16, _unpack_uint32
 import _frozen_importlib as _bootstrap  # for _verbose_message
+import _frozen_importlib_external as _bootstrap_external
 import _imp  # for check_hash_based_pycs
 import _io  # for open
 import marshal  # for loads
 import sys  # for modules
 import time  # for mktime
+from _frozen_importlib_external import _unpack_uint16, _unpack_uint32
 
 __all__ = ["ZipImportError", "zipimporter"]
 
@@ -738,8 +738,7 @@ def _get_module_code(self, fullname):
                 continue
             modpath = toc_entry[0]
             return code, ispackage, modpath
-    else:
-        raise ZipImportError(f"can't find module {fullname!r}", name=fullname)
+    raise ZipImportError(f"can't find module {fullname!r}", name=fullname)
 
 
 class _ZipImportResourceReader:

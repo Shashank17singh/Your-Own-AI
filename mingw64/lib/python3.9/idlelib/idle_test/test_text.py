@@ -4,11 +4,12 @@ Run same tests with both by creating a mixin class.
 """
 
 import unittest
-from test.support import requires
 from _tkinter import TclError
 
+from test.support import requires
 
-class TextTest(object):
+
+class TextTest:
     "Define items common to both sets of tests."
 
     hw = "hello\nworld"  # Several tests insert this after initialization.
@@ -193,7 +194,6 @@ class TextTest(object):
 
 
 class MockTextTest(TextTest, unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         from idlelib.idle_test.mock_tk import Text
@@ -216,11 +216,10 @@ class MockTextTest(TextTest, unittest.TestCase):
 
 
 class TkTextTest(TextTest, unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
-        from tkinter import Tk, Text
+        from tkinter import Text, Tk
 
         cls.Text = Text
         cls.root = Tk()

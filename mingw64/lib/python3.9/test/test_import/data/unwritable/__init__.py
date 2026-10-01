@@ -1,7 +1,7 @@
 import sys
 
 
-class MyMod(object):
+class MyMod:
     __slots__ = [
         "__builtins__",
         "__cached__",

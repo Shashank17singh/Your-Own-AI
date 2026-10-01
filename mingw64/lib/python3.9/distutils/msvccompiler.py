@@ -8,16 +8,17 @@ for the Microsoft Visual Studio.
 # hacked by Robin Becker and Thomas Heller to do a better job of
 #   finding DevStudio (through the registry)
 
-import sys, os
+import os
+import sys
+from distutils import log
+from distutils.ccompiler import CCompiler, gen_lib_options
 from distutils.errors import (
+    CompileError,
     DistutilsExecError,
     DistutilsPlatformError,
-    CompileError,
     LibError,
     LinkError,
 )
-from distutils.ccompiler import CCompiler, gen_lib_options
-from distutils import log
 
 _can_read_reg = False
 try:
@@ -50,7 +51,6 @@ except ImportError:
             "Make sure that Python modules winreg, "
             "win32api or win32con are installed."
         )
-        pass
 
 if _can_read_reg:
     HKEYS = (
@@ -134,7 +134,7 @@ class MacroExpander:
                 self.set_macro("FrameworkSDKDir", net, "sdkinstallrootv1.1")
             else:
                 self.set_macro("FrameworkSDKDir", net, "sdkinstallroot")
-        except KeyError as exc:  #
+        except KeyError:
             raise DistutilsPlatformError("""Python was built with Visual Studio 2003;
 extensions must be built with a compiler than can generate compatible binaries.
 Visual Studio 2003 was not found on this system. If you have Cygwin installed,
@@ -358,9 +358,7 @@ class MSVCCompiler(CCompiler):
                 raise CompileError("Don't know how to compile %s" % src_name)
             if strip_dir:
                 base = os.path.basename(base)
-            if ext in self._rc_extensions:
-                obj_names.append(os.path.join(output_dir, base + self.res_extension))
-            elif ext in self._mc_extensions:
+            if ext in self._rc_extensions or ext in self._mc_extensions:
                 obj_names.append(os.path.join(output_dir, base + self.res_extension))
             else:
                 obj_names.append(os.path.join(output_dir, base + self.obj_extension))
@@ -585,9 +583,8 @@ class MSVCCompiler(CCompiler):
                 libfile = os.path.join(dir, self.library_filename(name))
                 if os.path.exists(libfile):
                     return libfile
-        else:
-            # Oops, didn't find it in *any* of 'dirs'
-            return None
+        # Oops, didn't find it in *any* of 'dirs'
+        return None
 
     # Helper methods for using the MSVC registry settings
 
@@ -673,7 +670,5 @@ class MSVCCompiler(CCompiler):
 if get_build_version() >= 8.0:
     log.debug("Importing new compiler from distutils.msvc9compiler")
     OldMSVCCompiler = MSVCCompiler
-    from distutils.msvc9compiler import MSVCCompiler
-
     # get_build_architecture not really relevant now we support cross-compile
-    from distutils.msvc9compiler import MacroExpander
+    from distutils.msvc9compiler import MacroExpander, MSVCCompiler

@@ -1,14 +1,14 @@
-import unittest
-from test import support
 import base64
 import binascii
 import os
+import unittest
 from array import array
+
+from test import support
 from test.support import script_helper
 
 
 class LegacyBase64TestCase(unittest.TestCase):
-
     # Legacy API is not as permissive as the modern API
     def check_type_errors(self, f):
         self.assertRaises(TypeError, f, "")
@@ -100,7 +100,6 @@ class LegacyBase64TestCase(unittest.TestCase):
 
 
 class BaseXYTestCase(unittest.TestCase):
-
     # Modern API completely ignores exported dimension and format data and
     # treats any buffer as a stream of bytes
     def check_encode_type_errors(self, f):
@@ -372,7 +371,7 @@ class BaseXYTestCase(unittest.TestCase):
     def test_b32decode_error(self):
         tests = [b"abc", b"ABCDEF==", b"==ABCDEF"]
         prefixes = [b"M", b"ME", b"MFRA", b"MFRGG", b"MFRGGZA", b"MFRGGZDF"]
-        for i in range(0, 17):
+        for i in range(17):
             if i:
                 tests.append(b"=" * i)
             for prefix in prefixes:

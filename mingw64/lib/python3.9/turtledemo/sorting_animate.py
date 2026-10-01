@@ -11,8 +11,8 @@ stretched to rectangles by shapesize()
  ---------------------------------------
 """
 
-from turtle import *
 import random
+from turtle import *
 
 
 class Block(Turtle):
@@ -31,7 +31,7 @@ class Block(Turtle):
         self.fillcolor("black")
 
     def __repr__(self):
-        return "Block size: {0}".format(self.size)
+        return f"Block size: {self.size}"
 
 
 class Shelf(list):
@@ -81,12 +81,11 @@ def isort(shelf):
         while hole > 0 and shelf[i].size < shelf[hole - 1].size:
             hole = hole - 1
         shelf.insert(hole, shelf.pop(i))
-    return
 
 
 def ssort(shelf):
     length = len(shelf)
-    for j in range(0, length - 1):
+    for j in range(length - 1):
         imin = j
         for i in range(j + 1, length):
             if shelf[i].size < shelf[imin].size:

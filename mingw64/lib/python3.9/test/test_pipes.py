@@ -1,9 +1,10 @@
-import pipes
 import os
+import pipes
+import shutil
 import string
 import unittest
-import shutil
-from test.support import TESTFN, run_unittest, unlink, reap_children
+
+from test.support import TESTFN, reap_children, run_unittest, unlink
 
 if os.name != "posix":
     raise unittest.SkipTest("pipes module only works on posix")

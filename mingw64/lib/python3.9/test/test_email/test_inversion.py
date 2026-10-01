@@ -6,9 +6,10 @@ producing RFC valid messages.
 
 import io
 import unittest
-from email import policy, message_from_bytes
-from email.message import EmailMessage
+from email import message_from_bytes, policy
 from email.generator import BytesGenerator
+from email.message import EmailMessage
+
 from test.test_email import TestEmailBase, parameterize
 
 
@@ -24,7 +25,6 @@ def dedent(bstr):
 
 @parameterize
 class TestInversion(TestEmailBase):
-
     policy = policy.default
     message = EmailMessage
 

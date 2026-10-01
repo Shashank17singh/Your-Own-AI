@@ -1,14 +1,15 @@
 import os.path
-from os.path import abspath
+import pickle
 import re
 import sys
 import types
-import pickle
-from test import support
-import test.test_importlib.util
 import unittest
 import unittest.mock
 import unittest.test
+from os.path import abspath
+
+import test.test_importlib.util
+from test import support
 
 
 class TestableTestProgram(unittest.TestProgram):
@@ -162,7 +163,7 @@ class TestDiscovery(unittest.TestCase):
         os.path.isfile = lambda path: os.path.basename(path) not in directories
         self.addCleanup(restore_isfile)
 
-        class Module(object):
+        class Module:
             paths = []
             load_tests_args = []
 
@@ -230,7 +231,7 @@ class TestDiscovery(unittest.TestCase):
         os.path.isfile = lambda path: os.path.basename(path) not in directories
         self.addCleanup(restore_isfile)
 
-        class Module(object):
+        class Module:
             paths = []
             load_tests_args = []
 
@@ -304,7 +305,7 @@ class TestDiscovery(unittest.TestCase):
         os.path.isdir = lambda path: not path.endswith(".py")
         os.path.isfile = lambda path: path.endswith(".py")
 
-        class Module(object):
+        class Module:
             paths = []
             load_tests_args = []
 
@@ -406,7 +407,7 @@ class TestDiscovery(unittest.TestCase):
         os.path.isdir = lambda path: not path.endswith(".py")
         self.addCleanup(sys.path.remove, abspath("/toplevel"))
 
-        class Module(object):
+        class Module:
             paths = []
             load_tests_args = []
 
@@ -589,7 +590,7 @@ class TestDiscovery(unittest.TestCase):
         program = object.__new__(unittest.TestProgram)
         program._initArgParsers()
 
-        class Loader(object):
+        class Loader:
             args = []
 
             def discover(self, start_dir, pattern, top_level_dir):
@@ -603,7 +604,7 @@ class TestDiscovery(unittest.TestCase):
     def test_command_line_handling_do_discovery_calls_loader(self):
         program = TestableTestProgram()
 
-        class Loader(object):
+        class Loader:
             args = []
 
             def discover(self, start_dir, pattern, top_level_dir):
@@ -668,7 +669,7 @@ class TestDiscovery(unittest.TestCase):
         self.assertTrue(program.catchbreak)
 
     def setup_module_clash(self):
-        class Module(object):
+        class Module:
             __file__ = "bar/foo.py"
 
         sys.modules["foo"] = Module
@@ -778,7 +779,7 @@ class TestDiscovery(unittest.TestCase):
         with self.assertRaises(TypeError) as cm:
             loader.discover("sys")
         self.assertEqual(
-            str(cm.exception), "Can not use builtin modules " "as dotted module names"
+            str(cm.exception), "Can not use builtin modules as dotted module names"
         )
 
     def test_discovery_from_dotted_namespace_packages(self):
@@ -822,7 +823,7 @@ class TestDiscovery(unittest.TestCase):
                         loader.discover("package")
                     self.assertEqual(
                         str(cm.exception),
-                        "don't know how to discover from {!r}".format(package),
+                        f"don't know how to discover from {package!r}",
                     )
 
 

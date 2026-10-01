@@ -1,10 +1,11 @@
-import unittest
-from weakref import WeakSet
-import string
-from collections import UserString as ustr
-from collections.abc import Set, MutableSet
-import gc
 import contextlib
+import gc
+import string
+import unittest
+from collections import UserString as ustr
+from collections.abc import MutableSet, Set
+from weakref import WeakSet
+
 from test import support
 
 
@@ -18,7 +19,6 @@ class RefCycle:
 
 
 class TestWeakSet(unittest.TestCase):
-
     def setUp(self):
         # need to keep references to them
         self.items = [ustr(c) for c in ("a", "b", "c")]

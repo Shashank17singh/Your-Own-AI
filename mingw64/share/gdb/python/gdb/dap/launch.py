@@ -1,6 +1,8 @@
 import re
-from typing import Mapping, Optional, Sequence
+from collections.abc import Mapping, Sequence
+
 import gdb
+
 from .events import exec_and_expect_stop, expect_process, expect_stop
 from .server import (
     DeferredRequest,
@@ -43,10 +45,10 @@ def file_command(program):
 @request("launch", on_dap_thread=True)
 def launch(
     *,
-    program: Optional[str] = None,
-    cwd: Optional[str] = None,
+    program: str | None = None,
+    cwd: str | None = None,
     args: Sequence[str] = (),
-    env: Optional[Mapping[str, str]] = None,
+    env: Mapping[str, str] | None = None,
     stopAtBeginningOfMainSubprogram: bool = False,
     stopOnEntry: bool = False,
     **extra,
@@ -79,7 +81,6 @@ def launch(
     def _launch_impl():
         send_gdb_with_response(_setup_launch)
         send_gdb(_do_launch)
-        return None
 
     return _LaunchOrAttachDeferredRequest(_launch_impl)
 
@@ -87,9 +88,9 @@ def launch(
 @request("attach", on_dap_thread=True)
 def attach(
     *,
-    program: Optional[str] = None,
-    pid: Optional[int] = None,
-    target: Optional[str] = None,
+    program: str | None = None,
+    pid: int | None = None,
+    target: str | None = None,
     **args,
 ):
     @in_gdb_thread
@@ -105,7 +106,6 @@ def attach(
         expect_process("attach")
         expect_stop("attach")
         exec_and_log(cmd)
-        return None
 
     @in_dap_thread
     def _attach_impl():

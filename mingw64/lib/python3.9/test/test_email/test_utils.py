@@ -1,14 +1,14 @@
 import datetime
-from email import utils
-import test.support
+import os.path
+import sys
 import time
 import unittest
-import sys
-import os.path
+from email import utils
+
+import test.support
 
 
 class DateTimeTests(unittest.TestCase):
-
     datestring = "Sun, 23 Sep 2001 20:10:55"
     dateargs = (2001, 9, 23, 20, 10, 55)
     offsetstring = " -0700"
@@ -54,7 +54,6 @@ class DateTimeTests(unittest.TestCase):
 
 
 class LocaltimeTests(unittest.TestCase):
-
     def test_localtime_is_tz_aware_daylight_true(self):
         test.support.patch(self, time, "daylight", True)
         t = utils.localtime()
@@ -149,7 +148,6 @@ class LocaltimeTests(unittest.TestCase):
 # on Mac OS X Snow Leopard.
 @test.support.requires_mac_ver(10, 7)
 class FormatDateTests(unittest.TestCase):
-
     @test.support.run_with_tz("Europe/Minsk")
     def test_formatdate(self):
         timeval = time.mktime((2011, 12, 1, 18, 0, 0, 4, 335, 0))

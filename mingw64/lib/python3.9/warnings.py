@@ -3,14 +3,14 @@
 import sys
 
 __all__ = [
+    "catch_warnings",
+    "filterwarnings",
+    "formatwarning",
+    "resetwarnings",
+    "showwarning",
+    "simplefilter",
     "warn",
     "warn_explicit",
-    "showwarning",
-    "formatwarning",
-    "filterwarnings",
-    "simplefilter",
-    "resetwarnings",
-    "catch_warnings",
 ]
 
 
@@ -118,7 +118,7 @@ def _showwarnmsg(msg):
             # warnings.showwarning() was replaced
             if not callable(sw):
                 raise TypeError(
-                    "warnings.showwarning() must be set to a " "function or method"
+                    "warnings.showwarning() must be set to a function or method"
                 )
 
             sw(msg.message, msg.category, msg.filename, msg.lineno, msg.file, msg.line)
@@ -174,7 +174,7 @@ def filterwarnings(
         import re
 
     if message:
-        message = re.compile(message, re.I)
+        message = re.compile(message, re.IGNORECASE)
     else:
         message = None
     if module:
@@ -230,8 +230,6 @@ def resetwarnings():
 
 class _OptionError(Exception):
     """Exception used by option processing helpers."""
-
-    pass
 
 
 # Helper to process -W options passed via sys.warnoptions
@@ -331,8 +329,7 @@ def warn(message, category=None, stacklevel=1, source=None):
         category = UserWarning
     if not (isinstance(category, type) and issubclass(category, Warning)):
         raise TypeError(
-            "category must be a Warning subclass, "
-            "not '{:s}'".format(type(category).__name__)
+            f"category must be a Warning subclass, not '{type(category).__name__:s}'"
         )
     # Get context information
     try:
@@ -446,8 +443,7 @@ def warn_explicit(
     _showwarnmsg(msg)
 
 
-class WarningMessage(object):
-
+class WarningMessage:
     _WARNING_DETAILS = (
         "message",
         "category",
@@ -478,7 +474,7 @@ class WarningMessage(object):
         )
 
 
-class catch_warnings(object):
+class catch_warnings:
     """A context manager that copies and restores the warnings filter upon
     exiting the context.
 
@@ -547,7 +543,8 @@ class catch_warnings(object):
 def _warn_unawaited_coroutine(coro):
     msg_lines = [f"coroutine '{coro.__qualname__}' was never awaited\n"]
     if coro.cr_origin is not None:
-        import linecache, traceback
+        import linecache
+        import traceback
 
         def extract():
             for filename, lineno, funcname in reversed(coro.cr_origin):
@@ -576,12 +573,12 @@ def _warn_unawaited_coroutine(coro):
 # If either if the compiled regexs are None, match anything.
 try:
     from _warnings import (
-        filters,
         _defaultaction,
+        _filters_mutated,
         _onceregistry,
+        filters,
         warn,
         warn_explicit,
-        _filters_mutated,
     )
 
     defaultaction = _defaultaction

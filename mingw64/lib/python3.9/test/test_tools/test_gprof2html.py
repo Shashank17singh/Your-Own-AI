@@ -2,10 +2,11 @@
 
 import os
 import sys
+import tempfile
 import unittest
 from unittest import mock
-import tempfile
-from test.test_tools import skip_if_missing, import_tool
+
+from test.test_tools import import_tool, skip_if_missing
 
 skip_if_missing()
 
@@ -22,9 +23,10 @@ class Gprof2htmlTests(unittest.TestCase):
         sys.argv = []
 
     def test_gprof(self):
-        with mock.patch.object(
-            self.gprof, "webbrowser"
-        ) as wmock, tempfile.TemporaryDirectory() as tmpdir:
+        with (
+            mock.patch.object(self.gprof, "webbrowser") as wmock,
+            tempfile.TemporaryDirectory() as tmpdir,
+        ):
             fn = os.path.join(tmpdir, "abc")
             open(fn, "w").close()
             sys.argv = ["gprof2html", fn]

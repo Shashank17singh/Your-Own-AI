@@ -23,10 +23,10 @@ import os
 import socket
 import stat
 import subprocess
+import sys
 import threading
 import time
 import traceback
-import sys
 import warnings
 import weakref
 
@@ -35,17 +35,19 @@ try:
 except ImportError:  # pragma: no cover
     ssl = None
 
-from . import constants
-from . import coroutines
-from . import events
-from . import exceptions
-from . import futures
-from . import protocols
-from . import sslproto
-from . import staggered
-from . import tasks
-from . import transports
-from . import trsock
+from . import (
+    constants,
+    coroutines,
+    events,
+    exceptions,
+    futures,
+    protocols,
+    sslproto,
+    staggered,
+    tasks,
+    transports,
+    trsock,
+)
 from .log import logger
 
 __all__ = ("BaseEventLoop",)
@@ -117,11 +119,13 @@ def _ipaddr_info(host, port, family, type, proto, flowinfo=0, scopeid=0):
     else:
         return None
 
-    if port is None:
-        port = 0
-    elif isinstance(port, bytes) and port == b"":
-        port = 0
-    elif isinstance(port, str) and port == "":
+    if (
+        port is None
+        or isinstance(port, bytes)
+        and port == b""
+        or isinstance(port, str)
+        and port == ""
+    ):
         port = 0
     else:
         # If port's a service name like "http", don't skip getaddrinfo.
@@ -233,7 +237,7 @@ class _SendfileFallbackProtocol(protocols.Protocol):
 
     def connection_made(self, transport):
         raise RuntimeError(
-            "Invalid state: " "connection should have been established already."
+            "Invalid state: connection should have been established already."
         )
 
     def connection_lost(self, exc):
@@ -279,7 +283,6 @@ class _SendfileFallbackProtocol(protocols.Protocol):
 
 
 class Server(events.AbstractServer):
-
     def __init__(
         self,
         loop,
@@ -405,7 +408,6 @@ class Server(events.AbstractServer):
 
 
 class BaseEventLoop(events.AbstractEventLoop):
-
     def __init__(self):
         self._timer_cancelled_count = 0
         self._closed = False
@@ -802,7 +804,7 @@ class BaseEventLoop(events.AbstractEventLoop):
             raise TypeError(f"coroutines cannot be used with {method}()")
         if not callable(callback):
             raise TypeError(
-                f"a callable object was expected by {method}(), " f"got {callback!r}"
+                f"a callable object was expected by {method}(), got {callback!r}"
             )
 
     def _call_soon(self, callback, args, context):
@@ -910,7 +912,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         self._check_sendfile_params(sock, file, offset, count)
         try:
             return await self._sock_sendfile_native(sock, file, offset, count)
-        except exceptions.SendfileNotAvailableError as exc:
+        except exceptions.SendfileNotAvailableError:
             if not fallback:
                 raise
         return await self._sock_sendfile_fallback(sock, file, offset, count)
@@ -957,21 +959,13 @@ class BaseEventLoop(events.AbstractEventLoop):
             raise ValueError("only SOCK_STREAM type sockets are supported")
         if count is not None:
             if not isinstance(count, int):
-                raise TypeError(
-                    "count must be a positive integer (got {!r})".format(count)
-                )
+                raise TypeError(f"count must be a positive integer (got {count!r})")
             if count <= 0:
-                raise ValueError(
-                    "count must be a positive integer (got {!r})".format(count)
-                )
+                raise ValueError(f"count must be a positive integer (got {count!r})")
         if not isinstance(offset, int):
-            raise TypeError(
-                "offset must be a non-negative integer (got {!r})".format(offset)
-            )
+            raise TypeError(f"offset must be a non-negative integer (got {offset!r})")
         if offset < 0:
-            raise ValueError(
-                "offset must be a non-negative integer (got {!r})".format(offset)
-            )
+            raise ValueError(f"offset must be a non-negative integer (got {offset!r})")
 
     async def _connect_sock(self, exceptions, addr_info, local_addr_infos=None):
         """Create, bind and connect one socket."""
@@ -1053,7 +1047,7 @@ class BaseEventLoop(events.AbstractEventLoop):
             # don't judge it here.)
             if not host:
                 raise ValueError(
-                    "You must set server_hostname " "when using ssl without a host"
+                    "You must set server_hostname when using ssl without a host"
                 )
             server_hostname = host
 
@@ -1237,7 +1231,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         if mode is constants._SendfileMode.TRY_NATIVE:
             try:
                 return await self._sendfile_native(transport, file, offset, count)
-            except exceptions.SendfileNotAvailableError as exc:
+            except exceptions.SendfileNotAvailableError:
                 if not fallback:
                     raise
 
@@ -1398,7 +1392,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                     except OSError as err:
                         # Directory may have permissions only to create socket.
                         logger.error(
-                            "Unable to check or remove stale UNIX " "socket %r: %r",
+                            "Unable to check or remove stale UNIX socket %r: %r",
                             local_addr,
                             err,
                         )
@@ -1409,9 +1403,9 @@ class BaseEventLoop(events.AbstractEventLoop):
                 addr_infos = {}  # Using order preserving dict
                 for idx, addr in ((0, local_addr), (1, remote_addr)):
                     if addr is not None:
-                        assert (
-                            isinstance(addr, tuple) and len(addr) == 2
-                        ), "2-tuple is expected"
+                        assert isinstance(addr, tuple) and len(addr) == 2, (
+                            "2-tuple is expected"
+                        )
 
                         infos = await self._ensure_resolved(
                             addr,
@@ -1501,8 +1495,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         if self._debug:
             if local_addr:
                 logger.info(
-                    "Datagram endpoint local_addr=%r remote_addr=%r "
-                    "created: (%r, %r)",
+                    "Datagram endpoint local_addr=%r remote_addr=%r created: (%r, %r)",
                     local_addr,
                     remote_addr,
                     transport,
@@ -1510,7 +1503,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                 )
             else:
                 logger.debug(
-                    "Datagram endpoint remote_addr=%r created: " "(%r, %r)",
+                    "Datagram endpoint remote_addr=%r created: (%r, %r)",
                     remote_addr,
                     transport,
                     protocol,
@@ -1613,7 +1606,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                     af, socktype, proto, canonname, sa = res
                     try:
                         sock = socket.socket(af, socktype, proto)
-                    except socket.error:
+                    except OSError:
                         # Assume it's a bad family/type/protocol combination.
                         if self._debug:
                             logger.warning(
@@ -1860,9 +1853,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         documentation for details about context).
         """
         if handler is not None and not callable(handler):
-            raise TypeError(
-                f"A callable object or None is expected, " f"got {handler!r}"
-            )
+            raise TypeError(f"A callable object or None is expected, got {handler!r}")
         self._exception_handler = handler
 
     def default_exception_handler(self, context):

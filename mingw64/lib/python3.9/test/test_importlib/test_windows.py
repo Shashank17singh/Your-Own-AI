@@ -6,22 +6,24 @@ import os
 import re
 import sys
 import unittest
-from test import support
-from distutils.util import get_platform
 from contextlib import contextmanager
+from distutils.util import get_platform
+
+from test import support
+
 from .util import temp_module
 
 support.import_module("winreg", required_on=["win"])
 from winreg import (
-    CreateKey,
     HKEY_CURRENT_USER,
-    SetValue,
-    REG_SZ,
     KEY_ALL_ACCESS,
-    EnumKey,
+    REG_SZ,
     CloseKey,
+    CreateKey,
     DeleteKey,
+    EnumKey,
     OpenKey,
+    SetValue,
 )
 
 
@@ -66,7 +68,7 @@ def setup_module(machinery, name, path=None):
 class WindowsRegistryFinderTests:
     # The module name is process-specific, allowing for
     # simultaneous runs of the same test on a single machine.
-    test_module = "spamham{}".format(os.getpid())
+    test_module = f"spamham{os.getpid()}"
 
     def test_find_spec_missing(self):
         spec = self.machinery.WindowsRegistryFinder.find_spec("spam")

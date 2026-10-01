@@ -13,22 +13,20 @@ for older versions of VS in distutils.msvccompiler.
 # ported to VS2005 and VS 2008 by Christian Heimes
 
 import os
+import re
 import subprocess
 import sys
-import re
-
+import winreg
+from distutils import log
+from distutils.ccompiler import CCompiler, gen_lib_options
 from distutils.errors import (
+    CompileError,
     DistutilsExecError,
     DistutilsPlatformError,
-    CompileError,
     LibError,
     LinkError,
 )
-from distutils.ccompiler import CCompiler, gen_lib_options
-from distutils import log
 from distutils.util import get_platform
-
-import winreg
 
 RegOpenKeyEx = winreg.OpenKeyEx
 RegEnumKey = winreg.EnumKey
@@ -131,7 +129,6 @@ class Reg:
 
 
 class MacroExpander:
-
     def __init__(self, version):
         self.macros = {}
         self.vsbase = VS_BASE % version
@@ -469,9 +466,7 @@ class MSVCCompiler(CCompiler):
                 raise CompileError("Don't know how to compile %s" % src_name)
             if strip_dir:
                 base = os.path.basename(base)
-            if ext in self._rc_extensions:
-                obj_names.append(os.path.join(output_dir, base + self.res_extension))
-            elif ext in self._mc_extensions:
+            if ext in self._rc_extensions or ext in self._mc_extensions:
                 obj_names.append(os.path.join(output_dir, base + self.res_extension))
             else:
                 obj_names.append(os.path.join(output_dir, base + self.obj_extension))
@@ -788,9 +783,8 @@ class MSVCCompiler(CCompiler):
                 libfile = os.path.join(dir, self.library_filename(name))
                 if os.path.exists(libfile):
                     return libfile
-        else:
-            # Oops, didn't find it in *any* of 'dirs'
-            return None
+        # Oops, didn't find it in *any* of 'dirs'
+        return None
 
     # Helper methods for using the MSVC registry settings
 

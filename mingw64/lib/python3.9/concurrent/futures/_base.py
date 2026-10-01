@@ -40,28 +40,20 @@ LOGGER = logging.getLogger("concurrent.futures")
 class Error(Exception):
     """Base class for all future-related exceptions."""
 
-    pass
-
 
 class CancelledError(Error):
     """The Future was cancelled."""
-
-    pass
 
 
 class TimeoutError(Error):
     """The operation exceeded the given deadline."""
 
-    pass
-
 
 class InvalidStateError(Error):
     """The operation is not allowed in this state."""
 
-    pass
 
-
-class _Waiter(object):
+class _Waiter:
     """Provides the event that wait() and as_completed() block on."""
 
     def __init__(self):
@@ -82,22 +74,22 @@ class _AsCompletedWaiter(_Waiter):
     """Used by as_completed()."""
 
     def __init__(self):
-        super(_AsCompletedWaiter, self).__init__()
+        super().__init__()
         self.lock = threading.Lock()
 
     def add_result(self, future):
         with self.lock:
-            super(_AsCompletedWaiter, self).add_result(future)
+            super().add_result(future)
             self.event.set()
 
     def add_exception(self, future):
         with self.lock:
-            super(_AsCompletedWaiter, self).add_exception(future)
+            super().add_exception(future)
             self.event.set()
 
     def add_cancelled(self, future):
         with self.lock:
-            super(_AsCompletedWaiter, self).add_cancelled(future)
+            super().add_cancelled(future)
             self.event.set()
 
 
@@ -148,7 +140,7 @@ class _AllCompletedWaiter(_Waiter):
         self._decrement_pending_calls()
 
 
-class _AcquireFutures(object):
+class _AcquireFutures:
     """A context manager that does an ordered acquire of Future conditions."""
 
     def __init__(self, futures):
@@ -320,7 +312,7 @@ def wait(fs, timeout=None, return_when=ALL_COMPLETED):
     return DoneAndNotDoneFutures(done, set(fs) - done)
 
 
-class Future(object):
+class Future:
     """Represents the result of an asynchronous computation."""
 
     def __init__(self):
@@ -542,7 +534,7 @@ class Future(object):
         """
         with self._condition:
             if self._state in {CANCELLED, CANCELLED_AND_NOTIFIED, FINISHED}:
-                raise InvalidStateError("{}: {!r}".format(self._state, self))
+                raise InvalidStateError(f"{self._state}: {self!r}")
             self._result = result
             self._state = FINISHED
             for waiter in self._waiters:
@@ -557,7 +549,7 @@ class Future(object):
         """
         with self._condition:
             if self._state in {CANCELLED, CANCELLED_AND_NOTIFIED, FINISHED}:
-                raise InvalidStateError("{}: {!r}".format(self._state, self))
+                raise InvalidStateError(f"{self._state}: {self!r}")
             self._exception = exception
             self._state = FINISHED
             for waiter in self._waiters:
@@ -568,7 +560,7 @@ class Future(object):
     __class_getitem__ = classmethod(types.GenericAlias)
 
 
-class Executor(object):
+class Executor:
     """This is an abstract base class for concrete asynchronous executors."""
 
     def submit(self, fn, /, *args, **kwargs):
@@ -641,7 +633,6 @@ class Executor(object):
                 futures. Futures that are completed or running will not be
                 cancelled.
         """
-        pass
 
     def __enter__(self):
         return self

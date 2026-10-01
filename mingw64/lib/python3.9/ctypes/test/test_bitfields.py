@@ -1,9 +1,8 @@
+import _ctypes_test
+import os
+import unittest
 from ctypes import *
 from ctypes.test import need_symbol
-import unittest
-import os
-
-import _ctypes_test
 
 
 class BITS(Structure):
@@ -35,7 +34,6 @@ func.argtypes = POINTER(BITS), c_char
 
 
 class C_Test(unittest.TestCase):
-
     def test_ints(self):
         for i in range(512):
             for name in "ABCDEFGHI":
@@ -61,7 +59,6 @@ int_types = unsigned_int_types + signed_int_types
 
 
 class BitFieldTest(unittest.TestCase):
-
     def test_longlong(self):
         class X(Structure):
             _fields_ = [

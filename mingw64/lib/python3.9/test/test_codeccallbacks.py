@@ -73,7 +73,6 @@ class NoObjectUnicodeTranslateError(UnicodeTranslateError):
 
 
 class CodecCallbackTest(unittest.TestCase):
-
     def test_xmlcharrefreplace(self):
         # replace unencodable characters which numeric character entities.
         # For ascii, latin-1 and charmaps this is completely implemented

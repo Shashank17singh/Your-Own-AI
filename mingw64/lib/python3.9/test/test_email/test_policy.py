@@ -1,12 +1,12 @@
-import io
-import types
-import textwrap
-import unittest
 import email.errors
-import email.policy
-import email.parser
 import email.generator
 import email.message
+import email.parser
+import email.policy
+import io
+import textwrap
+import types
+import unittest
 from email import headerregistry
 
 
@@ -17,7 +17,6 @@ def make_defaults(base_defaults, differences):
 
 
 class PolicyAPITests(unittest.TestCase):
-
     longMessage = True
 
     # Base default values.
@@ -72,9 +71,7 @@ class PolicyAPITests(unittest.TestCase):
                     self.assertEqual(
                         getattr(policy, attr),
                         value,
-                        (
-                            "change {} docs/docstrings if defaults have " "changed"
-                        ).format(policy),
+                        (f"change {policy} docs/docstrings if defaults have changed"),
                     )
 
     def test_all_attributes_covered(self):
@@ -86,9 +83,7 @@ class PolicyAPITests(unittest.TestCase):
                     ):
                         continue
                     else:
-                        self.assertIn(
-                            attr, expected, "{} is not fully tested".format(attr)
-                        )
+                        self.assertIn(attr, expected, f"{attr} is not fully tested")
 
     def test_abc(self):
         with self.assertRaises(TypeError) as cm:
@@ -297,7 +292,6 @@ class TestException(Exception):
 
 
 class TestPolicyPropagation(unittest.TestCase):
-
     # The abstract methods are used by the parser but not by the wrapper
     # functions that call it, so if the exception gets raised we know that the
     # policy was actually propagated all the way to feedparser.
@@ -351,7 +345,8 @@ class TestPolicyPropagation(unittest.TestCase):
         self.assertIs(msg.policy, self.policy)
 
     def test_parser_propagates_policy_to_sub_messages(self):
-        msg = self._make_msg(textwrap.dedent("""\
+        msg = self._make_msg(
+            textwrap.dedent("""\
             Subject: mime test
             MIME-Version: 1.0
             Content-Type: multipart/mixed, boundary="XXX"
@@ -365,7 +360,8 @@ class TestPolicyPropagation(unittest.TestCase):
 
             test2
             --XXX--
-            """))
+            """)
+        )
         for part in msg.walk():
             self.assertIs(part.policy, self.policy)
 
@@ -386,7 +382,6 @@ class TestPolicyPropagation(unittest.TestCase):
 
 
 class TestConcretePolicies(unittest.TestCase):
-
     def test_header_store_parse_rejects_newlines(self):
         instance = email.policy.EmailPolicy()
         self.assertRaises(

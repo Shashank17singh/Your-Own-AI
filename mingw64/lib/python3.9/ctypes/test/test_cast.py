@@ -1,11 +1,10 @@
+import sys
+import unittest
 from ctypes import *
 from ctypes.test import need_symbol
-import unittest
-import sys
 
 
 class Test(unittest.TestCase):
-
     def test_array2pointer(self):
         array = (c_int * 3)(42, 17, 2)
 

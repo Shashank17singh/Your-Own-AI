@@ -8,8 +8,8 @@ import threading
 import time
 import unittest
 
-from test.fork_wait import ForkWait
 from test import support
+from test.fork_wait import ForkWait
 
 # Skip test if fork does not exist.
 support.get_attribute(os, "fork")

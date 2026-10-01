@@ -1,8 +1,9 @@
+import atexit
+import io
+import os
 import sys
 import unittest
-import io
-import atexit
-import os
+
 from test import support
 from test.support import script_helper
 
@@ -37,7 +38,6 @@ def exit():
 
 
 class GeneralTest(unittest.TestCase):
-
     def setUp(self):
         self.save_stdout = sys.stdout
         self.save_stderr = sys.stderr
@@ -187,7 +187,6 @@ class GeneralTest(unittest.TestCase):
 
 @support.cpython_only
 class SubinterpreterTest(unittest.TestCase):
-
     def test_callbacks_leak(self):
         # This test shows a leak in refleak mode if atexit doesn't
         # take care to free callbacks in its per-subinterpreter module
@@ -225,13 +224,13 @@ class SubinterpreterTest(unittest.TestCase):
         expected = b"The test has passed!"
         r, w = os.pipe()
 
-        code = r"""if 1:
+        code = rf"""if 1:
             import os
             import atexit
             def callback():
-                os.write({:d}, b"The test has passed!")
+                os.write({w:d}, b"The test has passed!")
             atexit.register(callback)
-        """.format(w)
+        """
         ret = support.run_in_subinterp(code)
         os.close(w)
         self.assertEqual(os.read(r, len(expected)), expected)

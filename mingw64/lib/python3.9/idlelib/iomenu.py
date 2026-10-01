@@ -4,13 +4,9 @@ import shlex
 import sys
 import tempfile
 import tokenize
-
-from tkinter import filedialog
-from tkinter import messagebox
-from tkinter.simpledialog import askstring
-
-import idlelib
 from idlelib.config import idleConf
+from tkinter import filedialog, messagebox
+from tkinter.simpledialog import askstring
 
 encoding = "utf-8"
 if sys.platform == "win32":
@@ -165,7 +161,7 @@ class IOBinding:
             if eol_convention is not None:
                 messagebox.showwarning(
                     "Mixed Newlines",
-                    "Mixed newlines detected.\n" "The file will be changed on save.",
+                    "Mixed newlines detected.\nThe file will be changed on save.",
                     parent=self.text,
                 )
                 converted = True
@@ -399,7 +395,7 @@ class IOBinding:
 
 
 def _io_binding(parent):  # htest #
-    from tkinter import Toplevel, Text
+    from tkinter import Text, Toplevel
 
     root = Toplevel(parent)
     root.title("Test IOBinding")

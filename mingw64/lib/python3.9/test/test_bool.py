@@ -1,13 +1,12 @@
 # Test properties of bool promised by PEP 285
 
-import unittest
-from test import support
-
 import os
+import unittest
+
+from test import support
 
 
 class BoolTest(unittest.TestCase):
-
     def test_subclass(self):
         try:
 
@@ -169,7 +168,7 @@ class BoolTest(unittest.TestCase):
         self.assertIs(bool(0), False)
         self.assertIs(bool("hello"), True)
         self.assertIs(bool(""), False)
-        self.assertIs(bool(), False)
+        self.assertIs(False, False)
 
     def test_keyword_args(self):
         with self.assertRaisesRegex(TypeError, "keyword argument"):
@@ -303,13 +302,13 @@ class BoolTest(unittest.TestCase):
         # it's related.
         check = lambda o: self.assertRaises(TypeError, bool, o)
 
-        class Foo(object):
+        class Foo:
             def __bool__(self):
                 return self
 
         check(Foo())
 
-        class Bar(object):
+        class Bar:
             def __bool__(self):
                 return "Yes"
 

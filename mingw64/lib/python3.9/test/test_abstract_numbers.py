@@ -3,7 +3,7 @@
 import math
 import operator
 import unittest
-from numbers import Complex, Real, Rational, Integral
+from numbers import Complex, Integral, Rational, Real
 
 
 class TestNumbers(unittest.TestCase):
@@ -11,21 +11,21 @@ class TestNumbers(unittest.TestCase):
         self.assertTrue(issubclass(int, Integral))
         self.assertTrue(issubclass(int, Complex))
 
-        self.assertEqual(7, int(7).real)
-        self.assertEqual(0, int(7).imag)
-        self.assertEqual(7, int(7).conjugate())
-        self.assertEqual(-7, int(-7).conjugate())
-        self.assertEqual(7, int(7).numerator)
-        self.assertEqual(1, int(7).denominator)
+        self.assertEqual(7, (7).real)
+        self.assertEqual(0, (7).imag)
+        self.assertEqual(7, (7).conjugate())
+        self.assertEqual(-7, (-7).conjugate())
+        self.assertEqual(7, (7).numerator)
+        self.assertEqual(1, (7).denominator)
 
     def test_float(self):
         self.assertFalse(issubclass(float, Rational))
         self.assertTrue(issubclass(float, Real))
 
-        self.assertEqual(7.3, float(7.3).real)
-        self.assertEqual(0, float(7.3).imag)
-        self.assertEqual(7.3, float(7.3).conjugate())
-        self.assertEqual(-7.3, float(-7.3).conjugate())
+        self.assertEqual(7.3, (7.3).real)
+        self.assertEqual(0, (7.3).imag)
+        self.assertEqual(7.3, (7.3).conjugate())
+        self.assertEqual(-7.3, (-7.3).conjugate())
 
     def test_complex(self):
         self.assertFalse(issubclass(complex, Real))

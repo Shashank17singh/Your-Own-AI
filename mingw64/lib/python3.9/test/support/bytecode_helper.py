@@ -1,8 +1,8 @@
 """bytecode_helper - support tools for testing correct bytecode generation"""
 
-import unittest
 import dis
 import io
+import unittest
 
 _UNSPECIFIED = object()
 

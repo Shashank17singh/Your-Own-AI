@@ -172,8 +172,8 @@ def test():
 
 
 def testall(list, recursive, toplevel):
-    import sys
     import os
+    import sys
 
     for filename in list:
         if os.path.isdir(filename):

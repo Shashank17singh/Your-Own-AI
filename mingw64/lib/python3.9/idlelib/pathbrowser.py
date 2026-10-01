@@ -1,13 +1,11 @@
 import importlib.machinery
 import os
 import sys
-
 from idlelib.browser import ModuleBrowser, ModuleBrowserTreeItem
 from idlelib.tree import TreeItem
 
 
 class PathBrowser(ModuleBrowser):
-
     def __init__(self, master, *, _htest=False, _utest=False):
         """
         _htest - bool, change box location when running htest
@@ -27,7 +25,6 @@ class PathBrowser(ModuleBrowser):
 
 
 class PathBrowserTreeItem(TreeItem):
-
     def GetText(self):
         return "sys.path"
 
@@ -40,7 +37,6 @@ class PathBrowserTreeItem(TreeItem):
 
 
 class DirBrowserTreeItem(TreeItem):
-
     def __init__(self, dir, packages=[]):
         self.dir = dir
         self.packages = packages

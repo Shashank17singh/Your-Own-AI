@@ -4,7 +4,9 @@ import inspect
 import json
 import threading
 from contextlib import contextmanager
+
 import gdb
+
 from .io import read_json, start_json_writer
 from .startup import (
     DAPException,
@@ -55,7 +57,6 @@ class DeferredRequest:
         sent in the response.  None means no 'body' field will be set.
         Subclasses must override this.
         """
-        pass
 
     @in_dap_thread
     def reschedule(self):
@@ -347,7 +348,7 @@ def request(
     response: bool = True,
     on_dap_thread: bool = False,
     expect_stopped: bool = True,
-    defer_events: bool = True
+    defer_events: bool = True,
 ):
     """A decorator for DAP requests.
     This registers the function as the implementation of the DAP
@@ -464,7 +465,7 @@ def cancel(**args):
     return None
 
 
-class Invoker(object):
+class Invoker:
     """A simple class that can invoke a gdb command."""
 
     def __init__(self, cmd):
@@ -475,7 +476,7 @@ class Invoker(object):
         exec_and_log(self._cmd)
 
 
-class Cancellable(object):
+class Cancellable:
     def __init__(self, fn, result_q=None):
         self._fn = fn
         self._result_q = result_q

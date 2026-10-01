@@ -1,25 +1,24 @@
-from test import support
-from test.support import bigmemtest, _4G
-
+import _compression
 import array
-import unittest
-from io import BytesIO, DEFAULT_BUFFER_SIZE
-import os
-import pickle
 import glob
-import tempfile
+import os
 import pathlib
+import pickle
 import random
 import shutil
 import subprocess
-import threading
-from test.support import unlink
-import _compression
 import sys
+import tempfile
+import threading
+import unittest
+from io import DEFAULT_BUFFER_SIZE, BytesIO
+
+from test import support
+from test.support import _4G, bigmemtest, unlink
 
 # Skip tests if the bz2 module doesn't exist.
 bz2 = support.import_module("bz2")
-from bz2 import BZ2File, BZ2Compressor, BZ2Decompressor
+from bz2 import BZ2Compressor, BZ2Decompressor, BZ2File
 
 has_cmdline_bunzip2 = None
 
@@ -110,7 +109,7 @@ class BZ2FileTest(BaseTest):
     def testRead(self):
         self.createTempFile()
         with BZ2File(self.filename) as bz2f:
-            self.assertRaises(TypeError, bz2f.read, float())
+            self.assertRaises(TypeError, bz2f.read, 0.0)
             self.assertEqual(bz2f.read(), self.TEXT)
 
     def testReadBadFile(self):
@@ -121,7 +120,7 @@ class BZ2FileTest(BaseTest):
     def testReadMultiStream(self):
         self.createTempFile(streams=5)
         with BZ2File(self.filename) as bz2f:
-            self.assertRaises(TypeError, bz2f.read, float())
+            self.assertRaises(TypeError, bz2f.read, 0.0)
             self.assertEqual(bz2f.read(), self.TEXT * 5)
 
     def testReadMonkeyMultiStream(self):
@@ -132,7 +131,7 @@ class BZ2FileTest(BaseTest):
         try:
             self.createTempFile(streams=5)
             with BZ2File(self.filename) as bz2f:
-                self.assertRaises(TypeError, bz2f.read, float())
+                self.assertRaises(TypeError, bz2f.read, 0.0)
                 self.assertEqual(bz2f.read(), self.TEXT * 5)
         finally:
             _compression.BUFFER_SIZE = buffer_size
@@ -150,7 +149,7 @@ class BZ2FileTest(BaseTest):
     def testRead0(self):
         self.createTempFile()
         with BZ2File(self.filename) as bz2f:
-            self.assertRaises(TypeError, bz2f.read, float())
+            self.assertRaises(TypeError, bz2f.read, 0.0)
             self.assertEqual(bz2f.read(0), b"")
 
     def testReadChunk10(self):
@@ -579,17 +578,16 @@ class BZ2FileTest(BaseTest):
     def testReadBytesIO(self):
         with BytesIO(self.DATA) as bio:
             with BZ2File(bio) as bz2f:
-                self.assertRaises(TypeError, bz2f.read, float())
+                self.assertRaises(TypeError, bz2f.read, 0.0)
                 self.assertEqual(bz2f.read(), self.TEXT)
             self.assertFalse(bio.closed)
 
     def testPeekBytesIO(self):
-        with BytesIO(self.DATA) as bio:
-            with BZ2File(bio) as bz2f:
-                pdata = bz2f.peek()
-                self.assertNotEqual(len(pdata), 0)
-                self.assertTrue(self.TEXT.startswith(pdata))
-                self.assertEqual(bz2f.read(), self.TEXT)
+        with BytesIO(self.DATA) as bio, BZ2File(bio) as bz2f:
+            pdata = bz2f.peek()
+            self.assertNotEqual(len(pdata), 0)
+            self.assertTrue(self.TEXT.startswith(pdata))
+            self.assertEqual(bz2f.read(), self.TEXT)
 
     def testWriteBytesIO(self):
         with BytesIO() as bio:
@@ -600,18 +598,16 @@ class BZ2FileTest(BaseTest):
             self.assertFalse(bio.closed)
 
     def testSeekForwardBytesIO(self):
-        with BytesIO(self.DATA) as bio:
-            with BZ2File(bio) as bz2f:
-                self.assertRaises(TypeError, bz2f.seek)
-                bz2f.seek(150)
-                self.assertEqual(bz2f.read(), self.TEXT[150:])
+        with BytesIO(self.DATA) as bio, BZ2File(bio) as bz2f:
+            self.assertRaises(TypeError, bz2f.seek)
+            bz2f.seek(150)
+            self.assertEqual(bz2f.read(), self.TEXT[150:])
 
     def testSeekBackwardsBytesIO(self):
-        with BytesIO(self.DATA) as bio:
-            with BZ2File(bio) as bz2f:
-                bz2f.read(500)
-                bz2f.seek(-150, 1)
-                self.assertEqual(bz2f.read(), self.TEXT[500 - 150 :])
+        with BytesIO(self.DATA) as bio, BZ2File(bio) as bz2f:
+            bz2f.read(500)
+            bz2f.seek(-150, 1)
+            self.assertEqual(bz2f.read(), self.TEXT[500 - 150 :])
 
     def test_read_truncated(self):
         # Drop the eos_magic field (6 bytes) and CRC (4 bytes).

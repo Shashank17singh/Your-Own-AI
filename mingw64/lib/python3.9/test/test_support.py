@@ -14,8 +14,7 @@ import unittest
 import warnings
 
 from test import support
-from test.support import script_helper
-from test.support import socket_helper
+from test.support import script_helper, socket_helper
 
 TESTFN = support.TESTFN
 
@@ -67,7 +66,6 @@ class TestSupport(unittest.TestCase):
         self.assertEqual(support.get_original_stdout(), sys.stdout)
 
     def test_unload(self):
-        import sched
 
         self.assertIn("sched", sys.modules)
         support.unload("sched")
@@ -195,7 +193,7 @@ class TestSupport(unittest.TestCase):
         warn = warnings[0]
         self.assertTrue(
             warn.startswith(
-                f"tests may fail, unable to create " f"temporary directory {path!r}: "
+                f"tests may fail, unable to create temporary directory {path!r}: "
             ),
             warn,
         )
@@ -520,7 +518,7 @@ class TestSupport(unittest.TestCase):
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-            universal_newlines=True,
+            text=True,
             env=env,
         )
         if expected is None:

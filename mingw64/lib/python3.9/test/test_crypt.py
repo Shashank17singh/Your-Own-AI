@@ -15,14 +15,12 @@ except ImportError as ex:
 @unittest.skipUnless(sys.platform == "win32", "This should only run on windows")
 @unittest.skipIf(crypt, "import succeeded")
 class TestWhyCryptDidNotImport(unittest.TestCase):
-
     def test_import_failure_message(self):
         self.assertIn("not supported", IMPORT_ERROR)
 
 
 @unittest.skipUnless(crypt, "crypt module is required")
 class CryptTestCase(unittest.TestCase):
-
     def test_crypt(self):
         cr = crypt.crypt("mypassword")
         cr2 = crypt.crypt("mypassword", cr)

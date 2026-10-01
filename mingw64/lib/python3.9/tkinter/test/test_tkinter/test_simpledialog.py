@@ -1,8 +1,9 @@
-import unittest
 import tkinter
-from test.support import requires, run_unittest, swap_attr
-from tkinter.test.support import AbstractDefaultRootTest
+import unittest
 from tkinter.simpledialog import Dialog, askinteger
+from tkinter.test.support import AbstractDefaultRootTest
+
+from test.support import requires, run_unittest, swap_attr
 
 requires("gui")
 

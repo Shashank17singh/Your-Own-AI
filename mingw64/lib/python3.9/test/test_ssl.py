@@ -1,26 +1,27 @@
 # Test the support for SSL and sockets
 
-import sys
-import unittest
-import unittest.mock
-from test import support
-from test.support import socket_helper
-import socket
-import select
-import time
+import asyncore
 import datetime
+import errno
+import functools
 import gc
 import os
-import errno
-import pprint
-import urllib.request
-import threading
-import traceback
-import asyncore
-import weakref
 import platform
+import pprint
+import select
+import socket
+import sys
 import sysconfig
-import functools
+import threading
+import time
+import traceback
+import unittest
+import unittest.mock
+import urllib.request
+import weakref
+
+from test import support
+from test.support import socket_helper
 
 try:
     import ctypes
@@ -387,7 +388,6 @@ def testing_context(server_cert=SIGNED_CERTFILE):
 
 
 class BasicSocketTests(unittest.TestCase):
-
     def test_constants(self):
         ssl.CERT_NONE
         ssl.CERT_OPTIONAL
@@ -632,10 +632,10 @@ class BasicSocketTests(unittest.TestCase):
         self.assertLessEqual(status, 15)
         # Version string as returned by {Open,Libre}SSL, the format might change
         if IS_LIBRESSL:
-            self.assertTrue(s.startswith("LibreSSL {:d}".format(major)), (s, t, hex(n)))
+            self.assertTrue(s.startswith(f"LibreSSL {major:d}"), (s, t, hex(n)))
         else:
             self.assertTrue(
-                s.startswith("OpenSSL {:d}.{:d}.{:d}".format(major, minor, fix)),
+                s.startswith(f"OpenSSL {major:d}.{minor:d}.{fix:d}"),
                 (s, t, hex(n)),
             )
 
@@ -705,17 +705,14 @@ class BasicSocketTests(unittest.TestCase):
             self.assertRaisesRegex(
                 ValueError, "can't connect in server-side mode", s.connect, (HOST, 8080)
             )
-        with self.assertRaises(OSError) as cm:
-            with socket.socket() as sock:
-                ssl.wrap_socket(sock, certfile=NONEXISTINGCERT)
+        with self.assertRaises(OSError) as cm, socket.socket() as sock:
+            ssl.wrap_socket(sock, certfile=NONEXISTINGCERT)
         self.assertEqual(cm.exception.errno, errno.ENOENT)
-        with self.assertRaises(OSError) as cm:
-            with socket.socket() as sock:
-                ssl.wrap_socket(sock, certfile=CERTFILE, keyfile=NONEXISTINGCERT)
+        with self.assertRaises(OSError) as cm, socket.socket() as sock:
+            ssl.wrap_socket(sock, certfile=CERTFILE, keyfile=NONEXISTINGCERT)
         self.assertEqual(cm.exception.errno, errno.ENOENT)
-        with self.assertRaises(OSError) as cm:
-            with socket.socket() as sock:
-                ssl.wrap_socket(sock, certfile=NONEXISTINGCERT, keyfile=NONEXISTINGCERT)
+        with self.assertRaises(OSError) as cm, socket.socket() as sock:
+            ssl.wrap_socket(sock, certfile=NONEXISTINGCERT, keyfile=NONEXISTINGCERT)
         self.assertEqual(cm.exception.errno, errno.ENOENT)
 
     def bad_cert_test(self, certfile):
@@ -1179,7 +1176,7 @@ class BasicSocketTests(unittest.TestCase):
 
         if local_february_name().lower() == "feb":
             self.skipTest(
-                "locale-specific month name needs to be " "different from C locale"
+                "locale-specific month name needs to be different from C locale"
             )
 
         # locale-independent
@@ -1205,7 +1202,6 @@ class BasicSocketTests(unittest.TestCase):
 
 
 class ContextTests(unittest.TestCase):
-
     def test_constructor(self):
         for protocol in PROTOCOLS:
             ssl.SSLContext(protocol)
@@ -1893,7 +1889,6 @@ class ContextTests(unittest.TestCase):
 
 
 class SSLErrorTests(unittest.TestCase):
-
     def test_str(self):
         # The str() of a SSLError doesn't include the errno
         e = ssl.SSLError(1, "foo")
@@ -1951,7 +1946,6 @@ class SSLErrorTests(unittest.TestCase):
 
 
 class MemoryBIOTests(unittest.TestCase):
-
     def test_read_write(self):
         bio = ssl.MemoryBIO()
         bio.write(b"foo")
@@ -2395,7 +2389,6 @@ class SimpleBackgroundTests(unittest.TestCase):
 
 
 class NetworkedTests(unittest.TestCase):
-
     def test_timeout_connect_ex(self):
         # Issue #12065: on a timeout, connect_ex() should return the original
         # errno (mimicking the behaviour of non-SSL sockets).
@@ -2450,7 +2443,6 @@ from test.ssl_servers import make_https_server
 
 
 class ThreadedEchoServer(threading.Thread):
-
     class ConnectionHandler(threading.Thread):
         """A mildly complicated class, because we want it to work both
         with and without the SSL wrapper around the socket connection, so
@@ -2657,9 +2649,7 @@ class ThreadedEchoServer(threading.Thread):
                     # XXX: OpenSSL 1.1.1 sometimes raises ConnectionResetError
                     # when connection is not shut down gracefully.
                     if self.server.chatty and support.verbose:
-                        sys.stdout.write(
-                            " Connection reset by peer: {}\n".format(self.addr)
-                        )
+                        sys.stdout.write(f" Connection reset by peer: {self.addr}\n")
                     self.close()
                     self.running = False
                 except ssl.SSLError as err:
@@ -2761,7 +2751,7 @@ class ThreadedEchoServer(threading.Thread):
                 handler = self.ConnectionHandler(self, newconn, connaddr)
                 handler.start()
                 handler.join()
-            except socket.timeout:
+            except TimeoutError:
                 pass
             except KeyboardInterrupt:
                 self.stop()
@@ -2776,13 +2766,10 @@ class ThreadedEchoServer(threading.Thread):
 
 
 class AsyncoreEchoServer(threading.Thread):
-
     # this one's based on asyncore.dispatcher
 
     class EchoServer(asyncore.dispatcher):
-
         class ConnectionHandler(asyncore.dispatcher_with_send):
-
             def __init__(self, conn, certfile):
                 self.socket = test_wrap_socket(
                     conn,
@@ -3047,7 +3034,6 @@ def try_protocol_combo(
 
 
 class ThreadedTests(unittest.TestCase):
-
     def test_echo(self):
         """Basic test of an SSL client connecting to a server"""
         if support.verbose:
@@ -3165,36 +3151,36 @@ class ThreadedTests(unittest.TestCase):
 
         # VERIFY_DEFAULT should pass
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                cert = s.getpeercert()
-                self.assertTrue(cert, "Can't get peer certificate.")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            cert = s.getpeercert()
+            self.assertTrue(cert, "Can't get peer certificate.")
 
         # VERIFY_CRL_CHECK_LEAF without a loaded CRL file fails
         client_context.verify_flags |= ssl.VERIFY_CRL_CHECK_LEAF
 
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                with self.assertRaisesRegex(ssl.SSLError, "certificate verify failed"):
-                    s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+            self.assertRaisesRegex(ssl.SSLError, "certificate verify failed"),
+        ):
+            s.connect((HOST, server.port))
 
         # now load a CRL file. The CRL file is signed by the CA.
         client_context.load_verify_locations(CRLFILE)
 
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                cert = s.getpeercert()
-                self.assertTrue(cert, "Can't get peer certificate.")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            cert = s.getpeercert()
+            self.assertTrue(cert, "Can't get peer certificate.")
 
     def test_check_hostname(self):
         if support.verbose:
@@ -3204,34 +3190,36 @@ class ThreadedTests(unittest.TestCase):
 
         # correct hostname should verify
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                cert = s.getpeercert()
-                self.assertTrue(cert, "Can't get peer certificate.")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            cert = s.getpeercert()
+            self.assertTrue(cert, "Can't get peer certificate.")
 
         # incorrect hostname should raise an exception
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname="invalid"
-            ) as s:
-                with self.assertRaisesRegex(
-                    ssl.CertificateError,
-                    "Hostname mismatch, certificate is not valid for 'invalid'.",
-                ):
-                    s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname="invalid") as s,
+            self.assertRaisesRegex(
+                ssl.CertificateError,
+                "Hostname mismatch, certificate is not valid for 'invalid'.",
+            ),
+        ):
+            s.connect((HOST, server.port))
 
         # missing server_hostname arg should cause an exception, too
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with socket.socket() as s:
-                with self.assertRaisesRegex(
-                    ValueError, "check_hostname requires server_hostname"
-                ):
-                    client_context.wrap_socket(s)
+        with (
+            server,
+            socket.socket() as s,
+            self.assertRaisesRegex(
+                ValueError, "check_hostname requires server_hostname"
+            ),
+        ):
+            client_context.wrap_socket(s)
 
     @unittest.skipUnless(
         ssl.HAS_NEVER_CHECK_COMMON_NAME, "test requires hostname_checks_common_name"
@@ -3243,21 +3231,21 @@ class ThreadedTests(unittest.TestCase):
 
         # default cert has a SAN
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
 
         client_context, server_context, hostname = testing_context(NOSANFILE)
         client_context.hostname_checks_common_name = False
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                with self.assertRaises(ssl.SSLCertVerificationError):
-                    s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+            self.assertRaises(ssl.SSLCertVerificationError),
+        ):
+            s.connect((HOST, server.port))
 
     def test_ecc_cert(self):
         client_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -3271,15 +3259,15 @@ class ThreadedTests(unittest.TestCase):
 
         # correct hostname should verify
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                cert = s.getpeercert()
-                self.assertTrue(cert, "Can't get peer certificate.")
-                cipher = s.cipher()[0].split("-")
-                self.assertTrue(cipher[:2], ("ECDHE", "ECDSA"))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            cert = s.getpeercert()
+            self.assertTrue(cert, "Can't get peer certificate.")
+            cipher = s.cipher()[0].split("-")
+            self.assertTrue(cipher[:2], ("ECDHE", "ECDSA"))
 
     def test_dual_rsa_ecc(self):
         client_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -3298,15 +3286,15 @@ class ThreadedTests(unittest.TestCase):
 
         # correct hostname should verify
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                cert = s.getpeercert()
-                self.assertTrue(cert, "Can't get peer certificate.")
-                cipher = s.cipher()[0].split("-")
-                self.assertTrue(cipher[:2], ("ECDHE", "ECDSA"))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            cert = s.getpeercert()
+            self.assertTrue(cert, "Can't get peer certificate.")
+            cipher = s.cipher()[0].split("-")
+            self.assertTrue(cipher[:2], ("ECDHE", "ECDSA"))
 
     def test_check_hostname_idn(self):
         if support.verbose:
@@ -3351,24 +3339,28 @@ class ThreadedTests(unittest.TestCase):
         ]
         for server_hostname, expected_hostname in idn_hostnames:
             server = ThreadedEchoServer(context=server_context, chatty=True)
-            with server:
-                with context.wrap_socket(
+            with (
+                server,
+                context.wrap_socket(
                     socket.socket(), server_hostname=server_hostname
-                ) as s:
-                    self.assertEqual(s.server_hostname, expected_hostname)
-                    s.connect((HOST, server.port))
-                    cert = s.getpeercert()
-                    self.assertEqual(s.server_hostname, expected_hostname)
-                    self.assertTrue(cert, "Can't get peer certificate.")
+                ) as s,
+            ):
+                self.assertEqual(s.server_hostname, expected_hostname)
+                s.connect((HOST, server.port))
+                cert = s.getpeercert()
+                self.assertEqual(s.server_hostname, expected_hostname)
+                self.assertTrue(cert, "Can't get peer certificate.")
 
         # incorrect hostname should raise an exception
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with context.wrap_socket(
+        with (
+            server,
+            context.wrap_socket(
                 socket.socket(), server_hostname="python.example.org"
-            ) as s:
-                with self.assertRaises(ssl.CertificateError):
-                    s.connect((HOST, server.port))
+            ) as s,
+            self.assertRaises(ssl.CertificateError),
+        ):
+            s.connect((HOST, server.port))
 
     def test_wrong_cert_tls12(self):
         """Connecting when the server rejects the client's certificate
@@ -3390,9 +3382,10 @@ class ThreadedTests(unittest.TestCase):
             connectionchatty=True,
         )
 
-        with server, client_context.wrap_socket(
-            socket.socket(), server_hostname=hostname
-        ) as s:
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
             try:
                 # Expect either an SSL error about the server rejecting
                 # the connection, or a low-level connection reset (which
@@ -3423,9 +3416,10 @@ class ThreadedTests(unittest.TestCase):
             chatty=True,
             connectionchatty=True,
         )
-        with server, client_context.wrap_socket(
-            socket.socket(), server_hostname=hostname
-        ) as s:
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
             # TLS 1.3 perform client cert exchange after handshake
             s.connect((HOST, server.port))
             try:
@@ -3493,19 +3487,21 @@ class ThreadedTests(unittest.TestCase):
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 
         server = ThreadedEchoServer(context=server_context, chatty=True)
-        with server:
-            with context.wrap_socket(
+        with (
+            server,
+            context.wrap_socket(
                 socket.socket(), server_hostname=SIGNED_CERTFILE_HOSTNAME
-            ) as s:
-                try:
-                    s.connect((HOST, server.port))
-                except ssl.SSLError as e:
-                    msg = "unable to get local issuer certificate"
-                    self.assertIsInstance(e, ssl.SSLCertVerificationError)
-                    self.assertEqual(e.verify_code, 20)
-                    self.assertEqual(e.verify_message, msg)
-                    self.assertIn(msg, repr(e))
-                    self.assertIn("certificate verify failed", repr(e))
+            ) as s,
+        ):
+            try:
+                s.connect((HOST, server.port))
+            except ssl.SSLError as e:
+                msg = "unable to get local issuer certificate"
+                self.assertIsInstance(e, ssl.SSLCertVerificationError)
+                self.assertEqual(e.verify_code, 20)
+                self.assertEqual(e.verify_message, msg)
+                self.assertIn(msg, repr(e))
+                self.assertIn("certificate verify failed", repr(e))
 
     @requires_tls_version("SSLv2")
     def test_protocol_sslv2(self):
@@ -3878,31 +3874,25 @@ class ThreadedTests(unittest.TestCase):
                 indata = (data_prefix + meth_name).encode("ascii")
                 try:
                     ret = send_meth(indata, *args)
-                    msg = "sending with {}".format(meth_name)
+                    msg = f"sending with {meth_name}"
                     self.assertEqual(ret, ret_val_meth(indata), msg=msg)
                     outdata = s.read()
                     if outdata != indata.lower():
                         self.fail(
-                            "While sending with <<{name:s}>> bad data "
-                            "<<{outdata:r}>> ({nout:d}) received; "
-                            "expected <<{indata:r}>> ({nin:d})\n".format(
-                                name=meth_name,
-                                outdata=outdata[:20],
-                                nout=len(outdata),
-                                indata=indata[:20],
-                                nin=len(indata),
-                            )
+                            f"While sending with <<{meth_name:s}>> bad data "
+                            f"<<{outdata[:20]:r}>> ({len(outdata):d}) received; "
+                            f"expected <<{indata[:20]:r}>> ({len(indata):d})\n"
                         )
                 except ValueError as e:
                     if expect_success:
                         self.fail(
-                            "Failed to send with method <<{name:s}>>; "
-                            "expected to succeed.\n".format(name=meth_name)
+                            f"Failed to send with method <<{meth_name:s}>>; "
+                            "expected to succeed.\n"
                         )
                     if not str(e).startswith(meth_name):
                         self.fail(
-                            "Method <<{name:s}>> failed with unexpected "
-                            "exception message: {exp:s}\n".format(name=meth_name, exp=e)
+                            f"Method <<{meth_name:s}>> failed with unexpected "
+                            f"exception message: {e:s}\n"
                         )
 
             for meth_name, recv_meth, expect_success, args in recv_methods:
@@ -3912,26 +3902,20 @@ class ThreadedTests(unittest.TestCase):
                     outdata = recv_meth(*args)
                     if outdata != indata.lower():
                         self.fail(
-                            "While receiving with <<{name:s}>> bad data "
-                            "<<{outdata:r}>> ({nout:d}) received; "
-                            "expected <<{indata:r}>> ({nin:d})\n".format(
-                                name=meth_name,
-                                outdata=outdata[:20],
-                                nout=len(outdata),
-                                indata=indata[:20],
-                                nin=len(indata),
-                            )
+                            f"While receiving with <<{meth_name:s}>> bad data "
+                            f"<<{outdata[:20]:r}>> ({len(outdata):d}) received; "
+                            f"expected <<{indata[:20]:r}>> ({len(indata):d})\n"
                         )
                 except ValueError as e:
                     if expect_success:
                         self.fail(
-                            "Failed to receive with method <<{name:s}>>; "
-                            "expected to succeed.\n".format(name=meth_name)
+                            f"Failed to receive with method <<{meth_name:s}>>; "
+                            "expected to succeed.\n"
                         )
                     if not str(e).startswith(meth_name):
                         self.fail(
-                            "Method <<{name:s}>> failed with unexpected "
-                            "exception message: {exp:s}\n".format(name=meth_name, exp=e)
+                            f"Method <<{meth_name:s}>> failed with unexpected "
+                            f"exception message: {e:s}\n"
                         )
                     # consume data
                     s.read()
@@ -4298,9 +4282,7 @@ class ThreadedTests(unittest.TestCase):
                 # get the data
                 cb_data = s.get_channel_binding("tls-unique")
                 if support.verbose:
-                    sys.stdout.write(
-                        " got channel binding data: {0!r}\n".format(cb_data)
-                    )
+                    sys.stdout.write(f" got channel binding data: {cb_data!r}\n")
 
                 # check if it is sane
                 self.assertIsNotNone(cb_data)
@@ -4322,7 +4304,7 @@ class ThreadedTests(unittest.TestCase):
                 new_cb_data = s.get_channel_binding("tls-unique")
                 if support.verbose:
                     sys.stdout.write(
-                        "got another channel binding data: {0!r}\n".format(new_cb_data)
+                        f"got another channel binding data: {new_cb_data!r}\n"
                     )
                 # is it really unique
                 self.assertNotEqual(cb_data, new_cb_data)
@@ -4715,12 +4697,11 @@ class ThreadedTests(unittest.TestCase):
         context.load_verify_locations(SIGNING_CA)
         context.load_cert_chain(SIGNED_CERTFILE)
         server = ThreadedEchoServer(context=context, chatty=False)
-        with server:
-            with context.wrap_socket(socket.socket()) as s:
-                s.connect((HOST, server.port))
-                with open(support.TESTFN, "rb") as file:
-                    s.sendfile(file)
-                    self.assertEqual(s.recv(1024), TEST_DATA)
+        with server, context.wrap_socket(socket.socket()) as s:
+            s.connect((HOST, server.port))
+            with open(support.TESTFN, "rb") as file:
+                s.sendfile(file)
+                self.assertEqual(s.recv(1024), TEST_DATA)
 
     def test_session(self):
         client_context, server_context, hostname = testing_context()
@@ -4869,23 +4850,23 @@ class TestPostHandshakeAuth(unittest.TestCase):
         client_context.load_cert_chain(SIGNED_CERTFILE)
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"FALSE\n")
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"TRUE\n")
-                # PHA method just returns true when cert is already available
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                s.write(b"GETCERT")
-                cert_text = s.recv(4096).decode("us-ascii")
-                self.assertIn("Python Software Foundation CA", cert_text)
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"FALSE\n")
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"TRUE\n")
+            # PHA method just returns true when cert is already available
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            s.write(b"GETCERT")
+            cert_text = s.recv(4096).decode("us-ascii")
+            self.assertIn("Python Software Foundation CA", cert_text)
 
     def test_pha_required_nocert(self):
         client_context, server_context, hostname = testing_context()
@@ -4897,21 +4878,23 @@ class TestPostHandshakeAuth(unittest.TestCase):
         # (it is only raised sometimes on Windows)
         with support.catch_threading_exception() as cm:
             server = ThreadedEchoServer(context=server_context, chatty=False)
-            with server:
-                with client_context.wrap_socket(
+            with (
+                server,
+                client_context.wrap_socket(
                     socket.socket(), server_hostname=hostname
-                ) as s:
-                    s.connect((HOST, server.port))
-                    s.write(b"PHA")
-                    # receive CertificateRequest
-                    self.assertEqual(s.recv(1024), b"OK\n")
-                    # send empty Certificate + Finish
-                    s.write(b"HASCERT")
-                    # receive alert
-                    with self.assertRaisesRegex(
-                        ssl.SSLError, "tlsv13 alert certificate required"
-                    ):
-                        s.recv(1024)
+                ) as s,
+            ):
+                s.connect((HOST, server.port))
+                s.write(b"PHA")
+                # receive CertificateRequest
+                self.assertEqual(s.recv(1024), b"OK\n")
+                # send empty Certificate + Finish
+                s.write(b"HASCERT")
+                # receive alert
+                with self.assertRaisesRegex(
+                    ssl.SSLError, "tlsv13 alert certificate required"
+                ):
+                    s.recv(1024)
 
     def test_pha_optional(self):
         if support.verbose:
@@ -4926,17 +4909,17 @@ class TestPostHandshakeAuth(unittest.TestCase):
         # check CERT_OPTIONAL
         server_context.verify_mode = ssl.CERT_OPTIONAL
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"FALSE\n")
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"TRUE\n")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"FALSE\n")
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"TRUE\n")
 
     def test_pha_optional_nocert(self):
         if support.verbose:
@@ -4948,18 +4931,18 @@ class TestPostHandshakeAuth(unittest.TestCase):
         client_context.post_handshake_auth = True
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"FALSE\n")
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                # optional doesn't fail when client does not have a cert
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"FALSE\n")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"FALSE\n")
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            # optional doesn't fail when client does not have a cert
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"FALSE\n")
 
     def test_pha_no_pha_client(self):
         client_context, server_context, hostname = testing_context()
@@ -4968,15 +4951,15 @@ class TestPostHandshakeAuth(unittest.TestCase):
         client_context.load_cert_chain(SIGNED_CERTFILE)
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                with self.assertRaisesRegex(ssl.SSLError, "not server"):
-                    s.verify_client_post_handshake()
-                s.write(b"PHA")
-                self.assertIn(b"extension not received", s.recv(1024))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            with self.assertRaisesRegex(ssl.SSLError, "not server"):
+                s.verify_client_post_handshake()
+            s.write(b"PHA")
+            self.assertIn(b"extension not received", s.recv(1024))
 
     def test_pha_no_pha_server(self):
         # server doesn't have PHA enabled, cert is requested in handshake
@@ -4986,18 +4969,18 @@ class TestPostHandshakeAuth(unittest.TestCase):
         client_context.load_cert_chain(SIGNED_CERTFILE)
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"TRUE\n")
-                # PHA doesn't fail if there is already a cert
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"TRUE\n")
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"TRUE\n")
+            # PHA doesn't fail if there is already a cert
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"TRUE\n")
 
     def test_pha_not_tls13(self):
         # TLS 1.2
@@ -5008,14 +4991,14 @@ class TestPostHandshakeAuth(unittest.TestCase):
         client_context.load_cert_chain(SIGNED_CERTFILE)
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                # PHA fails for TLS != 1.3
-                s.write(b"PHA")
-                self.assertIn(b"WRONG_SSL_VERSION", s.recv(1024))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            # PHA fails for TLS != 1.3
+            s.write(b"PHA")
+            self.assertIn(b"WRONG_SSL_VERSION", s.recv(1024))
 
     def test_bpo37428_pha_cert_none(self):
         # verify that post_handshake_auth does not implicitly enable cert
@@ -5035,19 +5018,19 @@ class TestPostHandshakeAuth(unittest.TestCase):
         server_context.verify_mode = ssl.CERT_REQUIRED
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"FALSE\n")
-                s.write(b"PHA")
-                self.assertEqual(s.recv(1024), b"OK\n")
-                s.write(b"HASCERT")
-                self.assertEqual(s.recv(1024), b"TRUE\n")
-                # server cert has not been validated
-                self.assertEqual(s.getpeercert(), {})
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"FALSE\n")
+            s.write(b"PHA")
+            self.assertEqual(s.recv(1024), b"OK\n")
+            s.write(b"HASCERT")
+            self.assertEqual(s.recv(1024), b"TRUE\n")
+            # server cert has not been validated
+            self.assertEqual(s.getpeercert(), {})
 
 
 HAS_KEYLOG = hasattr(ssl.SSLContext, "keylog_filename")
@@ -5057,7 +5040,6 @@ requires_keylog = unittest.skipUnless(
 
 
 class TestSSLDebug(unittest.TestCase):
-
     def keylog_lines(self, fname=support.TESTFN):
         with open(fname) as f:
             return len(list(f))
@@ -5093,32 +5075,32 @@ class TestSSLDebug(unittest.TestCase):
 
         client_context.keylog_filename = support.TESTFN
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
         # header, 5 lines for TLS 1.3
         self.assertEqual(self.keylog_lines(), 6)
 
         client_context.keylog_filename = None
         server_context.keylog_filename = support.TESTFN
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
         self.assertGreaterEqual(self.keylog_lines(), 11)
 
         client_context.keylog_filename = support.TESTFN
         server_context.keylog_filename = support.TESTFN
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
         self.assertGreaterEqual(self.keylog_lines(), 21)
 
         client_context.keylog_filename = None
@@ -5171,11 +5153,11 @@ class TestSSLDebug(unittest.TestCase):
         client_context._msg_callback = msg_cb
 
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
-            with client_context.wrap_socket(
-                socket.socket(), server_hostname=hostname
-            ) as s:
-                s.connect((HOST, server.port))
+        with (
+            server,
+            client_context.wrap_socket(socket.socket(), server_hostname=hostname) as s,
+        ):
+            s.connect((HOST, server.port))
 
         self.assertIn(
             (

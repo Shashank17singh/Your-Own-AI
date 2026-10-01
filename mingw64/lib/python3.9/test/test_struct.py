@@ -1,10 +1,10 @@
-from collections import abc
 import array
 import math
 import operator
-import unittest
 import struct
 import sys
+import unittest
+from collections import abc
 
 from test import support
 from test.support.script_helper import assert_python_ok
@@ -304,7 +304,7 @@ class StructTest(unittest.TestCase):
                 # Objects with an '__index__' method should be allowed
                 # to pack as integers.  That is assuming the implemented
                 # '__index__' method returns an 'int'.
-                class Indexable(object):
+                class Indexable:
                     def __init__(self, value):
                         self._value = value
 
@@ -313,7 +313,7 @@ class StructTest(unittest.TestCase):
 
                 # If the '__index__' method raises a type error, then
                 # '__int__' should be used with a deprecation warning.
-                class BadIndex(object):
+                class BadIndex:
                     def __index__(self):
                         raise TypeError
 
@@ -349,8 +349,7 @@ class StructTest(unittest.TestCase):
                         struct.pack(format, obj)
                     except:
                         self.fail(
-                            "integer code pack failed on object "
-                            "with '__index__' method"
+                            "integer code pack failed on object with '__index__' method"
                         )
 
                 # Check for bogus values from '__index__'.
@@ -531,7 +530,7 @@ class StructTest(unittest.TestCase):
             self.assertEqual(value, 0x12345678)
 
     def test_bool(self):
-        class ExplodingBool(object):
+        class ExplodingBool:
             def __bool__(self):
                 raise OSError
 
@@ -578,10 +577,10 @@ class StructTest(unittest.TestCase):
             self.assertTrue(struct.unpack(">?", c)[0])
 
     def test_count_overflow(self):
-        hugecount = "{}b".format(sys.maxsize + 1)
+        hugecount = f"{sys.maxsize + 1}b"
         self.assertRaises(struct.error, struct.calcsize, hugecount)
 
-        hugecount2 = "{}b{}H".format(sys.maxsize // 2, sys.maxsize // 2)
+        hugecount2 = f"{sys.maxsize // 2}b{sys.maxsize // 2}H"
         self.assertRaises(struct.error, struct.calcsize, hugecount2)
 
     def test_trailing_counter(self):

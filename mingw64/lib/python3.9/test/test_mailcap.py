@@ -1,8 +1,9 @@
+import copy
 import mailcap
 import os
-import copy
-import test.support
 import unittest
+
+import test.support
 
 # Location of mailcap file
 MAILCAPFILE = test.support.findfile("mailcap.txt")
@@ -76,7 +77,6 @@ for entry_list in MAILCAPDICT_DEPRECATED.values():
 
 
 class HelperFunctionTest(unittest.TestCase):
-
     def test_listmailcapfiles(self):
         # The return value for listmailcapfiles() will vary by system.
         # So verify that listmailcapfiles() returns a list of strings that is of
@@ -148,7 +148,6 @@ class HelperFunctionTest(unittest.TestCase):
 
 
 class GetcapsTest(unittest.TestCase):
-
     def test_mock_getcaps(self):
         # Test mailcap.getcaps() using mock mailcap file in this dir.
         # Temporarily override any existing system mailcap file by pointing the
@@ -177,7 +176,6 @@ class GetcapsTest(unittest.TestCase):
 
 
 class FindmatchTest(unittest.TestCase):
-
     def test_findmatch(self):
 
         # default findmatch arguments

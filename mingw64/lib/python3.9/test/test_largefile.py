@@ -1,17 +1,23 @@
 """Test largefile support on system where this makes sense."""
 
+import _pyio as pyio  # Python implementation of io
+import io  # C implementation of io
 import os
+import shutil
+import socket
 import stat
 import sys
-import unittest
-import socket
-import shutil
 import threading
-from test.support import TESTFN, requires, unlink, bigmemtest
-from test.support import SHORT_TIMEOUT
-from test.support import socket_helper
-import io  # C implementation of io
-import _pyio as pyio  # Python implementation of io
+import unittest
+
+from test.support import (
+    SHORT_TIMEOUT,
+    TESTFN,
+    bigmemtest,
+    requires,
+    socket_helper,
+    unlink,
+)
 
 # size of file to create (>2 GiB; 2 GiB == 2,147,483,648 bytes)
 size = 2_500_000_000
@@ -19,7 +25,6 @@ TESTFN2 = TESTFN + "2"
 
 
 class LargeFileTest:
-
     def setUp(self):
         if os.path.exists(TESTFN):
             mode = "r+b"
@@ -46,7 +51,7 @@ class LargeFileTest:
             pass
         if not os.stat(TESTFN)[stat.ST_SIZE] == 0:
             raise cls.failureException(
-                "File was not truncated by opening " 'with mode "wb"'
+                'File was not truncated by opening with mode "wb"'
             )
         unlink(TESTFN2)
 
@@ -116,7 +121,7 @@ class TestFileMethods(LargeFileTest):
         with self.open(TESTFN, "r+b") as f:
             if not hasattr(f, "truncate"):
                 raise unittest.SkipTest(
-                    "open().truncate() not available " "on this system"
+                    "open().truncate() not available on this system"
                 )
             f.seek(0, 2)
             # else we've lost track of the true size
@@ -269,7 +274,7 @@ def setUpModule():
             f.write(b"x")
             f.flush()
         except (OSError, OverflowError):
-            raise unittest.SkipTest("filesystem does not have " "largefile support")
+            raise unittest.SkipTest("filesystem does not have largefile support")
         finally:
             f.close()
             unlink(TESTFN)

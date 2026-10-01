@@ -2,18 +2,18 @@
 Test script for doctest.
 """
 
-from test import support
+import contextlib
 import doctest
 import functools
-import os
-import sys
 import importlib
 import importlib.abc
 import importlib.util
-import unittest
+import os
+import sys
 import tempfile
-import shutil
-import contextlib
+import unittest
+
+from test import support
 
 # NOTE: There are some additional tests relating to interaction with
 #       zipimport in the test_zipimport_support test module.
@@ -123,7 +123,7 @@ class SampleClass:
             return self.val
 
 
-class SampleNewStyleClass(object):
+class SampleNewStyleClass:
     r"""
     >>> print('1\n2\n3')
     1
@@ -719,7 +719,6 @@ class test_DocTestFinder:
 
 
 class TestDocTestFinder(unittest.TestCase):
-
     def test_empty_namespace_package(self):
         pkg_name = "doctest_empty_pkg"
         with tempfile.TemporaryDirectory() as parent_dir:
@@ -2722,7 +2721,6 @@ def test_testfile():
 
 
 class TestImporter(importlib.abc.MetaPathFinder, importlib.abc.ResourceLoader):
-
     def find_spec(self, fullname, path, target=None):
         return importlib.util.spec_from_file_location(fullname, path, loader=self)
 
@@ -2732,7 +2730,6 @@ class TestImporter(importlib.abc.MetaPathFinder, importlib.abc.ResourceLoader):
 
 
 class TestHook:
-
     def __init__(self, pathdir):
         self.sys_path = sys.path[:]
         self.meta_path = sys.meta_path[:]

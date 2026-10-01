@@ -1,5 +1,5 @@
-from ctypes import *
 import unittest
+from ctypes import *
 
 subclasses = []
 for base in [

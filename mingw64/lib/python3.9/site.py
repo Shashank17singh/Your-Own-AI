@@ -69,11 +69,11 @@ site-specific customizations.  If this import fails with an
 ImportError exception, it is silently ignored.
 """
 
-import sys
-import os
-import builtins
 import _sitebuiltins
+import builtins
 import io
+import os
+import sys
 
 # Prefixes for site-packages; add additional prefixes like /usr/local here
 PREFIXES = [sys.prefix, sys.exec_prefix]
@@ -177,7 +177,7 @@ def addpackage(sitedir, name, known_paths):
                     known_paths.add(dircase)
             except Exception:
                 print(
-                    "Error processing line {:d} of {}:\n".format(n + 1, fullname),
+                    f"Error processing line {n + 1:d} of {fullname}:\n",
                     file=sys.stderr,
                 )
                 import traceback

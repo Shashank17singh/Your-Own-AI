@@ -1,8 +1,9 @@
 import contextlib
 import sys
-import unittest
-from test import support
 import time
+import unittest
+
+from test import support
 
 resource = support.import_module("resource")
 
@@ -10,7 +11,6 @@ resource = support.import_module("resource")
 
 
 class ResourceTest(unittest.TestCase):
-
     def test_args(self):
         self.assertRaises(TypeError, resource.getrlimit)
         self.assertRaises(TypeError, resource.getrlimit, 42, 42)

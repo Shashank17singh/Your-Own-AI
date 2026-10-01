@@ -1,18 +1,15 @@
-# coding: utf-8
-
-import re
+import importlib.metadata
 import json
 import pickle
+import re
 import textwrap
 import unittest
-import importlib.metadata
 
 try:
     import pyfakefs.fake_filesystem_unittest as ffs
 except ImportError:
     from .stubs import fake_filesystem_unittest as ffs
 
-from . import fixtures
 from importlib.metadata import (
     Distribution,
     EntryPoint,
@@ -22,6 +19,8 @@ from importlib.metadata import (
     metadata,
     version,
 )
+
+from . import fixtures
 
 
 class BasicTests(fixtures.DistInfoPkg, unittest.TestCase):
@@ -135,11 +134,13 @@ class NonASCIITests(fixtures.OnSysPath, fixtures.SiteDir, unittest.TestCase):
         metadata_dir.mkdir()
         metadata = metadata_dir / "METADATA"
         with metadata.open("w", encoding="utf-8") as fp:
-            fp.write(textwrap.dedent("""
+            fp.write(
+                textwrap.dedent("""
                 Name: portend
 
                 pôrˈtend
-                """).lstrip())
+                """).lstrip()
+            )
         return "portend"
 
     def test_metadata_loads(self):
@@ -154,7 +155,6 @@ class NonASCIITests(fixtures.OnSysPath, fixtures.SiteDir, unittest.TestCase):
 
 
 class DiscoveryTests(fixtures.EggInfoPkg, fixtures.DistInfoPkg, unittest.TestCase):
-
     def test_package_discovery(self):
         dists = list(distributions())
         assert all(isinstance(dist, Distribution) for dist in dists)
@@ -177,9 +177,8 @@ class DirectoryTest(fixtures.OnSysPath, fixtures.SiteDir, unittest.TestCase):
     def test_egg(self):
         egg = self.site_dir.joinpath("foo-3.6.egg")
         egg.mkdir()
-        with self.add_sys_path(egg):
-            with self.assertRaises(PackageNotFoundError):
-                version("foo")
+        with self.add_sys_path(egg), self.assertRaises(PackageNotFoundError):
+            version("foo")
 
 
 class MissingSysPath(fixtures.OnSysPath, unittest.TestCase):
@@ -197,7 +196,7 @@ class InaccessibleSysPath(fixtures.OnSysPath, ffs.TestCase):
     site_dir = "/access-denied"
 
     def setUp(self):
-        super(InaccessibleSysPath, self).setUp()
+        super().setUp()
         self.setUpPyfakefs()
         self.fs.create_dir(self.site_dir, perm_bits=000)
 
@@ -211,7 +210,7 @@ class InaccessibleSysPath(fixtures.OnSysPath, ffs.TestCase):
 
 class TestEntryPoints(unittest.TestCase):
     def __init__(self, *args):
-        super(TestEntryPoints, self).__init__(*args)
+        super().__init__(*args)
         self.ep = importlib.metadata.EntryPoint("name", "value", "group")
 
     def test_entry_point_pickleable(self):

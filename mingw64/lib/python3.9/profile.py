@@ -23,12 +23,11 @@
 # either express or implied.  See the License for the specific language
 # governing permissions and limitations under the License.
 
-
+import marshal
 import sys
 import time
-import marshal
 
-__all__ = ["run", "runctx", "Profile"]
+__all__ = ["Profile", "run", "runctx"]
 
 # Sample timer for use with
 # i_count = 0

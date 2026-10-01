@@ -1,6 +1,6 @@
-from ctypes import *
-import unittest
 import struct
+import unittest
+from ctypes import *
 
 
 def valid_ranges(*types):
@@ -54,7 +54,6 @@ bool_values = [True, False, 0, 1, -1, 5000, "test", [], [1]]
 
 
 class NumberTestCase(unittest.TestCase):
-
     def test_default_init(self):
         # default values are set to zero
         for t in signed_types + unsigned_types + float_types:
@@ -109,7 +108,7 @@ class NumberTestCase(unittest.TestCase):
     def test_floats(self):
         # c_float and c_double can be created from
         # Python int and float
-        class FloatLike(object):
+        class FloatLike:
             def __float__(self):
                 return 2.0
 
@@ -121,19 +120,19 @@ class NumberTestCase(unittest.TestCase):
             self.assertEqual(t(f).value, 2.0)
 
     def test_integers(self):
-        class FloatLike(object):
+        class FloatLike:
             def __float__(self):
                 return 2.0
 
         f = FloatLike()
 
-        class IntLike(object):
+        class IntLike:
             def __int__(self):
                 return 2
 
         d = IntLike()
 
-        class IndexLike(object):
+        class IndexLike:
             def __index__(self):
                 return 2
 
@@ -202,8 +201,8 @@ class NumberTestCase(unittest.TestCase):
             self.assertIs(type(v), t)
 
     def test_char_from_address(self):
-        from ctypes import c_char
         from array import array
+        from ctypes import c_char
 
         a = array("b", [0])
         a[0] = ord("x")
@@ -217,8 +216,8 @@ class NumberTestCase(unittest.TestCase):
     # array does not support c_bool / 't'
     @unittest.skip("test disabled")
     def test_bool_from_address(self):
-        from ctypes import c_bool
         from array import array
+        from ctypes import c_bool
 
         a = array(c_bool._type_, [True])
         v = t.from_address(a.buffer_info()[0])

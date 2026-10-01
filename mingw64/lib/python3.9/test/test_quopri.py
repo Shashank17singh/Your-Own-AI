@@ -1,7 +1,8 @@
-import unittest
-
-import sys, io, subprocess
+import io
 import quopri
+import subprocess
+import sys
+import unittest
 
 ENCSAMPLE = b"""\
 Here's a bunch of special=20
@@ -22,7 +23,9 @@ characters... have fun!
 """
 
 # First line ends with a space
-DECSAMPLE = b"Here's a bunch of special \n" + b"""\
+DECSAMPLE = (
+    b"Here's a bunch of special \n"
+    + b"""\
 
 \xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9
 \xaa\xab\xac\xad\xae\xaf\xb0\xb1\xb2\xb3
@@ -38,6 +41,7 @@ DECSAMPLE = b"Here's a bunch of special \n" + b"""\
 
 characters... have fun!
 """
+)
 
 
 def withpythonimplementation(testfunc):

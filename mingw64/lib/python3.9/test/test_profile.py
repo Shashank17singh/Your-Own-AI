@@ -1,21 +1,20 @@
 """Test suite for the profile module."""
 
-import sys
-import pstats
-import unittest
 import os
+import profile
+import pstats
+import sys
+import unittest
+from contextlib import contextmanager
 from difflib import unified_diff
 from io import StringIO
-from test.support import TESTFN, run_unittest, unlink, temp_dir, change_cwd
-from contextlib import contextmanager
 
-import profile
 from test.profilee import testfunc, timer
+from test.support import TESTFN, change_cwd, run_unittest, temp_dir, unlink
 from test.support.script_helper import assert_python_failure, assert_python_ok
 
 
 class ProfileTest(unittest.TestCase):
-
     profilerclass = profile.Profile
     profilermodule = profile
     methodnames = ["print_stats", "print_callers", "print_callees"]
@@ -87,7 +86,7 @@ class ProfileTest(unittest.TestCase):
             self.assertIn(
                 self.expected_max_output,
                 res,
-                "Profiling {0!r} didn't report max:\n{1}".format(stmt, res),
+                f"Profiling {stmt!r} didn't report max:\n{res}",
             )
 
     def test_run(self):
@@ -146,8 +145,10 @@ def regenerate_expected_output(filename, cls):
     with open(filename, "w") as f:
         f.writelines(newfile)
         f.write("_ProfileOutput = {}\n")
-        for i, method in enumerate(cls.methodnames):
-            f.write('_ProfileOutput[%r] = """\\\n%s"""\n' % (method, results[i + 1]))
+        f.writelines(
+            '_ProfileOutput[%r] = """\\\n%s"""\n' % (method, results[i + 1])
+            for i, method in enumerate(cls.methodnames)
+        )
         f.write('\nif __name__ == "__main__":\n    main()\n')
 
 

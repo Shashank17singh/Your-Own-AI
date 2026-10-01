@@ -2,8 +2,8 @@
 
 __all__ = (
     "Future",
-    "wrap_future",
     "isfuture",
+    "wrap_future",
 )
 
 import concurrent.futures
@@ -11,10 +11,7 @@ import contextvars
 import logging
 import sys
 
-from . import base_futures
-from . import events
-from . import exceptions
-from . import format_helpers
+from . import base_futures, events, exceptions, format_helpers
 
 isfuture = base_futures.isfuture
 
@@ -402,9 +399,9 @@ def wrap_future(future, *, loop=None):
     """Wrap concurrent.futures.Future object."""
     if isfuture(future):
         return future
-    assert isinstance(
-        future, concurrent.futures.Future
-    ), f"concurrent.futures.Future is expected, got {future!r}"
+    assert isinstance(future, concurrent.futures.Future), (
+        f"concurrent.futures.Future is expected, got {future!r}"
+    )
     if loop is None:
         loop = events.get_event_loop()
     new_future = loop.create_future()

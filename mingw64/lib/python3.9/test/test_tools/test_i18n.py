@@ -4,9 +4,10 @@ import os
 import sys
 import unittest
 from textwrap import dedent
+
+from test.support import temp_cwd, temp_dir
 from test.support.script_helper import assert_python_ok
 from test.test_tools import skip_if_missing, toolsdir
-from test.support import temp_cwd, temp_dir
 
 skip_if_missing()
 
@@ -45,9 +46,8 @@ class Test_pygettext(unittest.TestCase):
                 line = line[len("msgid ") :]
                 cur_msgid.append(line.strip('"'))
                 reading_msgid = True
-        else:
-            if reading_msgid:
-                msgids.append("\n".join(cur_msgid))
+        if reading_msgid:
+            msgids.append("\n".join(cur_msgid))
         return msgids
 
     def extract_docstrings_from_str(self, module_content):
@@ -91,54 +91,71 @@ class Test_pygettext(unittest.TestCase):
                 data = fp.read()
             header = self.get_header(data)
             creationDate = header["POT-Creation-Date"]
-            if creationDate.endswith("\\n"):
-                creationDate = creationDate[: -len("\\n")]
+            creationDate = creationDate.removesuffix("\\n")
             datetime.strptime(creationDate, "%Y-%m-%d %H:%M%z")
 
     def test_funcdocstring(self):
         for doc in ('"""doc"""', "r'''doc'''", "R'doc'", 'u"doc"'):
             with self.subTest(doc):
-                msgids = self.extract_docstrings_from_str(dedent("""\
+                msgids = self.extract_docstrings_from_str(
+                    dedent(
+                        """\
                 def foo(bar):
                     %s
-                """ % doc))
+                """
+                        % doc
+                    )
+                )
                 self.assertIn("doc", msgids)
 
     def test_funcdocstring_bytes(self):
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo(bar):
             b"""doc"""
-        '''))
+        ''')
+        )
         self.assertFalse([msgid for msgid in msgids if "doc" in msgid])
 
     def test_funcdocstring_fstring(self):
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo(bar):
             f"""doc"""
-        '''))
+        ''')
+        )
         self.assertFalse([msgid for msgid in msgids if "doc" in msgid])
 
     def test_classdocstring(self):
         for doc in ('"""doc"""', "r'''doc'''", "R'doc'", 'u"doc"'):
             with self.subTest(doc):
-                msgids = self.extract_docstrings_from_str(dedent("""\
+                msgids = self.extract_docstrings_from_str(
+                    dedent(
+                        """\
                 class C:
                     %s
-                """ % doc))
+                """
+                        % doc
+                    )
+                )
                 self.assertIn("doc", msgids)
 
     def test_classdocstring_bytes(self):
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         class C:
             b"""doc"""
-        '''))
+        ''')
+        )
         self.assertFalse([msgid for msgid in msgids if "doc" in msgid])
 
     def test_classdocstring_fstring(self):
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         class C:
             f"""doc"""
-        '''))
+        ''')
+        )
         self.assertFalse([msgid for msgid in msgids if "doc" in msgid])
 
     def test_msgid(self):
@@ -155,40 +172,48 @@ class Test_pygettext(unittest.TestCase):
 
     def test_funcdocstring_annotated_args(self):
         """Test docstrings for functions with annotated args"""
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo(bar: str):
             """doc"""
-        '''))
+        ''')
+        )
         self.assertIn("doc", msgids)
 
     def test_funcdocstring_annotated_return(self):
         """Test docstrings for functions with annotated return type"""
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo(bar) -> str:
             """doc"""
-        '''))
+        ''')
+        )
         self.assertIn("doc", msgids)
 
     def test_funcdocstring_defvalue_args(self):
         """Test docstring for functions with default arg values"""
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo(bar=()):
             """doc"""
-        '''))
+        ''')
+        )
         self.assertIn("doc", msgids)
 
     def test_funcdocstring_multiple_funcs(self):
         """Test docstring extraction for multiple functions combining
         annotated args, annotated return types and default arg values
         """
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         def foo1(bar: tuple=()) -> str:
             """doc1"""
         def foo2(bar: List[1:2]) -> (lambda x: x):
             """doc2"""
         def foo3(bar: 'func'=lambda x: x) -> {1: 2}:
             """doc3"""
-        '''))
+        ''')
+        )
         self.assertIn("doc1", msgids)
         self.assertIn("doc2", msgids)
         self.assertIn("doc3", msgids)
@@ -197,10 +222,12 @@ class Test_pygettext(unittest.TestCase):
         """Test docstring extraction for a class with colons occurring within
         the parentheses.
         """
-        msgids = self.extract_docstrings_from_str(dedent('''\
+        msgids = self.extract_docstrings_from_str(
+            dedent('''\
         class D(L[1:2], F({1: 2}), metaclass=M(lambda x: x)):
             """doc"""
-        '''))
+        ''')
+        )
         self.assertIn("doc", msgids)
 
     def test_files_list(self):

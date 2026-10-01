@@ -1,11 +1,12 @@
 """Test the interactive interpreter."""
 
-import sys
 import os
-import unittest
 import subprocess
+import sys
+import unittest
 from textwrap import dedent
-from test.support import cpython_only, SuppressCrashReport
+
+from test.support import SuppressCrashReport, cpython_only
 from test.support.script_helper import kill_python
 
 
@@ -37,12 +38,11 @@ def spawn_repl(*args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kw):
         stdin=subprocess.PIPE,
         stdout=stdout,
         stderr=stderr,
-        **kw
+        **kw,
     )
 
 
 class TestInteractiveInterpreter(unittest.TestCase):
-
     @cpython_only
     def test_no_memory(self):
         # Issue #30696: Fix the interactive interpreter looping endlessly when

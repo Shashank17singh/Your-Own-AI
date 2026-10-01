@@ -1,20 +1,18 @@
 """Tests for distutils.command.build_clib."""
 
-import unittest
 import os
 import sys
-
-from test.support import run_unittest, missing_compiler_executable
-
+import unittest
 from distutils.command.build_clib import build_clib
 from distutils.errors import DistutilsSetupError
 from distutils.tests import support
+
+from test.support import missing_compiler_executable, run_unittest
 
 
 class BuildCLibTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
-
     def test_check_library_dist(self):
         pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)

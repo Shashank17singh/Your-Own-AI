@@ -1,12 +1,13 @@
 "Test format, coverage 99%."
 
-from idlelib import format as ft
 import unittest
-from unittest import mock
-from test.support import requires
-from tkinter import Tk, Text
+from idlelib import format as ft
 from idlelib.editor import EditorWindow
 from idlelib.idle_test.mock_idle import Editor as MockEditor
+from tkinter import Text, Tk
+from unittest import mock
+
+from test.support import requires
 
 
 class Is_Get_Test(unittest.TestCase):
@@ -71,7 +72,7 @@ class FindTest(unittest.TestCase):
         text.delete("1.0", "end")
 
     def test_find_comment(self):
-        comment = "# Comment block with no blank lines before\n" "# Comment line\n" "\n"
+        comment = "# Comment block with no blank lines before\n# Comment line\n\n"
         self.runcase(comment, 3, ("1.0", "3.0", "#", comment[0:58]))
 
         comment = (
@@ -90,37 +91,27 @@ class FindTest(unittest.TestCase):
         )
         self.runcase(comment, 4, ("2.0", "4.0", "    #", comment[1:82]))
 
-        comment = "\n" "# Single line comment\n" "\n"
+        comment = "\n# Single line comment\n\n"
         self.runcase(comment, 3, ("2.0", "3.0", "#", comment[1:23]))
 
-        comment = "\n" "    # Single line comment with leading whitespace\n" "\n"
+        comment = "\n    # Single line comment with leading whitespace\n\n"
         self.runcase(comment, 3, ("2.0", "3.0", "    #", comment[1:51]))
 
-        comment = "\n" "# Comment immediately followed by code\n" "x = 42\n" "\n"
+        comment = "\n# Comment immediately followed by code\nx = 42\n\n"
         self.runcase(comment, 3, ("2.0", "3.0", "#", comment[1:40]))
 
-        comment = (
-            "\n" "    # Indented comment immediately followed by code\n" "x = 42\n" "\n"
-        )
+        comment = "\n    # Indented comment immediately followed by code\nx = 42\n\n"
         self.runcase(comment, 3, ("2.0", "3.0", "    #", comment[1:53]))
 
-        comment = (
-            "\n" "# Comment immediately followed by indented code\n" "    x = 42\n" "\n"
-        )
+        comment = "\n# Comment immediately followed by indented code\n    x = 42\n\n"
         self.runcase(comment, 3, ("2.0", "3.0", "#", comment[1:49]))
 
     def test_find_paragraph(self):
-        teststring = (
-            '"""String with no blank lines before\n' "String line\n" '"""\n' "\n"
-        )
+        teststring = '"""String with no blank lines before\nString line\n"""\n\n'
         self.runcase(teststring, 4, ("1.0", "4.0", "", teststring[0:53]))
 
         teststring = (
-            "\n"
-            '"""String with whitespace line before and after\n'
-            "String line.\n"
-            '"""\n'
-            "\n"
+            '\n"""String with whitespace line before and after\nString line.\n"""\n\n'
         )
         self.runcase(teststring, 5, ("2.0", "5.0", "", teststring[1:66]))
 
@@ -133,10 +124,10 @@ class FindTest(unittest.TestCase):
         )
         self.runcase(teststring, 5, ("2.0", "5.0", "    ", teststring[1:85]))
 
-        teststring = "\n" '"""Single line string."""\n' "\n"
+        teststring = '\n"""Single line string."""\n\n'
         self.runcase(teststring, 3, ("2.0", "3.0", "", teststring[1:27]))
 
-        teststring = "\n" '    """Single line string with leading whitespace."""\n' "\n"
+        teststring = '\n    """Single line string with leading whitespace."""\n\n'
         self.runcase(teststring, 3, ("2.0", "3.0", "    ", teststring[1:55]))
 
 
@@ -395,7 +386,6 @@ class DummyEditwin:
 
 
 class FormatRegionTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -585,7 +575,6 @@ class C1:
 
 
 class IndentsTest(unittest.TestCase):
-
     @mock.patch.object(ft, "askyesno")
     def test_toggle_tabs(self, askyesno):
         editor = DummyEditwin(None, None)  # usetabs == False.
@@ -620,7 +609,6 @@ class IndentsTest(unittest.TestCase):
 
 
 class RstripTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")

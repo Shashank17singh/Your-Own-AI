@@ -9,6 +9,7 @@ import sys
 import threading
 import time
 import unittest
+
 from test import support
 from test.support.script_helper import assert_python_ok, spawn_python
 
@@ -19,7 +20,6 @@ except ImportError:
 
 
 class GenericTests(unittest.TestCase):
-
     def test_enums(self):
         for name in dir(signal):
             sig = getattr(signal, name)
@@ -99,7 +99,6 @@ class PosixTests(unittest.TestCase):
 
 @unittest.skipUnless(sys.platform == "win32", "Windows specific")
 class WindowsSignalTests(unittest.TestCase):
-
     def test_valid_signals(self):
         s = signal.valid_signals()
         self.assertIsInstance(s, set)
@@ -152,7 +151,6 @@ class WindowsSignalTests(unittest.TestCase):
 
 
 class WakeupFDTests(unittest.TestCase):
-
     def test_invalid_call(self):
         # First parameter is positional-only
         with self.assertRaises(TypeError):
@@ -232,13 +230,13 @@ class WakeupSignalTests(unittest.TestCase):
     @unittest.skipIf(_testcapi is None, "need _testcapi")
     def check_wakeup(self, test_body, *signals, ordered=True):
         # use a subprocess to have only one thread
-        code = """if 1:
+        code = f"""if 1:
         import _testcapi
         import os
         import signal
         import struct
 
-        signals = {!r}
+        signals = {tuple(map(int, signals))!r}
 
         def handler(signum, frame):
             pass
@@ -246,13 +244,13 @@ class WakeupSignalTests(unittest.TestCase):
         def check_signum(signals):
             data = os.read(read, len(signals)+1)
             raised = struct.unpack('%uB' % len(data), data)
-            if not {!r}:
+            if not {ordered!r}:
                 raised = set(raised)
                 signals = set(signals)
             if raised != signals:
                 raise Exception("%r != %r" % (raised, signals))
 
-        {}
+        {test_body}
 
         signal.signal(signal.SIGALRM, handler)
         read, write = os.pipe()
@@ -264,7 +262,7 @@ class WakeupSignalTests(unittest.TestCase):
 
         os.close(read)
         os.close(write)
-        """.format(tuple(map(int, signals)), ordered, test_body)
+        """
 
         assert_python_ok("-c", code)
 
@@ -427,7 +425,6 @@ class WakeupSignalTests(unittest.TestCase):
 
 @unittest.skipUnless(hasattr(socket, "socketpair"), "need socket.socketpair")
 class WakeupSocketSignalTests(unittest.TestCase):
-
     @unittest.skipIf(_testcapi is None, "need _testcapi")
     def test_socket(self):
         # use a subprocess to have only one thread
@@ -471,7 +468,7 @@ class WakeupSocketSignalTests(unittest.TestCase):
             action = "send"
         else:
             action = "write"
-        code = """if 1:
+        code = f"""if 1:
         import errno
         import signal
         import socket
@@ -504,7 +501,7 @@ class WakeupSocketSignalTests(unittest.TestCase):
         if ('Exception ignored when trying to {action} to the signal wakeup fd'
             not in err):
             raise AssertionError(err)
-        """.format(action=action)
+        """
         assert_python_ok("-c", code)
 
     @unittest.skipIf(_testcapi is None, "need _testcapi")
@@ -514,7 +511,7 @@ class WakeupSocketSignalTests(unittest.TestCase):
             action = "send"
         else:
             action = "write"
-        code = """if 1:
+        code = f"""if 1:
         import errno
         import signal
         import socket
@@ -613,13 +610,12 @@ class WakeupSocketSignalTests(unittest.TestCase):
             raise AssertionError("second set_wakeup_fd() test failed, "
                                  "stderr: %r" % err)
 
-        """.format(action=action)
+        """
         assert_python_ok("-c", code)
 
 
 @unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class SiginterruptTest(unittest.TestCase):
-
     def readpipe_interrupted(self, interrupt):
         """Perform a read during which a signal will arrive.  Return True if the
         read is interrupted by the signal and raises an exception.  Return False
@@ -725,9 +721,7 @@ class ItimerTest(unittest.TestCase):
 
         if self.hndl_count > 3:
             # it shouldn't be here, because it should have been disabled.
-            raise signal.ItimerError(
-                "setitimer didn't disable ITIMER_VIRTUAL " "timer."
-            )
+            raise signal.ItimerError("setitimer didn't disable ITIMER_VIRTUAL timer.")
         elif self.hndl_count == 3:
             # disable ITIMER_VIRTUAL, this function shouldn't be called anymore
             signal.setitimer(signal.ITIMER_VIRTUAL, 0)
@@ -771,7 +765,7 @@ class ItimerTest(unittest.TestCase):
             if signal.getitimer(self.itimer) == (0.0, 0.0):
                 break  # sig_vtalrm handler stopped this itimer
         else:  # Issue 8424
-            self.skipTest("timeout: likely cause: machine too slow or load too " "high")
+            self.skipTest("timeout: likely cause: machine too slow or load too high")
 
         # virtual itimer should be (0.0, 0.0) now
         self.assertEqual(signal.getitimer(self.itimer), (0.0, 0.0))
@@ -790,7 +784,7 @@ class ItimerTest(unittest.TestCase):
             if signal.getitimer(self.itimer) == (0.0, 0.0):
                 break  # sig_prof handler stopped this itimer
         else:  # Issue 8424
-            self.skipTest("timeout: likely cause: machine too slow or load too " "high")
+            self.skipTest("timeout: likely cause: machine too slow or load too high")
 
         # profiling itimer should be (0.0, 0.0) now
         self.assertEqual(signal.getitimer(self.itimer), (0.0, 0.0))
@@ -1342,7 +1336,6 @@ class StressTest(unittest.TestCase):
 
 
 class RaiseSignalTest(unittest.TestCase):
-
     def test_sigint(self):
         with self.assertRaises(KeyboardInterrupt):
             signal.raise_signal(signal.SIGINT)
@@ -1374,7 +1367,6 @@ class RaiseSignalTest(unittest.TestCase):
 
 
 class PidfdSignalTest(unittest.TestCase):
-
     @unittest.skipUnless(
         hasattr(signal, "pidfd_send_signal"),
         "pidfd support not built in",

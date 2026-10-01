@@ -11,19 +11,18 @@ for the Borland C++ compiler.
 # someone should sit down and factor out the common code as
 # WindowsCCompiler!  --GPW
 
-
 import os
+from distutils import log
+from distutils.ccompiler import CCompiler, gen_preprocess_options
+from distutils.dep_util import newer
 from distutils.errors import (
-    DistutilsExecError,
     CompileError,
+    DistutilsExecError,
     LibError,
     LinkError,
     UnknownFileError,
 )
-from distutils.ccompiler import CCompiler, gen_preprocess_options
 from distutils.file_util import write_file
-from distutils.dep_util import newer
-from distutils import log
 
 
 class BCPPCompiler(CCompiler):
@@ -209,7 +208,6 @@ class BCPPCompiler(CCompiler):
             output_filename = os.path.join(output_dir, output_filename)
 
         if self._need_link(objects, output_filename):
-
             # Figure out linker args based on type of target.
             if target_desc == CCompiler.EXECUTABLE:
                 startup_obj = "c0w32"
@@ -332,9 +330,8 @@ class BCPPCompiler(CCompiler):
                 libfile = os.path.join(dir, self.library_filename(name))
                 if os.path.exists(libfile):
                     return libfile
-        else:
-            # Oops, didn't find it in *any* of 'dirs'
-            return None
+        # Oops, didn't find it in *any* of 'dirs'
+        return None
 
     # overwrite the one from CCompiler to support rc and res-files
     def object_filenames(self, source_filenames, strip_dir=0, output_dir=""):

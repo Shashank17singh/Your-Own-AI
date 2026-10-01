@@ -1,17 +1,17 @@
 """Tests for futures.py."""
 
+import asyncio
 import concurrent.futures
 import gc
 import re
 import sys
 import threading
 import unittest
+from asyncio import futures
 from unittest import mock
 
-import asyncio
-from asyncio import futures
-from test.test_asyncio import utils as test_utils
 from test import support
+from test.test_asyncio import utils as test_utils
 
 
 def tearDownModule():
@@ -84,7 +84,6 @@ class DuckFuture:
 
 
 class DuckTests(test_utils.TestCase):
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -102,7 +101,6 @@ class DuckTests(test_utils.TestCase):
 
 
 class BaseFutureTests:
-
     def _new_future(self, *args, **kwargs):
         return self.cls(*args, **kwargs)
 
@@ -629,7 +627,6 @@ class PyFutureTests(BaseFutureTests, test_utils.TestCase):
 
 
 class BaseFutureDoneCallbackTests:
-
     def setUp(self):
         super().setUp()
         self.loop = self.new_test_loop()
@@ -832,14 +829,12 @@ class BaseFutureDoneCallbackTests:
 
 @unittest.skipUnless(hasattr(futures, "_CFuture"), "requires the C _asyncio module")
 class CFutureDoneCallbackTests(BaseFutureDoneCallbackTests, test_utils.TestCase):
-
     def _new_future(self):
         return futures._CFuture(loop=self.loop)
 
 
 @unittest.skipUnless(hasattr(futures, "_CFuture"), "requires the C _asyncio module")
 class CSubFutureDoneCallbackTests(BaseFutureDoneCallbackTests, test_utils.TestCase):
-
     def _new_future(self):
         class CSubFuture(futures._CFuture):
             pass
@@ -848,13 +843,11 @@ class CSubFutureDoneCallbackTests(BaseFutureDoneCallbackTests, test_utils.TestCa
 
 
 class PyFutureDoneCallbackTests(BaseFutureDoneCallbackTests, test_utils.TestCase):
-
     def _new_future(self):
         return futures._PyFuture(loop=self.loop)
 
 
 class BaseFutureInheritanceTests:
-
     def _get_future_cls(self):
         raise NotImplementedError
 

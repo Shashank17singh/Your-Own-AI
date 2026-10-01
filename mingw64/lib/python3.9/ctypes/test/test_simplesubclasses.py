@@ -10,7 +10,6 @@ class MyInt(c_int):
 
 
 class Test(unittest.TestCase):
-
     def test_compare(self):
         self.assertEqual(MyInt(3), MyInt(3))
         self.assertNotEqual(MyInt(42), MyInt(43))

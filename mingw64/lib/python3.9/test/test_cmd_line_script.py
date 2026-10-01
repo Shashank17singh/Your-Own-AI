@@ -3,26 +3,26 @@
 import contextlib
 import importlib
 import importlib.machinery
-import zipimport
-import unittest
-import sys
+import io
 import os
 import os.path
 import py_compile
 import subprocess
-import io
-
+import sys
 import textwrap
+import unittest
+import zipimport
+
 from test import support
 from test.support.script_helper import (
+    assert_python_failure,
+    assert_python_ok,
+    kill_python,
     make_pkg,
     make_script,
     make_zip_pkg,
     make_zip_script,
-    assert_python_ok,
-    assert_python_failure,
     spawn_python,
-    kill_python,
 )
 
 verbose = support.verbose
@@ -469,7 +469,7 @@ class CmdLineTest(unittest.TestCase):
         with support.temp_dir() as script_dir:
             pkg_dir = os.path.join(script_dir, "test_pkg")
             make_pkg(pkg_dir)
-            msg = "'test_pkg' is a package and cannot " "be directly executed"
+            msg = "'test_pkg' is a package and cannot be directly executed"
             self._check_import_error(["-m", "test_pkg"], msg, cwd=script_dir)
 
     def test_package_recursion(self):
@@ -533,22 +533,21 @@ class CmdLineTest(unittest.TestCase):
         # does not alter the value of sys.path[0]
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "other")
-            with support.change_cwd(path=script_dir):
-                with open("-m", "w") as f:
-                    f.write("data")
-                    rc, out, err = assert_python_ok(
-                        "-m", "other", *example_args, __isolated=False
-                    )
-                    self._check_output(
-                        script_name,
-                        rc,
-                        out,
-                        script_name,
-                        script_name,
-                        script_dir,
-                        "",
-                        importlib.machinery.SourceFileLoader,
-                    )
+            with support.change_cwd(path=script_dir), open("-m", "w") as f:
+                f.write("data")
+                rc, out, err = assert_python_ok(
+                    "-m", "other", *example_args, __isolated=False
+                )
+                self._check_output(
+                    script_name,
+                    rc,
+                    out,
+                    script_name,
+                    script_name,
+                    script_dir,
+                    "",
+                    importlib.machinery.SourceFileLoader,
+                )
 
     def test_issue20884(self):
         # On Windows, script with encoding cookie and LF line ending
@@ -558,8 +557,7 @@ class CmdLineTest(unittest.TestCase):
             with open(script_name, "w", newline="\n") as f:
                 f.write("#coding: iso-8859-1\n")
                 f.write('"""\n')
-                for _ in range(30):
-                    f.write("x" * 80 + "\n")
+                f.writelines("x" * 80 + "\n" for _ in range(30))
                 f.write('"""\n')
 
             with support.change_cwd(path=script_dir):
@@ -642,7 +640,7 @@ class CmdLineTest(unittest.TestCase):
                 pass
             err = self.check_dash_m_failure("asyncio.py")
             self.assertIn(
-                b"Try using 'asyncio' instead " b"of 'asyncio.py' as the module name",
+                b"Try using 'asyncio' instead of 'asyncio.py' as the module name",
                 err,
             )
 
@@ -652,7 +650,7 @@ class CmdLineTest(unittest.TestCase):
         exceptions = (ImportError, AttributeError, TypeError, ValueError)
         for exception in exceptions:
             exception = exception.__name__
-            init = "raise {0}('Exception in __init__.py')".format(exception)
+            init = f"raise {exception}('Exception in __init__.py')"
             with self.subTest(exception), self.setup_test_pkg(init) as pkg_dir:
                 err = self.check_dash_m_failure("test_pkg")
                 self.assertIn(exception.encode("ascii"), err)
@@ -750,7 +748,7 @@ class CmdLineTest(unittest.TestCase):
             self.assertIn("\n    1 + 1 = 2\n    ^", text)
 
             # Try the same with a form feed at the start of the indented line
-            script = "if True:\n" "\f    1 + 1 = 2\n"
+            script = "if True:\n\f    1 + 1 = 2\n"
             script_name = _make_test_script(script_dir, "script", script)
             exitcode, stdout, stderr = assert_python_failure(script_name)
             text = io.TextIOWrapper(io.BytesIO(stderr), "ascii").read()

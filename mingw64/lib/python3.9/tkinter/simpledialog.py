@@ -8,7 +8,7 @@ askstring -- get a string from the user
 """
 
 from tkinter import *
-from tkinter import messagebox, _get_default_root
+from tkinter import _get_default_root, messagebox
 
 
 class SimpleDialog:
@@ -153,7 +153,6 @@ class Dialog(Toplevel):
         This method should be overridden, and is called
         by the __init__ method.
         """
-        pass
 
     def buttonbox(self):
         """add standard button box.
@@ -196,7 +195,7 @@ class Dialog(Toplevel):
         This method is called automatically to process the data, *after*
         the dialog is destroyed. By default, it does nothing.
         """
-        pass  # override
+        # override
 
 
 def _setup_dialog(w):
@@ -247,14 +246,14 @@ class _QueryDialog(Dialog):
         if self.minvalue is not None and result < self.minvalue:
             messagebox.showwarning(
                 "Too small",
-                "The allowed minimum value is %s. " "Please try again." % self.minvalue,
+                "The allowed minimum value is %s. Please try again." % self.minvalue,
                 parent=self,
             )
             return 0
         if self.maxvalue is not None and result > self.maxvalue:
             messagebox.showwarning(
                 "Too large",
-                "The allowed maximum value is %s. " "Please try again." % self.maxvalue,
+                "The allowed maximum value is %s. Please try again." % self.maxvalue,
                 parent=self,
             )
             return 0

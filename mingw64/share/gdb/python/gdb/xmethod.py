@@ -1,10 +1,11 @@
 """Utilities for defining xmethods"""
 
 import re
+
 import gdb
 
 
-class XMethod(object):
+class XMethod:
     """Base class (or a template) for an xmethod description.
     Currently, the description requires only the 'name' and 'enabled'
     attributes.  Description objects are managed by 'XMethodMatcher'
@@ -23,7 +24,7 @@ class XMethod(object):
         self.enabled = True
 
 
-class XMethodMatcher(object):
+class XMethodMatcher:
     """Abstract base class for matching an xmethod.
     When looking for xmethods, GDB invokes the `match' method of a
     registered xmethod matcher to match the object type and method name.
@@ -65,7 +66,7 @@ class XMethodMatcher(object):
         raise NotImplementedError("XMethodMatcher match")
 
 
-class XMethodWorker(object):
+class XMethodWorker:
     """Base class for all xmethod workers defined in Python.
     An xmethod worker is an object which matches the method arguments, and
     invokes the method when GDB wants it to.  Internally, GDB first invokes the
@@ -181,13 +182,13 @@ def _validate_xmethod_matcher(matcher):
     if not hasattr(matcher, "enabled"):
         return TypeError("Xmethod matcher is missing attribute: enabled")
     if not isinstance(matcher.name, str):
-        return TypeError("Attribute 'name' of xmethod matcher is not a " "string")
+        return TypeError("Attribute 'name' of xmethod matcher is not a string")
     if matcher.name.find(";") >= 0:
         return ValueError("Xmethod matcher name cannot contain ';' in it")
 
 
 def _lookup_xmethod_matcher(locus, name):
-    for i in range(0, len(locus.xmethods)):
+    for i in range(len(locus.xmethods)):
         if locus.xmethods[i].name == name:
             return i
     return -1
@@ -222,14 +223,10 @@ def register_xmethod_matcher(locus, matcher, replace=False):
             del locus.xmethods[index]
         else:
             raise RuntimeError(
-                "Xmethod matcher already registered with {}: {}".format(
-                    locus_name, matcher.name
-                )
+                f"Xmethod matcher already registered with {locus_name}: {matcher.name}"
             )
     if gdb.parameter("verbose"):
         gdb.write(
-            "Registering xmethod matcher '{}' with '{}' ...\n".format(
-                locus_name, matcher.name
-            )
+            f"Registering xmethod matcher '{locus_name}' with '{matcher.name}' ...\n"
         )
     locus.xmethods.insert(0, matcher)

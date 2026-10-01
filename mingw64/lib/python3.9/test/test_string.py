@@ -1,10 +1,9 @@
-import unittest
 import string
+import unittest
 from string import Template
 
 
 class ModuleTest(unittest.TestCase):
-
     def test_attrs(self):
         # While the exact order of the items in these attributes is not
         # technically part of the "language spec", in practice there is almost
@@ -176,7 +175,7 @@ class ModuleTest(unittest.TestCase):
             def check_unused_args(self, used_args, args, kwargs):
                 # Track which arguments actually got used
                 unused_args = set(kwargs.keys())
-                unused_args.update(range(0, len(args)))
+                unused_args.update(range(len(args)))
 
                 for arg in used_args:
                     unused_args.remove(arg)

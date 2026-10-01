@@ -7,12 +7,10 @@ to prepare search pattern.
 import fnmatch
 import os
 import sys
-
-from tkinter import StringVar, BooleanVar
-from tkinter.ttk import Checkbutton  # Frame imported in ...Base
-
-from idlelib.searchbase import SearchDialogBase
 from idlelib import searchengine
+from idlelib.searchbase import SearchDialogBase
+from tkinter import BooleanVar, StringVar
+from tkinter.ttk import Checkbutton  # Frame imported in ...Base
 
 # Importing OutputWindow here fails due to import loop
 # EditorWindow -> GrepDialog -> OutputWindow -> EditorWindow
@@ -199,9 +197,9 @@ class GrepDialog(SearchDialogBase):
 
 
 def _grep_dialog(parent):  # htest #
-    from tkinter import Toplevel, Text, SEL, END
-    from tkinter.ttk import Frame, Button
     from idlelib.pyshell import PyShellFileList
+    from tkinter import END, SEL, Text, Toplevel
+    from tkinter.ttk import Button, Frame
 
     top = Toplevel(parent)
     top.title("Test GrepDialog")

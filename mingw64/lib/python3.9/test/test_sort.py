@@ -1,7 +1,8 @@
-from test import support
 import random
 import unittest
 from functools import cmp_to_key
+
+from test import support
 
 verbose = support.verbose
 nerrors = 0
@@ -49,7 +50,7 @@ class TestBase(unittest.TestCase):
             sizes.extend(range(n - 1, n + 2))
         sizes.extend([10, 100, 1000])
 
-        class Complains(object):
+        class Complains:
             maybe_complain = True
 
             def __init__(self, i):
@@ -65,7 +66,7 @@ class TestBase(unittest.TestCase):
             def __repr__(self):
                 return "Complains(%d)" % self.i
 
-        class Stable(object):
+        class Stable:
             def __init__(self, key, i):
                 self.key = key
                 self.index = i
@@ -136,7 +137,6 @@ class TestBase(unittest.TestCase):
 
 
 class TestBugs(unittest.TestCase):
-
     def test_bug453523(self):
         # bug 453523 -- list.sort() crasher.
         # If this fails, the most likely outcome is a core dump.
@@ -179,9 +179,8 @@ class TestBugs(unittest.TestCase):
 
 
 class TestDecorateSortUndecorate(unittest.TestCase):
-
     def test_decorated(self):
-        data = "The quick Brown fox Jumped over The lazy Dog".split()
+        data = ["The", "quick", "Brown", "fox", "Jumped", "over", "The", "lazy", "Dog"]
         copy = data[:]
         random.shuffle(data)
         data.sort(key=str.lower)
@@ -193,7 +192,7 @@ class TestDecorateSortUndecorate(unittest.TestCase):
         copy.sort(key=cmp_to_key(my_cmp))
 
     def test_baddecorator(self):
-        data = "The quick Brown fox Jumped over The lazy Dog".split()
+        data = ["The", "quick", "Brown", "fox", "Jumped", "over", "The", "lazy", "Dog"]
         self.assertRaises(TypeError, data.sort, key=lambda x, y: 0)
 
     def test_stability(self):
@@ -223,7 +222,7 @@ class TestDecorateSortUndecorate(unittest.TestCase):
     def test_key_with_mutating_del(self):
         data = list(range(10))
 
-        class SortKiller(object):
+        class SortKiller:
             def __init__(self, x):
                 pass
 
@@ -240,7 +239,7 @@ class TestDecorateSortUndecorate(unittest.TestCase):
         data = list(range(10))
 
         ## dup = data[:]
-        class SortKiller(object):
+        class SortKiller:
             def __init__(self, x):
                 if x > 2:
                     raise RuntimeError

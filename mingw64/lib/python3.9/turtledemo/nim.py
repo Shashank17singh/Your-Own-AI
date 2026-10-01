@@ -6,9 +6,9 @@ Implements the model-view-controller
 design pattern.
 """
 
-import turtle
 import random
 import time
+import turtle
 
 SCREENWIDTH = 640
 SCREENHEIGHT = 480
@@ -46,7 +46,7 @@ def randommove(state):
     return z, rand
 
 
-class NimModel(object):
+class NimModel:
     def __init__(self, game):
         self.game = game
 
@@ -109,7 +109,7 @@ class Stick(turtle.Turtle):
         self.game.controller.notify_move(self.row, self.col)
 
 
-class NimView(object):
+class NimView:
     def __init__(self, game):
         self.game = game
         self.screen = game.screen
@@ -177,7 +177,7 @@ class NimView(object):
             self.screen.clear()
 
 
-class NimController(object):
+class NimController:
     def __init__(self, game):
         self.game = game
         self.sticks = game.view.sticks
@@ -197,7 +197,7 @@ class NimController(object):
         self.BUSY = False
 
 
-class Nim(object):
+class Nim:
     CREATED = 0
     RUNNING = 1
     OVER = 2

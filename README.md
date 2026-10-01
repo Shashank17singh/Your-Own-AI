@@ -13,27 +13,27 @@
 
 ---
 
-##  Overview
+## Overview
 
 Architected a high-performance vector database in modern C++. It implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
 
 ---
 
-##  What This Project Does
+## What This Project Does
 
-| Feature | Description |
-|---|---|
-|  **3 Search Algorithms** | HNSW (production-grade), KD-Tree, Brute Force - run all three and compare speed |
-|  **3 Distance Metrics** | Cosine similarity, Euclidean distance, Manhattan distance |
-|  **16D Demo Vectors** | 20 pre-loaded semantic vectors across 4 categories (CS, Math, Food, Sports) |
-|  **2D PCA Scatter Plot** | Live visualization of semantic space - watch clusters form |
-|  **Real Document Embedding** | Paste any text → Ollama embeds it with `nomic-embed-text` (768D) |
-|  **RAG Pipeline** | Ask questions about your documents → HNSW retrieves context → local LLM answers |
-|  **Full REST API** | CRUD endpoints: insert, delete, search, benchmark, hnsw-info |
+| Feature                     | Description                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| **3 Search Algorithms**     | HNSW (production-grade), KD-Tree, Brute Force - run all three and compare speed |
+| **3 Distance Metrics**      | Cosine similarity, Euclidean distance, Manhattan distance                       |
+| **16D Demo Vectors**        | 20 pre-loaded semantic vectors across 4 categories (CS, Math, Food, Sports)     |
+| **2D PCA Scatter Plot**     | Live visualization of semantic space - watch clusters form                      |
+| **Real Document Embedding** | Paste any text → Ollama embeds it with `nomic-embed-text` (768D)                |
+| **RAG Pipeline**            | Ask questions about your documents → HNSW retrieves context → local LLM answers |
+| **Full REST API**           | CRUD endpoints: insert, delete, search, benchmark, hnsw-info                    |
 
 ---
 
-##  How It Works
+## How It Works
 
 ```mermaid
 graph TD
@@ -41,7 +41,7 @@ graph TD
     A[Raw Text Document] -->|Chunking| B(Ollama: nomic-embed-text)
     B -->|768D Vector| C{HNSW Index C++}
     end
-    
+
     subgraph "Retrieval Augmented Generation (RAG)"
     D[User Query] -->|Embed| E(Ollama: nomic-embed-text)
     E -->|768D Query Vector| C
@@ -49,11 +49,11 @@ graph TD
     F -->|Prompt Injection| G(Ollama: Llama 3.2:1b)
     G --> H[Final Generated Answer]
     end
-    
+
     classDef llm fill:#f9f0ff,stroke:#8a2be2,stroke-width:2px,color:#000;
     classDef data fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
     classDef index fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000;
-    
+
     class B,G,E llm;
     class A,D,F,H data;
     class C index;
@@ -63,7 +63,7 @@ graph TD
 
 ---
 
-##  Prerequisites
+## Prerequisites
 
 You need **3 things** installed on your Windows laptop:
 
@@ -73,7 +73,7 @@ You need **3 things** installed on your Windows laptop:
 
 ---
 
-##  Step-by-Step Setup (Windows)
+## Step-by-Step Setup (Windows)
 
 ### Step 1 - Install MSYS2 (C++ Compiler)
 
@@ -86,7 +86,7 @@ You need **3 things** installed on your Windows laptop:
 pacman -Syu
 ```
 
-*(Close and reopen the terminal if it asks you to)*
+_(Close and reopen the terminal if it asks you to)_
 
 ```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
@@ -155,12 +155,15 @@ cmake --build . --config Release
 This produces `vectordb.exe` in the `build/` (or `build/Release/`) folder.
 
 Alternatively, you can compile directly with g++:
+
 ```bash
 g++ -std=c++17 -O2 -Iinclude src/main.cpp -o db -lws2_32
 ```
+
 This produces `db.exe`.
 
 > **Troubleshooting:**
+>
 > - `g++: command not found` → MSYS2 not in PATH, redo Step 1 point 5
 > - `undefined reference to WSA...` → missing `-lws2_32` flag, add it
 > - Takes too long? Remove `-O2` for a faster (but slower) compile
@@ -173,7 +176,7 @@ This produces `db.exe`.
 ollama serve
 ```
 
-*(If Ollama is already in the system tray, skip this)*
+_(If Ollama is already in the system tray, skip this)_
 
 **Terminal 2** - Start the VectorDB server:
 
@@ -197,7 +200,7 @@ Open your browser to **http://localhost:8080**.
 
 ---
 
-##  Using the Application
+## Using the Application
 
 ### Tab 1: Search (Demo Vectors)
 
@@ -238,31 +241,31 @@ The answer streams in with a typewriter effect. Click the **context chips** to s
 
 ---
 
-##  REST API Reference
+## REST API Reference
 
 The server exposes a full REST API at `http://localhost:8080`.
 
 ### Demo Vector Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/search?v=f1,f2,...&k=5&metric=cosine&algo=hnsw` | K-NN search |
-| `POST` | `/insert` | Insert a demo vector |
-| `DELETE` | `/delete/:id` | Delete by ID |
-| `GET` | `/items` | List all demo vectors |
-| `GET` | `/benchmark?v=...&k=5&metric=cosine` | Compare all 3 algorithms |
-| `GET` | `/hnsw-info` | HNSW graph structure and layer stats |
-| `GET` | `/stats` | Database statistics |
+| Method   | Endpoint                                          | Description                          |
+| -------- | ------------------------------------------------- | ------------------------------------ |
+| `GET`    | `/search?v=f1,f2,...&k=5&metric=cosine&algo=hnsw` | K-NN search                          |
+| `POST`   | `/insert`                                         | Insert a demo vector                 |
+| `DELETE` | `/delete/:id`                                     | Delete by ID                         |
+| `GET`    | `/items`                                          | List all demo vectors                |
+| `GET`    | `/benchmark?v=...&k=5&metric=cosine`              | Compare all 3 algorithms             |
+| `GET`    | `/hnsw-info`                                      | HNSW graph structure and layer stats |
+| `GET`    | `/stats`                                          | Database statistics                  |
 
 ### Document & RAG Endpoints
 
-| Method | Endpoint | Body | Description |
-|---|---|---|---|
-| `POST` | `/doc/insert` | `{"title":"...","text":"..."}` | Embed and store document |
-| `GET` | `/doc/list` | - | List all stored documents |
-| `DELETE` | `/doc/delete/:id` | - | Delete document chunk |
-| `POST` | `/doc/ask` | `{"question":"...","k":3}` | RAG: retrieve + generate |
-| `GET` | `/status` | - | Ollama status and model info |
+| Method   | Endpoint          | Body                           | Description                  |
+| -------- | ----------------- | ------------------------------ | ---------------------------- |
+| `POST`   | `/doc/insert`     | `{"title":"...","text":"..."}` | Embed and store document     |
+| `GET`    | `/doc/list`       | -                              | List all stored documents    |
+| `DELETE` | `/doc/delete/:id` | -                              | Delete document chunk        |
+| `POST`   | `/doc/ask`        | `{"question":"...","k":3}`     | RAG: retrieve + generate     |
+| `GET`    | `/status`         | -                              | Ollama status and model info |
 
 ### Example: Search via curl
 
@@ -280,7 +283,7 @@ curl -X POST http://localhost:8080/doc/ask `
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 Your-Own-AI/
@@ -307,7 +310,7 @@ OllamaClient        HTTP client → /api/embeddings + /api/generate
 
 ---
 
-##  Algorithm Deep Dive
+## Algorithm Deep Dive
 
 ### HNSW (Hierarchical Navigable Small World)
 
@@ -331,38 +334,36 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 ---
 
-##  Common Issues
+## Common Issues
 
-| Problem | Fix |
-|---|---|
-| `Ollama: OFFLINE` in header | Run `ollama serve` in a terminal |
-| Embedding takes forever | Ollama is downloading the model on first use, wait ~2 min |
-| `g++: command not found` | Add `C:\msys64\ucrt64\bin` to Windows PATH |
-| Port 8080 already in use | Kill the process: `netstat -ano \| findstr 8080` then `taskkill /PID <pid> /F` |
-| LLM answer is slow | Normal - llama3.2:1b takes 10-30s on a laptop CPU. |
-
+| Problem                     | Fix                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `Ollama: OFFLINE` in header | Run `ollama serve` in a terminal                                               |
+| Embedding takes forever     | Ollama is downloading the model on first use, wait ~2 min                      |
+| `g++: command not found`    | Add `C:\msys64\ucrt64\bin` to Windows PATH                                     |
+| Port 8080 already in use    | Kill the process: `netstat -ano \| findstr 8080` then `taskkill /PID <pid> /F` |
+| LLM answer is slow          | Normal - llama3.2:1b takes 10-30s on a laptop CPU.                             |
 
 ---
 
-
---- 
+---
 
 ## Deep Codebase Analysis
 
-| File | Purpose / Details |
-|---|---|
-| `.vscode\settings.json` | Core component logic and implementation details. |
-| `CMakeLists.txt` | Core component logic and implementation details. |
-| `Ollama_Cloud_GPU.ipynb` | Core component logic and implementation details. |
-| `brag-output\composition\.hyperframes\hf-ids-stamped.json` | Core component logic and implementation details. |
-| `brag-output\composition\hyperframes.json` | Core component logic and implementation details. |
-| `brag-output\composition\meta.json` | Core component logic and implementation details. |
-| `brag-output\composition\package.json` | Core component logic and implementation details. |
-| `brag-output\share-copy.txt` | Core component logic and implementation details. |
-| `create_colab.py` | Core component logic and implementation details. |
-| `include\httplib.h` | //  httplib.h |
-| `mingw64\include\ansidecl.h` | Core component logic and implementation details. |
-| `mingw64\include\bfd.h` | Core component logic and implementation details. |
-| `mingw64\include\bfdlink.h` | Core component logic and implementation details. |
-| `mingw64\include\c++\16.1.0\backward\auto_ptr.h` | auto_ptr implementation -*- C++ -*- |
-| `mingw64\include\c++\16.1.0\backward\backward_warning.h` | Copyright (C) 2001-2026 Free Software Foundation, Inc. |
+| File                                                       | Purpose / Details                                      |
+| ---------------------------------------------------------- | ------------------------------------------------------ |
+| `.vscode\settings.json`                                    | Core component logic and implementation details.       |
+| `CMakeLists.txt`                                           | Core component logic and implementation details.       |
+| `Ollama_Cloud_GPU.ipynb`                                   | Core component logic and implementation details.       |
+| `brag-output\composition\.hyperframes\hf-ids-stamped.json` | Core component logic and implementation details.       |
+| `brag-output\composition\hyperframes.json`                 | Core component logic and implementation details.       |
+| `brag-output\composition\meta.json`                        | Core component logic and implementation details.       |
+| `brag-output\composition\package.json`                     | Core component logic and implementation details.       |
+| `brag-output\share-copy.txt`                               | Core component logic and implementation details.       |
+| `create_colab.py`                                          | Core component logic and implementation details.       |
+| `include\httplib.h`                                        | // httplib.h                                           |
+| `mingw64\include\ansidecl.h`                               | Core component logic and implementation details.       |
+| `mingw64\include\bfd.h`                                    | Core component logic and implementation details.       |
+| `mingw64\include\bfdlink.h`                                | Core component logic and implementation details.       |
+| `mingw64\include\c++\16.1.0\backward\auto_ptr.h`           | auto_ptr implementation -_- C++ -_-                    |
+| `mingw64\include\c++\16.1.0\backward\backward_warning.h`   | Copyright (C) 2001-2026 Free Software Foundation, Inc. |

@@ -1,8 +1,8 @@
 import sys
-
 import unittest
+
 from test import support
-from test.test_grammar import VALID_UNDERSCORE_LITERALS, INVALID_UNDERSCORE_LITERALS
+from test.test_grammar import INVALID_UNDERSCORE_LITERALS, VALID_UNDERSCORE_LITERALS
 
 L = [
     ("0", 0),
@@ -31,9 +31,8 @@ class IntSubclass(int):
 
 
 class IntTestCases(unittest.TestCase):
-
     def test_basic(self):
-        self.assertEqual(int(314), 314)
+        self.assertEqual(314, 314)
         self.assertEqual(int(3.14), 3)
         # Check that conversion from float truncates towards zero
         self.assertEqual(int(-3.14), -3)
@@ -241,7 +240,7 @@ class IntTestCases(unittest.TestCase):
         self.assertIs(int(b"-1"), -1)
 
     def test_no_args(self):
-        self.assertEqual(int(), 0)
+        self.assertEqual(0, 0)
 
     def test_keyword_args(self):
         # Test invoking int() using keyword arguments.
@@ -278,7 +277,7 @@ class IntTestCases(unittest.TestCase):
             int("0", 5.0)
 
     def test_int_base_indexable(self):
-        class MyIndexable(object):
+        class MyIndexable:
             def __init__(self, value):
                 self.value = value
 
@@ -352,7 +351,7 @@ class IntTestCases(unittest.TestCase):
 
         self.assertRaises(TypeError, int, ClassicMissingMethods())
 
-        class MissingMethods(object):
+        class MissingMethods:
             pass
 
         self.assertRaises(TypeError, int, MissingMethods())
@@ -425,7 +424,7 @@ class IntTestCases(unittest.TestCase):
                     int(TruncReturnsNonIntegral())
                 except TypeError as e:
                     self.assertEqual(
-                        str(e), "__trunc__ returned non-Integral" " (type NonIntegral)"
+                        str(e), "__trunc__ returned non-Integral (type NonIntegral)"
                     )
                 else:
                     self.fail(

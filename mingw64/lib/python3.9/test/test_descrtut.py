@@ -8,9 +8,6 @@
 # of much interest anymore), and a few were fiddled to make the output
 # deterministic.
 
-from test.support import sortdict
-import pprint
-
 
 class defaultdict(dict):
     def __init__(self, default=None):
@@ -415,24 +412,24 @@ called C.save()
 """
 
 
-class A(object):
+class A:
     def m(self):
         return "A"
 
 
 class B(A):
     def m(self):
-        return "B" + super(B, self).m()
+        return "B" + super().m()
 
 
 class C(A):
     def m(self):
-        return "C" + super(C, self).m()
+        return "C" + super().m()
 
 
 class D(C, B):
     def m(self):
-        return "D" + super(D, self).m()
+        return "D" + super().m()
 
 
 test_7 = """

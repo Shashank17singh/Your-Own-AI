@@ -13,13 +13,13 @@ the "typical" Unix-style command-line C compiler:
   * link shared library handled by 'cc -shared'
 """
 
-import os, sys, re
-
-from distutils import sysconfig
+import os
+import re
+import sys
+from distutils import log, sysconfig
+from distutils.ccompiler import CCompiler, gen_lib_options, gen_preprocess_options
 from distutils.dep_util import newer
-from distutils.ccompiler import CCompiler, gen_preprocess_options, gen_lib_options
-from distutils.errors import DistutilsExecError, CompileError, LibError, LinkError
-from distutils import log
+from distutils.errors import CompileError, DistutilsExecError, LibError, LinkError
 
 if sys.platform == "darwin":
     import _osx_support
@@ -41,7 +41,6 @@ if sys.platform == "darwin":
 
 
 class UnixCCompiler(CCompiler):
-
     compiler_type = "unix"
 
     # These are used by CCompiler in two places: the constructor sets
@@ -319,7 +318,6 @@ class UnixCCompiler(CCompiler):
                 dir.startswith("/System/")
                 or (dir.startswith("/usr/") and not dir.startswith("/usr/local/"))
             ):
-
                 shared = os.path.join(sysroot, dir[1:], shared_f)
                 dylib = os.path.join(sysroot, dir[1:], dylib_f)
                 static = os.path.join(sysroot, dir[1:], static_f)

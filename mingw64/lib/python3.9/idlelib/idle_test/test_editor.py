@@ -1,17 +1,16 @@
 "Test editor, coverage 35%."
 
-from idlelib import editor
 import unittest
 from collections import namedtuple
-from test.support import requires
+from idlelib import editor
 from tkinter import Tk
-from idlelib.idle_test.mock_idle import Func
+
+from test.support import requires
 
 Editor = editor.EditorWindow
 
 
 class EditorWindowTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -104,7 +103,6 @@ def insert(text, string):
 
 
 class IndentAndNewlineTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
@@ -209,7 +207,6 @@ class IndentAndNewlineTest(unittest.TestCase):
 
 
 class RMenuTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         requires("gui")
