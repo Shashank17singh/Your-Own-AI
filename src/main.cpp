@@ -370,6 +370,10 @@ public:
   }
   size_t size() const { return G.size(); }
 };
+/**
+ * @class VectorDB
+ * @brief Thread-safe in-memory vector database supporting multiple search algorithms.
+ */
 class VectorDB {
   std::unordered_map<int, VectorItem> store;
   BruteForce bf;
@@ -621,6 +625,10 @@ std::vector<std::string> chunkText(const std::string &text,
   }
   return chunks;
 }
+/**
+ * @class OllamaClient
+ * @brief Client for interacting with a local Ollama API to generate embeddings and responses.
+ */
 class OllamaClient {
   std::string host;
   int port;
@@ -707,6 +715,10 @@ struct DocItem {
   std::string text;
   std::vector<float> emb;
 };
+/**
+ * @class DocumentDB
+ * @brief Thread-safe document store with vector search capabilities.
+ */
 class DocumentDB {
   std::unordered_map<int, DocItem> store;
   HNSW hnsw;
