@@ -1,6 +1,6 @@
 <div align="center">
 
-#  Your-Own-AI (VectorDB) - Building a Vector Database in C++
+# Your-Own-AI (VectorDB) - Building a Vector Database in C++
 
 **A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama**
 
@@ -343,3 +343,26 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 
 ---
+
+
+--- 
+
+## Deep Codebase Analysis
+
+| File | Purpose / Details |
+|---|---|
+| `.vscode\settings.json` | Core component logic and implementation details. |
+| `CMakeLists.txt` | Core component logic and implementation details. |
+| `Ollama_Cloud_GPU.ipynb` | Core component logic and implementation details. |
+| `brag-output\composition\.hyperframes\hf-ids-stamped.json` | Core component logic and implementation details. |
+| `brag-output\composition\hyperframes.json` | Core component logic and implementation details. |
+| `brag-output\composition\meta.json` | Core component logic and implementation details. |
+| `brag-output\composition\package.json` | Core component logic and implementation details. |
+| `brag-output\share-copy.txt` | Core component logic and implementation details. |
+| `create_colab.py` | Core component logic and implementation details. |
+| `include\httplib.h` | //  httplib.h |
+| `mingw64\include\ansidecl.h` | Core component logic and implementation details. |
+| `mingw64\include\bfd.h` | Core component logic and implementation details. |
+| `mingw64\include\bfdlink.h` | Core component logic and implementation details. |
+| `mingw64\include\c++\16.1.0\backward\auto_ptr.h` | auto_ptr implementation -*- C++ -*- |
+| `mingw64\include\c++\16.1.0\backward\backward_warning.h` | Copyright (C) 2001-2026 Free Software Foundation, Inc. |

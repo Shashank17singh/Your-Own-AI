@@ -1,0 +1,1 @@
+Your-Own-AI turns your documents into local 768D embeddings, retrieves the right context with HNSW, and answers with Ollama — all from a C++ vector database.
