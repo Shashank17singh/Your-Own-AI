@@ -104,7 +104,7 @@ notebook = {
     "nbformat_minor": 0,
 }
 
-with open("e:/Project/Your-Own-AI/Ollama_Cloud_GPU.ipynb", "w", encoding="utf-8") as f:
+with open("Ollama_Cloud_GPU.ipynb", "w", encoding="utf-8") as f:
     json.dump(notebook, f, indent=2)
 
 print("Notebook created")
