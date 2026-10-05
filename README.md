@@ -15,7 +15,7 @@
 
 ## Overview
 
-Architected a high-performance vector database in modern C++. It implements **HNSW**, **KD-Tree**, and **Brute Force** search algorithms side-by-side, plus a **RAG pipeline** powered by a local LLM via Ollama.
+A custom C++ vector database implementing HNSW, KD-Tree, and Brute-Force search. It serves as the backend for a fully local RAG pipeline using Ollama, complete with a REST API and a frontend for 2D PCA visualization of the vectors.
 
 ---
 
