@@ -21,41 +21,29 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+using namespace std;
 static const int DIMS = 16;
-/**
- * @struct VectorItem
- * @brief Represents a single document or chunk embedded in the vector space.
- */
+
 struct VectorItem {
   int id;
-  std::string metadata;
-  std::string category;
-  std::vector<float> emb;
+  string metadata;
+  string category;
+  vector<float> emb;
 };
-using DistFn = std::function<float(const std::vector<float> &,
-                                   const std::vector<float> &)>;
-/**
- * @brief Calculates the Euclidean (L2) distance between two vectors.
- * @param a First vector
- * @param b Second vector
- * @return float Euclidean distance
- */
-float euclidean(const std::vector<float> &a, const std::vector<float> &b) {
+using DistFn = function<float(const vector<float> &,
+                                   const vector<float> &)>;
+
+float euclidean(const vector<float> &a, const vector<float> &b) {
   float s = 0;
   for (int i = 0; i < (int)a.size(); i++) {
     float d = a[i] - b[i];
     s += d * d;
   }
-  return std::sqrt(s);
+  return sqrt(s);
 }
-/**
- * @brief Calculates the Cosine distance between two vectors (1.0 -
- * cosine_similarity).
- * @param a First vector
- * @param b Second vector
- * @return float Cosine distance
- */
-float cosine(const std::vector<float> &a, const std::vector<float> &b) {
+
+float cosine(const vector<float> &a, const vector<float> &b) {
   float dot = 0, na = 0, nb = 0;
   for (int i = 0; i < (int)a.size(); i++) {
     dot += a[i] * b[i];
@@ -64,15 +52,15 @@ float cosine(const std::vector<float> &a, const std::vector<float> &b) {
   }
   if (na < 1e-9f || nb < 1e-9f)
     return 1.0f;
-  return 1.0f - dot / (std::sqrt(na) * std::sqrt(nb));
+  return 1.0f - dot / (sqrt(na) * sqrt(nb));
 }
-float manhattan(const std::vector<float> &a, const std::vector<float> &b) {
+float manhattan(const vector<float> &a, const vector<float> &b) {
   float s = 0;
   for (int i = 0; i < (int)a.size(); i++)
-    s += std::abs(a[i] - b[i]);
+    s += abs(a[i] - b[i]);
   return s;
 }
-DistFn getDistFn(const std::string &m) {
+DistFn getDistFn(const string &m) {
   if (m == "cosine")
     return cosine;
   if (m == "manhattan")
@@ -81,22 +69,22 @@ DistFn getDistFn(const std::string &m) {
 }
 class BruteForce {
 public:
-  std::vector<VectorItem> items;
+  vector<VectorItem> items;
   void insert(const VectorItem &v) { items.push_back(v); }
-  std::vector<std::pair<float, int>> knn(const std::vector<float> &q, int k,
+  vector<pair<float, int>> knn(const vector<float> &q, int k,
                                          DistFn dist) {
-    std::vector<std::pair<float, int>> r;
+    vector<pair<float, int>> r;
     r.reserve(items.size());
     for (auto &v : items)
       r.push_back({dist(q, v.emb), v.id});
-    std::sort(r.begin(), r.end());
+    sort(r.begin(), r.end());
     if ((int)r.size() > k)
       r.resize(k);
     return r;
   }
   void remove(int id) {
     items.erase(
-        std::remove_if(items.begin(), items.end(),
+        remove_if(items.begin(), items.end(),
                        [id](const VectorItem &v) { return v.id == id; }),
         items.end());
   }
@@ -107,13 +95,7 @@ struct KDNode {
   KDNode *right = nullptr;
   explicit KDNode(const VectorItem &v) : item(v) {}
 };
-/**
- * @class KDTree
- * @brief K-Dimensional Tree implementation for exact nearest neighbor search.
- *
- * Partitions space iteratively along alternating axes. Best suited for
- * lower-dimensional data.
- */
+
 class KDTree {
   KDNode *root = nullptr;
   int dims;
@@ -134,8 +116,8 @@ class KDTree {
       n->right = ins(n->right, v, d + 1);
     return n;
   }
-  void knn(KDNode *n, const std::vector<float> &q, int k, int d, DistFn dist,
-           std::priority_queue<std::pair<float, int>> &heap) {
+  void knn(KDNode *n, const vector<float> &q, int k, int d, DistFn dist,
+           priority_queue<pair<float, int>> &heap) {
     if (!n)
       return;
     float dn = dist(q, n->item.emb);
@@ -149,7 +131,7 @@ class KDTree {
     KDNode *closer = diff < 0 ? n->left : n->right;
     KDNode *farther = diff < 0 ? n->right : n->left;
     knn(closer, q, k, d + 1, dist, heap);
-    if ((int)heap.size() < k || std::abs(diff) < heap.top().first)
+    if ((int)heap.size() < k || abs(diff) < heap.top().first)
       knn(farther, q, k, d + 1, dist, heap);
   }
 
@@ -157,57 +139,50 @@ public:
   explicit KDTree(int d) : dims(d) {}
   ~KDTree() { destroy(root); }
   void insert(const VectorItem &v) { root = ins(root, v, 0); }
-  std::vector<std::pair<float, int>> knn(const std::vector<float> &q, int k,
+  vector<pair<float, int>> knn(const vector<float> &q, int k,
                                          DistFn dist) {
-    std::priority_queue<std::pair<float, int>> heap;
+    priority_queue<pair<float, int>> heap;
     knn(root, q, k, 0, dist, heap);
-    std::vector<std::pair<float, int>> r;
+    vector<pair<float, int>> r;
     while (!heap.empty()) {
       r.push_back(heap.top());
       heap.pop();
     }
-    std::sort(r.begin(), r.end());
+    sort(r.begin(), r.end());
     return r;
   }
-  void rebuild(const std::vector<VectorItem> &items) {
+  void rebuild(const vector<VectorItem> &items) {
     destroy(root);
     root = nullptr;
     for (auto &v : items)
       insert(v);
   }
 };
-/**
- * @class HNSW
- * @brief Hierarchical Navigable Small World Graph implementation for
- * approximate nearest neighbor search.
- *
- * Provides O(log N) search complexity by building a multi-layered graph where
- * upper layers are sparse and lower layers are dense.
- */
+
 class HNSW {
   struct Node {
     VectorItem item;
     int maxLyr;
-    std::vector<std::vector<int>> nbrs;
+    vector<vector<int>> nbrs;
   };
-  std::unordered_map<int, Node> G;
+  unordered_map<int, Node> G;
   int M, M0, ef_build;
   float mL;
   int topLayer = -1;
   int entryPt = -1;
-  std::mt19937 rng;
+  mt19937 rng;
   int randLevel() {
-    std::uniform_real_distribution<float> u(0.0f, 1.0f);
-    return (int)std::floor(-std::log(u(rng)) * mL);
+    uniform_real_distribution<float> u(0.0f, 1.0f);
+    return (int)floor(-log(u(rng)) * mL);
   }
-  std::vector<std::pair<float, int>> searchLayer(const std::vector<float> &q,
+  vector<pair<float, int>> searchLayer(const vector<float> &q,
                                                  int ep, int ef, int lyr,
                                                  DistFn dist) {
-    std::unordered_map<int, bool> vis;
-    std::priority_queue<std::pair<float, int>,
-                        std::vector<std::pair<float, int>>, std::greater<>>
+    unordered_map<int, bool> vis;
+    priority_queue<pair<float, int>,
+                        vector<pair<float, int>>, greater<>>
         cands;
-    std::priority_queue<std::pair<float, int>> found;
+    priority_queue<pair<float, int>> found;
     float d0 = dist(q, G[ep].item.emb);
     vis[ep] = true;
     cands.push({d0, ep});
@@ -232,30 +207,30 @@ class HNSW {
         }
       }
     }
-    std::vector<std::pair<float, int>> res;
+    vector<pair<float, int>> res;
     while (!found.empty()) {
       res.push_back(found.top());
       found.pop();
     }
-    std::sort(res.begin(), res.end());
+    sort(res.begin(), res.end());
     return res;
   }
-  std::vector<int> selectNbrs(std::vector<std::pair<float, int>> &cands,
+  vector<int> selectNbrs(vector<pair<float, int>> &cands,
                               int maxM) {
-    std::vector<int> r;
-    for (int i = 0; i < std::min((int)cands.size(), maxM); i++)
+    vector<int> r;
+    for (int i = 0; i < min((int)cands.size(), maxM); i++)
       r.push_back(cands[i].second);
     return r;
   }
 
 public:
   HNSW(int m = 16, int efBuild = 200)
-      : M(m), M0(2 * m), ef_build(efBuild), mL(1.0f / std::log((float)m)),
+      : M(m), M0(2 * m), ef_build(efBuild), mL(1.0f / log((float)m)),
         rng(42) {}
   void insert(const VectorItem &item, DistFn dist) {
     int id = item.id;
     int lvl = randLevel();
-    G[id] = {item, lvl, std::vector<std::vector<int>>(lvl + 1)};
+    G[id] = {item, lvl, vector<vector<int>>(lvl + 1)};
     if (entryPt == -1) {
       entryPt = id;
       topLayer = lvl;
@@ -269,7 +244,7 @@ public:
           ep = W[0].second;
       }
     }
-    for (int lc = std::min(topLayer, lvl); lc >= 0; lc--) {
+    for (int lc = min(topLayer, lvl); lc >= 0; lc--) {
       auto W = searchLayer(item.emb, ep, ef_build, lc, dist);
       int maxM = (lc == 0) ? M0 : M;
       auto sel = selectNbrs(W, maxM);
@@ -282,11 +257,11 @@ public:
         auto &conn = G[nid].nbrs[lc];
         conn.push_back(id);
         if ((int)conn.size() > maxM) {
-          std::vector<std::pair<float, int>> ds;
+          vector<pair<float, int>> ds;
           for (int c : conn)
             if (G.count(c))
               ds.push_back({dist(G[nid].item.emb, G[c].item.emb), c});
-          std::sort(ds.begin(), ds.end());
+          sort(ds.begin(), ds.end());
           conn.clear();
           for (int i = 0; i < maxM && i < (int)ds.size(); i++)
             conn.push_back(ds[i].second);
@@ -300,7 +275,7 @@ public:
       entryPt = id;
     }
   }
-  std::vector<std::pair<float, int>> knn(const std::vector<float> &q, int k,
+  vector<pair<float, int>> knn(const vector<float> &q, int k,
                                          int ef, DistFn dist) {
     if (entryPt == -1)
       return {};
@@ -312,7 +287,7 @@ public:
           ep = W[0].second;
       }
     }
-    auto W = searchLayer(q, ep, std::max(ef, k), 0, dist);
+    auto W = searchLayer(q, ep, max(ef, k), 0, dist);
     if ((int)W.size() > k)
       W.resize(k);
     return W;
@@ -322,7 +297,7 @@ public:
       return;
     for (auto &[nid, nd] : G)
       for (auto &layer : nd.nbrs)
-        layer.erase(std::remove(layer.begin(), layer.end(), id), layer.end());
+        layer.erase(remove(layer.begin(), layer.end(), id), layer.end());
     if (entryPt == id) {
       entryPt = -1;
       for (auto &[nid, nd] : G)
@@ -335,23 +310,23 @@ public:
   }
   struct GraphInfo {
     int topLayer, nodeCount;
-    std::vector<int> nodesPerLayer, edgesPerLayer;
+    vector<int> nodesPerLayer, edgesPerLayer;
     struct NV {
       int id;
-      std::string metadata, category;
+      string metadata, category;
       int maxLyr;
     };
     struct EV {
       int src, dst, lyr;
     };
-    std::vector<NV> nodes;
-    std::vector<EV> edges;
+    vector<NV> nodes;
+    vector<EV> edges;
   };
   GraphInfo getInfo() {
     GraphInfo gi;
     gi.topLayer = topLayer;
     gi.nodeCount = (int)G.size();
-    int maxL = std::max(topLayer + 1, 1);
+    int maxL = max(topLayer + 1, 1);
     gi.nodesPerLayer.assign(maxL, 0);
     gi.edgesPerLayer.assign(maxL, 0);
     for (auto &[id, nd] : G) {
@@ -370,24 +345,21 @@ public:
   }
   size_t size() const { return G.size(); }
 };
-/**
- * @class VectorDB
- * @brief Thread-safe in-memory vector database supporting multiple search algorithms.
- */
+
 class VectorDB {
-  std::unordered_map<int, VectorItem> store;
+  unordered_map<int, VectorItem> store;
   BruteForce bf;
   KDTree kdt;
   HNSW hnsw;
-  std::mutex mu;
+  mutex mu;
   int nextId = 1;
 
 public:
   const int dims;
   explicit VectorDB(int d) : kdt(d), hnsw(16, 200), dims(d) {}
-  int insert(const std::string &meta, const std::string &cat,
-             const std::vector<float> &emb, DistFn dist) {
-    std::lock_guard<std::mutex> lk(mu);
+  int insert(const string &meta, const string &cat,
+             const vector<float> &emb, DistFn dist) {
+    lock_guard<mutex> lk(mu);
     VectorItem v{nextId++, meta, cat, emb};
     store[v.id] = v;
     bf.insert(v);
@@ -396,13 +368,13 @@ public:
     return v.id;
   }
   bool remove(int id) {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     if (!store.count(id))
       return false;
     store.erase(id);
     bf.remove(id);
     hnsw.remove(id);
-    std::vector<VectorItem> rem;
+    vector<VectorItem> rem;
     for (auto &[i, v] : store)
       rem.push_back(v);
     kdt.rebuild(rem);
@@ -410,29 +382,29 @@ public:
   }
   struct Hit {
     int id;
-    std::string meta, cat;
-    std::vector<float> emb;
+    string meta, cat;
+    vector<float> emb;
     float dist;
   };
   struct SearchOut {
-    std::vector<Hit> hits;
+    vector<Hit> hits;
     long long us;
-    std::string algo, metric;
+    string algo, metric;
   };
-  SearchOut search(const std::vector<float> &q, int k,
-                   const std::string &metric, const std::string &algo) {
-    std::lock_guard<std::mutex> lk(mu);
+  SearchOut search(const vector<float> &q, int k,
+                   const string &metric, const string &algo) {
+    lock_guard<mutex> lk(mu);
     auto dfn = getDistFn(metric);
-    auto t0 = std::chrono::high_resolution_clock::now();
-    std::vector<std::pair<float, int>> raw;
+    auto t0 = chrono::high_resolution_clock::now();
+    vector<pair<float, int>> raw;
     if (algo == "bruteforce")
       raw = bf.knn(q, k, dfn);
     else if (algo == "kdtree")
       raw = kdt.knn(q, k, dfn);
     else
       raw = hnsw.knn(q, k, 50, dfn);
-    long long us = std::chrono::duration_cast<std::chrono::microseconds>(
-                       std::chrono::high_resolution_clock::now() - t0)
+    long long us = chrono::duration_cast<chrono::microseconds>(
+                       chrono::high_resolution_clock::now() - t0)
                        .count();
     SearchOut out;
     out.us = us;
@@ -448,38 +420,38 @@ public:
     long long bfUs, kdUs, hnswUs;
     int n;
   };
-  BenchOut benchmark(const std::vector<float> &q, int k,
-                     const std::string &metric) {
-    std::lock_guard<std::mutex> lk(mu);
+  BenchOut benchmark(const vector<float> &q, int k,
+                     const string &metric) {
+    lock_guard<mutex> lk(mu);
     auto dfn = getDistFn(metric);
     auto time = [&](auto fn) -> long long {
-      auto t = std::chrono::high_resolution_clock::now();
+      auto t = chrono::high_resolution_clock::now();
       fn();
-      return std::chrono::duration_cast<std::chrono::microseconds>(
-                 std::chrono::high_resolution_clock::now() - t)
+      return chrono::duration_cast<chrono::microseconds>(
+                 chrono::high_resolution_clock::now() - t)
           .count();
     };
     return {time([&] { bf.knn(q, k, dfn); }), time([&] { kdt.knn(q, k, dfn); }),
             time([&] { hnsw.knn(q, k, 50, dfn); }), (int)store.size()};
   }
-  std::vector<VectorItem> all() {
-    std::lock_guard<std::mutex> lk(mu);
-    std::vector<VectorItem> r;
+  vector<VectorItem> all() {
+    lock_guard<mutex> lk(mu);
+    vector<VectorItem> r;
     for (auto &[id, v] : store)
       r.push_back(v);
     return r;
   }
   HNSW::GraphInfo hnswInfo() {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     return hnsw.getInfo();
   }
   size_t size() {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     return store.size();
   }
 };
-std::string jS(const std::string &s) {
-  std::string o = "\"";
+string jS(const string &s) {
+  string o = "\"";
   for (char c : s) {
     if (c == '"')
       o += "\\\"";
@@ -496,30 +468,30 @@ std::string jS(const std::string &s) {
   }
   return o + '"';
 }
-std::string jVec(const std::vector<float> &v) {
-  std::ostringstream ss;
+string jVec(const vector<float> &v) {
+  ostringstream ss;
   ss << '[';
   for (size_t i = 0; i < v.size(); i++) {
     if (i)
       ss << ',';
-    ss << std::fixed << std::setprecision(4) << v[i];
+    ss << fixed << setprecision(4) << v[i];
   }
   return ss.str() + ']';
 }
-std::vector<float> parseVec(const std::string &s) {
-  std::vector<float> v;
-  std::istringstream ss(s);
-  std::string t;
-  while (std::getline(ss, t, ','))
+vector<float> parseVec(const string &s) {
+  vector<float> v;
+  istringstream ss(s);
+  string t;
+  while (getline(ss, t, ','))
     try {
-      v.push_back(std::stof(t));
+      v.push_back(stof(t));
     } catch (...) {
     }
   return v;
 }
-std::string extractStr(const std::string &body, const std::string &key) {
+string extractStr(const string &body, const string &key) {
   size_t p = body.find('"' + key + '"');
-  if (p == std::string::npos)
+  if (p == string::npos)
     return "";
   p = body.find(':', p) + 1;
   while (p < body.size() && (body[p] == ' ' || body[p] == '\t'))
@@ -527,7 +499,7 @@ std::string extractStr(const std::string &body, const std::string &key) {
   if (p >= body.size() || body[p] != '"')
     return "";
   p++;
-  std::string result;
+  string result;
   while (p < body.size()) {
     if (body[p] == '"')
       break;
@@ -560,32 +532,32 @@ std::string extractStr(const std::string &body, const std::string &key) {
   }
   return result;
 }
-int extractInt(const std::string &body, const std::string &key, int def = 0) {
+int extractInt(const string &body, const string &key, int def = 0) {
   size_t p = body.find('"' + key + '"');
-  if (p == std::string::npos)
+  if (p == string::npos)
     return def;
   p = body.find(':', p) + 1;
   while (p < body.size() && (body[p] == ' ' || body[p] == '\t'))
     p++;
   try {
-    return std::stoi(body.substr(p));
+    return stoi(body.substr(p));
   } catch (...) {
     return def;
   }
 }
-bool parseBody(const std::string &b, std::string &meta, std::string &cat,
-               std::vector<float> &emb) {
+bool parseBody(const string &b, string &meta, string &cat,
+               vector<float> &emb) {
   meta = extractStr(b, "metadata");
   cat = extractStr(b, "category");
-  auto extractArr = [&](const std::string &key) -> std::vector<float> {
+  auto extractArr = [&](const string &key) -> vector<float> {
     size_t p = b.find('"' + key + '"');
-    if (p == std::string::npos)
+    if (p == string::npos)
       return {};
     p = b.find('[', p);
-    if (p == std::string::npos)
+    if (p == string::npos)
       return {};
     size_t e = b.find(']', p);
-    if (e == std::string::npos)
+    if (e == string::npos)
       return {};
     return parseVec(b.substr(p + 1, e - p - 1));
   };
@@ -597,23 +569,23 @@ void cors(httplib::Response &res) {
   res.set_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   res.set_header("Access-Control-Allow-Headers", "Content-Type");
 }
-std::vector<std::string> chunkText(const std::string &text,
+vector<string> chunkText(const string &text,
                                    int chunkWords = 250,
                                    int overlapWords = 30) {
-  std::istringstream ss(text);
-  std::vector<std::string> words;
-  std::string w;
+  istringstream ss(text);
+  vector<string> words;
+  string w;
   while (ss >> w)
     words.push_back(w);
   if (words.empty())
     return {};
   if ((int)words.size() <= chunkWords)
     return {text};
-  std::vector<std::string> chunks;
+  vector<string> chunks;
   int step = chunkWords - overlapWords;
   for (int i = 0; i < (int)words.size(); i += step) {
-    int end = std::min(i + chunkWords, (int)words.size());
-    std::string chunk;
+    int end = min(i + chunkWords, (int)words.size());
+    string chunk;
     for (int j = i; j < end; j++) {
       if (j > i)
         chunk += ' ';
@@ -625,15 +597,12 @@ std::vector<std::string> chunkText(const std::string &text,
   }
   return chunks;
 }
-/**
- * @class OllamaClient
- * @brief Client for interacting with a local Ollama API to generate embeddings and responses.
- */
+
 class OllamaClient {
-  std::string host;
+  string host;
   int port;
-  std::string esc(const std::string &s) {
-    std::string o;
+  string esc(const string &s) {
+    string o;
     for (char c : s) {
       if (c == '"')
         o += "\\\"";
@@ -650,12 +619,12 @@ class OllamaClient {
     }
     return o;
   }
-  std::vector<float> parseEmbedding(const std::string &body) {
+  vector<float> parseEmbedding(const string &body) {
     size_t p = body.find("\"embedding\"");
-    if (p == std::string::npos)
+    if (p == string::npos)
       return {};
     p = body.find('[', p);
-    if (p == std::string::npos)
+    if (p == string::npos)
       return {};
     size_t e = p + 1, depth = 1;
     while (e < body.size() && depth > 0) {
@@ -667,14 +636,14 @@ class OllamaClient {
     }
     return parseVec(body.substr(p + 1, e - p - 2));
   }
-  std::string parseResponse(const std::string &body) {
+  string parseResponse(const string &body) {
     return extractStr(body, "response");
   }
 
 public:
-  std::string embedModel = "nomic-embed-text";
-  std::string genModel = "llama3.2:1b";
-  OllamaClient(const std::string &h = "127.0.0.1", int p = 11434)
+  string embedModel = "nomic-embed-text";
+  string genModel = "llama3.2:1b";
+  OllamaClient(const string &h = "127.0.0.1", int p = 11434)
       : host(h), port(p) {}
   bool isAvailable() {
     httplib::Client cli(host, port);
@@ -682,22 +651,22 @@ public:
     auto res = cli.Get("/api/tags");
     return res && res->status == 200;
   }
-  std::vector<float> embed(const std::string &text) {
+  vector<float> embed(const string &text) {
     httplib::Client cli(host, port);
     cli.set_connection_timeout(3, 0);
     cli.set_read_timeout(30, 0);
-    std::string body =
+    string body =
         "{\"model\":\"" + embedModel + "\",\"prompt\":\"" + esc(text) + "\"}";
     auto res = cli.Post("/api/embeddings", body, "application/json");
     if (!res || res->status != 200)
       return {};
     return parseEmbedding(res->body);
   }
-  std::string generate(const std::string &prompt) {
+  string generate(const string &prompt) {
     httplib::Client cli(host, port);
     cli.set_connection_timeout(3, 0);
     cli.set_read_timeout(180, 0);
-    std::string body = "{\"model\":\"" + genModel +
+    string body = "{\"model\":\"" + genModel +
                        "\","
                        "\"prompt\":\"" +
                        esc(prompt) +
@@ -711,27 +680,24 @@ public:
 };
 struct DocItem {
   int id;
-  std::string title;
-  std::string text;
-  std::vector<float> emb;
+  string title;
+  string text;
+  vector<float> emb;
 };
-/**
- * @class DocumentDB
- * @brief Thread-safe document store with vector search capabilities.
- */
+
 class DocumentDB {
-  std::unordered_map<int, DocItem> store;
+  unordered_map<int, DocItem> store;
   HNSW hnsw;
   BruteForce bf;
-  std::mutex mu;
+  mutex mu;
   int nextId = 1;
   int dims = 0;
 
 public:
   DocumentDB() : hnsw(16, 200) {}
-  int insert(const std::string &title, const std::string &text,
-             const std::vector<float> &emb) {
-    std::lock_guard<std::mutex> lk(mu);
+  int insert(const string &title, const string &text,
+             const vector<float> &emb) {
+    lock_guard<mutex> lk(mu);
     if (dims == 0)
       dims = (int)emb.size();
     DocItem item{nextId++, title, text, emb};
@@ -741,21 +707,21 @@ public:
     bf.insert(vi);
     return item.id;
   }
-  std::vector<std::pair<float, DocItem>> search(const std::vector<float> &q,
+  vector<pair<float, DocItem>> search(const vector<float> &q,
                                                 int k, float max_dist = 0.7f) {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     if (store.empty())
       return {};
     auto raw =
         (store.size() < 10) ? bf.knn(q, k, cosine) : hnsw.knn(q, k, 50, cosine);
-    std::vector<std::pair<float, DocItem>> out;
+    vector<pair<float, DocItem>> out;
     for (auto &[d, id] : raw)
       if (store.count(id) && d <= max_dist)
         out.push_back({d, store[id]});
     return out;
   }
   bool remove(int id) {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     if (!store.count(id))
       return false;
     store.erase(id);
@@ -763,15 +729,15 @@ public:
     bf.remove(id);
     return true;
   }
-  std::vector<DocItem> all() {
-    std::lock_guard<std::mutex> lk(mu);
-    std::vector<DocItem> r;
+  vector<DocItem> all() {
+    lock_guard<mutex> lk(mu);
+    vector<DocItem> r;
     for (auto &[id, v] : store)
       r.push_back(v);
     return r;
   }
   size_t size() {
-    std::lock_guard<std::mutex> lk(mu);
+    lock_guard<mutex> lk(mu);
     return store.size();
   }
   int getDims() { return dims; }
@@ -868,16 +834,16 @@ int main() {
   OllamaClient ollama;
   loadDemo(db);
   bool ollamaUp = ollama.isAvailable();
-  std::cout << "=== VectorDB Engine ===" << std::endl;
-  std::cout << "http://localhost:8080" << std::endl;
-  std::cout << db.size() << " demo vectors | " << DIMS
-            << " dims | HNSW+KD-Tree+BruteForce" << std::endl;
-  std::cout << "Ollama: "
+  cout << "=== VectorDB Engine ===" << endl;
+  cout << "http://localhost:8080" << endl;
+  cout << db.size() << " demo vectors | " << DIMS
+            << " dims | HNSW+KD-Tree+BruteForce" << endl;
+  cout << "Ollama: "
             << (ollamaUp ? "ONLINE" : "OFFLINE (install from ollama.com)")
-            << std::endl;
+            << endl;
   if (ollamaUp)
-    std::cout << "  embed model: " << ollama.embedModel
-              << "  gen model: " << ollama.genModel << std::endl;
+    cout << "  embed model: " << ollama.embedModel
+              << "  gen model: " << ollama.genModel << endl;
   httplib::Server svr;
   svr.Options(".*", [](const httplib::Request &, httplib::Response &res) {
     cors(res);
@@ -887,14 +853,14 @@ int main() {
     cors(res);
     auto q = parseVec(req.get_param_value("v"));
     if ((int)q.size() != DIMS) {
-      res.set_content("{\"error\":\"need " + std::to_string(DIMS) +
+      res.set_content("{\"error\":\"need " + to_string(DIMS) +
                           "D vector\"}",
                       "application/json");
       return;
     }
     int k = 5;
     try {
-      k = std::stoi(req.get_param_value("k"));
+      k = stoi(req.get_param_value("k"));
     } catch (...) {
     }
     auto metric = req.get_param_value("metric");
@@ -904,15 +870,15 @@ int main() {
     if (algo.empty())
       algo = "hnsw";
     auto out = db.search(q, k, metric, algo);
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"results\":[";
     for (size_t i = 0; i < out.hits.size(); i++) {
       if (i)
         ss << ',';
       auto &h = out.hits[i];
       ss << "{\"id\":" << h.id << ",\"metadata\":" << jS(h.meta)
-         << ",\"category\":" << jS(h.cat) << ",\"distance\":" << std::fixed
-         << std::setprecision(6) << h.dist << ",\"embedding\":" << jVec(h.emb)
+         << ",\"category\":" << jS(h.cat) << ",\"distance\":" << fixed
+         << setprecision(6) << h.dist << ",\"embedding\":" << jVec(h.emb)
          << '}';
     }
     ss << "],\"latencyUs\":" << out.us << ",\"algo\":" << jS(out.algo)
@@ -921,27 +887,27 @@ int main() {
   });
   svr.Post("/insert", [&](const httplib::Request &req, httplib::Response &res) {
     cors(res);
-    std::string meta, cat;
-    std::vector<float> emb;
+    string meta, cat;
+    vector<float> emb;
     if (!parseBody(req.body, meta, cat, emb) || (int)emb.size() != DIMS) {
       res.set_content("{\"error\":\"invalid body\"}", "application/json");
       return;
     }
     int id = db.insert(meta, cat, emb, getDistFn("cosine"));
-    res.set_content("{\"id\":" + std::to_string(id) + "}", "application/json");
+    res.set_content("{\"id\":" + to_string(id) + "}", "application/json");
   });
   svr.Delete(R"(/delete/(\d+))", [&](const httplib::Request &req,
                                      httplib::Response &res) {
     cors(res);
-    int id = std::stoi(req.matches[1]);
+    int id = stoi(req.matches[1]);
     bool ok = db.remove(id);
-    res.set_content("{\"ok\":" + std::string(ok ? "true" : "false") + "}",
+    res.set_content("{\"ok\":" + string(ok ? "true" : "false") + "}",
                     "application/json");
   });
   svr.Get("/items", [&](const httplib::Request &, httplib::Response &res) {
     cors(res);
     auto items = db.all();
-    std::ostringstream ss;
+    ostringstream ss;
     ss << '[';
     for (size_t i = 0; i < items.size(); i++) {
       if (i)
@@ -959,21 +925,21 @@ int main() {
             cors(res);
             auto q = parseVec(req.get_param_value("v"));
             if ((int)q.size() != DIMS) {
-              res.set_content("{\"error\":\"need " + std::to_string(DIMS) +
+              res.set_content("{\"error\":\"need " + to_string(DIMS) +
                                   "D vector\"}",
                               "application/json");
               return;
             }
             int k = 5;
             try {
-              k = std::stoi(req.get_param_value("k"));
+              k = stoi(req.get_param_value("k"));
             } catch (...) {
             }
             auto metric = req.get_param_value("metric");
             if (metric.empty())
               metric = "cosine";
             auto b = db.benchmark(q, k, metric);
-            std::ostringstream ss;
+            ostringstream ss;
             ss << "{\"bruteforceUs\":" << b.bfUs << ",\"kdtreeUs\":" << b.kdUs
                << ",\"hnswUs\":" << b.hnswUs << ",\"itemCount\":" << b.n << '}';
             res.set_content(ss.str(), "application/json");
@@ -981,7 +947,7 @@ int main() {
   svr.Get("/hnsw-info", [&](const httplib::Request &, httplib::Response &res) {
     cors(res);
     auto gi = db.hnswInfo();
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"topLayer\":" << gi.topLayer << ",\"nodeCount\":" << gi.nodeCount
        << ",\"nodesPerLayer\":[";
     for (size_t i = 0; i < gi.nodesPerLayer.size(); i++) {
@@ -1026,7 +992,7 @@ int main() {
           return;
         }
         auto chunks = chunkText(text, 250, 30);
-        std::vector<int> ids;
+        vector<int> ids;
         for (int i = 0; i < (int)chunks.size(); i++) {
           auto emb = ollama.embed(chunks[i]);
           if (emb.empty()) {
@@ -1037,13 +1003,13 @@ int main() {
                 "application/json");
             return;
           }
-          std::string chunkTitle =
-              (chunks.size() > 1) ? title + " [" + std::to_string(i + 1) + "/" +
-                                        std::to_string(chunks.size()) + "]"
+          string chunkTitle =
+              (chunks.size() > 1) ? title + " [" + to_string(i + 1) + "/" +
+                                        to_string(chunks.size()) + "]"
                                   : title;
           ids.push_back(docDB.insert(chunkTitle, chunks[i], emb));
         }
-        std::ostringstream ss;
+        ostringstream ss;
         ss << "{\"ids\":[";
         for (size_t i = 0; i < ids.size(); i++) {
           if (i)
@@ -1057,25 +1023,25 @@ int main() {
   svr.Delete(R"(/doc/delete/(\d+))", [&](const httplib::Request &req,
                                          httplib::Response &res) {
     cors(res);
-    int id = std::stoi(req.matches[1]);
+    int id = stoi(req.matches[1]);
     bool ok = docDB.remove(id);
-    res.set_content("{\"ok\":" + std::string(ok ? "true" : "false") + "}",
+    res.set_content("{\"ok\":" + string(ok ? "true" : "false") + "}",
                     "application/json");
   });
   svr.Get("/doc/list", [&](const httplib::Request &, httplib::Response &res) {
     cors(res);
     auto docs = docDB.all();
-    std::ostringstream ss;
+    ostringstream ss;
     ss << '[';
     for (size_t i = 0; i < docs.size(); i++) {
       if (i)
         ss << ',';
-      std::string preview = docs[i].text.substr(0, 120);
+      string preview = docs[i].text.substr(0, 120);
       if (docs[i].text.size() > 120)
         preview += "…";
       ss << "{\"id\":" << docs[i].id << ",\"title\":" << jS(docs[i].title)
          << ",\"preview\":" << jS(preview) << ",\"words\":"
-         << (int)std::count(docs[i].text.begin(), docs[i].text.end(), ' ') + 1
+         << (int)count(docs[i].text.begin(), docs[i].text.end(), ' ') + 1
          << '}';
     }
     ss << ']';
@@ -1096,14 +1062,14 @@ int main() {
       return;
     }
     auto hits = docDB.search(qEmb, k);
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"contexts\":[";
     for (size_t i = 0; i < hits.size(); i++) {
       if (i)
         ss << ',';
       ss << "{\"id\":" << hits[i].second.id
          << ",\"title\":" << jS(hits[i].second.title)
-         << ",\"distance\":" << std::fixed << std::setprecision(4)
+         << ",\"distance\":" << fixed << setprecision(4)
          << hits[i].first << '}';
     }
     ss << "]}";
@@ -1124,12 +1090,12 @@ int main() {
       return;
     }
     auto hits = docDB.search(qEmb, k);
-    std::ostringstream ctx;
+    ostringstream ctx;
     for (int i = 0; i < (int)hits.size(); i++) {
       ctx << "[" << (i + 1) << "] " << hits[i].second.title << ":\n"
           << hits[i].second.text << "\n\n";
     }
-    std::string prompt =
+    string prompt =
         "You are a helpful assistant. Answer the user's question directly. "
         "Use the provided context if it contains relevant information. "
         "If it doesn't, just use your own general knowledge. "
@@ -1141,7 +1107,7 @@ int main() {
         "\n\n"
         "Answer:";
     auto answer = ollama.generate(prompt);
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"answer\":" << jS(answer) << ",\"model\":" << jS(ollama.genModel)
        << ",\"contexts\":[";
     for (size_t i = 0; i < hits.size(); i++) {
@@ -1150,7 +1116,7 @@ int main() {
       ss << "{\"id\":" << hits[i].second.id
          << ",\"title\":" << jS(hits[i].second.title)
          << ",\"text\":" << jS(hits[i].second.text)
-         << ",\"distance\":" << std::fixed << std::setprecision(4)
+         << ",\"distance\":" << fixed << setprecision(4)
          << hits[i].first << '}';
     }
     ss << "],\"docCount\":" << docDB.size() << '}';
@@ -1159,7 +1125,7 @@ int main() {
   svr.Get("/status", [&](const httplib::Request &, httplib::Response &res) {
     cors(res);
     bool up = ollama.isAvailable();
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"ollamaAvailable\":" << (up ? "true" : "false")
        << ",\"embedModel\":" << jS(ollama.embedModel)
        << ",\"genModel\":" << jS(ollama.genModel)
@@ -1169,20 +1135,20 @@ int main() {
   });
   svr.Get("/stats", [&](const httplib::Request &, httplib::Response &res) {
     cors(res);
-    std::ostringstream ss;
+    ostringstream ss;
     ss << "{\"count\":" << db.size() << ",\"dims\":" << DIMS
        << ",\"algorithms\":[\"bruteforce\",\"kdtree\",\"hnsw\"]"
        << ",\"metrics\":[\"euclidean\",\"cosine\",\"manhattan\"]}";
     res.set_content(ss.str(), "application/json");
   });
   svr.Get("/", [](const httplib::Request &, httplib::Response &res) {
-    std::ifstream f("index.html");
+    ifstream f("index.html");
     if (!f.is_open()) {
       res.status = 404;
       return;
     }
-    res.set_content(std::string(std::istreambuf_iterator<char>(f),
-                                std::istreambuf_iterator<char>()),
+    res.set_content(string(istreambuf_iterator<char>(f),
+                                istreambuf_iterator<char>()),
                     "text/html");
   });
   svr.listen("0.0.0.0", 8080);
