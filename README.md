@@ -352,18 +352,8 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 | File                                                       | Purpose / Details                                      |
 | ---------------------------------------------------------- | ------------------------------------------------------ |
-| `.vscode\settings.json`                                    | Core component logic and implementation details.       |
-| `CMakeLists.txt`                                           | Core component logic and implementation details.       |
-| `Ollama_Cloud_GPU.ipynb`                                   | Core component logic and implementation details.       |
-| `brag-output\composition\.hyperframes\hf-ids-stamped.json` | Core component logic and implementation details.       |
-| `brag-output\composition\hyperframes.json`                 | Core component logic and implementation details.       |
-| `brag-output\composition\meta.json`                        | Core component logic and implementation details.       |
-| `brag-output\composition\package.json`                     | Core component logic and implementation details.       |
-| `brag-output\share-copy.txt`                               | Core component logic and implementation details.       |
-| `create_colab.py`                                          | Core component logic and implementation details.       |
-| `include\httplib.h`                                        | // httplib.h                                           |
-| `mingw64\include\ansidecl.h`                               | Core component logic and implementation details.       |
-| `mingw64\include\bfd.h`                                    | Core component logic and implementation details.       |
-| `mingw64\include\bfdlink.h`                                | Core component logic and implementation details.       |
-| `mingw64\include\c++\16.1.0\backward\auto_ptr.h`           | auto_ptr implementation -_- C++ -_-                    |
-| `mingw64\include\c++\16.1.0\backward\backward_warning.h`   | Copyright (C) 2001-2026 Free Software Foundation, Inc. |
+| `CMakeLists.txt`                                           | Build configuration for compiling the C++ backend.     |
+| `Ollama_Cloud_GPU.ipynb`                                   | Colab notebook for running Ollama with GPU support.    |
+| `create_colab.py`                                          | Python script to generate the Colab environment.       |
+| `include\httplib.h`                                        | Single-header C++ HTTP server library (cpp-httplib).   |
+| `src\main.cpp`                                             | Core C++ backend: HNSW, KD-Tree, BruteForce, REST API. |
