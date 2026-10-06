@@ -74,9 +74,9 @@ else:
     _modifier_masks = (MC_CONTROL, MC_ALT, MC_SHIFT, MC_META)
 
 # a dictionary to map a modifier name into its number
-_modifier_names = dict(
-    [(name, number) for number in range(len(_modifiers)) for name in _modifiers[number]]
-)
+_modifier_names = {
+    name: number for number in range(len(_modifiers)) for name in _modifiers[number]
+}
 
 # In 3.4, if no shell window is ever open, the underlying Tk widget is
 # destroyed before .__del__ methods here are called.  The following
@@ -161,7 +161,7 @@ def expand_substates(states):
 
     statelist = []
     for state in states:
-        substates = list(set(state & x for x in states))
+        substates = list({state & x for x in states})
         substates.sort(key=nbits, reverse=True)
         statelist.append(substates)
     return statelist
@@ -255,7 +255,7 @@ class _ComplexBinder:
                     for i in _state_subsets[s]
                 ]
                 handler = self.__create_handler(lists, self.type, _state_codes[s])
-                seq = "<%s%s-%s>" % (_state_names[s], self.typename, triplet[2])
+                seq = f"<{_state_names[s]}{self.typename}-{triplet[2]}>"
                 self.handlerids.append(
                     (seq, self.widget.bind(self.widgetinst, seq, handler))
                 )
@@ -313,9 +313,7 @@ _types = (
 _binder_classes = (_ComplexBinder,) * 4 + (_SimpleBinder,) * (len(_types) - 4)
 
 # A dictionary to map a type name into its number
-_type_names = dict(
-    [(name, number) for number in range(len(_types)) for name in _types[number]]
-)
+_type_names = {name: number for number in range(len(_types)) for name in _types[number]}
 
 _keysym_re = re.compile(r"^\w+$")
 _button_re = re.compile(r"^[1-5]$")
@@ -494,16 +492,19 @@ def _multi_call(parent):  # htest #
     top = tkinter.Toplevel(parent)
     top.title("Test MultiCall")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x, y + 175))
+    top.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
     text = MultiCallCreator(tkinter.Text)(top)
     text.pack()
 
-    def bindseq(seq, n=[0]):
+    def bindseq(seq, n=None):
+        if n is None:
+            n = [0]
+
         def handler(event):
             print(seq)
 
-        text.bind("<<handler%d>>" % n[0], handler)
-        text.event_add("<<handler%d>>" % n[0], seq)
+        text.bind("<<handler%d>>" % n[0], handler)  # noqa: UP031
+        text.event_add("<<handler%d>>" % n[0], seq)  # noqa: UP031
         n[0] += 1
 
     bindseq("<Key>")

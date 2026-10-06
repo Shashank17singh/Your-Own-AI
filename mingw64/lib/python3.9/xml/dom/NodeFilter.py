@@ -1,4 +1,4 @@
-class NodeFilter:
+class NodeFilter:  # noqa: N999
     """
     This is the DOM2 NodeFilter interface. It contains only constants.
     """

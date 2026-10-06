@@ -28,7 +28,7 @@ _PRINT_WORKING_MSG_INTERVAL = 60
 class TestsWithSourceFile(unittest.TestCase):
     def setUp(self):
         # Create test data.
-        line_gen = ("Test of zipfile line %d." % i for i in range(1000000))
+        line_gen = ("Test of zipfile line %d." % i for i in range(1000000))  # noqa: UP031
         self.data = "\n".join(line_gen).encode("ascii")
 
         # And write it to a file.
@@ -44,13 +44,13 @@ class TestsWithSourceFile(unittest.TestCase):
 
             next_time = time.monotonic() + _PRINT_WORKING_MSG_INTERVAL
             for num in range(filecount):
-                zipfp.writestr("testfn%d" % num, self.data)
+                zipfp.writestr("testfn%d" % num, self.data)  # noqa: UP031
                 # Print still working message since this test can be really slow
                 if next_time <= time.monotonic():
                     next_time = time.monotonic() + _PRINT_WORKING_MSG_INTERVAL
                     print(
                         (
-                            "  zipTest still writing %d of %d, be patient..."
+                            "  zipTest still writing %d of %d, be patient..."  # noqa: UP031
                             % (num, filecount)
                         ),
                         file=sys.__stdout__,
@@ -60,13 +60,13 @@ class TestsWithSourceFile(unittest.TestCase):
         # Read the ZIP archive
         with zipfile.ZipFile(f, "r", compression) as zipfp:
             for num in range(filecount):
-                self.assertEqual(zipfp.read("testfn%d" % num), self.data)
+                self.assertEqual(zipfp.read("testfn%d" % num), self.data)  # noqa: UP031
                 # Print still working message since this test can be really slow
                 if next_time <= time.monotonic():
                     next_time = time.monotonic() + _PRINT_WORKING_MSG_INTERVAL
                     print(
                         (
-                            "  zipTest still reading %d of %d, be patient..."
+                            "  zipTest still reading %d of %d, be patient..."  # noqa: UP031
                             % (num, filecount)
                         ),
                         file=sys.__stdout__,
@@ -104,31 +104,31 @@ class OtherTests(unittest.TestCase):
             zipf.debug = 100
             numfiles = (1 << 16) * 3 // 2
             for i in range(numfiles):
-                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))
+                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))  # noqa: UP031
             self.assertEqual(len(zipf.namelist()), numfiles)
 
         with zipfile.ZipFile(TESTFN, mode="r") as zipf2:
             self.assertEqual(len(zipf2.namelist()), numfiles)
             for i in range(numfiles):
-                content = zipf2.read("foo%08d" % i).decode("ascii")
-                self.assertEqual(content, "%d" % (i**3 % 57))
+                content = zipf2.read("foo%08d" % i).decode("ascii")  # noqa: UP031
+                self.assertEqual(content, "%d" % (i**3 % 57))  # noqa: UP031
 
     def testMoreThan64kFilesAppend(self):
         with zipfile.ZipFile(TESTFN, mode="w", allowZip64=False) as zipf:
             zipf.debug = 100
             numfiles = (1 << 16) - 1
             for i in range(numfiles):
-                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))
+                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))  # noqa: UP031
             self.assertEqual(len(zipf.namelist()), numfiles)
             with self.assertRaises(zipfile.LargeZipFile):
-                zipf.writestr("foo%08d" % numfiles, b"")
+                zipf.writestr("foo%08d" % numfiles, b"")  # noqa: UP031
             self.assertEqual(len(zipf.namelist()), numfiles)
 
         with zipfile.ZipFile(TESTFN, mode="a", allowZip64=False) as zipf:
             zipf.debug = 100
             self.assertEqual(len(zipf.namelist()), numfiles)
             with self.assertRaises(zipfile.LargeZipFile):
-                zipf.writestr("foo%08d" % numfiles, b"")
+                zipf.writestr("foo%08d" % numfiles, b"")  # noqa: UP031
             self.assertEqual(len(zipf.namelist()), numfiles)
 
         with zipfile.ZipFile(TESTFN, mode="a", allowZip64=True) as zipf:
@@ -136,14 +136,14 @@ class OtherTests(unittest.TestCase):
             self.assertEqual(len(zipf.namelist()), numfiles)
             numfiles2 = (1 << 16) * 3 // 2
             for i in range(numfiles, numfiles2):
-                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))
+                zipf.writestr("foo%08d" % i, "%d" % (i**3 % 57))  # noqa: UP031
             self.assertEqual(len(zipf.namelist()), numfiles2)
 
         with zipfile.ZipFile(TESTFN, mode="r") as zipf2:
             self.assertEqual(len(zipf2.namelist()), numfiles2)
             for i in range(numfiles2):
-                content = zipf2.read("foo%08d" % i).decode("ascii")
-                self.assertEqual(content, "%d" % (i**3 % 57))
+                content = zipf2.read("foo%08d" % i).decode("ascii")  # noqa: UP031
+                self.assertEqual(content, "%d" % (i**3 % 57))  # noqa: UP031
 
     def tearDown(self):
         support.unlink(TESTFN)

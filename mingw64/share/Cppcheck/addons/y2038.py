@@ -222,7 +222,7 @@ def check_y2038_safe(dumpfile, quiet=False):
     srcfile = data.files[0]
     for cfg in data.iterconfigurations():
         if not quiet:
-            print("Checking %s, config %s..." % (srcfile, cfg.name))
+            print(f"Checking {srcfile}, config {cfg.name}...")
         safe_ranges = []
         safe = -1
         time_bits_defined = False
@@ -244,7 +244,7 @@ def check_y2038_safe(dumpfile, quiet=False):
         if has_dump_config:
             config_source = "cppcheck configuration"
         time_bits_defined = effective_flags["time_bits_defined"]
-        if effective_flags["time_bits_defined"]:
+        if effective_flags["time_bits_defined"]:  # noqa: SIM102
             if effective_flags["time_bits_value"] != Y2038_SAFE_TIME_BITS:
                 fake_directive = type(
                     "FakeDirective",
@@ -253,20 +253,22 @@ def check_y2038_safe(dumpfile, quiet=False):
                         "file": srcfile,
                         "linenr": 0,
                         "column": 0,
-                        "str": "cppcheck configuration: _TIME_BITS=%s"
-                        % effective_flags["time_bits_value"],
+                        "str": "cppcheck configuration: _TIME_BITS={}".format(
+                            effective_flags["time_bits_value"]
+                        ),
                     },
                 )()
                 cppcheckdata.reportError(
                     fake_directive,
                     "error",
-                    "_TIME_BITS must be defined equal to 64 (found in cppcheck configuration: _TIME_BITS=%s)"
-                    % effective_flags["time_bits_value"],
+                    "_TIME_BITS must be defined equal to 64 (found in cppcheck configuration: _TIME_BITS={})".format(
+                        effective_flags["time_bits_value"]
+                    ),
                     "y2038",
                     "type-bits-not-64",
                 )
                 y2038safe = False
-        if effective_flags["file_offset_bits_defined"]:
+        if effective_flags["file_offset_bits_defined"]:  # noqa: SIM102
             if effective_flags["file_offset_bits_value"] != Y2038_SAFE_FILE_OFFSET_BITS:
                 fake_directive = type(
                     "FakeDirective",
@@ -275,15 +277,17 @@ def check_y2038_safe(dumpfile, quiet=False):
                         "file": srcfile,
                         "linenr": 0,
                         "column": 0,
-                        "str": "cppcheck configuration: _FILE_OFFSET_BITS=%s"
-                        % effective_flags["file_offset_bits_value"],
+                        "str": "cppcheck configuration: _FILE_OFFSET_BITS={}".format(
+                            effective_flags["file_offset_bits_value"]
+                        ),
                     },
                 )()
                 cppcheckdata.reportError(
                     fake_directive,
                     "error",
-                    "_FILE_OFFSET_BITS must be defined equal to 64 (found in cppcheck configuration: _FILE_OFFSET_BITS=%s)"
-                    % effective_flags["file_offset_bits_value"],
+                    "_FILE_OFFSET_BITS must be defined equal to 64 (found in cppcheck configuration: _FILE_OFFSET_BITS={})".format(
+                        effective_flags["file_offset_bits_value"]
+                    ),
                     "y2038",
                     "file-offset-bits-not-64",
                 )
@@ -310,10 +314,6 @@ def check_y2038_safe(dumpfile, quiet=False):
                 y2038safe = False
             else:
                 safe = 0  # Start of file is safe
-        source_time_bits_defined = False  # pylint: disable=unused-variable
-        source_file_offset_bits_defined = False  # pylint: disable=unused-variable
-        source_file_offset_bits_value = None  # pylint: disable=unused-variable
-        source_use_time_bits64_defined = False  # pylint: disable=unused-variable
         source_flags_used = {
             "time_bits": False,
             "file_offset_bits": False,
@@ -323,14 +323,12 @@ def check_y2038_safe(dumpfile, quiet=False):
             if directive.file == srcfile:
                 srclinenr = directive.linenr
             if re_define_time_bits_64.match(directive.str):
-                source_time_bits_defined = True
                 if not effective_flags["time_bits_defined"]:
                     effective_flags["time_bits_defined"] = True
                     effective_flags["time_bits_value"] = Y2038_SAFE_TIME_BITS
                     time_bits_defined = True
                     source_flags_used["time_bits"] = True
             elif re_define_time_bits.match(directive.str):
-                source_time_bits_defined = False
                 if not effective_flags["time_bits_defined"]:
                     source_flags_used["time_bits"] = True
                     cppcheckdata.reportError(
@@ -341,14 +339,11 @@ def check_y2038_safe(dumpfile, quiet=False):
                         "type-bits-not-64",
                     )
                     y2038safe = False
-            elif re_undef_time_bits.match(directive.str):
-                source_time_bits_defined = False
+            elif re_undef_time_bits.match(directive.str):  # noqa: SIM102
                 if not effective_flags["time_bits_defined"]:
                     time_bits_defined = False
                     source_flags_used["time_bits"] = True
             if re_define_file_offset_bits_64.match(directive.str):
-                source_file_offset_bits_defined = True
-                source_file_offset_bits_value = Y2038_SAFE_FILE_OFFSET_BITS
                 if not effective_flags["file_offset_bits_defined"]:
                     effective_flags["file_offset_bits_defined"] = True
                     effective_flags["file_offset_bits_value"] = (
@@ -356,7 +351,6 @@ def check_y2038_safe(dumpfile, quiet=False):
                     )
                     source_flags_used["file_offset_bits"] = True
             elif re_define_file_offset_bits.match(directive.str):
-                source_file_offset_bits_defined = False
                 if not effective_flags["file_offset_bits_defined"]:
                     source_flags_used["file_offset_bits"] = True
                     cppcheckdata.reportError(
@@ -367,16 +361,13 @@ def check_y2038_safe(dumpfile, quiet=False):
                         "file-offset-bits-not-64",
                     )
                     y2038safe = False
-            elif re_undef_file_offset_bits.match(directive.str):
-                source_file_offset_bits_defined = False
-                source_file_offset_bits_value = None
+            elif re_undef_file_offset_bits.match(directive.str):  # noqa: SIM102
                 if not effective_flags["file_offset_bits_defined"]:
                     effective_flags["file_offset_bits_defined"] = False
                     effective_flags["file_offset_bits_value"] = None
                     source_flags_used["file_offset_bits"] = True
             if re_define_use_time_bits64.match(directive.str):
                 safe = int(srclinenr)
-                source_use_time_bits64_defined = True
                 if not effective_flags["use_time_bits64_defined"]:
                     effective_flags["use_time_bits64_defined"] = True
                     source_flags_used["use_time_bits64"] = True
@@ -390,7 +381,6 @@ def check_y2038_safe(dumpfile, quiet=False):
                         )
             elif re_undef_use_time_bits64.match(directive.str):
                 unsafe = int(srclinenr)
-                source_use_time_bits64_defined = False
                 if not effective_flags["use_time_bits64_defined"]:
                     source_flags_used["use_time_bits64"] = True
                 if unsafe > safe >= 0:
@@ -445,11 +435,11 @@ def check_y2038_safe(dumpfile, quiet=False):
             token = token.next
         if warnings_suppressed > 0 and config_source and not quiet:
             print(
-                "Y2038 warnings suppressed: Found proper Y2038 configuration in %s (_TIME_BITS=%d and _FILE_OFFSET_BITS=%d)"
+                "Y2038 warnings suppressed: Found proper Y2038 configuration in %s (_TIME_BITS=%d and _FILE_OFFSET_BITS=%d)"  # noqa: UP031
                 % (config_source, Y2038_SAFE_TIME_BITS, Y2038_SAFE_FILE_OFFSET_BITS)
             )
             print(
-                "Suppressed %d Y2038-unsafe function warning(s)" % warnings_suppressed
+                "Suppressed %d Y2038-unsafe function warning(s)" % warnings_suppressed  # noqa: UP031
             )
     return y2038safe
 

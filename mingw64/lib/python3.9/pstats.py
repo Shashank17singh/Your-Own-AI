@@ -146,7 +146,7 @@ class Stats:
             try:
                 file_stats = os.stat(arg)
                 arg = time.ctime(file_stats.st_mtime) + "    " + arg
-            except:  # in case this is not unix
+            except:  # in case this is not unix  # noqa: E722, S110
                 pass
             self.files = [arg]
         elif hasattr(arg, "create_stats"):
@@ -155,7 +155,7 @@ class Stats:
             arg.stats = {}
         if not self.stats:
             raise TypeError(
-                "Cannot create or construct a %r object from %r" % (self.__class__, arg)
+                f"Cannot create or construct a {self.__class__!r} object from {arg!r}"
             )
         return
 
@@ -206,7 +206,7 @@ class Stats:
 
     # list the tuple indices and directions for sorting,
     # along with some printable description
-    sort_arg_dict_default = {
+    sort_arg_dict_default = {  # noqa: RUF012
         "calls": (((1, -1),), "call count"),
         "ncalls": (((1, -1),), "call count"),
         "cumtime": (((3, -1),), "cumulative time"),
@@ -341,7 +341,7 @@ class Stats:
             try:
                 rex = re.compile(sel)
             except re.error:
-                msg += "   <Invalid regular expression %r>\n" % sel
+                msg += f"   <Invalid regular expression {sel!r}>\n"
                 return new_list, msg
             new_list = []
             for func in list:
@@ -356,11 +356,7 @@ class Stats:
                 count = sel
                 new_list = list[:count]
         if len(list) != len(new_list):
-            msg += "   List reduced from %r to %r due to restriction <%r>\n" % (
-                len(list),
-                len(new_list),
-                sel,
-            )
+            msg += f"   List reduced from {len(list)!r} to {len(new_list)!r} due to restriction <{sel!r}>\n"
 
         return new_list, msg
 
@@ -379,7 +375,7 @@ class Stats:
         stats_profile = StatsProfile(total_tt, func_profiles)
 
         for func in func_list:
-            cc, nc, tt, ct, callers = self.stats[func]
+            cc, nc, tt, ct, _callers = self.stats[func]
             file_name, line_number, func_name = func
             ncalls = str(nc) if nc == cc else (str(nc) + "/" + str(cc))
             tottime = float(f8(tt))
@@ -433,10 +429,10 @@ class Stats:
 
         print(indent, self.total_calls, "function calls", end=" ", file=self.stream)
         if self.total_calls != self.prim_calls:
-            print("(%d primitive calls)" % self.prim_calls, end=" ", file=self.stream)
-        print("in %.3f seconds" % self.total_tt, file=self.stream)
+            print("(%d primitive calls)" % self.prim_calls, end=" ", file=self.stream)  # noqa: UP031
+        print(f"in {self.total_tt:.3f} seconds", file=self.stream)
         print(file=self.stream)
-        width, list = self.get_print_list(amount)
+        _width, list = self.get_print_list(amount)
         if list:
             self.print_title()
             for func in list:
@@ -465,7 +461,7 @@ class Stats:
         if list:
             self.print_call_heading(width, "was called by...")
             for func in list:
-                cc, nc, tt, ct, callers = self.stats[func]
+                _cc, _nc, _tt, _ct, callers = self.stats[func]
                 self.print_call_line(width, func, callers, "<-")
             print(file=self.stream)
             print(file=self.stream)
@@ -498,18 +494,15 @@ class Stats:
             if isinstance(value, tuple):
                 nc, cc, tt, ct = value
                 if nc != cc:
-                    substats = "%d/%d" % (nc, cc)
+                    substats = "%d/%d" % (nc, cc)  # noqa: UP031
                 else:
-                    substats = "%d" % (nc,)
-                substats = "%s %s %s  %s" % (
-                    substats.rjust(7 + 2 * len(indent)),
-                    f8(tt),
-                    f8(ct),
-                    name,
+                    substats = "%d" % (nc,)  # noqa: UP031
+                substats = (
+                    f"{substats.rjust(7 + 2 * len(indent))} {f8(tt)} {f8(ct)}  {name}"
                 )
                 left_width = name_size + 1
             else:
-                substats = "%s(%r) %s" % (name, value, f8(self.stats[func][3]))
+                substats = f"{name}({value!r}) {f8(self.stats[func][3])}"
                 left_width = name_size + 3
             print(indent * left_width + substats, file=self.stream)
             indent = " "
@@ -521,7 +514,7 @@ class Stats:
         print("filename:lineno(function)", file=self.stream)
 
     def print_line(self, func):  # hack: should print percentages
-        cc, nc, tt, ct, callers = self.stats[func]
+        cc, nc, tt, ct, _callers = self.stats[func]
         c = str(nc)
         if nc != cc:
             c = c + "/" + str(cc)
@@ -579,11 +572,11 @@ def func_std_string(func_name):  # match what old profile produced
         # special case for built-in functions
         name = func_name[2]
         if name.startswith("<") and name.endswith(">"):
-            return "{%s}" % name[1:-1]
+            return f"{{{name[1:-1]}}}"
         else:
             return name
     else:
-        return "%s:%d(%s)" % func_name
+        return "%s:%d(%s)" % func_name  # noqa: UP031
 
 
 # **************************************************************************
@@ -634,7 +627,7 @@ def count_calls(callers):
 
 
 def f8(x):
-    return "%8.3f" % x
+    return f"{x:8.3f}"
 
 
 # **************************************************************************
@@ -645,7 +638,7 @@ if __name__ == "__main__":
     import cmd
 
     try:
-        import readline
+        import readline  # noqa: F401
     except ImportError:
         pass
 
@@ -703,7 +696,7 @@ if __name__ == "__main__":
                     self.stats.add(line)
                 except OSError as e:
                     print(
-                        "Failed to load statistics for %s: %s" % (line, e),
+                        f"Failed to load statistics for {line}: {e}",
                         file=self.stream,
                     )
             else:
@@ -756,7 +749,7 @@ if __name__ == "__main__":
                 except OSError as err:
                     print(err.args[1], file=self.stream)
                     return
-                except Exception as err:
+                except Exception as err:  # noqa: BLE001
                     print(err.__class__.__name__ + ":", err, file=self.stream)
                     return
                 self.prompt = line + "% "
@@ -796,7 +789,7 @@ if __name__ == "__main__":
                     "Valid sort keys (unique prefixes are accepted):", file=self.stream
                 )
                 for key, value in Stats.sort_arg_dict_default.items():
-                    print("%s -- %s" % (key, value[1]), file=self.stream)
+                    print(f"{key} -- {value[1]}", file=self.stream)
             return 0
 
         def help_sort(self):

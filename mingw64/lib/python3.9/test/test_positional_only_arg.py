@@ -155,7 +155,9 @@ class PositionalOnlyTestCase(unittest.TestCase):
 
     def test_syntax_for_many_positional_only(self):
         # more than 255 positional only arguments, should compile ok
-        fundef = "def f(%s, /):\n  pass\n" % ", ".join("i%d" % i for i in range(300))
+        fundef = "def f({}, /):\n  pass\n".format(
+            ", ".join("i%d" % i for i in range(300))
+        )  # noqa: UP031
         compile(fundef, "<test>", "single")
 
     def test_pos_only_definition(self):
@@ -501,7 +503,9 @@ class PositionalOnlyTestCase(unittest.TestCase):
 
     def test_too_many_arguments(self):
         # more than 255 positional-only arguments, should compile ok
-        fundef = "def f(%s, /):\n  pass\n" % ", ".join("i%d" % i for i in range(300))
+        fundef = "def f({}, /):\n  pass\n".format(
+            ", ".join("i%d" % i for i in range(300))
+        )  # noqa: UP031
         compile(fundef, "<test>", "single")
 
     def test_serialization(self):
@@ -597,7 +601,7 @@ class PositionalOnlyTestCase(unittest.TestCase):
 
     def test_annotations_constant_fold(self):
         def g():
-            def f(x: not (int is int), /): ...
+            def f(x: not (int is int), /): ...  # noqa: PLR0124
 
         # without constant folding we end up with
         # COMPARE_OP(is), IS_OP (0)

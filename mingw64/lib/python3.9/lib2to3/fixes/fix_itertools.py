@@ -18,10 +18,10 @@ class FixItertools(fixer_base.BaseFix):
     PATTERN = """
               power< it='itertools'
                   trailer<
-                     dot='.' func=%(it_funcs)s > trailer< '(' [any] ')' > >
+                     dot='.' func={it_funcs} > trailer< '(' [any] ')' > >
               |
-              power< func=%(it_funcs)s trailer< '(' [any] ')' > >
-              """ % (locals())
+              power< func={it_funcs} trailer< '(' [any] ')' > >
+              """.format(**locals())
 
     # Needs to be run after fix_(map|zip|filter)
     run_order = 6

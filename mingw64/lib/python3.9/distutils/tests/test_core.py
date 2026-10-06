@@ -70,7 +70,7 @@ class CoreTestCase(support.EnvironGuard, unittest.TestCase):
             shutil.rmtree(path)
 
     def write_setup(self, text, path=test.support.TESTFN):
-        f = open(path, "w")
+        f = open(path, "w")  # noqa: SIM115
         try:
             f.write(text)
         finally:

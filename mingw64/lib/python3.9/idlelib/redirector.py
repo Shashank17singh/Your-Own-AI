@@ -49,11 +49,7 @@ class WidgetRedirector:
         tk.createcommand(w, self.dispatch)
 
     def __repr__(self):
-        return "%s(%s<%s>)" % (
-            self.__class__.__name__,
-            self.widget.__class__.__name__,
-            self.widget._w,
-        )
+        return f"{self.__class__.__name__}({self.widget.__class__.__name__}<{self.widget._w}>)"
 
     def close(self):
         "Unregister operations and revert redirection created by .__init__."
@@ -147,7 +143,7 @@ class OriginalCommand:
         self.orig_and_operation = (redir.orig, operation)
 
     def __repr__(self):
-        return "%s(%r, %r)" % (self.__class__.__name__, self.redir, self.operation)
+        return f"{self.__class__.__name__}({self.redir!r}, {self.operation!r})"
 
     def __call__(self, *args):
         return self.tk_call(self.orig_and_operation + args)
@@ -159,7 +155,7 @@ def _widget_redirector(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test WidgetRedirector")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x, y + 175))
+    top.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
     text = Text(top)
     text.pack()
     text.focus_set()

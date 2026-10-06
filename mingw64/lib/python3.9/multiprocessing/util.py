@@ -124,9 +124,7 @@ def log_to_stderr(level=None):
 def _platform_supports_abstract_sockets():
     if sys.platform == "linux":
         return True
-    if hasattr(sys, "getandroidapilevel"):
-        return True
-    return False
+    return bool(hasattr(sys, "getandroidapilevel"))
 
 
 def is_abstract_socket_namespace(address):
@@ -188,7 +186,7 @@ def _run_after_forkers():
     for (index, ident, func), obj in items:
         try:
             func(obj)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             info("after forker raised exception %s", e)
 
 
@@ -287,9 +285,9 @@ class Finalize:
             obj = None
 
         if obj is None:
-            return "<%s object, dead>" % self.__class__.__name__
+            return f"<{self.__class__.__name__} object, dead>"
 
-        x = "<%s object, callback=%s" % (
+        x = "<{} object, callback={}".format(
             self.__class__.__name__,
             getattr(self._callback, "__name__", self._callback),
         )
@@ -335,7 +333,7 @@ def _run_finalizers(minpriority=None):
             sub_debug("calling %s", finalizer)
             try:
                 finalizer()
-            except Exception:
+            except Exception:  # noqa: BLE001
                 import traceback
 
                 traceback.print_exc()
@@ -444,7 +442,7 @@ class ForkAwareLocal(threading.local):
 
 try:
     MAXFD = os.sysconf("SC_OPEN_MAX")
-except Exception:
+except Exception:  # noqa: BLE001
     MAXFD = 256
 
 
@@ -473,7 +471,7 @@ def _close_stdin():
     try:
         fd = os.open(os.devnull, os.O_RDONLY)
         try:
-            sys.stdin = open(fd, closefd=False)
+            sys.stdin = open(fd, closefd=False)  # noqa: SIM115
         except:
             os.close(fd)
             raise

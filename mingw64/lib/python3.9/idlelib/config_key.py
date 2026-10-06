@@ -141,7 +141,7 @@ class GetKeysDialog(Toplevel):
         self.create_widgets()
         self.update_idletasks()
         self.geometry(
-            "+%d+%d"
+            "+%d+%d"  # noqa: UP031
             % (
                 parent.winfo_rootx()
                 + (parent.winfo_width() / 2 - self.winfo_reqwidth() / 2),
@@ -211,7 +211,7 @@ class GetKeysDialog(Toplevel):
             )
             check.grid(row=0, column=column, padx=2, sticky="w")
             self.modifier_checkbuttons[modifier] = check
-            column += 1
+            column += 1  # noqa: SIM113
 
         # Basic entry help text.
         help_basic = Label(

@@ -46,9 +46,9 @@ class Idb(bdb.Bdb):
         filename = code.co_filename
         lineno = frame.f_lineno
         basename = os.path.basename(filename)
-        message = "%s:%s" % (basename, lineno)
+        message = f"{basename}:{lineno}"
         if code.co_name != "?":
-            message = "%s: %s()" % (message, code.co_name)
+            message = f"{message}: {code.co_name}()"
         return message
 
 
@@ -108,7 +108,7 @@ class Debugger:
     def close(self, event=None):
         try:
             self.quit()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         if self.interacting:
             self.top.bell()
@@ -202,11 +202,11 @@ class Debugger:
             try:
                 m1 = type.__name__
             except AttributeError:
-                m1 = "%s" % str(type)
+                m1 = f"{type!s}"
             if value is not None:
                 try:
-                    m1 = "%s: %s" % (m1, str(value))
-                except:
+                    m1 = f"{m1}: {value!s}"
+                except:  # noqa: E722, S110
                     pass
             bg = "yellow"
         else:
@@ -379,7 +379,7 @@ class StackViewer(ScrolledList):
             frame, lineno = stack[i]
             try:
                 modname = frame.f_globals["__name__"]
-            except:
+            except:  # noqa: E722
                 modname = "?"
             code = frame.f_code
             filename = code.co_filename
@@ -389,9 +389,9 @@ class StackViewer(ScrolledList):
             sourceline = linecache.getline(filename, lineno)
             sourceline = sourceline.strip()
             if funcname in ("?", "", None):
-                item = "%s, line %d: %s" % (modname, lineno, sourceline)
+                item = "%s, line %d: %s" % (modname, lineno, sourceline)  # noqa: UP031
             else:
-                item = "%s.%s(), line %d: %s" % (modname, funcname, lineno, sourceline)
+                item = "%s.%s(), line %d: %s" % (modname, funcname, lineno, sourceline)  # noqa: UP031
             if i == index:
                 item = "> " + item
             self.append(item)

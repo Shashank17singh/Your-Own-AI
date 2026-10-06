@@ -77,7 +77,7 @@ class urlopenNetworkTests(unittest.TestCase):
             ):
                 self.assertTrue(
                     hasattr(open_url, attr),
-                    "object returned from urlopen lacks the %s attribute" % attr,
+                    f"object returned from urlopen lacks the {attr} attribute",
                 )
             self.assertTrue(open_url.read(), "calling 'read' failed")
 
@@ -151,7 +151,7 @@ class urlopenNetworkTests(unittest.TestCase):
             pass
         else:
             # This happens with some overzealous DNS providers such as OpenDNS
-            self.skipTest("%r should not resolve for test to work" % bogus_domain)
+            self.skipTest(f"{bogus_domain!r} should not resolve for test to work")
         failure_explanation = (
             "opening an invalid URL did not raise OSError; "
             "can be caused by a broken DNS server "
@@ -180,7 +180,7 @@ class urlretrieveNetworkTests(unittest.TestCase):
 
     def test_basic(self):
         # Test basic functionality.
-        with self.urlretrieve(self.logo) as (file_location, info):
+        with self.urlretrieve(self.logo) as (file_location, _info):
             self.assertTrue(
                 os.path.exists(file_location),
                 "file location returned by urlretrieve is not a valid path",
@@ -193,7 +193,7 @@ class urlretrieveNetworkTests(unittest.TestCase):
 
     def test_specified_path(self):
         # Make sure that specifying the location of the file to write to works.
-        with self.urlretrieve(self.logo, support.TESTFN) as (file_location, info):
+        with self.urlretrieve(self.logo, support.TESTFN) as (file_location, _info):
             self.assertEqual(file_location, support.TESTFN)
             self.assertTrue(os.path.exists(file_location))
             with open(file_location, "rb") as f:
@@ -201,7 +201,7 @@ class urlretrieveNetworkTests(unittest.TestCase):
 
     def test_header(self):
         # Make sure header returned as 2nd value from urlretrieve is good.
-        with self.urlretrieve(self.logo) as (file_location, info):
+        with self.urlretrieve(self.logo) as (_file_location, info):
             self.assertIsInstance(
                 info,
                 email.message.Message,
@@ -211,13 +211,13 @@ class urlretrieveNetworkTests(unittest.TestCase):
     logo = "http://www.pythontest.net/"
 
     def test_data_header(self):
-        with self.urlretrieve(self.logo) as (file_location, fileheaders):
+        with self.urlretrieve(self.logo) as (_file_location, fileheaders):
             datevalue = fileheaders.get("Date")
             dateformat = "%a, %d %b %Y %H:%M:%S GMT"
             try:
                 time.strptime(datevalue, dateformat)
             except ValueError:
-                self.fail("Date value not in %r format" % dateformat)
+                self.fail(f"Date value not in {dateformat!r} format")
 
     def test_reporthook(self):
         records = []
@@ -226,7 +226,7 @@ class urlretrieveNetworkTests(unittest.TestCase):
             records.append((blocks, block_size, total_size))
 
         with self.urlretrieve(self.logo, reporthook=recording_reporthook) as (
-            file_location,
+            _file_location,
             fileheaders,
         ):
             expected_size = int(fileheaders["Content-Length"])
@@ -240,7 +240,7 @@ class urlretrieveNetworkTests(unittest.TestCase):
         )
         self.assertEqual(records[0][0], 0)
         self.assertGreater(
-            records[0][1], 0, msg="block size can't be 0 in %s" % records_repr
+            records[0][1], 0, msg=f"block size can't be 0 in {records_repr}"
         )
         self.assertEqual(records[0][2], expected_size)
         self.assertEqual(records[-1][2], expected_size)
@@ -249,13 +249,13 @@ class urlretrieveNetworkTests(unittest.TestCase):
         self.assertEqual(
             {records[0][1]},
             block_sizes,
-            msg="block sizes in %s must be equal" % records_repr,
+            msg=f"block sizes in {records_repr} must be equal",
         )
         self.assertGreaterEqual(
             records[-1][0] * records[0][1],
             expected_size,
             msg="number of blocks * block size must be"
-            " >= total size in %s" % records_repr,
+            f" >= total size in {records_repr}",
         )
 
 

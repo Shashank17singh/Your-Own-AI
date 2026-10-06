@@ -117,7 +117,7 @@ class ParserBase:
                     return -1  # incomplete
                 j = m.end()
             elif c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ":
-                name, j = self._scan_name(j, i)
+                _name, j = self._scan_name(j, i)
             elif c in self._decl_otherchars:
                 j = j + 1
             elif c == "[":
@@ -129,11 +129,11 @@ class ParserBase:
                     # also in data attribute specifications of attlist declaration
                     # also link type declaration subsets in linktype declarations
                     # also link attribute specification lists in link declarations
-                    self.error("unsupported '[' char in %s declaration" % decltype)
+                    self.error(f"unsupported '[' char in {decltype} declaration")
                 else:
                     self.error("unexpected '[' char in declaration")
             else:
-                self.error("unexpected %r char in declaration" % rawdata[j])
+                self.error(f"unexpected {rawdata[j]!r} char in declaration")
             if j < 0:
                 return j
         return -1  # incomplete
@@ -154,7 +154,7 @@ class ParserBase:
             match = _msmarkedsectionclose.search(rawdata, i + 3)
         else:
             self.error(
-                "unknown status keyword %r in marked section" % rawdata[i + 3 : j]
+                f"unknown status keyword {rawdata[i + 3 : j]!r} in marked section"
             )
         if not match:
             return -1
@@ -191,7 +191,7 @@ class ParserBase:
                     return -1
                 if s != "<!":
                     self.updatepos(declstartpos, j + 1)
-                    self.error("unexpected char in internal subset (in %r)" % s)
+                    self.error(f"unexpected char in internal subset (in {s!r})")
                 if (j + 2) == n:
                     # end of buffer; incomplete
                     return -1
@@ -208,7 +208,7 @@ class ParserBase:
                     return -1
                 if name not in {"attlist", "element", "entity", "notation"}:
                     self.updatepos(declstartpos, j + 2)
-                    self.error("unknown declaration %r in internal subset" % name)
+                    self.error(f"unknown declaration {name!r} in internal subset")
                 # handle the individual names
                 meth = getattr(self, "_parse_doctype_" + name)
                 j = meth(j, declstartpos)
@@ -239,13 +239,13 @@ class ParserBase:
                 j = j + 1
             else:
                 self.updatepos(declstartpos, j)
-                self.error("unexpected char %r in internal subset" % c)
+                self.error(f"unexpected char {c!r} in internal subset")
         # end of buffer reached
         return -1
 
     # Internal -- scan past <!ELEMENT declarations
     def _parse_doctype_element(self, i, declstartpos):
-        name, j = self._scan_name(i, declstartpos)
+        _name, j = self._scan_name(i, declstartpos)
         if j == -1:
             return -1
         # style content model; just skip until '>'
@@ -284,7 +284,7 @@ class ParserBase:
                     # end of buffer, incomplete
                     return -1
             else:
-                name, j = self._scan_name(j, declstartpos)
+                name, j = self._scan_name(j, declstartpos)  # noqa: RUF059
             c = rawdata[j : j + 1]
             if not c:
                 return -1
@@ -301,7 +301,7 @@ class ParserBase:
                 if rawdata[j:] == "#":
                     # end of buffer
                     return -1
-                name, j = self._scan_name(j + 1, declstartpos)
+                _name, j = self._scan_name(j + 1, declstartpos)
                 if j < 0:
                     return j
                 c = rawdata[j : j + 1]
@@ -313,7 +313,7 @@ class ParserBase:
 
     # Internal -- scan past <!NOTATION declarations
     def _parse_doctype_notation(self, i, declstartpos):
-        name, j = self._scan_name(i, declstartpos)
+        name, j = self._scan_name(i, declstartpos)  # noqa: RUF059
         if j < 0:
             return j
         rawdata = self.rawdata
@@ -330,7 +330,7 @@ class ParserBase:
                     return -1
                 j = m.end()
             else:
-                name, j = self._scan_name(j, declstartpos)
+                _name, j = self._scan_name(j, declstartpos)
                 if j < 0:
                     return j
 
@@ -349,7 +349,7 @@ class ParserBase:
                     break
         else:
             j = i
-        name, j = self._scan_name(j, declstartpos)
+        name, j = self._scan_name(j, declstartpos)  # noqa: RUF059
         if j < 0:
             return j
         while 1:
@@ -365,7 +365,7 @@ class ParserBase:
             elif c == ">":
                 return j + 1
             else:
-                name, j = self._scan_name(j, declstartpos)
+                _name, j = self._scan_name(j, declstartpos)
                 if j < 0:
                     return j
 
@@ -386,7 +386,7 @@ class ParserBase:
         else:
             self.updatepos(declstartpos, i)
             self.error(
-                "expected name token at %r" % rawdata[declstartpos : declstartpos + 20]
+                f"expected name token at {rawdata[declstartpos : declstartpos + 20]!r}"
             )
 
     # To be overridden -- handlers for unknown objects

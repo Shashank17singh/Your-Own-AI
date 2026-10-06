@@ -178,13 +178,13 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
         for arch in ("ppc", "i386", "x86_64", "ppc64"):
             _osx_support._remove_original_values(get_config_vars())
             get_config_vars()["CFLAGS"] = (
-                "-arch %s -isysroot "
+                f"-arch {arch} -isysroot "
                 "/Developer/SDKs/MacOSX10.4u.sdk  "
                 "-fno-strict-aliasing -fno-common "
-                "-dynamic -DNDEBUG -g -O3" % (arch,)
+                "-dynamic -DNDEBUG -g -O3"
             )
 
-            self.assertEqual(get_platform(), "macosx-10.4-%s" % (arch,))
+            self.assertEqual(get_platform(), f"macosx-10.4-{arch}")
 
         # linux debian sarge
         os.name = "posix"
@@ -331,7 +331,7 @@ class UtilTestCase(support.EnvironGuard, unittest.TestCase):
     def test_rfc822_escape(self):
         header = "I am a\npoor\nlonesome\nheader\n"
         res = rfc822_escape(header)
-        wanted = ("I am a%(8s)spoor%(8s)slonesome%(8s)sheader%(8s)s") % {
+        wanted = ("I am a%(8s)spoor%(8s)slonesome%(8s)sheader%(8s)s") % {  # noqa: UP031
             "8s": "\n" + 8 * " "
         }
         self.assertEqual(res, wanted)

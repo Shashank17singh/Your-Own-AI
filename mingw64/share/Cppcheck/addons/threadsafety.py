@@ -318,7 +318,7 @@ if __name__ == "__main__":
         for cfg in data.iterconfigurations():
             if not args.quiet:
                 srcfile = data.files[0]
-                print("Checking %s, config %s..." % (srcfile, cfg.name))
+                print(f"Checking {srcfile}, config {cfg.name}...")
             check_MTunsafe(cfg)
             checkstatic(cfg)
     sys.exit(cppcheckdata.EXIT_CODE)

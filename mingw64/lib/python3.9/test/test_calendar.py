@@ -108,7 +108,7 @@ Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
 """
 
 
-default_format = dict(year="year", month="month", encoding="ascii")
+default_format = {"year": "year", "month": "month", "encoding": "ascii"}
 
 result_2004_html = """\
 <?xml version="1.0" encoding="{encoding}"?>
@@ -785,7 +785,7 @@ class SundayTestCase(MonthCalendarTestCase):
 
 
 class TimegmTestCase(unittest.TestCase):
-    TIMESTAMPS = [
+    TIMESTAMPS = [  # noqa: RUF012
         0,
         10,
         100,
@@ -866,7 +866,7 @@ class CommandLineTestCase(unittest.TestCase):
         return assert_python_ok("-m", "calendar", *args)[1]
 
     def assertFailure(self, *args):
-        rc, stdout, stderr = assert_python_failure("-m", "calendar", *args)
+        rc, _stdout, stderr = assert_python_failure("-m", "calendar", *args)
         self.assertIn(b"usage:", stderr)
         self.assertEqual(rc, 2)
 
@@ -884,8 +884,8 @@ class CommandLineTestCase(unittest.TestCase):
 
     def test_output_current_year(self):
         stdout = self.run_ok()
-        year = datetime.datetime.now().year
-        self.assertIn((" %s" % year).encode(), stdout)
+        year = datetime.datetime.now().year  # noqa: DTZ005
+        self.assertIn((f" {year}").encode(), stdout)
         self.assertIn(b"January", stdout)
         self.assertIn(b"Mo Tu We Th Fr Sa Su", stdout)
 
@@ -961,8 +961,8 @@ class CommandLineTestCase(unittest.TestCase):
 
     def test_html_output_current_year(self):
         stdout = self.run_ok("--type", "html")
-        year = datetime.datetime.now().year
-        self.assertIn(("<title>Calendar for %s</title>" % year).encode(), stdout)
+        year = datetime.datetime.now().year  # noqa: DTZ005
+        self.assertIn((f"<title>Calendar for {year}</title>").encode(), stdout)
         self.assertIn(b'<tr><th colspan="7" class="month">January</th></tr>', stdout)
 
     def test_html_output_year_encoding(self):
@@ -1012,10 +1012,10 @@ class TestSubClassingCase(unittest.TestCase):
     def setUp(self):
 
         class CustomHTMLCal(calendar.HTMLCalendar):
-            cssclasses = [
+            cssclasses = [  # noqa: RUF012
                 style + " text-nowrap" for style in calendar.HTMLCalendar.cssclasses
             ]
-            cssclasses_weekday_head = [
+            cssclasses_weekday_head = [  # noqa: RUF012
                 "red",
                 "blue",
                 "green",
@@ -1046,20 +1046,19 @@ class TestSubClassingCase(unittest.TestCase):
     def test_formatweek_head(self):
         header = self.cal.formatweekheader()
         for color in self.cal.cssclasses_weekday_head:
-            self.assertIn('<th class="%s">' % color, header)
+            self.assertIn(f'<th class="{color}">', header)
 
     def test_format_year(self):
         self.assertIn(
             (
-                '<table border="0" cellpadding="0" cellspacing="0" class="%s">'
-                % self.cal.cssclass_year
+                f'<table border="0" cellpadding="0" cellspacing="0" class="{self.cal.cssclass_year}">'
             ),
             self.cal.formatyear(2017),
         )
 
     def test_format_year_head(self):
         self.assertIn(
-            '<tr><th colspan="%d" class="%s">%s</th></tr>'
+            '<tr><th colspan="%d" class="%s">%s</th></tr>'  # noqa: UP031
             % (3, self.cal.cssclass_year_head, 2017),
             self.cal.formatyear(2017),
         )

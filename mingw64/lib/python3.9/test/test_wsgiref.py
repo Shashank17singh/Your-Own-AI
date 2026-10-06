@@ -106,7 +106,7 @@ def compare_generic_iter(make_it, match):
         raise AssertionError("Too many items from __getitem__", it)
 
     try:
-        iter, StopIteration
+        iter, StopIteration  # noqa: B018
     except NameError:
         pass
     else:
@@ -142,7 +142,7 @@ class IntegrationTests(TestCase):
         )
 
     def test_plain_hello(self):
-        out, err = run_amock()
+        out, _err = run_amock()
         self.check_hello(out)
 
     def test_environ(self):
@@ -152,17 +152,17 @@ class IntegrationTests(TestCase):
             b"X-Test-Header: Python test 2\n"
             b"Content-Length: 0\n\n"
         )
-        out, err = run_amock(header_app, request)
+        out, _err = run_amock(header_app, request)
         self.assertEqual(
             out.splitlines()[-1], b"Python test,Python test 2;query=test;/path/"
         )
 
     def test_request_length(self):
-        out, err = run_amock(data=b"GET " + (b"x" * 65537) + b" HTTP/1.0\n\n")
+        out, _err = run_amock(data=b"GET " + (b"x" * 65537) + b" HTTP/1.0\n\n")
         self.assertEqual(out.splitlines()[0], b"HTTP/1.0 414 Request-URI Too Long")
 
     def test_validated_hello(self):
-        out, err = run_amock(validator(hello_app))
+        out, _err = run_amock(validator(hello_app))
         # the middleware doesn't support len(), so content-length isn't there
         self.check_hello(out, has_length=False)
 
@@ -256,7 +256,7 @@ class IntegrationTests(TestCase):
             # Encode as latin1 to get original bytes
             return [e["PATH_INFO"].encode("latin1")]
 
-        out, err = run_amock(validator(app), data=b"GET /\x80%80 HTTP/1.0")
+        out, _err = run_amock(validator(app), data=b"GET /\x80%80 HTTP/1.0")
         self.assertEqual(
             [
                 b"HTTP/1.0 200 OK",
@@ -583,7 +583,7 @@ class ErrorHandler(BaseCGIHandler):
     # BaseHandler records the OS environment at import time, but envvars
     # might have been changed later by other tests, which trips up
     # HandlerTests.testEnviron().
-    os_environ = dict(os.environ.items())
+    os_environ = dict(os.environ.items())  # noqa: RUF012
 
     def __init__(self, **kw):
         setup_testing_defaults(kw)
@@ -602,7 +602,7 @@ class TestHandler(ErrorHandler):
     """Simple handler subclass for testing BaseHandler, w/error passthru"""
 
     def handle_error(self):
-        raise  # for testing, we want to see what's happening
+        raise  # for testing, we want to see what's happening  # noqa: PLE0704
 
 
 class HandlerTests(TestCase):
@@ -761,7 +761,7 @@ class HandlerTests(TestCase):
         self.assertEqual(
             h.stdout.getvalue(),
             (
-                "Status: %s\r\n"
+                "Status: %s\r\n"  # noqa: UP031
                 "Content-Type: text/plain\r\n"
                 "Content-Length: %d\r\n"
                 "\r\n" % (h.error_status, len(h.error_body))
@@ -802,7 +802,7 @@ class HandlerTests(TestCase):
         shortpat = ("Status: 200 OK\r\nContent-Length: 0\r\n\r\n").encode("iso-8859-1")
 
         for ssw in "FooBar/1.0", None:
-            sw = ssw and "Server: %s\r\n" % ssw or ""
+            sw = ssw and f"Server: {ssw}\r\n" or ""
 
             for version in "1.0", "1.1":
                 for proto in "HTTP/0.9", "HTTP/1.0", "HTTP/1.1":
@@ -913,7 +913,7 @@ class HandlerTests(TestCase):
 
                 class AbortingWriter:
                     def write(self, b):
-                        raise exception
+                        raise exception  # noqa: B023
 
                 stderr = StringIO()
                 h = SimpleHandler(BytesIO(), AbortingWriter(), stderr, environ)

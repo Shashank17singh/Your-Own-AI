@@ -183,7 +183,7 @@ class TestThreadedClient(SocketThread):
     def run(self):
         try:
             self._prog(TestSocketWrapper(self._sock))
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self._test._abort_socket_test(ex)
 
 
@@ -230,14 +230,14 @@ class TestThreadedServer(SocketThread):
             if self._clients >= self._max_clients:
                 return
 
-            r, w, x = select.select([self._sock, self._s1], [], [], self._timeout)
+            r, _w, _x = select.select([self._sock, self._s1], [], [], self._timeout)
 
             if self._s1 in r:
                 return
 
             if self._sock in r:
                 try:
-                    conn, addr = self._sock.accept()
+                    conn, _addr = self._sock.accept()
                 except BlockingIOError:
                     continue
                 except TimeoutError:
@@ -251,7 +251,7 @@ class TestThreadedServer(SocketThread):
                     try:
                         with conn:
                             self._handle_client(conn)
-                    except Exception as ex:
+                    except Exception as ex:  # noqa: BLE001
                         self._active = False
                         try:
                             raise

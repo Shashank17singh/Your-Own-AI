@@ -35,7 +35,7 @@ if TkVersion < 8.5:
     fix_scaling(root)
     messagebox.showerror(
         "Idle Cannot Start",
-        "Idle requires tcl/tk 8.5+, not %s." % TkVersion,
+        f"Idle requires tcl/tk 8.5+, not {TkVersion}.",
         parent=root,
     )
     raise SystemExit(1)
@@ -154,7 +154,7 @@ class PyShellEditorWindow(EditorWindow):
             self.restore_file_breaks()
         self.color_breakpoint_text()
 
-    rmenu_specs = [
+    rmenu_specs = [  # noqa: RUF012
         ("Cut", "<<cut>>", "rmenu_check_cut"),
         ("Copy", "<<copy>>", "rmenu_check_copy"),
         ("Paste", "<<paste>>", "rmenu_check_paste"),
@@ -178,7 +178,7 @@ class PyShellEditorWindow(EditorWindow):
     def set_breakpoint(self, lineno):
         text = self.text
         filename = self.io.filename
-        text.tag_add("BREAK", "%d.0" % lineno, "%d.0" % (lineno + 1))
+        text.tag_add("BREAK", "%d.0" % lineno, "%d.0" % (lineno + 1))  # noqa: UP031
         try:
             self.breakpoints.index(lineno)
         except ValueError:  # only add if missing, i.e. do once
@@ -186,7 +186,7 @@ class PyShellEditorWindow(EditorWindow):
         try:  # update the subprocess debugger
             debug = self.flist.pyshell.interp.debugger
             debug.set_breakpoint_here(filename, lineno)
-        except:  # but debugger may not be active right now....
+        except:  # but debugger may not be active right now....  # noqa: E722, S110
             pass
 
     def set_breakpoint_here(self, event=None):
@@ -207,13 +207,13 @@ class PyShellEditorWindow(EditorWindow):
         lineno = int(float(text.index("insert")))
         try:
             self.breakpoints.remove(lineno)
-        except:
+        except:  # noqa: E722, S110
             pass
         text.tag_remove("BREAK", "insert linestart", "insert lineend +1char")
         try:
             debug = self.flist.pyshell.interp.debugger
             debug.clear_breakpoint_here(filename, lineno)
-        except:
+        except:  # noqa: E722, S110
             pass
 
     def clear_file_breaks(self):
@@ -228,7 +228,7 @@ class PyShellEditorWindow(EditorWindow):
             try:
                 debug = self.flist.pyshell.interp.debugger
                 debug.clear_file_breaks(filename)
-            except:
+            except:  # noqa: E722, S110
                 pass
 
     def store_file_breaks(self):
@@ -270,7 +270,7 @@ class PyShellEditorWindow(EditorWindow):
                 self.root.breakpoint_error_displayed = True
                 messagebox.showerror(
                     title="IDLE Error",
-                    message="Unable to update breakpoint list:\n%s" % str(err),
+                    message=f"Unable to update breakpoint list:\n{err!s}",
                     parent=self.text,
                 )
 
@@ -335,9 +335,8 @@ class PyShellFileList(FileList):
             self.pyshell.top.wakeup()
         else:
             self.pyshell = PyShell(self)
-            if self.pyshell:
-                if not self.pyshell.begin():
-                    return None
+            if self.pyshell and not self.pyshell.begin():
+                return None
         return self.pyshell
 
 
@@ -441,7 +440,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         del_exitf = idleConf.GetOption(
             "main", "General", "delete-exitfunc", default=False, type="bool"
         )
-        command = "__import__('idlelib.run').run.main(%r)" % (del_exitf,)
+        command = f"__import__('idlelib.run').run.main({del_exitf!r})"
         return [sys.executable] + w + ["-c", command, str(self.port)]
 
     def start_subprocess(self):
@@ -498,13 +497,12 @@ class ModifiedInterpreter(InteractiveInterpreter):
             try:
                 # Only close subprocess debugger, don't unregister gui_adap!
                 debugger_r.close_subprocess_debugger(self.rpcclt)
-            except:
+            except:  # noqa: E722, S110
                 pass
         # Kill subprocess, spawn a new one, accept connection.
         self.rpcclt.close()
         self.terminate_subprocess()
         console = self.tkconsole
-        was_executing = console.executing
         console.executing = False
         self.spawn_subprocess()
         try:
@@ -574,12 +572,11 @@ class ModifiedInterpreter(InteractiveInterpreter):
             path = sys.path
 
         self.runcommand(
-            """if 1:
+            f"""if 1:
         import sys as _sys
-        _sys.path = %r
+        _sys.path = {path!r}
         del _sys
         \n"""
-            % (path,)
         )
 
     active_seq = None
@@ -704,7 +701,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
 
     def stuffsource(self, source):
         "Stuff source in the filename cache"
-        filename = "<pyshell#%d>" % self.gid
+        filename = "<pyshell#%d>" % self.gid  # noqa: UP031
         self.gid = self.gid + 1
         lines = source.split("\n")
         linecache.cache[filename] = len(source) + 1, 0, lines, filename
@@ -713,8 +710,8 @@ class ModifiedInterpreter(InteractiveInterpreter):
     def prepend_syspath(self, filename):
         "Prepend sys.path with file's directory if not already included"
         self.runcommand(
-            """if 1:
-            _filename = %r
+            f"""if 1:
+            _filename = {filename!r}
             import sys as _sys
             from os.path import dirname as _dirname
             _dir = _dirname(_filename)
@@ -722,7 +719,6 @@ class ModifiedInterpreter(InteractiveInterpreter):
                 _sys.path.insert(0, _dir)
             del _filename, _sys, _dirname, _dir
             \n"""
-            % (filename,)
         )
 
     def showsyntaxerror(self, filename=None):
@@ -735,19 +731,19 @@ class ModifiedInterpreter(InteractiveInterpreter):
         tkconsole = self.tkconsole
         text = tkconsole.text
         text.tag_remove("ERROR", "1.0", "end")
-        type, value, tb = sys.exc_info()
+        _type, value, _tb = sys.exc_info()
         msg = getattr(value, "msg", "") or value or "<no detail available>"
         lineno = getattr(value, "lineno", "") or 1
         offset = getattr(value, "offset", "") or 0
         if offset == 0:
             lineno += 1  # mark end of offending line
         if lineno == 1:
-            pos = "iomark + %d chars" % (offset - 1)
+            pos = "iomark + %d chars" % (offset - 1)  # noqa: UP031
         else:
-            pos = "iomark linestart + %d lines + %d chars" % (lineno - 1, offset - 1)
+            pos = "iomark linestart + %d lines + %d chars" % (lineno - 1, offset - 1)  # noqa: UP031
         tkconsole.colorize_syntax_error(text, pos)
         tkconsole.resetoutput()
-        self.write("SyntaxError: %s\n" % msg)
+        self.write(f"SyntaxError: {msg}\n")
         tkconsole.showprompt()
 
     def showtraceback(self):
@@ -773,7 +769,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         if self.rpcclt:
             self.rpcclt.remotequeue("exec", "runcode", (code,), {})
         else:
-            exec(code, self.locals)
+            exec(code, self.locals)  # noqa: S102
         return 1
 
     def runcode(self, code):
@@ -789,7 +785,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
             elif debugger:
                 debugger.run(code, self.locals)
             else:
-                exec(code, self.locals)
+                exec(code, self.locals)  # noqa: S102
         except SystemExit:
             if not self.tkconsole.closing:
                 if messagebox.askyesno(
@@ -803,7 +799,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
                     self.showtraceback()
             else:
                 raise
-        except:
+        except:  # noqa: E722
             if use_subprocess:
                 print("IDLE internal error in runcode()", file=self.tkconsole.stderr)
                 self.showtraceback()
@@ -863,7 +859,7 @@ class PyShell(OutputWindow):
     UndoDelegator = ModifiedUndoDelegator
 
     # Override menus
-    menu_specs = [
+    menu_specs = [  # noqa: RUF012
         ("file", "_File"),
         ("edit", "_Edit"),
         ("debug", "_Debug"),
@@ -1084,10 +1080,7 @@ class PyShell(OutputWindow):
             )
             sys.displayhook = rpc.displayhook
 
-        self.write(
-            "Python %s on %s\n%s\n%s"
-            % (sys.version, sys.platform, self.COPYRIGHT, nosub)
-        )
+        self.write(f"Python {sys.version} on {sys.platform}\n{self.COPYRIGHT}\n{nosub}")
         self.text.focus_force()
         self.showprompt()
         # User code should use separate default Tk root window
@@ -1133,7 +1126,7 @@ class PyShell(OutputWindow):
         try:
             if self.text.compare("sel.first", "!=", "sel.last"):
                 return  # Active selection -- always use default binding
-        except:
+        except:  # noqa: E722, S110
             pass
         if not (self.executing or self.reading):
             self.resetoutput()
@@ -1184,11 +1177,10 @@ class PyShell(OutputWindow):
         # (but only if this before the I/O mark)
         try:
             sel = self.text.get("sel.first", "sel.last")
-            if sel:
-                if self.text.compare("sel.last", "<=", "iomark"):
-                    self.recall(sel, event)
-                    return "break"
-        except:
+            if sel and self.text.compare("sel.last", "<=", "iomark"):
+                self.recall(sel, event)
+                return "break"
+        except:  # noqa: E722, S110
             pass
         # If we're strictly before the line containing iomark, recall
         # the current line, less a leading prompt, less leading or
@@ -1283,8 +1275,8 @@ class PyShell(OutputWindow):
         if self.interp.rpcclt:
             return self.interp.remote_stack_viewer()
         try:
-            sys.last_traceback
-        except:
+            sys.last_traceback  # noqa: B018
+        except:  # noqa: E722
             messagebox.showerror(
                 "No stack trace",
                 "There is no stack trace yet.\n(sys.last_traceback is not defined)",
@@ -1333,7 +1325,7 @@ class PyShell(OutputWindow):
             self.text.mark_gravity("iomark", "right")
             count = OutputWindow.write(self, s, tags, "iomark")
             self.text.mark_gravity("iomark", "left")
-        except:
+        except:  # noqa: TRY203
             raise  ###pass  # ### 11Aug07 KBK if we are expecting exceptions
             # let's find out what they are and be specific.
         if self.canceled:
@@ -1444,7 +1436,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "c:deihnr:st:")
     except getopt.error as msg:
-        print("Error: %s\n%s" % (msg, usage_msg), file=sys.stderr)
+        print(f"Error: {msg}\n{usage_msg}", file=sys.stderr)
         sys.exit(2)
     for o, a in opts:
         if o == "-c":
@@ -1532,7 +1524,7 @@ def main():
         else:
             ext = ".gif"
             sizes = (16, 32, 48)
-        iconfiles = [os.path.join(icondir, "idle_%d%s" % (size, ext)) for size in sizes]
+        iconfiles = [os.path.join(icondir, "idle_%d%s" % (size, ext)) for size in sizes]  # noqa: UP031
         icons = [PhotoImage(master=root, file=iconfile) for iconfile in iconfiles]
         root.wm_iconphoto(True, *icons)
 
@@ -1542,14 +1534,13 @@ def main():
     flist = PyShellFileList(root)
     macosx.setupApp(root, flist)
 
-    if enable_edit:
-        if not (cmd or script):
-            for filename in args[:]:
-                if flist.open(filename) is None:
-                    # filename is a directory actually, disconsider it
-                    args.remove(filename)
-            if not args:
-                flist.new()
+    if enable_edit and not (cmd or script):
+        for filename in args[:]:
+            if flist.open(filename) is None:
+                # filename is a directory actually, disconsider it
+                args.remove(filename)
+        if not args:
+            flist.new()
 
     if enable_shell:
         shell = flist.open_shell()
@@ -1574,12 +1565,11 @@ def main():
             shell.interp.execfile(filename)
     if cmd or script:
         shell.interp.runcommand(
-            """if 1:
+            f"""if 1:
             import sys as _sys
-            _sys.argv = %r
+            _sys.argv = {sys.argv!r}
             del _sys
             \n"""
-            % (sys.argv,)
         )
         if cmd:
             shell.interp.execsource(cmd)

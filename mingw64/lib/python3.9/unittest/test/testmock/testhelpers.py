@@ -45,7 +45,7 @@ class AnyTest(unittest.TestCase):
 
     def test_any_and_datetime(self):
         mock = Mock()
-        mock(datetime.now(), foo=datetime.now())
+        mock(datetime.now(), foo=datetime.now())  # noqa: DTZ005
         mock.assert_called_with(ANY, foo=ANY)
 
     def test_any_mock_calls_comparison_order(self):
@@ -58,7 +58,7 @@ class AnyTest(unittest.TestCase):
             def __ne__(self, other):
                 pass
 
-        for d in datetime.now(), Foo():
+        for d in datetime.now(), Foo():  # noqa: DTZ005
             mock.reset_mock()
             mock(d, foo=d, bar=d)
             mock.method(d, zinga=d, alpha=d)
@@ -175,22 +175,22 @@ class CallTest(unittest.TestCase):
         self.assertNotEqual(args, ((1, 2, 3), {}))
 
     def test_call_with_kwargs(self):
-        args = _Call(((), dict(a=3, b=4)))
-        self.assertEqual(args, (dict(a=3, b=4),))
-        self.assertEqual(args, ("foo", dict(a=3, b=4)))
-        self.assertEqual(args, ("foo", (), dict(a=3, b=4)))
-        self.assertEqual(args, ((), dict(a=3, b=4)))
+        args = _Call(((), {"a": 3, "b": 4}))
+        self.assertEqual(args, ({"a": 3, "b": 4},))
+        self.assertEqual(args, ("foo", {"a": 3, "b": 4}))
+        self.assertEqual(args, ("foo", (), {"a": 3, "b": 4}))
+        self.assertEqual(args, ((), {"a": 3, "b": 4}))
         self.assertEqual(args.args, ())
-        self.assertEqual(args.kwargs, dict(a=3, b=4))
+        self.assertEqual(args.kwargs, {"a": 3, "b": 4})
 
     def test_named_call_with_kwargs(self):
-        args = _Call(("foo", (), dict(a=3, b=4)))
-        self.assertEqual(args, ("foo", dict(a=3, b=4)))
-        self.assertEqual(args, ("foo", (), dict(a=3, b=4)))
+        args = _Call(("foo", (), {"a": 3, "b": 4}))
+        self.assertEqual(args, ("foo", {"a": 3, "b": 4}))
+        self.assertEqual(args, ("foo", (), {"a": 3, "b": 4}))
         self.assertEqual(args.args, ())
-        self.assertEqual(args.kwargs, dict(a=3, b=4))
-        self.assertNotEqual(args, (dict(a=3, b=4),))
-        self.assertNotEqual(args, ((), dict(a=3, b=4)))
+        self.assertEqual(args.kwargs, {"a": 3, "b": 4})
+        self.assertNotEqual(args, ({"a": 3, "b": 4},))
+        self.assertNotEqual(args, ((), {"a": 3, "b": 4}))
 
     def test_call_with_args_call_empty_name(self):
         args = _Call(((1, 2, 3), {}))
@@ -248,7 +248,7 @@ class CallTest(unittest.TestCase):
 
     def test_extended_call(self):
         result = call(1).foo(2).bar(3, a=4)
-        self.assertEqual(result, ("().foo().bar", (3,), dict(a=4)))
+        self.assertEqual(result, ("().foo().bar", (3,), {"a": 4}))
         mock = MagicMock()
         mock(1, 2, a=3, b=4)
         self.assertEqual(mock.call_args, call(1, 2, a=3, b=4))
@@ -433,7 +433,7 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertRaises(AttributeError, getattr, mock, "foo")
 
         class Foo:
-            foo = []
+            foo = []  # noqa: RUF012
 
         mock = create_autospec(Foo)
         mock.foo.append(3)
@@ -476,7 +476,7 @@ class SpecSignatureTest(unittest.TestCase):
 
         inst = CrazyClass()
         with self.assertRaises(AttributeError):
-            inst.other
+            inst.other  # noqa: B018
         self.assertEqual(inst.crazy(42), 42)
         mock = create_autospec(inst)
         mock.crazy(42)
@@ -491,7 +491,7 @@ class SpecSignatureTest(unittest.TestCase):
                 pass
 
             sorted = sorted
-            attr = {}
+            attr = {}  # noqa: RUF012
 
         mock = create_autospec(BuiltinSubclass)
         mock.append(3)
@@ -526,7 +526,7 @@ class SpecSignatureTest(unittest.TestCase):
 
     def test_magic_methods(self):
         class BuiltinSubclass(list):
-            attr = {}
+            attr = {}  # noqa: RUF012
 
         mock = create_autospec(BuiltinSubclass)
         self.assertEqual(list(mock), [])
@@ -692,7 +692,7 @@ class SpecSignatureTest(unittest.TestCase):
         self.assertEqual(s.existing(1, 2), s.existing.return_value)
         self.assertRaises(AttributeError, lambda: s.nonexisting)
         obj = s.raiser
-        obj.foo, obj.bar
+        obj.foo, obj.bar  # noqa: B018
 
     def test_signature_class(self):
         class Foo:
@@ -940,13 +940,13 @@ class TestCallList(unittest.TestCase):
         self.assertEqual(str(mock.mock_calls), expected)
 
     def test_propertymock(self):
-        p = patch("%s.SomeClass.one" % __name__, new_callable=PropertyMock)
+        p = patch(f"{__name__}.SomeClass.one", new_callable=PropertyMock)
         mock = p.start()
         try:
-            SomeClass.one
+            SomeClass.one  # noqa: B018
             mock.assert_called_once_with()
             s = SomeClass()
-            s.one
+            s.one  # noqa: B018
             mock.assert_called_with()
             self.assertEqual(mock.mock_calls, [call(), call()])
             s.one = 3

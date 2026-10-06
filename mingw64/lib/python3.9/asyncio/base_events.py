@@ -615,7 +615,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         try:
             self._default_executor.shutdown(wait=True)
             self.call_soon_threadsafe(future.set_result, None)
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self.call_soon_threadsafe(future.set_exception, ex)
 
     def _check_running(self):
@@ -1356,16 +1356,16 @@ class BaseEventLoop(events.AbstractEventLoop):
                 or allow_broadcast
             ):
                 # show the problematic kwargs in exception msg
-                opts = dict(
-                    local_addr=local_addr,
-                    remote_addr=remote_addr,
-                    family=family,
-                    proto=proto,
-                    flags=flags,
-                    reuse_address=reuse_address,
-                    reuse_port=reuse_port,
-                    allow_broadcast=allow_broadcast,
-                )
+                opts = {
+                    "local_addr": local_addr,
+                    "remote_addr": remote_addr,
+                    "family": family,
+                    "proto": proto,
+                    "flags": flags,
+                    "reuse_address": reuse_address,
+                    "reuse_port": reuse_port,
+                    "allow_broadcast": allow_broadcast,
+                }
                 problems = ", ".join(f"{k}={v}" for k, v in opts.items() if v)
                 raise ValueError(
                     f"socket modifier keyword arguments can not be used "
@@ -1457,7 +1457,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                         stacklevel=2,
                     )
 
-            for (family, proto), (local_address, remote_address) in addr_pairs_info:
+            for (family, proto), (local_address, remote_address) in addr_pairs_info:  # noqa: PLR1704
                 sock = None
                 r_addr = None
                 try:
@@ -1603,7 +1603,7 @@ class BaseEventLoop(events.AbstractEventLoop):
             completed = False
             try:
                 for res in infos:
-                    af, socktype, proto, canonname, sa = res
+                    af, socktype, proto, _canonname, sa = res
                     try:
                         sock = socket.socket(af, socktype, proto)
                     except OSError:
@@ -1638,7 +1638,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                         raise OSError(
                             err.errno,
                             "error while attempting "
-                            "to bind on address %r: %s" % (sa, err.strerror.lower()),
+                            f"to bind on address {sa!r}: {err.strerror.lower()}",
                         ) from None
                 completed = True
             finally:
@@ -1764,7 +1764,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         **kwargs,
     ):
         if not isinstance(cmd, (bytes, str)):
-            raise ValueError("cmd must be a string")
+            raise ValueError("cmd must be a string")  # noqa: TRY004
         if universal_newlines:
             raise ValueError("universal_newlines must be False")
         if not shell:
@@ -1783,7 +1783,7 @@ class BaseEventLoop(events.AbstractEventLoop):
         if self._debug:
             # don't log parameters: they may contain sensitive information
             # (password) and may be too long
-            debug_log = "run shell command %r" % cmd
+            debug_log = f"run shell command {cmd!r}"
             self._log_subprocess(debug_log, stdin, stdout, stderr)
         transport = await self._make_subprocess_transport(
             protocol, cmd, True, stdin, stdout, stderr, bufsize, **kwargs
@@ -1934,7 +1934,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                 self.default_exception_handler(context)
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException:
+            except BaseException:  # noqa: BLE001
                 # Second protection layer for unexpected errors
                 # in the default implementation, as well as for subclassed
                 # event loops with overloaded "default_exception_handler".
@@ -1944,7 +1944,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                 self._exception_handler(self, context)
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 # Exception in the user set custom exception handler.
                 try:
                     # Let's try default handler.
@@ -1957,7 +1957,7 @@ class BaseEventLoop(events.AbstractEventLoop):
                     )
                 except (SystemExit, KeyboardInterrupt):
                     raise
-                except BaseException:
+                except BaseException:  # noqa: BLE001
                     # Guard 'default_exception_handler' in case it is
                     # overloaded.
                     logger.error(

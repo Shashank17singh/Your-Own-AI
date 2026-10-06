@@ -384,7 +384,7 @@ class IntTestCases(unittest.TestCase):
 
             class ExceptionalTrunc(base):
                 def __trunc__(self):
-                    1 / 0
+                    1 / 0  # noqa: B018
 
             with self.assertRaises(ZeroDivisionError):
                 int(ExceptionalTrunc())
@@ -428,8 +428,7 @@ class IntTestCases(unittest.TestCase):
                     )
                 else:
                     self.fail(
-                        "Failed to raise TypeError with %s"
-                        % ((base, trunc_result_base),)
+                        f"Failed to raise TypeError with {(base, trunc_result_base)}"
                     )
 
                 # Regression test for bugs.python.org/issue16060.
@@ -451,7 +450,7 @@ class IntTestCases(unittest.TestCase):
 
         class BadIndex(int):
             def __index__(self):
-                return 42.0
+                return 42.0  # noqa: PLE0305
 
         my_int = MyIndex(7)
         self.assertEqual(my_int, 7)
@@ -479,11 +478,11 @@ class IntTestCases(unittest.TestCase):
     def test_int_returns_int_subclass(self):
         class BadIndex:
             def __index__(self):
-                return True
+                return True  # noqa: PLE0305
 
         class BadIndex2(int):
             def __index__(self):
-                return True
+                return True  # noqa: PLE0305
 
         class BadInt:
             def __int__(self):
@@ -550,14 +549,14 @@ class IntTestCases(unittest.TestCase):
 
     def test_error_message(self):
         def check(s, base=None):
-            with self.assertRaises(ValueError, msg="int(%r, %r)" % (s, base)) as cm:
+            with self.assertRaises(ValueError, msg=f"int({s!r}, {base!r})") as cm:
                 if base is None:
                     int(s)
                 else:
                     int(s, base)
             self.assertEqual(
                 cm.exception.args[0],
-                "invalid literal for int() with base %d: %r"
+                "invalid literal for int() with base %d: %r"  # noqa: UP031
                 % (10 if base is None else base, s),
             )
 

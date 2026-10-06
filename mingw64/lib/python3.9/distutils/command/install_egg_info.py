@@ -14,7 +14,7 @@ class install_egg_info(Command):
     """Install an .egg-info file for the package"""
 
     description = "Install package's PKG-INFO metadata as an .egg-info file"
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("install-dir=", "d", "directory to install to"),
     ]
 
@@ -23,10 +23,13 @@ class install_egg_info(Command):
 
     def finalize_options(self):
         self.set_undefined_options("install_lib", ("install_dir", "install_dir"))
-        basename = "%s-%s-py%d.%d.egg-info" % (
-            to_filename(safe_name(self.distribution.get_name())),
-            to_filename(safe_version(self.distribution.get_version())),
-            *sys.version_info[:2],
+        basename = (
+            "%s-%s-py%d.%d.egg-info"
+            % (  # noqa: UP031
+                to_filename(safe_name(self.distribution.get_name())),
+                to_filename(safe_version(self.distribution.get_version())),
+                *sys.version_info[:2],
+            )
         )
         self.target = os.path.join(self.install_dir, basename)
         self.outputs = [self.target]

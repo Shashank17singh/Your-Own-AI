@@ -72,11 +72,11 @@ class TestBasic(unittest.TestCase):
         d = deque(range(200), maxlen=10)
         d.append(d)
         support.unlink(support.TESTFN)
-        fo = open(support.TESTFN, "w")
+        fo = open(support.TESTFN, "w")  # noqa: SIM115
         try:
             fo.write(str(d))
             fo.close()
-            fo = open(support.TESTFN, "r")
+            fo = open(support.TESTFN, "r")  # noqa: SIM115
             self.assertEqual(fo.read(), repr(d))
         finally:
             fo.close()
@@ -84,11 +84,11 @@ class TestBasic(unittest.TestCase):
 
         d = deque(range(10), maxlen=None)
         self.assertEqual(repr(d), "deque([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])")
-        fo = open(support.TESTFN, "w")
+        fo = open(support.TESTFN, "w")  # noqa: SIM115
         try:
             fo.write(str(d))
             fo.close()
-            fo = open(support.TESTFN, "r")
+            fo = open(support.TESTFN, "r")  # noqa: SIM115
             self.assertEqual(fo.read(), repr(d))
         finally:
             fo.close()
@@ -185,13 +185,13 @@ class TestBasic(unittest.TestCase):
         d = deque(range(n))
         d[n // 2] = MutateCmp(d, False)
         with self.assertRaises(RuntimeError):
-            n in d
+            n in d  # noqa: B015
 
         # Test detection of comparison exceptions
         d = deque(range(n))
         d[n // 2] = BadCmp()
         with self.assertRaises(RuntimeError):
-            n in d
+            n in d  # noqa: B015
 
     def test_contains_count_stop_crashes(self):
         class A:
@@ -296,7 +296,6 @@ class TestBasic(unittest.TestCase):
 
         # Test start and stop arguments behavior matches list.index()
         elements = "ABCDEFGHI"
-        nonelement = "Z"
         d = deque(elements * 2)
         s = list(elements * 2)
         for start in range(-5 - len(s) * 2, 5 + len(s) * 2):
@@ -321,7 +320,7 @@ class TestBasic(unittest.TestCase):
     def test_index_bug_24913(self):
         d = deque("A" * 3)
         with self.assertRaises(ValueError):
-            i = d.index("Hello world", 0, 4)
+            d.index("Hello world", 0, 4)
 
     def test_insert(self):
         # Test to make sure insert behaves like lists
@@ -562,10 +561,10 @@ class TestBasic(unittest.TestCase):
         d.append(d)
         try:
             support.unlink(support.TESTFN)
-            fo = open(support.TESTFN, "w")
+            fo = open(support.TESTFN, "w")  # noqa: SIM115
             print(d, file=fo, end="")
             fo.close()
-            fo = open(support.TESTFN, "r")
+            fo = open(support.TESTFN, "r")  # noqa: SIM115
             self.assertEqual(fo.read(), repr(d))
         finally:
             fo.close()
@@ -785,7 +784,7 @@ class TestBasic(unittest.TestCase):
     def test_sizeof(self):
         BLOCKLEN = 64
         basesize = support.calcvobjsize("2P4nP")
-        blocksize = struct.calcsize("P%dPP" % BLOCKLEN)
+        blocksize = struct.calcsize("P%dPP" % BLOCKLEN)  # noqa: UP031
         self.assertEqual(object.__sizeof__(deque()), basesize)
         check = self.check_sizeof
         check(deque(), basesize + blocksize)
@@ -901,7 +900,7 @@ class TestSubclass(unittest.TestCase):
                 self.assertNotEqual(id(e), id(d))
                 self.assertEqual(type(e), type(d))
                 self.assertEqual(e.maxlen, d.maxlen)
-                dd = d.pop()
+                d.pop()
                 ee = e.pop()
                 self.assertEqual(id(ee), id(e))
                 self.assertEqual(e, d)
@@ -928,7 +927,7 @@ class TestSubclass(unittest.TestCase):
 
         d1 = X([1, 2, 3])
         d2 = X([4, 5, 6])
-        d1 == d2  # not clear if this is supposed to be True or False,
+        d1 == d2  # not clear if this is supposed to be True or False,  # noqa: B015
         # but it used to give a SystemError
 
     @support.cpython_only
@@ -1114,7 +1113,7 @@ def test_main(verbose=None):
         print(counts)
 
     # doctests
-    from test import test_deque
+    from test import test_deque  # noqa: PLW0406
 
     support.run_doctest(test_deque, verbose)
 

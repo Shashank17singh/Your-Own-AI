@@ -24,7 +24,7 @@ def _delete_files():
 
 
 class DumbDBMTestCase(unittest.TestCase):
-    _dict = {
+    _dict = {  # noqa: RUF012
         b"0": b"",
         b"a": b"Python:",
         b"b": b"Programming",
@@ -46,7 +46,7 @@ class DumbDBMTestCase(unittest.TestCase):
     def test_dumbdbm_creation_mode(self):
         try:
             old_umask = os.umask(0o002)
-            f = dumbdbm.open(_fname, "c", 0o637)
+            f = dumbdbm.open(_fname, "c", 0o637)  # noqa: SIM115
             f.close()
         finally:
             os.umask(old_umask)
@@ -65,7 +65,7 @@ class DumbDBMTestCase(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(st.st_mode), expected_mode)
 
     def test_close_twice(self):
-        f = dumbdbm.open(_fname)
+        f = dumbdbm.open(_fname)  # noqa: SIM115
         f[b"a"] = b"b"
         self.assertEqual(f[b"a"], b"b")
         f.close()
@@ -102,7 +102,7 @@ class DumbDBMTestCase(unittest.TestCase):
     def test_dumbdbm_keys(self):
         self.init_db()
         with contextlib.closing(dumbdbm.open(_fname)) as f:
-            keys = self.keys_helper(f)
+            self.keys_helper(f)
 
     def test_write_contains(self):
         with contextlib.closing(dumbdbm.open(_fname)) as f:
@@ -151,12 +151,12 @@ class DumbDBMTestCase(unittest.TestCase):
         with open(_fname + ".dir", "wb") as file:
             file.write(data)
 
-        f = dumbdbm.open(_fname)
+        f = dumbdbm.open(_fname)  # noqa: SIM115
         self.assertEqual(f[b"1"], b"hello")
         self.assertEqual(f[b"2"], b"hello2")
 
     def read_helper(self, f):
-        keys = self.keys_helper(f)
+        self.keys_helper(f)
         for key in self._dict:
             self.assertEqual(self._dict[key], f[key])
 
@@ -207,7 +207,7 @@ class DumbDBMTestCase(unittest.TestCase):
             db.keys()
 
     def test_check_closed(self):
-        f = dumbdbm.open(_fname, "c")
+        f = dumbdbm.open(_fname, "c")  # noqa: SIM115
         f.close()
 
         for meth in (
@@ -242,7 +242,7 @@ class DumbDBMTestCase(unittest.TestCase):
         with open(_fname + ".dir", "w") as stream:
             stream.write("str(print('Hacked!')), 0\n")
         with support.captured_stdout() as stdout:
-            with self.assertRaises(ValueError), dumbdbm.open(_fname) as f:
+            with self.assertRaises(ValueError), dumbdbm.open(_fname):
                 pass
             self.assertEqual(stdout.getvalue(), "")
 
@@ -250,17 +250,17 @@ class DumbDBMTestCase(unittest.TestCase):
         for value in ("r", "w"):
             _delete_files()
             with self.assertRaises(FileNotFoundError):
-                dumbdbm.open(_fname, value)
+                dumbdbm.open(_fname, value)  # noqa: SIM115
             self.assertFalse(os.path.exists(_fname + ".dir"))
             self.assertFalse(os.path.exists(_fname + ".bak"))
 
     def test_missing_index(self):
-        with dumbdbm.open(_fname, "n") as f:
+        with dumbdbm.open(_fname, "n"):
             pass
         os.unlink(_fname + ".dir")
         for value in ("r", "w"):
             with self.assertRaises(FileNotFoundError):
-                dumbdbm.open(_fname, value)
+                dumbdbm.open(_fname, value)  # noqa: SIM115
             self.assertFalse(os.path.exists(_fname + ".dir"))
             self.assertFalse(os.path.exists(_fname + ".bak"))
 
@@ -269,7 +269,7 @@ class DumbDBMTestCase(unittest.TestCase):
             with self.assertRaisesRegex(
                 ValueError, "Flag must be one of 'r', 'w', 'c', or 'n'"
             ):
-                dumbdbm.open(_fname, flag)
+                dumbdbm.open(_fname, flag)  # noqa: SIM115
 
     def test_readonly_files(self):
         with support.temp_dir() as dir:

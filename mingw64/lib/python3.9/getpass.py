@@ -176,7 +176,7 @@ try:
 
     # it's possible there is an incompatible termios from the
     # McMillan Installer, make sure we have a UNIX-compatible termios
-    termios.tcgetattr, termios.tcsetattr
+    termios.tcgetattr, termios.tcsetattr  # noqa: B018
 except (ImportError, AttributeError):
     try:
         import msvcrt

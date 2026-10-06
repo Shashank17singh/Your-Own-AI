@@ -63,7 +63,7 @@ class Distribution:
     # don't want to pollute the commands with too many options that they
     # have minimal control over.
     # The fourth entry for verbose means that it can be repeated.
-    global_options = [
+    global_options = [  # noqa: RUF012
         ("verbose", "v", "run verbosely (default)", 1),
         ("quiet", "q", "run quietly (turns verbosity off)"),
         ("dry-run", "n", "don't actually do anything"),
@@ -81,7 +81,7 @@ Common commands: (see '--help-commands' for more)
 """
 
     # options that are not propagated to the commands
-    display_options = [
+    display_options = [  # noqa: RUF012
         ("help-commands", None, "list all available commands"),
         ("name", None, "print package name"),
         ("version", "V", "print package version"),
@@ -108,10 +108,10 @@ Common commands: (see '--help-commands' for more)
         ("requires", None, "print the list of packages/modules required"),
         ("obsoletes", None, "print the list of packages/modules made obsolete"),
     ]
-    display_option_names = [translate_longopt(x[0]) for x in display_options]
+    display_option_names = [translate_longopt(x[0]) for x in display_options]  # noqa: RUF012
 
     # negative options are options that exclude other options
-    negative_opt = {"quiet": "verbose"}
+    negative_opt = {"quiet": "verbose"}  # noqa: RUF012
 
     # -- Creation/initialization methods -------------------------------
 
@@ -252,7 +252,7 @@ Common commands: (see '--help-commands' for more)
                 elif hasattr(self, key):
                     setattr(self, key, val)
                 else:
-                    msg = "Unknown distribution option: %s" % repr(key)
+                    msg = f"Unknown distribution option: {key!r}"
                     warnings.warn(msg)
 
         # no-user-cfg is handled before other command line args
@@ -301,9 +301,9 @@ Common commands: (see '--help-commands' for more)
         for cmd_name in commands:
             opt_dict = self.command_options.get(cmd_name)
             if opt_dict is None:
-                self.announce(indent + "no option dict for '%s' command" % cmd_name)
+                self.announce(indent + f"no option dict for '{cmd_name}' command")
             else:
-                self.announce(indent + "option dict for '%s' command:" % cmd_name)
+                self.announce(indent + f"option dict for '{cmd_name}' command:")
                 out = pformat(opt_dict)
                 for line in out.split("\n"):
                     self.announce(indent + "  " + line)
@@ -354,7 +354,7 @@ Common commands: (see '--help-commands' for more)
             files.append(local_file)
 
         if DEBUG:
-            self.announce("using config files: %s" % ", ".join(files))
+            self.announce("using config files: {}".format(", ".join(files)))
 
         return files
 
@@ -392,7 +392,7 @@ Common commands: (see '--help-commands' for more)
         parser = ConfigParser()
         for filename in filenames:
             if DEBUG:
-                self.announce("  reading %s" % filename)
+                self.announce(f"  reading {filename}")
             parser.read(filename)
             for section in parser.sections():
                 options = parser.options(section)
@@ -522,7 +522,7 @@ Common commands: (see '--help-commands' for more)
         # Pull the current command from the head of the command line
         command = args[0]
         if not command_re.match(command):
-            raise SystemExit("invalid command name '%s'" % command)
+            raise SystemExit(f"invalid command name '{command}'")
         self.commands.append(command)
 
         # Dig up the command class that implements this command, so we
@@ -537,7 +537,7 @@ Common commands: (see '--help-commands' for more)
         # to be sure that the basic "command" interface is implemented.
         if not issubclass(cmd_class, Command):
             raise DistutilsClassError(
-                "command class %s must subclass Command" % cmd_class
+                f"command class {cmd_class} must subclass Command"
             )
 
         # Also make sure that the command object provides a list of its
@@ -590,9 +590,8 @@ Common commands: (see '--help-commands' for more)
                         func()
                     else:
                         raise DistutilsClassError(
-                            "invalid help function %r for help option '%s': "
+                            f"invalid help function {func!r} for help option '{help_option}': "
                             "must be a callable object (function, etc.)"
-                            % (func, help_option)
                         )
 
             if help_option_found:
@@ -619,7 +618,7 @@ Common commands: (see '--help-commands' for more)
                 value = [elm.strip() for elm in value.split(",")]
                 setattr(self.metadata, attr, value)
 
-    def _show_help(self, parser, global_options=1, display_options=1, commands=[]):
+    def _show_help(self, parser, global_options=1, display_options=1, commands=None):
         """Show help for the setup script command-line in the form of
         several lists of command-line options.  'parser' should be a
         FancyGetopt instance; do not expect it to be returned in the
@@ -636,6 +635,8 @@ Common commands: (see '--help-commands' for more)
         from distutils.cmd import Command
         from distutils.core import gen_usage
 
+        if commands is None:
+            commands = []
         if global_options:
             if display_options:
                 options = self._get_toplevel_options()
@@ -664,7 +665,7 @@ Common commands: (see '--help-commands' for more)
                 )
             else:
                 parser.set_option_table(klass.user_options)
-            parser.print_help("Options for '%s' command:" % klass.__name__)
+            parser.print_help(f"Options for '{klass.__name__}' command:")
             print()
 
         print(gen_usage(self.script_name))
@@ -723,7 +724,7 @@ Common commands: (see '--help-commands' for more)
             except AttributeError:
                 description = "(no description available)"
 
-            print("  %-*s  %s" % (max_length, cmd, description))
+            print("  %-*s  %s" % (max_length, cmd, description))  # noqa: UP031
 
     def print_commands(self):
         """Print out a help message listing all available commands with a
@@ -741,7 +742,7 @@ Common commands: (see '--help-commands' for more)
             is_std[cmd] = 1
 
         extra_commands = []
-        for cmd in self.cmdclass.keys():
+        for cmd in self.cmdclass:
             if not is_std.get(cmd):
                 extra_commands.append(cmd)
 
@@ -771,7 +772,7 @@ Common commands: (see '--help-commands' for more)
             is_std[cmd] = 1
 
         extra_commands = []
-        for cmd in self.cmdclass.keys():
+        for cmd in self.cmdclass:
             if not is_std.get(cmd):
                 extra_commands.append(cmd)
 
@@ -818,7 +819,7 @@ Common commands: (see '--help-commands' for more)
             return klass
 
         for pkgname in self.get_command_packages():
-            module_name = "%s.%s" % (pkgname, command)
+            module_name = f"{pkgname}.{command}"
             klass_name = command
 
             try:
@@ -831,14 +832,13 @@ Common commands: (see '--help-commands' for more)
                 klass = getattr(module, klass_name)
             except AttributeError:
                 raise DistutilsModuleError(
-                    "invalid command '%s' (no class '%s' in module '%s')"
-                    % (command, klass_name, module_name)
+                    f"invalid command '{command}' (no class '{klass_name}' in module '{module_name}')"
                 )
 
             self.cmdclass[command] = klass
             return klass
 
-        raise DistutilsModuleError("invalid command '%s'" % command)
+        raise DistutilsModuleError(f"invalid command '{command}'")
 
     def get_command_obj(self, command, create=1):
         """Return the command object for 'command'.  Normally this object
@@ -851,7 +851,7 @@ Common commands: (see '--help-commands' for more)
             if DEBUG:
                 self.announce(
                     "Distribution.get_command_obj(): "
-                    "creating '%s' command object" % command
+                    f"creating '{command}' command object"
                 )
 
             klass = self.get_command_class(command)
@@ -883,10 +883,10 @@ Common commands: (see '--help-commands' for more)
             option_dict = self.get_option_dict(command_name)
 
         if DEBUG:
-            self.announce("  setting options for '%s' command:" % command_name)
+            self.announce(f"  setting options for '{command_name}' command:")
         for option, (source, value) in option_dict.items():
             if DEBUG:
-                self.announce("    %s = %s (from %s)" % (option, value, source))
+                self.announce(f"    {option} = {value} (from {source})")
             try:
                 bool_opts = [translate_longopt(o) for o in command_obj.boolean_options]
             except AttributeError:
@@ -906,8 +906,7 @@ Common commands: (see '--help-commands' for more)
                     setattr(command_obj, option, value)
                 else:
                     raise DistutilsOptionError(
-                        "error in %s: command '%s' has no such option '%s'"
-                        % (source, command_name, option)
+                        f"error in {source}: command '{command_name}' has no such option '{option}'"
                     )
             except ValueError as msg:
                 raise DistutilsOptionError(msg)
@@ -1054,7 +1053,7 @@ class DistributionMetadata:
 
     def __init__(self, path=None):
         if path is not None:
-            self.read_pkg_file(open(path))
+            self.read_pkg_file(open(path))  # noqa: SIM115
         else:
             self.name = None
             self.version = None
@@ -1146,23 +1145,23 @@ class DistributionMetadata:
         ):
             version = "1.1"
 
-        file.write("Metadata-Version: %s\n" % version)
-        file.write("Name: %s\n" % self.get_name())
-        file.write("Version: %s\n" % self.get_version())
-        file.write("Summary: %s\n" % self.get_description())
-        file.write("Home-page: %s\n" % self.get_url())
-        file.write("Author: %s\n" % self.get_contact())
-        file.write("Author-email: %s\n" % self.get_contact_email())
-        file.write("License: %s\n" % self.get_license())
+        file.write(f"Metadata-Version: {version}\n")
+        file.write(f"Name: {self.get_name()}\n")
+        file.write(f"Version: {self.get_version()}\n")
+        file.write(f"Summary: {self.get_description()}\n")
+        file.write(f"Home-page: {self.get_url()}\n")
+        file.write(f"Author: {self.get_contact()}\n")
+        file.write(f"Author-email: {self.get_contact_email()}\n")
+        file.write(f"License: {self.get_license()}\n")
         if self.download_url:
-            file.write("Download-URL: %s\n" % self.download_url)
+            file.write(f"Download-URL: {self.download_url}\n")
 
         long_desc = rfc822_escape(self.get_long_description())
-        file.write("Description: %s\n" % long_desc)
+        file.write(f"Description: {long_desc}\n")
 
         keywords = ",".join(self.get_keywords())
         if keywords:
-            file.write("Keywords: %s\n" % keywords)
+            file.write(f"Keywords: {keywords}\n")
 
         self._write_list(file, "Platform", self.get_platforms())
         self._write_list(file, "Classifier", self.get_classifiers())
@@ -1174,7 +1173,7 @@ class DistributionMetadata:
 
     def _write_list(self, file, name, values):
         for value in values:
-            file.write("%s: %s\n" % (name, value))
+            file.write(f"{name}: {value}\n")
 
     # -- Metadata query methods ----------------------------------------
 
@@ -1185,7 +1184,7 @@ class DistributionMetadata:
         return self.version or "0.0.0"
 
     def get_fullname(self):
-        return "%s-%s" % (self.get_name(), self.get_version())
+        return f"{self.get_name()}-{self.get_version()}"
 
     def get_author(self):
         return self.author or "UNKNOWN"

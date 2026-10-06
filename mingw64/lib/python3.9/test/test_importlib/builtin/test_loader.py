@@ -96,7 +96,7 @@ class InspectLoaderTests:
         # Modules not built-in should raise ImportError.
         for meth_name in ("get_code", "get_source", "is_package"):
             method = getattr(self.machinery.BuiltinImporter, meth_name)
-        with self.assertRaises(ImportError) as cm:
+        with self.assertRaises(ImportError):
             method(util.BUILTINS.bad_name)
 
 

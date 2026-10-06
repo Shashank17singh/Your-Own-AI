@@ -74,7 +74,7 @@ class Test_MultibyteCodec(unittest.TestCase):
         try:
             for enc in ALL_CJKENCODINGS:
                 code = f"# coding: {enc}\n"
-                exec(code)
+                exec(code)  # noqa: S102
         finally:
             support.unlink(TESTFN)
 
@@ -298,12 +298,12 @@ class Test_IncrementalDecoder(unittest.TestCase):
 class Test_StreamReader(unittest.TestCase):
     def test_bug1728403(self):
         try:
-            f = open(TESTFN, "wb")
+            f = open(TESTFN, "wb")  # noqa: SIM115
             try:
                 f.write(b"\xa1")
             finally:
                 f.close()
-            f = codecs.open(TESTFN, encoding="cp949")
+            f = codecs.open(TESTFN, encoding="cp949")  # noqa: SIM115
             try:
                 self.assertRaises(UnicodeDecodeError, f.read, 2)
             finally:

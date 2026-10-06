@@ -132,7 +132,7 @@ def _readmodule(module, path, inpackage=None):
     """
     # Compute the full module name (prepending inpackage if set).
     if inpackage is not None:
-        fullmodule = "%s.%s" % (inpackage, module)
+        fullmodule = f"{inpackage}.{module}"
     else:
         fullmodule = module
 
@@ -155,13 +155,12 @@ def _readmodule(module, path, inpackage=None):
         submodule = module[i + 1 :]
         parent = _readmodule(package, path, inpackage)
         if inpackage is not None:
-            package = "%s.%s" % (inpackage, package)
+            package = f"{inpackage}.{package}"
         if not "__path__" in parent:
             raise ImportError(f"No package named {package}")
         return _readmodule(submodule, parent["__path__"], package)
 
     # Search the path for the module.
-    f = None
     if inpackage is not None:
         search_path = path
     else:
@@ -294,7 +293,7 @@ def _create_tree(fullmodule, path, fname, source, tree, inpackage):
                                 _readmodule(mod, path, inpackage)
                             except ImportError:
                                 _readmodule(mod, [])
-                    except:
+                    except:  # noqa: E722, S110
                         # If we can't find or parse the imported module,
                         # too bad -- don't die here.
                         pass
@@ -306,7 +305,7 @@ def _create_tree(fullmodule, path, fname, source, tree, inpackage):
                 try:
                     # Recursively read the imported module.
                     d = _readmodule(mod, path, inpackage)
-                except:
+                except:  # noqa: E722, S112
                     # If we can't find or parse the imported module,
                     # too bad -- don't die here.
                     continue
@@ -373,7 +372,7 @@ def _main():
 
     try:
         mod = sys.argv[1]
-    except:
+    except:  # noqa: E722
         mod = __file__
     if os.path.exists(mod):
         path = [os.path.dirname(mod)]

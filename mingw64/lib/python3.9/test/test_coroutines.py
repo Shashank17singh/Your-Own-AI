@@ -348,9 +348,11 @@ class AsyncBadSyntaxTest(unittest.TestCase):
             """import math as await""",
             """def async():
                 pass""",
-            """def foo(*, await=1):
+            (
+                """def foo(*, await=1):
                 pass"""
-            """async = 1""",
+                """async = 1"""
+            ),
             """print(await=1)""",
         ]
 
@@ -418,14 +420,14 @@ class TokenizerRegrTest(unittest.TestCase):
 
         # Test that 500 consequent, one-line defs is OK
         ns = {}
-        exec(buf, ns, ns)
+        exec(buf, ns, ns)  # noqa: S102
         self.assertEqual(ns["i499"](), 499)
 
         # Test that 500 consequent, one-line defs *and*
         # one 'async def' following them is OK
         buf += "\nasync def foo():\n    return"
         ns = {}
-        exec(buf, ns, ns)
+        exec(buf, ns, ns)  # noqa: S102
         self.assertEqual(ns["i499"](), 499)
         self.assertTrue(inspect.iscoroutinefunction(ns["foo"]))
 
@@ -640,8 +642,8 @@ class CoroutineTest(unittest.TestCase):
 
     def test_func_12(self):
         async def g():
-            i = me.send(None)
-            await foo
+            me.send(None)
+            await foo  # noqa: F821
 
         me = g()
         with self.assertRaisesRegex(ValueError, "coroutine already executing"):
@@ -1113,7 +1115,7 @@ class CoroutineTest(unittest.TestCase):
         async def g():
             try:
                 raise KeyError
-            except:
+            except:  # noqa: E722
                 return await f()
 
         _, result = run_async(g())
@@ -1137,7 +1139,7 @@ class CoroutineTest(unittest.TestCase):
         async def foo():
             async with Manager("A") as a, Manager("B") as b:
                 await AsyncYieldFrom([("managers", a.name, b.name)])
-                1 / 0
+                1 / 0  # noqa: B018
 
         f = foo()
         result, _ = run_async(f)
@@ -1160,7 +1162,7 @@ class CoroutineTest(unittest.TestCase):
         async def foo():
             async with Manager("A") as a, Manager("C") as c:
                 await AsyncYieldFrom([("managers", a.name, c.name)])
-                1 / 0
+                1 / 0  # noqa: B018
 
         with self.assertRaises(ZeroDivisionError):
             run_async(foo())
@@ -1265,7 +1267,7 @@ class CoroutineTest(unittest.TestCase):
         # Exit with exception
         async def foo():
             async with CM():
-                1 / 0
+                1 / 0  # noqa: B018
 
         try:
             run_async(foo())
@@ -1359,7 +1361,7 @@ class CoroutineTest(unittest.TestCase):
                 return self
 
             async def __aexit__(self, *e):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def foo():
             nonlocal CNT
@@ -1379,7 +1381,7 @@ class CoroutineTest(unittest.TestCase):
                 return self
 
             async def __aexit__(self, *e):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def foo():
             nonlocal CNT
@@ -1403,7 +1405,7 @@ class CoroutineTest(unittest.TestCase):
                 raise NotImplementedError
 
             async def __aexit__(self, *e):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def foo():
             nonlocal CNT
@@ -1440,7 +1442,7 @@ class CoroutineTest(unittest.TestCase):
 
         class CM:
             async def __aenter__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
             async def __aexit__(self, *e):
                 return True
@@ -1675,7 +1677,7 @@ class CoroutineTest(unittest.TestCase):
 
         class AI:
             def __aiter__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def foo():
             nonlocal CNT
@@ -1692,7 +1694,7 @@ class CoroutineTest(unittest.TestCase):
 
         class AI:
             def __aiter__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def foo():
             nonlocal CNT
@@ -1716,7 +1718,7 @@ class CoroutineTest(unittest.TestCase):
                 return self
 
             def __await__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def main():
             async for _ in F():
@@ -1934,7 +1936,7 @@ class CoroutineTest(unittest.TestCase):
         async def f():
             yield 1
             yield 2
-            raise Exception("aaa")
+            raise Exception("aaa")  # noqa: TRY002
 
         async def run_list():
             return [i async for i in f()]
@@ -2112,7 +2114,7 @@ class CoroAsyncIOCompatTest(unittest.TestCase):
                 buffer.append(exc_type.__name__)
 
         async def f():
-            async with CM() as c:
+            async with CM():
                 await asyncio.sleep(0.01)
                 raise MyException
             buffer.append("unreachable")
@@ -2215,7 +2217,7 @@ class OriginTrackingTest(unittest.TestCase):
 
         orig_depth = sys.get_coroutine_origin_tracking_depth()
         try:
-            msg = check(0, f"coroutine '{corofn.__qualname__}' was never awaited")
+            check(0, f"coroutine '{corofn.__qualname__}' was never awaited")
             check(
                 1,
                 "".join(

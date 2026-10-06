@@ -104,7 +104,7 @@ class Callbacks(unittest.TestCase):
         from sys import getrefcount as grc
 
         for o in (), [], object():
-            initial = grc(o)
+            grc(o)
             # This call leaks a reference to 'o'...
             self.check_type(py_object, o)
             before = grc(o)
@@ -151,7 +151,7 @@ class Callbacks(unittest.TestCase):
             def __del__(self):
                 gc.collect()
 
-        CFUNCTYPE(None)(lambda x=Nasty(): None)
+        CFUNCTYPE(None)(lambda x=Nasty(): None)  # noqa: B008
 
 
 @need_symbol("WINFUNCTYPE")
@@ -184,7 +184,7 @@ class SampleCallbacksTestCase(unittest.TestCase):
         result = integrate(0.0, 1.0, CALLBACK(func), 10)
         diff = abs(result - 1.0 / 3.0)
 
-        self.assertLess(diff, 0.01, "%s not less than 0.01" % diff)
+        self.assertLess(diff, 0.01, f"{diff} not less than 0.01")
 
     def test_issue_8959_a(self):
         from ctypes.util import find_library
@@ -258,7 +258,7 @@ class SampleCallbacksTestCase(unittest.TestCase):
 
         # This should mirror the structure in Modules/_ctypes/_ctypes_test.c
         class X(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("first", c_ulong),
                 ("second", c_ulong),
                 ("third", c_ulong),
@@ -321,7 +321,7 @@ class SampleCallbacksTestCase(unittest.TestCase):
         ctypes_func = proto(func)
         with support.catch_unraisable_exception() as cm:
             # don't test the result since it is an uninitialized value
-            result = ctypes_func()
+            ctypes_func()
 
             self.assertIsInstance(cm.unraisable.exc_value, TypeError)
             self.assertEqual(

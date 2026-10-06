@@ -41,7 +41,7 @@ def delete_files():
 
 
 class AnyDBMTestCase:
-    _dict = {
+    _dict = {  # noqa: RUF012
         "a": b"Python:",
         "b": b"Programming",
         "c": b"the",
@@ -57,7 +57,7 @@ class AnyDBMTestCase:
         f.close()
 
     def keys_helper(self, f):
-        keys = sorted(k.decode("ascii") for k in f.keys())
+        keys = sorted(k.decode("ascii") for k in f)
         dkeys = sorted(self._dict.keys())
         self.assertEqual(keys, dkeys)
         return keys
@@ -107,7 +107,7 @@ class AnyDBMTestCase:
     def test_anydbm_keys(self):
         self.init_db()
         f = dbm.open(_fname, "r")
-        keys = self.keys_helper(f)
+        self.keys_helper(f)
         f.close()
 
     def test_empty_value(self):
@@ -134,7 +134,7 @@ class AnyDBMTestCase:
         f.close()
 
     def read_helper(self, f):
-        keys = self.keys_helper(f)
+        self.keys_helper(f)
         for key in self._dict:
             self.assertEqual(self._dict[key], f[key.encode("ascii")])
 

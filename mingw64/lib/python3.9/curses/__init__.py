@@ -58,9 +58,9 @@ def start_color():
 # Import Python has_key() implementation if _curses doesn't contain has_key()
 
 try:
-    has_key
+    has_key  # noqa: B018
 except NameError:
-    from .has_key import has_key
+    from .has_key import has_key  # noqa: F401
 
 # Wrapper for the entire curses-based application.  Runs a function which
 # should be the rest of your curses-based application.  If the application
@@ -96,7 +96,7 @@ def wrapper(func, /, *args, **kwds):
         # module -- the error return from C start_color() is ignorable.
         try:
             start_color()
-        except:
+        except:  # noqa: E722, S110
             pass
 
         return func(stdscr, *args, **kwds)

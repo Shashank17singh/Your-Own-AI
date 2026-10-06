@@ -129,18 +129,18 @@ class UrlParseTestCase(unittest.TestCase):
     def test_qsl(self):
         for orig, expect in parse_qsl_test_cases:
             result = urllib.parse.parse_qsl(orig, keep_blank_values=True)
-            self.assertEqual(result, expect, "Error parsing %r" % orig)
+            self.assertEqual(result, expect, f"Error parsing {orig!r}")
             expect_without_blanks = [v for v in expect if len(v[1])]
             result = urllib.parse.parse_qsl(orig, keep_blank_values=False)
-            self.assertEqual(result, expect_without_blanks, "Error parsing %r" % orig)
+            self.assertEqual(result, expect_without_blanks, f"Error parsing {orig!r}")
 
     def test_qs(self):
         for orig, expect in parse_qs_test_cases:
             result = urllib.parse.parse_qs(orig, keep_blank_values=True)
-            self.assertEqual(result, expect, "Error parsing %r" % orig)
+            self.assertEqual(result, expect, f"Error parsing {orig!r}")
             expect_without_blanks = {v: expect[v] for v in expect if len(expect[v][0])}
             result = urllib.parse.parse_qs(orig, keep_blank_values=False)
-            self.assertEqual(result, expect_without_blanks, "Error parsing %r" % orig)
+            self.assertEqual(result, expect_without_blanks, f"Error parsing {orig!r}")
 
     def test_roundtrips(self):
         str_cases = [
@@ -242,9 +242,7 @@ class UrlParseTestCase(unittest.TestCase):
     def checkJoin(self, base, relurl, expected):
         str_components = (base, relurl, expected)
         self.assertEqual(urllib.parse.urljoin(base, relurl), expected)
-        bytes_components = baseb, relurlb, expectedb = [
-            x.encode("ascii") for x in str_components
-        ]
+        baseb, relurlb, expectedb = [x.encode("ascii") for x in str_components]
         self.assertEqual(urllib.parse.urljoin(baseb, relurlb), expectedb)
 
     def test_unparse_parse(self):
@@ -657,7 +655,7 @@ class UrlParseTestCase(unittest.TestCase):
         url = b"HTTP://WWW.PYTHON.ORG:65536/doc/#frag"
         p = urllib.parse.urlsplit(url)
         with self.assertRaisesRegex(ValueError, "out of range"):
-            p.port
+            p.port  # noqa: B018
 
     def test_urlsplit_remove_unsafe_bytes(self):
         # Remove ASCII tabs and newlines from input
@@ -719,7 +717,7 @@ class UrlParseTestCase(unittest.TestCase):
                         p = parse(url)
                         self.assertEqual(p.netloc, netloc)
                         with self.assertRaises(ValueError):
-                            p.port
+                            p.port  # noqa: B018
 
     def test_attributes_without_netloc(self):
         # This example is straight from RFC 3261.  It looks like it
@@ -1032,9 +1030,9 @@ class UrlParseTestCase(unittest.TestCase):
         for orig, expect in parse_qs_semicolon_cases:
             with self.subTest(f"Original: {orig!r}, Expected: {expect!r}"):
                 result = urllib.parse.parse_qs(orig, separator=";")
-                self.assertEqual(result, expect, "Error parsing %r" % orig)
+                self.assertEqual(result, expect, f"Error parsing {orig!r}")
                 result_bytes = urllib.parse.parse_qs(orig, separator=b";")
-                self.assertEqual(result_bytes, expect, "Error parsing %r" % orig)
+                self.assertEqual(result_bytes, expect, f"Error parsing {orig!r}")
 
     def test_parse_qsl_separator(self):
         parse_qsl_semicolon_cases = [
@@ -1052,9 +1050,9 @@ class UrlParseTestCase(unittest.TestCase):
         for orig, expect in parse_qsl_semicolon_cases:
             with self.subTest(f"Original: {orig!r}, Expected: {expect!r}"):
                 result = urllib.parse.parse_qsl(orig, separator=";")
-                self.assertEqual(result, expect, "Error parsing %r" % orig)
+                self.assertEqual(result, expect, f"Error parsing {orig!r}")
                 result_bytes = urllib.parse.parse_qsl(orig, separator=b";")
-                self.assertEqual(result_bytes, expect, "Error parsing %r" % orig)
+                self.assertEqual(result_bytes, expect, f"Error parsing {orig!r}")
 
     def test_urlencode_sequences(self):
         # Other tests incidentally urlencode things; test non-covered cases:
@@ -1118,11 +1116,11 @@ class UrlParseTestCase(unittest.TestCase):
         message = "Port could not be cast to integer value as 'oracle'"
         p1 = urllib.parse.urlparse("http://Server=sde; Service=sde:oracle")
         with self.assertRaisesRegex(ValueError, message):
-            p1.port
+            p1.port  # noqa: B018
 
         p2 = urllib.parse.urlsplit("http://Server=sde; Service=sde:oracle")
         with self.assertRaisesRegex(ValueError, message):
-            p2.port
+            p2.port  # noqa: B018
 
     def test_telurl_params(self):
         p1 = urllib.parse.urlparse("tel:123-4;phone-context=+1-650-516")
@@ -1202,7 +1200,7 @@ class UrlParseTestCase(unittest.TestCase):
             for netloc in ["netloc{}false.netloc", "n{}user@netloc"]:
                 for c in denorm_chars:
                     url = f"{scheme}://{netloc.format(c)}/path"
-                    with self.subTest(url=url, char=f"{ord(c):04X}"):
+                    with self.subTest(url=url, char=f"{ord(c):04X}"):  # noqa: SIM117
                         with self.assertRaises(ValueError):
                             urllib.parse.urlsplit(url)
 

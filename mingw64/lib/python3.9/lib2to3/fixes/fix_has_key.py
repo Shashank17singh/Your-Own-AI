@@ -75,7 +75,7 @@ class FixHasKey(fixer_base.BaseFix):
             # pattern when its parent matches the second alternative
             return None
         negation = results.get("negation")
-        anchor = results["anchor"]
+        results["anchor"]
         prefix = node.prefix
         before = [n.clone() for n in results["before"]]
         arg = results["arg"].clone()

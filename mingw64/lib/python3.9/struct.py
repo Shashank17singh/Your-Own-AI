@@ -1,15 +1,15 @@
 __all__ = [
+    # Classes
+    "Struct",
     # Functions
     "calcsize",
+    # Exceptions
+    "error",
+    "iter_unpack",
     "pack",
     "pack_into",
     "unpack",
     "unpack_from",
-    "iter_unpack",
-    # Classes
-    "Struct",
-    # Exceptions
-    "error",
 ]
 
 from _struct import *

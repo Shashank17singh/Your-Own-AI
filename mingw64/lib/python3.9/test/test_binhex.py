@@ -47,7 +47,7 @@ class BinHexTestCase(unittest.TestCase):
         The testcase fails if no exception is raised when a filename parameter provided to binhex.binhex()
         is too long, or if the exception raised in binhex.binhex() is not an instance of binhex.Error.
         """
-        f3 = open(self.fname3, "wb")
+        f3 = open(self.fname3, "wb")  # noqa: SIM115
         f3.close()
 
         self.assertRaises(binhex.Error, binhex.binhex, self.fname3, self.fname2)

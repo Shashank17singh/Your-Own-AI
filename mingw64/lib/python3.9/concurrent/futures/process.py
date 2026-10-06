@@ -129,7 +129,7 @@ class _ExceptionWithTraceback:
         tb = traceback.format_exception(type(exc), exc, tb)
         tb = "".join(tb)
         self.exc = exc
-        self.tb = '\n"""\n%s"""' % tb
+        self.tb = f'\n"""\n{tb}"""'
 
     def __reduce__(self):
         return _rebuild_exc, (self.exc, self.tb)
@@ -216,7 +216,7 @@ def _sendback_result(result_queue, work_id, result=None, exception=None):
     """Safely send back the given result or exception"""
     try:
         result_queue.put(_ResultItem(work_id, result=result, exception=exception))
-    except BaseException as e:
+    except BaseException as e:  # noqa: BLE001
         exc = _ExceptionWithTraceback(e, e.__traceback__)
         result_queue.put(_ResultItem(work_id, exception=exc))
 
@@ -237,7 +237,7 @@ def _process_worker(call_queue, result_queue, initializer, initargs):
     if initializer is not None:
         try:
             initializer(*initargs)
-        except BaseException:
+        except BaseException:  # noqa: BLE001
             _base.LOGGER.critical("Exception in initializer:", exc_info=True)
             # The parent will notice that the process stopped and
             # mark the pool broken
@@ -250,7 +250,7 @@ def _process_worker(call_queue, result_queue, initializer, initargs):
             return
         try:
             r = call_item.fn(*call_item.args, **call_item.kwargs)
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             exc = _ExceptionWithTraceback(e, e.__traceback__)
             _sendback_result(result_queue, call_item.work_id, exception=exc)
         else:
@@ -394,7 +394,7 @@ class _ExecutorManagerThread(threading.Thread):
             try:
                 result_item = result_reader.recv()
                 is_broken = False
-            except BaseException as e:
+            except BaseException as e:  # noqa: BLE001
                 cause = traceback.format_exception(type(e), e, e.__traceback__)
 
         elif wakeup_reader in ready:
@@ -464,7 +464,7 @@ class _ExecutorManagerThread(threading.Thread):
             bpe.__cause__ = _RemoteTraceback(f"\n'''\n{''.join(cause)}'''")
 
         # Mark pending tasks as failed.
-        for work_id, work_item in self.pending_work_items.items():
+        for work_item in self.pending_work_items.values():
             work_item.future.set_exception(bpe)
             # Delete references to object. See issue16284
             del work_item
@@ -540,9 +540,8 @@ _system_limited = None
 
 def _check_system_limits():
     global _system_limits_checked, _system_limited
-    if _system_limits_checked:
-        if _system_limited:
-            raise NotImplementedError(_system_limited)
+    if _system_limits_checked and _system_limited:
+        raise NotImplementedError(_system_limited)
     _system_limits_checked = True
     try:
         nsems_max = os.sysconf("SC_SEM_NSEMS_MAX")
@@ -558,7 +557,7 @@ def _check_system_limits():
         # according to POSIX
         return
     _system_limited = (
-        "system provides too few semaphores (%d available, 256 necessary)" % nsems_max
+        "system provides too few semaphores (%d available, 256 necessary)" % nsems_max  # noqa: UP031
     )
     raise NotImplementedError(_system_limited)
 

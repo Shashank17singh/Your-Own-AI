@@ -106,7 +106,7 @@ from enum import IntEnum as _IntEnum
 from enum import IntFlag as _IntFlag
 
 try:
-    from _ssl import RAND_egd
+    from _ssl import RAND_egd  # noqa: F401
 except ImportError:
     # LibreSSL does not provide RAND_egd
     pass
@@ -146,10 +146,10 @@ _IntEnum._convert_(
     "VerifyMode", __name__, lambda name: name.startswith("CERT_"), source=_ssl
 )
 
-PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_TLS
-_PROTOCOL_NAMES = {value: name for name, value in _SSLMethod.__members__.items()}
+PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_SSLv23 = _SSLMethod.PROTOCOL_TLS  # noqa: F821
+_PROTOCOL_NAMES = {value: name for name, value in _SSLMethod.__members__.items()}  # noqa: F821
 
-_SSLv2_IF_EXISTS = getattr(_SSLMethod, "PROTOCOL_SSLv2", None)
+_SSLv2_IF_EXISTS = getattr(_SSLMethod, "PROTOCOL_SSLv2", None)  # noqa: F821
 
 
 class TLSVersion(_IntEnum):
@@ -410,11 +410,12 @@ def match_hostname(cert, hostname):
                     dnsnames.append(value)
     if len(dnsnames) > 1:
         raise CertificateError(
-            "hostname %r "
-            "doesn't match either of %s" % (hostname, ", ".join(map(repr, dnsnames)))
+            "hostname {!r} doesn't match either of {}".format(
+                hostname, ", ".join(map(repr, dnsnames))
+            )
         )
     elif len(dnsnames) == 1:
-        raise CertificateError("hostname %r doesn't match %r" % (hostname, dnsnames[0]))
+        raise CertificateError(f"hostname {hostname!r} doesn't match {dnsnames[0]!r}")
     else:
         raise CertificateError(
             "no appropriate commonName or subjectAltName fields were found"
@@ -477,7 +478,7 @@ class SSLContext(_SSLContext):
     sslsocket_class = None  # SSLSocket is assigned later.
     sslobject_class = None  # SSLObject is assigned later.
 
-    def __new__(cls, protocol=PROTOCOL_TLS, *args, **kwargs):
+    def __new__(cls, protocol=PROTOCOL_TLS, *args, **kwargs):  # noqa: F821
         self = _SSLContext.__new__(cls, protocol)
         return self
 
@@ -564,7 +565,7 @@ class SSLContext(_SSLContext):
         try:
             for cert, encoding, trust in enum_certificates(storename):
                 # CA certs are never PKCS#7 encoded
-                if encoding == "x509_asn":
+                if encoding == "x509_asn":  # noqa: SIM102
                     if trust is True or purpose.oid in trust:
                         certs.extend(cert)
         except PermissionError:
@@ -590,7 +591,7 @@ class SSLContext(_SSLContext):
         @minimum_version.setter
         def minimum_version(self, value):
             if value == TLSVersion.SSLv3:
-                self.options &= ~Options.OP_NO_SSLv3
+                self.options &= ~Options.OP_NO_SSLv3  # noqa: F821
             super(SSLContext, SSLContext).minimum_version.__set__(self, value)
 
         @property
@@ -603,7 +604,7 @@ class SSLContext(_SSLContext):
 
     @property
     def options(self):
-        return Options(super().options)
+        return Options(super().options)  # noqa: F821
 
     @options.setter
     def options(self, value):
@@ -674,7 +675,7 @@ class SSLContext(_SSLContext):
             super(SSLContext, SSLContext)._msg_callback.__set__(self, None)
             return
 
-        if not hasattr(callback, "__call__"):
+        if not callable(callback):
             raise TypeError(f"{callback} is not callable.")
 
         def inner(conn, direction, version, content_type, msg_type, data):
@@ -707,11 +708,11 @@ class SSLContext(_SSLContext):
 
     @property
     def protocol(self):
-        return _SSLMethod(super().protocol)
+        return _SSLMethod(super().protocol)  # noqa: F821
 
     @property
     def verify_flags(self):
-        return VerifyFlags(super().verify_flags)
+        return VerifyFlags(super().verify_flags)  # noqa: F821
 
     @verify_flags.setter
     def verify_flags(self, value):
@@ -721,7 +722,7 @@ class SSLContext(_SSLContext):
     def verify_mode(self):
         value = super().verify_mode
         try:
-            return VerifyMode(value)
+            return VerifyMode(value)  # noqa: F821
         except ValueError:
             return value
 
@@ -745,16 +746,16 @@ def create_default_context(
     # SSLContext sets OP_NO_SSLv2, OP_NO_SSLv3, OP_NO_COMPRESSION,
     # OP_CIPHER_SERVER_PREFERENCE, OP_SINGLE_DH_USE and OP_SINGLE_ECDH_USE
     # by default.
-    context = SSLContext(PROTOCOL_TLS)
+    context = SSLContext(PROTOCOL_TLS)  # noqa: F821
 
     if purpose == Purpose.SERVER_AUTH:
         # verify certs and host name in client mode
-        context.verify_mode = CERT_REQUIRED
+        context.verify_mode = CERT_REQUIRED  # noqa: F821
         context.check_hostname = True
 
     if cafile or capath or cadata:
         context.load_verify_locations(cafile, capath, cadata)
-    elif context.verify_mode != CERT_NONE:
+    elif context.verify_mode != CERT_NONE:  # noqa: F821
         # no explicit cafile, capath or cadata but the verify mode is
         # CERT_OPTIONAL or CERT_REQUIRED. Let's try to load default system
         # root CA certificates for the given purpose. This may fail silently.
@@ -768,9 +769,9 @@ def create_default_context(
 
 
 def _create_unverified_context(
-    protocol=PROTOCOL_TLS,
+    protocol=PROTOCOL_TLS,  # noqa: F821
     *,
-    cert_reqs=CERT_NONE,
+    cert_reqs=CERT_NONE,  # noqa: F821
     check_hostname=False,
     purpose=Purpose.SERVER_AUTH,
     certfile=None,
@@ -809,7 +810,7 @@ def _create_unverified_context(
     # load CA root certs
     if cafile or capath or cadata:
         context.load_verify_locations(cafile, capath, cadata)
-    elif context.verify_mode != CERT_NONE:
+    elif context.verify_mode != CERT_NONE:  # noqa: F821
         # no explicit cafile, capath or cadata but the verify mode is
         # CERT_OPTIONAL or CERT_REQUIRED. Let's try to load default system
         # root CA certificates for the given purpose. This may fail silently.
@@ -1033,9 +1034,12 @@ class SSLSocket(socket):
         if context.check_hostname and not server_hostname:
             raise ValueError("check_hostname requires server_hostname")
 
-        kwargs = dict(
-            family=sock.family, type=sock.type, proto=sock.proto, fileno=sock.fileno()
-        )
+        kwargs = {
+            "family": sock.family,
+            "type": sock.type,
+            "proto": sock.proto,
+            "fileno": sock.fileno(),
+        }
         self = cls.__new__(cls, **kwargs)
         super(SSLSocket, self).__init__(**kwargs)
         self.settimeout(sock.gettimeout())
@@ -1113,7 +1117,7 @@ class SSLSocket(socket):
             return self._sslobj.session_reused
 
     def dup(self):
-        raise NotImplementedError("Can't dup() %s instances" % self.__class__.__name__)
+        raise NotImplementedError(f"Can't dup() {self.__class__.__name__} instances")
 
     def _checkClosed(self, msg=None):
         # raise an exception here if you wish to check for spurious closes
@@ -1140,7 +1144,7 @@ class SSLSocket(socket):
             else:
                 return self._sslobj.read(len)
         except SSLError as x:
-            if x.args[0] == SSL_ERROR_EOF and self.suppress_ragged_eofs:
+            if x.args[0] == SSL_ERROR_EOF and self.suppress_ragged_eofs:  # noqa: F821
                 if buffer is not None:
                     return 0
                 else:
@@ -1208,8 +1212,7 @@ class SSLSocket(socket):
         if self._sslobj is not None:
             if flags != 0:
                 raise ValueError(
-                    "non-zero flags not allowed in calls to send() on %s"
-                    % self.__class__
+                    f"non-zero flags not allowed in calls to send() on {self.__class__}"
                 )
             return self._sslobj.write(data)
         else:
@@ -1218,7 +1221,7 @@ class SSLSocket(socket):
     def sendto(self, data, flags_or_addr, addr=None):
         self._checkClosed()
         if self._sslobj is not None:
-            raise ValueError("sendto not allowed on instances of %s" % self.__class__)
+            raise ValueError(f"sendto not allowed on instances of {self.__class__}")
         elif addr is None:
             return super().sendto(data, flags_or_addr)
         else:
@@ -1228,7 +1231,7 @@ class SSLSocket(socket):
         # Ensure programs don't send data unencrypted if they try to
         # use this method.
         raise NotImplementedError(
-            "sendmsg not allowed on instances of %s" % self.__class__
+            f"sendmsg not allowed on instances of {self.__class__}"
         )
 
     def sendall(self, data, flags=0):
@@ -1236,8 +1239,7 @@ class SSLSocket(socket):
         if self._sslobj is not None:
             if flags != 0:
                 raise ValueError(
-                    "non-zero flags not allowed in calls to sendall() on %s"
-                    % self.__class__
+                    f"non-zero flags not allowed in calls to sendall() on {self.__class__}"
                 )
             count = 0
             with memoryview(data) as view, view.cast("B") as byte_view:
@@ -1263,8 +1265,7 @@ class SSLSocket(socket):
         if self._sslobj is not None:
             if flags != 0:
                 raise ValueError(
-                    "non-zero flags not allowed in calls to recv() on %s"
-                    % self.__class__
+                    f"non-zero flags not allowed in calls to recv() on {self.__class__}"
                 )
             return self.read(buflen)
         else:
@@ -1279,8 +1280,7 @@ class SSLSocket(socket):
         if self._sslobj is not None:
             if flags != 0:
                 raise ValueError(
-                    "non-zero flags not allowed in calls to recv_into() on %s"
-                    % self.__class__
+                    f"non-zero flags not allowed in calls to recv_into() on {self.__class__}"
                 )
             return self.read(nbytes, buffer)
         else:
@@ -1289,7 +1289,7 @@ class SSLSocket(socket):
     def recvfrom(self, buflen=1024, flags=0):
         self._checkClosed()
         if self._sslobj is not None:
-            raise ValueError("recvfrom not allowed on instances of %s" % self.__class__)
+            raise ValueError(f"recvfrom not allowed on instances of {self.__class__}")
         else:
             return super().recvfrom(buflen, flags)
 
@@ -1297,19 +1297,19 @@ class SSLSocket(socket):
         self._checkClosed()
         if self._sslobj is not None:
             raise ValueError(
-                "recvfrom_into not allowed on instances of %s" % self.__class__
+                f"recvfrom_into not allowed on instances of {self.__class__}"
             )
         else:
             return super().recvfrom_into(buffer, nbytes, flags)
 
     def recvmsg(self, *args, **kwargs):
         raise NotImplementedError(
-            "recvmsg not allowed on instances of %s" % self.__class__
+            f"recvmsg not allowed on instances of {self.__class__}"
         )
 
     def recvmsg_into(self, *args, **kwargs):
         raise NotImplementedError(
-            "recvmsg_into not allowed on instances of %s" % self.__class__
+            f"recvmsg_into not allowed on instances of {self.__class__}"
         )
 
     @_sslcopydoc
@@ -1432,8 +1432,8 @@ def wrap_socket(
     keyfile=None,
     certfile=None,
     server_side=False,
-    cert_reqs=CERT_NONE,
-    ssl_version=PROTOCOL_TLS,
+    cert_reqs=CERT_NONE,  # noqa: F821
+    ssl_version=PROTOCOL_TLS,  # noqa: F821
     ca_certs=None,
     do_handshake_on_connect=True,
     suppress_ragged_eofs=True,
@@ -1495,7 +1495,7 @@ def cert_time_to_seconds(cert_time):
         month_number = months.index(cert_time[:3].title()) + 1
     except ValueError:
         raise ValueError(
-            'time data %r does not match format "%%b%s"' % (cert_time, time_format)
+            f'time data {cert_time!r} does not match format "%b{time_format}"'
         )
     else:
         # found valid month
@@ -1525,24 +1525,24 @@ def PEM_cert_to_DER_cert(pem_cert_string):
     DER-encoded version of it as a byte sequence"""
 
     if not pem_cert_string.startswith(PEM_HEADER):
-        raise ValueError("Invalid PEM encoding; must start with %s" % PEM_HEADER)
+        raise ValueError(f"Invalid PEM encoding; must start with {PEM_HEADER}")
     if not pem_cert_string.strip().endswith(PEM_FOOTER):
-        raise ValueError("Invalid PEM encoding; must end with %s" % PEM_FOOTER)
+        raise ValueError(f"Invalid PEM encoding; must end with {PEM_FOOTER}")
     d = pem_cert_string.strip()[len(PEM_HEADER) : -len(PEM_FOOTER)]
     return base64.decodebytes(d.encode("ASCII", "strict"))
 
 
-def get_server_certificate(addr, ssl_version=PROTOCOL_TLS, ca_certs=None):
+def get_server_certificate(addr, ssl_version=PROTOCOL_TLS, ca_certs=None):  # noqa: F821
     """Retrieve the certificate from the server at the specified address,
     and return it as a PEM-encoded string.
     If 'ca_certs' is specified, validate the server cert against it.
     If 'ssl_version' is specified, use it in the connection attempt."""
 
-    host, port = addr
+    _host, _port = addr
     if ca_certs is not None:
-        cert_reqs = CERT_REQUIRED
+        cert_reqs = CERT_REQUIRED  # noqa: F821
     else:
-        cert_reqs = CERT_NONE
+        cert_reqs = CERT_NONE  # noqa: F821
     context = _create_stdlib_context(ssl_version, cert_reqs=cert_reqs, cafile=ca_certs)
     with create_connection(addr) as sock, context.wrap_socket(sock) as sslsock:
         dercert = sslsock.getpeercert(True)

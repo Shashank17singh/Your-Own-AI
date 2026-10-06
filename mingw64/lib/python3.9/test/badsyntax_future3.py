@@ -1,6 +1,6 @@
 """This is a test"""
 
-from __future__ import rested_snopes
+from __future__ import rested_snopes  # noqa: F407
 
 
 def f(x):

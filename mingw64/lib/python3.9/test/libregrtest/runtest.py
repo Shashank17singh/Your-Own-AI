@@ -241,7 +241,7 @@ def runtest(ns: Namespace, test_name: str) -> TestResult:
     """
     try:
         return _runtest(ns, test_name)
-    except:
+    except:  # noqa: E722
         if not ns.pgo:
             msg = traceback.format_exc()
             print(f"test {test_name} crashed -- {msg}", file=sys.stderr, flush=True)
@@ -254,7 +254,7 @@ def _test_module(the_module):
     for error in loader.errors:
         print(error, file=sys.stderr)
     if loader.errors:
-        raise Exception("errors while loading tests")
+        raise Exception("errors while loading tests")  # noqa: TRY002
     support.run_unittest(tests)
 
 
@@ -345,7 +345,7 @@ def _runtest_inner(
     except KeyboardInterrupt:
         print()
         return Interrupted(test_name)
-    except:
+    except:  # noqa: E722
         if not ns.pgo:
             msg = traceback.format_exc()
             print(f"test {test_name} crashed -- {msg}", file=sys.stderr, flush=True)
@@ -395,7 +395,7 @@ def cleanup_test_droppings(test_name: str, verbose: int) -> None:
             # fix possible permissions problems that might prevent cleanup
             os.chmod(name, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
             nuker(name)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             print_warning(
                 f"{test_name} left behind {kind} {name!r} "
                 f"and it couldn't be removed: {exc}"

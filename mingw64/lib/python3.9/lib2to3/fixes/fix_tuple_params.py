@@ -145,7 +145,7 @@ def simplify_args(node):
         while node.type == syms.vfpdef:
             node = node.children[1]
         return node
-    raise RuntimeError("Received unexpected node %s" % node)
+    raise RuntimeError(f"Received unexpected node {node}")
 
 
 def find_params(node):
@@ -156,7 +156,9 @@ def find_params(node):
     return [find_params(c) for c in node.children if c.type != token.COMMA]
 
 
-def map_to_index(param_list, prefix=[], d=None):
+def map_to_index(param_list, prefix=None, d=None):
+    if prefix is None:
+        prefix = []
     if d is None:
         d = {}
     for i, obj in enumerate(param_list):

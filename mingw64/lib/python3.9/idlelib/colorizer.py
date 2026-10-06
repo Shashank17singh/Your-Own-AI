@@ -10,7 +10,7 @@ DEBUG = False
 
 def any(name, alternates):
     "Return a named group pattern matching list of alternates."
-    return "(?P<%s>" % name + "|".join(alternates) + ")"
+    return f"(?P<{name}>" + "|".join(alternates) + ")"
 
 
 def make_pat():
@@ -143,7 +143,7 @@ class ColorDelegator(Delegator):
         "Insert chars into widget at index and mark for colorizing."
         index = self.index(index)
         self.delegate.insert(index, chars, tags)
-        self.notify_range(index, index + "+%dc" % len(chars))
+        self.notify_range(index, index + "+%dc" % len(chars))  # noqa: UP031
 
     def delete(self, index1, index2=None):
         "Delete chars between indexes and mark for colorizing."
@@ -261,7 +261,7 @@ class ColorDelegator(Delegator):
             ok = False
             while not ok:
                 mark = next
-                next = self.index(mark + "+%d lines linestart" % lines_to_get)
+                next = self.index(mark + "+%d lines linestart" % lines_to_get)  # noqa: UP031
                 lines_to_get = min(lines_to_get * 2, 100)
                 ok = "SYNC" in self.tag_names(next + "-1c")
                 line = self.get(mark, next)
@@ -276,15 +276,15 @@ class ColorDelegator(Delegator):
                     for key, value in m.groupdict().items():
                         if value:
                             a, b = m.span(key)
-                            self.tag_add(key, head + "+%dc" % a, head + "+%dc" % b)
+                            self.tag_add(key, head + "+%dc" % a, head + "+%dc" % b)  # noqa: UP031
                             if value in ("def", "class"):
                                 m1 = self.idprog.match(chars, b)
                                 if m1:
                                     a, b = m1.span(1)
                                     self.tag_add(
                                         "DEFINITION",
-                                        head + "+%dc" % a,
-                                        head + "+%dc" % b,
+                                        head + "+%dc" % a,  # noqa: UP031
+                                        head + "+%dc" % b,  # noqa: UP031
                                     )
                     m = self.prog.search(chars, m.end())
                 if "SYNC" in self.tag_names(next + "-1c"):
@@ -319,7 +319,7 @@ def _color_delegator(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test ColorDelegator")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("700x250+%d+%d" % (x + 20, y + 175))
+    top.geometry("700x250+%d+%d" % (x + 20, y + 175))  # noqa: UP031
     source = (
         "if True: int ('1') # keyword, builtin, string, comment\n"
         "elif False: print(0)\n"

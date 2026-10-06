@@ -30,7 +30,7 @@ except NameError:
 if os.path.isdir(_icondir):
     ICONDIR = _icondir
 elif not os.path.isdir(ICONDIR):
-    raise RuntimeError("can't find icon directory (%r)" % (ICONDIR,))
+    raise RuntimeError(f"can't find icon directory ({ICONDIR!r})")
 
 
 def listicons(icondir=ICONDIR):
@@ -169,7 +169,7 @@ class TreeNode:
         visible_bottom = self.canvas.canvasy(visible_height)
         if visible_top <= top and bottom <= visible_bottom:
             return
-        x0, y0, x1, y1 = self.canvas._getints(self.canvas["scrollregion"])
+        _x0, _y0, _x1, y1 = self.canvas._getints(self.canvas["scrollregion"])
         if top >= visible_top and height <= visible_height:
             fraction = top + height - visible_height
         else:
@@ -192,7 +192,7 @@ class TreeNode:
             self.canvas.update()
             self.canvas.delete(ALL)  # XXX could be more subtle
             self.draw(7, 2)
-            x0, y0, x1, y1 = self.canvas.bbox(ALL)
+            _x0, _y0, x1, y1 = self.canvas.bbox(ALL)
             self.canvas.configure(scrollregion=(0, 0, x1, y1))
             self.canvas["cursor"] = oldcursor
 
@@ -266,17 +266,17 @@ class TreeNode:
             id = self.canvas.create_text(textx, texty, anchor="nw", text=labeltext)
             self.canvas.tag_bind(id, "<1>", self.select)
             self.canvas.tag_bind(id, "<Double-1>", self.flip)
-            x0, y0, x1, y1 = self.canvas.bbox(id)
+            _x0, _y0, x1, _y1 = self.canvas.bbox(id)
             textx = max(x1, 200) + 10
         text = self.item.GetText() or "<no text>"
         try:
-            self.entry
+            self.entry  # noqa: B018
         except AttributeError:
             pass
         else:
             self.edit_finish()
         try:
-            self.label
+            self.label  # noqa: B018
         except AttributeError:
             # padding carefully selected (on Windows) to match Entry widget:
             self.label = Label(self.canvas, text=text, bd=0, padx=2, pady=2)
@@ -493,7 +493,7 @@ class ScrolledCanvas:
 def _tree_widget(parent):  # htest #
     top = Toplevel(parent)
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x + 50, y + 175))
+    top.geometry("+%d+%d" % (x + 50, y + 175))  # noqa: UP031
     sc = ScrolledCanvas(top, bg="white", highlightthickness=0, takefocus=1)
     sc.frame.pack(expand=1, fill="both", side=LEFT)
     item = FileTreeItem(ICONDIR)

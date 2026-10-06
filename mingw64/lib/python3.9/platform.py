@@ -230,13 +230,12 @@ def libc_ver(executable=None, lib="", version="", chunksize=16384):
                     version = glibcversion
                 elif V(glibcversion) > V(version):
                     version = glibcversion
-            elif so:
-                if lib != "glibc":
-                    lib = "libc"
-                    if soversion and (not version or V(soversion) > V(version)):
-                        version = soversion
-                    if threads and version[-len(threads) :] != threads:
-                        version = version + threads
+            elif so and lib != "glibc":
+                lib = "libc"
+                if soversion and (not version or V(soversion) > V(version)):
+                    version = soversion
+                if threads and version[-len(threads) :] != threads:
+                    version = version + threads
             pos = m.end()
     return lib, version
 
@@ -497,7 +496,7 @@ def java_ver(release="", vendor="", vminfo=("", "", ""), osinfo=("", "", "")):
     """
     # Import the needed APIs
     try:
-        import java.lang
+        import java.lang  # noqa: F401
     except ImportError:
         return release, vendor, vminfo, osinfo
 
@@ -779,7 +778,7 @@ class _Processor:
         except ImportError:
             pass
         else:
-            csid, cpu_number = vms_lib.getsyi("SYI$_CPU", 0)
+            _csid, cpu_number = vms_lib.getsyi("SYI$_CPU", 0)
             return "Alpha" if cpu_number >= 128 else "VAX"
 
     def from_subprocess():
@@ -873,7 +872,7 @@ def uname():
 
         # Try win32_ver() on win32 platforms
         if system == "win32":
-            release, version, csd, ptype = win32_ver()
+            release, version, _csd, _ptype = win32_ver()
             machine = machine or _get_machine_win32()
 
         # Try the 'ver' system command available on some
@@ -906,14 +905,14 @@ def uname():
             system = "Windows"
 
         elif system[:4] == "java":
-            release, vendor, vminfo, osinfo = java_ver()
+            release, vendor, vminfo, _osinfo = java_ver()
             system = "Java"
             version = ", ".join(vminfo)
             if not version:
                 version = vendor
 
     # System specific extensions
-    if system == "OpenVMS":
+    if system == "OpenVMS":  # noqa: SIM102
         # OpenVMS seems to have release and version mixed up
         if not release or release == "0":
             release = version
@@ -1059,11 +1058,9 @@ def _sys_version(sys_version=None):
             match = _ironpython26_sys_version_parser.match(sys_version)
 
         if match is None:
-            raise ValueError(
-                "failed to parse IronPython sys.version: %s" % repr(sys_version)
-            )
+            raise ValueError(f"failed to parse IronPython sys.version: {sys_version!r}")
 
-        version, alt_version, compiler = match.groups()
+        version, _alt_version, compiler = match.groups()
         buildno = ""
         builddate = ""
 
@@ -1072,9 +1069,7 @@ def _sys_version(sys_version=None):
         name = "Jython"
         match = _sys_version_parser.match(sys_version)
         if match is None:
-            raise ValueError(
-                "failed to parse Jython sys.version: %s" % repr(sys_version)
-            )
+            raise ValueError(f"failed to parse Jython sys.version: {sys_version!r}")
         version, buildno, builddate, buildtime, _ = match.groups()
         if builddate is None:
             builddate = ""
@@ -1085,7 +1080,7 @@ def _sys_version(sys_version=None):
         name = "PyPy"
         match = _pypy_sys_version_parser.match(sys_version)
         if match is None:
-            raise ValueError("failed to parse PyPy sys.version: %s" % repr(sys_version))
+            raise ValueError(f"failed to parse PyPy sys.version: {sys_version!r}")
         version, buildno, builddate, buildtime = match.groups()
         compiler = ""
 
@@ -1093,9 +1088,7 @@ def _sys_version(sys_version=None):
         # CPython
         match = _sys_version_parser.match(sys_version)
         if match is None:
-            raise ValueError(
-                "failed to parse CPython sys.version: %s" % repr(sys_version)
-            )
+            raise ValueError(f"failed to parse CPython sys.version: {sys_version!r}")
         version, buildno, builddate, buildtime, compiler = match.groups()
         name = "CPython"
         if builddate is None:
@@ -1229,7 +1222,7 @@ def platform(aliased=0, terse=0):
 
     # Get uname information and then apply platform specific cosmetics
     # to it...
-    system, node, release, version, machine, processor = uname()
+    system, node, release, version, machine, processor = uname()  # noqa: RUF059
     if machine == processor:
         processor = ""
     if aliased:
@@ -1244,7 +1237,7 @@ def platform(aliased=0, terse=0):
 
     if system == "Windows":
         # MS platforms
-        rel, vers, csd, ptype = win32_ver(version)
+        _rel, _vers, csd, _ptype = win32_ver(version)
         if terse:
             platform = _platform(system, release)
         else:
@@ -1258,7 +1251,7 @@ def platform(aliased=0, terse=0):
         )
     elif system == "Java":
         # Java platforms
-        r, v, vminfo, (os_name, os_version, os_arch) = java_ver()
+        _r, _v, _vminfo, (os_name, os_version, os_arch) = java_ver()
         if terse or not os_name:
             platform = _platform(system, release, version)
         else:

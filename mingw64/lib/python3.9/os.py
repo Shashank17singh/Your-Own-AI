@@ -500,7 +500,7 @@ if {open, stat} <= supports_dir_fd and {scandir, stat} <= supports_fd:
         # lstat()/open()/fstat() trick.
         if not follow_symlinks:
             orig_st = stat(top, follow_symlinks=False, dir_fd=dir_fd)
-        topfd = open(top, O_RDONLY, dir_fd=dir_fd)
+        topfd = open(top, O_RDONLY, dir_fd=dir_fd)  # noqa: SIM115
         try:
             if follow_symlinks or (
                 st.S_ISDIR(orig_st.st_mode) and path.samestat(orig_st, stat(topfd))
@@ -556,7 +556,7 @@ if {open, stat} <= supports_dir_fd and {scandir, stat} <= supports_fd:
                         assert entries is not None
                         name, entry = name
                         orig_st = entry.stat(follow_symlinks=False)
-                dirfd = open(name, O_RDONLY, dir_fd=topfd)
+                dirfd = open(name, O_RDONLY, dir_fd=topfd)  # noqa: SIM115
             except OSError as err:
                 if onerror is not None:
                     onerror(err)
@@ -794,7 +794,7 @@ def _createenviron():
         # Where Env Var Names Must Be UPPERCASE
         def check_str(value):
             if not isinstance(value, str):
-                raise TypeError("str expected, not %s" % type(value).__name__)
+                raise TypeError(f"str expected, not {type(value).__name__}")
             return value
 
         encode = check_str
@@ -812,7 +812,7 @@ def _createenviron():
 
         def encode(value):
             if not isinstance(value, str):
-                raise TypeError("str expected, not %s" % type(value).__name__)
+                raise TypeError(f"str expected, not {type(value).__name__}")
             return value.encode(encoding, "surrogateescape")
 
         def decode(value):
@@ -842,7 +842,7 @@ if supports_bytes_environ:
 
     def _check_bytes(value):
         if not isinstance(value, bytes):
-            raise TypeError("bytes expected, not %s" % type(value).__name__)
+            raise TypeError(f"bytes expected, not {type(value).__name__}")
         return value
 
     # bytes environ
@@ -917,14 +917,14 @@ if _exists("fork") and not _exists("spawnv") and _exists("execv"):
                     func(file, args)
                 else:
                     func(file, args, env)
-            except:
+            except:  # noqa: E722
                 _exit(127)
         else:
             # Parent
             if mode == P_NOWAIT:
                 return pid  # Caller is responsible for waiting!
             while 1:
-                wpid, sts = waitpid(pid, 0)
+                _wpid, sts = waitpid(pid, 0)
                 if WIFSTOPPED(sts):
                     continue
 
@@ -1031,9 +1031,9 @@ if _exists("spawnvp"):
 # Supply os.popen()
 def popen(cmd, mode="r", buffering=-1):
     if not isinstance(cmd, str):
-        raise TypeError("invalid cmd type (%s, expected string)" % type(cmd))
+        raise TypeError(f"invalid cmd type ({type(cmd)}, expected string)")
     if mode not in ("r", "w"):
-        raise ValueError("invalid mode %r" % mode)
+        raise ValueError(f"invalid mode {mode!r}")
     if buffering == 0 or buffering is None:
         raise ValueError("popen() does not support unbuffered streams")
     import io
@@ -1083,7 +1083,7 @@ class _wrap_close:
 # Supply os.fdopen()
 def fdopen(fd, *args, **kwargs):
     if not isinstance(fd, int):
-        raise TypeError("invalid fd type (%s, expected integer)" % type(fd))
+        raise TypeError(f"invalid fd type ({type(fd)}, expected integer)")
 
     return open(fd, *args, **kwargs)
 

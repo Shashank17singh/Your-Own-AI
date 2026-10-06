@@ -115,7 +115,7 @@ class MimeTypesTestCase(unittest.TestCase):
         # test_urllib2 is run before test_mimetypes, global state is modified
         # such that the 'all' set will have more items in it.
         all = set(self.db.guess_all_extensions("text/plain", strict=True))
-        unless(all >= set([".bat", ".c", ".h", ".ksh", ".pl", ".txt"]))
+        unless(all >= {".bat", ".c", ".h", ".ksh", ".pl", ".txt"})
         # And now non-strict
         all = self.db.guess_all_extensions("image/jpg", strict=False)
         all.sort()
@@ -263,7 +263,7 @@ class MimetypesCliTestCase(unittest.TestCase):
 
     def test_help_option(self):
         support.patch(self, sys, "argv", [sys.executable, "-h"])
-        with support.captured_stdout() as output:
+        with support.captured_stdout() as output:  # noqa: SIM117
             with self.assertRaises(SystemExit) as cm:
                 mimetypes._main()
 
@@ -272,7 +272,7 @@ class MimetypesCliTestCase(unittest.TestCase):
 
     def test_invalid_option(self):
         support.patch(self, sys, "argv", [sys.executable, "--invalid"])
-        with support.captured_stdout() as output:
+        with support.captured_stdout() as output:  # noqa: SIM117
             with self.assertRaises(SystemExit) as cm:
                 mimetypes._main()
 

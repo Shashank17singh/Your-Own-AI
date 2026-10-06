@@ -95,10 +95,10 @@ class PtyTest(unittest.TestCase):
         try:
             debug("Calling master_open()")
             master_fd, slave_name = pty.master_open()
-            debug("Got master_fd '%d', slave_name '%s'" % (master_fd, slave_name))
-            debug("Calling slave_open(%r)" % (slave_name,))
+            debug("Got master_fd '%d', slave_name '%s'" % (master_fd, slave_name))  # noqa: UP031
+            debug(f"Calling slave_open({slave_name!r})")
             slave_fd = pty.slave_open(slave_name)
-            debug("Got slave_fd '%d'" % slave_fd)
+            debug("Got slave_fd '%d'" % slave_fd)  # noqa: UP031
         except OSError:
             # " An optional feature could not be imported " ... ?
             raise unittest.SkipTest("Pseudo-terminals (seemingly) not functional.")
@@ -160,7 +160,7 @@ class PtyTest(unittest.TestCase):
             except AttributeError:
                 # Have pty, but not setsid()?
                 debug("No setsid() available?")
-            except:
+            except:  # noqa: E722
                 # We don't want this error to propagate, escaping the call to
                 # os._exit() and causing very peculiar behavior in the calling
                 # regrtest.py !
@@ -172,7 +172,7 @@ class PtyTest(unittest.TestCase):
                 os._exit(2)
             os._exit(4)
         else:
-            debug("Waiting for child (%d) to finish." % pid)
+            debug("Waiting for child (%d) to finish." % pid)  # noqa: UP031
             # In verbose mode, we have to consume the debug output from the
             # child or the child will block, causing this test to hang in the
             # parent's waitpid() call.  The child blocks after a
@@ -200,7 +200,7 @@ class PtyTest(unittest.TestCase):
 
             pid, status = os.waitpid(pid, 0)
             res = os.waitstatus_to_exitcode(status)
-            debug("Child (%d) exited with code %d (status %d)." % (pid, res, status))
+            debug("Child (%d) exited with code %d (status %d)." % (pid, res, status))  # noqa: UP031
             if res == 1:
                 self.fail("Child raised an unexpected exception in os.setsid()")
             elif res == 2:
@@ -295,7 +295,7 @@ class SmallPtyTests(unittest.TestCase):
 
     def test__copy_eof_on_all(self):
         """Test the empty read EOF case on both master_fd and stdin."""
-        read_from_stdout_fd, mock_stdout_fd = self._pipe()
+        _read_from_stdout_fd, mock_stdout_fd = self._pipe()
         pty.STDOUT_FILENO = mock_stdout_fd
         mock_stdin_fd, write_to_stdin_fd = self._pipe()
         pty.STDIN_FILENO = mock_stdin_fd

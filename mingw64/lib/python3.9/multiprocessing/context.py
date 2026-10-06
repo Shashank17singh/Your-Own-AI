@@ -221,7 +221,7 @@ class BaseContext:
         try:
             ctx = _concrete_contexts[method]
         except KeyError:
-            raise ValueError("cannot find context for %r" % method) from None
+            raise ValueError(f"cannot find context for {method!r}") from None
         ctx._check_available()
         return ctx
 
@@ -408,6 +408,6 @@ def set_spawning_popen(popen):
 def assert_spawning(obj):
     if get_spawning_popen() is None:
         raise RuntimeError(
-            "%s objects should only be shared between processes"
-            " through inheritance" % type(obj).__name__
+            f"{type(obj).__name__} objects should only be shared between processes"
+            " through inheritance"
         )

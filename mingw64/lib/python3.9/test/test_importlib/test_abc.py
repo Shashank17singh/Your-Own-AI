@@ -22,8 +22,8 @@ class InheritanceTests:
     """Test that the specified class is a subclass/superclass of the expected
     classes."""
 
-    subclasses = []
-    superclasses = []
+    subclasses = []  # noqa: RUF012
+    superclasses = []  # noqa: RUF012
 
     def setUp(self):
         self.superclasses = [
@@ -60,8 +60,8 @@ class InheritanceTests:
 
 
 class MetaPathFinder(InheritanceTests):
-    superclass_names = ["Finder"]
-    subclass_names = [
+    superclass_names = ["Finder"]  # noqa: RUF012
+    subclass_names = [  # noqa: RUF012
         "BuiltinImporter",
         "FrozenImporter",
         "PathFinder",
@@ -75,8 +75,8 @@ Frozen_MetaPathFinderInheritanceTests, Source_MetaPathFinderInheritanceTests = (
 
 
 class PathEntryFinder(InheritanceTests):
-    superclass_names = ["Finder"]
-    subclass_names = ["FileFinder"]
+    superclass_names = ["Finder"]  # noqa: RUF012
+    subclass_names = ["FileFinder"]  # noqa: RUF012
 
 
 Frozen_PathEntryFinderInheritanceTests, Source_PathEntryFinderInheritanceTests = (
@@ -85,7 +85,7 @@ Frozen_PathEntryFinderInheritanceTests, Source_PathEntryFinderInheritanceTests =
 
 
 class ResourceLoader(InheritanceTests):
-    superclass_names = ["Loader"]
+    superclass_names = ["Loader"]  # noqa: RUF012
 
 
 Frozen_ResourceLoaderInheritanceTests, Source_ResourceLoaderInheritanceTests = (
@@ -94,8 +94,8 @@ Frozen_ResourceLoaderInheritanceTests, Source_ResourceLoaderInheritanceTests = (
 
 
 class InspectLoader(InheritanceTests):
-    superclass_names = ["Loader"]
-    subclass_names = ["BuiltinImporter", "FrozenImporter", "ExtensionFileLoader"]
+    superclass_names = ["Loader"]  # noqa: RUF012
+    subclass_names = ["BuiltinImporter", "FrozenImporter", "ExtensionFileLoader"]  # noqa: RUF012
 
 
 Frozen_InspectLoaderInheritanceTests, Source_InspectLoaderInheritanceTests = (
@@ -104,8 +104,8 @@ Frozen_InspectLoaderInheritanceTests, Source_InspectLoaderInheritanceTests = (
 
 
 class ExecutionLoader(InheritanceTests):
-    superclass_names = ["InspectLoader"]
-    subclass_names = ["ExtensionFileLoader"]
+    superclass_names = ["InspectLoader"]  # noqa: RUF012
+    subclass_names = ["ExtensionFileLoader"]  # noqa: RUF012
 
 
 Frozen_ExecutionLoaderInheritanceTests, Source_ExecutionLoaderInheritanceTests = (
@@ -114,8 +114,8 @@ Frozen_ExecutionLoaderInheritanceTests, Source_ExecutionLoaderInheritanceTests =
 
 
 class FileLoader(InheritanceTests):
-    superclass_names = ["ResourceLoader", "ExecutionLoader"]
-    subclass_names = ["SourceFileLoader", "SourcelessFileLoader"]
+    superclass_names = ["ResourceLoader", "ExecutionLoader"]  # noqa: RUF012
+    subclass_names = ["SourceFileLoader", "SourcelessFileLoader"]  # noqa: RUF012
 
 
 Frozen_FileLoaderInheritanceTests, Source_FileLoaderInheritanceTests = (
@@ -124,8 +124,8 @@ Frozen_FileLoaderInheritanceTests, Source_FileLoaderInheritanceTests = (
 
 
 class SourceLoader(InheritanceTests):
-    superclass_names = ["ResourceLoader", "ExecutionLoader"]
-    subclass_names = ["SourceFileLoader"]
+    superclass_names = ["ResourceLoader", "ExecutionLoader"]  # noqa: RUF012
+    subclass_names = ["SourceFileLoader"]  # noqa: RUF012
 
 
 Frozen_SourceLoaderInheritanceTests, Source_SourceLoaderInheritanceTests = (
@@ -226,7 +226,7 @@ class LoaderDefaultsTests(ABCTestHarness):
         mod = types.ModuleType("blah")
         with self.assertRaises(NotImplementedError):
             self.ins.module_repr(mod)
-        original_repr = repr(mod)
+        repr(mod)
         mod.__loader__ = self.ins
         # Should still return a proper repr.
         self.assertTrue(repr(mod))
@@ -492,7 +492,7 @@ class InspectLoaderSourceToCodeTests:
             code = loader.source_to_code(data)
         else:
             code = loader.source_to_code(data, path)
-        exec(code, module.__dict__)
+        exec(code, module.__dict__)  # noqa: S102
         return module
 
     def test_source_to_code_source(self):
@@ -537,7 +537,7 @@ class InspectLoaderGetCodeTests:
             mocked.return_value = "attr = 42"
             loader = self.InspectLoaderSubclass()
             code = loader.get_code("blah")
-        exec(code, module.__dict__)
+        exec(code, module.__dict__)  # noqa: S102
         self.assertEqual(module.attr, 42)
 
     def test_get_code_source_is_None(self):
@@ -635,7 +635,7 @@ class ExecutionLoaderGetCodeTests:
             code = loader.get_code("blah")
         self.assertEqual(code.co_filename, path)
         module = types.ModuleType("blah")
-        exec(code, module.__dict__)
+        exec(code, module.__dict__)  # noqa: S102
         self.assertEqual(module.attr, 42)
 
     def test_get_code_source_is_None(self):
@@ -666,7 +666,7 @@ class ExecutionLoaderGetCodeTests:
             code = loader.get_code("blah")
         self.assertEqual(code.co_filename, "<string>")
         module = types.ModuleType("blah")
-        exec(code, module.__dict__)
+        exec(code, module.__dict__)  # noqa: S102
         self.assertEqual(module.attr, 42)
 
 
@@ -748,8 +748,8 @@ class SourceLoaderTestHarness:
             self.name = self.package
         else:
             module_name = "mod"
-            self.path = os.path.join(self.package, ".".join(["mod", "py"]))
-            self.name = ".".join([self.package, module_name])
+            self.path = os.path.join(self.package, "mod.py")
+            self.name = f"{self.package}.{module_name}"
         self.cached = self.util.cache_from_source(self.path)
         self.loader = self.loader_mock(self.path, **kwargs)
 
@@ -773,7 +773,7 @@ class SourceLoaderTestHarness:
         module.__package__ = self.package
         module.__loader__ = self.loader
         module.__path__ = []
-        exec(code_object, module.__dict__)
+        exec(code_object, module.__dict__)  # noqa: S102
         self.verify_module(module)
 
 
@@ -919,7 +919,7 @@ class SourceLoaderBytecodeTests(SourceLoaderTestHarness):
         try:
             sys.dont_write_bytecode = True
             self.loader.bytecode_path = "<does not exist>"
-            code_object = self.loader.get_code(self.name)
+            self.loader.get_code(self.name)
             self.assertNotIn(self.cached, self.loader.written)
         finally:
             sys.dont_write_bytecode = False

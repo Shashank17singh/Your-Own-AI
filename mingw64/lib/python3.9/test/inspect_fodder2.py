@@ -66,7 +66,7 @@ setfunc(lambda x, y: x * y)
 
 # line 57
 def with_comment():  # hello
-    world
+    world  # noqa: B018, F821
 
 
 # line 61
@@ -172,8 +172,8 @@ def real():
 class cls135:
     def func136():
         def func137():
-            never_reached1
-            never_reached2
+            never_reached1  # noqa: B018, F821
+            never_reached2  # noqa: B018, F821
 
 
 # line 141

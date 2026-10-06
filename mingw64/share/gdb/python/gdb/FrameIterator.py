@@ -1,4 +1,4 @@
-class FrameIterator:
+class FrameIterator:  # noqa: N999
     """A gdb.Frame iterator.  Iterates over gdb.Frames or objects that
     conform to that interface."""
 

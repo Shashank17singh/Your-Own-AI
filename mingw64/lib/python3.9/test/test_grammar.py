@@ -123,9 +123,9 @@ class TokenTests(unittest.TestCase):
         if maxsize == 2147483647:
             self.assertEqual(-2147483647 - 1, -0o20000000000)
             # XXX -2147483648
-            self.assertTrue(0o37777777777 > 0)
-            self.assertTrue(0xFFFFFFFF > 0)
-            self.assertTrue(0b1111111111111111111111111111111 > 0)
+            self.assertTrue(0o37777777777 > 0)  # noqa: PLR0133
+            self.assertTrue(0xFFFFFFFF > 0)  # noqa: PLR0133
+            self.assertTrue(0b1111111111111111111111111111111 > 0)  # noqa: PLR0133
             for s in (
                 "2147483648",
                 "0o40000000000",
@@ -133,15 +133,15 @@ class TokenTests(unittest.TestCase):
                 "0b10000000000000000000000000000000",
             ):
                 try:
-                    x = eval(s)
+                    eval(s)
                 except OverflowError:
-                    self.fail("OverflowError on huge integer literal %r" % s)
+                    self.fail(f"OverflowError on huge integer literal {s!r}")
         elif maxsize == 9223372036854775807:
             self.assertEqual(-9223372036854775807 - 1, -0o1000000000000000000000)
-            self.assertTrue(0o1777777777777777777777 > 0)
-            self.assertTrue(0xFFFFFFFFFFFFFFFF > 0)
+            self.assertTrue(0o1777777777777777777777 > 0)  # noqa: PLR0133
+            self.assertTrue(0xFFFFFFFFFFFFFFFF > 0)  # noqa: PLR0133
             self.assertTrue(
-                0b11111111111111111111111111111111111111111111111111111111111111 > 0
+                0b11111111111111111111111111111111111111111111111111111111111111 > 0  # noqa: PLR0133
             )
             for s in (
                 "9223372036854775808",
@@ -150,35 +150,18 @@ class TokenTests(unittest.TestCase):
                 "0b100000000000000000000000000000000000000000000000000000000000000",
             ):
                 try:
-                    x = eval(s)
+                    eval(s)
                 except OverflowError:
-                    self.fail("OverflowError on huge integer literal %r" % s)
+                    self.fail(f"OverflowError on huge integer literal {s!r}")
         else:
-            self.fail("Weird maxsize value %r" % maxsize)
+            self.fail(f"Weird maxsize value {maxsize!r}")
 
     def test_long_integers(self):
-        x = 0
-        x = 0xFFFFFFFFFFFFFFFF
-        x = 0xFFFFFFFFFFFFFFFF
-        x = 0o77777777777777777
-        x = 0o77777777777777777
-        x = 123456789012345678901234567890
-        x = 0b100000000000000000000000000000000000000000000000000000000000000000000
-        x = 0b111111111111111111111111111111111111111111111111111111111111111111111
+        pass
 
     def test_floats(self):
-        x = 3.14
-        x = 314.0
-        x = 0.314
+        pass
         # XXX x = 000.314
-        x = 0.314
-        x = 3e14
-        x = 3e14
-        x = 3e-14
-        x = 3e14
-        x = 3.0e14
-        x = 0.3e14
-        x = 3.1e4
 
     def test_float_exponent_tokenization(self):
         # See issue 21642.
@@ -307,18 +290,17 @@ class GrammarTests(unittest.TestCase):
 
     def test_eval_input(self):
         # testlist ENDMARKER
-        x = eval("1, 0 or 1")
+        eval("1, 0 or 1")
 
     def test_var_annot_basics(self):
         # all these should be allowed
-        var1: int = 5
-        var2: [int, str]
+        var2: [int, str]  # noqa: F842
         my_lst = [42]
 
         def one():
             return 1
 
-        int.new_attr: int
+        int.new_attr: int  # noqa: B032
         [list][0]: type
         my_lst[one() - 1]: int = 5
         self.assertEqual(my_lst, [5])
@@ -343,7 +325,7 @@ class GrammarTests(unittest.TestCase):
             no_name[does_not_exist]: no_name_again = 1 / 0
         with self.assertRaises(NameError):
             no_name[does_not_exist]: 1 / 0 = 0
-        global var_annot_global
+        global var_annot_global  # noqa: PLW0602
 
         # function semantics
         def f():
@@ -354,24 +336,24 @@ class GrammarTests(unittest.TestCase):
         self.assertEqual(f.__annotations__, {})
 
         def f_OK():
-            x: 1 / 0
+            x: 1 / 0  # noqa: F842
 
         f_OK()
 
         def fbad():
             x: int
-            print(x)
+            print(x)  # noqa: F821
 
         with self.assertRaises(UnboundLocalError):
             fbad()
 
         def f2bad():
             (no_such_global): int
-            print(no_such_global)
+            print(no_such_global)  # noqa: F821
 
         try:
             f2bad()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.assertIs(type(e), NameError)
 
         # class semantics
@@ -393,7 +375,7 @@ class GrammarTests(unittest.TestCase):
 
             class Cbad2(C):
                 x: int
-                x.y: list = []
+                x.y: list = []  # noqa: RUF012
 
     def test_var_annot_metaclass_semantics(self):
         class CMeta(type):
@@ -430,7 +412,7 @@ class GrammarTests(unittest.TestCase):
     def test_var_annot_simple_exec(self):
         gns = {}
         lns = {}
-        exec("'docstring'\n__annotations__[1] = 2\nx: int = 5\n", gns, lns)
+        exec("'docstring'\n__annotations__[1] = 2\nx: int = 5\n", gns, lns)  # noqa: S102
         self.assertEqual(lns["__annotations__"], {1: 2, "x": int})
         with self.assertRaises(KeyError):
             gns["__annotations__"]
@@ -438,7 +420,7 @@ class GrammarTests(unittest.TestCase):
     def test_var_annot_custom_maps(self):
         # tests with custom locals() and __annotations__
         ns = {"__annotations__": CNS()}
-        exec('X: int; Z: str = "Z"; (w): complex = 1j', ns)
+        exec('X: int; Z: str = "Z"; (w): complex = 1j', ns)  # noqa: S102
         self.assertEqual(ns["__annotations__"]["x"], int)
         self.assertEqual(ns["__annotations__"]["z"], str)
         with self.assertRaises(KeyError):
@@ -457,7 +439,7 @@ class GrammarTests(unittest.TestCase):
             def __getitem__(self, item):
                 return self._dct[item]
 
-        exec("x: int = 1", {}, CNS2())
+        exec("x: int = 1", {}, CNS2())  # noqa: S102
         self.assertEqual(nonloc_ns["__annotations__"]["x"], int)
 
     def test_var_annot_refleak(self):
@@ -478,19 +460,19 @@ class GrammarTests(unittest.TestCase):
             def __getitem__(self, item):
                 return self._dct[item]
 
-        exec("X: str", {}, CNS2())
+        exec("X: str", {}, CNS2())  # noqa: S102
         self.assertEqual(nonloc_ns["__annotations__"]["x"], str)
 
     def test_var_annot_rhs(self):
         ns = {}
-        exec("x: tuple = 1, 2", ns)
+        exec("x: tuple = 1, 2", ns)  # noqa: S102
         self.assertEqual(ns["x"], (1, 2))
         stmt = "def f():\n    x: int = yield"
-        exec(stmt, ns)
+        exec(stmt, ns)  # noqa: S102
         self.assertEqual(list(ns["f"]()), [None])
 
         ns = {"a": 1, "b": (2, 3, 4), "c": 5, "Tuple": tuple}
-        exec("x: Tuple[int, ...] = a,*b,c", ns)
+        exec("x: Tuple[int, ...] = a,*b,c", ns)  # noqa: S102
         self.assertEqual(ns["x"], (1, 2, 3, 4, 5))
 
     def test_funcdef(self):
@@ -577,10 +559,10 @@ class GrammarTests(unittest.TestCase):
         d01()
         d01(1)
         d01(*(1,))
-        d01(*[] or [2])
-        d01(*() or (), *{} and (), **() or {})
+        d01(*[2])
+        d01(*() or (), *{}, **() or {})
         d01(a=2)
-        d01(**{"a": 2} or {})
+        d01(a=2)
 
         def d11(a, b=1):
             pass
@@ -717,7 +699,7 @@ class GrammarTests(unittest.TestCase):
         def f(*args, **kwargs):
             return args, kwargs
 
-        self.assertEqual(f(1, x=2, *[3, 4], y=5), ((1, 3, 4), {"x": 2, "y": 5}))
+        self.assertEqual(f(1, x=2, *[3, 4], y=5), ((1, 3, 4), {"x": 2, "y": 5}))  # noqa: B026
         self.assertEqual(f(1, *(2, 3), 4), ((1, 2, 3, 4), {}))
         self.assertRaises(SyntaxError, eval, "f(1, x=2, *(3,4), x=5)")
         self.assertEqual(
@@ -856,7 +838,7 @@ class GrammarTests(unittest.TestCase):
         def f(x):
             pass
 
-        @d := null
+        @d := null  # noqa: F841
         def f(x):
             pass
 
@@ -992,7 +974,7 @@ class GrammarTests(unittest.TestCase):
         ### lambdef: 'lambda' [varargslist] ':' test
         l1 = lambda: 0
         self.assertEqual(l1(), 0)
-        l2 = lambda: a[d]  # XXX just testing the expression
+        lambda: a[d]  # XXX just testing the expression
         l3 = lambda: [2 < x for x in [-1, 3, 0]]
         self.assertEqual(l3(), [0, 1, 0])
         l4 = lambda x=lambda y=lambda z=1: z: y(): x()
@@ -1007,21 +989,6 @@ class GrammarTests(unittest.TestCase):
         self.assertEqual(l6(1, 2, k=10), 1 + 2 + 10)
 
         # check that trailing commas are permitted
-        l10 = lambda a,: 0
-        l11 = lambda *args,: 0
-        l12 = lambda **kwds,: 0
-        l13 = lambda a, *args,: 0
-        l14 = lambda a, **kwds,: 0
-        l15 = lambda *args, b,: 0
-        l16 = lambda *, b,: 0
-        l17 = lambda *args, **kwds,: 0
-        l18 = lambda a, *args, b,: 0
-        l19 = lambda a, *, b,: 0
-        l20 = lambda a, *args, **kwds,: 0
-        l21 = lambda *args, b, **kwds,: 0
-        l22 = lambda *, b, **kwds,: 0
-        l23 = lambda a, *args, b, **kwds,: 0
-        l24 = lambda a, *, b, **kwds,: 0
 
     ### stmt: simple_stmt | compound_stmt
     # Tested below
@@ -1043,13 +1010,10 @@ class GrammarTests(unittest.TestCase):
 
     def test_expr_stmt(self):
         # (exprlist '=')* exprlist
-        1
-        1, 2, 3
-        x = 1
-        x = 1, 2, 3
-        x = y = z = 1, 2, 3
-        x, y, z = 1, 2, 3
-        abc = a, b, c = x, y, z = xyz = 1, 2, (3, 4)
+        1  # noqa: B018
+        1, 2, 3  # noqa: B018
+        _x, _y, _z = 1, 2, 3
+        _a, _b, _c = _x, _y, _z = 1, 2, (3, 4)
 
         check_syntax_error(self, "x + 1 = 1")
         check_syntax_error(self, "a + 1 = b + 2")
@@ -1071,13 +1035,13 @@ class GrammarTests(unittest.TestCase):
             custom_msg = f"call to '{keyword}'"
             for case in cases:
                 source = case.format(keyword)
-                with self.subTest(source=source):
+                with self.subTest(source=source):  # noqa: SIM117
                     with self.assertRaisesRegex(SyntaxError, custom_msg):
-                        exec(source)
+                        exec(source)  # noqa: S102
                 source = source.replace("foo", "(foo.)")
-                with self.subTest(source=source):
+                with self.subTest(source=source):  # noqa: SIM117
                     with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-                        exec(source)
+                        exec(source)  # noqa: S102
 
     def test_del_stmt(self):
         # 'del' exprlist
@@ -1094,10 +1058,10 @@ class GrammarTests(unittest.TestCase):
         del z
         del ()
 
-        a, b, c, d, e, f, g = "abcdefg"
+        a, b, c, d, e, f, g = "abcdefg"  # noqa: RUF059
         del a, (b, c), (d, (e, f))
 
-        a, b, c, d, e, f, g = "abcdefg"
+        a, b, c, d, e, f, _g = "abcdefg"
         del a, [b, c], (d, [e, f])
 
         abcd = list("abcd")
@@ -1130,7 +1094,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 continue
                 msg = "continue failed to continue inside try"
-            except:
+            except:  # noqa: E722
                 msg = "continue inside try called except block"
         if msg != "ok":
             self.fail(msg)
@@ -1165,7 +1129,7 @@ class GrammarTests(unittest.TestCase):
                         break
                     big_hippo -= 1
                     continue
-                except:
+                except:  # noqa: TRY203
                     raise
             if count > 2 or big_hippo != 1:
                 self.fail("continue then break in try/except in loop broken!")
@@ -1185,7 +1149,7 @@ class GrammarTests(unittest.TestCase):
             return 1, *z
 
         g1()
-        x = g2()
+        g2()
         y = g3()
         self.assertEqual(y, (1, 2, 3), "unparenthesized star expr return")
         check_syntax_error(self, "class foo:return 1")
@@ -1197,7 +1161,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 pass
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 1)
 
         count = 0
@@ -1206,16 +1170,16 @@ class GrammarTests(unittest.TestCase):
             try:
                 continue
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 1)
 
         count = 0
         while count < 2:
             count += 1
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 1)
 
         for count in [0, 1]:
@@ -1223,7 +1187,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 pass
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 0)
 
         for count in [0, 1]:
@@ -1231,15 +1195,15 @@ class GrammarTests(unittest.TestCase):
             try:
                 continue
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 0)
 
         for count in [0, 1]:
             self.assertEqual(count, 0)
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
-                break
+                break  # noqa: B012
         self.assertEqual(count, 0)
 
     def test_continue_in_finally(self):
@@ -1249,7 +1213,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 pass
             finally:
-                continue
+                continue  # noqa: B012
             break
         self.assertEqual(count, 2)
 
@@ -1259,16 +1223,16 @@ class GrammarTests(unittest.TestCase):
             try:
                 break
             finally:
-                continue
+                continue  # noqa: B012
         self.assertEqual(count, 2)
 
         count = 0
         while count < 2:
             count += 1
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
-                continue
+                continue  # noqa: B012
             break
         self.assertEqual(count, 2)
 
@@ -1276,7 +1240,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 pass
             finally:
-                continue
+                continue  # noqa: B012
             break
         self.assertEqual(count, 1)
 
@@ -1284,14 +1248,14 @@ class GrammarTests(unittest.TestCase):
             try:
                 break
             finally:
-                continue
+                continue  # noqa: B012
         self.assertEqual(count, 1)
 
         for count in [0, 1]:
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
-                continue
+                continue  # noqa: B012
             break
         self.assertEqual(count, 1)
 
@@ -1300,7 +1264,7 @@ class GrammarTests(unittest.TestCase):
             try:
                 pass
             finally:
-                return 1
+                return 1  # noqa: B012
 
         self.assertEqual(g1(), 1)
 
@@ -1308,15 +1272,15 @@ class GrammarTests(unittest.TestCase):
             try:
                 return 2
             finally:
-                return 3
+                return 3  # noqa: B012, SIM107
 
         self.assertEqual(g2(), 3)
 
         def g3():
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
-                return 4
+                return 4  # noqa: B012
 
         self.assertEqual(g3(), 4)
 
@@ -1331,7 +1295,7 @@ class GrammarTests(unittest.TestCase):
                         return count + count2
                     finally:
                         if x:
-                            break
+                            break  # noqa: B012
             return "end", count, count2
 
         self.assertEqual(g1(False), 10)
@@ -1344,7 +1308,7 @@ class GrammarTests(unittest.TestCase):
                         return count + count2
                     finally:
                         if x:
-                            break
+                            break  # noqa: B012
             return "end", count, count2
 
         self.assertEqual(g2(False), 10)
@@ -1360,7 +1324,7 @@ class GrammarTests(unittest.TestCase):
                     return count
                 finally:
                     if x:
-                        continue
+                        continue  # noqa: B012
             return "end", count
 
         self.assertEqual(g1(False), 1)
@@ -1372,7 +1336,7 @@ class GrammarTests(unittest.TestCase):
                     return count
                 finally:
                     if x:
-                        continue
+                        continue  # noqa: B012
             return "end", count
 
         self.assertEqual(g2(False), 0)
@@ -1383,52 +1347,52 @@ class GrammarTests(unittest.TestCase):
         def g():
             yield 1
 
-        def g():
+        def g():  # noqa: F811
             yield from ()
 
         # Allowed as RHS of assignment
-        def g():
-            x = yield 1
+        def g():  # noqa: F811
+            yield 1
 
-        def g():
-            x = yield from ()
+        def g():  # noqa: F811
+            yield from ()
 
         # Ordinary yield accepts implicit tuples
-        def g():
+        def g():  # noqa: F811
             yield 1, 1
 
-        def g():
-            x = yield 1, 1
+        def g():  # noqa: F811
+            yield 1, 1
 
         # 'yield from' does not
         check_syntax_error(self, "def g(): yield from (), 1")
         check_syntax_error(self, "def g(): x = yield from (), 1")
 
         # Requires parentheses as subexpression
-        def g():
+        def g():  # noqa: F811
             1, (yield 1)
 
-        def g():
+        def g():  # noqa: F811
             1, (yield from ())
 
         check_syntax_error(self, "def g(): 1, yield 1")
         check_syntax_error(self, "def g(): 1, yield from ()")
 
         # Requires parentheses as call argument
-        def g():
+        def g():  # noqa: F811
             f((yield 1))
 
-        def g():
+        def g():  # noqa: F811
             f((yield 1), 1)
 
-        def g():
+        def g():  # noqa: F811
             f((yield from ()))
 
-        def g():
+        def g():  # noqa: F811
             f((yield from ()), 1)
 
         # Do not require parenthesis for tuple unpacking
-        def g():
+        def g():  # noqa: F811
             rest = 4, 5, 6
             yield 1, 2, 3, *rest
 
@@ -1451,7 +1415,7 @@ class GrammarTests(unittest.TestCase):
         def g():
             [x for x in [(yield 1)]]
 
-        def g():
+        def g():  # noqa: F811
             [x for x in [(yield from ())]]
 
         check = self.check_syntax_error
@@ -1500,8 +1464,8 @@ class GrammarTests(unittest.TestCase):
     def test_global(self):
         # 'global' NAME (',' NAME)*
         global a
-        global a, b
-        global one, two, three, four, five, six, seven, eight, nine, ten
+        global a, b  # noqa: PLW0602
+        global one, two, three, four, five, six, seven, eight, nine, ten  # noqa: PLW0602
 
     def test_nonlocal(self):
         # 'nonlocal' NAME (',' NAME)*
@@ -1515,7 +1479,7 @@ class GrammarTests(unittest.TestCase):
     def test_assert(self):
         # assertTruestmt: 'assert' test [',' test]
         assert 1
-        assert 1, 1
+        assert 1, 1  # noqa: RUF040
         assert lambda x: x
         assert 1, lambda x: x + 1
 
@@ -1624,27 +1588,27 @@ class GrammarTests(unittest.TestCase):
         ###         | 'try' ':' suite 'finally' ':' suite
         ### except_clause: 'except' [expr ['as' NAME]]
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             pass
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except EOFError:
             pass
         except TypeError:
             pass
-        except:
+        except:  # noqa: E722, S110
             pass
         else:
             pass
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except (EOFError, TypeError, ZeroDivisionError):
             pass
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except (EOFError, TypeError, ZeroDivisionError):
             pass
         try:
@@ -1672,7 +1636,7 @@ class GrammarTests(unittest.TestCase):
             pass
         if 1 and 1:
             pass
-        if 1 or 1:
+        if True:
             pass
         if not 1:
             pass
@@ -1686,28 +1650,28 @@ class GrammarTests(unittest.TestCase):
         ### comp_op: '<'|'>'|'=='|'>='|'<='|'!='|'in'|'not' 'in'|'is'|'is' 'not'
         if 1:
             pass
-        x = 1 == 1
-        if 1 == 1:
+        x = 1 == 1  # noqa: PLR0133
+        if 1 == 1:  # noqa: PLR0133
             pass
-        if 1 != 1:
+        if 1 != 1:  # noqa: PLR0133
             pass
-        if 1 < 1:
+        if 1 < 1:  # noqa: PLR0133
             pass
-        if 1 > 1:
+        if 1 > 1:  # noqa: PLR0133
             pass
-        if 1 <= 1:
+        if 1 <= 1:  # noqa: PLR0133
             pass
-        if 1 >= 1:
+        if 1 >= 1:  # noqa: PLR0133
             pass
-        if x is x:
+        if x is x:  # noqa: PLR0124
             pass
-        if x is not x:
+        if x is not x:  # noqa: PLR0124
             pass
         if 1 in ():
             pass
         if 1 not in ():
             pass
-        if 1 < 1 > 1 == 1 >= 1 <= 1 != 1 in 1 not in x is x is not x:
+        if 1 < 1 > 1 == 1 >= 1 <= 1 != 1 in 1 not in x is x is not x:  # noqa: PLR0124, PLR0133
             pass
 
     def test_comparison_is_literal(self):
@@ -1810,33 +1774,21 @@ class GrammarTests(unittest.TestCase):
             compile("[{(1, 2): 3} [i, j]]", "<testcase>", "exec")
 
     def test_binary_mask_ops(self):
-        x = 1 & 1
-        x = 1 ^ 1
-        x = 1 | 1
+        pass
 
     def test_shift_ops(self):
-        x = 1 << 1
-        x = 1 >> 1
-        x = 1 << 1 >> 1
+        1 << 1 >> 1
 
     def test_additive_ops(self):
-        x = 1
-        x = 1 + 1
-        x = 1 - 1 - 1
-        x = 1 - 1 + 1 - 1 + 1
+        1 - 1 - 1
+        1 - 1 + 1 - 1 + 1
 
     def test_multiplicative_ops(self):
-        x = 1 * 1
-        x = 1 / 1
-        x = 1 % 1
-        x = 1 / 1 * 1 % 1
+        1 / 1 * 1 % 1
 
     def test_unary_ops(self):
-        x = +1
-        x = -1
-        x = ~1
-        x = ~1 ^ 1 & 1 | 1 & 1 ^ -1
-        x = -1 * 1 / 1 + 1 * 1 - ---1 * 1
+        ~1 ^ 1 & 1 | 1 & 1 ^ -1
+        -1 * 1 / 1 + 1 * 1 - ---1 * 1  # noqa: B002
 
     def test_selectors(self):
         ### trailer: '(' [testlist] ')' | '[' subscript ']' | '.' NAME
@@ -1844,19 +1796,19 @@ class GrammarTests(unittest.TestCase):
 
         import time
 
-        c = sys.path[0]
-        x = time.time()
-        x = sys.modules["time"].time()
+        sys.path[0]
+        time.time()
+        sys.modules["time"].time()
         a = "01234"
-        c = a[0]
-        c = a[-1]
-        s = a[0:5]
-        s = a[:5]
-        s = a[0:]
-        s = a[:]
-        s = a[-5:]
-        s = a[:-1]
-        s = a[-4:-3]
+        a[0]
+        a[-1]
+        a[0:5]
+        a[:5]
+        a[0:]
+        a[:]
+        a[-5:]
+        a[:-1]
+        a[-4:-3]
         # A rough test of SF bug 1333982.  http://python.org/sf/1333982
         # The testing here is fairly incomplete.
         # Test cases should include: commas with 1 and 2 colons
@@ -1874,13 +1826,13 @@ class GrammarTests(unittest.TestCase):
         ### dictsetmaker: (test ':' test (',' test ':' test)* [',']) | (test (',' test)* [','])
 
         x = 1
-        x = 1 or 2 or 3
-        x = (1 or 2 or 3, 2, 3)
+        x = 1
+        x = (1, 2, 3)
 
         x = []
         x = [1]
-        x = [1 or 2 or 3]
-        x = [1 or 2 or 3, 2, 3]
+        x = [1]
+        x = [1, 2, 3]
         x = []
 
         x = {}
@@ -1888,7 +1840,7 @@ class GrammarTests(unittest.TestCase):
         x = {
             "one": 1,
         }
-        x = {"one" or "two": 1 or 2}
+        x = {"one": 1}
         x = {"one": 1, "two": 2}
         x = {
             "one": 1,
@@ -1908,7 +1860,7 @@ class GrammarTests(unittest.TestCase):
             4,
         }
 
-        x = x
+        x = x  # noqa: PLW0127
         x = "x"
         x = 123
 
@@ -1958,7 +1910,7 @@ class GrammarTests(unittest.TestCase):
         class H:
             pass
 
-        @d := class_decorator
+        @d := class_decorator  # noqa: F841
         class I:
             pass
 
@@ -2030,7 +1982,7 @@ class GrammarTests(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            [(lambda a: [a**i for i in range(a + 1)])(j) for j in range(5)],
+            [(lambda a: [a**i for i in range(a + 1)])(j) for j in range(5)],  # noqa: PLC3002
             [[1], [1, 1], [1, 2, 4], [1, 3, 9, 27], [1, 4, 16, 64, 256]],
         )
 
@@ -2092,11 +2044,11 @@ class GrammarTests(unittest.TestCase):
             pass
 
         self.assertEqual(
-            list((x, y) for x in "abcd" for y in "abcd"),
+            [(x, y) for x in "abcd" for y in "abcd"],
             [(x, y) for x in "abcd" for y in "abcd"],
         )
         self.assertEqual(
-            list((x, y) for x in "ab" for y in "xy"),
+            [(x, y) for x in "ab" for y in "xy"],
             [(x, y) for x in "ab" for y in "xy"],
         )
 
@@ -2151,11 +2103,11 @@ class GrammarTests(unittest.TestCase):
         # Grammar allows multiple adjacent 'if's in listcomps and genexps,
         # even though it's silly. Make sure it works (ifelse broke this.)
         self.assertEqual([x for x in range(10) if x % 2 if x % 3], [1, 5, 7])
-        self.assertEqual(list(x for x in range(10) if x % 2 if x % 3), [1, 5, 7])
+        self.assertEqual([x for x in range(10) if x % 2 if x % 3], [1, 5, 7])
 
         # verify unpacking single element tuples in listcomp/genexp.
         self.assertEqual([x for (x,) in [(4,), (5,), (6,)]], [4, 5, 6])
-        self.assertEqual(list(x for (x,) in [(7,), (8,), (9,)]), [7, 8, 9])
+        self.assertEqual([x for (x,) in [(7,), (8,), (9,)]], [7, 8, 9])
 
     def test_with_statement(self):
         class manager:
@@ -2167,15 +2119,15 @@ class GrammarTests(unittest.TestCase):
 
         with manager():
             pass
-        with manager() as x:
+        with manager():
             pass
-        with manager() as (x, y):
+        with manager() as (_x, _y):
             pass
         with manager(), manager():
             pass
-        with manager() as x, manager() as y:
+        with manager(), manager():
             pass
-        with manager() as x, manager():
+        with manager(), manager():
             pass
 
         if not use_old_parser():
@@ -2255,8 +2207,8 @@ class GrammarTests(unittest.TestCase):
             [
                 x(False)
                 for x in (
-                    lambda x: False if x else True,
-                    lambda x: True if x else False,
+                    lambda x: not x,
+                    lambda x: bool(x),
                 )
                 if x(False)
             ],
@@ -2268,17 +2220,15 @@ class GrammarTests(unittest.TestCase):
         self.assertEqual(((5 and 6) if 0 else 1), 1)
         self.assertEqual((5 and (6 if 1 else 1)), 6)
         self.assertEqual((0 or _checkeval("check 3", 2) if 0 else 3), 3)
-        self.assertEqual(
-            (1 or _checkeval("check 4", 2) if 1 else _checkeval("check 5", 3)), 1
-        )
-        self.assertEqual((0 or 5 if 1 else _checkeval("check 6", 3)), 5)
+        self.assertEqual((1 if 1 else _checkeval("check 5", 3)), 1)
+        self.assertEqual((5 if 1 else _checkeval("check 6", 3)), 5)
         self.assertEqual((not 5 if 1 else 1), False)
         self.assertEqual((not 5 if 0 else 1), 1)
         self.assertEqual((6 + 1 if 1 else 2), 7)
         self.assertEqual((6 - 1 if 1 else 2), 5)
         self.assertEqual((6 * 2 if 1 else 4), 12)
         self.assertEqual((6 / 2 if 1 else 3), 3)
-        self.assertEqual((6 < 4 if 0 else 2), 2)
+        self.assertEqual((6 < 4 if 0 else 2), 2)  # noqa: PLR0133
 
     def test_paren_evaluation(self):
         self.assertEqual(16 // (4 // 2), 8)
@@ -2366,15 +2316,15 @@ class GrammarTests(unittest.TestCase):
         async def foo():
             async with manager():
                 pass
-            async with manager() as x:
+            async with manager():
                 pass
-            async with manager() as (x, y):
+            async with manager() as (_x, _y):
                 pass
             async with manager(), manager():
                 pass
-            async with manager() as x, manager() as y:
+            async with manager(), manager():
                 pass
-            async with manager() as x, manager():
+            async with manager(), manager():
                 pass
             raise Done
 

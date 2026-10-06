@@ -19,7 +19,7 @@ class NetrcParseError(Exception):
         Exception.__init__(self, msg)
 
     def __str__(self):
-        return "%s (%s, line %s)" % (self.msg, self.filename, self.lineno)
+        return f"{self.msg} ({self.filename}, line {self.lineno})"
 
 
 class netrc:
@@ -62,7 +62,7 @@ class netrc:
                     self.macros[entryname].append(line)
                 continue
             else:
-                raise NetrcParseError("bad toplevel token %r" % tt, file, lexer.lineno)
+                raise NetrcParseError(f"bad toplevel token {tt!r}", file, lexer.lineno)
 
             # We're looking at start of an entry for a named machine or default.
             login = ""
@@ -77,8 +77,7 @@ class netrc:
                         break
                     else:
                         raise NetrcParseError(
-                            "malformed %s entry %s terminated by %s"
-                            % (toplevel, entryname, repr(tt)),
+                            f"malformed {toplevel} entry {entryname} terminated by {tt!r}",
                             file,
                             lexer.lineno,
                         )
@@ -95,17 +94,16 @@ class netrc:
                             try:
                                 fowner = pwd.getpwuid(prop.st_uid)[0]
                             except KeyError:
-                                fowner = "uid %s" % prop.st_uid
+                                fowner = f"uid {prop.st_uid}"
                             try:
                                 user = pwd.getpwuid(os.getuid())[0]
                             except KeyError:
-                                user = "uid %s" % os.getuid()
+                                user = f"uid {os.getuid()}"
                             raise NetrcParseError(
                                 (
-                                    "~/.netrc file owner (%s) does not match"
-                                    " current user (%s)"
-                                )
-                                % (fowner, user),
+                                    f"~/.netrc file owner ({fowner}) does not match"
+                                    f" current user ({user})"
+                                ),
                                 file,
                                 lexer.lineno,
                             )
@@ -120,7 +118,7 @@ class netrc:
                     password = lexer.get_token()
                 else:
                     raise NetrcParseError(
-                        "bad follower token %r" % tt, file, lexer.lineno
+                        f"bad follower token {tt!r}", file, lexer.lineno
                     )
 
     def authenticators(self, host):
@@ -135,13 +133,13 @@ class netrc:
     def __repr__(self):
         """Dump the class data in the format of a .netrc file."""
         rep = ""
-        for host in self.hosts.keys():
+        for host in self.hosts:
             attrs = self.hosts[host]
             rep += f"machine {host}\n\tlogin {attrs[0]}\n"
             if attrs[1]:
                 rep += f"\taccount {attrs[1]}\n"
             rep += f"\tpassword {attrs[2]}\n"
-        for macro in self.macros.keys():
+        for macro in self.macros:
             rep += f"macdef {macro}\n"
             for line in self.macros[macro]:
                 rep += line

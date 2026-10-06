@@ -129,7 +129,7 @@ def _module_to_load(name):
         sys.modules[name] = module
     try:
         yield module
-    except Exception:
+    except Exception:  # noqa: BLE001
         if not is_reload:
             try:
                 del sys.modules[name]
@@ -243,7 +243,7 @@ class _LazyModule(types.ModuleType):
         # Figure out exactly what attributes were mutated between the creation
         # of the module and now.
         attrs_then = self.__spec__.loader_state["__dict__"]
-        original_type = self.__spec__.loader_state["__class__"]
+        self.__spec__.loader_state["__class__"]
         attrs_now = self.__dict__
         attrs_updated = {}
         for key, value in attrs_now.items():
@@ -254,7 +254,7 @@ class _LazyModule(types.ModuleType):
         self.__spec__.loader.exec_module(self)
         # If exec_module() was used directly there is no guarantee the module
         # object was put into sys.modules.
-        if original_name in sys.modules:
+        if original_name in sys.modules:  # noqa: SIM102
             if id(self) != id(sys.modules[original_name]):
                 raise ValueError(
                     f"module object for {original_name!r} "

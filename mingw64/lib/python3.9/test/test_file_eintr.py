@@ -36,8 +36,7 @@ class TestFileIOSignalInterrupt:
         subclasseses should override this to test different IO objects.
         """
         return (
-            "import %s as io ;"
-            'infile = io.FileIO(sys.stdin.fileno(), "rb")' % self.modname
+            f'import {self.modname} as io ;infile = io.FileIO(sys.stdin.fileno(), "rb")'
         )
 
     def fail_with_process_info(self, why, stdout=b"", stderr=b"", communicate=True):
@@ -64,8 +63,7 @@ class TestFileIOSignalInterrupt:
             stdout += stdout_end
             stderr += stderr_end
         self.fail(
-            "Error from IO process %s:\nSTDOUT:\n%sSTDERR:\n%s\n"
-            % (why, stdout.decode(), stderr.decode())
+            f"Error from IO process {why}:\nSTDOUT:\n{stdout.decode()}STDERR:\n{stderr.decode()}\n"
         )
 
     def _test_reading(self, data_to_write, read_and_verify_code):
@@ -140,7 +138,7 @@ class TestFileIOSignalInterrupt:
         stdout, stderr = self._process.communicate(input=b"\n")
         if self._process.returncode:
             self.fail_with_process_info(
-                "exited rc=%d" % self._process.returncode,
+                "exited rc=%d" % self._process.returncode,  # noqa: UP031
                 stdout,
                 stderr,
                 communicate=False,
@@ -203,8 +201,8 @@ class TestBufferedIOSignalInterrupt(TestFileIOSignalInterrupt):
     def _generate_infile_setup_code(self):
         """Returns the infile = ... line of code to make a BufferedReader."""
         return (
-            'import %s as io ;infile = io.open(sys.stdin.fileno(), "rb") ;'
-            "assert isinstance(infile, io.BufferedReader)" % self.modname
+            f'import {self.modname} as io ;infile = io.open(sys.stdin.fileno(), "rb") ;'
+            "assert isinstance(infile, io.BufferedReader)"
         )
 
     def test_readall(self):
@@ -229,9 +227,9 @@ class TestTextIOSignalInterrupt(TestFileIOSignalInterrupt):
     def _generate_infile_setup_code(self):
         """Returns the infile = ... line of code to make a TextIOWrapper."""
         return (
-            "import %s as io ;"
+            f"import {self.modname} as io ;"
             'infile = io.open(sys.stdin.fileno(), "rt", newline=None) ;'
-            "assert isinstance(infile, io.TextIOWrapper)" % self.modname
+            "assert isinstance(infile, io.TextIOWrapper)"
         )
 
     def test_readline(self):

@@ -75,7 +75,7 @@ class TestHistoryManipulation(unittest.TestCase):
         hasattr(readline, "append_history_file"), "append_history not available"
     )
     def test_write_read_append(self):
-        hfile = tempfile.NamedTemporaryFile(delete=False)
+        hfile = tempfile.NamedTemporaryFile(delete=False)  # noqa: SIM115
         hfile.close()
         hfilename = hfile.name
         self.addCleanup(unlink, hfilename)
@@ -140,7 +140,7 @@ class TestReadline(unittest.TestCase):
         # Issue #19884: Ensure that the ANSI sequence "\033[1034h" is not
         # written into stdout when the readline module is imported and stdout
         # is redirected to a pipe.
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, _stderr = assert_python_ok(
             "-c", "import readline", TERM="xterm-256color"
         )
         self.assertEqual(stdout, b"")

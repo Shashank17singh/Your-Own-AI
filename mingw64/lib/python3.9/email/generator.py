@@ -236,7 +236,7 @@ class Generator:
         if payload is None:
             return
         if not isinstance(payload, str):
-            raise TypeError("string payload expected: %s" % type(payload))
+            raise TypeError(f"string payload expected: {type(payload)}")
         if _has_surrogates(msg._payload):
             charset = msg.get_param("charset")
             if charset is not None:
@@ -430,7 +430,7 @@ class BytesGenerator(Generator):
         # just write it back out.
         if msg._payload is None:
             return
-        if _has_surrogates(msg._payload) and not self.policy.cte_type == "7bit":
+        if _has_surrogates(msg._payload) and self.policy.cte_type != "7bit":
             if self._mangle_from_:
                 msg._payload = fcre.sub(">From ", msg._payload)
             self._write_lines(msg._payload)
@@ -514,7 +514,7 @@ class DecodedGenerator(Generator):
 
 # Helper used by Generator._make_boundary
 _width = len(repr(sys.maxsize - 1))
-_fmt = "%%0%dd" % _width
+_fmt = "%%0%dd" % _width  # noqa: UP031
 
 # Backward compatibility
 _make_boundary = Generator._make_boundary

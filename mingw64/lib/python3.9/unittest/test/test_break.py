@@ -159,8 +159,8 @@ class TestBreak(unittest.TestCase):
         default_handler = signal.getsignal(signal.SIGINT)
 
         class FakeRunner:
-            initArgs = []
-            runArgs = []
+            initArgs = []  # noqa: RUF012
+            runArgs = []  # noqa: RUF012
 
             def __init__(self, *args, **kwargs):
                 self.initArgs.append((args, kwargs))

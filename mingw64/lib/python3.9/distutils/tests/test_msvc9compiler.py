@@ -149,7 +149,7 @@ class msvc9compilerTestCase(support.TempdirManager, unittest.TestCase):
 
         tempdir = self.mkdtemp()
         manifest = os.path.join(tempdir, "manifest")
-        f = open(manifest, "w")
+        f = open(manifest, "w")  # noqa: SIM115
         try:
             f.write(_MANIFEST_WITH_MULTIPLE_REFERENCES)
         finally:
@@ -159,7 +159,7 @@ class msvc9compilerTestCase(support.TempdirManager, unittest.TestCase):
         compiler._remove_visual_c_ref(manifest)
 
         # see what we got
-        f = open(manifest)
+        f = open(manifest)  # noqa: SIM115
         try:
             # removing trailing spaces
             content = "\n".join([line.rstrip() for line in f])
@@ -174,7 +174,7 @@ class msvc9compilerTestCase(support.TempdirManager, unittest.TestCase):
 
         tempdir = self.mkdtemp()
         manifest = os.path.join(tempdir, "manifest")
-        f = open(manifest, "w")
+        f = open(manifest, "w")  # noqa: SIM115
         try:
             f.write(_MANIFEST_WITH_ONLY_MSVC_REFERENCE)
         finally:

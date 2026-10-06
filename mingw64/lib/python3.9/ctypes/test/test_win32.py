@@ -100,10 +100,10 @@ class TestWinError(unittest.TestCase):
 class Structures(unittest.TestCase):
     def test_struct_by_value(self):
         class POINT(Structure):
-            _fields_ = [("x", c_long), ("y", c_long)]
+            _fields_ = [("x", c_long), ("y", c_long)]  # noqa: RUF012
 
         class RECT(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("left", c_long),
                 ("top", c_long),
                 ("right", c_long),

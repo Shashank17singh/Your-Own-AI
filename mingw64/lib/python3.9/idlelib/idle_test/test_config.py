@@ -194,7 +194,7 @@ class IdleConfTest(unittest.TestCase):
         else:
             idle_dir = os.path.abspath(sys.path[0])
         for ctype in conf.config_types:
-            config_path = os.path.join(idle_dir, "../config-%s.def" % ctype)
+            config_path = os.path.join(idle_dir, f"../config-{ctype}.def")
             with open(config_path, "r") as f:
                 cls.config_string[ctype] = f.read()
 
@@ -228,18 +228,18 @@ class IdleConfTest(unittest.TestCase):
         conf = self.new_config(_utest=True)
 
         # Check normal way should success
-        with mock.patch("os.path.expanduser", return_value="/home/foo"):
+        with mock.patch("os.path.expanduser", return_value="/home/foo"):  # noqa: SIM117
             with mock.patch("os.path.exists", return_value=True):
                 self.assertEqual(conf.GetUserCfgDir(), "/home/foo/.idlerc")
 
         # Check os.getcwd should success
-        with mock.patch("os.path.expanduser", return_value="~"):
+        with mock.patch("os.path.expanduser", return_value="~"):  # noqa: SIM117
             with mock.patch("os.getcwd", return_value="/home/foo/cpython"):
                 with mock.patch("os.mkdir"):
                     self.assertEqual(conf.GetUserCfgDir(), "/home/foo/cpython/.idlerc")
 
         # Check user dir not exists and created failed should raise SystemExit
-        with mock.patch("os.path.join", return_value="/path/not/exists"):
+        with mock.patch("os.path.join", return_value="/path/not/exists"):  # noqa: SIM117
             with self.assertRaises(SystemExit):
                 with self.assertRaises(FileNotFoundError):
                     conf.GetUserCfgDir()
@@ -252,18 +252,18 @@ class IdleConfTest(unittest.TestCase):
         conf = self.new_config(_utest=True)
 
         # Check normal way should success
-        with mock.patch("os.path.expanduser", return_value="C:\\foo"):
+        with mock.patch("os.path.expanduser", return_value="C:\\foo"):  # noqa: SIM117
             with mock.patch("os.path.exists", return_value=True):
                 self.assertEqual(conf.GetUserCfgDir(), "C:\\foo\\.idlerc")
 
         # Check os.getcwd should success
-        with mock.patch("os.path.expanduser", return_value="~"):
+        with mock.patch("os.path.expanduser", return_value="~"):  # noqa: SIM117
             with mock.patch("os.getcwd", return_value="C:\\foo\\cpython"):
                 with mock.patch("os.mkdir"):
                     self.assertEqual(conf.GetUserCfgDir(), "C:\\foo\\cpython\\.idlerc")
 
         # Check user dir not exists and created failed should raise SystemExit
-        with mock.patch("os.path.join", return_value="/path/not/exists"):
+        with mock.patch("os.path.join", return_value="/path/not/exists"):  # noqa: SIM117
             with self.assertRaises(SystemExit):
                 with self.assertRaises(FileNotFoundError):
                     conf.GetUserCfgDir()
@@ -273,7 +273,7 @@ class IdleConfTest(unittest.TestCase):
 
         # Mock out idle_dir
         idle_dir = "/home/foo"
-        with mock.patch.dict({"__name__": "__foo__"}):
+        with mock.patch.dict({"__name__": "__foo__"}):  # noqa: SIM117
             with mock.patch("os.path.dirname", return_value=idle_dir):
                 conf.CreateConfigHandlers()
 
@@ -766,7 +766,7 @@ class CurrentColorKeysTest(unittest.TestCase):
 
 
 class ChangesTest(unittest.TestCase):
-    empty = {"main": {}, "highlight": {}, "keys": {}, "extensions": {}}
+    empty = {"main": {}, "highlight": {}, "keys": {}, "extensions": {}}  # noqa: RUF012
 
     def load(self):  # Test_add_option verifies that this works.
         changes = self.changes
@@ -775,7 +775,7 @@ class ChangesTest(unittest.TestCase):
         changes.add_option("keys", "Ksec", "kitem", "kval")
         return changes
 
-    loaded = {
+    loaded = {  # noqa: RUF012
         "main": {"Msec": {"mitem": "mval"}},
         "highlight": {"Hsec": {"hitem": "hval"}},
         "keys": {"Ksec": {"kitem": "kval"}},

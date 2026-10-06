@@ -5,7 +5,7 @@ from ctypes import *
 
 
 class X(Structure):
-    _fields_ = [("c_int", c_int)]
+    _fields_ = [("c_int", c_int)]  # noqa: RUF012
     init_called = False
 
     def __init__(self):

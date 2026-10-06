@@ -273,7 +273,7 @@ class Queue:
                                 wrelease()
                 except IndexError:
                     pass
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 if ignore_epipe and getattr(e, "errno", 0) == errno.EPIPE:
                     return
                 # Since this runs in a daemon thread the resources it uses

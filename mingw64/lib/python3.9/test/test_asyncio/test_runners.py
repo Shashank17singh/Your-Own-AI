@@ -123,7 +123,7 @@ class RunTests(BaseTest):
             try:
                 await asyncio.sleep(0.1)
             except asyncio.CancelledError:
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def main():
             loop = asyncio.get_running_loop()
@@ -163,7 +163,7 @@ class RunTests(BaseTest):
                 async for the_meaning_of_life in spinner:
                     pass
             except asyncio.CancelledError:
-                1 / 0
+                1 / 0  # noqa: B018
 
         async def main():
             loop = asyncio.get_running_loop()

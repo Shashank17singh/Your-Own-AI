@@ -77,10 +77,10 @@ class DOMBuilder:
                 settings = self._settings[(_name_xform(name), state)]
             except KeyError:
                 raise xml.dom.NotSupportedErr(
-                    "unsupported feature: %r" % (name,)
+                    f"unsupported feature: {name!r}"
                 ) from None
             else:
-                for name, value in settings:
+                for name, value in settings:  # noqa: PLR1704
                     setattr(self._options, name, value)
         else:
             raise xml.dom.NotFoundErr("unknown feature: " + repr(name))
@@ -92,7 +92,7 @@ class DOMBuilder:
         key = (_name_xform(name), state and 1 or 0)
         return key in self._settings
 
-    _settings = {
+    _settings = {  # noqa: RUF012
         ("namespace_declarations", 0): [("namespace_declarations", 0)],
         ("namespace_declarations", 1): [("namespace_declarations", 1)],
         ("validation", 0): [("validation", 0)],
@@ -150,7 +150,7 @@ class DOMBuilder:
                         or options.cdata_sections
                     )
                 )
-            raise xml.dom.NotFoundErr("feature %s not known" % repr(name))
+            raise xml.dom.NotFoundErr(f"feature {name!r} not known")
 
     def parseURI(self, uri):
         if self.entityResolver:

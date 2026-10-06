@@ -154,7 +154,7 @@ class POP3:
     # Raise 'error_proto' if the response doesn't start with '+'.
 
     def _getresp(self):
-        resp, o = self._getline()
+        resp, _o = self._getline()
         if self._debugging > 1:
             print("*resp*", repr(resp))
         if not resp.startswith(b"+"):
@@ -204,7 +204,7 @@ class POP3:
 
         (should indicate password required).
         """
-        return self._shortcmd("USER %s" % user)
+        return self._shortcmd(f"USER {user}")
 
     def pass_(self, pswd):
         """Send password, return response
@@ -213,7 +213,7 @@ class POP3:
 
         NB: mailbox is locked by server from here to 'quit()'
         """
-        return self._shortcmd("PASS %s" % pswd)
+        return self._shortcmd(f"PASS {pswd}")
 
     def stat(self):
         """Get mailbox status.
@@ -238,7 +238,7 @@ class POP3:
         single response: the "scan listing" for that message.
         """
         if which is not None:
-            return self._shortcmd("LIST %s" % which)
+            return self._shortcmd(f"LIST {which}")
         return self._longcmd("LIST")
 
     def retr(self, which):
@@ -246,14 +246,14 @@ class POP3:
 
         Result is in form ['response', ['line', ...], octets].
         """
-        return self._longcmd("RETR %s" % which)
+        return self._longcmd(f"RETR {which}")
 
     def dele(self, which):
         """Delete message number 'which'.
 
         Result is 'response'.
         """
-        return self._shortcmd("DELE %s" % which)
+        return self._shortcmd(f"DELE {which}")
 
     def noop(self):
         """Does nothing.
@@ -303,7 +303,7 @@ class POP3:
 
     def rpop(self, user):
         """Not sure what this does."""
-        return self._shortcmd("RPOP %s" % user)
+        return self._shortcmd(f"RPOP {user}")
 
     timestamp = re.compile(rb"\+OK.[^<]*(<.*>)")
 
@@ -326,7 +326,7 @@ class POP3:
 
         digest = m.group(1) + secret
         digest = hashlib.md5(digest).hexdigest()
-        return self._shortcmd("APOP %s %s" % (user, digest))
+        return self._shortcmd(f"APOP {user} {digest}")
 
     def top(self, which, howmuch):
         """Retrieve message header of message number 'which'
@@ -334,7 +334,7 @@ class POP3:
 
         Result is in form ['response', ['line', ...], octets].
         """
-        return self._longcmd("TOP %s %s" % (which, howmuch))
+        return self._longcmd(f"TOP {which} {howmuch}")
 
     def uidl(self, which=None):
         """Return message digest (unique id) list.
@@ -344,7 +344,7 @@ class POP3:
         the list ['response', ['mesgnum uid', ...], octets]
         """
         if which is not None:
-            return self._shortcmd("UIDL %s" % which)
+            return self._shortcmd(f"UIDL {which}")
         return self._longcmd("UIDL")
 
     def utf8(self):
@@ -473,7 +473,7 @@ if __name__ == "__main__":
     numMsgs, totalSize = a.stat()
     for i in range(1, numMsgs + 1):
         header, msg, octets = a.retr(i)
-        print("Message %d:" % i)
+        print("Message %d:" % i)  # noqa: UP031
         for line in msg:
             print("   " + line)
         print("-----------------------")

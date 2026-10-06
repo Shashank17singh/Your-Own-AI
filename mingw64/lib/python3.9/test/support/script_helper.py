@@ -71,7 +71,7 @@ class _PythonRunResult(
         out = out.decode("ascii", "replace").rstrip()
         err = err.decode("ascii", "replace").rstrip()
         raise AssertionError(
-            "Process return code is %d\n"
+            "Process return code is %d\n"  # noqa: UP031
             "command line: %r\n"
             "\n"
             "stdout:\n"

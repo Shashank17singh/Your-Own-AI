@@ -26,7 +26,7 @@ class TestUntestedModules(unittest.TestCase):
                 pass
 
             try:
-                import tty  # Not available on Windows
+                import tty  # Not available on Windows  # noqa: F401
             except ImportError:
                 if support.verbose:
                     print("skipping tty")

@@ -64,7 +64,7 @@ class FrameTreeItem(TreeItem):
         frame, lineno = self.info
         try:
             modname = frame.f_globals["__name__"]
-        except:
+        except:  # noqa: E722
             modname = "?"
         code = frame.f_code
         filename = code.co_filename
@@ -72,13 +72,13 @@ class FrameTreeItem(TreeItem):
         sourceline = linecache.getline(filename, lineno)
         sourceline = sourceline.strip()
         if funcname in ("?", "", None):
-            item = "%s, line %d: %s" % (modname, lineno, sourceline)
+            item = "%s, line %d: %s" % (modname, lineno, sourceline)  # noqa: UP031
         else:
-            item = "%s.%s(...), line %d: %s" % (modname, funcname, lineno, sourceline)
+            item = "%s.%s(...), line %d: %s" % (modname, funcname, lineno, sourceline)  # noqa: UP031
         return item
 
     def GetSubList(self):
-        frame, lineno = self.info
+        frame, _lineno = self.info
         sublist = []
         if frame.f_globals is not frame.f_locals:
             item = VariablesTreeItem("<locals>", frame.f_locals, self.flist)
@@ -107,7 +107,7 @@ class VariablesTreeItem(ObjectTreeItem):
 
     def GetSubList(self):
         sublist = []
-        for key in self.object.keys():
+        for key in self.object:
             try:
                 value = self.object[key]
             except KeyError:
@@ -127,10 +127,10 @@ def _stack_viewer(parent):  # htest #
     top = tk.Toplevel(parent)
     top.title("Test StackViewer")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x + 50, y + 175))
+    top.geometry("+%d+%d" % (x + 50, y + 175))  # noqa: UP031
     flist = PyShellFileList(top)
     try:  # to obtain a traceback object
-        intentional_name_error
+        intentional_name_error  # noqa: B018
     except NameError:
         exc_type, exc_value, exc_tb = sys.exc_info()
     # inject stack trace to sys

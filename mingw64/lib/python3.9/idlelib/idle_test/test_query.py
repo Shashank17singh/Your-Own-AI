@@ -81,7 +81,7 @@ class SectionNameTest(unittest.TestCase):
 
     class Dummy_SectionName:
         entry_ok = query.SectionName.entry_ok  # Function being tested.
-        used_names = ["used"]
+        used_names = ["used"]  # noqa: RUF012
 
         def __init__(self, dummy_entry):
             self.entry = Var(value=dummy_entry)
@@ -238,7 +238,6 @@ class HelpsourcePathokTest(unittest.TestCase):
 
     def test_path_ok_web(self):
         dialog = self.Dummy_HelpSource("")
-        Equal = self.assertEqual
         for url in "www.py.org", "http://py.org":
             with self.subTest():
                 dialog.path.set(url)
@@ -260,8 +259,8 @@ class HelpsourceEntryokTest(unittest.TestCase):
 
     class Dummy_HelpSource:
         entry_ok = query.HelpSource.entry_ok
-        entry_error = {}
-        path_error = {}
+        entry_error = {}  # noqa: RUF012
+        path_error = {}  # noqa: RUF012
 
         def item_ok(self):
             return self.name
@@ -319,7 +318,7 @@ class CustomRunEntryokTest(unittest.TestCase):
 
     class Dummy_CustomRun:
         entry_ok = query.CustomRun.entry_ok
-        entry_error = {}
+        entry_error = {}  # noqa: RUF012
         restartvar = Var()
 
         def cli_args_ok(self):
@@ -389,7 +388,6 @@ class SectionnameGuiTest(unittest.TestCase):
         root = Tk()
         root.withdraw()
         dialog = query.SectionName(root, "T", "t", {"abc"}, _utest=True)
-        Equal = self.assertEqual
         self.assertEqual(dialog.used_names, {"abc"})
         dialog.entry.insert(0, "okay")
         dialog.button_ok.invoke()

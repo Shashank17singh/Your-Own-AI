@@ -37,10 +37,10 @@ class InterProcessSignalTests(unittest.TestCase):
                 return
             signal.pause()
 
-        self.fail("signal %s not received after %s seconds" % (signame, timeout))
+        self.fail(f"signal {signame} not received after {timeout} seconds")
 
     def subprocess_send_signal(self, pid, signame):
-        code = "import os, signal; os.kill(%s, signal.%s)" % (pid, signame)
+        code = f"import os, signal; os.kill({pid}, signal.{signame})"
         args = [sys.executable, "-I", "-c", code]
         return subprocess.Popen(args)
 
@@ -59,7 +59,7 @@ class InterProcessSignalTests(unittest.TestCase):
             self.wait_signal(child, "SIGHUP")
         self.assertEqual(self.got_signals, {"SIGHUP": 1, "SIGUSR1": 0, "SIGALRM": 0})
 
-        with self.assertRaises(SIGUSR1Exception):
+        with self.assertRaises(SIGUSR1Exception):  # noqa: SIM117
             with self.subprocess_send_signal(pid, "SIGUSR1") as child:
                 self.wait_signal(child, "SIGUSR1")
         self.assertEqual(self.got_signals, {"SIGHUP": 1, "SIGUSR1": 1, "SIGALRM": 0})

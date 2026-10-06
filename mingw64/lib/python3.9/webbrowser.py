@@ -150,7 +150,7 @@ def _synthesize(browser, *, preferred=False):
 class BaseBrowser:
     """Parent class for all browsers. Do not use directly."""
 
-    args = ["%s"]
+    args = ["%s"]  # noqa: RUF012
 
     def __init__(self, name=""):
         self.name = name
@@ -222,7 +222,7 @@ class UnixBrowser(BaseBrowser):
     # used for new=1 (open_new).  If newtab is not None, it is used for
     # new=3 (open_new_tab).  After both substitutions are made, any empty
     # strings in the transformed remote_args list will be removed.
-    remote_args = ["%action", "%s"]
+    remote_args = ["%action", "%s"]  # noqa: RUF012
     remote_action = None
     remote_action_newwin = None
     remote_action_newtab = None
@@ -261,10 +261,7 @@ class UnixBrowser(BaseBrowser):
             except subprocess.TimeoutExpired:
                 return True
         elif self.background:
-            if p.poll() is None:
-                return True
-            else:
-                return False
+            return p.poll() is None
         else:
             return not p.wait()
 
@@ -281,7 +278,7 @@ class UnixBrowser(BaseBrowser):
                 action = self.remote_action_newtab
         else:
             raise Error(
-                "Bad 'new' parameter to open(); " + "expected 0, 1, or 2, got %s" % new
+                "Bad 'new' parameter to open(); " + f"expected 0, 1, or 2, got {new}"
             )
 
         args = [
@@ -301,7 +298,7 @@ class UnixBrowser(BaseBrowser):
 class Mozilla(UnixBrowser):
     """Launcher class for Mozilla browsers."""
 
-    remote_args = ["%action", "%s"]
+    remote_args = ["%action", "%s"]  # noqa: RUF012
     remote_action = ""
     remote_action_newwin = "-new-window"
     remote_action_newtab = "-new-tab"
@@ -311,8 +308,8 @@ class Mozilla(UnixBrowser):
 class Netscape(UnixBrowser):
     """Launcher class for Netscape browser."""
 
-    raise_opts = ["-noraise", "-raise"]
-    remote_args = ["-remote", "openURL(%s%action)"]
+    raise_opts = ["-noraise", "-raise"]  # noqa: RUF012
+    remote_args = ["-remote", "openURL(%s%action)"]  # noqa: RUF012
     remote_action = ""
     remote_action_newwin = ",new-window"
     remote_action_newtab = ",new-tab"
@@ -322,8 +319,8 @@ class Netscape(UnixBrowser):
 class Galeon(UnixBrowser):
     """Launcher class for Galeon/Epiphany browsers."""
 
-    raise_opts = ["-noraise", ""]
-    remote_args = ["%action", "%s"]
+    raise_opts = ["-noraise", ""]  # noqa: RUF012
+    remote_args = ["%action", "%s"]  # noqa: RUF012
     remote_action = "-n"
     remote_action_newwin = "-w"
     background = True
@@ -332,7 +329,7 @@ class Galeon(UnixBrowser):
 class Chrome(UnixBrowser):
     "Launcher class for Google Chrome browser."
 
-    remote_args = ["%action", "%s"]
+    remote_args = ["%action", "%s"]  # noqa: RUF012
     remote_action = ""
     remote_action_newwin = "--new-window"
     remote_action_newtab = ""
@@ -345,7 +342,7 @@ Chromium = Chrome
 class Opera(UnixBrowser):
     "Launcher class for Opera browser."
 
-    remote_args = ["%action", "%s"]
+    remote_args = ["%action", "%s"]  # noqa: RUF012
     remote_action = ""
     remote_action_newwin = "--new-window"
     remote_action_newtab = ""
@@ -355,7 +352,7 @@ class Opera(UnixBrowser):
 class Elinks(UnixBrowser):
     "Launcher class for Elinks browsers."
 
-    remote_args = ["-remote", "openURL(%s%action)"]
+    remote_args = ["-remote", "openURL(%s%action)"]  # noqa: RUF012
     remote_action = ""
     remote_action_newwin = ",new-window"
     remote_action_newtab = ",new-tab"
@@ -691,8 +688,8 @@ if sys.platform == "darwin":
             new = int(bool(new))
             if self.name == "default":
                 # User called open, open_new or get without a browser parameter
-                script = 'open location "%s"' % url.replace(
-                    '"', "%22"
+                script = 'open location "{}"'.format(
+                    url.replace('"', "%22")
                 )  # opens in default browser
             else:
                 # User called get and chose a browser
@@ -701,12 +698,12 @@ if sys.platform == "darwin":
                 else:
                     # Include toWindow parameter of OpenURL command for browsers
                     # that support it.  0 == new window; -1 == existing
-                    toWindow = "toWindow %d" % (new - 1)
-                cmd = 'OpenURL "%s"' % url.replace('"', "%22")
-                script = """tell application "%s"
+                    toWindow = "toWindow %d" % (new - 1)  # noqa: UP031
+                cmd = 'OpenURL "{}"'.format(url.replace('"', "%22"))
+                script = f"""tell application "{self.name}"
                                 activate
-                                %s %s
-                            end tell""" % (self.name, cmd, toWindow)
+                                {cmd} {toWindow}
+                            end tell"""
             # Open pipe to AppleScript through osascript command
             osapipe = os.popen("osascript", "w")
             if osapipe is None:
@@ -722,16 +719,16 @@ if sys.platform == "darwin":
 
         def open(self, url, new=0, autoraise=True):
             if self._name == "default":
-                script = 'open location "%s"' % url.replace(
-                    '"', "%22"
+                script = 'open location "{}"'.format(
+                    url.replace('"', "%22")
                 )  # opens in default browser
             else:
                 script = """
-                   tell application "%s"
+                   tell application "{}"
                        activate
-                       open location "%s"
+                       open location "{}"
                    end
-                   """ % (self._name, url.replace('"', "%22"))
+                   """.format(self._name, url.replace('"', "%22"))
 
             osapipe = os.popen("osascript", "w")
             if osapipe is None:
@@ -745,9 +742,9 @@ if sys.platform == "darwin":
 def main():
     import getopt
 
-    usage = """Usage: %s [-n | -t] url
+    usage = f"""Usage: {sys.argv[0]} [-n | -t] url
     -n: open new window
-    -t: open new tab""" % sys.argv[0]
+    -t: open new tab"""
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ntd")
     except getopt.error as msg:

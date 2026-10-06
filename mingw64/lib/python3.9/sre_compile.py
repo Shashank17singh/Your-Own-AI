@@ -138,7 +138,7 @@ def _compile(code, pattern, flags):
                 emit(ANY)
         elif op in REPEATING_CODES:
             if flags & SRE_FLAG_TEMPLATE:
-                raise error("internal: unsupported template operator %r" % (op,))
+                raise error(f"internal: unsupported template operator {op!r}")
             if _simple(av[2]):
                 if op is MAX_REPEAT:
                     emit(REPEAT_ONE)
@@ -209,7 +209,7 @@ def _compile(code, pattern, flags):
             emit(op)
             tail = []
             tailappend = tail.append
-            for av in av[1]:
+            for av in av[1]:  # noqa: B020
                 skip = _len(code)
                 emit(0)
                 # _compile_info(code, av, flags)
@@ -219,7 +219,7 @@ def _compile(code, pattern, flags):
                 emit(0)
                 code[skip] = _len(code) - skip
             emit(FAILURE)  # end of branch
-            for tail in tail:
+            for tail in tail:  # noqa: B020
                 code[tail] = _len(code) - tail
         elif op is CATEGORY:
             emit(op)
@@ -254,7 +254,7 @@ def _compile(code, pattern, flags):
             else:
                 code[skipyes] = _len(code) - skipyes + 1
         else:
-            raise error("internal: unsupported operand type %r" % (op,))
+            raise error(f"internal: unsupported operand type {op!r}")
 
 
 def _compile_charset(charset, flags, code):
@@ -279,7 +279,7 @@ def _compile_charset(charset, flags, code):
             else:
                 emit(av)
         else:
-            raise error("internal: unsupported set operator %r" % (op,))
+            raise error(f"internal: unsupported set operator {op!r}")
     emit(FAILURE)
 
 
@@ -514,7 +514,7 @@ def _get_charset_prefix(pattern, flags):
         op, av = pattern.data[0]
         if op is not SUBPATTERN:
             break
-        group, add_flags, del_flags, pattern = av
+        _group, add_flags, del_flags, pattern = av
         flags = _combine_flags(flags, add_flags, del_flags)
         if flags & SRE_FLAG_IGNORECASE and flags & SRE_FLAG_LOCALE:
             return None
@@ -633,7 +633,7 @@ def _code(p, flags):
 
 
 def _hex_code(code):
-    return "[%s]" % ", ".join("%#0*x" % (_sre.CODESIZE * 2 + 2, x) for x in code)
+    return "[{}]".format(", ".join("%#0*x" % (_sre.CODESIZE * 2 + 2, x) for x in code))  # noqa: UP031
 
 
 def dis(code):
@@ -647,9 +647,9 @@ def dis(code):
         def print_(*args, to=None):
             if to is not None:
                 labels.add(to)
-                args += ("(to %d)" % (to,),)
+                args += ("(to %d)" % (to,),)  # noqa: UP031
             print(
-                "%*d%s " % (offset_width, start, ":" if start in labels else "."),
+                "%*d%s " % (offset_width, start, ":" if start in labels else "."),  # noqa: UP031
                 end="  " * (level - 1),
             )
             print(*args)
@@ -680,7 +680,7 @@ def dis(code):
             ):
                 arg = code[i]
                 i += 1
-                print_(op, "%#02x (%r)" % (arg, chr(arg)))
+                print_(op, f"{arg:#02x} ({chr(arg)!r})")
             elif op is AT:
                 arg = code[i]
                 i += 1
@@ -701,7 +701,7 @@ def dis(code):
             elif op in (RANGE, RANGE_UNI_IGNORE):
                 lo, hi = code[i : i + 2]
                 i += 2
-                print_(op, "%#02x %#02x (%r-%r)" % (lo, hi, chr(lo), chr(hi)))
+                print_(op, f"{lo:#02x} {hi:#02x} ({chr(lo)!r}-{chr(hi)!r})")
             elif op is CHARSET:
                 print_(op, _hex_code(code[i : i + 256 // _CODEBITS]))
                 i += 256 // _CODEBITS
@@ -777,8 +777,8 @@ def dis(code):
                     prefix = code[start : start + prefix_len]
                     print_2(
                         "  prefix",
-                        "[%s]" % ", ".join("%#02x" % x for x in prefix),
-                        "(%r)" % "".join(map(chr, prefix)),
+                        "[{}]".format(", ".join(f"{x:#02x}" for x in prefix)),
+                        "({!r})".format("".join(map(chr, prefix))),
                     )
                     start += prefix_len
                     print_2("  overlap", code[start : start + prefix_len])

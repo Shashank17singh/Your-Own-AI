@@ -191,7 +191,7 @@ class Server:
             log_stack(LogLevel.FULL)
             result["success"] = False
             result["message"] = str(e)
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             log_stack()
             result["success"] = False
             result["message"] = str(e)
@@ -490,13 +490,13 @@ class Cancellable:
                 val = self._fn()
                 if self._result_q is not None:
                     self._result_q.put(val)
-        except (Exception, KeyboardInterrupt) as e:
+        except (Exception, KeyboardInterrupt) as e:  # noqa: BLE001
             if self._result_q is not None:
                 self._result_q.put(e)
             elif isinstance(e, KeyboardInterrupt):
                 pass
             else:
-                err_string = "%s, %s" % (e, type(e))
+                err_string = f"{e}, {type(e)}"
                 thread_log("caught exception: " + err_string)
                 log_stack()
 

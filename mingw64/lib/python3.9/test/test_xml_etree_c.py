@@ -72,13 +72,13 @@ class MiscTests(unittest.TestCase):
         # when the parser was part of a reference cycle.
 
         def parser_ref_cycle():
-            parser = cET.XMLParser()
+            cET.XMLParser()
             # Create a reference cycle using an exception to keep the frame
             # alive, so the parser will be destroyed by the garbage collector
             try:
                 raise ValueError
-            except ValueError as exc:
-                err = exc
+            except ValueError:
+                pass
 
         # Create a parser part of reference cycle
         parser_ref_cycle()
@@ -94,8 +94,8 @@ class MiscTests(unittest.TestCase):
 
         class X:
             def __del__(self):
-                elem.text
-                elem.tail
+                elem.text  # noqa: B018
+                elem.tail  # noqa: B018
                 elem.clear()
 
         elem.text = X()

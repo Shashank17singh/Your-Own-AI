@@ -62,16 +62,14 @@ class TestBase:
                     self.assertEqual(
                         result,
                         expected,
-                        "%a.decode(%r, %r)=%a != %a"
-                        % (source, self.encoding, scheme, result, expected),
+                        f"{source!a}.decode({self.encoding!r}, {scheme!r})={result!a} != {expected!a}",
                     )
                 else:
                     self.assertTrue(type(result) is bytes, type(result))
                     self.assertEqual(
                         result,
                         expected,
-                        "%a.encode(%r, %r)=%a != %a"
-                        % (source, self.encoding, scheme, result, expected),
+                        f"{source!a}.encode({self.encoding!r}, {scheme!r})={result!a} != {expected!a}",
                     )
             else:
                 self.assertRaises(UnicodeError, func, source, scheme)
@@ -93,13 +91,13 @@ class TestBase:
 
         def xmlcharnamereplace(exc):
             if not isinstance(exc, UnicodeEncodeError):
-                raise TypeError("don't know how to handle %r" % exc)
+                raise TypeError(f"don't know how to handle {exc!r}")
             l = []
             for c in exc.object[exc.start : exc.end]:
                 if ord(c) in codepoint2name:
-                    l.append("&%s;" % codepoint2name[ord(c)])
+                    l.append(f"&{codepoint2name[ord(c)]};")
                 else:
-                    l.append("&#%d;" % ord(c))
+                    l.append("&#%d;" % ord(c))  # noqa: UP031
             return ("".join(l), exc.end)
 
         codecs.register_error("test.xmlcharnamereplace", xmlcharnamereplace)
@@ -297,10 +295,10 @@ class TestBase:
 
 
 class TestBase_Mapping(unittest.TestCase):
-    pass_enctest = []
-    pass_dectest = []
-    supmaps = []
-    codectests = []
+    pass_enctest = []  # noqa: RUF012
+    pass_dectest = []  # noqa: RUF012
+    supmaps = []  # noqa: RUF012
+    codectests = []  # noqa: RUF012
 
     def setUp(self):
         try:
@@ -376,8 +374,7 @@ class TestBase_Mapping(unittest.TestCase):
                     self.assertEqual(
                         result,
                         expected,
-                        "%a.decode(%r, %r)=%a != %a"
-                        % (source, self.encoding, scheme, result, expected),
+                        f"{source!a}.decode({self.encoding!r}, {scheme!r})={result!a} != {expected!a}",
                     )
                 else:
                     result = func(self.encoding, scheme)
@@ -385,8 +382,7 @@ class TestBase_Mapping(unittest.TestCase):
                     self.assertEqual(
                         result,
                         expected,
-                        "%a.encode(%r, %r)=%a != %a"
-                        % (source, self.encoding, scheme, result, expected),
+                        f"{source!a}.encode({self.encoding!r}, {scheme!r})={result!a} != {expected!a}",
                     )
             else:
                 self.assertRaises(UnicodeError, func, self.encoding, scheme)

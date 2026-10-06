@@ -117,7 +117,7 @@ class Timer:
             stmtprefix = ""
             setup = "_setup()"
         else:
-            raise ValueError("setup is neither a string nor callable")
+            raise ValueError("setup is neither a string nor callable")  # noqa: TRY004
         if isinstance(stmt, str):
             # Check that the code can be compiled outside a function
             compile(stmtprefix + stmt, dummy_src_name, "exec")
@@ -127,11 +127,11 @@ class Timer:
             init += ", _stmt=_stmt"
             stmt = "_stmt()"
         else:
-            raise ValueError("stmt is neither a string nor callable")
+            raise ValueError("stmt is neither a string nor callable")  # noqa: TRY004
         src = template.format(stmt=stmt, setup=setup, init=init)
         self.src = src  # Save for traceback display
         code = compile(src, dummy_src_name, "exec")
-        exec(code, global_ns, local_ns)
+        exec(code, global_ns, local_ns)  # noqa: S102
         self.inner = local_ns["inner"]
 
     def print_exc(self, file=None):
@@ -361,7 +361,7 @@ def main(args=None, *, _wrap_timer=None):
 
         try:
             number, _ = t.autorange(callback)
-        except:
+        except:  # noqa: E722
             t.print_exc()
             return 1
 
@@ -370,7 +370,7 @@ def main(args=None, *, _wrap_timer=None):
 
     try:
         raw_timings = t.repeat(repeat, number)
-    except:
+    except:  # noqa: E722
         t.print_exc()
         return 1
 
@@ -386,16 +386,16 @@ def main(args=None, *, _wrap_timer=None):
                 if dt >= scale:
                     break
 
-        return "%.*g %s" % (precision, dt / scale, unit)
+        return "%.*g %s" % (precision, dt / scale, unit)  # noqa: UP031
 
     if verbose:
-        print("raw times: %s" % ", ".join(map(format_time, raw_timings)))
+        print("raw times: {}".format(", ".join(map(format_time, raw_timings))))
         print()
     timings = [dt / number for dt in raw_timings]
 
     best = min(timings)
     print(
-        "%d loop%s, best of %d: %s per loop"
+        "%d loop%s, best of %d: %s per loop"  # noqa: UP031
         % (number, "s" if number != 1 else "", repeat, format_time(best))
     )
 
@@ -406,8 +406,8 @@ def main(args=None, *, _wrap_timer=None):
 
         warnings.warn_explicit(
             "The test results are likely unreliable. "
-            "The worst time (%s) was more than four times "
-            "slower than the best time (%s)." % (format_time(worst), format_time(best)),
+            f"The worst time ({format_time(worst)}) was more than four times "
+            f"slower than the best time ({format_time(best)}).",
             UserWarning,
             "",
             0,

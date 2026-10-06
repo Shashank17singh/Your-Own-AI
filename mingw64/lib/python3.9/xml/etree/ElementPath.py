@@ -1,4 +1,4 @@
-import re
+import re  # noqa: N999
 
 xpath_tokenizer_re = re.compile(
     r"("
@@ -24,13 +24,13 @@ def xpath_tokenizer(pattern, namespaces=None):
                 try:
                     if not namespaces:
                         raise KeyError
-                    yield ttype, "{%s}%s" % (namespaces[prefix], uri)
+                    yield ttype, f"{{{namespaces[prefix]}}}{uri}"
                 except KeyError:
                     raise SyntaxError(
-                        "prefix %r not found in prefix map" % prefix
+                        f"prefix {prefix!r} not found in prefix map"
                     ) from None
             elif default_namespace and not parsing_attribute:
-                yield ttype, "{%s}%s" % (default_namespace, tag)
+                yield ttype, f"{{{default_namespace}}}{tag}"
             else:
                 yield token
             parsing_attribute = False

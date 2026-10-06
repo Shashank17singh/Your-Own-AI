@@ -170,7 +170,7 @@ def _create_and_install_waiters(fs, return_when):
         elif return_when == ALL_COMPLETED:
             waiter = _AllCompletedWaiter(pending_count, stop_on_exception=False)
         else:
-            raise ValueError("Invalid return condition: %r" % return_when)
+            raise ValueError(f"Invalid return condition: {return_when!r}")
 
     for f in fs:
         f._waiters.append(waiter)
@@ -224,7 +224,7 @@ def as_completed(fs, timeout=None):
     fs = set(fs)
     total_futures = len(fs)
     with _AcquireFutures(fs):
-        finished = set(f for f in fs if f._state in [CANCELLED_AND_NOTIFIED, FINISHED])
+        finished = {f for f in fs if f._state in [CANCELLED_AND_NOTIFIED, FINISHED]}
         pending = fs - finished
         waiter = _create_and_install_waiters(fs, _AS_COMPLETED)
     finished = list(finished)
@@ -238,7 +238,7 @@ def as_completed(fs, timeout=None):
                 wait_timeout = end_time - time.monotonic()
                 if wait_timeout < 0:
                     raise TimeoutError(
-                        "%d (of %d) futures unfinished" % (len(pending), total_futures)
+                        "%d (of %d) futures unfinished" % (len(pending), total_futures)  # noqa: UP031
                     )
 
             waiter.event.wait(wait_timeout)
@@ -289,12 +289,12 @@ def wait(fs, timeout=None, return_when=ALL_COMPLETED):
         futures.
     """
     with _AcquireFutures(fs):
-        done = set(f for f in fs if f._state in [CANCELLED_AND_NOTIFIED, FINISHED])
+        done = {f for f in fs if f._state in [CANCELLED_AND_NOTIFIED, FINISHED]}
         not_done = set(fs) - done
 
         if (return_when == FIRST_COMPLETED) and done:
             return DoneAndNotDoneFutures(done, not_done)
-        elif (return_when == FIRST_EXCEPTION) and done:
+        elif (return_when == FIRST_EXCEPTION) and done:  # noqa: SIM102
             if any(f for f in done if not f.cancelled() and f.exception() is not None):
                 return DoneAndNotDoneFutures(done, not_done)
 
@@ -335,24 +335,10 @@ class Future:
         with self._condition:
             if self._state == FINISHED:
                 if self._exception:
-                    return "<%s at %#x state=%s raised %s>" % (
-                        self.__class__.__name__,
-                        id(self),
-                        _STATE_TO_DESCRIPTION_MAP[self._state],
-                        self._exception.__class__.__name__,
-                    )
+                    return f"<{self.__class__.__name__} at {id(self):#x} state={_STATE_TO_DESCRIPTION_MAP[self._state]} raised {self._exception.__class__.__name__}>"
                 else:
-                    return "<%s at %#x state=%s returned %s>" % (
-                        self.__class__.__name__,
-                        id(self),
-                        _STATE_TO_DESCRIPTION_MAP[self._state],
-                        self._result.__class__.__name__,
-                    )
-            return "<%s at %#x state=%s>" % (
-                self.__class__.__name__,
-                id(self),
-                _STATE_TO_DESCRIPTION_MAP[self._state],
-            )
+                    return f"<{self.__class__.__name__} at {id(self):#x} state={_STATE_TO_DESCRIPTION_MAP[self._state]} returned {self._result.__class__.__name__}>"
+            return f"<{self.__class__.__name__} at {id(self):#x} state={_STATE_TO_DESCRIPTION_MAP[self._state]}>"
 
     def cancel(self):
         """Cancel the future if possible.
@@ -394,7 +380,7 @@ class Future:
                 raise self._exception
             finally:
                 # Break a reference cycle with the exception in self._exception
-                self = None
+                self = None  # noqa: PLW0642
         else:
             return self._result
 
@@ -451,7 +437,7 @@ class Future:
                     raise TimeoutError()
         finally:
             # Break a reference cycle with the exception in self._exception
-            self = None
+            self = None  # noqa: PLW0642
 
     def exception(self, timeout=None):
         """Return the exception raised by the call that the future represents.

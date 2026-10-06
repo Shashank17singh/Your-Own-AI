@@ -38,7 +38,7 @@ class InternalFunctionsTest(unittest.TestCase):
             for i in range(0, len(fmt_opts), 2):
                 self.assertEqual(result.pop(fmt_opts[i]), fmt_opts[i + 1])
             if result:
-                self.fail("result still got elements: %s" % result)
+                self.fail(f"result still got elements: {result}")
 
         self.assertFalse(ttk._format_optdict({}))
         check_against(
@@ -216,22 +216,13 @@ class InternalFunctionsTest(unittest.TestCase):
         def sample_expected(indent=0, indent_size=2):
             spaces = lambda amount=0: " " * (amount + indent)
             return (
-                "%sa -other {1 2 3} -children {\n"
-                "%sb -children {\n"
-                "%sc -something {1 2} -children {\n"
-                "%sd -nice opt\n"
-                "%s}\n"
-                "%s}\n"
-                "%s}"
-                % (
-                    spaces(),
-                    spaces(indent_size),
-                    spaces(2 * indent_size),
-                    spaces(3 * indent_size),
-                    spaces(2 * indent_size),
-                    spaces(indent_size),
-                    spaces(),
-                )
+                f"{spaces()}a -other {{1 2 3}} -children {{\n"
+                f"{spaces(indent_size)}b -children {{\n"
+                f"{spaces(2 * indent_size)}c -something {{1 2}} -children {{\n"
+                f"{spaces(3 * indent_size)}d -nice opt\n"
+                f"{spaces(2 * indent_size)}}}\n"
+                f"{spaces(indent_size)}}}\n"
+                f"{spaces()}}}"
             )
 
         self.assertEqual(ttk._format_layoutlist([])[0], "")
@@ -304,11 +295,11 @@ class InternalFunctionsTest(unittest.TestCase):
                 ttk._list_from_statespec((sspec, value)), [states + (res_value,)]
             )
 
-        states_even = tuple("state%d" % i for i in range(6))
+        states_even = tuple("state%d" % i for i in range(6))  # noqa: UP031
         statespec = MockStateSpec(*states_even)
         test_it(statespec, "val", "val", states_even)
         test_it(statespec, MockTclObj("val"), "val", states_even)
-        states_odd = tuple("state%d" % i for i in range(5))
+        states_odd = tuple("state%d" % i for i in range(5))  # noqa: UP031
         statespec = MockStateSpec(*states_odd)
         test_it(statespec, "val", "val", states_odd)
         test_it(("a", "b", "c"), MockTclObj("val"), "val", ("a", "b", "c"))

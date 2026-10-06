@@ -10,7 +10,7 @@ NTHREADS = 30
 def t1():
     try:
         pass
-    except Exception:
+    except Exception:  # noqa: BLE001
         traceback.print_exc()
         os._exit(1)
 
@@ -18,7 +18,7 @@ def t1():
 def t2():
     try:
         pass
-    except Exception:
+    except Exception:  # noqa: BLE001
         traceback.print_exc()
         os._exit(1)
 

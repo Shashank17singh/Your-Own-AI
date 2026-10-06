@@ -309,7 +309,7 @@ def islink(path):
 def lexists(path):
     """Test whether a path exists.  Returns True for broken symbolic links"""
     try:
-        st = os.lstat(path)
+        os.lstat(path)
     except (OSError, ValueError):
         return False
     return True
@@ -784,7 +784,7 @@ def relpath(path, start=None):
         path_drive, path_rest = splitdrive(path_abs)
         if normcase(start_drive) != normcase(path_drive):
             raise ValueError(
-                "path is on mount %r, start on mount %r" % (path_drive, start_drive)
+                f"path is on mount {path_drive!r}, start on mount {start_drive!r}"
             )
 
         start_list = [x for x in start_rest.split(sep) if x]
@@ -835,14 +835,14 @@ def commonpath(paths):
         split_paths = [p.split(sep) for d, p in drivesplits]
 
         try:
-            (isabs,) = set(p[:1] == sep for d, p in drivesplits)
+            (isabs,) = {p[:1] == sep for d, p in drivesplits}
         except ValueError:
             raise ValueError("Can't mix absolute and relative paths") from None
 
         # Check that all drive letters or UNC paths match. The check is made only
         # now otherwise type errors for mixing strings and bytes would not be
         # caught.
-        if len(set(d for d, p in drivesplits)) != 1:
+        if len({d for d, p in drivesplits}) != 1:
             raise ValueError("Paths don't have the same drive")
 
         drive, path = splitdrive(paths[0].replace(altsep, sep))

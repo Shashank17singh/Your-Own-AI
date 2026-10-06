@@ -46,13 +46,13 @@ class DictVersionTests(unittest.TestCase):
 
     def test_constructor(self):
         # new empty dictionaries must all have an unique version
-        empty1 = self.new_dict()
-        empty2 = self.new_dict()
-        empty3 = self.new_dict()
+        self.new_dict()
+        self.new_dict()
+        self.new_dict()
 
         # non-empty dictionaries must also have an unique version
-        nonempty1 = self.new_dict(x="x")
-        nonempty2 = self.new_dict(x="x", y="y")
+        self.new_dict(x="x")
+        self.new_dict(x="x", y="y")
 
     def test_copy(self):
         d = self.new_dict(a=1, b=2)

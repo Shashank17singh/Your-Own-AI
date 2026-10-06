@@ -26,7 +26,7 @@ all_test_classes = []
 
 for module, suffix in zip(test_modules, test_suffixes):
     test_classes = []
-    for name, cls in module.__dict__.items():
+    for cls in module.__dict__.values():
         if not isinstance(cls, type):
             continue
         if issubclass(cls, unittest.TestCase):

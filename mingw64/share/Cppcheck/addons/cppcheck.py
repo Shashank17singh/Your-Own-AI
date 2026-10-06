@@ -32,11 +32,11 @@ def runcheckers():
     __addon_name__ = os.path.splitext(os.path.basename(addon))[0]
     for dumpfile in args.dumpfile:
         if not args.quiet:
-            print("Checking %s..." % dumpfile)
+            print(f"Checking {dumpfile}...")
         data = cppcheckdata.CppcheckData(dumpfile)
         for cfg in data.iterconfigurations():
             if not args.quiet:
-                print("Checking %s, config %s..." % (dumpfile, cfg.name))
+                print(f"Checking {dumpfile}, config {cfg.name}...")
             for c in __checkers__:
                 __errorid__ = c.__name__
                 c(cfg, data)

@@ -14,24 +14,24 @@ expatreader -- Driver that allows use of the Expat parser with SAX.
 """
 
 from ._exceptions import (
-    SAXException,
-    SAXNotRecognizedException,
-    SAXNotSupportedException,
-    SAXParseException,
+    SAXException,  # noqa: F401
+    SAXNotRecognizedException,  # noqa: F401
+    SAXNotSupportedException,  # noqa: F401
+    SAXParseException,  # noqa: F401
     SAXReaderNotAvailable,
 )
-from .handler import ContentHandler, ErrorHandler
+from .handler import ContentHandler, ErrorHandler  # noqa: F401
 from .xmlreader import InputSource
 
 
-def parse(source, handler, errorHandler=ErrorHandler()):
+def parse(source, handler, errorHandler=ErrorHandler()):  # noqa: B008
     parser = make_parser()
     parser.setContentHandler(handler)
     parser.setErrorHandler(errorHandler)
     parser.parse(source)
 
 
-def parseString(string, handler, errorHandler=ErrorHandler()):
+def parseString(string, handler, errorHandler=ErrorHandler()):  # noqa: B008
     import io
 
     if errorHandler is None:
@@ -50,7 +50,7 @@ def parseString(string, handler, errorHandler=ErrorHandler()):
 default_parser_list = ["xml.sax.expatreader"]
 _false = 0
 if _false:
-    import xml.sax.expatreader
+    import xml.sax.expatreader  # noqa: F401
 import os
 import sys
 

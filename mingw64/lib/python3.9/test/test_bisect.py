@@ -218,7 +218,7 @@ class TestInsort:
     def test_vsBuiltinSort(self, n=500):
         from random import choice
 
-        for insorted in (list(), UserList()):
+        for insorted in ([], UserList()):
             for i in range(n):
                 digit = choice("0123456789")
                 if digit in "02468":
@@ -233,7 +233,7 @@ class TestInsort:
 
     def test_listDerived(self):
         class List(list):
-            data = []
+            data = []  # noqa: RUF012
 
             def insert(self, index, item):
                 self.data.insert(index, item)
@@ -343,7 +343,9 @@ class TestErrorHandlingC(TestErrorHandling, unittest.TestCase):
 
 class TestDocExample:
     def test_grades(self):
-        def grade(score, breakpoints=[60, 70, 80, 90], grades="FDCBA"):
+        def grade(score, breakpoints=None, grades="FDCBA"):
+            if breakpoints is None:
+                breakpoints = [60, 70, 80, 90]
             i = self.module.bisect(breakpoints, score)
             return grades[i]
 

@@ -775,10 +775,10 @@ class SyntaxTestCase(unittest.TestCase):
             compile(code, filename, mode)
         except SyntaxError as err:
             if subclass and not isinstance(err, subclass):
-                self.fail("SyntaxError is not a %s" % subclass.__name__)
+                self.fail(f"SyntaxError is not a {subclass.__name__}")
             mo = re.search(errtext, str(err))
             if mo is None:
-                self.fail("SyntaxError did not contain %r" % (errtext,))
+                self.fail(f"SyntaxError did not contain {errtext!r}")
             self.assertEqual(err.filename, filename)
             if lineno is not None:
                 self.assertEqual(err.lineno, lineno)
@@ -876,7 +876,7 @@ class SyntaxTestCase(unittest.TestCase):
         self._check_error("class C:\n  if 0: return\n  else: x= 1", "outside function")
         self._check_error("class C:\n  if 1: pass\n  else: return", "outside function")
 
-    def test_break_outside_loop(self):
+    def test_break_outside_loop(self):  # noqa: F811
         self._check_error("if 0: break", "outside loop")
         self._check_error("if 0: break\nelse:  x=1", "outside loop")
         self._check_error("if 1: pass\nelse: break", "outside loop")
@@ -1020,7 +1020,7 @@ while 1:
 
 def test_main():
     support.run_unittest(SyntaxTestCase)
-    from test import test_syntax
+    from test import test_syntax  # noqa: PLW0406
 
     support.run_doctest(test_syntax, verbosity=True)
 

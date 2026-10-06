@@ -70,7 +70,7 @@ class TestServerThread(threading.Thread):
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self._threads = support.threading_setup()
-        os.environ = support.EnvironmentVarGuard()
+        os.environ = support.EnvironmentVarGuard()  # noqa: B003
         self.server_started = threading.Event()
         self.thread = TestServerThread(self, self.request_handler)
         self.thread.start()
@@ -82,7 +82,9 @@ class BaseTestCase(unittest.TestCase):
         os.environ.__exit__()
         support.threading_cleanup(*self._threads)
 
-    def request(self, uri, method="GET", body=None, headers={}):
+    def request(self, uri, method="GET", body=None, headers=None):
+        if headers is None:
+            headers = {}
         self.connection = http.client.HTTPConnection(self.HOST, self.PORT)
         self.connection.request(method, uri, body, headers)
         return self.connection.getresponse()
@@ -371,7 +373,7 @@ class SimpleHTTPServerTestCase(BaseTestCase):
             os.chdir(self.cwd)
             try:
                 shutil.rmtree(self.tempdir)
-            except:
+            except:  # noqa: E722, S110
                 pass
         finally:
             BaseTestCase.tearDown(self)
@@ -424,11 +426,9 @@ class SimpleHTTPServerTestCase(BaseTestCase):
                     break
         body = self.check_status_and_reason(response, HTTPStatus.OK)
         quotedname = urllib.parse.quote(filename, errors="surrogatepass")
-        self.assertIn(('href="%s"' % quotedname).encode(enc, "surrogateescape"), body)
+        self.assertIn((f'href="{quotedname}"').encode(enc, "surrogateescape"), body)
         self.assertIn(
-            (">%s<" % html.escape(filename, quote=False)).encode(
-                enc, "surrogateescape"
-            ),
+            (f">{html.escape(filename, quote=False)}<").encode(enc, "surrogateescape"),
             body,
         )
         response = self.request(self.base_url + "/" + quotedname)
@@ -557,7 +557,7 @@ class SimpleHTTPServerTestCase(BaseTestCase):
             open(fullpath, "w").close()
         except OSError:
             raise unittest.SkipTest(
-                "Can not create file %s on current file system" % filename
+                f"Can not create file {filename} on current file system"
             )
 
         try:
@@ -568,7 +568,7 @@ class SimpleHTTPServerTestCase(BaseTestCase):
             os.unlink(fullpath)  # avoid affecting test_undecodable_filename
 
         self.assertIsNotNone(enc)
-        html_text = ">%s<" % html.escape(filename, quote=False)
+        html_text = f">{html.escape(filename, quote=False)}<"
         self.assertIn(html_text.encode(enc), body)
 
 
@@ -775,7 +775,7 @@ class CGIHTTPServerTestCase(BaseTestCase):
                 self.assertEqual(
                     expected,
                     actual,
-                    msg="path = %r\nGot:    %r\nWanted: %r" % (path, actual, expected),
+                    msg=f"path = {path!r}\nGot:    {actual!r}\nWanted: {expected!r}",
                 )
 
     def test_headers_and_content(self):
@@ -1166,8 +1166,8 @@ class BaseHTTPRequestHandlerTestCase(unittest.TestCase):
     def test_date_time_string(self):
         now = time.time()
         # this is the old code that formats the timestamp
-        year, month, day, hh, mm, ss, wd, y, z = time.gmtime(now)
-        expected = "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+        year, month, day, hh, mm, ss, wd, _y, _z = time.gmtime(now)
+        expected = "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (  # noqa: UP031
             self.handler.weekdayname[wd],
             day,
             self.handler.monthname[month],

@@ -76,11 +76,11 @@ class AutoCompleteWindow:
             i += 1
         if i < len(self.start):
             self.widget.delete(
-                "%s+%dc" % (self.startindex, i),
-                "%s+%dc" % (self.startindex, len(self.start)),
+                "%s+%dc" % (self.startindex, i),  # noqa: UP031
+                "%s+%dc" % (self.startindex, len(self.start)),  # noqa: UP031
             )
         if i < len(newstart):
-            self.widget.insert("%s+%dc" % (self.startindex, i), newstart[i:])
+            self.widget.insert("%s+%dc" % (self.startindex, i), newstart[i:])  # noqa: UP031
         self.start = newstart
 
     def _binary_search(self, s):
@@ -270,7 +270,7 @@ class AutoCompleteWindow:
             # Position the completion list window
             text = self.widget
             text.see(self.startindex)
-            x, y, cx, cy = text.bbox(self.startindex)
+            x, y, _cx, cy = text.bbox(self.startindex)
             acw = self.autocompletewindow
             if platform.system().startswith("Windows"):
                 # On Windows an update() call is needed for the completion
@@ -292,7 +292,7 @@ class AutoCompleteWindow:
             else:
                 # place acw above current line
                 new_y -= acw_height
-            acw.wm_geometry("+%d+%d" % (new_x, new_y))
+            acw.wm_geometry("+%d+%d" % (new_x, new_y))  # noqa: UP031
             acw.update_idletasks()
         except TclError:
             pass
@@ -483,7 +483,7 @@ class AutoCompleteWindow:
         if not self.is_active():
             return
         if self.widget.index("insert") != self.widget.index(
-            "%s+%dc" % (self.startindex, len(self.start))
+            "%s+%dc" % (self.startindex, len(self.start))  # noqa: UP031
         ):
             # If we didn't catch an event which moved the insert, close window
             self.hide_window()

@@ -156,7 +156,7 @@ def dyld_find(name, executable_path=None, env=None):
         except NotImplementedError:
             pass
 
-    raise ValueError("dylib %s could not be found" % (name,))
+    raise ValueError(f"dylib {name} could not be found")
 
 
 def framework_find(fn, executable_path=None, env=None):
@@ -187,7 +187,6 @@ def framework_find(fn, executable_path=None, env=None):
 
 
 def test_dyld_find():
-    env = {}
     assert dyld_find("libSystem.dylib") == "/usr/lib/libSystem.dylib"
     assert (
         dyld_find("System.framework/System")

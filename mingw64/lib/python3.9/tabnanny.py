@@ -93,7 +93,7 @@ def check(file):
 
     if os.path.isdir(file) and not os.path.islink(file):
         if verbose:
-            print("%r: listing directory" % (file,))
+            print(f"{file!r}: listing directory")
         names = os.listdir(file)
         for name in names:
             fullname = os.path.join(file, name)
@@ -106,31 +106,31 @@ def check(file):
         return
 
     try:
-        f = tokenize.open(file)
+        f = tokenize.open(file)  # noqa: SIM115
     except OSError as msg:
-        errprint("%r: I/O Error: %s" % (file, msg))
+        errprint(f"{file!r}: I/O Error: {msg}")
         return
 
     if verbose > 1:
-        print("checking %r ..." % file)
+        print(f"checking {file!r} ...")
 
     try:
         process_tokens(tokenize.generate_tokens(f.readline))
 
     except tokenize.TokenError as msg:
-        errprint("%r: Token Error: %s" % (file, msg))
+        errprint(f"{file!r}: Token Error: {msg}")
         return
 
     except IndentationError as msg:
-        errprint("%r: Indentation Error: %s" % (file, msg))
+        errprint(f"{file!r}: Indentation Error: {msg}")
         return
 
     except NannyNag as nag:
         badline = nag.get_lineno()
         line = nag.get_line()
         if verbose:
-            print("%r: *** Line %d: trouble in tab city! ***" % (file, badline))
-            print("offending line: %r" % (line,))
+            print("%r: *** Line %d: trouble in tab city! ***" % (file, badline))  # noqa: UP031
+            print(f"offending line: {line!r}")
             print(nag.get_msg())
         else:
             if " " in file:
@@ -145,7 +145,7 @@ def check(file):
         f.close()
 
     if verbose:
-        print("%r: Clean bill of health." % (file,))
+        print(f"{file!r}: Clean bill of health.")
 
 
 class Whitespace:

@@ -27,7 +27,7 @@ usage: %(script)s [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
 
 
 def gen_usage(script_name):
-    script = os.path.basename(script_name)
+    os.path.basename(script_name)
     return USAGE % vars()
 
 
@@ -113,7 +113,7 @@ def setup(**attrs):
     object.
     """
 
-    global _setup_stop_after, _setup_distribution
+    global _setup_stop_after, _setup_distribution  # noqa: PLW0602
 
     # Determine the distribution class -- either caller-supplied or
     # our Distribution (see below).
@@ -134,9 +134,9 @@ def setup(**attrs):
         _setup_distribution = dist = klass(attrs)
     except DistutilsSetupError as msg:
         if "name" not in attrs:
-            raise SystemExit("error in setup command: %s" % msg)
+            raise SystemExit(f"error in setup command: {msg}")
         else:
-            raise SystemExit("error in %s setup command: %s" % (attrs["name"], msg))
+            raise SystemExit("error in {} setup command: {}".format(attrs["name"], msg))
 
     if _setup_stop_after == "init":
         return dist
@@ -158,7 +158,7 @@ def setup(**attrs):
     try:
         ok = dist.parse_command_line()
     except DistutilsArgError as msg:
-        raise SystemExit(gen_usage(dist.script_name) + "\nerror: %s" % msg)
+        raise SystemExit(gen_usage(dist.script_name) + f"\nerror: {msg}")
 
     if DEBUG:
         print("options (after parsing command line):")
@@ -175,10 +175,10 @@ def setup(**attrs):
             raise SystemExit("interrupted")
         except OSError as exc:
             if DEBUG:
-                sys.stderr.write("error: %s\n" % (exc,))
+                sys.stderr.write(f"error: {exc}\n")
                 raise
             else:
-                raise SystemExit("error: %s" % (exc,))
+                raise SystemExit(f"error: {exc}")
 
         except (DistutilsError, CCompilerError) as msg:
             if DEBUG:
@@ -224,9 +224,9 @@ def run_setup(script_name, script_args=None, stop_after="run"):
     used to drive the Distutils.
     """
     if stop_after not in ("init", "config", "commandline", "run"):
-        raise ValueError("invalid value for 'stop_after': %r" % (stop_after,))
+        raise ValueError(f"invalid value for 'stop_after': {stop_after!r}")
 
-    global _setup_stop_after, _setup_distribution
+    global _setup_stop_after, _setup_distribution  # noqa: PLW0602
     _setup_stop_after = stop_after
 
     save_argv = sys.argv.copy()
@@ -237,7 +237,7 @@ def run_setup(script_name, script_args=None, stop_after="run"):
             if script_args is not None:
                 sys.argv[1:] = script_args
             with open(script_name, "rb") as f:
-                exec(f.read(), g)
+                exec(f.read(), g)  # noqa: S102
         finally:
             sys.argv = save_argv
             _setup_stop_after = None
@@ -248,11 +248,8 @@ def run_setup(script_name, script_args=None, stop_after="run"):
 
     if _setup_distribution is None:
         raise RuntimeError(
-            (
-                "'distutils.core.setup()' was never called -- "
-                "perhaps '%s' is not a Distutils setup script?"
-            )
-            % script_name
+            "'distutils.core.setup()' was never called -- "
+            f"perhaps '{script_name}' is not a Distutils setup script?"
         )
 
     # I wonder if the setup script's namespace -- g and l -- would be of

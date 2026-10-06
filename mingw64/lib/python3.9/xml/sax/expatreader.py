@@ -131,7 +131,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
             return 0
         elif name == feature_external_ges:
             return self._external_ges
-        raise SAXNotRecognizedException("Feature '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Feature '{name}' not recognized")
 
     def setFeature(self, name, state):
         if self._parsing:
@@ -160,7 +160,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
                     "expat does not report namespace prefixes"
                 )
         else:
-            raise SAXNotRecognizedException("Feature '%s' not recognized" % name)
+            raise SAXNotRecognizedException(f"Feature '{name}' not recognized")
 
     def getProperty(self, name):
         if name == handler.property_lexical_handler:
@@ -179,7 +179,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
                 raise SAXNotSupportedException(
                     "XML string cannot be returned when not parsing"
                 )
-        raise SAXNotRecognizedException("Property '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Property '{name}' not recognized")
 
     def setProperty(self, name, value):
         if name == handler.property_lexical_handler:
@@ -189,9 +189,9 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
         elif name == property_interning_dict:
             self._interning = value
         elif name == property_xml_string:
-            raise SAXNotSupportedException("Property '%s' cannot be set" % name)
+            raise SAXNotSupportedException(f"Property '{name}' cannot be set")
         else:
-            raise SAXNotRecognizedException("Property '%s' not recognized" % name)
+            raise SAXNotRecognizedException(f"Property '{name}' not recognized")
 
     def feed(self, data, isFinal=False):
         if not self._parsing:
@@ -330,7 +330,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
                 qname = aname
                 apair = (None, aname)
             elif length == 3:
-                qname = "%s:%s" % (parts[2], parts[1])
+                qname = f"{parts[2]}:{parts[1]}"
                 apair = parts[0], parts[1]
             else:
                 qname = parts[1]
@@ -382,7 +382,7 @@ class ExpatParser(xmlreader.IncrementalParser, xmlreader.Locator):
         self._source = source
         try:
             xmlreader.IncrementalParser.parse(self, source)
-        except:
+        except:  # noqa: E722
             return 0  # FIXME: save error info here?
         self._parser, self._source = self._entity_stack[-1]
         del self._entity_stack[-1]

@@ -38,7 +38,7 @@ def run():
     os.dup2(wfd, 2, True)
     os.close(wfd)
     global server
-    server = Server(open(saved_in, "rb"), open(saved_out, "wb"), open(rfd, "r"))
+    server = Server(open(saved_in, "rb"), open(saved_out, "wb"), open(rfd, "r"))  # noqa: SIM115
 
 
 session_started = False

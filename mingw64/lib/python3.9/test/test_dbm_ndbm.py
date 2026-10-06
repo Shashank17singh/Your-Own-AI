@@ -10,7 +10,7 @@ from dbm.ndbm import error
 class DbmTestCase(unittest.TestCase):
     def setUp(self):
         self.filename = support.TESTFN
-        self.d = dbm.ndbm.open(self.filename, "c")
+        self.d = dbm.ndbm.open(self.filename, "c")  # noqa: SIM115
         self.d.close()
 
     def tearDown(self):
@@ -18,7 +18,7 @@ class DbmTestCase(unittest.TestCase):
             support.unlink(self.filename + suffix)
 
     def test_keys(self):
-        self.d = dbm.ndbm.open(self.filename, "c")
+        self.d = dbm.ndbm.open(self.filename, "c")  # noqa: SIM115
         self.assertEqual(self.d.keys(), [])
         self.d["a"] = "b"
         self.d[b"bytes"] = b"data"
@@ -42,7 +42,7 @@ class DbmTestCase(unittest.TestCase):
             self.skipTest(
                 "Berkeley DB doesn't distinguish the empty value from the absent one"
             )
-        self.d = dbm.ndbm.open(self.filename, "c")
+        self.d = dbm.ndbm.open(self.filename, "c")  # noqa: SIM115
         self.assertEqual(self.d.keys(), [])
         self.d["empty"] = ""
         self.assertEqual(self.d.keys(), [b"empty"])
@@ -55,7 +55,7 @@ class DbmTestCase(unittest.TestCase):
     def test_modes(self):
         for mode in ["r", "rw", "w", "n"]:
             try:
-                self.d = dbm.ndbm.open(self.filename, mode)
+                self.d = dbm.ndbm.open(self.filename, mode)  # noqa: SIM115
                 self.d.close()
             except error:
                 self.fail()
@@ -128,7 +128,7 @@ class DbmTestCase(unittest.TestCase):
     def test_nonexisting_file(self):
         nonexisting_file = "nonexisting-file"
         with self.assertRaises(dbm.ndbm.error) as cm:
-            dbm.ndbm.open(nonexisting_file)
+            dbm.ndbm.open(nonexisting_file)  # noqa: SIM115
         self.assertIn(nonexisting_file, str(cm.exception))
         self.assertEqual(cm.exception.filename, nonexisting_file)
 

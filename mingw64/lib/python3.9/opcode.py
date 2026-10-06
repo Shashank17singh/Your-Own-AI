@@ -27,7 +27,7 @@ __all__ = [
 #     --Larry Hastings, 2013/11/23
 
 try:
-    from _opcode import stack_effect
+    from _opcode import stack_effect  # noqa: F401
 
     __all__.append("stack_effect")
 except ImportError:
@@ -45,7 +45,7 @@ hasfree = []
 hasnargs = []  # unused
 
 opmap = {}
-opname = ["<%r>" % (op,) for op in range(256)]
+opname = [f"<{op!r}>" for op in range(256)]
 
 
 def def_op(name, op):
@@ -54,17 +54,17 @@ def def_op(name, op):
 
 
 def name_op(name, op):
-    def_op(name, op)
+    def_op(name, op)  # noqa: F821
     hasname.append(op)
 
 
 def jrel_op(name, op):
-    def_op(name, op)
+    def_op(name, op)  # noqa: F821
     hasjrel.append(op)
 
 
 def jabs_op(name, op):
-    def_op(name, op)
+    def_op(name, op)  # noqa: F821
     hasjabs.append(op)
 
 

@@ -118,30 +118,30 @@ class TracebackCases(unittest.TestCase):
             e = None
             try:
                 f()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 e = exc
-            raise Exception from e
+            raise Exception from e  # noqa: TRY002
 
         try:
             f()
-        except Exception:
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
 
         traceback.format_exception(exc_info[0], exc_info[1], exc_info[2])
 
     def test_format_exception_only_bad__str__(self):
         class X(Exception):
-            def __str__(self):
-                1 / 0
+            def __str__(self):  # noqa: PLE0307
+                1 / 0  # noqa: B018
 
         err = traceback.format_exception_only(X, X())
         self.assertEqual(len(err), 1)
-        str_value = "<unprintable %s object>" % X.__name__
+        str_value = f"<unprintable {X.__name__} object>"
         if X.__module__ in ("__main__", "builtins"):
             str_name = X.__qualname__
         else:
-            str_name = ".".join([X.__module__, X.__qualname__])
-        self.assertEqual(err[0], "%s: %s\n" % (str_name, str_value))
+            str_name = f"{X.__module__}.{X.__qualname__}"
+        self.assertEqual(err[0], f"{str_name}: {str_value}\n")
 
     def test_encoded_file(self):
         # Test that tracebacks are correctly printed for encoded source files:
@@ -158,7 +158,7 @@ class TracebackCases(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        stdout, stderr = process.communicate()
+        stdout, _stderr = process.communicate()
         output_encoding = str(stdout, "ascii").splitlines()[0]
 
         def do_test(firstlines, message, charset, lineno):
@@ -175,7 +175,7 @@ class TracebackCases(unittest.TestCase):
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                 )
-                stdout, stderr = process.communicate()
+                stdout, _stderr = process.communicate()
                 stdout = stdout.decode(output_encoding).splitlines()
             finally:
                 unlink(TESTFN)
@@ -189,7 +189,7 @@ class TracebackCases(unittest.TestCase):
             err_msg = f"RuntimeError: {message_ascii}"
 
             self.assertIn(
-                ("line %s" % lineno),
+                (f"line {lineno}"),
                 stdout[1],
                 f"Invalid line number: {stdout[1]!r} instead of {lineno}",
             )
@@ -241,7 +241,7 @@ class TracebackCases(unittest.TestCase):
             # when the module is unloaded
             obj = PrintExceptionAtExit()
         """)
-        rc, stdout, stderr = assert_python_ok("-c", code)
+        _rc, _stdout, stderr = assert_python_ok("-c", code)
         expected = [
             b"Traceback (most recent call last):",
             b'  File "<string>", line 8, in __init__',
@@ -266,7 +266,7 @@ class TracebackFormatTests(unittest.TestCase):
         try:
             self.some_exception()
         except KeyError:
-            type_, value, tb = sys.exc_info()
+            type_, _value, tb = sys.exc_info()  # noqa: RUF059
             if cleanup_func is not None:
                 # Clear the inner frames, not this one
                 cleanup_func(tb.tb_next)
@@ -339,9 +339,9 @@ class TracebackFormatTests(unittest.TestCase):
         self.assertEqual(
             stderr.getvalue().splitlines()[-4:],
             [
-                '  File "%s", line %d, in test_print_stack' % (__file__, lineno + 3),
+                '  File "%s", line %d, in test_print_stack' % (__file__, lineno + 3),  # noqa: UP031
                 "    prn()",
-                '  File "%s", line %d, in prn' % (__file__, lineno + 1),
+                '  File "%s", line %d, in prn' % (__file__, lineno + 1),  # noqa: UP031
                 "    traceback.print_stack()",
             ],
         )
@@ -535,7 +535,7 @@ class TracebackFormatTests(unittest.TestCase):
         from _testcapi import exception_print
 
         def render_exc():
-            exc_type, exc_value, exc_tb = sys.exc_info()
+            _exc_type, exc_value, _exc_tb = sys.exc_info()
             exception_print(exc_value)
 
         self._check_recursive_traceback_display(render_exc)
@@ -549,9 +549,9 @@ class TracebackFormatTests(unittest.TestCase):
         self.assertEqual(
             result[-2:],
             [
-                '  File "%s", line %d, in test_format_stack\n'
+                '  File "%s", line %d, in test_format_stack\n'  # noqa: UP031
                 "    result = fmt()\n" % (__file__, lineno + 2),
-                '  File "%s", line %d, in fmt\n'
+                '  File "%s", line %d, in fmt\n'  # noqa: UP031
                 "    return traceback.format_stack()\n" % (__file__, lineno + 1),
             ],
         )
@@ -572,7 +572,7 @@ class TracebackFormatTests(unittest.TestCase):
             try:
                 raise ex1
             except UnhashableException:
-                exc_type, exc_val, exc_tb = sys.exc_info()
+                _exc_type, exc_val, _exc_tb = sys.exc_info()
 
         with captured_output("stderr") as stderr_f:
             exception_print(exc_val)
@@ -592,9 +592,7 @@ context_message = (
     "\nDuring handling of the above exception, another exception occurred:\n\n"
 )
 
-boundaries = re.compile(
-    "(%s|%s)" % (re.escape(cause_message), re.escape(context_message))
-)
+boundaries = re.compile(f"({re.escape(cause_message)}|{re.escape(context_message)})")
 
 
 class BaseExceptionReportingTests:
@@ -603,11 +601,11 @@ class BaseExceptionReportingTests:
             return exception_or_callable
         try:
             exception_or_callable()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             return e
 
     def zero_div(self):
-        1 / 0  # In zero_div
+        1 / 0  # In zero_div  # noqa: B018
 
     def check_zero_div(self, msg):
         lines = msg.splitlines()
@@ -617,7 +615,7 @@ class BaseExceptionReportingTests:
 
     def test_simple(self):
         try:
-            1 / 0  # Marker
+            1 / 0  # Marker  # noqa: B018
         except ZeroDivisionError as _:
             e = _
         lines = self.get_report(e).splitlines()
@@ -662,8 +660,8 @@ class BaseExceptionReportingTests:
     def test_context_suppression(self):
         try:
             try:
-                raise Exception
-            except:
+                raise Exception  # noqa: TRY002
+            except:  # noqa: E722
                 raise ZeroDivisionError from None
         except ZeroDivisionError as _:
             e = _
@@ -683,7 +681,7 @@ class BaseExceptionReportingTests:
             except ZeroDivisionError as _e:
                 e = _e
             try:
-                xyzzy
+                xyzzy  # noqa: B018
             except NameError:
                 raise KeyError from e
 
@@ -734,7 +732,7 @@ class BaseExceptionReportingTests:
         self.assertEqual(msg[-2], "        ^")
 
         def e():
-            exec("x = 5 | 4 |")
+            exec("x = 5 | 4 |")  # noqa: S102
 
         msg = self.get_report(e).splitlines()
         self.assertEqual(msg[-2], "               ^")
@@ -778,15 +776,15 @@ class BaseExceptionReportingTests:
     def test_syntax_error_various_offsets(self):
         for offset in range(-5, 10):
             for add in [0, 2]:
-                text = " " * add + "text%d" % offset
+                text = " " * add + "text%d" % offset  # noqa: UP031
                 expected = ['  File "file.py", line 1']
                 if offset < 1:
-                    expected.append("    %s" % text.lstrip())
+                    expected.append(f"    {text.lstrip()}")
                 elif offset <= 6:
-                    expected.append("    %s" % text.lstrip())
+                    expected.append(f"    {text.lstrip()}")
                     expected.append("    %s^" % (" " * (offset - 1)))
                 else:
-                    expected.append("    %s" % text.lstrip())
+                    expected.append(f"    {text.lstrip()}")
                     expected.append("    %s^" % (" " * 5))
                 expected.append("SyntaxError: msg")
                 expected.append("")
@@ -832,7 +830,7 @@ class LimitTests(unittest.TestCase):
     It's enough to test extact_tb, extract_stack and format_exception"""
 
     def last_raises1(self):
-        raise Exception("Last raised")
+        raise Exception("Last raised")  # noqa: TRY002
 
     def last_raises2(self):
         self.last_raises1()
@@ -894,8 +892,8 @@ class LimitTests(unittest.TestCase):
     def test_extract_tb(self):
         try:
             self.last_raises5()
-        except Exception:
-            exc_type, exc_value, tb = sys.exc_info()
+        except Exception:  # noqa: BLE001
+            _exc_type, _exc_value, tb = sys.exc_info()
 
         def extract(**kwargs):
             return traceback.extract_tb(tb, **kwargs)
@@ -922,7 +920,7 @@ class LimitTests(unittest.TestCase):
     def test_format_exception(self):
         try:
             self.last_raises5()
-        except Exception:
+        except Exception:  # noqa: BLE001
             exc_type, exc_value, tb = sys.exc_info()
 
         # [1:-1] to exclude "Traceback (...)" header and
@@ -963,13 +961,12 @@ class MiscTracebackCases(unittest.TestCase):
             inner()
 
         def inner():
-            i = 1
-            1 / 0
+            1 / 0  # noqa: B018
 
         try:
             outer()
-        except:
-            type_, value, tb = sys.exc_info()
+        except:  # noqa: E722
+            type_, _value, tb = sys.exc_info()  # noqa: RUF059
 
         # Initial assertion: there's one local in the inner frame.
         inner_frame = tb.tb_next.tb_next.tb_next.tb_frame
@@ -1043,8 +1040,8 @@ class TestStack(unittest.TestCase):
 
     def test_walk_tb(self):
         try:
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             _, _, tb = sys.exc_info()
         s = list(traceback.walk_tb(tb))
         self.assertEqual(len(s), 1)
@@ -1107,8 +1104,6 @@ class TestStack(unittest.TestCase):
 
     def test_format_locals(self):
         def some_inner(k, v):
-            a = 1
-            b = 2
             return traceback.StackSummary.extract(
                 traceback.walk_stack(None), capture_locals=True, limit=1
             )
@@ -1116,7 +1111,7 @@ class TestStack(unittest.TestCase):
         s = some_inner(3, 4)
         self.assertEqual(
             [
-                '  File "%s", line %d, in some_inner\n'
+                '  File "%s", line %d, in some_inner\n'  # noqa: UP031
                 "    return traceback.StackSummary.extract(\n"
                 "    a = 1\n"
                 "    b = 2\n"
@@ -1130,8 +1125,8 @@ class TestStack(unittest.TestCase):
 class TestTracebackException(unittest.TestCase):
     def test_smoke(self):
         try:
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
             exc = traceback.TracebackException(*exc_info)
             expected_stack = traceback.StackSummary.extract(
@@ -1147,11 +1142,11 @@ class TestTracebackException(unittest.TestCase):
     def test_from_exception(self):
         # Check all the parameters are accepted.
         def foo():
-            1 / 0
+            1 / 0  # noqa: B018
 
         try:
             foo()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             exc_info = sys.exc_info()
             self.expected_stack = traceback.StackSummary.extract(
                 traceback.walk_tb(exc_info[2]),
@@ -1174,13 +1169,13 @@ class TestTracebackException(unittest.TestCase):
     def test_cause(self):
         try:
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 exc_info_context = sys.exc_info()
                 exc_context = traceback.TracebackException(*exc_info_context)
                 cause = Exception("cause")
-                raise Exception("uh oh") from cause
-        except Exception:
+                raise Exception("uh oh") from cause  # noqa: TRY002
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
             exc = traceback.TracebackException(*exc_info)
             expected_stack = traceback.StackSummary.extract(
@@ -1197,12 +1192,12 @@ class TestTracebackException(unittest.TestCase):
     def test_context(self):
         try:
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 exc_info_context = sys.exc_info()
                 exc_context = traceback.TracebackException(*exc_info_context)
-                raise Exception("uh oh")
-        except Exception:
+                raise Exception("uh oh")  # noqa: TRY002
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
             exc = traceback.TracebackException(*exc_info)
             expected_stack = traceback.StackSummary.extract(
@@ -1217,20 +1212,20 @@ class TestTracebackException(unittest.TestCase):
 
     def test_no_refs_to_exception_and_traceback_objects(self):
         try:
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
 
         refcnt1 = sys.getrefcount(exc_info[1])
         refcnt2 = sys.getrefcount(exc_info[2])
-        exc = traceback.TracebackException(*exc_info)
+        traceback.TracebackException(*exc_info)
         self.assertEqual(sys.getrefcount(exc_info[1]), refcnt1)
         self.assertEqual(sys.getrefcount(exc_info[2]), refcnt2)
 
     def test_comparison_basic(self):
         try:
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
             exc = traceback.TracebackException(*exc_info)
             exc2 = traceback.TracebackException(*exc_info)
@@ -1243,16 +1238,16 @@ class TestTracebackException(unittest.TestCase):
         def raise_exc():
             try:
                 raise ValueError("bad value")
-            except:
+            except:  # noqa: TRY203
                 raise
 
         def raise_with_locals():
-            x, y = 1, 2
+            _x, _y = 1, 2
             raise_exc()
 
         try:
             raise_with_locals()
-        except Exception:
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
 
         exc = traceback.TracebackException(*exc_info)
@@ -1280,8 +1275,8 @@ class TestTracebackException(unittest.TestCase):
         excs = []
         for _ in range(2):
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722
                 excs.append(traceback.TracebackException(*sys.exc_info()))
         self.assertEqual(excs[0], excs[1])
         self.assertEqual(list(excs[0].format()), list(excs[1].format()))
@@ -1310,11 +1305,11 @@ class TestTracebackException(unittest.TestCase):
             if n:
                 recurse(n - 1)
             else:
-                1 / 0
+                1 / 0  # noqa: B018
 
         try:
             recurse(10)
-        except Exception:
+        except Exception:  # noqa: BLE001
             exc_info = sys.exc_info()
             exc = traceback.TracebackException(*exc_info, limit=5)
             expected_stack = traceback.StackSummary.extract(

@@ -76,14 +76,14 @@ class CCompiler:
     # what language to use when mixing source types. For example, if some
     # extension has two files with ".c" extension, and one with ".cpp", it
     # is still linked as c++.
-    language_map = {
+    language_map = {  # noqa: RUF012
         ".c": "c",
         ".cc": "c++",
         ".cpp": "c++",
         ".cxx": "c++",
         ".m": "objc",
     }
-    language_order = ["c++", "objc", "c"]
+    language_order = ["c++", "objc", "c"]  # noqa: RUF012
 
     def __init__(self, verbose=0, dry_run=0, force=0):
         self.dry_run = dry_run
@@ -118,7 +118,7 @@ class CCompiler:
         # named library files) to include on any link
         self.objects = []
 
-        for key in self.executables.keys():
+        for key in self.executables:
             self.set_executable(key, self.executables[key])
 
     def set_executables(self, **kwargs):
@@ -147,11 +147,10 @@ class CCompiler:
         # discovered at run-time, since there are many different ways to do
         # basically the same things with Unix C compilers.
 
-        for key in kwargs:
+        for key in kwargs:  # noqa: PLC0206
             if key not in self.executables:
                 raise ValueError(
-                    "unknown executable '%s' for class %s"
-                    % (key, self.__class__.__name__)
+                    f"unknown executable '{key}' for class {self.__class__.__name__}"
                 )
             self.set_executable(key, kwargs[key])
 
@@ -166,7 +165,7 @@ class CCompiler:
         for defn in self.macros:
             if defn[0] == name:
                 return i
-            i += 1
+            i += 1  # noqa: SIM113
         return None
 
     def _check_macro_definitions(self, definitions):
@@ -184,7 +183,7 @@ class CCompiler:
                 and isinstance(defn[0], str)
             ):
                 raise TypeError(
-                    ("invalid macro definition '%s': " % defn)
+                    (f"invalid macro definition '{defn}': ")
                     + "must be tuple (string,), (string, string), or "
                     + "(string, None)"
                 )
@@ -485,7 +484,7 @@ class CCompiler:
         lang = None
         index = len(self.language_order)
         for source in sources:
-            base, ext = os.path.splitext(source)
+            _base, ext = os.path.splitext(source)
             extlang = self.language_map.get(ext)
             try:
                 extindex = self.language_order.index(extlang)
@@ -836,15 +835,14 @@ class CCompiler:
         f = os.fdopen(fd, "w")
         try:
             for incl in includes:
-                f.write("""#include "%s"\n""" % incl)
+                f.write(f"""#include "{incl}"\n""")
             f.write(
-                """\
-int main (int argc, char **argv) {
-    %s();
+                f"""\
+int main (int argc, char **argv) {{
+    {funcname}();
     return 0;
-}
+}}
 """
-                % funcname
             )
         finally:
             f.close()
@@ -913,9 +911,7 @@ int main (int argc, char **argv) {
             base = os.path.splitdrive(base)[1]  # Chop off the drive
             base = base[os.path.isabs(base) :]  # If abs, chop off leading /
             if ext not in self.src_extensions:
-                raise UnknownFileError(
-                    "unknown file type '%s' (from '%s')" % (ext, src_name)
-                )
+                raise UnknownFileError(f"unknown file type '{ext}' (from '{src_name}')")
             if strip_dir:
                 base = os.path.basename(base)
             obj_names.append(os.path.join(output_dir, base + self.obj_extension))
@@ -967,7 +963,7 @@ int main (int argc, char **argv) {
             print(msg)
 
     def warn(self, msg):
-        sys.stderr.write("warning: %s\n" % msg)
+        sys.stderr.write(f"warning: {msg}\n")
 
     def execute(self, func, args, msg=None, level=1):
         execute(func, args, msg, self.dry_run)
@@ -1078,11 +1074,11 @@ def new_compiler(plat=None, compiler=None, verbose=0, dry_run=0, force=0):
         if compiler is None:
             compiler = get_default_compiler(plat)
 
-        module_name, class_name, long_description = compiler_class[compiler]
+        module_name, class_name, _long_description = compiler_class[compiler]
     except KeyError:
-        msg = "don't know how to compile C/C++ code on platform '%s'" % plat
+        msg = f"don't know how to compile C/C++ code on platform '{plat}'"
         if compiler is not None:
-            msg = msg + " with '%s' compiler" % compiler
+            msg = msg + f" with '{compiler}' compiler"
         raise DistutilsPlatformError(msg)
 
     try:
@@ -1092,12 +1088,12 @@ def new_compiler(plat=None, compiler=None, verbose=0, dry_run=0, force=0):
         klass = vars(module)[class_name]
     except ImportError:
         raise DistutilsModuleError(
-            "can't compile C/C++ code: unable to load module '%s'" % module_name
+            f"can't compile C/C++ code: unable to load module '{module_name}'"
         )
     except KeyError:
         raise DistutilsModuleError(
-            "can't compile C/C++ code: unable to find class '%s' "
-            "in module '%s'" % (class_name, module_name)
+            f"can't compile C/C++ code: unable to find class '{class_name}' "
+            f"in module '{module_name}'"
         )
 
     # XXX The None is necessary to preserve backwards compatibility
@@ -1131,23 +1127,23 @@ def gen_preprocess_options(macros, include_dirs):
     for macro in macros:
         if not (isinstance(macro, tuple) and 1 <= len(macro) <= 2):
             raise TypeError(
-                "bad macro definition '%s': "
-                "each element of 'macros' list must be a 1- or 2-tuple" % macro
+                f"bad macro definition '{macro}': "
+                "each element of 'macros' list must be a 1- or 2-tuple"
             )
 
         if len(macro) == 1:  # undefine this macro
-            pp_opts.append("-U%s" % macro[0])
+            pp_opts.append(f"-U{macro[0]}")
         elif len(macro) == 2:
             if macro[1] is None:  # define with no explicit value
-                pp_opts.append("-D%s" % macro[0])
+                pp_opts.append(f"-D{macro[0]}")
             else:
                 # XXX *don't* need to be clever about quoting the
                 # macro value here, because we're going to avoid the
                 # shell at all costs when we spawn the command!
-                pp_opts.append("-D%s=%s" % macro)
+                pp_opts.append("-D{}={}".format(*macro))
 
     for dir in include_dirs:
-        pp_opts.append("-I%s" % dir)
+        pp_opts.append(f"-I{dir}")
     return pp_opts
 
 
@@ -1184,7 +1180,7 @@ def gen_lib_options(compiler, library_dirs, runtime_library_dirs, libraries):
                 lib_opts.append(lib_file)
             else:
                 compiler.warn(
-                    "no library file corresponding to '%s' found (skipping)" % lib
+                    f"no library file corresponding to '{lib}' found (skipping)"
                 )
         else:
             lib_opts.append(compiler.library_option(lib))

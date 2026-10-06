@@ -38,7 +38,7 @@ class SlottedNaiveException(Exception):
 
 class BrokenStrException(Exception):
     def __str__(self):
-        raise Exception("str() is broken")
+        raise Exception("str() is broken")  # noqa: TRY002
 
 
 # XXX This is not really enough, each *operation* should be tested!
@@ -63,9 +63,9 @@ class ExceptionTests(unittest.TestCase):
         self.assertRaises(AttributeError, getattr, sys, "undefined_attribute")
 
         self.raise_catch(EOFError, "EOFError")
-        fp = open(TESTFN, "w")
+        fp = open(TESTFN, "w")  # noqa: SIM115
         fp.close()
-        fp = open(TESTFN, "r")
+        fp = open(TESTFN, "r")  # noqa: SIM115
         savestdin = sys.stdin
         try:
             try:
@@ -113,7 +113,7 @@ class ExceptionTests(unittest.TestCase):
 
         self.raise_catch(SyntaxError, "SyntaxError")
         try:
-            exec("/\n")
+            exec("/\n")  # noqa: S102
         except SyntaxError:
             pass
 
@@ -134,7 +134,7 @@ class ExceptionTests(unittest.TestCase):
 
         self.raise_catch(TypeError, "TypeError")
         try:
-            [] + ()
+            [] + ()  # noqa: B018
         except TypeError:
             pass
 
@@ -150,7 +150,7 @@ class ExceptionTests(unittest.TestCase):
         self.raise_catch(Exception, "Exception")
         try:
             x = 1 / 0
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
 
         self.raise_catch(StopAsyncIteration, "StopAsyncIteration")
@@ -165,7 +165,7 @@ class ExceptionTests(unittest.TestCase):
                     compile(src, "<fragment>", "exec")
                 except SyntaxError as e:
                     if e.msg != msg:
-                        self.fail("expected %s, got %s" % (msg, e.msg))
+                        self.fail(f"expected {msg}, got {e.msg}")
                 else:
                     self.fail("failed to get expected SyntaxError")
 
@@ -184,7 +184,7 @@ class ExceptionTests(unittest.TestCase):
                 compile(src, "<fragment>", "exec")
             except exception as e:
                 if e.msg != msg:
-                    self.fail("expected %s, got %s" % (msg, e.msg))
+                    self.fail(f"expected {msg}, got {e.msg}")
             else:
                 self.fail("failed to get expected SyntaxError")
 
@@ -318,7 +318,7 @@ class ExceptionTests(unittest.TestCase):
             try:
                 _testcapi.raise_exception(BadException, 1)
             except TypeError:
-                exc, err, tb = sys.exc_info()
+                _exc, _err, tb = sys.exc_info()
                 co = tb.tb_frame.f_code
                 self.assertEqual(co.co_name, "test_capi1")
                 self.assertTrue(co.co_filename.endswith("test_exceptions.py"))
@@ -331,7 +331,7 @@ class ExceptionTests(unittest.TestCase):
             try:
                 _testcapi.raise_exception(BadException, 0)
             except RuntimeError:
-                exc, err, tb = sys.exc_info()
+                _exc, _err, tb = sys.exc_info()
                 co = tb.tb_frame.f_code
                 self.assertEqual(co.co_name, "__init__")
                 self.assertTrue(co.co_filename.endswith("test_exceptions.py"))
@@ -354,7 +354,7 @@ class ExceptionTests(unittest.TestCase):
 
     def test_WindowsError(self):
         try:
-            WindowsError
+            WindowsError  # noqa: B018
         except NameError:
             pass
         else:
@@ -396,7 +396,7 @@ class ExceptionTests(unittest.TestCase):
         ctypes = import_module("ctypes")
         # this error code has no message, Python formats it as hexadecimal
         code = 3765269347
-        with self.assertRaisesRegex(OSError, "Windows Error 0x%x" % code):
+        with self.assertRaisesRegex(OSError, f"Windows Error 0x{code:x}"):
             ctypes.pythonapi.PyErr_SetFromWindowsErr(code)
 
     def testAttributes(self):
@@ -612,7 +612,7 @@ class ExceptionTests(unittest.TestCase):
             try:
                 e = exc(*args)
             except:
-                print("\nexc=%r, args=%r" % (exc, args), file=sys.stderr)
+                print(f"\nexc={exc!r}, args={args!r}", file=sys.stderr)
                 raise
             else:
                 # Verify module name
@@ -625,8 +625,7 @@ class ExceptionTests(unittest.TestCase):
                     self.assertEqual(
                         repr(value),
                         repr(expected[checkArgName]),
-                        "%r.%s == %r, expected %r"
-                        % (e, checkArgName, value, expected[checkArgName]),
+                        f"{e!r}.{checkArgName} == {value!r}, expected {expected[checkArgName]!r}",
                     )
 
                 # test for pickling support
@@ -640,13 +639,13 @@ class ExceptionTests(unittest.TestCase):
                             self.assertEqual(
                                 got,
                                 want,
-                                'pickled "%r", attribute "%s' % (e, checkArgName),
+                                f'pickled "{e!r}", attribute "{checkArgName}',
                             )
 
     def testWithTraceback(self):
         try:
             raise IndexError(4)
-        except:
+        except:  # noqa: E722
             tb = sys.exc_info()[2]
 
         e = BaseException().with_traceback(tb)
@@ -681,7 +680,7 @@ class ExceptionTests(unittest.TestCase):
     def testNoneClearsTracebackAttr(self):
         try:
             raise IndexError(4)
-        except:
+        except:  # noqa: E722
             tb = sys.exc_info()[2]
 
         e = Exception()
@@ -707,8 +706,8 @@ class ExceptionTests(unittest.TestCase):
 
     def testChainingDescriptors(self):
         try:
-            raise Exception()
-        except Exception as exc:
+            raise Exception()  # noqa: TRY002
+        except Exception as exc:  # noqa: BLE001
             e = exc
 
         self.assertIsNone(e.__context__)
@@ -761,8 +760,8 @@ class ExceptionTests(unittest.TestCase):
         # Make sure the local variable bound to the exception instance by
         # an "except" statement is only visible inside the except block.
         try:
-            raise Exception()
-        except Exception as e:
+            raise Exception()  # noqa: TRY002
+        except Exception as e:  # noqa: BLE001
             self.assertTrue(e)
             del e
         self.assertNotIn("e", locals())
@@ -780,7 +779,6 @@ class ExceptionTests(unittest.TestCase):
 
         def inner_raising_func():
             # Create some references in exception value and traceback
-            local_ref = obj
             raise MyException(obj)
 
         # Qualified "except" with "as"
@@ -812,7 +810,7 @@ class ExceptionTests(unittest.TestCase):
         wr = weakref.ref(obj)
         try:
             inner_raising_func()
-        except:
+        except:  # noqa: E722, S110
             pass
         obj = None
         gc_collect()  # For PyPy or other GCs.
@@ -825,7 +823,7 @@ class ExceptionTests(unittest.TestCase):
         for i in [0]:
             try:
                 inner_raising_func()
-            except:
+            except:  # noqa: E722
                 break
         obj = None
         gc_collect()  # For PyPy or other GCs.
@@ -838,7 +836,7 @@ class ExceptionTests(unittest.TestCase):
         try:
             try:
                 inner_raising_func()
-            except:
+            except:  # noqa: E722
                 raise KeyError
         except KeyError as e:
             # We want to test that the except block above got rid of
@@ -895,11 +893,11 @@ class ExceptionTests(unittest.TestCase):
         # issue 4617: This used to raise a SyntaxError
         # "can not delete variable 'e' referenced in nested scope"
         def print_error():
-            e
+            e  # noqa: B018, F821
 
         try:
-            something
-        except Exception:
+            something  # noqa: B018, F821
+        except Exception:  # noqa: BLE001
             print_error()
             # implicit "del e" here
 
@@ -962,7 +960,7 @@ class ExceptionTests(unittest.TestCase):
         it = g()
         next(it)
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             self.assertIs(sys.exc_info()[1], e)
             gen_exc = it.throw(e)
@@ -975,7 +973,7 @@ class ExceptionTests(unittest.TestCase):
         # the caller's exception state should still be restored.
         def g():
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             except ZeroDivisionError:
                 yield sys.exc_info()[0]
                 raise
@@ -1070,7 +1068,7 @@ class ExceptionTests(unittest.TestCase):
 
     def test_generator_del_cleanup_exc_state(self):
         def do_del(g):
-            g = None
+            pass
 
         self._check_generator_cleanup_exc_state(do_del)
 
@@ -1106,8 +1104,8 @@ class ExceptionTests(unittest.TestCase):
 
         e = ()
         try:
-            raise Exception(MyObject())
-        except:
+            raise Exception(MyObject())  # noqa: TRY002
+        except:  # noqa: E722, S110
             pass
         gc_collect()  # For PyPy or other GCs.
         self.assertEqual(e, (None, None, None))
@@ -1166,7 +1164,7 @@ class ExceptionTests(unittest.TestCase):
 
         try:
             cycle()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             exc = e
 
         self.assertIsInstance(exc, TypeError)
@@ -1345,14 +1343,14 @@ class ExceptionTests(unittest.TestCase):
         class MyException(Exception, metaclass=Meta):
             pass
 
-        with captured_stderr() as stderr:
+        with captured_stderr():
             try:
                 raise KeyError()
             except MyException:
                 self.fail("exception should not be a MyException")
             except KeyError:
                 pass
-            except:
+            except:  # noqa: E722
                 self.fail("Should have raised KeyError")
             else:
                 self.fail("Should have raised KeyError")
@@ -1363,7 +1361,7 @@ class ExceptionTests(unittest.TestCase):
             except RecursionError:
                 return sys.exc_info()
 
-        e, v, tb = g()
+        _e, v, _tb = g()
         self.assertIsInstance(v, RecursionError, type(v))
         self.assertIn("maximum recursion depth exceeded", str(v))
 
@@ -1392,8 +1390,7 @@ class ExceptionTests(unittest.TestCase):
         # singleton was being used in that case, that held traceback data and
         # locals indefinitely and would cause a segfault in _PyExc_Fini() upon
         # finalization of these locals.
-        code = (
-            """if 1:
+        code = f"""if 1:
             import sys
             from _testinternalcapi import get_recursion_depth
 
@@ -1417,7 +1414,7 @@ class ExceptionTests(unittest.TestCase):
                     generator.throw(MyException)
 
             def gen():
-                f = open(%a, mode='rb', buffering=0)
+                f = open({__file__!a}, mode='rb', buffering=0)
                 yield
 
             generator = gen()
@@ -1434,8 +1431,6 @@ class ExceptionTests(unittest.TestCase):
                 sys.setrecursionlimit(recursionlimit)
                 print('Done.')
         """
-            % __file__
-        )
         rc, out, err = script_helper.assert_python_failure("-Wd", "-c", code)
         # Check that the program does not fail with SIGABRT.
         self.assertEqual(rc, 1)
@@ -1483,7 +1478,7 @@ class ExceptionTests(unittest.TestCase):
             recurse(16)
         """
         with SuppressCrashReport():
-            rc, out, err = script_helper.assert_python_failure("-c", code)
+            _rc, _out, err = script_helper.assert_python_failure("-c", code)
             self.assertIn(
                 b"Fatal Python error: _PyErr_NormalizeException: "
                 b"Cannot recover from MemoryErrors while "
@@ -1660,7 +1655,7 @@ class ExceptionTests(unittest.TestCase):
         # Span a large range of tests as the CPython code always evolves with
         # changes that add or remove memory allocations.
         for i in range(1, 20):
-            rc, out, err = script_helper.assert_python_failure("-c", code % i)
+            rc, _out, err = script_helper.assert_python_failure("-c", code % i)
             self.assertIn(rc, (1, 120))
             self.assertIn(b"MemoryError", err)
 
@@ -1709,14 +1704,14 @@ class ExceptionTests(unittest.TestCase):
         # Issue 25612#msg304117
         def g():
             yield 1
-            raise
+            raise  # noqa: PLE0704
             yield 2
 
         with self.assertRaises(ZeroDivisionError):
             i = g()
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722
                 next(i)
                 next(i)
 
@@ -1728,7 +1723,7 @@ class ExceptionTests(unittest.TestCase):
         AssertionError = TypeError
         try:
             assert False, "hello"
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             del AssertionError
             self.assertIsInstance(e, AssertionError)
             self.assertEqual(str(e), "hello")
@@ -1750,12 +1745,12 @@ class ExceptionTests(unittest.TestCase):
 
         try:
             raise MemoryError
-        except MemoryError as exc:
-            inst = exc
+        except MemoryError:
+            pass
 
         try:
             raise TestException
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
 
         for _ in range(10):
@@ -1788,19 +1783,19 @@ class ImportErrorTests(unittest.TestCase):
 
         msg = "'invalid' is an invalid keyword argument for ImportError"
         with self.assertRaisesRegex(TypeError, msg):
-            ImportError("test", invalid="keyword")
+            raise ImportError("test", invalid="keyword")
 
         with self.assertRaisesRegex(TypeError, msg):
-            ImportError("test", name="name", invalid="keyword")
+            raise ImportError("test", name="name", invalid="keyword")
 
         with self.assertRaisesRegex(TypeError, msg):
-            ImportError("test", path="path", invalid="keyword")
+            raise ImportError("test", path="path", invalid="keyword")
 
         with self.assertRaisesRegex(TypeError, msg):
-            ImportError(invalid="keyword")
+            raise ImportError(invalid="keyword")
 
         with self.assertRaisesRegex(TypeError, msg):
-            ImportError("test", invalid="keyword", another=True)
+            raise ImportError("test", invalid="keyword", another=True)
 
     def test_reset_attributes(self):
         exc = ImportError("test", name="name", path="path")
@@ -1825,10 +1820,10 @@ class ImportErrorTests(unittest.TestCase):
 
     def test_copy_pickle(self):
         for kwargs in (
-            dict(),
-            dict(name="somename"),
-            dict(path="somepath"),
-            dict(name="somename", path="somepath"),
+            {},
+            {"name": "somename"},
+            {"path": "somepath"},
+            {"name": "somename", "path": "somepath"},
         ):
             orig = ImportError("test", **kwargs)
             for proto in range(pickle.HIGHEST_PROTOCOL + 1):

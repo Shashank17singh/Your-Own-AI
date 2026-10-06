@@ -53,7 +53,7 @@ def setUpModule():
             site.addsitedir(site.USER_SITE)
         except PermissionError as exc:
             raise unittest.SkipTest(
-                "unable to create user site directory (%r): %s" % (site.USER_SITE, exc)
+                f"unable to create user site directory ({site.USER_SITE!r}): {exc}"
             )
 
 
@@ -106,14 +106,14 @@ class HelperFunctionsTests(unittest.TestCase):
             self.assertIn(
                 entry,
                 dir_set,
-                "%s from sys.path not found in set returned "
-                "by _init_pathinfo(): %s" % (entry, dir_set),
+                f"{entry} from sys.path not found in set returned "
+                f"by _init_pathinfo(): {dir_set}",
             )
 
     def pth_file_tests(self, pth_file):
         """Contain common code for testing results of reading a .pth file"""
         self.assertIn(
-            pth_file.imported, sys.modules, "%s not in sys.modules" % pth_file.imported
+            pth_file.imported, sys.modules, f"{pth_file.imported} not in sys.modules"
         )
         self.assertIn(site.makepath(pth_file.good_dir_path)[0], sys.path)
         self.assertFalse(os.path.exists(pth_file.bad_dir_path))
@@ -217,7 +217,7 @@ class HelperFunctionsTests(unittest.TestCase):
 
         env = os.environ.copy()
         rc = subprocess.call(
-            [sys.executable, "-c", "import sys; sys.exit(%r in sys.path)" % usersite],
+            [sys.executable, "-c", f"import sys; sys.exit({usersite!r} in sys.path)"],
             env=env,
         )
         self.assertEqual(rc, 1)
@@ -228,7 +228,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 sys.executable,
                 "-s",
                 "-c",
-                "import sys; sys.exit(%r in sys.path)" % usersite,
+                f"import sys; sys.exit({usersite!r} in sys.path)",
             ],
             env=env,
         )
@@ -240,7 +240,7 @@ class HelperFunctionsTests(unittest.TestCase):
         env = os.environ.copy()
         env["PYTHONNOUSERSITE"] = "1"
         rc = subprocess.call(
-            [sys.executable, "-c", "import sys; sys.exit(%r in sys.path)" % usersite],
+            [sys.executable, "-c", f"import sys; sys.exit({usersite!r} in sys.path)"],
             env=env,
         )
         if usersite == site.getsitepackages()[0]:
@@ -299,14 +299,17 @@ class HelperFunctionsTests(unittest.TestCase):
                 wanted = os.path.join(
                     "xoxo",
                     sys.platlibdir,
-                    "python%d.%d" % sys.version_info[:2],
+                    "python%d.%d" % sys.version_info[:2],  # noqa: UP031
                     "site-packages",
                 )
                 self.assertEqual(dirs[0], wanted)
             else:
                 self.assertEqual(len(dirs), 1)
             wanted = os.path.join(
-                "xoxo", "lib", "python%d.%d" % sys.version_info[:2], "site-packages"
+                "xoxo",
+                "lib",
+                "python%d.%d" % sys.version_info[:2],
+                "site-packages",  # noqa: UP031
             )
             self.assertEqual(dirs[-1], wanted)
         else:
@@ -382,11 +385,11 @@ class PthFile:
         Make sure to call self.cleanup() to undo anything done by this method.
 
         """
-        FILE = open(self.file_path, "w")
+        FILE = open(self.file_path, "w")  # noqa: SIM115
         try:
             print("#import @bad module name", file=FILE)
             print("\n", file=FILE)
-            print("import %s" % self.imported, file=FILE)
+            print(f"import {self.imported}", file=FILE)
             print(self.good_dirname, file=FILE)
             print(self.bad_dirname, file=FILE)
         finally:
@@ -480,7 +483,7 @@ class ImportSideEffectTests(unittest.TestCase):
         # If sitecustomize is available, it should have been imported.
         if "sitecustomize" not in sys.modules:
             try:
-                import sitecustomize
+                import sitecustomize  # noqa: F401
             except ImportError:
                 pass
             else:
@@ -499,7 +502,7 @@ class ImportSideEffectTests(unittest.TestCase):
         # Reset global urllib.request._opener
         self.addCleanup(urllib.request.urlcleanup)
         try:
-            with socket_helper.transient_internet(url):
+            with socket_helper.transient_internet(url):  # noqa: SIM117
                 with urllib.request.urlopen(req) as data:
                     code = data.getcode()
         except urllib.error.HTTPError as e:
@@ -682,9 +685,8 @@ class _pthFileTests(unittest.TestCase):
                 exe_file,
                 "-c",
                 "import sys; sys.exit(not sys.flags.no_site and "
-                "%r in sys.path and %r in sys.path and %r not in sys.path and "
-                'all("\\r" not in p and "\\n" not in p for p in sys.path))'
-                % (
+                "{!r} in sys.path and {!r} in sys.path and {!r} not in sys.path and "
+                'all("\\r" not in p and "\\n" not in p for p in sys.path))'.format(
                     os.path.join(sys_prefix, "fake-path-name"),
                     libpath,
                     os.path.join(sys_prefix, "from-env"),
@@ -716,9 +718,8 @@ class _pthFileTests(unittest.TestCase):
                 exe_file,
                 "-c",
                 "import sys; sys.exit(not sys.flags.no_site and "
-                "%r in sys.path and %r in sys.path and %r not in sys.path and "
-                'all("\\r" not in p and "\\n" not in p for p in sys.path))'
-                % (
+                "{!r} in sys.path and {!r} in sys.path and {!r} not in sys.path and "
+                'all("\\r" not in p and "\\n" not in p for p in sys.path))'.format(
                     os.path.join(sys_prefix, "fake-path-name"),
                     libpath,
                     os.path.join(sys_prefix, "from-env"),

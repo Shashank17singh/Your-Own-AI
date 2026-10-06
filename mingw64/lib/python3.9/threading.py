@@ -138,7 +138,7 @@ class _RLock:
             owner = _active[owner].name
         except KeyError:
             pass
-        return "<%s %s.%s object owner=%r count=%d at %s>" % (
+        return "<%s %s.%s object owner=%r count=%d at %s>" % (  # noqa: UP031
             "locked" if self._block.locked() else "unlocked",
             self.__class__.__module__,
             self.__class__.__qualname__,
@@ -286,7 +286,7 @@ class Condition:
         return self._lock.__exit__(*args)
 
     def __repr__(self):
-        return "<Condition(%s, %d)>" % (self._lock, len(self._waiters))
+        return "<Condition(%s, %d)>" % (self._lock, len(self._waiters))  # noqa: UP031
 
     def _release_save(self):
         self._lock.release()  # No state to save
@@ -704,11 +704,10 @@ class Barrier:
     # If we are the last thread to exit the barrier, signal any threads
     # waiting for the barrier to drain.
     def _exit(self):
-        if self._count == 0:
-            if self._state in (-1, 1):
-                # resetting or draining
-                self._state = 0
-                self._cond.notify_all()
+        if self._count == 0 and self._state in (-1, 1):
+            # resetting or draining
+            self._state = 0
+            self._cond.notify_all()
 
     def reset(self):
         """Reset the barrier to the initial state.
@@ -900,8 +899,8 @@ class Thread:
         if self._daemonic:
             status += " daemon"
         if self._ident is not None:
-            status += " %s" % self._ident
-        return "<%s(%s, %s)>" % (self.__class__.__name__, self._name, status)
+            status += f" {self._ident}"
+        return f"<{self.__class__.__name__}({self._name}, {status})>"
 
     def start(self):
         """Start the thread's activity.
@@ -1005,7 +1004,7 @@ class Thread:
 
             try:
                 self.run()
-            except:
+            except:  # noqa: E722
                 self._invoke_excepthook(self)
         finally:
             with _active_limbo_lock:
@@ -1013,7 +1012,7 @@ class Thread:
                     # We don't call self._delete() because it also
                     # grabs _active_limbo_lock.
                     del _active[get_ident()]
-                except:
+                except:  # noqa: E722, S110
                     pass
 
     def _stop(self):
@@ -1256,7 +1255,7 @@ def _make_invoke_excepthook():
     local_sys = _sys
 
     def invoke_excepthook(thread):
-        global excepthook
+        global excepthook  # noqa: PLW0602
         try:
             hook = excepthook
             if hook is None:
@@ -1265,7 +1264,7 @@ def _make_invoke_excepthook():
             args = ExceptHookArgs([*sys_exc_info(), thread])
 
             hook(args)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             exc.__suppress_context__ = True
             del exc
 

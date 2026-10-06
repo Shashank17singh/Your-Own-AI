@@ -91,13 +91,13 @@ def find_paragraph(text, mark):
     Also returns the comment format string, if any, and paragraph of text
     between the start/stop indices.
     """
-    lineno, col = map(int, mark.split("."))
-    line = text.get("%d.0" % lineno, "%d.end" % lineno)
+    lineno, _col = map(int, mark.split("."))
+    line = text.get("%d.0" % lineno, "%d.end" % lineno)  # noqa: UP031
 
     # Look for start of next paragraph if the index passed in is a blank line
-    while text.compare("%d.0" % lineno, "<", "end") and is_all_white(line):
+    while text.compare("%d.0" % lineno, "<", "end") and is_all_white(line):  # noqa: UP031
         lineno = lineno + 1
-        line = text.get("%d.0" % lineno, "%d.end" % lineno)
+        line = text.get("%d.0" % lineno, "%d.end" % lineno)  # noqa: UP031
     first_lineno = lineno
     comment_header = get_comment_header(line)
     comment_header_len = len(comment_header)
@@ -107,20 +107,20 @@ def find_paragraph(text, mark):
         line[comment_header_len:]
     ):
         lineno = lineno + 1
-        line = text.get("%d.0" % lineno, "%d.end" % lineno)
-    last = "%d.0" % lineno
+        line = text.get("%d.0" % lineno, "%d.end" % lineno)  # noqa: UP031
+    last = "%d.0" % lineno  # noqa: UP031
 
     # Search back to beginning of paragraph (first blank line before)
     lineno = first_lineno - 1
-    line = text.get("%d.0" % lineno, "%d.end" % lineno)
+    line = text.get("%d.0" % lineno, "%d.end" % lineno)  # noqa: UP031
     while (
         lineno > 0
         and get_comment_header(line) == comment_header
         and not is_all_white(line[comment_header_len:])
     ):
         lineno = lineno - 1
-        line = text.get("%d.0" % lineno, "%d.end" % lineno)
-    first = "%d.0" % (lineno + 1)
+        line = text.get("%d.0" % lineno, "%d.end" % lineno)  # noqa: UP031
+    first = "%d.0" % (lineno + 1)  # noqa: UP031
 
     return first, last, comment_header, text.get(first, last)
 
@@ -419,13 +419,13 @@ class Rstrip:  # 'Strip Trailing Whitespace" on "Format" menu.
 
         end_line = int(float(text.index("end")))
         for cur in range(1, end_line):
-            txt = text.get("%i.0" % cur, "%i.end" % cur)
+            txt = text.get("%i.0" % cur, "%i.end" % cur)  # noqa: UP031
             raw = len(txt)
             cut = len(txt.rstrip())
             # Since text.delete() marks file as changed, even if not,
             # only call it when needed to actually delete something.
             if cut < raw:
-                text.delete("%i.%i" % (cur, cut), "%i.end" % cur)
+                text.delete("%i.%i" % (cur, cut), "%i.end" % cur)  # noqa: UP031
 
         if text.get(
             "end-2c"

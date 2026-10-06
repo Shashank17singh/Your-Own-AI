@@ -12,7 +12,7 @@ from distutils.dir_util import remove_tree
 
 class clean(Command):
     description = "clean up temporary files from 'build' command"
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("build-base=", "b", "base build directory (default: 'build.build-base')"),
         (
             "build-lib=",
@@ -29,7 +29,7 @@ class clean(Command):
         ("all", "a", "remove all build output, not just temporary by-products"),
     ]
 
-    boolean_options = ["all"]
+    boolean_options = ["all"]  # noqa: RUF012
 
     def initialize_options(self):
         self.build_base = None

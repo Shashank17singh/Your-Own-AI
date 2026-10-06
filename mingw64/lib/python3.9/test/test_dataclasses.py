@@ -31,7 +31,7 @@ class TestCase(unittest.TestCase):
         class C:
             pass
 
-        o = C()
+        C()
         self.assertEqual(len(fields(C)), 0)
 
     def test_no_fields_but_member_variable(self):
@@ -39,7 +39,7 @@ class TestCase(unittest.TestCase):
         class C:
             i = 0
 
-        o = C()
+        C()
         self.assertEqual(len(fields(C)), 0)
 
     def test_one_field_no_default(self):
@@ -265,7 +265,7 @@ class TestCase(unittest.TestCase):
         exclusions = {"None", "True", "False"}
         builtins_names = sorted(
             b
-            for b in builtins.__dict__.keys()
+            for b in builtins.__dict__
             if not b.startswith("__") and b not in exclusions
         )
         attributes = [(name, str) for name in builtins_names]
@@ -284,7 +284,7 @@ class TestCase(unittest.TestCase):
         exclusions = {"None", "True", "False"}
         builtins_names = sorted(
             b
-            for b in builtins.__dict__.keys()
+            for b in builtins.__dict__
             if not b.startswith("__") and b not in exclusions
         )
         attributes = [(name, str) for name in builtins_names]
@@ -316,7 +316,7 @@ class TestCase(unittest.TestCase):
                         lambda a, b: a >= b,
                     ]
                 ):
-                    with self.subTest(idx=idx):
+                    with self.subTest(idx=idx):  # noqa: SIM117
                         with self.assertRaisesRegex(
                             TypeError,
                             f"not supported between instances of '{cls.__name__}' and '{cls.__name__}'",
@@ -352,7 +352,7 @@ class TestCase(unittest.TestCase):
                         lambda a, b: a >= b,
                     ]
                 ):
-                    with self.subTest(idx=idx):
+                    with self.subTest(idx=idx):  # noqa: SIM117
                         with self.assertRaisesRegex(
                             TypeError,
                             f"not supported between instances of '{cls.__name__}' and '{cls.__name__}'",
@@ -396,7 +396,7 @@ class TestCase(unittest.TestCase):
                         lambda a, b: a >= b,
                     ]
                 ):
-                    with self.subTest(idx=idx):
+                    with self.subTest(idx=idx):  # noqa: SIM117
                         with self.assertRaisesRegex(
                             TypeError,
                             f"not supported between instances of '{cls.__name__}' and '{cls.__name__}'",
@@ -703,7 +703,7 @@ class TestCase(unittest.TestCase):
         for typ, empty, non_empty in [
             (list, [], [1]),
             (dict, {}, {0: 1}),
-            (set, set(), set([1])),
+            (set, set(), {1}),
         ]:
             with self.subTest(typ=typ):
                 # Can't use a zero-length value.
@@ -744,7 +744,7 @@ class TestCase(unittest.TestCase):
 
                 # Because this is a ClassVar, it can be mutable.
                 @dataclass
-                class C:
+                class C:  # noqa: F811
                     x: ClassVar[typ] = Subclass()
 
     def test_deliberately_mutable_defaults(self):
@@ -813,7 +813,7 @@ class TestCase(unittest.TestCase):
 
         # Make sure we can't unpack.
         with self.assertRaisesRegex(TypeError, "unpack"):
-            x, y, z = Point3D(4, 5, 6)
+            _x, _y, _z = Point3D(4, 5, 6)
 
         # Make sure another class with the same field names isn't
         #  equal.
@@ -1324,9 +1324,9 @@ class TestCase(unittest.TestCase):
             x: list = field(default_factory=factory, init=False)
 
         # Make sure the default factory is called for each new instance.
-        C().x
+        C().x  # noqa: B018
         self.assertEqual(factory.call_count, 1)
-        C().x
+        C().x  # noqa: B018
         self.assertEqual(factory.call_count, 2)
 
     def test_default_factory_not_called_if_value_given(self):
@@ -1339,11 +1339,11 @@ class TestCase(unittest.TestCase):
 
         # Make sure that if a field has a default factory function,
         #  it's not called if a value is specified.
-        C().x
+        C().x  # noqa: B018
         self.assertEqual(factory.call_count, 1)
         self.assertEqual(C(10).x, 10)
         self.assertEqual(factory.call_count, 1)
-        C().x
+        C().x  # noqa: B018
         self.assertEqual(factory.call_count, 2)
 
     def test_default_factory_derived(self):
@@ -1386,7 +1386,7 @@ class TestCase(unittest.TestCase):
 
         # .y was not initialized.
         with self.assertRaisesRegex(AttributeError, "object has no attribute"):
-            c.y
+            c.y  # noqa: B018
 
         # And if we again derive a non-dataclass, no fields are added.
         class D(C):
@@ -1877,7 +1877,7 @@ class TestCase(unittest.TestCase):
             calls.append((name, value))
 
         C.__setattr__ = setattr
-        c = C(0, 1)
+        C(0, 1)
         self.assertEqual(("a", 0), calls[0])
         self.assertEqual(("b", 1), calls[1])
         self.assertEqual(("c", []), calls[2])
@@ -2027,7 +2027,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(box.label, "<unknown>")
 
         # Subscripting the resulting class should work, etc.
-        Alias = list[LabeledBox[int]]
+        list[LabeledBox[int]]
 
     def test_generic_extending(self):
         S = TypeVar("S")
@@ -2063,7 +2063,7 @@ class TestCase(unittest.TestCase):
 
         Child = make_dataclass(
             "Child",
-            [("y", T), ("z", Optional[T], None)],
+            [("y", T), ("z", Optional[T], None)],  # noqa: UP045
             bases=(Parent[int], Generic[T]),
             namespace={"other": 42},
         )
@@ -3224,7 +3224,7 @@ class TestStringAnnotations(unittest.TestCase):
                 with self.assertRaisesRegex(
                     AttributeError, "object has no attribute 'x'"
                 ):
-                    C(1).x
+                    C(1).x  # noqa: B018
 
     def test_isnt_initvar(self):
         for typestr in (
@@ -3272,7 +3272,7 @@ class TestStringAnnotations(unittest.TestCase):
                 c = m.IV(0, 1, 2, 3, 4)
 
                 for field_name in ("iv0", "iv1", "iv2", "iv3"):
-                    with self.subTest(field_name=field_name):
+                    with self.subTest(field_name=field_name):  # noqa: SIM117
                         with self.assertRaisesRegex(
                             AttributeError, f"object has no attribute '{field_name}'"
                         ):
@@ -3315,9 +3315,7 @@ class TestMakeDataclass(unittest.TestCase):
     def test_no_mutate_namespace(self):
         # Make sure a provided namespace isn't mutated.
         ns = {}
-        C = make_dataclass(
-            "C", [("x", int), ("y", int, field(default=5))], namespace=ns
-        )
+        make_dataclass("C", [("x", int), ("y", int, field(default=5))], namespace=ns)
         self.assertEqual(ns, {})
 
     def test_base(self):
@@ -3420,7 +3418,7 @@ class TestMakeDataclass(unittest.TestCase):
             (),
             (1, 2, 3, 4),
         ]:
-            with self.subTest(bad_field=bad_field):
+            with self.subTest(bad_field=bad_field):  # noqa: SIM117
                 with self.assertRaisesRegex(TypeError, r"Invalid field: "):
                     make_dataclass("C", ["a", bad_field])
 
@@ -3429,13 +3427,13 @@ class TestMakeDataclass(unittest.TestCase):
             float,
             lambda x: x,
         ]:
-            with self.subTest(bad_field=bad_field):
+            with self.subTest(bad_field=bad_field):  # noqa: SIM117
                 with self.assertRaisesRegex(TypeError, r"has no len\(\)"):
                     make_dataclass("C", ["a", bad_field])
 
     def test_duplicate_field_names(self):
         for field in ["a", "ab"]:
-            with self.subTest(field=field):
+            with self.subTest(field=field):  # noqa: SIM117
                 with self.assertRaisesRegex(TypeError, "Field name duplicated"):
                     make_dataclass("C", [field, "a", field])
 
@@ -3527,7 +3525,7 @@ class TestReplace(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, r"__init__\(\) got an unexpected " "keyword argument 'z'"
         ):
-            c1 = replace(c, z=3)
+            replace(c, z=3)
 
     def test_invalid_object(self):
         @dataclass(frozen=True)

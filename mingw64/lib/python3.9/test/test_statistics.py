@@ -9,6 +9,7 @@ import collections.abc
 import copy
 import decimal
 import doctest
+import itertools
 import math
 import pickle
 import random
@@ -181,7 +182,7 @@ c_statistics = support.import_fresh_module("statistics", fresh=["_statistics"])
 
 
 class TestModules(unittest.TestCase):
-    func_names = ["_normal_dist_inv_cdf"]
+    func_names = ["_normal_dist_inv_cdf"]  # noqa: RUF012
 
     def test_py_functions(self):
         for fname in self.func_names:
@@ -246,7 +247,7 @@ class NumericTestCase(unittest.TestCase):
 
     def _check_approx_seq(self, first, second, tol, rel, msg):
         if len(first) != len(second):
-            standardMsg = "sequences differ in length: %d items != %d items" % (
+            standardMsg = "sequences differ in length: %d items != %d items" % (  # noqa: UP031
                 len(first),
                 len(second),
             )
@@ -275,7 +276,7 @@ class NumericTestCase(unittest.TestCase):
             "  -> relative error = %r"
         )
         if idx is not None:
-            header = "numeric sequences first differ at index %d.\n" % idx
+            header = "numeric sequences first differ at index %d.\n" % idx  # noqa: UP031
             template = header + template
         # Calculate actual errors:
         abs_err, rel_err = _calc_errors(first, second)
@@ -369,7 +370,7 @@ class ApproxEqualExactTest(unittest.TestCase):
 
     def do_exactly_equal_test(self, x, tol, rel):
         result = approx_equal(x, x, tol=tol, rel=rel)
-        self.assertTrue(result, "equality failure for x=%r" % x)
+        self.assertTrue(result, f"equality failure for x={x!r}")
         result = approx_equal(-x, -x, tol=tol, rel=rel)
         self.assertTrue(result, "equality failure for x=%r" % -x)
 
@@ -432,7 +433,7 @@ class ApproxEqualUnequalTest(unittest.TestCase):
     def do_exactly_unequal_test(self, x):
         for a in (x, -x):
             result = approx_equal(a, a + 1, tol=0, rel=0)
-            self.assertFalse(result, "inequality failure for x=%r" % a)
+            self.assertFalse(result, f"inequality failure for x={a!r}")
 
     def test_exactly_unequal_ints(self):
         # Test unequal int values are unequal with zero error tolerance.
@@ -651,13 +652,13 @@ class TestNumericTestCase(unittest.TestCase):
         """Return substrings we expect to see in error messages."""
         abs_err, rel_err = _calc_errors(first, second)
         substrings = [
-            "tol=%r" % tol,
-            "rel=%r" % rel,
-            "absolute error = %r" % abs_err,
-            "relative error = %r" % rel_err,
+            f"tol={tol!r}",
+            f"rel={rel!r}",
+            f"absolute error = {abs_err!r}",
+            f"relative error = {rel_err!r}",
         ]
         if idx is not None:
-            substrings.append("differ at index %d" % idx)
+            substrings.append("differ at index %d" % idx)  # noqa: UP031
         return substrings
 
 
@@ -668,25 +669,21 @@ class TestNumericTestCase(unittest.TestCase):
 
 class GlobalsTest(unittest.TestCase):
     module = statistics
-    expected_metadata = ["__doc__", "__all__"]
+    expected_metadata = ["__doc__", "__all__"]  # noqa: RUF012
 
     def test_meta(self):
         # Test for the existence of metadata.
         for meta in self.expected_metadata:
-            self.assertTrue(hasattr(self.module, meta), "%s not present" % meta)
+            self.assertTrue(hasattr(self.module, meta), f"{meta} not present")
 
     def test_check_all(self):
         # Check everything in __all__ exists and is public.
         module = self.module
         for name in module.__all__:
             # No private names in __all__:
-            self.assertFalse(
-                name.startswith("_"), 'private name "%s" in __all__' % name
-            )
+            self.assertFalse(name.startswith("_"), f'private name "{name}" in __all__')
             # And anything in __all__ must exist:
-            self.assertTrue(
-                hasattr(module, name), 'missing name "%s" in __all__' % name
-            )
+            self.assertTrue(hasattr(module, name), f'missing name "{name}" in __all__')
 
 
 class DocTests(unittest.TestCase):
@@ -1065,7 +1062,7 @@ class FailNegTest(unittest.TestCase):
 
     def test_error_msg(self):
         # Test that a given error message is used.
-        msg = "badness #%d" % random.randint(10000, 99999)
+        msg = "badness #%d" % random.randint(10000, 99999)  # noqa: UP031
         try:
             next(statistics._fail_neg([-1], msg))
         except statistics.StatisticsError as e:
@@ -1273,7 +1270,7 @@ class TestSumCommon(UnivariateCommonMixin, UnivariateTypeMixin):
     # after conversion to the appropriate type.
     def setUp(self):
         def simplified_sum(*args):
-            T, value, n = statistics._sum(*args)
+            T, value, _n = statistics._sum(*args)
             return statistics._coerce(value, T)
 
         self.func = simplified_sum
@@ -2364,7 +2361,7 @@ class TestQuantiles(unittest.TestCase):
         # Q2 agrees with median()
         for k in range(2, 60):
             data = random.choices(range(100), k=k)
-            q1, q2, q3 = quantiles(data)
+            _q1, q2, _q3 = quantiles(data)
             self.assertEqual(q2, statistics.median(data))
 
     def test_specific_cases_inclusive(self):
@@ -2455,7 +2452,7 @@ class TestQuantiles(unittest.TestCase):
         # Q2 agrees with median()
         for k in range(2, 60):
             data = random.choices(range(100), k=k)
-            q1, q2, q3 = quantiles(data, method="inclusive")
+            _q1, q2, _q3 = quantiles(data, method="inclusive")
             self.assertEqual(q2, statistics.median(data))
 
     def test_equal_inputs(self):
@@ -2486,7 +2483,7 @@ class TestQuantiles(unittest.TestCase):
         for n in (13, 19, 59, 109, 211, 571, 1019, 1907, 5261, 9769):
             group_sizes = {total // n, total // n + 1}
             pos = [bisect.bisect(data, q) for q in quantiles(data, n=n)]
-            sizes = {q - p for p, q in zip(pos, pos[1:])}
+            sizes = {q - p for p, q in itertools.pairwise(pos)}
             self.assertTrue(sizes <= group_sizes)
 
     def test_error_cases(self):

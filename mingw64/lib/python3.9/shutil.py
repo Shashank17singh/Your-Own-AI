@@ -128,7 +128,7 @@ def _fastcopy_fcopyfile(fsrc, fdst, flags):
     try:
         infd = fsrc.fileno()
         outfd = fdst.fileno()
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         raise _GiveupOnFastCopy(err)  # not a regular file
 
     try:
@@ -160,7 +160,7 @@ def _fastcopy_sendfile(fsrc, fdst):
     try:
         infd = fsrc.fileno()
         outfd = fdst.fileno()
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         raise _GiveupOnFastCopy(err)  # not a regular file
 
     # Hopefully the whole file will be copied in a single call.
@@ -200,7 +200,7 @@ def _fastcopy_sendfile(fsrc, fdst):
             if offset == 0 and os.lseek(outfd, 0, os.SEEK_CUR) == 0:
                 raise _GiveupOnFastCopy(err)
 
-            raise err
+            raise
         else:
             if sent == 0:
                 break  # EOF
@@ -292,7 +292,7 @@ def copyfile(src, dst, *, follow_symlinks=True):
             # XXX What about other special files? (sockets, devices...)
             if stat.S_ISFIFO(st.st_mode):
                 fn = fn.path if isinstance(fn, os.DirEntry) else fn
-                raise SpecialFileError("`%s` is a named pipe" % fn)
+                raise SpecialFileError(f"`{fn}` is a named pipe")
             if _WINDOWS and i == 0:
                 file_size = st.st_size
 
@@ -804,7 +804,7 @@ def rmtree(path, ignore_errors=False, onerror=None):
     elif onerror is None:
 
         def onerror(*args):
-            raise
+            raise  # noqa: PLE0704
 
     if _use_fd_functions:
         # While the unsafe rmtree works fine on bytes, the fd based does not.
@@ -814,12 +814,12 @@ def rmtree(path, ignore_errors=False, onerror=None):
         # lstat()/open()/fstat() trick.
         try:
             orig_st = os.lstat(path)
-        except Exception:
+        except Exception:  # noqa: BLE001
             onerror(os.lstat, path, sys.exc_info())
             return
         try:
             fd = os.open(path, os.O_RDONLY)
-        except Exception:
+        except Exception:  # noqa: BLE001
             onerror(os.open, path, sys.exc_info())
             return
         try:
@@ -913,7 +913,7 @@ def move(src, dst, copy_function=copy2):
         real_dst = os.path.join(dst, _basename(src))
 
         if os.path.exists(real_dst):
-            raise Error("Destination path '%s' already exists" % real_dst)
+            raise Error(f"Destination path '{real_dst}' already exists")
     try:
         os.rename(src, real_dst)
     except OSError:
@@ -923,9 +923,7 @@ def move(src, dst, copy_function=copy2):
             os.unlink(src)
         elif os.path.isdir(src):
             if _destinsrc(src, dst):
-                raise Error(
-                    "Cannot move a directory '%s' into itself '%s'." % (src, dst)
-                )
+                raise Error(f"Cannot move a directory '{src}' into itself '{dst}'.")
             if _is_immutable(src) or (
                 not os.access(src, os.W_OK)
                 and os.listdir(src)
@@ -933,7 +931,7 @@ def move(src, dst, copy_function=copy2):
             ):
                 raise PermissionError(
                     "Cannot move the non-empty directory "
-                    "'%s': Lacking write permission to '%s'." % (src, src)
+                    f"'{src}': Lacking write permission to '{src}'."
                 )
             copytree(src, real_dst, copy_function=copy_function, symlinks=True)
             rmtree(src)
@@ -1052,7 +1050,7 @@ def _make_tarball(
         return tarinfo
 
     if not dry_run:
-        tar = tarfile.open(archive_name, "w|%s" % tar_compression)
+        tar = tarfile.open(archive_name, f"w|{tar_compression}")  # noqa: SIM115
         try:
             tar.add(base_dir, filter=_set_uid_gid)
         finally:
@@ -1149,7 +1147,7 @@ def register_archive_format(name, function, extra_args=None, description=""):
     if extra_args is None:
         extra_args = []
     if not callable(function):
-        raise TypeError("The %s object is not callable" % function)
+        raise TypeError(f"The {function} object is not callable")
     if not isinstance(extra_args, (tuple, list)):
         raise TypeError("extra_args needs to be a sequence")
     for element in extra_args:
@@ -1207,7 +1205,7 @@ def make_archive(
     try:
         format_info = _ARCHIVE_FORMATS[format]
     except KeyError:
-        raise ValueError("unknown archive format '%s'" % format) from None
+        raise ValueError(f"unknown archive format '{format}'") from None
 
     func = format_info[0]
     for arg, val in format_info[1]:
@@ -1295,7 +1293,7 @@ def _unpack_zipfile(filename, extract_dir):
     import zipfile  # late import for breaking circular dependency
 
     if not zipfile.is_zipfile(filename):
-        raise ReadError("%s is not a zip file" % filename)
+        raise ReadError(f"{filename} is not a zip file")
 
     zip = zipfile.ZipFile(filename)
     try:
@@ -1324,9 +1322,9 @@ def _unpack_tarfile(filename, extract_dir):
     import tarfile  # late import for breaking circular dependency
 
     try:
-        tarobj = tarfile.open(filename)
+        tarobj = tarfile.open(filename)  # noqa: SIM115
     except tarfile.TarError:
-        raise ReadError("%s is not a compressed or uncompressed tar file" % filename)
+        raise ReadError(f"{filename} is not a compressed or uncompressed tar file")
     try:
         tarobj.extractall(extract_dir)
     finally:

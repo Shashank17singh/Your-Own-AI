@@ -16,13 +16,15 @@ from distutils.util import get_platform
 class bdist_dumb(Command):
     description = 'create a "dumb" built distribution'
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("bdist-dir=", "d", "temporary directory for creating the distribution"),
         (
             "plat-name=",
             "p",
-            "platform name to embed in generated filenames "
-            "(default: %s)" % get_platform(),
+            (
+                "platform name to embed in generated filenames "
+                f"(default: {get_platform()})"
+            ),
         ),
         (
             "format=",
@@ -54,9 +56,9 @@ class bdist_dumb(Command):
         ),
     ]
 
-    boolean_options = ["keep-temp", "skip-build", "relative"]
+    boolean_options = ["keep-temp", "skip-build", "relative"]  # noqa: RUF012
 
-    default_format = {"posix": "gztar", "nt": "zip"}
+    default_format = {"posix": "gztar", "nt": "zip"}  # noqa: RUF012
 
     def initialize_options(self):
         self.bdist_dir = None
@@ -80,7 +82,7 @@ class bdist_dumb(Command):
             except KeyError:
                 raise DistutilsPlatformError(
                     "don't know how to create dumb built distributions "
-                    "on platform %s" % os.name
+                    f"on platform {os.name}"
                 )
 
         self.set_undefined_options(
@@ -104,7 +106,7 @@ class bdist_dumb(Command):
 
         # And make an archive relative to the root of the
         # pseudo-installation tree.
-        archive_basename = "%s.%s" % (self.distribution.get_fullname(), self.plat_name)
+        archive_basename = f"{self.distribution.get_fullname()}.{self.plat_name}"
 
         pseudoinstall_root = os.path.join(self.dist_dir, archive_basename)
         if not self.relative:
@@ -115,8 +117,7 @@ class bdist_dumb(Command):
             ):
                 raise DistutilsPlatformError(
                     "can't make a dumb built distribution where "
-                    "base and platbase are different (%s, %s)"
-                    % (repr(install.install_base), repr(install.install_platbase))
+                    f"base and platbase are different ({install.install_base!r}, {install.install_platbase!r})"
                 )
             else:
                 archive_root = os.path.join(

@@ -323,7 +323,7 @@ class BaseServer:
         if self.verify_request(request, client_address):
             try:
                 self.process_request(request, client_address)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 self.handle_error(request, client_address)
                 self.shutdown_request(request)
             except:
@@ -624,7 +624,7 @@ if hasattr(os, "fork"):
                 try:
                     self.finish_request(request, client_address)
                     status = 0
-                except Exception:
+                except Exception:  # noqa: BLE001
                     self.handle_error(request, client_address)
                 finally:
                     try:
@@ -692,7 +692,7 @@ class ThreadingMixIn:
         """
         try:
             self.finish_request(request, client_address)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handle_error(request, client_address)
         finally:
             self.shutdown_request(request)

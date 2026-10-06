@@ -78,13 +78,13 @@ def main():
 
 
 def diff(fn, tree):
-    f = open("@", "w")
+    f = open("@", "w")  # noqa: SIM115
     try:
         f.write(str(tree))
     finally:
         f.close()
     try:
-        return os.system("diff -u %s @" % fn)
+        return os.system(f"diff -u {fn} @")
     finally:
         os.remove("@")
 

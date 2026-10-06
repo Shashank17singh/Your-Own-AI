@@ -40,7 +40,7 @@ class error(Exception):
         self.pattern = pattern
         self.pos = pos
         if pattern is not None and pos is not None:
-            msg = "%s at position %d" % (msg, pos)
+            msg = "%s at position %d" % (msg, pos)  # noqa: UP031
             if isinstance(pattern, str):
                 newline = "\n"
             else:
@@ -48,7 +48,7 @@ class error(Exception):
             self.lineno = pattern.count(newline, 0, pos) + 1
             self.colno = pos - pattern.rfind(newline, 0, pos)
             if newline in pattern:
-                msg = "%s (line %d, column %d)" % (msg, self.lineno, self.colno)
+                msg = "%s (line %d, column %d)" % (msg, self.lineno, self.colno)  # noqa: UP031
         else:
             self.lineno = self.colno = None
         super().__init__(msg)
@@ -151,46 +151,46 @@ CHCODES = _makecodes("""
 
 # replacement operations for "ignore case" mode
 OP_IGNORE = {
-    LITERAL: LITERAL_IGNORE,
-    NOT_LITERAL: NOT_LITERAL_IGNORE,
+    LITERAL: LITERAL_IGNORE,  # noqa: F821
+    NOT_LITERAL: NOT_LITERAL_IGNORE,  # noqa: F821
 }
 
 OP_LOCALE_IGNORE = {
-    LITERAL: LITERAL_LOC_IGNORE,
-    NOT_LITERAL: NOT_LITERAL_LOC_IGNORE,
+    LITERAL: LITERAL_LOC_IGNORE,  # noqa: F821
+    NOT_LITERAL: NOT_LITERAL_LOC_IGNORE,  # noqa: F821
 }
 
 OP_UNICODE_IGNORE = {
-    LITERAL: LITERAL_UNI_IGNORE,
-    NOT_LITERAL: NOT_LITERAL_UNI_IGNORE,
+    LITERAL: LITERAL_UNI_IGNORE,  # noqa: F821
+    NOT_LITERAL: NOT_LITERAL_UNI_IGNORE,  # noqa: F821
 }
 
-AT_MULTILINE = {AT_BEGINNING: AT_BEGINNING_LINE, AT_END: AT_END_LINE}
+AT_MULTILINE = {AT_BEGINNING: AT_BEGINNING_LINE, AT_END: AT_END_LINE}  # noqa: F821
 
-AT_LOCALE = {AT_BOUNDARY: AT_LOC_BOUNDARY, AT_NON_BOUNDARY: AT_LOC_NON_BOUNDARY}
+AT_LOCALE = {AT_BOUNDARY: AT_LOC_BOUNDARY, AT_NON_BOUNDARY: AT_LOC_NON_BOUNDARY}  # noqa: F821
 
-AT_UNICODE = {AT_BOUNDARY: AT_UNI_BOUNDARY, AT_NON_BOUNDARY: AT_UNI_NON_BOUNDARY}
+AT_UNICODE = {AT_BOUNDARY: AT_UNI_BOUNDARY, AT_NON_BOUNDARY: AT_UNI_NON_BOUNDARY}  # noqa: F821
 
 CH_LOCALE = {
-    CATEGORY_DIGIT: CATEGORY_DIGIT,
-    CATEGORY_NOT_DIGIT: CATEGORY_NOT_DIGIT,
-    CATEGORY_SPACE: CATEGORY_SPACE,
-    CATEGORY_NOT_SPACE: CATEGORY_NOT_SPACE,
-    CATEGORY_WORD: CATEGORY_LOC_WORD,
-    CATEGORY_NOT_WORD: CATEGORY_LOC_NOT_WORD,
-    CATEGORY_LINEBREAK: CATEGORY_LINEBREAK,
-    CATEGORY_NOT_LINEBREAK: CATEGORY_NOT_LINEBREAK,
+    CATEGORY_DIGIT: CATEGORY_DIGIT,  # noqa: F821
+    CATEGORY_NOT_DIGIT: CATEGORY_NOT_DIGIT,  # noqa: F821
+    CATEGORY_SPACE: CATEGORY_SPACE,  # noqa: F821
+    CATEGORY_NOT_SPACE: CATEGORY_NOT_SPACE,  # noqa: F821
+    CATEGORY_WORD: CATEGORY_LOC_WORD,  # noqa: F821
+    CATEGORY_NOT_WORD: CATEGORY_LOC_NOT_WORD,  # noqa: F821
+    CATEGORY_LINEBREAK: CATEGORY_LINEBREAK,  # noqa: F821
+    CATEGORY_NOT_LINEBREAK: CATEGORY_NOT_LINEBREAK,  # noqa: F821
 }
 
 CH_UNICODE = {
-    CATEGORY_DIGIT: CATEGORY_UNI_DIGIT,
-    CATEGORY_NOT_DIGIT: CATEGORY_UNI_NOT_DIGIT,
-    CATEGORY_SPACE: CATEGORY_UNI_SPACE,
-    CATEGORY_NOT_SPACE: CATEGORY_UNI_NOT_SPACE,
-    CATEGORY_WORD: CATEGORY_UNI_WORD,
-    CATEGORY_NOT_WORD: CATEGORY_UNI_NOT_WORD,
-    CATEGORY_LINEBREAK: CATEGORY_UNI_LINEBREAK,
-    CATEGORY_NOT_LINEBREAK: CATEGORY_UNI_NOT_LINEBREAK,
+    CATEGORY_DIGIT: CATEGORY_UNI_DIGIT,  # noqa: F821
+    CATEGORY_NOT_DIGIT: CATEGORY_UNI_NOT_DIGIT,  # noqa: F821
+    CATEGORY_SPACE: CATEGORY_UNI_SPACE,  # noqa: F821
+    CATEGORY_NOT_SPACE: CATEGORY_UNI_NOT_SPACE,  # noqa: F821
+    CATEGORY_WORD: CATEGORY_UNI_WORD,  # noqa: F821
+    CATEGORY_NOT_WORD: CATEGORY_UNI_NOT_WORD,  # noqa: F821
+    CATEGORY_LINEBREAK: CATEGORY_UNI_LINEBREAK,  # noqa: F821
+    CATEGORY_NOT_LINEBREAK: CATEGORY_UNI_NOT_LINEBREAK,  # noqa: F821
 }
 
 # flags
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     def dump(f, d, prefix):
         items = sorted(d)
         for item in items:
-            f.write("#define %s_%s %d\n" % (prefix, item, item))
+            f.write("#define %s_%s %d\n" % (prefix, item, item))  # noqa: UP031
 
     with open("sre_constants.h", "w") as f:
         f.write("""\
@@ -233,24 +233,24 @@ if __name__ == "__main__":
 
 """)
 
-        f.write("#define SRE_MAGIC %d\n" % MAGIC)
+        f.write("#define SRE_MAGIC %d\n" % MAGIC)  # noqa: UP031
 
         dump(f, OPCODES, "SRE_OP")
         dump(f, ATCODES, "SRE")
         dump(f, CHCODES, "SRE")
 
-        f.write("#define SRE_FLAG_TEMPLATE %d\n" % SRE_FLAG_TEMPLATE)
-        f.write("#define SRE_FLAG_IGNORECASE %d\n" % SRE_FLAG_IGNORECASE)
-        f.write("#define SRE_FLAG_LOCALE %d\n" % SRE_FLAG_LOCALE)
-        f.write("#define SRE_FLAG_MULTILINE %d\n" % SRE_FLAG_MULTILINE)
-        f.write("#define SRE_FLAG_DOTALL %d\n" % SRE_FLAG_DOTALL)
-        f.write("#define SRE_FLAG_UNICODE %d\n" % SRE_FLAG_UNICODE)
-        f.write("#define SRE_FLAG_VERBOSE %d\n" % SRE_FLAG_VERBOSE)
-        f.write("#define SRE_FLAG_DEBUG %d\n" % SRE_FLAG_DEBUG)
-        f.write("#define SRE_FLAG_ASCII %d\n" % SRE_FLAG_ASCII)
+        f.write("#define SRE_FLAG_TEMPLATE %d\n" % SRE_FLAG_TEMPLATE)  # noqa: UP031
+        f.write("#define SRE_FLAG_IGNORECASE %d\n" % SRE_FLAG_IGNORECASE)  # noqa: UP031
+        f.write("#define SRE_FLAG_LOCALE %d\n" % SRE_FLAG_LOCALE)  # noqa: UP031
+        f.write("#define SRE_FLAG_MULTILINE %d\n" % SRE_FLAG_MULTILINE)  # noqa: UP031
+        f.write("#define SRE_FLAG_DOTALL %d\n" % SRE_FLAG_DOTALL)  # noqa: UP031
+        f.write("#define SRE_FLAG_UNICODE %d\n" % SRE_FLAG_UNICODE)  # noqa: UP031
+        f.write("#define SRE_FLAG_VERBOSE %d\n" % SRE_FLAG_VERBOSE)  # noqa: UP031
+        f.write("#define SRE_FLAG_DEBUG %d\n" % SRE_FLAG_DEBUG)  # noqa: UP031
+        f.write("#define SRE_FLAG_ASCII %d\n" % SRE_FLAG_ASCII)  # noqa: UP031
 
-        f.write("#define SRE_INFO_PREFIX %d\n" % SRE_INFO_PREFIX)
-        f.write("#define SRE_INFO_LITERAL %d\n" % SRE_INFO_LITERAL)
-        f.write("#define SRE_INFO_CHARSET %d\n" % SRE_INFO_CHARSET)
+        f.write("#define SRE_INFO_PREFIX %d\n" % SRE_INFO_PREFIX)  # noqa: UP031
+        f.write("#define SRE_INFO_LITERAL %d\n" % SRE_INFO_LITERAL)  # noqa: UP031
+        f.write("#define SRE_INFO_CHARSET %d\n" % SRE_INFO_CHARSET)  # noqa: UP031
 
     print("done")

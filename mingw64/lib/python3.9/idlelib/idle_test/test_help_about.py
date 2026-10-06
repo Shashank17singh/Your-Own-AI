@@ -45,8 +45,8 @@ class LiveDialogTest(unittest.TestCase):
 
     def test_dialog_logo(self):
         """Test about dialog logo."""
-        path, file = os.path.split(self.dialog.icon_image["file"])
-        fn, ext = os.path.splitext(file)
+        _path, file = os.path.split(self.dialog.icon_image["file"])
+        fn, _ext = os.path.splitext(file)
         self.assertEqual(fn, "idle_48")
 
     def test_printer_buttons(self):

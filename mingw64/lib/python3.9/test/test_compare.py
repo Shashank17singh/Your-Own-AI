@@ -13,15 +13,15 @@ class Cmp:
         self.arg = arg
 
     def __repr__(self):
-        return "<Cmp %s>" % self.arg
+        return f"<Cmp {self.arg}>"
 
     def __eq__(self, other):
         return self.arg == other
 
 
 class ComparisonTest(unittest.TestCase):
-    set1 = [2, 2.0, 2, 2 + 0j, Cmp(2.0)]
-    set2 = [[1], (3,), None, Empty()]
+    set1 = [2, 2.0, 2, 2 + 0j, Cmp(2.0)]  # noqa: RUF012
+    set2 = [[1], (3,), None, Empty()]  # noqa: RUF012
     candidates = set1 + set2
 
     def test_comparisons(self):
@@ -39,7 +39,7 @@ class ComparisonTest(unittest.TestCase):
             L.insert(len(L) // 2, Empty())
         for a in L:
             for b in L:
-                self.assertEqual(a == b, id(a) == id(b), "a=%r, b=%r" % (a, b))
+                self.assertEqual(a == b, id(a) == id(b), f"a={a!r}, b={b!r}")
 
     def test_ne_defaults_to_not_eq(self):
         a = Cmp(1)
@@ -68,7 +68,7 @@ class ComparisonTest(unittest.TestCase):
                 calls.append("Right.__ne__")
                 return NotImplemented
 
-        Left() != Right()
+        Left() != Right()  # noqa: B015
         self.assertSequenceEqual(calls, ["Left.__eq__", "Right.__ne__"])
 
     def test_ne_low_priority(self):
@@ -90,7 +90,7 @@ class ComparisonTest(unittest.TestCase):
                 calls.append("Derived.__ne__")
                 return NotImplemented
 
-        Base() != Derived()
+        Base() != Derived()  # noqa: B015
         self.assertSequenceEqual(calls, ["Derived.__ne__", "Base.__eq__"])
 
     def test_other_delegation(self):

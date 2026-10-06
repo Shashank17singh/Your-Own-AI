@@ -7,7 +7,7 @@ from idlelib import rpc
 class CodePicklerTest(unittest.TestCase):
     def test_pickle_unpickle(self):
         def f():
-            return a + b + c
+            return a + b + c  # noqa: F821
 
         func, (cbytes,) = rpc.pickle_code(f.__code__)
         self.assertIs(func, rpc.unpickle_code)

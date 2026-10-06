@@ -63,7 +63,7 @@ class BlockingTestMixin:
             self.result = block_func(*block_args)
             # If block_func returned before our thread made the call, we failed!
             if not thread.startedEvent.is_set():
-                self.fail("blocking function %r appeared not to block" % block_func)
+                self.fail(f"blocking function {block_func!r} appeared not to block")
             return self.result
         finally:
             support.join_thread(thread)  # make sure the thread terminates
@@ -82,10 +82,10 @@ class BlockingTestMixin:
         try:
             try:
                 block_func(*block_args)
-            except expected_exception_class:
+            except expected_exception_class:  # noqa: TRY203
                 raise
             else:
-                self.fail("expected exception of kind %r" % expected_exception_class)
+                self.fail(f"expected exception of kind {expected_exception_class!r}")
         finally:
             support.join_thread(thread)  # make sure the thread terminates
             if not thread.startedEvent.is_set():
@@ -106,11 +106,11 @@ class BaseQueueTestMixin(BlockingTestMixin):
         q.put(111)
         q.put(333)
         q.put(222)
-        target_order = dict(
-            Queue=[111, 333, 222],
-            LifoQueue=[222, 333, 111],
-            PriorityQueue=[111, 222, 333],
-        )
+        target_order = {
+            "Queue": [111, 333, 222],
+            "LifoQueue": [222, 333, 111],
+            "PriorityQueue": [111, 222, 333],
+        }
         actual_order = [q.get(), q.get(), q.get()]
         self.assertEqual(
             actual_order,
@@ -490,7 +490,7 @@ class BaseSimpleQueueTest:
             def wrapper(*args, **kwargs):
                 try:
                     f(*args, **kwargs)
-                except BaseException as e:
+                except BaseException as e:  # noqa: BLE001
                     exceptions.append(e)
 
             return wrapper

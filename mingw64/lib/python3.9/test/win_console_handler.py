@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # Add our console control handling function with value 1
     if not SetConsoleCtrlHandler(ctrl_handler, 1):
         print("Unable to add SetConsoleCtrlHandler")
-        exit(-1)
+        sys.exit(-1)
 
     # Awake main process
     m = mmap.mmap(-1, 1, sys.argv[1])

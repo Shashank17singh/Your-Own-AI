@@ -88,7 +88,9 @@ def walk_packages(path=None, prefix="", onerror=None):
     walk_packages(ctypes.__path__, ctypes.__name__+'.')
     """
 
-    def seen(p, m={}):
+    def seen(p, m=None):
+        if m is None:
+            m = {}
         if p in m:
             return True
         m[p] = True
@@ -215,7 +217,7 @@ class ImpImporter:
     """
 
     def __init__(self, path=None):
-        global imp
+        global imp  # noqa: PLW0602
         warnings.warn(
             "This emulation is deprecated, use 'importlib' instead", DeprecationWarning
         )
@@ -313,17 +315,16 @@ class ImpLoader:
         if self.file and self.file.closed:
             mod_type = self.etc[2]
             if mod_type == imp.PY_SOURCE:
-                self.file = open(self.filename, "r")
+                self.file = open(self.filename, "r")  # noqa: SIM115
             elif mod_type in (imp.PY_COMPILED, imp.C_EXTENSION):
-                self.file = open(self.filename, "rb")
+                self.file = open(self.filename, "rb")  # noqa: SIM115
 
     def _fix_name(self, fullname):
         if fullname is None:
             fullname = self.fullname
         elif fullname != self.fullname:
             raise ImportError(
-                "Loader for module %s cannot handle "
-                "module %s" % (self.fullname, fullname)
+                f"Loader for module {self.fullname} cannot handle module {fullname}"
             )
         return fullname
 
@@ -398,7 +399,7 @@ try:
 
             fn = fn[plen:].split(os.sep)
 
-            if len(fn) == 2 and fn[1].startswith("__init__.py"):
+            if len(fn) == 2 and fn[1].startswith("__init__.py"):  # noqa: SIM102
                 if fn[0] not in yielded:
                     yielded[fn[0]] = 1
                     yield prefix + fn[0], True
@@ -598,9 +599,9 @@ def extend_path(path, name):
         pkgfile = os.path.join(dir, sname_pkg)
         if os.path.isfile(pkgfile):
             try:
-                f = open(pkgfile)
+                f = open(pkgfile)  # noqa: SIM115
             except OSError as msg:
-                sys.stderr.write("Can't open %s: %s\n" % (pkgfile, msg))
+                sys.stderr.write(f"Can't open {pkgfile}: {msg}\n")
             else:
                 with f:
                     for line in f:

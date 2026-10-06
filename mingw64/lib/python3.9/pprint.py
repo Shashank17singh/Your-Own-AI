@@ -195,7 +195,7 @@ class PrettyPrinter:
         return self.format(object, {}, 0, 0)[2]
 
     def isreadable(self, object):
-        s, readable, recursive = self.format(object, {}, 0, 0)
+        _s, readable, recursive = self.format(object, {}, 0, 0)
         return readable and not recursive
 
     def _format(self, object, stream, indent, allowance, context, level):
@@ -221,7 +221,7 @@ class PrettyPrinter:
                 return
         stream.write(rep)
 
-    _dispatch = {}
+    _dispatch = {}  # noqa: RUF012
 
     def _pprint_dict(self, object, stream, indent, allowance, context, level):
         write = stream.write
@@ -504,7 +504,7 @@ class PrettyPrinter:
         rdf = self._repr(object.default_factory, context, level)
         cls = object.__class__
         indent += len(cls.__name__) + 1
-        stream.write("%s(%s,\n%s" % (cls.__name__, rdf, " " * indent))
+        stream.write("{}({},\n{}".format(cls.__name__, rdf, " " * indent))
         self._pprint_dict(object, stream, indent, allowance + 1, context, level)
         stream.write(")")
 
@@ -557,7 +557,7 @@ class PrettyPrinter:
         else:
             self._format_items(object, stream, indent, 2, context, level)
             rml = self._repr(object.maxlen, context, level)
-            stream.write("],\n%smaxlen=%s)" % (" " * indent, rml))
+            stream.write("],\n{}maxlen={})".format(" " * indent, rml))
 
     _dispatch[_collections.deque.__repr__] = _pprint_deque
 
@@ -611,12 +611,12 @@ def _safe_repr(object, context, maxlevels, level, sort_dicts):
             vrepr, vreadable, vrecur = _safe_repr(
                 v, context, maxlevels, level, sort_dicts
             )
-            append("%s: %s" % (krepr, vrepr))
+            append(f"{krepr}: {vrepr}")
             readable = readable and kreadable and vreadable
             if krecur or vrecur:
                 recursive = True
         del context[objid]
-        return "{%s}" % ", ".join(components), readable, recursive
+        return "{{{}}}".format(", ".join(components)), readable, recursive
 
     if (issubclass(typ, list) and r is list.__repr__) or (
         issubclass(typ, tuple) and r is tuple.__repr__
@@ -664,7 +664,7 @@ _builtin_scalars = frozenset(
 
 
 def _recursion(object):
-    return "<Recursion on %s with id=%s>" % (type(object).__name__, id(object))
+    return f"<Recursion on {type(object).__name__} with id={id(object)}>"
 
 
 def _perfcheck(object=None):

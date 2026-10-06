@@ -307,7 +307,7 @@ class CAPITest(unittest.TestCase):
                 with support.SuppressCrashReport():
                     _testcapi.return_null_without_error()
             """)
-            rc, out, err = assert_python_failure("-c", code)
+            _rc, _out, err = assert_python_failure("-c", code)
             self.assertRegex(
                 err.replace(b"\r", b""),
                 rb"Fatal Python error: _Py_CheckFunctionResult: "
@@ -339,7 +339,7 @@ class CAPITest(unittest.TestCase):
                 with support.SuppressCrashReport():
                     _testcapi.return_result_with_error()
             """)
-            rc, out, err = assert_python_failure("-c", code)
+            _rc, _out, err = assert_python_failure("-c", code)
             self.assertRegex(
                 err.replace(b"\r", b""),
                 rb"Fatal Python error: _Py_CheckFunctionResult: "
@@ -396,7 +396,7 @@ class CAPITest(unittest.TestCase):
                         _testcapi.remove_mem_hooks()
                         break
         """
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, out, _err = assert_python_ok("-c", code)
         self.assertIn(b"MemoryError 1 10", out)
         self.assertIn(b"MemoryError 2 20", out)
         self.assertIn(b"MemoryError 3 30", out)
@@ -477,7 +477,7 @@ class CAPITest(unittest.TestCase):
             with support.SuppressCrashReport():
                 _testcapi.negative_refcount()
         """)
-        rc, out, err = assert_python_failure("-c", code)
+        _rc, _out, err = assert_python_failure("-c", code)
         self.assertRegex(
             err,
             rb"_testcapimodule\.c:[0-9]+: "
@@ -718,20 +718,21 @@ class TestPendingCalls(unittest.TestCase):
             # this busy loop is where we expect to be interrupted to
             # run our callbacks.  Note that callbacks are only run on the
             # main thread
-            if False and support.verbose:
+            if False:
                 print(
-                    "(%i)" % (len(l),),
+                    "(%i)" % (len(l),),  # noqa: UP031
                 )
             for i in range(1000):
-                a = i * i
+                i * i
             if context and not context.event.is_set():
                 continue
             count += 1
             self.assertTrue(
-                count < 10000, "timeout waiting for %i callbacks, got %i" % (n, len(l))
+                count < 10000,
+                "timeout waiting for %i callbacks, got %i" % (n, len(l)),  # noqa: UP031
             )
-        if False and support.verbose:
-            print("(%i)" % (len(l),))
+        if False:
+            print("(%i)" % (len(l),))  # noqa: UP031
 
     def test_pendingcalls_threaded(self):
 
@@ -764,7 +765,7 @@ class TestPendingCalls(unittest.TestCase):
             with context.lock:
                 context.nFinished += 1
                 nFinished = context.nFinished
-                if False and support.verbose:
+                if False:
                     print("finished threads: ", nFinished)
             if nFinished == context.nThreads:
                 context.event.set()
@@ -843,7 +844,6 @@ class TestThreadState(unittest.TestCase):
                 idents.append(threading.get_ident())
 
             _testcapi._test_thread_state(callback)
-            a = b = callback
             time.sleep(1)
             # Check our main thread is in the list exactly 3 times.
             self.assertEqual(

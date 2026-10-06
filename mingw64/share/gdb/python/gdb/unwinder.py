@@ -18,7 +18,7 @@ class Unwinder:
             name: An identifying name for the unwinder.
         """
         if not isinstance(name, str):
-            raise TypeError("incorrect type for name: %s" % type(name))
+            raise TypeError(f"incorrect type for name: {type(name)}")
         self._name = name
         self._enabled = True
 
@@ -33,7 +33,7 @@ class Unwinder:
     @enabled.setter
     def enabled(self, value):
         if not isinstance(value, bool):
-            raise TypeError("incorrect type for enabled attribute: %s" % type(value))
+            raise TypeError(f"incorrect type for enabled attribute: {type(value)}")
         self._enabled = value
         gdb.invalidate_cached_frames()
 
@@ -91,12 +91,12 @@ def register_unwinder(locus, unwinder, replace=False):
     """
     if locus is None:
         if gdb.parameter("verbose"):
-            gdb.write("Registering global %s unwinder ...\n" % unwinder.name)
+            gdb.write(f"Registering global {unwinder.name} unwinder ...\n")
         locus = gdb
-    elif isinstance(locus, gdb.Objfile) or isinstance(locus, gdb.Progspace):
+    elif isinstance(locus, (gdb.Objfile, gdb.Progspace)):
         if gdb.parameter("verbose"):
             gdb.write(
-                "Registering %s unwinder for %s ...\n" % (unwinder.name, locus.filename)
+                f"Registering {unwinder.name} unwinder for {locus.filename} ...\n"
             )
     else:
         raise TypeError("locus should be gdb.Objfile or gdb.Progspace or None")
@@ -106,7 +106,7 @@ def register_unwinder(locus, unwinder, replace=False):
             if replace:
                 del locus.frame_unwinders[i]
             else:
-                raise RuntimeError("Unwinder %s already exists." % unwinder.name)
-        i += 1
+                raise RuntimeError(f"Unwinder {unwinder.name} already exists.")
+        i += 1  # noqa: SIM113
     locus.frame_unwinders.insert(0, unwinder)
     gdb.invalidate_cached_frames()

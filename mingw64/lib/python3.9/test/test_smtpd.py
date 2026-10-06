@@ -747,47 +747,47 @@ class SMTPDChannelTest(unittest.TestCase):
 
     def test_attribute_deprecations(self):
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__server
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__server = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__line
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__line = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__state
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__state = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__greeting
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__greeting = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__mailfrom
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__mailfrom = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__rcpttos
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__rcpttos = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__data
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__data = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__fqdn
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__fqdn = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__peer
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__peer = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__conn
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__conn = "spam"
         with support.check_warnings(("", DeprecationWarning)):
-            spam = self.channel._SMTPChannel__addr
+            pass
         with support.check_warnings(("", DeprecationWarning)):
             self.channel._SMTPChannel__addr = "spam"
 

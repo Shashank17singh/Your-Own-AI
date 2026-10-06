@@ -68,7 +68,7 @@ SCHEME_KEYS = ("purelib", "platlib", "headers", "scripts", "data")
 class install(Command):
     description = "install everything from build directory"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         # Select installation scheme and set base director(y|ies)
         ("prefix=", None, "installation prefix"),
         ("exec-prefix=", None, "(Unix only) prefix for platform-specific files"),
@@ -114,8 +114,10 @@ class install(Command):
         (
             "optimize=",
             "O",
-            'also compile with optimization: -O1 for "python -O", '
-            '-O2 for "python -OO", and -O0 to disable [default: -O0]',
+            (
+                'also compile with optimization: -O1 for "python -O", '
+                '-O2 for "python -OO", and -O0 to disable [default: -O0]'
+            ),
         ),
         # Miscellaneous control options
         ("force", "f", "force installation (overwrite any existing files)"),
@@ -128,15 +130,15 @@ class install(Command):
         ("record=", None, "filename in which to record list of installed files"),
     ]
 
-    boolean_options = ["compile", "force", "skip-build"]
+    boolean_options = ["compile", "force", "skip-build"]  # noqa: RUF012
 
     if HAS_USER_SITE:
         user_options.append(
-            ("user", None, "install in user site-package '%s'" % USER_SITE)
+            ("user", None, f"install in user site-package '{USER_SITE}'")
         )
         boolean_options.append("user")
 
-    negative_opt = {"no-compile": "compile"}
+    negative_opt = {"no-compile": "compile"}  # noqa: RUF012
 
     def initialize_options(self):
         """Initializes options."""
@@ -257,10 +259,9 @@ class install(Command):
             )
 
         # Next, stuff that's wrong (or dubious) only on certain platforms.
-        if os.name != "posix":
-            if self.exec_prefix:
-                self.warn("exec-prefix option ignored on this platform")
-                self.exec_prefix = None
+        if os.name != "posix" and self.exec_prefix:
+            self.warn("exec-prefix option ignored on this platform")
+            self.exec_prefix = None
 
         # Now the interesting logic -- so interesting that we farm it out
         # to other methods.  The goal of these methods is to set the final
@@ -296,8 +297,8 @@ class install(Command):
             "dist_version": self.distribution.get_version(),
             "dist_fullname": self.distribution.get_fullname(),
             "py_version": py_version,
-            "py_version_short": "%d.%d" % sys.version_info[:2],
-            "py_version_nodot": "%d%d" % sys.version_info[:2],
+            "py_version_short": "%d.%d" % sys.version_info[:2],  # noqa: UP031
+            "py_version_nodot": "%d%d" % sys.version_info[:2],  # noqa: UP031
             "sys_prefix": prefix,
             "prefix": prefix,
             "sys_exec_prefix": exec_prefix,
@@ -470,7 +471,7 @@ class install(Command):
                 self.select_scheme(os.name)
             except KeyError:
                 raise DistutilsPlatformError(
-                    "I don't know how to install stuff on '%s'" % os.name
+                    f"I don't know how to install stuff on '{os.name}'"
                 )
 
     def select_scheme(self, name):
@@ -561,9 +562,9 @@ class install(Command):
         if not self.user:
             return
         home = convert_path(os.path.expanduser("~"))
-        for name, path in self.config_vars.items():
+        for path in self.config_vars.values():
             if path.startswith(home) and not os.path.isdir(path):
-                self.debug_print("os.makedirs('%s', 0o700)" % path)
+                self.debug_print(f"os.makedirs('{path}', 0o700)")
                 os.makedirs(path, 0o700)
 
     # -- Command execution methods -------------------------------------
@@ -598,7 +599,7 @@ class install(Command):
             self.execute(
                 write_file,
                 (self.record, outputs),
-                "writing list of installed files to '%s'" % self.record,
+                f"writing list of installed files to '{self.record}'",
             )
 
         sys_path = map(os.path.normpath, sys.path)
@@ -623,10 +624,10 @@ class install(Command):
         filename = os.path.join(self.install_libbase, self.path_file + ".pth")
         if self.install_path_file:
             self.execute(
-                write_file, (filename, [self.extra_dirs]), "creating %s" % filename
+                write_file, (filename, [self.extra_dirs]), f"creating {filename}"
             )
         else:
-            self.warn("path file '%s' not created" % filename)
+            self.warn(f"path file '{filename}' not created")
 
     # -- Reporting methods ---------------------------------------------
 
@@ -682,7 +683,7 @@ class install(Command):
 
     # 'sub_commands': a list of commands this command might have to run to
     # get its work done.  See cmd.py for more info.
-    sub_commands = [
+    sub_commands = [  # noqa: RUF012
         ("install_lib", has_lib),
         ("install_headers", has_headers),
         ("install_scripts", has_scripts),

@@ -34,7 +34,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
         super().tearDown()
 
     def test_move_file_verbosity(self):
-        f = open(self.source, "w")
+        f = open(self.source, "w")  # noqa: SIM115
         try:
             f.write("some content")
         finally:
@@ -48,7 +48,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
         move_file(self.target, self.source, verbose=0)
 
         move_file(self.source, self.target, verbose=1)
-        wanted = ["moving %s -> %s" % (self.source, self.target)]
+        wanted = [f"moving {self.source} -> {self.target}"]
         self.assertEqual(self._logs, wanted)
 
         # back to original state
@@ -58,7 +58,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
         # now the target is a dir
         os.mkdir(self.target_dir)
         move_file(self.source, self.target_dir, verbose=1)
-        wanted = ["moving %s -> %s" % (self.source, self.target_dir)]
+        wanted = [f"moving {self.source} -> {self.target_dir}"]
         self.assertEqual(self._logs, wanted)
 
     def test_move_file_exception_unpacking_rename(self):
@@ -90,7 +90,7 @@ class FileUtilTestCase(support.TempdirManager, unittest.TestCase):
         try:
             os.link(self.source, self.target)
         except OSError as e:
-            self.skipTest("os.link: %s" % e)
+            self.skipTest(f"os.link: {e}")
         else:
             unlink(self.target)
         st = os.stat(self.source)

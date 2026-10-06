@@ -14,7 +14,7 @@ from test import support
 from test.libregrtest.utils import print_warning
 
 try:
-    import _multiprocessing
+    import _multiprocessing  # noqa: F401
     import multiprocessing.process
 except ImportError:
     multiprocessing = None
@@ -147,7 +147,7 @@ class saved_test_environment:
         return id(os.environ), os.environ, dict(os.environ)
 
     def restore_os_environ(self, saved_environ):
-        os.environ = saved_environ[1]
+        os.environ = saved_environ[1]  # noqa: B003
         os.environ.clear()
         os.environ.update(saved_environ[2])
 
@@ -299,7 +299,7 @@ class saved_test_environment:
             elif os.path.isdir(fn):
                 support.rmtree(fn)
 
-    _lc = [getattr(locale, lc) for lc in dir(locale) if lc.startswith("LC_")]
+    _lc = [getattr(locale, lc) for lc in dir(locale) if lc.startswith("LC_")]  # noqa: RUF012
 
     def get_locale(self):
         pairings = []
@@ -328,9 +328,7 @@ class saved_test_environment:
             yield name, getattr(self, get_name), getattr(self, restore_name)
 
     def __enter__(self):
-        self.saved_values = dict(
-            (name, get()) for name, get, restore in self.resource_info()
-        )
+        self.saved_values = {name: get() for name, get, restore in self.resource_info()}
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

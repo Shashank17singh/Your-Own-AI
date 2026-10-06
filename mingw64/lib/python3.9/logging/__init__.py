@@ -183,7 +183,7 @@ def getLevelName(level):
     result = _nameToLevel.get(level)
     if result is not None:
         return result
-    return "Level %s" % level
+    return f"Level {level}"
 
 
 def addLevelName(level, levelName):
@@ -207,8 +207,8 @@ else:  # pragma: no cover
     def currentframe():
         """Return the frame object for the caller's stack frame."""
         try:
-            raise Exception
-        except Exception:
+            raise Exception  # noqa: TRY002
+        except Exception:  # noqa: BLE001
             return sys.exc_info()[2].tb_frame.f_back
 
 
@@ -241,10 +241,10 @@ def _checkLevel(level):
         rv = level
     elif str(level) == level:
         if level not in _nameToLevel:
-            raise ValueError("Unknown level: %r" % level)
+            raise ValueError(f"Unknown level: {level!r}")
         rv = _nameToLevel[level]
     else:
-        raise TypeError("Level not an integer or a valid string: %r" % level)
+        raise TypeError(f"Level not an integer or a valid string: {level!r}")
     return rv
 
 
@@ -414,7 +414,7 @@ class LogRecord:
                 # for an example
                 try:
                     self.processName = mp.current_process().name
-                except Exception:  # pragma: no cover
+                except Exception:  # pragma: no cover  # noqa: BLE001, S110
                     pass
         if logProcesses and hasattr(os, "getpid"):
             self.process = os.getpid()
@@ -422,13 +422,7 @@ class LogRecord:
             self.process = None
 
     def __repr__(self):
-        return '<LogRecord: %s, %s, %s, %s, "%s">' % (
-            self.name,
-            self.levelno,
-            self.pathname,
-            self.lineno,
-            self.msg,
-        )
+        return f'<LogRecord: {self.name}, {self.levelno}, {self.pathname}, {self.lineno}, "{self.msg}">'
 
     def getMessage(self):
         """
@@ -505,8 +499,7 @@ class PercentStyle:
         """Validate the input format, ensure it matches the correct style"""
         if not self.validation_pattern.search(self._fmt):
             raise ValueError(
-                "Invalid format '%s' for '%s' style"
-                % (self._fmt, self.default_format[0])
+                f"Invalid format '{self._fmt}' for '{self.default_format[0]}' style"
             )
 
     def _format(self, record):
@@ -516,7 +509,7 @@ class PercentStyle:
         try:
             return self._format(record)
         except KeyError as e:
-            raise ValueError("Formatting field not found in record: %s" % e)
+            raise ValueError(f"Formatting field not found in record: {e}")
 
 
 class StrFormatStyle(PercentStyle):
@@ -541,15 +534,15 @@ class StrFormatStyle(PercentStyle):
                 if fieldname:
                     if not self.field_spec.match(fieldname):
                         raise ValueError(
-                            "invalid field name/expression: %r" % fieldname
+                            f"invalid field name/expression: {fieldname!r}"
                         )
                     fields.add(fieldname)
                 if conversion and conversion not in "rsa":
-                    raise ValueError("invalid conversion: %r" % conversion)
+                    raise ValueError(f"invalid conversion: {conversion!r}")
                 if spec and not self.fmt_spec.match(spec):
-                    raise ValueError("bad specifier: %r" % spec)
+                    raise ValueError(f"bad specifier: {spec!r}")
         except ValueError as e:
-            raise ValueError("invalid format: %s" % e)
+            raise ValueError(f"invalid format: {e}")
         if not fields:
             raise ValueError("invalid format: no fields")
 
@@ -656,7 +649,9 @@ class Formatter:
            Added the ``style`` parameter.
         """
         if style not in _STYLES:
-            raise ValueError("Style must be one of: %s" % ",".join(_STYLES.keys()))
+            raise ValueError(
+                "Style must be one of: {}".format(",".join(_STYLES.keys()))
+            )
         self._style = _STYLES[style][0](fmt)
         if validate:
             self._style.validate()
@@ -752,7 +747,7 @@ class Formatter:
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
         s = self.formatMessage(record)
-        if record.exc_info:
+        if record.exc_info:  # noqa: SIM102
             # Cache the traceback text to avoid converting it multiple times
             # (it's constant anyway)
             if not record.exc_text:
@@ -1113,17 +1108,16 @@ class Handler(Filterer):
                 else:
                     # couldn't find the right stack frame, for some reason
                     sys.stderr.write(
-                        "Logged from file %s, line %s\n"
-                        % (record.filename, record.lineno)
+                        f"Logged from file {record.filename}, line {record.lineno}\n"
                     )
                 # Issue 18671: output logging message and arguments
                 try:
                     sys.stderr.write(
-                        "Message: %r\nArguments: %s\n" % (record.msg, record.args)
+                        f"Message: {record.msg!r}\nArguments: {record.args}\n"
                     )
                 except RecursionError:  # See issue 36272
                     raise
-                except Exception:
+                except Exception:  # noqa: BLE001
                     sys.stderr.write(
                         "Unable to print the message and arguments"
                         " - possible formatting error.\nUse the"
@@ -1136,7 +1130,7 @@ class Handler(Filterer):
 
     def __repr__(self):
         level = getLevelName(self.level)
-        return "<%s (%s)>" % (self.__class__.__name__, level)
+        return f"<{self.__class__.__name__} ({level})>"
 
 
 class StreamHandler(Handler):
@@ -1189,7 +1183,7 @@ class StreamHandler(Handler):
             self.flush()
         except RecursionError:  # See issue 36272
             raise
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
     def setStream(self, stream):
@@ -1219,7 +1213,7 @@ class StreamHandler(Handler):
         name = str(name)
         if name:
             name += " "
-        return "<%s %s(%s)>" % (self.__class__.__name__, name, level)
+        return f"<{self.__class__.__name__} {name}({level})>"
 
 
 class FileHandler(StreamHandler):
@@ -1292,7 +1286,7 @@ class FileHandler(StreamHandler):
 
     def __repr__(self):
         level = getLevelName(self.level)
-        return "<%s %s (%s)>" % (self.__class__.__name__, self.baseFilename, level)
+        return f"<{self.__class__.__name__} {self.baseFilename} ({level})>"
 
 
 class _StderrHandler(StreamHandler):
@@ -1353,9 +1347,8 @@ def setLoggerClass(klass):
     define __init__() such that only a name argument is required, and the
     __init__() should call Logger.__init__()
     """
-    if klass != Logger:
-        if not issubclass(klass, Logger):
-            raise TypeError("logger not derived from logging.Logger: " + klass.__name__)
+    if klass != Logger and not issubclass(klass, Logger):
+        raise TypeError("logger not derived from logging.Logger: " + klass.__name__)
     global _loggerClass
     _loggerClass = klass
 
@@ -1430,11 +1423,8 @@ class Manager:
         """
         Set the class to be used when instantiating a logger with this Manager.
         """
-        if klass != Logger:
-            if not issubclass(klass, Logger):
-                raise TypeError(
-                    "logger not derived from logging.Logger: " + klass.__name__
-                )
+        if klass != Logger and not issubclass(klass, Logger):
+            raise TypeError("logger not derived from logging.Logger: " + klass.__name__)
         self.loggerClass = klass
 
     def setLogRecordFactory(self, factory):
@@ -1475,7 +1465,7 @@ class Manager:
         """
         name = alogger.name
         namelen = len(name)
-        for c in ph.loggerMap.keys():
+        for c in ph.loggerMap:
             # The if means ... if not c.parent.name.startswith(nm)
             if c.parent.name[:namelen] != name:
                 alogger.parent = c.parent
@@ -1686,7 +1676,7 @@ class Logger(Filterer):
         if extra is not None:
             for key in extra:
                 if (key in ["message", "asctime"]) or (key in rv.__dict__):
-                    raise KeyError("Attempt to overwrite %r in LogRecord" % key)
+                    raise KeyError(f"Attempt to overwrite {key!r} in LogRecord")
                 rv.__dict__[key] = extra[key]
         return rv
 
@@ -1806,7 +1796,7 @@ class Logger(Filterer):
                     lastResort.handle(record)
             elif raiseExceptions and not self.manager.emittedNoHandlerWarning:
                 sys.stderr.write(
-                    'No handlers could be found for logger "%s"\n' % self.name
+                    f'No handlers could be found for logger "{self.name}"\n'
                 )
                 self.manager.emittedNoHandlerWarning = True
 
@@ -1860,12 +1850,12 @@ class Logger(Filterer):
         __name__ rather than a literal string.
         """
         if self.root is not self:
-            suffix = ".".join((self.name, suffix))
+            suffix = f"{self.name}.{suffix}"
         return self.manager.getLogger(suffix)
 
     def __repr__(self):
         level = getLevelName(self.getEffectiveLevel())
-        return "<%s %s (%s)>" % (self.__class__.__name__, self.name, level)
+        return f"<{self.__class__.__name__} {self.name} ({level})>"
 
     def __reduce__(self):
         # In general, only the root logger will not be accessible via its name.
@@ -2038,7 +2028,7 @@ class LoggerAdapter:
     def __repr__(self):
         logger = self.logger
         level = getLevelName(logger.getEffectiveLevel())
-        return "<%s %s (%s)>" % (self.__class__.__name__, logger.name, level)
+        return f"<{self.__class__.__name__} {logger.name} ({level})>"
 
 
 root = RootLogger(WARNING)
@@ -2156,7 +2146,9 @@ def basicConfig(**kwargs):
             dfs = kwargs.pop("datefmt", None)
             style = kwargs.pop("style", "%")
             if style not in _STYLES:
-                raise ValueError("Style must be one of: %s" % ",".join(_STYLES.keys()))
+                raise ValueError(
+                    "Style must be one of: {}".format(",".join(_STYLES.keys()))
+                )
             fs = kwargs.pop("format", _STYLES[style][1])
             fmt = Formatter(fs, dfs, style)
             for h in handlers:
@@ -2168,7 +2160,7 @@ def basicConfig(**kwargs):
                 root.setLevel(level)
             if kwargs:
                 keys = ", ".join(kwargs.keys())
-                raise ValueError("Unrecognised argument(s): %s" % keys)
+                raise ValueError(f"Unrecognised argument(s): {keys}")
     finally:
         _releaseLock()
 
@@ -2310,7 +2302,7 @@ def shutdown(handlerList=_handlerList):
                     pass
                 finally:
                     h.release()
-        except:  # ignore everything, as we're shutting down
+        except:  # ignore everything, as we're shutting down  # noqa: E722
             if raiseExceptions:
                 raise
             # else, swallow

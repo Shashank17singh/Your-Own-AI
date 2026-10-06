@@ -104,7 +104,7 @@ def input(files=None, inplace=False, backup="", *, mode="r", openhook=None):
     global _state
     if _state and _state._file:
         raise RuntimeError("input() already active")
-    _state = FileInput(files, inplace, backup, mode=mode, openhook=openhook)
+    _state = FileInput(files, inplace, backup, mode=mode, openhook=openhook)  # noqa: SIM115
     return _state
 
 
@@ -369,11 +369,11 @@ class FileInput:
                     pass
                 # The next few lines may raise OSError
                 os.rename(self._filename, self._backupfilename)
-                self._file = open(self._backupfilename, self._mode)
+                self._file = open(self._backupfilename, self._mode)  # noqa: SIM115
                 try:
                     perm = os.fstat(self._file.fileno()).st_mode
                 except OSError:
-                    self._output = open(self._filename, self._write_mode)
+                    self._output = open(self._filename, self._write_mode)  # noqa: SIM115
                 else:
                     mode = os.O_CREAT | os.O_WRONLY | os.O_TRUNC
                     if hasattr(os, "O_BINARY"):
@@ -392,7 +392,7 @@ class FileInput:
                 if self._openhook:
                     self._file = self._openhook(self._filename, self._mode)
                 else:
-                    self._file = open(self._filename, self._mode)
+                    self._file = open(self._filename, self._mode)  # noqa: SIM115
         self._readline = self._file.readline  # hide FileInput._readline
         return self._readline()
 
@@ -455,16 +455,16 @@ def _test():
             inplace = True
         if o == "-b":
             backup = a
-    for line in input(args, inplace=inplace, backup=backup):
+    for line in input(args, inplace=inplace, backup=backup):  # noqa: SIM115
         if line[-1:] == "\n":
             line = line[:-1]
         if line[-1:] == "\r":
             line = line[:-1]
         print(
-            "%d: %s[%d]%s %s"
+            "%d: %s[%d]%s %s"  # noqa: UP031
             % (lineno(), filename(), filelineno(), isfirstline() and "*" or "", line)
         )
-    print("%d: %s[%d]" % (lineno(), filename(), filelineno()))
+    print("%d: %s[%d]" % (lineno(), filename(), filelineno()))  # noqa: UP031
 
 
 if __name__ == "__main__":

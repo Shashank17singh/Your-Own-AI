@@ -48,16 +48,16 @@ def _run_object_doctest(obj, module):
     # Use the object's fully qualified name if it has one
     # Otherwise, use the module's name
     try:
-        name = "%s.%s" % (obj.__module__, obj.__qualname__)
+        name = f"{obj.__module__}.{obj.__qualname__}"
     except AttributeError:
         name = module.__name__
     for example in finder.find(obj, name, module):
         runner.run(example)
     f, t = runner.failures, runner.tries
     if f:
-        raise test.support.TestFailed("%d of %d doctests failed" % (f, t))
+        raise test.support.TestFailed("%d of %d doctests failed" % (f, t))  # noqa: UP031
     if verbose:
-        print("doctest (%s) ... %d tests with zero failures" % (module.__name__, t))
+        print("doctest (%s) ... %d tests with zero failures" % (module.__name__, t))  # noqa: UP031
     return f, t
 
 
@@ -89,7 +89,7 @@ class ZipSupportTests(unittest.TestCase):
         with test.support.temp_dir() as d:
             init_name = make_script(d, "__init__", test_src)
             name_in_zip = os.path.join("zip_pkg", os.path.basename(init_name))
-            zip_name, run_name = make_zip_script(d, "test_zip", init_name, name_in_zip)
+            zip_name, _run_name = make_zip_script(d, "test_zip", init_name, name_in_zip)
             os.remove(init_name)
             sys.path.insert(0, zip_name)
             import zip_pkg
@@ -129,13 +129,13 @@ class ZipSupportTests(unittest.TestCase):
 
         with test.support.temp_dir() as d:
             script_name = make_script(d, "test_zipped_doctest", test_src)
-            zip_name, run_name = make_zip_script(d, "test_zip", script_name)
+            zip_name, _run_name = make_zip_script(d, "test_zip", script_name)
             with zipfile.ZipFile(zip_name, "a") as z:
                 for mod_name, src in sample_sources.items():
                     z.writestr(mod_name + ".py", src)
             if verbose:
                 with zipfile.ZipFile(zip_name, "r") as zip_file:
-                    print("Contents of %r:" % zip_name)
+                    print(f"Contents of {zip_name!r}:")
                     zip_file.printdir()
             os.remove(script_name)
             sys.path.insert(0, zip_name)
@@ -180,11 +180,6 @@ class ZipSupportTests(unittest.TestCase):
                 ]
                 # These tests are the ones which need access
                 # to the data files, so we don't run them
-                fail_due_to_missing_data_files = [
-                    test_zipped_doctest.test_DocFileSuite,
-                    test_zipped_doctest.test_testfile,
-                    test_zipped_doctest.test_unittest_reportflags,
-                ]
 
                 for obj in known_good_tests:
                     _run_object_doctest(obj, test_zipped_doctest)
@@ -203,7 +198,7 @@ class ZipSupportTests(unittest.TestCase):
         pattern = 'File "%s", line 2, in %s'
         with test.support.temp_dir() as d:
             script_name = make_script(d, "script", test_src)
-            rc, out, err = assert_python_ok(script_name)
+            rc, out, err = assert_python_ok(script_name)  # noqa: RUF059
             expected = pattern % (script_name, "__main__.Test")
             if verbose:
                 print("Expected line", expected)
@@ -213,7 +208,7 @@ class ZipSupportTests(unittest.TestCase):
             zip_name, run_name = make_zip_script(
                 d, "test_zip", script_name, "__main__.py"
             )
-            rc, out, err = assert_python_ok(zip_name)
+            _rc, out, _err = assert_python_ok(zip_name)
             expected = pattern % (run_name, "__main__.Test")
             if verbose:
                 print("Expected line", expected)

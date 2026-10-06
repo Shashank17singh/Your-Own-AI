@@ -174,7 +174,7 @@ class PropertyTests(unittest.TestCase):
                 foo.__isabstractmethod__ = NotBool()
                 foo = property(foo)
 
-            C.foo.__isabstractmethod__
+            C.foo.__isabstractmethod__  # noqa: B018
 
     @unittest.skipIf(
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
@@ -217,7 +217,7 @@ class PropertyTests(unittest.TestCase):
             @classmethod
             @property
             def __doc__(cls):
-                return "A doc for %r" % cls.__name__
+                return f"A doc for {cls.__name__!r}"
 
         self.assertEqual(A.__doc__, "A doc for 'A'")
 
@@ -260,7 +260,7 @@ class PropertySubclassTests(unittest.TestCase):
         except AttributeError:
             pass
         else:
-            raise Exception("AttributeError not raised")
+            raise Exception("AttributeError not raised")  # noqa: TRY002
 
     @unittest.skipIf(
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"

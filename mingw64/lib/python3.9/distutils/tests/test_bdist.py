@@ -59,7 +59,7 @@ class BuildTestCase(support.TempdirManager, unittest.TestCase):
                 # command is not supported on this build
                 continue
             self.assertTrue(
-                subcmd.skip_build, "%s should take --skip-build from bdist" % name
+                subcmd.skip_build, f"{name} should take --skip-build from bdist"
             )
 
 

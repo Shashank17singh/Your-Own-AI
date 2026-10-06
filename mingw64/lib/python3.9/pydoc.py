@@ -386,8 +386,10 @@ def source_synopsis(file):
     return result
 
 
-def synopsis(filename, cache={}):
+def synopsis(filename, cache=None):
     """Get the one-line summary out of a module file."""
+    if cache is None:
+        cache = {}
     mtime = os.stat(filename).st_mtime
     lastupdate, result = cache.get(filename, (None, None))
     if lastupdate is None or lastupdate < mtime:
@@ -402,7 +404,7 @@ def synopsis(filename, cache={}):
         if loader_cls is None:
             # Must be a source file.
             try:
-                file = tokenize.open(filename)
+                file = tokenize.open(filename)  # noqa: SIM115
             except OSError:
                 # module can't be opened, so skip it
                 return None
@@ -418,7 +420,7 @@ def synopsis(filename, cache={}):
             )
             try:
                 module = importlib._bootstrap._load(spec)
-            except:
+            except:  # noqa: E722
                 return None
             del sys.modules["__temp__"]
             result = module.__doc__.splitlines()[0] if module.__doc__ else None
@@ -436,7 +438,7 @@ class ErrorDuringImport(Exception):
 
     def __str__(self):
         exc = self.exc.__name__
-        return "problem in %s - %s: %s" % (self.filename, exc, self.value)
+        return f"problem in {self.filename} - {exc}: {self.value}"
 
 
 def importfile(path):
@@ -445,7 +447,7 @@ def importfile(path):
     with open(path, "rb") as file:
         is_bytecode = magic == file.read(len(magic))
     filename = os.path.basename(path)
-    name, ext = os.path.splitext(filename)
+    name, _ext = os.path.splitext(filename)
     if is_bytecode:
         loader = importlib._bootstrap_external.SourcelessFileLoader(name, path)
     else:
@@ -454,11 +456,11 @@ def importfile(path):
     spec = importlib.util.spec_from_file_location(name, path, loader=loader)
     try:
         return importlib._bootstrap._load(spec)
-    except:
+    except:  # noqa: E722
         raise ErrorDuringImport(path, sys.exc_info())
 
 
-def safeimport(path, forceload=0, cache={}):
+def safeimport(path, forceload=0, cache=None):
     """Import a module; handle errors; return None if the module isn't found.
 
     If the module *is* found but an exception occurs, it's wrapped in an
@@ -466,12 +468,14 @@ def safeimport(path, forceload=0, cache={}):
     package path is specified, the module at the end of the path is returned,
     not the package at the beginning.  If the optional 'forceload' argument
     is 1, we reload the module from disk (unless it's a dynamic extension)."""
+    if cache is None:
+        cache = {}
     try:
         # If forceload is 1 and the module has been previously loaded from
         # disk, we always have to reload the module.  Checking the file's
         # mtime isn't good enough (e.g. the module could contain a class
         # that inherits from another module that has changed).
-        if forceload and path in sys.modules:
+        if forceload and path in sys.modules:  # noqa: SIM102
             if path not in sys.builtin_module_names:
                 # Remove the module from sys.modules and re-import to try
                 # and avoid problems with partially loaded modules.
@@ -484,9 +488,9 @@ def safeimport(path, forceload=0, cache={}):
                     cache[key] = sys.modules[key]
                     del sys.modules[key]
         module = __import__(path)
-    except:
+    except:  # noqa: E722
         # Did the error occur before or after the module was found?
-        exc, value, tb = info = sys.exc_info()
+        exc, value, _tb = info = sys.exc_info()
         if path in sys.modules:
             # An error occurred while executing the imported module.
             raise ErrorDuringImport(sys.modules[path].__file__, info)
@@ -512,7 +516,8 @@ def safeimport(path, forceload=0, cache={}):
 
 class Doc:
     PYTHONDOCS = os.environ.get(
-        "PYTHONDOCS", "https://docs.python.org/%d.%d/library" % sys.version_info[:2]
+        "PYTHONDOCS",
+        "https://docs.python.org/%d.%d/library" % sys.version_info[:2],  # noqa: UP031
     )
 
     def document(self, object, name=None, *args):
@@ -537,7 +542,7 @@ class Doc:
 
     def fail(self, object, name=None, *args):
         """Raise an exception for unimplemented types."""
-        message = "don't know how to document object%s of type %s" % (
+        message = "don't know how to document object{} of type {}".format(
             name and " " + repr(name),
             type(object).__name__,
         )
@@ -545,7 +550,7 @@ class Doc:
 
     docmodule = docclass = docroutine = docother = docproperty = docdata = fail
 
-    def getdocloc(self, object, basedir=sysconfig.get_path("stdlib")):
+    def getdocloc(self, object, basedir=sysconfig.get_path("stdlib")):  # noqa: B008
         """Return the location of module docs or None"""
 
         try:
@@ -580,7 +585,7 @@ class Doc:
             and object.__name__ not in ("xml.etree", "test.pydoc_mod")
         ):
             if docloc.startswith(("http://", "https://")):
-                docloc = "%s/%s" % (docloc.rstrip("/"), object.__name__.lower())
+                docloc = "{}/{}".format(docloc.rstrip("/"), object.__name__.lower())
             else:
                 docloc = os.path.join(docloc, object.__name__.lower() + ".html")
         else:
@@ -631,8 +636,8 @@ class HTMLRepr(Repr):
     def repr_instance(self, x, level):
         try:
             return self.escape(cram(stripid(repr(x)), self.maxstring))
-        except:
-            return self.escape("<%s instance>" % x.__class__.__name__)
+        except:  # noqa: E722
+            return self.escape(f"<{x.__class__.__name__} instance>")
 
     repr_unicode = repr_string
 
@@ -648,24 +653,24 @@ class HTMLDoc(Doc):
 
     def page(self, title, contents):
         """Format an HTML page."""
-        return """\
+        return f"""\
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Python: %s</title>
+<html><head><title>Python: {title}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head><body bgcolor="#f0f0f8">
-%s
-</body></html>""" % (title, contents)
+{contents}
+</body></html>"""
 
     def heading(self, title, fgcol, bgcol, extras=""):
         """Format a page heading."""
         return """
-<table width="100%%" cellspacing=0 cellpadding=2 border=0 summary="heading">
-<tr bgcolor="%s">
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="{}">
 <td valign=bottom>&nbsp;<br>
-<font color="%s" face="helvetica, arial">&nbsp;<br>%s</font></td
+<font color="{}" face="helvetica, arial">&nbsp;<br>{}</font></td
 ><td align=right valign=bottom
-><font color="%s" face="helvetica, arial">%s</font></td></tr></table>
-    """ % (bgcol, fgcol, title, fgcol, extras or "&nbsp;")
+><font color="{}" face="helvetica, arial">{}</font></td></tr></table>
+    """.format(bgcol, fgcol, title, fgcol, extras or "&nbsp;")
 
     def section(
         self,
@@ -681,34 +686,32 @@ class HTMLDoc(Doc):
         """Format a section with a heading."""
         if marginalia is None:
             marginalia = "<tt>" + "&nbsp;" * width + "</tt>"
-        result = """<p>
-<table width="100%%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="%s">
+        result = f"""<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="{bgcol}">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="%s" face="helvetica, arial">%s</font></td></tr>
-    """ % (bgcol, fgcol, title)
+<font color="{fgcol}" face="helvetica, arial">{title}</font></td></tr>
+    """
         if prelude:
             result = (
                 result
-                + """
-<tr bgcolor="%s"><td rowspan=2>%s</td>
-<td colspan=2>%s</td></tr>
-<tr><td>%s</td>"""
-                % (bgcol, marginalia, prelude, gap)
+                + f"""
+<tr bgcolor="{bgcol}"><td rowspan=2>{marginalia}</td>
+<td colspan=2>{prelude}</td></tr>
+<tr><td>{gap}</td>"""
             )
         else:
             result = (
                 result
-                + """
-<tr><td bgcolor="%s">%s</td><td>%s</td>"""
-                % (bgcol, marginalia, gap)
+                + f"""
+<tr><td bgcolor="{bgcol}">{marginalia}</td><td>{gap}</td>"""
             )
 
-        return result + '\n<td width="100%%">%s</td></tr></table>' % contents
+        return result + f'\n<td width="100%">{contents}</td></tr></table>'
 
     def bigsection(self, title, *args):
         """Format a section with a big heading."""
-        title = "<big><strong>%s</strong></big>" % title
+        title = f"<big><strong>{title}</strong></big>"
         return self.section(title, *args)
 
     def preformat(self, text):
@@ -723,37 +726,33 @@ class HTMLDoc(Doc):
         result = ""
         rows = (len(list) + cols - 1) // cols
         for col in range(cols):
-            result = result + '<td width="%d%%" valign=top>' % (100 // cols)
+            result = result + '<td width="%d%%" valign=top>' % (100 // cols)  # noqa: UP031
             for i in range(rows * col, rows * col + rows):
                 if i < len(list):
                     result = result + format(list[i]) + "<br>\n"
             result = result + "</td>"
-        return '<table width="100%%" summary="list"><tr>%s</tr></table>' % result
+        return f'<table width="100%" summary="list"><tr>{result}</tr></table>'
 
     def grey(self, text):
-        return '<font color="#909090">%s</font>' % text
+        return f'<font color="#909090">{text}</font>'
 
     def namelink(self, name, *dicts):
         """Make a link for an identifier, given name-to-URL mappings."""
         for dict in dicts:
             if name in dict:
-                return '<a href="%s">%s</a>' % (dict[name], name)
+                return f'<a href="{dict[name]}">{name}</a>'
         return name
 
     def classlink(self, object, modname):
         """Make a link for a class."""
         name, module = object.__name__, sys.modules.get(object.__module__)
         if hasattr(module, name) and getattr(module, name) is object:
-            return '<a href="%s.html#%s">%s</a>' % (
-                module.__name__,
-                name,
-                classname(object, modname),
-            )
+            return f'<a href="{module.__name__}.html#{name}">{classname(object, modname)}</a>'
         return classname(object, modname)
 
     def modulelink(self, object):
         """Make a link for a module."""
-        return '<a href="%s.html">%s</a>' % (object.__name__, object.__name__)
+        return f'<a href="{object.__name__}.html">{object.__name__}</a>'
 
     def modpkglink(self, modpkginfo):
         """Make a link for a module or package to display in an index."""
@@ -761,22 +760,28 @@ class HTMLDoc(Doc):
         if shadowed:
             return self.grey(name)
         if path:
-            url = "%s.%s.html" % (path, name)
+            url = f"{path}.{name}.html"
         else:
-            url = "%s.html" % name
+            url = f"{name}.html"
         if ispackage:
-            text = "<strong>%s</strong>&nbsp;(package)" % name
+            text = f"<strong>{name}</strong>&nbsp;(package)"
         else:
             text = name
-        return '<a href="%s">%s</a>' % (url, text)
+        return f'<a href="{url}">{text}</a>'
 
     def filelink(self, url, path):
         """Make a link to source file."""
-        return '<a href="file:%s">%s</a>' % (url, path)
+        return f'<a href="file:{url}">{path}</a>'
 
-    def markup(self, text, escape=None, funcs={}, classes={}, methods={}):
+    def markup(self, text, escape=None, funcs=None, classes=None, methods=None):
         """Mark up some plain text, given a context of symbols to look for.
         Each context dictionary maps object names to anchor names."""
+        if methods is None:
+            methods = {}
+        if classes is None:
+            classes = {}
+        if funcs is None:
+            funcs = {}
         escape = escape or self.escape
         results = []
         here = 0
@@ -796,20 +801,20 @@ class HTMLDoc(Doc):
             all, scheme, rfc, pep, selfdot, name = match.groups()
             if scheme:
                 url = escape(all).replace('"', "&quot;")
-                results.append('<a href="%s">%s</a>' % (url, url))
+                results.append(f'<a href="{url}">{url}</a>')
             elif rfc:
-                url = "http://www.rfc-editor.org/rfc/rfc%d.txt" % int(rfc)
-                results.append('<a href="%s">%s</a>' % (url, escape(all)))
+                url = "http://www.rfc-editor.org/rfc/rfc%d.txt" % int(rfc)  # noqa: UP031
+                results.append(f'<a href="{url}">{escape(all)}</a>')
             elif pep:
-                url = "https://www.python.org/dev/peps/pep-%04d/" % int(pep)
-                results.append('<a href="%s">%s</a>' % (url, escape(all)))
+                url = "https://www.python.org/dev/peps/pep-%04d/" % int(pep)  # noqa: UP031
+                results.append(f'<a href="{url}">{escape(all)}</a>')
             elif selfdot:
                 # Create a link for methods like 'self.method(...)'
                 # and use <strong> for attributes like 'self.attr'
                 if text[end : end + 1] == "(":
                     results.append("self." + self.namelink(name, methods))
                 else:
-                    results.append("self.<strong>%s</strong>" % name)
+                    results.append(f"self.<strong>{name}</strong>")
             elif text[end : end + 1] == "(":
                 results.append(self.namelink(name, methods, funcs, classes))
             else:
@@ -835,8 +840,8 @@ class HTMLDoc(Doc):
                     result = result + "(" + ", ".join(parents) + ")"
                 result = result + "\n</font></dt>"
             elif type(entry) is type([]):
-                result = result + "<dd>\n%s</dd>\n" % self.formattree(entry, modname, c)
-        return "<dl>\n%s</dl>\n" % result
+                result = result + f"<dd>\n{self.formattree(entry, modname, c)}</dd>\n"
+        return f"<dl>\n{result}</dl>\n"
 
     def docmodule(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a module object."""
@@ -849,11 +854,12 @@ class HTMLDoc(Doc):
         links = []
         for i in range(len(parts) - 1):
             links.append(
-                '<a href="%s.html"><font color="#ffffff">%s</font></a>'
-                % (".".join(parts[: i + 1]), parts[i])
+                '<a href="{}.html"><font color="#ffffff">{}</font></a>'.format(
+                    ".".join(parts[: i + 1]), parts[i]
+                )
             )
         linkedname = ".".join(links + parts[-1:])
-        head = "<big><big><strong>%s</strong></big></big>" % linkedname
+        head = f"<big><big><strong>{linkedname}</strong></big></big>"
         try:
             path = inspect.getabsfile(object)
             url = urllib.parse.quote(path)
@@ -865,14 +871,14 @@ class HTMLDoc(Doc):
             version = str(object.__version__)
             if version[:11] == "$" + "Revision: " and version[-1:] == "$":
                 version = version[11:-1].strip()
-            info.append("version %s" % self.escape(version))
+            info.append(f"version {self.escape(version)}")
         if hasattr(object, "__date__"):
             info.append(self.escape(str(object.__date__)))
         if info:
-            head = head + " (%s)" % ", ".join(info)
+            head = head + " ({})".format(", ".join(info))
         docloc = self.getdocloc(object)
         if docloc is not None:
-            docloc = '<br><a href="%(docloc)s">Module Reference</a>' % locals()
+            docloc = '<br><a href="{docloc}">Module Reference</a>'.format(**locals())
         else:
             docloc = ""
         result = self.heading(
@@ -884,7 +890,7 @@ class HTMLDoc(Doc):
         classes, cdict = [], {}
         for key, value in inspect.getmembers(object, inspect.isclass):
             # if __all__ exists, believe it.  Otherwise use old heuristic.
-            if all is not None or (inspect.getmodule(value) or object) is object:
+            if all is not None or (inspect.getmodule(value) or object) is object:  # noqa: SIM102
                 if visiblename(key, all, object):
                     classes.append((key, value))
                     cdict[key] = cdict[value] = "#" + key
@@ -892,8 +898,8 @@ class HTMLDoc(Doc):
             for base in value.__bases__:
                 key, modname = base.__name__, base.__module__
                 module = sys.modules.get(modname)
-                if modname != name and module and hasattr(module, key):
-                    if getattr(module, key) is base:
+                if modname != name and module and hasattr(module, key):  # noqa: SIM102
+                    if getattr(module, key) is base:  # noqa: SIM102
                         if not key in cdict:
                             cdict[key] = cdict[base] = modname + ".html#" + key
         funcs, fdict = [], {}
@@ -903,20 +909,19 @@ class HTMLDoc(Doc):
                 all is not None
                 or inspect.isbuiltin(value)
                 or inspect.getmodule(value) is object
-            ):
-                if visiblename(key, all, object):
-                    funcs.append((key, value))
-                    fdict[key] = "#-" + key
-                    if inspect.isfunction(value):
-                        fdict[value] = fdict[key]
+            ) and visiblename(key, all, object):
+                funcs.append((key, value))
+                fdict[key] = "#-" + key
+                if inspect.isfunction(value):
+                    fdict[value] = fdict[key]
         data = []
         for key, value in inspect.getmembers(object, isdata):
             if visiblename(key, all, object):
                 data.append((key, value))
 
         doc = self.markup(getdoc(object), self.preformat, fdict, cdict)
-        doc = doc and "<tt>%s</tt>" % doc
-        result = result + "<p>%s</p>\n" % doc
+        doc = doc and f"<tt>{doc}</tt>"
+        result = result + f"<p>{doc}</p>\n"
 
         if hasattr(object, "__path__"):
             modpkgs = []
@@ -962,8 +967,12 @@ class HTMLDoc(Doc):
 
         return result
 
-    def docclass(self, object, name=None, mod=None, funcs={}, classes={}, *ignored):
+    def docclass(self, object, name=None, mod=None, funcs=None, classes=None, *ignored):
         """Produce HTML documentation for a class object."""
+        if classes is None:
+            classes = {}
+        if funcs is None:
+            funcs = {}
         realname = object.__name__
         name = name or realname
         bases = object.__bases__
@@ -989,7 +998,7 @@ class HTMLDoc(Doc):
             hr.maybe()
             push("<dl><dt>Method resolution order:</dt>\n")
             for base in mro:
-                push("<dd>%s</dd>\n" % self.classlink(base, object.__module__))
+                push(f"<dd>{self.classlink(base, object.__module__)}</dd>\n")
             push("</dl>\n")
 
         def spill(msg, attrs, predicate):
@@ -1000,7 +1009,7 @@ class HTMLDoc(Doc):
                 for name, kind, homecls, value in ok:
                     try:
                         value = getattr(object, name)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         # Some descriptors may meet a failure in their __get__.
                         # (bug #1785)
                         push(self.docdata(value, name, mod))
@@ -1031,13 +1040,13 @@ class HTMLDoc(Doc):
                     base = self.docother(getattr(object, name), name, mod)
                     doc = getdoc(value)
                     if not doc:
-                        push("<dl><dt>%s</dl>\n" % base)
+                        push(f"<dl><dt>{base}</dl>\n")
                     else:
                         doc = self.markup(
                             getdoc(value), self.preformat, funcs, classes, mdict
                         )
-                        doc = "<dd><tt>%s</tt>" % doc
-                        push("<dl><dt>%s%s</dl>\n" % (base, doc))
+                        doc = f"<dd><tt>{doc}</tt>"
+                        push(f"<dl><dt>{base}{doc}</dl>\n")
                     push("\n")
             return attrs
 
@@ -1052,7 +1061,7 @@ class HTMLDoc(Doc):
             mdict[key] = anchor = "#" + name + "-" + key
             try:
                 value = getattr(object, name)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 # Some descriptors may meet a failure in their __get__.
                 # (bug #1785)
                 pass
@@ -1068,7 +1077,7 @@ class HTMLDoc(Doc):
                 thisclass = mro.popleft()
             else:
                 thisclass = attrs[0][2]
-            attrs, inherited = _split_list(attrs, lambda t: t[2] is thisclass)
+            attrs, inherited = _split_list(attrs, lambda t: t[2] is thisclass)  # noqa: B023
 
             if object is not builtins.object and thisclass is builtins.object:
                 attrs = inherited
@@ -1076,29 +1085,29 @@ class HTMLDoc(Doc):
             elif thisclass is object:
                 tag = "defined here"
             else:
-                tag = "inherited from %s" % self.classlink(thisclass, object.__module__)
+                tag = f"inherited from {self.classlink(thisclass, object.__module__)}"
             tag += ":<br>\n"
 
             sort_attributes(attrs, object)
 
             # Pump out the attrs, segregated by kind.
-            attrs = spill("Methods %s" % tag, attrs, lambda t: t[1] == "method")
+            attrs = spill(f"Methods {tag}", attrs, lambda t: t[1] == "method")
             attrs = spill(
-                "Class methods %s" % tag, attrs, lambda t: t[1] == "class method"
+                f"Class methods {tag}", attrs, lambda t: t[1] == "class method"
             )
             attrs = spill(
-                "Static methods %s" % tag, attrs, lambda t: t[1] == "static method"
+                f"Static methods {tag}", attrs, lambda t: t[1] == "static method"
             )
             attrs = spilldescriptors(
-                "Readonly properties %s" % tag,
+                f"Readonly properties {tag}",
                 attrs,
                 lambda t: t[1] == "readonly property",
             )
             attrs = spilldescriptors(
-                "Data descriptors %s" % tag, attrs, lambda t: t[1] == "data descriptor"
+                f"Data descriptors {tag}", attrs, lambda t: t[1] == "data descriptor"
             )
             attrs = spilldata(
-                "Data and other attributes %s" % tag, attrs, lambda t: t[1] == "data"
+                f"Data and other attributes {tag}", attrs, lambda t: t[1] == "data"
             )
             assert attrs == []
             attrs = inherited
@@ -1106,18 +1115,14 @@ class HTMLDoc(Doc):
         contents = "".join(contents)
 
         if name == realname:
-            title = '<a name="%s">class <strong>%s</strong></a>' % (name, realname)
+            title = f'<a name="{name}">class <strong>{realname}</strong></a>'
         else:
-            title = '<strong>%s</strong> = <a name="%s">class %s</a>' % (
-                name,
-                name,
-                realname,
-            )
+            title = f'<strong>{name}</strong> = <a name="{name}">class {realname}</a>'
         if bases:
             parents = []
             for base in bases:
                 parents.append(self.classlink(base, object.__module__))
-            title = title + "(%s)" % ", ".join(parents)
+            title = title + "({})".format(", ".join(parents))
 
         decl = ""
         try:
@@ -1133,7 +1138,7 @@ class HTMLDoc(Doc):
         if decl:
             doc = decl + (doc or "")
         doc = self.markup(doc, self.preformat, funcs, classes, mdict)
-        doc = doc and "<tt>%s<br>&nbsp;</tt>" % doc
+        doc = doc and f"<tt>{doc}<br>&nbsp;</tt>"
 
         return self.section(title, "#000000", "#ffc8d8", contents, 3, doc)
 
@@ -1142,9 +1147,22 @@ class HTMLDoc(Doc):
         return self.grey("=" + self.repr(object))
 
     def docroutine(
-        self, object, name=None, mod=None, funcs={}, classes={}, methods={}, cl=None
+        self,
+        object,
+        name=None,
+        mod=None,
+        funcs=None,
+        classes=None,
+        methods=None,
+        cl=None,
     ):
         """Produce HTML documentation for a function or method object."""
+        if methods is None:
+            methods = {}
+        if classes is None:
+            classes = {}
+        if funcs is None:
+            funcs = {}
         realname = object.__name__
         name = name or realname
         anchor = (cl and cl.__name__ or "") + "-" + name
@@ -1157,11 +1175,11 @@ class HTMLDoc(Doc):
                     note = " from " + self.classlink(imclass, mod)
             else:
                 if object.__self__ is not None:
-                    note = " method of %s instance" % self.classlink(
-                        object.__self__.__class__, mod
+                    note = " method of {} instance".format(
+                        self.classlink(object.__self__.__class__, mod)
                     )
                 else:
-                    note = " unbound %s method" % self.classlink(imclass, mod)
+                    note = f" unbound {self.classlink(imclass, mod)} method"
 
         if inspect.iscoroutinefunction(object) or inspect.isasyncgenfunction(object):
             asyncqualifier = "async "
@@ -1169,21 +1187,17 @@ class HTMLDoc(Doc):
             asyncqualifier = ""
 
         if name == realname:
-            title = '<a name="%s"><strong>%s</strong></a>' % (anchor, realname)
+            title = f'<a name="{anchor}"><strong>{realname}</strong></a>'
         else:
             if cl and inspect.getattr_static(cl, realname, []) is object:
-                reallink = '<a href="#%s">%s</a>' % (
+                reallink = '<a href="#{}">{}</a>'.format(
                     cl.__name__ + "-" + realname,
                     realname,
                 )
                 skipdocs = 1
             else:
                 reallink = realname
-            title = '<a name="%s"><strong>%s</strong></a> = %s' % (
-                anchor,
-                name,
-                reallink,
-            )
+            title = f'<a name="{anchor}"><strong>{name}</strong></a> = {reallink}'
         argspec = None
         if inspect.isroutine(object):
             try:
@@ -1193,7 +1207,7 @@ class HTMLDoc(Doc):
             if signature:
                 argspec = str(signature)
                 if realname == "<lambda>":
-                    title = "<strong>%s</strong> <em>lambda</em> " % name
+                    title = f"<strong>{name}</strong> <em>lambda</em> "
                     # XXX lambda's won't usually have func_annotations['return']
                     # since the syntax doesn't support but it is possible.
                     # So removing parentheses isn't truly safe.
@@ -1205,15 +1219,15 @@ class HTMLDoc(Doc):
             asyncqualifier
             + title
             + self.escape(argspec)
-            + (note and self.grey('<font face="helvetica, arial">%s</font>' % note))
+            + (note and self.grey(f'<font face="helvetica, arial">{note}</font>'))
         )
 
         if skipdocs:
-            return "<dl><dt>%s</dt></dl>\n" % decl
+            return f"<dl><dt>{decl}</dt></dl>\n"
         else:
             doc = self.markup(getdoc(object), self.preformat, funcs, classes, methods)
-            doc = doc and "<dd><tt>%s</tt></dd>" % doc
-            return "<dl><dt>%s</dt>%s</dl>\n" % (decl, doc)
+            doc = doc and f"<dd><tt>{doc}</tt></dd>"
+            return f"<dl><dt>{decl}</dt>{doc}</dl>\n"
 
     def docdata(self, object, name=None, mod=None, cl=None):
         """Produce html documentation for a data descriptor."""
@@ -1221,10 +1235,10 @@ class HTMLDoc(Doc):
         push = results.append
 
         if name:
-            push("<dl><dt><strong>%s</strong></dt>\n" % name)
+            push(f"<dl><dt><strong>{name}</strong></dt>\n")
         doc = self.markup(getdoc(object), self.preformat)
         if doc:
-            push("<dd><tt>%s</tt></dd>\n" % doc)
+            push(f"<dd><tt>{doc}</tt></dd>\n")
         push("</dl>\n")
 
         return "".join(results)
@@ -1233,7 +1247,7 @@ class HTMLDoc(Doc):
 
     def docother(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a data object."""
-        lhs = name and "<strong>%s</strong> = " % name or ""
+        lhs = name and f"<strong>{name}</strong> = " or ""
         return lhs + self.repr(object)
 
     def index(self, dir, shadowed=None):
@@ -1286,8 +1300,8 @@ class TextRepr(Repr):
     def repr_instance(self, x, level):
         try:
             return cram(stripid(repr(x)), self.maxstring)
-        except:
-            return "<%s instance>" % x.__class__.__name__
+        except:  # noqa: E722
+            return f"<{x.__class__.__name__} instance>"
 
 
 class TextDoc(Doc):
@@ -1327,7 +1341,7 @@ class TextDoc(Doc):
                 result = result + prefix + classname(c, modname)
                 if bases and bases != (parent,):
                     parents = (classname(c, modname) for c in bases)
-                    result = result + "(%s)" % ", ".join(parents)
+                    result = result + "({})".format(", ".join(parents))
                 result = result + "\n"
             elif type(entry) is type([]):
                 result = result + self.formattree(entry, modname, c, prefix + "    ")
@@ -1360,7 +1374,7 @@ location listed above.
         classes = []
         for key, value in inspect.getmembers(object, inspect.isclass):
             # if __all__ exists, believe it.  Otherwise use old heuristic.
-            if all is not None or (inspect.getmodule(value) or object) is object:
+            if all is not None or (inspect.getmodule(value) or object) is object:  # noqa: SIM102
                 if visiblename(key, all, object):
                     classes.append((key, value))
         funcs = []
@@ -1370,9 +1384,8 @@ location listed above.
                 all is not None
                 or inspect.isbuiltin(value)
                 or inspect.getmodule(value) is object
-            ):
-                if visiblename(key, all, object):
-                    funcs.append((key, value))
+            ) and visiblename(key, all, object):
+                funcs.append((key, value))
         data = []
         for key, value in inspect.getmembers(object, isdata):
             if visiblename(key, all, object):
@@ -1452,7 +1465,7 @@ location listed above.
             title = self.bold(name) + " = class " + realname
         if bases:
             parents = map(makename, bases)
-            title = title + "(%s)" % ", ".join(parents)
+            title = title + "({})".format(", ".join(parents))
 
         contents = []
         push = contents.append
@@ -1521,7 +1534,7 @@ location listed above.
                 for name, kind, homecls, value in ok:
                     try:
                         value = getattr(object, name)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         # Some descriptors may meet a failure in their __get__.
                         # (bug #1785)
                         push(self.docdata(value, name, mod))
@@ -1563,7 +1576,7 @@ location listed above.
                 thisclass = mro.popleft()
             else:
                 thisclass = attrs[0][2]
-            attrs, inherited = _split_list(attrs, lambda t: t[2] is thisclass)
+            attrs, inherited = _split_list(attrs, lambda t: t[2] is thisclass)  # noqa: B023
 
             if object is not builtins.object and thisclass is builtins.object:
                 attrs = inherited
@@ -1571,30 +1584,30 @@ location listed above.
             elif thisclass is object:
                 tag = "defined here"
             else:
-                tag = "inherited from %s" % classname(thisclass, object.__module__)
+                tag = f"inherited from {classname(thisclass, object.__module__)}"
 
             sort_attributes(attrs, object)
 
             # Pump out the attrs, segregated by kind.
-            attrs = spill("Methods %s:\n" % tag, attrs, lambda t: t[1] == "method")
+            attrs = spill(f"Methods {tag}:\n", attrs, lambda t: t[1] == "method")
             attrs = spill(
-                "Class methods %s:\n" % tag, attrs, lambda t: t[1] == "class method"
+                f"Class methods {tag}:\n", attrs, lambda t: t[1] == "class method"
             )
             attrs = spill(
-                "Static methods %s:\n" % tag, attrs, lambda t: t[1] == "static method"
+                f"Static methods {tag}:\n", attrs, lambda t: t[1] == "static method"
             )
             attrs = spilldescriptors(
-                "Readonly properties %s:\n" % tag,
+                f"Readonly properties {tag}:\n",
                 attrs,
                 lambda t: t[1] == "readonly property",
             )
             attrs = spilldescriptors(
-                "Data descriptors %s:\n" % tag,
+                f"Data descriptors {tag}:\n",
                 attrs,
                 lambda t: t[1] == "data descriptor",
             )
             attrs = spilldata(
-                "Data and other attributes %s:\n" % tag, attrs, lambda t: t[1] == "data"
+                f"Data and other attributes {tag}:\n", attrs, lambda t: t[1] == "data"
             )
 
             assert attrs == []
@@ -1622,11 +1635,11 @@ location listed above.
                     note = " from " + classname(imclass, mod)
             else:
                 if object.__self__ is not None:
-                    note = " method of %s instance" % classname(
-                        object.__self__.__class__, mod
+                    note = " method of {} instance".format(
+                        classname(object.__self__.__class__, mod)
                     )
                 else:
-                    note = " unbound %s method" % classname(imclass, mod)
+                    note = f" unbound {classname(imclass, mod)} method"
 
         if inspect.iscoroutinefunction(object) or inspect.isasyncgenfunction(object):
             asyncqualifier = "async "
@@ -1706,7 +1719,7 @@ class _PlainTextDoc(TextDoc):
 # --------------------------------------------------------- user interfaces
 
 
-def pager(text):
+def pager(text):  # noqa: F811
     """The first time this is called, determine what kind of pager to use."""
     global pager
     pager = getpager()
@@ -1741,7 +1754,7 @@ def getpager():
     fd, filename = tempfile.mkstemp()
     os.close(fd)
     try:
-        if hasattr(os, "system") and os.system('more "%s"' % filename) == 0:
+        if hasattr(os, "system") and os.system(f'more "{filename}"') == 0:
             return lambda text: pipepager(text, "more")
         else:
             return ttypager
@@ -1817,7 +1830,7 @@ def ttypager(text):
 
     try:
         try:
-            h = int(os.environ.get("LINES", 0))
+            h = int(os.environ.get("LINES", 0))  # noqa: PLW1508
         except ValueError:
             h = 0
         if h <= 1:
@@ -1864,17 +1877,9 @@ def describe(thing):
     if inspect.isbuiltin(thing):
         return "built-in function " + thing.__name__
     if inspect.isgetsetdescriptor(thing):
-        return "getset descriptor %s.%s.%s" % (
-            thing.__objclass__.__module__,
-            thing.__objclass__.__name__,
-            thing.__name__,
-        )
+        return f"getset descriptor {thing.__objclass__.__module__}.{thing.__objclass__.__name__}.{thing.__name__}"
     if inspect.ismemberdescriptor(thing):
-        return "member descriptor %s.%s.%s" % (
-            thing.__objclass__.__module__,
-            thing.__objclass__.__name__,
-            thing.__name__,
-        )
+        return f"member descriptor {thing.__objclass__.__module__}.{thing.__objclass__.__name__}.{thing.__name__}"
     if inspect.isclass(thing):
         return "class " + thing.__name__
     if inspect.isfunction(thing):
@@ -1919,11 +1924,10 @@ def resolve(thing, forceload=0):
         object = locate(thing, forceload)
         if object is None:
             raise ImportError(
-                """\
-No Python documentation found for %r.
+                f"""\
+No Python documentation found for {thing!r}.
 Use help() to get the interactive help utility.
 Use help(str) for help on the str class."""
-                % thing
             )
         return object, thing
     else:
@@ -2005,7 +2009,7 @@ class Helper:
     #              make pydoc-topics
     #          in Doc/ and copying the output file into the Lib/ directory.
 
-    keywords = {
+    keywords = {  # noqa: RUF012
         "False": "",
         "None": "",
         "True": "",
@@ -2045,8 +2049,8 @@ class Helper:
     }
     # Either add symbols to this dictionary or to the symbols dictionary
     # directly: Whichever is easier. They are merged later.
-    _strprefixes = [p + q for p in ("b", "f", "r", "u") for q in ("'", '"')]
-    _symbols_inverse = {
+    _strprefixes = [p + q for p in ("b", "f", "r", "u") for q in ("'", '"')]  # noqa: RUF012
+    _symbols_inverse = {  # noqa: RUF012
         "STRINGS": ("'", "'''", '"', '"""', *_strprefixes),
         "OPERATORS": (
             "+",
@@ -2089,7 +2093,7 @@ class Helper:
         "BITWISE": ("<<", ">>", "&", "|", "^", "~"),
         "COMPLEX": ("j", "J"),
     }
-    symbols = {
+    symbols = {  # noqa: RUF012
         "%": "OPERATORS FORMATTING",
         "**": "POWER",
         ",": "TUPLES LISTS FUNCTIONS",
@@ -2113,11 +2117,13 @@ class Helper:
                 topics = topics + " " + topic
             symbols[symbol] = topics
 
-    topics = {
+    topics = {  # noqa: RUF012
         "TYPES": (
             "types",
-            "STRINGS UNICODE NUMBERS SEQUENCES MAPPINGS "
-            "FUNCTIONS CLASSES MODULES FILES inspect",
+            (
+                "STRINGS UNICODE NUMBERS SEQUENCES MAPPINGS "
+                "FUNCTIONS CLASSES MODULES FILES inspect"
+            ),
         ),
         "STRINGS": (
             "strings",
@@ -2149,19 +2155,23 @@ class Helper:
         "PACKAGES": "import",
         "EXPRESSIONS": (
             "operator-summary",
-            "lambda or and not in is BOOLEAN "
-            "COMPARISON BITWISE SHIFTING BINARY FORMATTING POWER "
-            "UNARY ATTRIBUTES SUBSCRIPTS SLICINGS CALLS TUPLES "
-            "LISTS DICTIONARIES",
+            (
+                "lambda or and not in is BOOLEAN "
+                "COMPARISON BITWISE SHIFTING BINARY FORMATTING POWER "
+                "UNARY ATTRIBUTES SUBSCRIPTS SLICINGS CALLS TUPLES "
+                "LISTS DICTIONARIES"
+            ),
         ),
         "OPERATORS": "EXPRESSIONS",
         "PRECEDENCE": "EXPRESSIONS",
         "OBJECTS": ("objects", "TYPES"),
         "SPECIALMETHODS": (
             "specialnames",
-            "BASICMETHODS ATTRIBUTEMETHODS "
-            "CALLABLEMETHODS SEQUENCEMETHODS MAPPINGMETHODS "
-            "NUMBERMETHODS CLASSES",
+            (
+                "BASICMETHODS ATTRIBUTEMETHODS "
+                "CALLABLEMETHODS SEQUENCEMETHODS MAPPINGMETHODS "
+                "NUMBERMETHODS CLASSES"
+            ),
         ),
         "BASICMETHODS": ("customization", "hash repr str SPECIALMETHODS"),
         "ATTRIBUTEMETHODS": ("attribute-access", "ATTRIBUTES SPECIALMETHODS"),
@@ -2238,10 +2248,7 @@ class Helper:
         if inspect.stack()[1][3] == "?":
             self()
             return ""
-        return "<%s.%s instance>" % (
-            self.__class__.__module__,
-            self.__class__.__qualname__,
-        )
+        return f"<{self.__class__.__module__}.{self.__class__.__qualname__} instance>"
 
     _GoInteractive = object()
 
@@ -2339,7 +2346,7 @@ To get a list of available modules, keywords, symbols, or topics, type
 "modules", "keywords", "symbols", or "topics".  Each module also comes
 with a one-line summary of what it does; to list the modules whose name
 or summary contain a given string such as "spam", type "modules spam".
-""".format("%d.%d" % sys.version_info[:2])
+""".format("%d.%d" % sys.version_info[:2])  # noqa: UP031
         )
 
     def list(self, items, columns=4, width=80):
@@ -2388,7 +2395,7 @@ module "pydoc_data.topics" could not be found.
             return
         target = self.topics.get(topic, self.keywords.get(topic))
         if not target:
-            self.output.write("no documentation found for %s\n" % repr(topic))
+            self.output.write(f"no documentation found for {topic!r}\n")
             return
         if type(target) is str:
             return self.showtopic(target, more_xrefs)
@@ -2397,7 +2404,7 @@ module "pydoc_data.topics" could not be found.
         try:
             doc = pydoc_data.topics.topics[label]
         except KeyError:
-            self.output.write("no documentation found for %s\n" % repr(topic))
+            self.output.write(f"no documentation found for {topic!r}\n")
             return
         doc = doc.strip() + "\n"
         if more_xrefs:
@@ -2407,7 +2414,7 @@ module "pydoc_data.topics" could not be found.
 
             text = "Related help topics: " + ", ".join(xrefs.split()) + "\n"
             wrapped_text = textwrap.wrap(text, 72)
-            doc += "\n%s\n" % "\n".join(wrapped_text)
+            doc += "\n{}\n".format("\n".join(wrapped_text))
         pager(doc)
 
     def _gettopic(self, topic, more_xrefs=""):
@@ -2517,7 +2524,7 @@ class ModuleScanner:
                 if hasattr(loader, "get_source"):
                     try:
                         source = loader.get_source(modname)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         if onerror:
                             onerror(modname)
                         continue
@@ -2635,7 +2642,7 @@ def _start_server(urlhandler, hostname, port):
             else:
                 content_type = "text/html"
             self.send_response(200)
-            self.send_header("Content-Type", "%s; charset=UTF-8" % content_type)
+            self.send_header("Content-Type", f"{content_type}; charset=UTF-8")
             self.end_headers()
             self.wfile.write(self.urlhandler(self.path, content_type).encode("utf-8"))
 
@@ -2653,7 +2660,7 @@ def _start_server(urlhandler, hostname, port):
 
         def serve_until_quit(self):
             while not self.quit:
-                rd, wr, ex = select.select([self.socket.fileno()], [], [], 1)
+                rd, _wr, _ex = select.select([self.socket.fileno()], [], [], 1)
                 if rd:
                     self.handle_request()
             self.server_close()
@@ -2682,14 +2689,14 @@ def _start_server(urlhandler, hostname, port):
                 docsvr = DocServer(self.host, self.port, self.ready)
                 self.docserver = docsvr
                 docsvr.serve_until_quit()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.error = e
 
         def ready(self, server):
             self.serving = True
             self.host = server.host
             self.port = server.server_port
-            self.url = "http://%s:%d/" % (self.host, self.port)
+            self.url = "http://%s:%d/" % (self.host, self.port)  # noqa: UP031
 
         def stop(self):
             """Stop the server and this thread nicely"""
@@ -2724,28 +2731,23 @@ def _url_handler(url, content_type="text/html"):
         def page(self, title, contents):
             """Format an HTML page."""
             css_path = "pydoc_data/_pydoc.css"
-            css_link = '<link rel="stylesheet" type="text/css" href="%s">' % css_path
-            return """\
+            css_link = f'<link rel="stylesheet" type="text/css" href="{css_path}">'
+            return f"""\
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Pydoc: %s</title>
+<html><head><title>Pydoc: {title}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-%s</head><body bgcolor="#f0f0f8">%s<div style="clear:both;padding-top:.5em;">%s</div>
-</body></html>""" % (title, css_link, html_navbar(), contents)
+{css_link}</head><body bgcolor="#f0f0f8">{html_navbar()}<div style="clear:both;padding-top:.5em;">{contents}</div>
+</body></html>"""
 
     html = _HTMLDoc()
 
     def html_navbar():
         version = html.escape(
-            "%s [%s, %s]"
-            % (
-                platform.python_version(),
-                platform.python_build()[0],
-                platform.python_compiler(),
-            )
+            f"{platform.python_version()} [{platform.python_build()[0]}, {platform.python_compiler()}]"
         )
-        return """
+        return f"""
             <div style='float:left'>
-                Python %s<br>%s
+                Python {version}<br>{html.escape(platform.platform(terse=True))}
             </div>
             <div style='float:right'>
                 <div style='text-align:center'>
@@ -2764,13 +2766,13 @@ def _url_handler(url, content_type="text/html"):
                     </form>
                 </div>
             </div>
-            """ % (version, html.escape(platform.platform(terse=True)))
+            """
 
     def html_index():
         """Module Index page."""
 
         def bltinlink(name):
-            return '<a href="%s.html">%s</a>' % (name, name)
+            return f'<a href="{name}.html">{name}</a>'
 
         heading = html.heading(
             "<big><big><strong>Index of Modules</strong></big></big>",
@@ -2815,7 +2817,7 @@ def _url_handler(url, content_type="text/html"):
 
         # format page
         def bltinlink(name):
-            return '<a href="%s.html">%s</a>' % (name, name)
+            return f'<a href="{name}.html">{name}</a>'
 
         results = []
         heading = html.heading(
@@ -2826,7 +2828,7 @@ def _url_handler(url, content_type="text/html"):
         for name, desc in search_result:
             results.append(bltinlink(name) + desc)
         contents = heading + html.bigsection(
-            "key = %s" % key, "#ffffff", "#ee77aa", "<br>".join(results)
+            f"key = {key}", "#ffffff", "#ee77aa", "<br>".join(results)
         )
         return "Search Results", contents
 
@@ -2834,7 +2836,7 @@ def _url_handler(url, content_type="text/html"):
         """Index of topic texts available."""
 
         def bltinlink(name):
-            return '<a href="topic?key=%s">%s</a>' % (name, name)
+            return f'<a href="topic?key={name}">{name}</a>'
 
         heading = html.heading(
             "<big><big><strong>INDEX</strong></big></big>", "#ffffff", "#7799ee"
@@ -2853,7 +2855,7 @@ def _url_handler(url, content_type="text/html"):
         names = sorted(Helper.keywords.keys())
 
         def bltinlink(name):
-            return '<a href="topic?key=%s">%s</a>' % (name, name)
+            return f'<a href="topic?key={name}">{name}</a>'
 
         contents = html.multicolumn(names, bltinlink)
         contents = heading + html.bigsection("Keywords", "#ffffff", "#ee77aa", contents)
@@ -2869,19 +2871,19 @@ def _url_handler(url, content_type="text/html"):
         else:
             title = "TOPIC"
         heading = html.heading(
-            "<big><big><strong>%s</strong></big></big>" % title, "#ffffff", "#7799ee"
+            f"<big><big><strong>{title}</strong></big></big>", "#ffffff", "#7799ee"
         )
-        contents = "<pre>%s</pre>" % html.markup(contents)
+        contents = f"<pre>{html.markup(contents)}</pre>"
         contents = html.bigsection(topic, "#ffffff", "#ee77aa", contents)
         if xrefs:
             xrefs = sorted(xrefs.split())
 
             def bltinlink(name):
-                return '<a href="topic?key=%s">%s</a>' % (name, name)
+                return f'<a href="topic?key={name}">{name}</a>'
 
             xrefs = html.multicolumn(xrefs, bltinlink)
             xrefs = html.section("Related help topics: ", "#ffffff", "#ee77aa", xrefs)
-        return ("%s %s" % (title, topic), "".join((heading, contents, xrefs)))
+        return (f"{title} {topic}", f"{heading}{contents}{xrefs}")
 
     def html_getobj(url):
         obj = locate(url, forceload=1)
@@ -2899,7 +2901,7 @@ def _url_handler(url, content_type="text/html"):
             html.escape(line) for line in format_exception_only(type(exc), exc)
         )
         contents = heading + html.bigsection(url, "#ffffff", "#bb0000", contents)
-        return "Error - %s" % url, contents
+        return f"Error - {url}", contents
 
     def get_html_page(url):
         """Generate an HTML page for url."""
@@ -2935,7 +2937,7 @@ def _url_handler(url, content_type="text/html"):
                     raise ValueError("bad pydoc url")
             else:
                 title, content = html_getobj(url)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             # Catch any errors and display them in an error page.
             title, content = html_error(complete_url, exc)
         return html.page(title, content)
@@ -2949,7 +2951,7 @@ def _url_handler(url, content_type="text/html"):
     elif content_type == "text/html":
         return get_html_page(url)
     # Errors outside the url handler are caught by the server.
-    raise TypeError("unknown content type %r for url %s" % (content_type, url))
+    raise TypeError(f"unknown content type {content_type!r} for url {url}")
 
 
 def browse(port=0, *, open_browser=True, hostname="localhost"):
@@ -3073,7 +3075,7 @@ def cli():
             raise BadUsage
         for arg in args:
             if ispath(arg) and not os.path.exists(arg):
-                print("file %r does not exist" % arg)
+                print(f"file {arg!r} does not exist")
                 break
             try:
                 if ispath(arg) and os.path.isfile(arg):

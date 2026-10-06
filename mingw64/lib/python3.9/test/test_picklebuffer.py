@@ -143,7 +143,7 @@ class PickleBufferTest(unittest.TestCase):
     def test_raw_released(self):
         pb = PickleBuffer(b"foo")
         pb.release()
-        with self.assertRaises(ValueError) as raises:
+        with self.assertRaises(ValueError):
             pb.raw()
 
 

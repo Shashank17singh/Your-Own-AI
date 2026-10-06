@@ -167,21 +167,19 @@ class ElementDef:
     def isAllChildrenSet(self):
         myself = len(self.children) == 0 and (self.isDesignated or self.isPositional)
         mychildren = len(self.children) > 0 and all(
-            [child.isAllChildrenSet() for child in self.children]
+            child.isAllChildrenSet() for child in self.children
         )
         return myself or mychildren
 
     def isAllSet(self):
-        return all(
-            [child.isPositional or child.isDesignated for child in self.children]
-        )
+        return all(child.isPositional or child.isDesignated for child in self.children)
 
     def isOnlyDesignated(self):
-        return all([not child.isPositional for child in self.children])
+        return all(not child.isPositional for child in self.children)
 
     def isMisra92Compliant(self):
         return self.structureViolationToken is None and all(
-            [child.isMisra92Compliant() for child in self.children]
+            child.isMisra92Compliant() for child in self.children
         )
 
     def isMisra93Compliant(self):
@@ -189,27 +187,25 @@ class ElementDef:
             result = self.isAllChildrenSet() or (
                 (self.isAllSet() or self.isOnlyDesignated())
                 and all(
-                    [
-                        not (child.isDesignated or child.isPositional)
-                        or child.isMisra93Compliant()
-                        for child in self.children
-                    ]
+                    not (child.isDesignated or child.isPositional)
+                    or child.isMisra93Compliant()
+                    for child in self.children
                 )
             )
             return result
         if self.elementType == "record":
-            result = all([child.isMisra93Compliant() for child in self.children])
+            result = all(child.isMisra93Compliant() for child in self.children)
             return result
         return True
 
     def isMisra94Compliant(self):
         return self.numInits <= 1 and all(
-            [child.isMisra94Compliant() for child in self.children]
+            child.isMisra94Compliant() for child in self.children
         )
 
     def isMisra95Compliant(self):
         return not self.isFlexible or all(
-            [not child.isDesignated for child in self.children]
+            not child.isDesignated for child in self.children
         )
 
 
@@ -325,14 +321,13 @@ class InitializerParser:
                     else:
                         if self.root is not None and self.ed.parent != self.root:
                             child = self.root.getChildByValueElement(self.ed)
-                            if self.token.valueType:
-                                if (
-                                    child.elementType != "record"
-                                    or self.token.valueType.type != "record"
-                                    or child.valueType.typeScope
-                                    != self.token.valueType.typeScope
-                                ):
-                                    self.root.markStuctureViolation(self.token)
+                            if self.token.valueType and (
+                                child.elementType != "record"
+                                or self.token.valueType.type != "record"
+                                or child.valueType.typeScope
+                                != self.token.valueType.typeScope
+                            ):
+                                self.root.markStuctureViolation(self.token)
                         self.ed.setInitialized(isDesignated)
                     parent = self.ed.parent
                     while parent and parent != self.root:
@@ -388,13 +383,12 @@ class InitializerParser:
                 self.token = self.token.astParent.astOperand2
                 break
             self.token = self.token.astParent
-            if self.token.str == "{":
-                if self.root:
-                    self.ed = self.root.getLastValueElement()
-                    self.ed.markAsCurrent()
-                    if self.root.name == "<-":
-                        self.root.children[0].parent = self.root.parent
-                    self.root = self.root.parent
+            if self.token.str == "{" and self.root:
+                self.ed = self.root.getLastValueElement()
+                self.ed.markAsCurrent()
+                if self.root.name == "<-":
+                    self.root.children[0].parent = self.root.parent
+                self.root = self.root.parent
             if self.token.astParent is None:
                 self.token = None
                 break
@@ -518,9 +512,7 @@ def createRecordChildrenDefs(ed, var):
                     child = getElementDef(variable.nameToken)
                     ed1.addChild(child)
                 child_dict[scopes.bodyStart] = ed1
-    sorted_keys = sorted(
-        list(child_dict.keys()), key=lambda k: (k.file, k.linenr, k.column)
-    )
+    sorted_keys = sorted(child_dict.keys(), key=lambda k: (k.file, k.linenr, k.column))
     for _key in sorted_keys:
         ed.addChild(child_dict[_key])
 

@@ -65,26 +65,25 @@ def alternates(members):
 
 
 def build_pattern(mapping=MAPPING):
-    mod_list = " | ".join(["module_name='%s'" % key for key in mapping])
+    mod_list = " | ".join([f"module_name='{key}'" for key in mapping])
     bare_names = alternates(mapping.keys())
 
-    yield """name_import=import_name< 'import' ((%s) |
-               multiple_imports=dotted_as_names< any* (%s) any* >) >
-          """ % (mod_list, mod_list)
+    yield f"""name_import=import_name< 'import' (({mod_list}) |
+               multiple_imports=dotted_as_names< any* ({mod_list}) any* >) >
+          """
     yield (
-        """import_from< 'from' (%s) 'import' ['(']
+        f"""import_from< 'from' ({mod_list}) 'import' ['(']
               ( any | import_as_name< any 'as' any > |
                 import_as_names< any* >)  [')'] >
           """
-        % mod_list
     )
-    yield """import_name< 'import' (dotted_as_name< (%s) 'as' any > |
+    yield f"""import_name< 'import' (dotted_as_name< ({mod_list}) 'as' any > |
                multiple_imports=dotted_as_names<
-                 any* dotted_as_name< (%s) 'as' any > any* >) >
-          """ % (mod_list, mod_list)
+                 any* dotted_as_name< ({mod_list}) 'as' any > any* >) >
+          """
 
     # Find usages of module members in code e.g. thread.foo(bar)
-    yield "power< bare_with_attr=(%s) trailer<'.' any > any* >" % bare_names
+    yield f"power< bare_with_attr=({bare_names}) trailer<'.' any > any* >"
 
 
 class FixImports(fixer_base.BaseFix):

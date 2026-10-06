@@ -196,11 +196,11 @@ def _parse_overview_fmt(lines):
     for line in lines:
         if line[0] == ":":
             # Metadata name (e.g. ":bytes")
-            name, _, suffix = line[1:].partition(":")
+            name, _, suffix = line[1:].partition(":")  # noqa: RUF059
             name = ":" + name
         else:
             # Header name (e.g. "Subject:" or "Xref:full")
-            name, _, suffix = line.partition(":")
+            name, _, _suffix = line.partition(":")
         name = name.lower()
         name = _OVERVIEW_FMT_ALTERNATIVES.get(name, name)
         # Should we do something with the suffix?
@@ -265,7 +265,7 @@ def _parse_datetime(date_str, time_str=None):
         year += 2000
     elif year < 100:
         year += 1900
-    return datetime.datetime(year, month, day, hours, minutes, seconds)
+    return datetime.datetime(year, month, day, hours, minutes, seconds)  # noqa: DTZ001
 
 
 def _unparse_datetime(dt, legacy=False):
@@ -440,7 +440,7 @@ class NNTP:
             self.nntp_version = 1
             self.nntp_implementation = None
             try:
-                resp, caps = self.capabilities()
+                _resp, caps = self.capabilities()
             except (NNTPPermanentError, NNTPTemporaryError):
                 # Server doesn't support capabilities
                 self._caps = {}
@@ -530,7 +530,7 @@ class NNTP:
         try:
             # If a string was passed then open a file with that name
             if isinstance(file, (str, bytes)):
-                openedFile = file = open(file, "wb")
+                openedFile = file = open(file, "wb")  # noqa: SIM115
 
             resp = self._getresp()
             if resp[:3] not in _LONGRESP:
@@ -592,7 +592,7 @@ class NNTP:
         except AttributeError:
             pass
         try:
-            resp, lines = self._longcmdstring("LIST OVERVIEW.FMT")
+            _resp, lines = self._longcmdstring("LIST OVERVIEW.FMT")
         except NNTPPermanentError:
             # Not supported by server?
             fmt = _DEFAULT_OVERVIEW_FMT[:]
@@ -886,7 +886,7 @@ class NNTP:
         cmd = "OVER" if "OVER" in self._caps else "XOVER"
         if isinstance(message_spec, (tuple, list)):
             start, end = message_spec
-            cmd += " {0}-{1}".format(start, end or "")
+            cmd += " {}-{}".format(start, end or "")
         elif message_spec is not None:
             cmd = cmd + " " + message_spec
         resp, lines = self._longcmdstring(cmd, file)
@@ -1102,7 +1102,7 @@ if __name__ == "__main__":
         "--port",
         default=-1,
         type=int,
-        help="NNTP port number (default: %s / %s)" % (NNTP_PORT, NNTP_SSL_PORT),
+        help=f"NNTP port number (default: {NNTP_PORT} / {NNTP_SSL_PORT})",
     )
     parser.add_argument(
         "-n",

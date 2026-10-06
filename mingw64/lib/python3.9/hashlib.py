@@ -76,7 +76,7 @@ __always_supported = (
 algorithms_guaranteed = set(__always_supported)
 algorithms_available = set(__always_supported)
 
-__all__ = __always_supported + (
+__all__ = __always_supported + (  # noqa: PLE0605
     "new",
     "algorithms_guaranteed",
     "algorithms_available",
@@ -268,7 +268,7 @@ except ImportError:
 
 try:
     # OpenSSL's scrypt requires OpenSSL 1.1+
-    from _hashlib import scrypt
+    from _hashlib import scrypt  # noqa: F401
 except ImportError:
     pass
 
@@ -281,7 +281,7 @@ for __func_name in __always_supported:
     except ValueError:
         import logging
 
-        logging.exception("code for hash %s was not found.", __func_name)
+        logging.exception("code for hash %s was not found.", __func_name)  # noqa: LOG015
 
 
 # Cleanup locals()

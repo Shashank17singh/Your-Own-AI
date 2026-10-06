@@ -50,7 +50,7 @@ class DateTimeTests(unittest.TestCase):
             self.assertRegex(
                 text,
                 r"^\d{4}-\d\d-\d\d \d\d:\d\d:\d\dZ$",
-                "bad time2isoz format: %s %s" % (az, bz),
+                f"bad time2isoz format: {az} {bz}",
             )
 
     def test_time2netscape(self):
@@ -70,7 +70,7 @@ class DateTimeTests(unittest.TestCase):
             self.assertRegex(
                 text,
                 r"[a-zA-Z]{3}, \d{2}-[a-zA-Z]{3}-\d{4} \d{2}:\d{2}:\d{2} GMT$",
-                "bad time2netscape format: %s %s" % (az, bz),
+                f"bad time2netscape format: {az} {bz}",
             )
 
     def test_http2time(self):
@@ -110,9 +110,7 @@ class DateTimeTests(unittest.TestCase):
         test_t = 760233600  # assume broken POSIX counting of seconds
         result = time2isoz(test_t)
         expected = "1994-02-03 00:00:00Z"
-        self.assertEqual(
-            result, expected, "%s  =>  '%s' (%s)" % (test_t, result, expected)
-        )
+        self.assertEqual(result, expected, f"{test_t}  =>  '{result}' ({expected})")
 
         for s in tests:
             self.assertEqual(http2time(s), test_t, s)
@@ -120,7 +118,7 @@ class DateTimeTests(unittest.TestCase):
             self.assertEqual(http2time(s.upper()), test_t, s.upper())
 
     def test_http2time_garbage(self):
-        for test in [
+        for test in [  # noqa: F402
             "",
             "Garbage",
             "Mandag 16. September 1996",
@@ -138,8 +136,7 @@ class DateTimeTests(unittest.TestCase):
         ]:
             self.assertIsNone(
                 http2time(test),
-                "http2time(%s) is not None\n"
-                "http2time(test) %s" % (test, http2time(test)),
+                f"http2time({test}) is not None\nhttp2time(test) {http2time(test)}",
             )
 
     def test_http2time_redos_regression_actually_completes(self):
@@ -189,7 +186,7 @@ class DateTimeTests(unittest.TestCase):
             self.assertEqual(iso2time(s.upper()), test_t, s.upper())
 
     def test_iso2time_garbage(self):
-        for test in [
+        for test in [  # noqa: F402
             "",
             "Garbage",
             "Thursday, 03-Feb-94 00:00:00 GMT",
@@ -203,7 +200,7 @@ class DateTimeTests(unittest.TestCase):
             "01-01-1980T00:00:62",
             "19800101T250000Z",
         ]:
-            self.assertIsNone(iso2time(test), "iso2time(%r)" % test)
+            self.assertIsNone(iso2time(test), f"iso2time({test!r})")
 
     def test_iso2time_performance_regression(self):
         # If ISO_DATE_RE regresses to quadratic complexity, this test will take a very long time to succeed.
@@ -275,22 +272,21 @@ class HeaderTests(unittest.TestCase):
         for arg, expect in tests:
             try:
                 result = split_header_words([arg])
-            except:
+            except:  # noqa: E722
                 import io
                 import traceback
 
                 f = io.StringIO()
                 traceback.print_exc(None, f)
-                result = "(error -- traceback follows)\n\n%s" % f.getvalue()
+                result = f"(error -- traceback follows)\n\n{f.getvalue()}"
             self.assertEqual(
                 result,
                 expect,
-                """
-When parsing: '%s'
-Expected:     '%s'
-Got:          '%s'
-"""
-                % (arg, expect, result),
+                f"""
+When parsing: '{arg}'
+Expected:     '{expect}'
+Got:          '{result}'
+""",
             )
 
     def test_roundtrip(self):
@@ -319,23 +315,24 @@ Got:          '%s'
             self.assertEqual(
                 res,
                 expect,
-                """
-When parsing: '%s'
-Expected:     '%s'
-Got:          '%s'
-Input was:    '%s'
-"""
-                % (arg, expect, res, input),
+                f"""
+When parsing: '{arg}'
+Expected:     '{expect}'
+Got:          '{res}'
+Input was:    '{input}'
+""",
             )
 
 
 class FakeResponse:
-    def __init__(self, headers=[], url=None):
+    def __init__(self, headers=None, url=None):
         """
         headers: list of RFC822-style 'Key: value' strings
         """
         import email
 
+        if headers is None:
+            headers = []
         self._headers = email.message_from_string("\n".join(headers))
         self._url = url
 
@@ -358,7 +355,7 @@ def _interact(cookiejar, url, set_cookie_hdrs, hdr_name):
     cookie_hdr = req.get_header("Cookie", "")
     headers = []
     for hdr in set_cookie_hdrs:
-        headers.append("%s: %s" % (hdr_name, hdr))
+        headers.append(f"{hdr_name}: {hdr}")
     res = FakeResponse(headers, url)
     cookiejar.extract_cookies(res, req)
     return cookie_hdr
@@ -386,7 +383,7 @@ class FileCookieJarTests(unittest.TestCase):
         for type_ in (int, float, A):
             with self.subTest(filename=type_), self.assertRaises(TypeError):
                 instance = type_()
-                c = LWPCookieJar(filename=instance)
+                LWPCookieJar(filename=instance)
 
     def test_lwp_valueless_cookie(self):
         # cookies with no value should be saved and loaded consistently
@@ -548,7 +545,7 @@ class CookieTests(unittest.TestCase):
         # cookies unchanged apart from lost info re. whether path was specified
         self.assertEqual(
             repr(c),
-            re.sub("path_specified=%s" % True, "path_specified=%s" % False, old_str),
+            re.sub(f"path_specified={True}", f"path_specified={False}", old_str),
         )
         self.assertEqual(
             interact_netscape(c, "http://www.acme.com/foo/"), '"spam"; eggs'
@@ -662,11 +659,11 @@ class CookieTests(unittest.TestCase):
             self.assertEqual(len(cookies), 1)
             self.assertEqual(time2netscape(cookies[0].expires), future)
 
-        interact_netscape(c, "http://www.acme.com/", 'spam="bar"; expires=%s' % future)
+        interact_netscape(c, "http://www.acme.com/", f'spam="bar"; expires={future}')
         self.assertEqual(len(c), 1)
         now = time2netscape(time.time() - 1)
         # ... and if in past or present, discard it
-        interact_netscape(c, "http://www.acme.com/", 'foo="eggs"; expires=%s' % now)
+        interact_netscape(c, "http://www.acme.com/", f'foo="eggs"; expires={now}')
         h = interact_netscape(c, "http://www.acme.com/")
         self.assertEqual(len(c), 1)
         self.assertIn('spam="bar"', h)
@@ -674,14 +671,14 @@ class CookieTests(unittest.TestCase):
 
         # max-age takes precedence over expires, and zero max-age is request to
         # delete both new cookie and any old matching cookie
-        interact_netscape(c, "http://www.acme.com/", 'eggs="bar"; expires=%s' % future)
-        interact_netscape(c, "http://www.acme.com/", 'bar="bar"; expires=%s' % future)
+        interact_netscape(c, "http://www.acme.com/", f'eggs="bar"; expires={future}')
+        interact_netscape(c, "http://www.acme.com/", f'bar="bar"; expires={future}')
         self.assertEqual(len(c), 3)
         interact_netscape(
-            c, "http://www.acme.com/", 'eggs="bar"; expires=%s; max-age=0' % future
+            c, "http://www.acme.com/", f'eggs="bar"; expires={future}; max-age=0'
         )
         interact_netscape(
-            c, "http://www.acme.com/", 'bar="bar"; max-age=0; expires=%s' % future
+            c, "http://www.acme.com/", f'bar="bar"; max-age=0; expires={future}'
         )
         h = interact_netscape(c, "http://www.acme.com/")
         self.assertEqual(len(c), 1)
@@ -940,7 +937,7 @@ class CookieTests(unittest.TestCase):
         self.assertEqual(len(cj), 2)
         for pseudo_tld in [".co.uk", ".org.za", ".tx.us", ".name.us"]:
             interact_netscape(
-                cj, "http://example.%s/" % pseudo_tld, "spam=eggs; Domain=.co.uk"
+                cj, f"http://example.{pseudo_tld}/", "spam=eggs; Domain=.co.uk"
             )
             self.assertEqual(len(cj), 2)
 
@@ -1075,7 +1072,7 @@ class CookieTests(unittest.TestCase):
         c.extract_cookies(res, req)
         self.assertEqual(len(c), 0)
 
-        p = pol.set_blocked_domains(["acme.com"])
+        pol.set_blocked_domains(["acme.com"])
         c.extract_cookies(res, req)
         self.assertEqual(len(c), 1)
 
@@ -1122,7 +1119,7 @@ class CookieTests(unittest.TestCase):
         self.assertFalse(pol.return_ok(cookies[0], req))
         self.assertFalse(req.has_header("Cookie"))
 
-        p = pol.set_blocked_domains(["acme.com"])
+        pol.set_blocked_domains(["acme.com"])
         req = urllib.request.Request("http://acme.com/")
         c.add_cookie_header(req)
         self.assertFalse(req.has_header("Cookie"))
@@ -1145,8 +1142,8 @@ class CookieTests(unittest.TestCase):
                     vs = "; Version=1"
                 c.set_policy(pol)
                 url = "http://www.acme.com/"
-                int(c, url, "foo1=bar%s%s" % (vs, whitespace))
-                int(c, url, "foo2=bar%s; secure%s" % (vs, whitespace))
+                int(c, url, f"foo1=bar{vs}{whitespace}")
+                int(c, url, f"foo2=bar{vs}; secure{whitespace}")
                 self.assertFalse(
                     c._cookies["www.acme.com"]["/"]["foo1"].secure,
                     "non-secure cookie registered secure",
@@ -1402,7 +1399,7 @@ class CookieTests(unittest.TestCase):
             ["Set-Cookie: b=foo; max-age=oops"],
             # bad version
             ["Set-Cookie: b=foo; version=spam"],
-            ["Set-Cookie:; Expires=%s" % future],
+            [f"Set-Cookie:; Expires={future}"],
         ]:
             c = cookiejar_from_cookie_headers(headers)
             # these bad cookies shouldn't be set
@@ -1468,7 +1465,7 @@ class LWPCookieTests(unittest.TestCase):
         )
 
         headers.append(
-            "Set-Cookie: CUSTOMER=WILE_E_COYOTE; path=/ ; "
+            "Set-Cookie: CUSTOMER=WILE_E_COYOTE; path=/ ; "  # noqa: UP031
             "expires=Wednesday, 09-Nov-%d 23:12:40 GMT" % year_plus_one
         )
         res = FakeResponse(headers, "http://www.acme.com/")
@@ -1742,40 +1739,36 @@ class LWPCookieTests(unittest.TestCase):
 
         c = LWPCookieJar(policy=pol)
 
-        max_age = "max-age=3600"
-
         # illegal domain (no embedded dots)
-        cookie = interact_2965(
-            c, "http://www.acme.com", 'foo=bar; domain=".com"; version=1'
-        )
+        interact_2965(c, "http://www.acme.com", 'foo=bar; domain=".com"; version=1')
         self.assertFalse(c)
 
         # legal domain
-        cookie = interact_2965(
+        interact_2965(
             c, "http://www.acme.com", 'ping=pong; domain="acme.com"; version=1'
         )
         self.assertEqual(len(c), 1)
 
         # illegal domain (host prefix "www.a" contains a dot)
-        cookie = interact_2965(
+        interact_2965(
             c, "http://www.a.acme.com", 'whiz=bang; domain="acme.com"; version=1'
         )
         self.assertEqual(len(c), 1)
 
         # legal domain
-        cookie = interact_2965(
+        interact_2965(
             c, "http://www.a.acme.com", 'wow=flutter; domain=".a.acme.com"; version=1'
         )
         self.assertEqual(len(c), 2)
 
         # can't partially match an IP-address
-        cookie = interact_2965(
+        interact_2965(
             c, "http://125.125.125.125", 'zzzz=ping; domain="125.125.125"; version=1'
         )
         self.assertEqual(len(c), 2)
 
         # illegal path (must be prefix of request path)
-        cookie = interact_2965(
+        interact_2965(
             c,
             "http://www.sol.no",
             'blah=rhubarb; domain=".sol.no"; path="/foo"; version=1',
@@ -1783,7 +1776,7 @@ class LWPCookieTests(unittest.TestCase):
         self.assertEqual(len(c), 2)
 
         # legal path
-        cookie = interact_2965(
+        interact_2965(
             c,
             "http://www.sol.no/foo/bar",
             'bing=bong; domain=".sol.no"; path="/foo"; version=1',
@@ -1791,7 +1784,7 @@ class LWPCookieTests(unittest.TestCase):
         self.assertEqual(len(c), 3)
 
         # illegal port (request-port not in list)
-        cookie = interact_2965(
+        interact_2965(
             c,
             "http://www.sol.no",
             'whiz=ffft; domain=".sol.no"; port="90,100"; version=1',
@@ -1799,7 +1792,7 @@ class LWPCookieTests(unittest.TestCase):
         self.assertEqual(len(c), 3)
 
         # legal port
-        cookie = interact_2965(
+        interact_2965(
             c,
             "http://www.sol.no",
             r'bang=wallop; version=1; domain=".sol.no"; '
@@ -1809,7 +1802,7 @@ class LWPCookieTests(unittest.TestCase):
         self.assertEqual(len(c), 4)
 
         # port attribute without any value (current port)
-        cookie = interact_2965(
+        interact_2965(
             c,
             "http://www.sol.no",
             'foo9=bar; version=1; domain=".sol.no"; port; max-age=100;',
@@ -1823,7 +1816,7 @@ class LWPCookieTests(unittest.TestCase):
         ##                           r'foo8=bar; version=1; path="/%66oo"')
         # but this is OK, because '<' is not an allowed HTTP URL path
         # character:
-        cookie = interact_2965(
+        interact_2965(
             c, "http://www.sol.no/<oo/", r'foo8=bar; version=1; path="/%3coo"'
         )
         self.assertEqual(len(c), 6)
@@ -1887,13 +1880,13 @@ class LWPCookieTests(unittest.TestCase):
         )
         interact_2965(c, "http://www.acme.com/", "foo3=bar; secure; Version=1")
 
-        expires = "expires=09-Nov-%d 23:12:40 GMT" % (year_plus_one,)
-        interact_netscape(c, "http://www.foo.com/", "fooa=bar; %s" % expires)
+        expires = "expires=09-Nov-%d 23:12:40 GMT" % (year_plus_one,)  # noqa: UP031
+        interact_netscape(c, "http://www.foo.com/", f"fooa=bar; {expires}")
         interact_netscape(
-            c, "http://www.foo.com/", "foob=bar; Domain=.foo.com; %s" % expires
+            c, "http://www.foo.com/", f"foob=bar; Domain=.foo.com; {expires}"
         )
         interact_netscape(
-            c, "http://www.foo.com/", "fooc=bar; Domain=www.foo.com; %s" % expires
+            c, "http://www.foo.com/", f"fooc=bar; Domain=www.foo.com; {expires}"
         )
 
         def save_and_restore(cj, ignore_discard):
@@ -2003,11 +1996,11 @@ class LWPCookieTests(unittest.TestCase):
         headers = []
         headers.append("Set-Cookie: s1=session;Path=/scripts")
         headers.append(
-            "Set-Cookie: p1=perm; Domain=.perlmeister.com;"
+            "Set-Cookie: p1=perm; Domain=.perlmeister.com;"  # noqa: UP031
             "Path=/;expires=Fri, 02-Feb-%d 23:24:20 GMT" % year_plus_one
         )
         headers.append(
-            "Set-Cookie: p2=perm;Path=/;expires=Fri, "
+            "Set-Cookie: p2=perm;Path=/;expires=Fri, "  # noqa: UP031
             "02-Feb-%d 23:24:20 GMT" % year_plus_one
         )
         headers.append("Set-Cookie: s2=session;Path=/scripts;Domain=.perlmeister.com")
@@ -2024,12 +2017,12 @@ class LWPCookieTests(unittest.TestCase):
             "perm_before": 0,
         }
         for cookie in c:
-            key = "%s_before" % cookie.value
+            key = f"{cookie.value}_before"
             counter[key] = counter[key] + 1
         c.clear_session_cookies()
         # How many now?
         for cookie in c:
-            key = "%s_after" % cookie.value
+            key = f"{cookie.value}_after"
             counter[key] = counter[key] + 1
 
             # a permanent cookie got lost accidentally

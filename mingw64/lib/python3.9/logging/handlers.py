@@ -81,7 +81,7 @@ class BaseRotatingHandler(logging.FileHandler):
             if self.shouldRollover(record):
                 self.doRollover()
             logging.FileHandler.emit(self, record)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
     def rotation_filename(self, default_name):
@@ -183,8 +183,8 @@ class RotatingFileHandler(BaseRotatingHandler):
             self.stream = None
         if self.backupCount > 0:
             for i in range(self.backupCount - 1, 0, -1):
-                sfn = self.rotation_filename("%s.%d" % (self.baseFilename, i))
-                dfn = self.rotation_filename("%s.%d" % (self.baseFilename, i + 1))
+                sfn = self.rotation_filename("%s.%d" % (self.baseFilename, i))  # noqa: UP031
+                dfn = self.rotation_filename("%s.%d" % (self.baseFilename, i + 1))  # noqa: UP031
                 if os.path.exists(sfn):
                     if os.path.exists(dfn):
                         os.remove(dfn)
@@ -206,7 +206,7 @@ class RotatingFileHandler(BaseRotatingHandler):
         if self.stream is None:  # delay was set...
             self.stream = self._open()
         if self.maxBytes > 0:  # are we rolling over?
-            msg = "%s\n" % self.format(record)
+            msg = f"{self.format(record)}\n"
             self.stream.seek(0, 2)  # due to non-posix-compliant Windows feature
             if self.stream.tell() + len(msg) >= self.maxBytes:
                 return 1
@@ -273,18 +273,17 @@ class TimedRotatingFileHandler(BaseRotatingHandler):
             self.interval = 60 * 60 * 24 * 7  # one week
             if len(self.when) != 2:
                 raise ValueError(
-                    "You must specify a day for weekly rollover from 0 to 6 (0 is Monday): %s"
-                    % self.when
+                    f"You must specify a day for weekly rollover from 0 to 6 (0 is Monday): {self.when}"
                 )
             if self.when[1] < "0" or self.when[1] > "6":
                 raise ValueError(
-                    "Invalid day specified for weekly rollover: %s" % self.when
+                    f"Invalid day specified for weekly rollover: {self.when}"
                 )
             self.dayOfWeek = int(self.when[1])
             self.suffix = "%Y-%m-%d"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}(\.\w+)?$"
         else:
-            raise ValueError("Invalid rollover interval specified: %s" % self.when)
+            raise ValueError(f"Invalid rollover interval specified: {self.when}")
 
         self.extMatch = re.compile(self.extMatch, re.ASCII)
         self.interval = self.interval * interval  # multiply by units requested
@@ -511,7 +510,7 @@ class WatchedFileHandler(logging.FileHandler):
         except FileNotFoundError:
             sres = None
         # compare file system stat with that of our stream file handle
-        if not sres or sres[ST_DEV] != self.dev or sres[ST_INO] != self.ino:
+        if not sres or sres[ST_DEV] != self.dev or sres[ST_INO] != self.ino:  # noqa: SIM102
             if self.stream is not None:
                 # we have an open file handle, clean it up
                 self.stream.flush()
@@ -641,7 +640,7 @@ class SocketHandler(logging.Handler):
         ei = record.exc_info
         if ei:
             # just to get traceback text into record.exc_text ...
-            dummy = self.format(record)
+            self.format(record)
         # See issue #14436: If msg or args are objects, they may not be
         # available on the receiving end. So we convert the msg % args
         # to a string, save it as msg and zap the args.
@@ -681,7 +680,7 @@ class SocketHandler(logging.Handler):
         try:
             s = self.makePickle(record)
             self.send(s)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
     def close(self):
@@ -799,7 +798,7 @@ class SysLogHandler(logging.Handler):
     LOG_LOCAL6 = 22  #  reserved for local use
     LOG_LOCAL7 = 23  #  reserved for local use
 
-    priority_names = {
+    priority_names = {  # noqa: RUF012
         "alert": LOG_ALERT,
         "crit": LOG_CRIT,
         "critical": LOG_CRIT,
@@ -814,7 +813,7 @@ class SysLogHandler(logging.Handler):
         "warning": LOG_WARNING,
     }
 
-    facility_names = {
+    facility_names = {  # noqa: RUF012
         "auth": LOG_AUTH,
         "authpriv": LOG_AUTHPRIV,
         "console": LOG_CONSOLE,
@@ -845,7 +844,7 @@ class SysLogHandler(logging.Handler):
     # there's more to it than meets the eye - in some locales, lowercasing
     # gives unexpected results. See SF #1524081: in the Turkish locale,
     # "INFO".lower() != "info"
-    priority_map = {
+    priority_map = {  # noqa: RUF012
         "DEBUG": "debug",
         "INFO": "info",
         "WARNING": "warning",
@@ -985,7 +984,7 @@ class SysLogHandler(logging.Handler):
 
             # We need to convert record level to lowercase, maybe this will
             # change in the future.
-            prio = "<%d>" % self.encodePriority(
+            prio = "<%d>" % self.encodePriority(  # noqa: UP031
                 self.facility, self.mapPriority(record.levelname)
             )
             prio = prio.encode("utf-8")
@@ -1003,7 +1002,7 @@ class SysLogHandler(logging.Handler):
                 self.socket.sendto(msg, self.address)
             else:
                 self.socket.sendall(msg)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
 
@@ -1093,7 +1092,7 @@ class SMTPHandler(logging.Handler):
                 smtp.login(self.username, self.password)
             smtp.send_message(msg)
             smtp.quit()
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
 
@@ -1184,7 +1183,7 @@ class NTEventLogHandler(logging.Handler):
                 type = self.getEventType(record)
                 msg = self.format(record)
                 self._welu.ReportEvent(self.appname, id, cat, type, [msg])
-            except Exception:
+            except Exception:  # noqa: BLE001
                 self.handleError(record)
 
     def close(self):
@@ -1268,7 +1267,7 @@ class HTTPHandler(logging.Handler):
                     sep = "&"
                 else:
                     sep = "?"
-                url = url + "%c%s" % (sep, data)
+                url = url + "%c%s" % (sep, data)  # noqa: UP031
             h.putrequest(self.method, url)
             # support multiple hosts on one IP address...
             # need to strip optional :port from host, if present
@@ -1284,14 +1283,14 @@ class HTTPHandler(logging.Handler):
             if self.credentials:
                 import base64
 
-                s = ("%s:%s" % self.credentials).encode("utf-8")
+                s = ("{}:{}".format(*self.credentials)).encode("utf-8")
                 s = "Basic " + base64.b64encode(s).strip().decode("ascii")
                 h.putheader("Authorization", s)
             h.endheaders()
             if self.method == "POST":
                 h.send(data.encode("utf-8"))
             h.getresponse()  # can't do anything with the result
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
 
@@ -1499,7 +1498,7 @@ class QueueHandler(logging.Handler):
         """
         try:
             self.enqueue(self.prepare(record))
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.handleError(record)
 
 

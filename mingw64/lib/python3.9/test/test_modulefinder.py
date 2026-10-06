@@ -333,7 +333,7 @@ def create_package(source):
         for line in source.splitlines():
             if type(line) != bytes:
                 line = line.encode("utf-8")
-            if line.startswith(b" ") or line.startswith(b"\t"):
+            if line.startswith((b" ", b"\t")):
                 ofi.write(line.strip() + b"\n")
             else:
                 if ofi:
@@ -352,9 +352,11 @@ class ModuleFinderTest(unittest.TestCase):
         info,
         report=False,
         debug=0,
-        replace_paths=[],
+        replace_paths=None,
         modulefinder_class=modulefinder.ModuleFinder,
     ):
+        if replace_paths is None:
+            replace_paths = []
         import_this, modules, missing, maybe_missing, source = info
         create_package(source)
         try:
@@ -431,7 +433,7 @@ class ModuleFinderTest(unittest.TestCase):
         with support.captured_stdout() as output:
             self._do_test(maybe_test, debug=2, replace_paths=[(old_path, new_path)])
         output = output.getvalue()
-        expected = "co_filename %r changed to %r" % (old_path, new_path)
+        expected = f"co_filename {old_path!r} changed to {new_path!r}"
         self.assertIn(expected, output)
 
     def test_extended_opargs(self):
@@ -440,13 +442,12 @@ class ModuleFinderTest(unittest.TestCase):
             ["a", "b"],
             [],
             [],
-            """\
+            f"""\
 a.py
-                                %r
+                                {list(range(2**16))!r}
                                 import b
 b.py
-"""
-            % list(range(2**16)),
+""",
         ]  # 2**16 constants
         self._do_test(extended_opargs_test)
 
@@ -466,7 +467,7 @@ b.py
 
             def load_module(self, fqname, fp, pathname, file_info):
                 # confirm that the fileinfo is a tuple of 3 elements
-                suffix, mode, type = file_info
+                _suffix, _mode, _type = file_info
                 return super().load_module(fqname, fp, pathname, file_info)
 
         self._do_test(absolute_import_test, modulefinder_class=CheckLoadModuleApi)

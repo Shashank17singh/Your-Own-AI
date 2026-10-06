@@ -71,7 +71,7 @@ class BuildScriptsTestCase(
         return expected
 
     def write_script(self, dir, name, text):
-        f = open(os.path.join(dir, name), "w")
+        f = open(os.path.join(dir, name), "w")  # noqa: SIM115
         try:
             f.write(text)
         finally:

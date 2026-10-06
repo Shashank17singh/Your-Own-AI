@@ -69,7 +69,7 @@ class SearchEngine:
         if not self.isre():  # if True, see setcookedpat
             pat = re.escape(pat)
         if self.isword():
-            pat = r"\b%s\b" % pat
+            pat = rf"\b{pat}\b"
         return pat
 
     def getprog(self):
@@ -141,18 +141,17 @@ class SearchEngine:
     def search_forward(self, text, prog, line, col, wrap, ok=0):
         wrapped = 0
         startline = line
-        chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+        chars = text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
         while chars:
             m = prog.search(chars[:-1], col)
-            if m:
-                if ok or m.end() > col:
-                    return line, m
+            if m and (ok or m.end() > col):
+                return line, m
             line = line + 1
             if wrapped and line > startline:
                 break
             col = 0
             ok = 1
-            chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+            chars = text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
             if not chars and wrap:
                 wrapped = 1
                 wrap = 0
@@ -163,12 +162,11 @@ class SearchEngine:
     def search_backward(self, text, prog, line, col, wrap, ok=0):
         wrapped = 0
         startline = line
-        chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+        chars = text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
         while 1:
             m = search_reverse(prog, chars[:-1], col)
-            if m:
-                if ok or m.start() < col:
-                    return line, m
+            if m and (ok or m.start() < col):
+                return line, m
             line = line - 1
             if wrapped and line < startline:
                 break
@@ -180,7 +178,7 @@ class SearchEngine:
                 wrap = 0
                 pos = text.index("end-1c")
                 line, col = map(int, pos.split("."))
-            chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+            chars = text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
             col = len(chars) - 1
         return None
 

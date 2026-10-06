@@ -34,7 +34,7 @@ class TestPEP380Operation(unittest.TestCase):
             trace.append("Finishing g2")
 
         for x in g1():
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         self.assertEqual(
             trace,
             [
@@ -68,7 +68,7 @@ class TestPEP380Operation(unittest.TestCase):
 
         try:
             for x in g1():
-                trace.append("Yielded %s" % (x,))
+                trace.append(f"Yielded {x}")
         except ValueError as e:
             self.assertEqual(e.args[0], "spanish inquisition occurred")
         else:
@@ -103,7 +103,7 @@ class TestPEP380Operation(unittest.TestCase):
             trace.append("Finishing g2")
 
         for x in g1():
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         self.assertEqual(
             trace,
             [
@@ -144,7 +144,7 @@ class TestPEP380Operation(unittest.TestCase):
 
         try:
             for x in g1():
-                trace.append("Yielded %s" % (x,))
+                trace.append(f"Yielded {x}")
         except ValueError as e:
             self.assertEqual(e.args[0], "hovercraft is full of eels")
         else:
@@ -170,18 +170,18 @@ class TestPEP380Operation(unittest.TestCase):
         def g1():
             trace.append("Starting g1")
             x = yield "g1 ham"
-            trace.append("g1 received %s" % (x,))
+            trace.append(f"g1 received {x}")
             yield from g2()
             x = yield "g1 eggs"
-            trace.append("g1 received %s" % (x,))
+            trace.append(f"g1 received {x}")
             trace.append("Finishing g1")
 
         def g2():
             trace.append("Starting g2")
             x = yield "g2 spam"
-            trace.append("g2 received %s" % (x,))
+            trace.append(f"g2 received {x}")
             x = yield "g2 more spam"
-            trace.append("g2 received %s" % (x,))
+            trace.append(f"g2 received {x}")
             trace.append("Finishing g2")
 
         g = g1()
@@ -190,7 +190,7 @@ class TestPEP380Operation(unittest.TestCase):
         try:
             while 1:
                 y = g.send(x)
-                trace.append("Yielded %s" % (y,))
+                trace.append(f"Yielded {y}")
                 x += 1
         except StopIteration:
             pass
@@ -220,19 +220,19 @@ class TestPEP380Operation(unittest.TestCase):
         def g1():
             trace.append("Starting g1")
             x = yield "g1 ham"
-            trace.append("g1 received %s" % (x,))
+            trace.append(f"g1 received {x}")
             yield from g2()
             x = yield "g1 eggs"
-            trace.append("g1 received %s" % (x,))
+            trace.append(f"g1 received {x}")
             trace.append("Finishing g1")
 
         def g2():
             trace.append("Starting g2")
             x = yield "g2 spam"
-            trace.append("g2 received %s" % (x,))
+            trace.append(f"g2 received {x}")
             raise ValueError("hovercraft is full of eels")
             x = yield "g2 more spam"
-            trace.append("g2 received %s" % (x,))
+            trace.append(f"g2 received {x}")
             trace.append("Finishing g2")
 
         def run():
@@ -242,7 +242,7 @@ class TestPEP380Operation(unittest.TestCase):
             try:
                 while 1:
                     y = g.send(x)
-                    trace.append("Yielded %s" % (y,))
+                    trace.append(f"Yielded {y}")
                     x += 1
             except StopIteration:
                 trace.append("StopIteration")
@@ -285,7 +285,7 @@ class TestPEP380Operation(unittest.TestCase):
         g = g1()
         for i in range(2):
             x = next(g)
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         g.close()
         self.assertEqual(
             trace,
@@ -327,7 +327,7 @@ class TestPEP380Operation(unittest.TestCase):
             g = g1()
             for i in range(2):
                 x = next(g)
-                trace.append("Yielded %s" % (x,))
+                trace.append(f"Yielded {x}")
             g.close()
         except ValueError as e:
             self.assertEqual(e.args[0], "nybbles have exploded with delight")
@@ -373,7 +373,7 @@ class TestPEP380Operation(unittest.TestCase):
             g = g1()
             for i in range(2):
                 x = next(g)
-                trace.append("Yielded %s" % (x,))
+                trace.append(f"Yielded {x}")
             e = ValueError("tomato ejected")
             g.throw(e)
         except ValueError as e:
@@ -399,8 +399,8 @@ class TestPEP380Operation(unittest.TestCase):
         trace = []
 
         def pex(e):
-            trace.append("%s: %s" % (e.__class__.__name__, e))
-            trace.append("value = %s" % (e.value,))
+            trace.append(f"{e.__class__.__name__}: {e}")
+            trace.append(f"value = {e.value}")
 
         e = StopIteration()
         pex(e)
@@ -442,10 +442,10 @@ class TestPEP380Operation(unittest.TestCase):
             trace.append("Starting g1")
             yield "g1 ham"
             ret = yield from g2()
-            trace.append("g2 returned %r" % (ret,))
+            trace.append(f"g2 returned {ret!r}")
             for v in 1, (2,), StopIteration(3):
                 ret = yield from g2(v)
-                trace.append("g2 returned %r" % (ret,))
+                trace.append(f"g2 returned {ret!r}")
             yield "g1 eggs"
             trace.append("Finishing g1")
 
@@ -458,7 +458,7 @@ class TestPEP380Operation(unittest.TestCase):
                 return v
 
         for x in g1():
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         self.assertEqual(
             trace,
             [
@@ -499,7 +499,7 @@ class TestPEP380Operation(unittest.TestCase):
             yield from range(3)
 
         for x in g():
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         self.assertEqual(
             trace,
             [
@@ -521,7 +521,7 @@ class TestPEP380Operation(unittest.TestCase):
         gi = g()
         for x in range(3):
             y = gi.send(None)
-            trace.append("Yielded: %s" % (y,))
+            trace.append(f"Yielded: {y}")
         self.assertEqual(
             trace,
             [
@@ -575,7 +575,7 @@ class TestPEP380Operation(unittest.TestCase):
             gi = g()
             for i in range(5):
                 x = next(gi)
-                trace.append("Yielded %s" % (x,))
+                trace.append(f"Yielded {x}")
             e = ValueError("tomato ejected")
             gi.throw(e)
         except ValueError as e:
@@ -614,7 +614,7 @@ class TestPEP380Operation(unittest.TestCase):
             next(gi)
             for x in range(3):
                 y = gi.send(42)
-                trace.append("Should not have yielded: %s" % (y,))
+                trace.append(f"Should not have yielded: {y}")
         except AttributeError as e:
             self.assertIn("send", e.args[0])
         else:
@@ -640,7 +640,7 @@ class TestPEP380Operation(unittest.TestCase):
                 return 1
 
             def __getattr__(self, attr):
-                1 / 0
+                1 / 0  # noqa: B018
 
         def g():
             yield from Broken()
@@ -706,7 +706,7 @@ class TestPEP380Operation(unittest.TestCase):
         try:
             gi = g1()
             for y in gi:
-                trace.append("Yielded: %s" % (y,))
+                trace.append(f"Yielded: {y}")
         except ValueError as e:
             self.assertEqual(e.args[0], "generator already executing")
         else:
@@ -754,11 +754,11 @@ class TestPEP380Operation(unittest.TestCase):
         g = g1()
         for i in range(2):
             x = next(g)
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         e = LunchError("tomato ejected")
         g.throw(e)
         for x in g:
-            trace.append("Yielded %s" % (x,))
+            trace.append(f"Yielded {x}")
         self.assertEqual(
             trace,
             [
@@ -787,12 +787,12 @@ class TestPEP380Operation(unittest.TestCase):
                 next(gi)
                 trace.append("f SHOULD NOT BE HERE")
             except StopIteration as e:
-                trace.append("f caught %r" % (e,))
+                trace.append(f"f caught {e!r}")
 
         def g(r):
             trace.append("g starting")
             yield
-            trace.append("g returning %r" % (r,))
+            trace.append(f"g returning {r!r}")
             return r
 
         f(None)
@@ -835,13 +835,13 @@ class TestPEP380Operation(unittest.TestCase):
                 gi.send("spam")
                 trace.append("f SHOULD NOT BE HERE")
             except StopIteration as e:
-                trace.append("f caught %r" % (e,))
+                trace.append(f"f caught {e!r}")
 
         def g(r):
             trace.append("g starting")
             x = yield
-            trace.append("g received %r" % (x,))
-            trace.append("g returning %r" % (r,))
+            trace.append(f"g received {x!r}")
+            trace.append(f"g returning {r!r}")
             return r
 
         f(None)
@@ -889,7 +889,7 @@ class TestPEP380Operation(unittest.TestCase):
 
         def outer():
             v = yield from inner()
-            trace.append("inner returned %r to outer" % (v,))
+            trace.append(f"inner returned {v!r} to outer")
             yield v
 
         for value in 2, (2,), StopIteration(2):
@@ -902,7 +902,7 @@ class TestPEP380Operation(unittest.TestCase):
                 [
                     1,
                     "inner caught ValueError",
-                    "inner returned %r to outer" % (value,),
+                    f"inner returned {value!r} to outer",
                     repr(value),
                 ],
             )
@@ -1064,7 +1064,7 @@ class TestPEP380Operation(unittest.TestCase):
             except MyErr:
                 pass
 
-        def two():
+        def two():  # noqa: F811
             try:
                 yield 1
             except MyErr:
@@ -1166,7 +1166,7 @@ class TestPEP380Operation(unittest.TestCase):
             yield
 
         def inner():
-            outer_gen = yield
+            yield
             yield from innermost()
 
         def outer():
@@ -1198,7 +1198,7 @@ class TestPEP380Operation(unittest.TestCase):
                 v = what
 
         def outer():
-            v = yield from MyGen()
+            yield from MyGen()
 
         g = outer()
         next(g)

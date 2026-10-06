@@ -44,7 +44,7 @@ class Query(Toplevel):
         message,
         *,
         text0="",
-        used_names={},
+        used_names=None,
         _htest=False,
         _utest=False,
     ):
@@ -60,6 +60,8 @@ class Query(Toplevel):
         _htest - bool, change box location when running htest
         _utest - bool, leave window hidden and not modal
         """
+        if used_names is None:
+            used_names = {}
         self.parent = parent  # Needed for Font call.
         self.message = message
         self.text0 = text0
@@ -83,7 +85,7 @@ class Query(Toplevel):
         self.create_widgets()
         self.update_idletasks()  # Need here for winfo_reqwidth below.
         self.geometry(  # Center dialog over parent (or below htest box).
-            "+%d+%d"
+            "+%d+%d"  # noqa: UP031
             % (
                 parent.winfo_rootx()
                 + (parent.winfo_width() / 2 - self.winfo_reqwidth() / 2),
@@ -273,7 +275,7 @@ class HelpSource(Query):
         *,
         menuitem="",
         filepath="",
-        used_names={},
+        used_names=None,
         _htest=False,
         _utest=False,
     ):
@@ -282,6 +284,8 @@ class HelpSource(Query):
         User enters a name for the Help resource and a web url or file
         name. The user can browse for the file.
         """
+        if used_names is None:
+            used_names = {}
         self.filepath = filepath
         message = "Name for item on Help menu:"
         super().__init__(
@@ -381,12 +385,14 @@ class CustomRun(Query):
 
     # Used in runscript.run_custom_event
 
-    def __init__(self, parent, title, *, cli_args=[], _htest=False, _utest=False):
+    def __init__(self, parent, title, *, cli_args=None, _htest=False, _utest=False):
         """cli_args is a list of strings.
 
         The list is assigned to the default Entry StringVar.
         The strings are displayed joined by ' ' for display.
         """
+        if cli_args is None:
+            cli_args = []
         message = "Command Line Arguments for sys.argv:"
         super().__init__(
             parent, title, message, text0=cli_args, _htest=_htest, _utest=_utest

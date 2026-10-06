@@ -497,7 +497,7 @@ class HighPageTest(unittest.TestCase):
         hs.see(1.0)
         hs.update_idletasks()
 
-        x, y, dx, dy, offset = hs.dlineinfo("1.0")
+        x, y, dx, dy, _offset = hs.dlineinfo("1.0")
 
         # Test binding from configdialog.
         hs.event_generate("<Leave>")
@@ -706,7 +706,6 @@ class HighPageTest(unittest.TestCase):
         page = self.page
         del page.paint_theme_sample  # Delete masking mock.
         hs_tag = page.highlight_sample.tag_cget
-        gh = idleConf.GetHighlight
 
         # Create custom theme based on IDLE Dark.
         page.theme_source.set(True)

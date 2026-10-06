@@ -38,7 +38,7 @@ class MmapTests(unittest.TestCase):
         # Test mmap module on Unix systems and Windows
 
         # Create a file to be mmap'ed.
-        f = open(TESTFN, "bw+")
+        f = open(TESTFN, "bw+")  # noqa: SIM115
         try:
             # Write 2 pages worth of data to the file
             f.write(b"\0" * PAGESIZE)
@@ -51,7 +51,7 @@ class MmapTests(unittest.TestCase):
 
         # Simple sanity checks
 
-        tp = str(type(m))  # SF bug 128713:  segfaulted on Linux
+        str(type(m))  # SF bug 128713:  segfaulted on Linux
         self.assertEqual(m.find(b"foo"), PAGESIZE)
 
         self.assertEqual(len(m), 2 * PAGESIZE)
@@ -80,7 +80,7 @@ class MmapTests(unittest.TestCase):
             self.fail("regex match on mmap failed!")
         else:
             start, end = match.span(0)
-            length = end - start
+            end - start
 
             self.assertEqual(start, PAGESIZE)
             self.assertEqual(end, PAGESIZE + 6)
@@ -118,7 +118,7 @@ class MmapTests(unittest.TestCase):
 
             # Check that the underlying file is truncated too
             # (bug #728515)
-            f = open(TESTFN, "rb")
+            f = open(TESTFN, "rb")  # noqa: SIM115
             try:
                 f.seek(0, 2)
                 self.assertEqual(f.tell(), 512)
@@ -358,7 +358,7 @@ class MmapTests(unittest.TestCase):
         with open(TESTFN, "wb") as f:
             f.write((65536 * 2) * b"m")  # Arbitrary character
 
-        with open(TESTFN, "rb") as f:
+        with open(TESTFN, "rb") as f:  # noqa: SIM117
             with mmap.mmap(f.fileno(), 0, offset=65536, access=mmap.ACCESS_READ) as mf:
                 self.assertRaises(IndexError, mf.__getitem__, 80000)
 
@@ -510,7 +510,7 @@ class MmapTests(unittest.TestCase):
         return mmap.mmap(f.fileno(), 0)
 
     def test_empty_file(self):
-        f = open(TESTFN, "w+b")
+        f = open(TESTFN, "w+b")  # noqa: SIM115
         f.close()
         with open(TESTFN, "rb") as f:
             self.assertRaisesRegex(
@@ -523,7 +523,7 @@ class MmapTests(unittest.TestCase):
             )
 
     def test_offset(self):
-        f = open(TESTFN, "w+b")
+        f = open(TESTFN, "w+b")  # noqa: SIM115
 
         try:  # unlink TESTFN no matter what
             halfsize = mmap.ALLOCATIONGRANULARITY
@@ -533,7 +533,7 @@ class MmapTests(unittest.TestCase):
 
             mapsize = halfsize * 2
             # Try invalid offset
-            f = open(TESTFN, "r+b")
+            f = open(TESTFN, "r+b")  # noqa: SIM115
             for offset in [-2, -1, None]:
                 try:
                     m = mmap.mmap(f.fileno(), mapsize, offset=offset)
@@ -545,7 +545,7 @@ class MmapTests(unittest.TestCase):
             f.close()
 
             # Try valid offset, hopefully 8192 works on all OSes
-            f = open(TESTFN, "r+b")
+            f = open(TESTFN, "r+b")  # noqa: SIM115
             m = mmap.mmap(f.fileno(), mapsize - halfsize, offset=halfsize)
             self.assertEqual(m[0:3], b"foo")
             f.close()
@@ -564,7 +564,7 @@ class MmapTests(unittest.TestCase):
                 self.assertEqual(m[0:3], b"foo")
 
                 # Check that the underlying file is truncated too
-                f = open(TESTFN, "rb")
+                f = open(TESTFN, "rb")  # noqa: SIM115
                 f.seek(0, 2)
                 self.assertEqual(f.tell(), halfsize + 512)
                 f.close()
@@ -681,23 +681,23 @@ class MmapTests(unittest.TestCase):
         m = mmap.mmap(-1, 1000, tagname="foo")
         try:
             mmap.mmap(-1, 5000, tagname="foo")[:]  # same tagname, but larger size
-        except:
+        except:  # noqa: E722, S110
             pass
         m.close()
 
         # Should not crash (Issue 5385)
         with open(TESTFN, "wb") as fp:
             fp.write(b"x" * 10)
-        f = open(TESTFN, "r+b")
+        f = open(TESTFN, "r+b")  # noqa: SIM115
         m = mmap.mmap(f.fileno(), 0)
         f.close()
         try:
             m.resize(0)  # will raise OSError
-        except:
+        except:  # noqa: E722, S110
             pass
         try:
             m[:]
-        except:
+        except:  # noqa: E722, S110
             pass
         m.close()
 
@@ -709,7 +709,7 @@ class MmapTests(unittest.TestCase):
         s = socket.socket()
         try:
             with self.assertRaises(OSError):
-                m = mmap.mmap(s.fileno(), 10)
+                mmap.mmap(s.fileno(), 10)
         finally:
             s.close()
 
@@ -845,9 +845,9 @@ class LargeMmapTests(unittest.TestCase):
         if sys.platform[:3] == "win" or sys.platform == "darwin":
             requires(
                 "largefile",
-                "test requires %s bytes and a long time to run" % str(0x180000000),
+                f"test requires {0x180000000!s} bytes and a long time to run",
             )
-        f = open(TESTFN, "w+b")
+        f = open(TESTFN, "w+b")  # noqa: SIM115
         try:
             f.seek(num_zeroes)
             f.write(tail)
@@ -885,7 +885,7 @@ class LargeMmapTests(unittest.TestCase):
         tail = b"  DEARdear  "
         start = boundary - len(tail) // 2
         end = start + len(tail)
-        with self._make_test_file(start, tail) as f:
+        with self._make_test_file(start, tail) as f:  # noqa: SIM117
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as m:
                 self.assertEqual(m[start:end], tail)
 

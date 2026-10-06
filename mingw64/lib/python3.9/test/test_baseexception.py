@@ -15,7 +15,7 @@ class ExceptionClassTests(unittest.TestCase):
         for attr in ("args", "__str__", "__repr__"):
             self.assertTrue(
                 hasattr(ins, attr),
-                "%s missing %s attribute" % (ins.__class__.__name__, attr),
+                f"{ins.__class__.__name__} missing {attr} attribute",
             )
 
     def test_inheritance(self):
@@ -28,7 +28,7 @@ class ExceptionClassTests(unittest.TestCase):
             except TypeError:
                 pass
 
-        inheritance_tree = open(
+        inheritance_tree = open(  # noqa: SIM115
             os.path.join(os.path.split(__file__)[0], "exception_hierarchy.txt")
         )
         try:
@@ -36,8 +36,8 @@ class ExceptionClassTests(unittest.TestCase):
             try:
                 last_exc = getattr(builtins, superclass_name)
             except AttributeError:
-                self.fail("base class %s not a built-in" % superclass_name)
-            self.assertIn(superclass_name, exc_set, "%s not found" % superclass_name)
+                self.fail(f"base class {superclass_name} not a built-in")
+            self.assertIn(superclass_name, exc_set, f"{superclass_name} not found")
             exc_set.discard(superclass_name)
             superclasses = []  # Loop will insert base exception
             last_depth = 0
@@ -58,7 +58,7 @@ class ExceptionClassTests(unittest.TestCase):
                 try:
                     exc = getattr(builtins, exc_name)
                 except AttributeError:
-                    self.fail("%s not a built-in exception" % exc_name)
+                    self.fail(f"{exc_name} not a built-in exception")
                 if last_depth < depth:
                     superclasses.append((last_depth, last_exc))
                 elif last_depth > depth:
@@ -66,8 +66,7 @@ class ExceptionClassTests(unittest.TestCase):
                         superclasses.pop()
                 self.assertTrue(
                     issubclass(exc, superclasses[-1][1]),
-                    "%s is not a subclass of %s"
-                    % (exc.__name__, superclasses[-1][1].__name__),
+                    f"{exc.__name__} is not a subclass of {superclasses[-1][1].__name__}",
                 )
                 try:  # Some exceptions require arguments; just skip them
                     self.verify_instance_interface(exc())
@@ -79,15 +78,13 @@ class ExceptionClassTests(unittest.TestCase):
                 last_depth = depth
         finally:
             inheritance_tree.close()
-        self.assertEqual(len(exc_set), 0, "%s not accounted for" % exc_set)
+        self.assertEqual(len(exc_set), 0, f"{exc_set} not accounted for")
 
     interface_tests = ("length", "args", "str", "repr")
 
     def interface_test_driver(self, results):
         for test_name, (given, expected) in zip(self.interface_tests, results):
-            self.assertEqual(
-                given, expected, "%s: %s != %s" % (test_name, given, expected)
-            )
+            self.assertEqual(given, expected, f"{test_name}: {given} != {expected}")
 
     def test_interface_single_arg(self):
         # Make sure interface works properly when given a single argument
@@ -97,7 +94,7 @@ class ExceptionClassTests(unittest.TestCase):
             [len(exc.args), 1],
             [exc.args[0], arg],
             [str(exc), str(arg)],
-            [repr(exc), "%s(%r)" % (exc.__class__.__name__, arg)],
+            [repr(exc), f"{exc.__class__.__name__}({arg!r})"],
         )
         self.interface_test_driver(results)
 
@@ -119,7 +116,7 @@ class ExceptionClassTests(unittest.TestCase):
         exc = Exception()
         results = (
             [len(exc.args), 0],
-            [exc.args, tuple()],
+            [exc.args, ()],
             [str(exc), ""],
             [repr(exc), exc.__class__.__name__ + "()"],
         )
@@ -135,31 +132,31 @@ class UsageTests(unittest.TestCase):
             raise object_
         except TypeError:
             return  # What is expected.
-        self.fail("TypeError expected for raising %s" % type(object_))
+        self.fail(f"TypeError expected for raising {type(object_)}")
 
     def catch_fails(self, object_):
         """Catching 'object_' should raise a TypeError."""
         try:
             try:
-                raise Exception
+                raise Exception  # noqa: TRY002
             except object_:
                 pass
         except TypeError:
             pass
-        except Exception:
-            self.fail("TypeError expected when catching %s" % type(object_))
+        except Exception:  # noqa: BLE001
+            self.fail(f"TypeError expected when catching {type(object_)}")
 
         try:
             try:
-                raise Exception
+                raise Exception  # noqa: TRY002
             except object_:
                 pass
         except TypeError:
             return
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail(
-                "TypeError expected when catching %s as specified in a "
-                "tuple" % type(object_)
+                f"TypeError expected when catching {type(object_)} as specified in a "
+                "tuple"
             )
 
     def test_raise_new_style_non_exception(self):

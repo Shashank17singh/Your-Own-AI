@@ -83,16 +83,16 @@ class Test_Csv(unittest.TestCase):
 
     def _test_kw_attrs(self, ctor, *args):
         # Now try with alternate options
-        kwargs = dict(
-            delimiter=":",
-            doublequote=False,
-            escapechar="\\",
-            lineterminator="\r",
-            quotechar="*",
-            quoting=csv.QUOTE_NONE,
-            skipinitialspace=True,
-            strict=True,
-        )
+        kwargs = {
+            "delimiter": ":",
+            "doublequote": False,
+            "escapechar": "\\",
+            "lineterminator": "\r",
+            "quotechar": "*",
+            "quoting": csv.QUOTE_NONE,
+            "skipinitialspace": True,
+            "strict": True,
+        }
         obj = ctor(*args, **kwargs)
         self.assertEqual(obj.dialect.delimiter, ":")
         self.assertIs(obj.dialect.doublequote, False)
@@ -180,7 +180,7 @@ class Test_Csv(unittest.TestCase):
     def test_write_bigfield(self):
         # This exercises the buffer realloc functionality
         bigstring = "X" * 50000
-        self._write_test([bigstring, bigstring], "%s,%s" % (bigstring, bigstring))
+        self._write_test([bigstring, bigstring], f"{bigstring},{bigstring}")
 
     def test_write_quoting(self):
         self._write_test(["a", 1, "p,q"], 'a,1,"p,q"')
@@ -335,7 +335,7 @@ class Test_Csv(unittest.TestCase):
         try:
             size = 50000
             bigstring = "X" * size
-            bigline = "%s,%s" % (bigstring, bigstring)
+            bigline = f"{bigstring},{bigstring}"
             self._read_test([bigline], [[bigstring, bigstring]])
             csv.field_size_limit(size)
             self._read_test([bigline], [[bigstring, bigstring]])
@@ -1005,7 +1005,7 @@ class TestDialectValidity(unittest.TestCase):
                 pass
 
             setattr(mydialect, field_name, value)
-            d = mydialect()
+            mydialect()
 
         for field_name in ("delimiter", "escapechar", "quotechar"):
             with self.subTest(field_name=field_name):
@@ -1214,7 +1214,7 @@ class TestLeaks(unittest.TestCase):
 
 
 class TestUnicode(unittest.TestCase):
-    names = [
+    names = [  # noqa: RUF012
         "Martin von Löwis",
         "Marc André Lemburg",
         "Guido van Rossum",

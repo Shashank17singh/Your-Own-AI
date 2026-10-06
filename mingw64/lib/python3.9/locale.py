@@ -293,8 +293,7 @@ def format(percent, value, grouping=False, monetary=False, *additional):
     match = _percent_re.match(percent)
     if not match or len(match.group()) != len(percent):
         raise ValueError(
-            ("format() must be given exactly one %%char format specifier, %s not valid")
-            % repr(percent)
+            f"format() must be given exactly one %char format specifier, {percent!r} not valid"
         )
     return _format(percent, value, grouping, monetary, *additional)
 
@@ -309,7 +308,7 @@ def currency(val, symbol=True, grouping=False, international=False):
     if digits == 127:
         raise ValueError("Currency formatting is not possible using the 'C' locale.")
 
-    s = _format("%%.%if" % digits, abs(val), grouping, monetary=True)
+    s = _format("%%.%if" % digits, abs(val), grouping, monetary=True)  # noqa: UP031
     # '<' and '>' are markers if the sign must be inserted between symbol and value
     s = "<" + s + ">"
 
@@ -547,7 +546,7 @@ def _parse_localename(localename):
         # On macOS "LC_CTYPE=UTF-8" is a valid locale setting
         # for getting UTF-8 handling for text.
         return None, "UTF-8"
-    raise ValueError("unknown locale: %s" % localename)
+    raise ValueError(f"unknown locale: {localename}")
 
 
 def _build_localename(localetuple):
@@ -685,7 +684,7 @@ if sys.platform.startswith("win"):
 else:
     # On Unix, if CODESET is available, use that.
     try:
-        CODESET
+        CODESET  # noqa: B018
     except NameError:
         if hasattr(sys, "getandroidapilevel"):
             # On Android langinfo.h and CODESET are missing, and UTF-8 is
@@ -1778,7 +1777,7 @@ def _print_locale():
 
     try:
         setlocale(LC_ALL, "")
-    except:
+    except:  # noqa: E722
         print("NOTE:")
         print('setlocale(LC_ALL, "") does not support the default locale')
         print("given in the OS environment variables.")
@@ -1797,7 +1796,7 @@ def _print_locale():
 ###
 
 try:
-    LC_MESSAGES
+    LC_MESSAGES  # noqa: B018
 except NameError:
     pass
 else:

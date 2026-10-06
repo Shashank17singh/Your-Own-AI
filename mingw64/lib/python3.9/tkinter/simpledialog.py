@@ -16,12 +16,14 @@ class SimpleDialog:
         self,
         master,
         text="",
-        buttons=[],
+        buttons=None,
         default=None,
         cancel=None,
         title=None,
         class_=None,
     ):
+        if buttons is None:
+            buttons = []
         if class_:
             self.root = Toplevel(master, class_=class_)
         else:
@@ -75,7 +77,7 @@ class SimpleDialog:
             y = master.winfo_screenheight() - w_height
         elif y < 0:
             y = 0
-        widget.geometry("+%d+%d" % (x, y))
+        widget.geometry("+%d+%d" % (x, y))  # noqa: UP031
         widget.deiconify()  # Become visible at the desired location
 
     def go(self):
@@ -134,7 +136,7 @@ class Dialog(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.cancel)
         if parent is not None:
             self.geometry(
-                "+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50)
+                "+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50)  # noqa: UP031
             )
         self.deiconify()  # become visible now
         self.initial_focus.focus_set()
@@ -246,14 +248,14 @@ class _QueryDialog(Dialog):
         if self.minvalue is not None and result < self.minvalue:
             messagebox.showwarning(
                 "Too small",
-                "The allowed minimum value is %s. Please try again." % self.minvalue,
+                f"The allowed minimum value is {self.minvalue}. Please try again.",
                 parent=self,
             )
             return 0
         if self.maxvalue is not None and result > self.maxvalue:
             messagebox.showwarning(
                 "Too large",
-                "The allowed maximum value is %s. Please try again." % self.maxvalue,
+                f"The allowed maximum value is {self.maxvalue}. Please try again.",
                 parent=self,
             )
             return 0

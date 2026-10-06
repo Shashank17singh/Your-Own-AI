@@ -304,7 +304,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
                 version_number = int(version_number[0]), int(version_number[1])
             except (ValueError, IndexError):
                 self.send_error(
-                    HTTPStatus.BAD_REQUEST, "Bad request version (%r)" % version
+                    HTTPStatus.BAD_REQUEST, f"Bad request version ({version!r})"
                 )
                 return False
             if version_number >= (1, 1) and self.protocol_version >= "HTTP/1.1":
@@ -312,14 +312,14 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             if version_number >= (2, 0):
                 self.send_error(
                     HTTPStatus.HTTP_VERSION_NOT_SUPPORTED,
-                    "Invalid HTTP version (%s)" % base_version_number,
+                    f"Invalid HTTP version ({base_version_number})",
                 )
                 return False
             self.request_version = version
 
         if not 2 <= len(words) <= 3:
             self.send_error(
-                HTTPStatus.BAD_REQUEST, "Bad request syntax (%r)" % requestline
+                HTTPStatus.BAD_REQUEST, f"Bad request syntax ({requestline!r})"
             )
             return False
         command, path = words[:2]
@@ -327,7 +327,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             self.close_connection = True
             if command != "GET":
                 self.send_error(
-                    HTTPStatus.BAD_REQUEST, "Bad HTTP/0.9 request type (%r)" % command
+                    HTTPStatus.BAD_REQUEST, f"Bad HTTP/0.9 request type ({command!r})"
                 )
                 return False
         self.command, self.path = command, path
@@ -355,14 +355,14 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             self.close_connection = False
         # Examine the headers and look for an Expect directive
         expect = self.headers.get("Expect", "")
-        if (
-            expect.lower() == "100-continue"
-            and self.protocol_version >= "HTTP/1.1"
-            and self.request_version >= "HTTP/1.1"
-        ):
-            if not self.handle_expect_100():
-                return False
-        return True
+        return not (
+            (
+                expect.lower() == "100-continue"
+                and self.protocol_version >= "HTTP/1.1"
+                and self.request_version >= "HTTP/1.1"
+            )
+            and not self.handle_expect_100()
+        )
 
     def handle_expect_100(self):
         """Decide what to do with an "Expect: 100-continue" header.
@@ -407,7 +407,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             mname = "do_" + self.command
             if not hasattr(self, mname):
                 self.send_error(
-                    HTTPStatus.NOT_IMPLEMENTED, "Unsupported method (%r)" % self.command
+                    HTTPStatus.NOT_IMPLEMENTED, f"Unsupported method ({self.command!r})"
                 )
                 return
             method = getattr(self, mname)
@@ -505,7 +505,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             if not hasattr(self, "_headers_buffer"):
                 self._headers_buffer = []
             self._headers_buffer.append(
-                ("%s %d %s\r\n" % (self.protocol_version, code, message)).encode(
+                ("%s %d %s\r\n" % (self.protocol_version, code, message)).encode(  # noqa: UP031
                     "latin-1", "strict"
                 )
             )
@@ -516,7 +516,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
             if not hasattr(self, "_headers_buffer"):
                 self._headers_buffer = []
             self._headers_buffer.append(
-                ("%s: %s\r\n" % (keyword, value)).encode("latin-1", "strict")
+                (f"{keyword}: {value}\r\n").encode("latin-1", "strict")
             )
 
         if keyword.lower() == "connection":
@@ -578,8 +578,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
         """
 
         sys.stderr.write(
-            "%s - - [%s] %s\n"
-            % (self.address_string(), self.log_date_time_string(), format % args)
+            f"{self.address_string()} - - [{self.log_date_time_string()}] {format % args}\n"
         )
 
     def version_string(self):
@@ -595,8 +594,8 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
     def log_date_time_string(self):
         """Return the current time formatted for logging."""
         now = time.time()
-        year, month, day, hh, mm, ss, x, y, z = time.localtime(now)
-        s = "%02d/%3s/%04d %02d:%02d:%02d" % (
+        year, month, day, hh, mm, ss, _x, _y, _z = time.localtime(now)
+        s = "%02d/%3s/%04d %02d:%02d:%02d" % (  # noqa: UP031
             day,
             self.monthname[month],
             year,
@@ -606,9 +605,9 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
         )
         return s
 
-    weekdayname = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    weekdayname = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]  # noqa: RUF012
 
-    monthname = [
+    monthname = [  # noqa: RUF012
         None,
         "Jan",
         "Feb",
@@ -639,7 +638,7 @@ class BaseHTTPRequestHandler(socketserver.StreamRequestHandler):
     MessageClass = http.client.HTTPMessage
 
     # hack to maintain backwards compatibility
-    responses = {v: (v.phrase, v.description) for v in HTTPStatus.__members__.values()}
+    responses = {v: (v.phrase, v.description) for v in HTTPStatus.__members__.values()}  # noqa: RUF012
 
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -655,7 +654,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     """
 
     server_version = "SimpleHTTP/" + __version__
-    extensions_map = _encodings_map_default = {
+    extensions_map = _encodings_map_default = {  # noqa: RUF012
         ".gz": "application/gzip",
         ".Z": "application/octet-stream",
         ".bz2": "application/x-bzip2",
@@ -724,7 +723,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "File not found")
             return None
         try:
-            f = open(path, "rb")
+            f = open(path, "rb")  # noqa: SIM115
         except OSError:
             self.send_error(HTTPStatus.NOT_FOUND, "File not found")
             return None
@@ -794,17 +793,15 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             displaypath = urllib.parse.unquote(path)
         displaypath = html.escape(displaypath, quote=False)
         enc = sys.getfilesystemencoding()
-        title = "Directory listing for %s" % displaypath
+        title = f"Directory listing for {displaypath}"
         r.append(
             '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
             '"http://www.w3.org/TR/html4/strict.dtd">'
         )
         r.append("<html>\n<head>")
-        r.append(
-            '<meta http-equiv="Content-Type" content="text/html; charset=%s">' % enc
-        )
-        r.append("<title>%s</title>\n</head>" % title)
-        r.append("<body>\n<h1>%s</h1>" % title)
+        r.append(f'<meta http-equiv="Content-Type" content="text/html; charset={enc}">')
+        r.append(f"<title>{title}</title>\n</head>")
+        r.append(f"<body>\n<h1>{title}</h1>")
         r.append("<hr>\n<ul>")
         for name in list:
             fullname = os.path.join(path, name)
@@ -817,8 +814,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                 displayname = name + "@"
                 # Note: a link to a directory displays with @ and links with /
             r.append(
-                '<li><a href="%s">%s</a></li>'
-                % (
+                '<li><a href="{}">{}</a></li>'.format(
                     urllib.parse.quote(linkname, errors="surrogatepass"),
                     html.escape(displayname, quote=False),
                 )
@@ -829,7 +825,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         f.write(encoded)
         f.seek(0)
         self.send_response(HTTPStatus.OK)
-        self.send_header("Content-type", "text/html; charset=%s" % enc)
+        self.send_header("Content-type", f"text/html; charset={enc}")
         self.send_header("Content-Length", str(len(encoded)))
         self.end_headers()
         return f
@@ -894,7 +890,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         slow) to look inside the data to make a better guess.
 
         """
-        base, ext = posixpath.splitext(path)
+        _base, ext = posixpath.splitext(path)
         if ext in self.extensions_map:
             return self.extensions_map[ext]
         ext = ext.lower()
@@ -948,7 +944,7 @@ def _url_collapse_path(path):
         tail_part = ""
 
     if query:
-        tail_part = "?".join((tail_part, query))
+        tail_part = f"{tail_part}?{query}"
 
     splitpath = ("/" + "/".join(head_parts), tail_part)
     collapsed_path = "/".join(splitpath)
@@ -1040,7 +1036,7 @@ class CGIHTTPRequestHandler(SimpleHTTPRequestHandler):
             return True
         return False
 
-    cgi_directories = ["/cgi-bin", "/htbin"]
+    cgi_directories = ["/cgi-bin", "/htbin"]  # noqa: RUF012
 
     def is_executable(self, path):
         """Test whether argument path is an executable file."""
@@ -1048,7 +1044,7 @@ class CGIHTTPRequestHandler(SimpleHTTPRequestHandler):
 
     def is_python(self, path):
         """Test whether argument path is a Python script."""
-        head, tail = os.path.splitext(path)
+        _head, tail = os.path.splitext(path)
         return tail.lower() in (".py", ".pyw")
 
     def run_cgi(self):
@@ -1082,22 +1078,21 @@ class CGIHTTPRequestHandler(SimpleHTTPRequestHandler):
         scriptfile = self.translate_path(scriptname)
         if not os.path.exists(scriptfile):
             self.send_error(
-                HTTPStatus.NOT_FOUND, "No such CGI script (%r)" % scriptname
+                HTTPStatus.NOT_FOUND, f"No such CGI script ({scriptname!r})"
             )
             return
         if not os.path.isfile(scriptfile):
             self.send_error(
-                HTTPStatus.FORBIDDEN, "CGI script is not a plain file (%r)" % scriptname
+                HTTPStatus.FORBIDDEN, f"CGI script is not a plain file ({scriptname!r})"
             )
             return
         ispy = self.is_python(scriptname)
-        if self.have_fork or not ispy:
-            if not self.is_executable(scriptfile):
-                self.send_error(
-                    HTTPStatus.FORBIDDEN,
-                    "CGI script is not executable (%r)" % scriptname,
-                )
-                return
+        if (self.have_fork or not ispy) and not self.is_executable(scriptfile):
+            self.send_error(
+                HTTPStatus.FORBIDDEN,
+                f"CGI script is not executable ({scriptname!r})",
+            )
+            return
 
         # Reference: http://hoohoo.ncsa.uiuc.edu/cgi/env.html
         # XXX Much of the following could be prepared ahead of time!
@@ -1201,7 +1196,7 @@ class CGIHTTPRequestHandler(SimpleHTTPRequestHandler):
                 os.dup2(self.rfile.fileno(), 0)
                 os.dup2(self.wfile.fileno(), 1)
                 os.execve(scriptfile, args, env)
-            except:
+            except:  # noqa: E722
                 self.server.handle_error(self.request, self.client_address)
                 os._exit(127)
 
@@ -1257,7 +1252,7 @@ def _get_best_family(*address):
         type=socket.SOCK_STREAM,
         flags=socket.AI_PASSIVE,
     )
-    family, type, proto, canonname, sockaddr = next(iter(infos))
+    family, _type, _proto, _canonname, sockaddr = next(iter(infos))
     return family, sockaddr
 
 

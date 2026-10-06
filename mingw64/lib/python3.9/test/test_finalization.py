@@ -40,10 +40,10 @@ class NonGCSimpleBase:
     testing features.
     """
 
-    survivors = []
-    del_calls = []
-    tp_del_calls = []
-    errors = []
+    survivors = []  # noqa: RUF012
+    del_calls = []  # noqa: RUF012
+    tp_del_calls = []  # noqa: RUF012
+    errors = []  # noqa: RUF012
 
     _cleaning = False
 
@@ -91,7 +91,7 @@ class NonGCSimpleBase:
                 self.del_calls.append(id(self))
                 self.check_sanity()
                 self.side_effect()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.errors.append(e)
 
     def side_effect(self):
@@ -444,7 +444,7 @@ class LegacyBase(SimpleBase):
             if not self._cleaning:
                 self.del_calls.append(id(self))
                 self.check_sanity()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.errors.append(e)
 
     def __tp_del__(self):
@@ -456,7 +456,7 @@ class LegacyBase(SimpleBase):
                 self.tp_del_calls.append(id(self))
                 self.check_sanity()
                 self.side_effect()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             self.errors.append(e)
 
 

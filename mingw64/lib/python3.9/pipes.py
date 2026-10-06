@@ -88,7 +88,7 @@ class Template:
 
     def __repr__(self):
         """t.__repr__() implements repr(t)."""
-        return "<Template instance, steps=%r>" % (self.steps,)
+        return f"<Template instance, steps={self.steps!r}>"
 
     def reset(self):
         """t.reset() restores a pipeline template to its initial state."""
@@ -111,7 +111,7 @@ class Template:
         if type(cmd) is not str:
             raise TypeError("Template.append: cmd must be a string")
         if kind not in stepkinds:
-            raise ValueError("Template.append: bad kind %r" % (kind,))
+            raise ValueError(f"Template.append: bad kind {kind!r}")
         if kind == SOURCE:
             raise ValueError("Template.append: SOURCE can only be prepended")
         if self.steps and self.steps[-1][1] == SINK:
@@ -127,7 +127,7 @@ class Template:
         if type(cmd) is not str:
             raise TypeError("Template.prepend: cmd must be a string")
         if kind not in stepkinds:
-            raise ValueError("Template.prepend: bad kind %r" % (kind,))
+            raise ValueError(f"Template.prepend: bad kind {kind!r}")
         if kind == SINK:
             raise ValueError("Template.prepend: SINK can only be appended")
         if self.steps and self.steps[0][1] == SOURCE:
@@ -145,7 +145,7 @@ class Template:
             return self.open_r(file)
         if rw == "w":
             return self.open_w(file)
-        raise ValueError("Template.open: rw must be 'r' or 'w', not %r" % (rw,))
+        raise ValueError(f"Template.open: rw must be 'r' or 'w', not {rw!r}")
 
     def open_r(self, file):
         """t.open_r(file) and t.open_w(file) implement

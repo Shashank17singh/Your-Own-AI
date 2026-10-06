@@ -7,11 +7,11 @@ import test.support
 class AnonTest(unittest.TestCase):
     def test_anon(self):
         class ANON(Union):
-            _fields_ = [("a", c_int), ("b", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
 
         class Y(Structure):
-            _fields_ = [("x", c_int), ("_", ANON), ("y", c_int)]
-            _anonymous_ = ["_"]
+            _fields_ = [("x", c_int), ("_", ANON), ("y", c_int)]  # noqa: RUF012
+            _anonymous_ = ["_"]  # noqa: RUF012
 
         self.assertEqual(Y.a.offset, sizeof(c_int))
         self.assertEqual(Y.b.offset, sizeof(c_int))
@@ -46,21 +46,21 @@ class AnonTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
 
             class Name(Structure):
-                _fields_ = []
-                _anonymous_ = ["x"]
+                _fields_ = []  # noqa: RUF012
+                _anonymous_ = ["x"]  # noqa: RUF012
                 x = 42
 
     def test_nested(self):
         class ANON_S(Structure):
-            _fields_ = [("a", c_int)]
+            _fields_ = [("a", c_int)]  # noqa: RUF012
 
         class ANON_U(Union):
-            _fields_ = [("_", ANON_S), ("b", c_int)]
-            _anonymous_ = ["_"]
+            _fields_ = [("_", ANON_S), ("b", c_int)]  # noqa: RUF012
+            _anonymous_ = ["_"]  # noqa: RUF012
 
         class Y(Structure):
-            _fields_ = [("x", c_int), ("_", ANON_U), ("y", c_int)]
-            _anonymous_ = ["_"]
+            _fields_ = [("x", c_int), ("_", ANON_U), ("y", c_int)]  # noqa: RUF012
+            _anonymous_ = ["_"]  # noqa: RUF012
 
         self.assertEqual(Y.x.offset, 0)
         self.assertEqual(Y.a.offset, sizeof(c_int))

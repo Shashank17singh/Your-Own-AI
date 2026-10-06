@@ -60,12 +60,12 @@ def checkcache(filename=None):
     else:
         return
 
-    for filename in filenames:
+    for filename in filenames:  # noqa: PLR1704
         entry = cache[filename]
         if len(entry) == 1:
             # lazy cache entry, leave it lazy.
             continue
-        size, mtime, lines, fullname = entry
+        size, mtime, _lines, fullname = entry
         if mtime is None:
             continue  # no-op for files loaded via a __loader__
         try:
@@ -82,9 +82,8 @@ def updatecache(filename, module_globals=None):
     If something's wrong, print a message, discard the cache entry,
     and return an empty list."""
 
-    if filename in cache:
-        if len(cache[filename]) != 1:
-            cache.pop(filename, None)
+    if filename in cache and len(cache[filename]) != 1:
+        cache.pop(filename, None)
     if not filename or (filename.startswith("<") and filename.endswith(">")):
         return []
 
@@ -158,10 +157,7 @@ def lazycache(filename, module_globals):
         filename, and the filename must not be already cached.
     """
     if filename in cache:
-        if len(cache[filename]) == 1:
-            return True
-        else:
-            return False
+        return len(cache[filename]) == 1
     if not filename or (filename.startswith("<") and filename.endswith(">")):
         return False
     # Try for a __loader__, if available

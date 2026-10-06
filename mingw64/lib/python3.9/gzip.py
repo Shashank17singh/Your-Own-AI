@@ -53,7 +53,7 @@ def open(
     """
     if "t" in mode:
         if "b" in mode:
-            raise ValueError("Invalid mode: %r" % (mode,))
+            raise ValueError(f"Invalid mode: {mode!r}")
     else:
         if encoding is not None:
             raise ValueError("Argument 'encoding' not supported in binary mode")
@@ -186,7 +186,7 @@ class GzipFile(_compression.BaseStream):
         if mode and "b" not in mode:
             mode += "b"
         if fileobj is None:
-            fileobj = self.myfileobj = builtins.open(filename, mode or "rb")
+            fileobj = self.myfileobj = builtins.open(filename, mode or "rb")  # noqa: SIM115
         if filename is None:
             filename = getattr(fileobj, "name", "")
             if not isinstance(filename, (str, bytes)):
@@ -454,7 +454,7 @@ class _GzipReader(_compression.DecompressReader):
             return False
 
         if magic != b"\037\213":
-            raise BadGzipFile("Not a gzipped file (%r)" % magic)
+            raise BadGzipFile(f"Not a gzipped file ({magic!r})")
 
         method, flag, self._last_mtime = struct.unpack("<BBIxx", self._read_exact(8))
         if method != 8:
@@ -542,9 +542,7 @@ class _GzipReader(_compression.DecompressReader):
         # stored is the true file size mod 2**32.
         crc32, isize = struct.unpack("<II", self._read_exact(8))
         if crc32 != self._crc:
-            raise BadGzipFile(
-                "CRC check failed %s != %s" % (hex(crc32), hex(self._crc))
-            )
+            raise BadGzipFile(f"CRC check failed {hex(crc32)} != {hex(self._crc)}")
         elif isize != (self._stream_size & 0xFFFFFFFF):
             raise BadGzipFile("Incorrect length of data produced")
 
@@ -616,8 +614,8 @@ def main():
             else:
                 if arg[-3:] != ".gz":
                     sys.exit(f"filename doesn't end in .gz: {arg!r}")
-                f = open(arg, "rb")
-                g = builtins.open(arg[:-3], "wb")
+                f = open(arg, "rb")  # noqa: SIM115
+                g = builtins.open(arg[:-3], "wb")  # noqa: SIM115
         else:
             if arg == "-":
                 f = sys.stdin.buffer
@@ -628,8 +626,8 @@ def main():
                     compresslevel=compresslevel,
                 )
             else:
-                f = builtins.open(arg, "rb")
-                g = open(arg + ".gz", "wb")
+                f = builtins.open(arg, "rb")  # noqa: SIM115
+                g = open(arg + ".gz", "wb")  # noqa: SIM115
         while True:
             chunk = f.read(1024)
             if not chunk:

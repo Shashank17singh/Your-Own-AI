@@ -137,7 +137,7 @@ def get_entity(expression):
         namespace = {**sys.modules, **__main__.__dict__}
         try:
             return eval(expression, namespace)  # Only protect user code.
-        except BaseException:
+        except BaseException:  # noqa: BLE001
             # An uncaught exception closes idle, and eval can raise any
             # exception, especially if user classes are involved.
             return None
@@ -164,7 +164,7 @@ def get_argspec(ob):
     # Determine function object fob to inspect.
     try:
         ob_call = ob.__call__
-    except BaseException:  # Buggy user object could raise anything.
+    except BaseException:  # Buggy user object could raise anything.  # noqa: BLE001
         return ""  # No popup for non-callables.
     # For Get_argspecTest.test_buggy_getattr_class, CallA() & CallB().
     fob = ob_call if isinstance(ob_call, types.MethodType) else ob
@@ -172,7 +172,7 @@ def get_argspec(ob):
     # Initialize argspec and wrap it to get lines.
     try:
         argspec = str(inspect.signature(fob))
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         msg = str(err)
         if msg.startswith(_invalid_method):
             return _invalid_method

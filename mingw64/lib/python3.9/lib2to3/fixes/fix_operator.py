@@ -34,12 +34,12 @@ class FixOperator(fixer_base.BaseFix):
                      |'repeat'|'irepeat')
               """
     obj = "'(' obj=any ')'"
-    PATTERN = """
+    PATTERN = f"""
               power< module='operator'
-                trailer< '.' %(methods)s > trailer< %(obj)s > >
+                trailer< '.' {methods} > trailer< {obj} > >
               |
-              power< %(methods)s trailer< %(obj)s > >
-              """ % dict(methods=methods, obj=obj)
+              power< {methods} trailer< {obj} > >
+              """
 
     def transform(self, node, results):
         method = self._check_method(node, results)
@@ -83,7 +83,7 @@ class FixOperator(fixer_base.BaseFix):
     def _handle_type2abc(self, node, results, module, abc):
         touch_import(None, module, node)
         obj = results["obj"]
-        args = [obj.clone(), String(", " + ".".join([module, abc]))]
+        args = [obj.clone(), String(", " + f"{module}.{abc}")]
         return Call(Name("isinstance"), args, prefix=node.prefix)
 
     def _check_method(self, node, results):
@@ -94,5 +94,5 @@ class FixOperator(fixer_base.BaseFix):
             else:
                 sub = (str(results["obj"]),)
                 invocation_str = method.invocation % sub
-                self.warning(node, "You should use '%s' here." % invocation_str)
+                self.warning(node, f"You should use '{invocation_str}' here.")
         return None

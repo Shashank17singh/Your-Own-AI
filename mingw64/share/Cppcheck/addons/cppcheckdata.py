@@ -28,7 +28,7 @@ except ImportError:
         }
         sys.stdout.write(json.dumps(msg) + "\n")
     else:
-        sys.stderr.write("%s [%s]\n" % (message, error_id))
+        sys.stderr.write(f"{message} [{error_id}]\n")
     sys.exit(1)
 from fnmatch import fnmatch
 from xml.etree import ElementTree
@@ -1106,16 +1106,14 @@ class Suppression:
             and fnmatch(errorId, self.errorId)
         ):
             return True
-        if (
+        return bool(
             (self.fileName is None or fnmatch(file, self.fileName))
-            and (self.suppressionType is None)
+            and self.suppressionType is None
             and (
                 self.symbolName is None or fnmatch(message, "*" + self.symbolName + "*")
             )
             and fnmatch(errorId, self.errorId)
-        ):
-            return True
-        return False
+        )
 
 
 class Configuration:
@@ -1138,18 +1136,18 @@ class Configuration:
     """
 
     name = ""
-    directives = []
-    macro_usage = []
-    preprocessor_if_conditions = []
-    tokenlist = []
-    scopes = []
-    containers = []
-    functions = []
-    variables = []
-    typedefInfo = []
-    valueflow = []
+    directives = []  # noqa: RUF012
+    macro_usage = []  # noqa: RUF012
+    preprocessor_if_conditions = []  # noqa: RUF012
+    tokenlist = []  # noqa: RUF012
+    scopes = []  # noqa: RUF012
+    containers = []  # noqa: RUF012
+    functions = []  # noqa: RUF012
+    variables = []  # noqa: RUF012
+    typedefInfo = []  # noqa: RUF012
+    valueflow = []  # noqa: RUF012
     standards = None
-    clang_warnings = []
+    clang_warnings = []  # noqa: RUF012
 
     def __init__(self, name):
         self.name = name
@@ -1545,9 +1543,7 @@ def astIsFloat(token):
         if typeToken.str == "float" or typeToken.str == "double":
             return True
         typeToken = typeToken.next
-    if typeToken.str == "float" or typeToken.str == "double":
-        return True
-    return False
+    return bool(typeToken.str == "float" or typeToken.str == "double")
 
 
 class CppCheckFormatter(argparse.HelpFormatter):
@@ -1785,14 +1781,12 @@ def reportError(
         }
         sys.stdout.write(json.dumps(msg) + "\n")
     else:
-        if is_suppressed(location, message, "%s-%s" % (addon, errorId)):
+        if is_suppressed(location, message, f"{addon}-{errorId}"):
             return
-        loc = "[%s:%i]" % (location.file, location.linenr)
+        loc = "[%s:%i]" % (location.file, location.linenr)  # noqa: UP031
         if len(extra) > 0:
             message += " (" + extra + ")"
-        sys.stderr.write(
-            "%s (%s) %s [%s-%s]\n" % (loc, severity, message, addon, errorId)
-        )
+        sys.stderr.write(f"{loc} ({severity}) {message} [{addon}-{errorId}]\n")
         global EXIT_CODE
         EXIT_CODE = 1
 

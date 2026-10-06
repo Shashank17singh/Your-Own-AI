@@ -63,7 +63,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
     def test_build_ext(self):
         cmd = support.missing_compiler_executable()
         if cmd is not None:
-            self.skipTest("The %r command is not found" % cmd)
+            self.skipTest(f"The {cmd!r} command is not found")
         global ALREADY_TESTED
         copy_xxmodule_c(self.tmp_dir)
         xx_c = os.path.join(self.tmp_dir, "xxmodule.c")
@@ -86,7 +86,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
             sys.stdout = old_stdout
 
         if ALREADY_TESTED:
-            self.skipTest("Already tested in %s" % ALREADY_TESTED)
+            self.skipTest(f"Already tested in {ALREADY_TESTED}")
         else:
             ALREADY_TESTED = type(self).__name__
 
@@ -213,7 +213,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         # make sure cmd.library_dirs is turned into a list
         # if it's a string
         cmd = self.build_ext(dist)
-        cmd.library_dirs = "my_lib_dir%sother_lib_dir" % os.pathsep
+        cmd.library_dirs = f"my_lib_dir{os.pathsep}other_lib_dir"
         cmd.finalize_options()
         self.assertIn("my_lib_dir", cmd.library_dirs)
         self.assertIn("other_lib_dir", cmd.library_dirs)
@@ -221,7 +221,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         # make sure rpath is turned into a list
         # if it's a string
         cmd = self.build_ext(dist)
-        cmd.rpath = "one%stwo" % os.pathsep
+        cmd.rpath = f"one{os.pathsep}two"
         cmd.finalize_options()
         self.assertEqual(cmd.rpath, ["one", "two"])
 
@@ -348,7 +348,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
     def test_get_outputs(self):
         cmd = support.missing_compiler_executable()
         if cmd is not None:
-            self.skipTest("The %r command is not found" % cmd)
+            self.skipTest(f"The {cmd!r} command is not found")
         tmp_dir = self.mkdtemp()
         c_file = os.path.join(tmp_dir, "foo.c")
         self.write_file(c_file, "void PyInit_foo(void) {}\n")
@@ -477,7 +477,7 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
 
     def _try_compile_deployment_target(self, operator, target):
         orig_environ = os.environ
-        os.environ = orig_environ.copy()
+        os.environ = orig_environ.copy()  # noqa: B003
         self.addCleanup(setattr, os, "environ", orig_environ)
 
         if target is None:
@@ -491,18 +491,17 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         with open(deptarget_c, "w") as fp:
             fp.write(
                 textwrap.dedent(
-                    """\
+                    f"""\
                 #include <AvailabilityMacros.h>
 
                 int dummy;
 
-                #if TARGET %s MAC_OS_X_VERSION_MIN_REQUIRED
+                #if TARGET {operator} MAC_OS_X_VERSION_MIN_REQUIRED
                 #else
                 #error "Unexpected target"
                 #endif
 
             """
-                    % operator
                 )
             )
 
@@ -514,18 +513,18 @@ class BuildExtTestCase(TempdirManager, LoggingSilencer, unittest.TestCase):
         # at least one value we test with will not exist yet.
         if target[:2] < (10, 10):
             # for 10.1 through 10.9.x -> "10n0"
-            target = "%02d%01d0" % target
+            target = "%02d%01d0" % target  # noqa: UP031
         else:
             # for 10.10 and beyond -> "10nn00"
             if len(target) >= 2:
-                target = "%02d%02d00" % target
+                target = "%02d%02d00" % target  # noqa: UP031
             else:
                 # 11 and later can have no minor version (11 instead of 11.0)
-                target = "%02d0000" % target
+                target = "%02d0000" % target  # noqa: UP031
         deptarget_ext = Extension(
             "deptarget",
             [deptarget_c],
-            extra_compile_args=["-DTARGET=%s" % (target,)],
+            extra_compile_args=[f"-DTARGET={target}"],
         )
         dist = Distribution({"name": "deptarget", "ext_modules": [deptarget_ext]})
         dist.package_dir = self.tmp_dir

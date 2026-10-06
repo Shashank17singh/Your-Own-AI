@@ -287,7 +287,7 @@ class ModuleSpecMethodsTests:
         self.spec.loader = FailedLoader()
         with CleanImport(self.spec.name):
             with self.assertRaises(RuntimeError):
-                loaded = self.bootstrap._load(self.spec)
+                self.bootstrap._load(self.spec)
             self.assertNotIn(self.spec.name, sys.modules)
 
     def test_load_failed_removed(self):
@@ -299,7 +299,7 @@ class ModuleSpecMethodsTests:
         self.spec.loader = FailedLoader()
         with CleanImport(self.spec.name):
             with self.assertRaises(RuntimeError):
-                loaded = self.bootstrap._load(self.spec)
+                self.bootstrap._load(self.spec)
             self.assertNotIn(self.spec.name, sys.modules)
 
     def test_load_legacy(self):
@@ -328,7 +328,7 @@ class ModuleSpecMethodsTests:
 
         self.spec.loader = ImmutableLoader()
         with CleanImport(self.spec.name):
-            loaded = self.bootstrap._load(self.spec)
+            self.bootstrap._load(self.spec)
 
             self.assertIs(sys.modules[self.spec.name], module)
 
@@ -422,7 +422,7 @@ class ModuleReprTests:
     def test_module___loader___module_repr_bad(self):
         class Loader(TestLoader):
             def module_repr(self, module):
-                raise Exception
+                raise Exception  # noqa: TRY002
 
         self.module.__loader__ = Loader()
         modrepr = self.bootstrap._module_repr(self.module)

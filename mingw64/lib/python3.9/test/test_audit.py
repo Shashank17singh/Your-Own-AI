@@ -27,7 +27,6 @@ class AuditTest(unittest.TestCase):
                 self.fail("".join(p.stderr))
 
     def run_python(self, *args):
-        events = []
         with subprocess.Popen(
             [sys.executable, "-X utf8", AUDIT_TESTS_PY, *args],
             encoding="utf-8",

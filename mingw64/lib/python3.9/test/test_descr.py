@@ -51,7 +51,7 @@ class OperatorsTest(unittest.TestCase):
             if expr.islower():
                 expr = expr + "(a, b)"
             else:
-                expr = "a %s b" % expr
+                expr = f"a {expr} b"
             self.binops[name] = expr
 
         self.unops = {
@@ -67,7 +67,7 @@ class OperatorsTest(unittest.TestCase):
             if expr.islower():
                 expr = expr + "(a)"
             else:
-                expr = "%s a" % expr
+                expr = f"{expr} a"
             self.unops[name] = expr
 
     def unop_test(self, a, res, expr="len(a)", meth="__len__"):
@@ -117,7 +117,7 @@ class OperatorsTest(unittest.TestCase):
 
     def setop_test(self, a, b, res, stmt="a+=b", meth="__iadd__"):
         d = {"a": deepcopy(a), "b": b}
-        exec(stmt, d)
+        exec(stmt, d)  # noqa: S102
         self.assertEqual(d["a"], res)
         t = type(a)
         m = getattr(t, meth)
@@ -136,7 +136,7 @@ class OperatorsTest(unittest.TestCase):
 
     def set2op_test(self, a, b, c, res, stmt="a[b]=c", meth="__setitem__"):
         d = {"a": deepcopy(a), "b": b, "c": c}
-        exec(stmt, d)
+        exec(stmt, d)  # noqa: S102
         self.assertEqual(d["a"], res)
         t = type(a)
         m = getattr(t, meth)
@@ -155,7 +155,7 @@ class OperatorsTest(unittest.TestCase):
 
     def setsliceop_test(self, a, b, c, d, res, stmt="a[b:c]=d", meth="__setitem__"):
         dictionary = {"a": deepcopy(a), "b": b, "c": c, "d": d}
-        exec(stmt, dictionary)
+        exec(stmt, dictionary)  # noqa: S102
         self.assertEqual(dictionary["a"], res)
         t = type(a)
         while meth not in t.__dict__:
@@ -199,10 +199,10 @@ class OperatorsTest(unittest.TestCase):
         d = {1: 2, 3: 4}
         l1 = []
         for i in list(d.keys()):
-            l1.append(i)
+            l1.append(i)  # noqa: PERF402
         l = []
         for i in iter(d):
-            l.append(i)
+            l.append(i)  # noqa: PERF402
         self.assertEqual(l, l1)
         l = []
         for i in d.__iter__():
@@ -221,19 +221,21 @@ class OperatorsTest(unittest.TestCase):
         )
 
     # Tests for unary and binary operators
-    def number_operators(self, a, b, skip=[]):
+    def number_operators(self, a, b, skip=None):
+        if skip is None:
+            skip = []
         dict = {"a": a, "b": b}
 
         for name, expr in self.binops.items():
             if name not in skip:
-                name = "__%s__" % name
+                name = f"__{name}__"
                 if hasattr(a, name):
                     res = eval(expr, dict)
                     self.binop_test(a, b, res, expr, name)
 
         for name, expr in list(self.unops.items()):
             if name not in skip:
-                name = "__%s__" % name
+                name = f"__{name}__"
                 if hasattr(a, name):
                     res = eval(expr, dict)
                     self.unop_test(a, res, expr, name)
@@ -281,10 +283,10 @@ class OperatorsTest(unittest.TestCase):
             def __repr__(self):
                 prec = self.prec
                 if self.imag == 0.0:
-                    return "%.*g" % (prec, self.real)
+                    return "%.*g" % (prec, self.real)  # noqa: UP031
                 if self.real == 0.0:
-                    return "%.*gj" % (prec, self.imag)
-                return "(%.*g+%.*gj)" % (prec, self.real, prec, self.imag)
+                    return "%.*gj" % (prec, self.imag)  # noqa: UP031
+                return "(%.*g+%.*gj)" % (prec, self.real, prec, self.imag)  # noqa: UP031
 
             __str__ = __repr__
 
@@ -391,10 +393,10 @@ class OperatorsTest(unittest.TestCase):
         d = spamdict({1: 2, 3: 4})
         l1 = []
         for i in list(d.keys()):
-            l1.append(i)
+            l1.append(i)  # noqa: PERF402
         l = []
         for i in iter(d):
-            l.append(i)
+            l.append(i)  # noqa: PERF402
         self.assertEqual(l, l1)
         l = []
         for i in d.__iter__():
@@ -437,18 +439,18 @@ class OperatorsTest(unittest.TestCase):
 
 class ClassPropertiesAndMethods(unittest.TestCase):
     def assertHasAttr(self, obj, name):
-        self.assertTrue(hasattr(obj, name), "%r has no attribute %r" % (obj, name))
+        self.assertTrue(hasattr(obj, name), f"{obj!r} has no attribute {name!r}")
 
     def assertNotHasAttr(self, obj, name):
         self.assertFalse(
-            hasattr(obj, name), "%r has unexpected attribute %r" % (obj, name)
+            hasattr(obj, name), f"{obj!r} has unexpected attribute {name!r}"
         )
 
     def test_python_dicts(self):
         # Testing Python subclass of dict...
         self.assertTrue(issubclass(dict, dict))
         self.assertIsInstance({}, dict)
-        d = dict()
+        d = {}
         self.assertEqual(d, {})
         self.assertIs(d.__class__, dict)
         self.assertIsInstance(d, dict)
@@ -600,7 +602,7 @@ class ClassPropertiesAndMethods(unittest.TestCase):
                 while name[:1] == "_":
                     name = name[1:]
                 if name:
-                    name = "_%s__super" % name
+                    name = f"_{name}__super"
                 else:
                     name = "__super"
                 setattr(cls, name, super(cls))
@@ -949,7 +951,6 @@ class ClassPropertiesAndMethods(unittest.TestCase):
 
         a = MM("a")
         a.foo = 12
-        x = a.foo
         del a.foo
         self.assertEqual(
             log, [("setattr", "foo", 12), ("getattr", "foo"), ("delattr", "foo")]
@@ -1202,11 +1203,11 @@ order (MRO) for bases """
                 callable(*args)
             except exc as msg:
                 # the exact msg is generally considered an impl detail
-                if support.check_impl_detail():
+                if support.check_impl_detail():  # noqa: SIM102
                     if not str(msg).startswith(expected):
-                        self.fail("Message %r, expected %r" % (str(msg), expected))
+                        self.fail(f"Message {str(msg)!r}, expected {expected!r}")
             else:
-                self.fail("Expected %s" % exc)
+                self.fail(f"Expected {exc}")
 
         class A:
             pass
@@ -1446,8 +1447,8 @@ order (MRO) for bases """
         # from the class above?
 
         # Test a single string is not expanded as a sequence.
-        class C:
-            __slots__ = "abc"
+        class C:  # noqa: F811
+            __slots__ = "abc"  # noqa: PLC0205
 
         c = C()
         c.abc = 5
@@ -1456,7 +1457,7 @@ order (MRO) for bases """
         # Test unicode slot names
         # Test a single unicode string is not expanded as a sequence.
         class C:
-            __slots__ = "abc"
+            __slots__ = "abc"  # noqa: PLC0205
 
         c = C()
         c.abc = 5
@@ -1549,7 +1550,7 @@ order (MRO) for bases """
             g = G()
             orig_objects = len(gc.get_objects())
             for i in range(10):
-                g == g
+                g == g  # noqa: B015, PLR0124
             new_objects = len(gc.get_objects())
             self.assertEqual(orig_objects, new_objects)
 
@@ -1570,7 +1571,7 @@ order (MRO) for bases """
         self.assertEqual(s.getvalue(), "")
 
         class X:
-            __slots__ = "a"
+            __slots__ = "a"  # noqa: PLC0205
 
         with self.assertRaises(AttributeError):
             del X().a
@@ -1667,7 +1668,7 @@ order (MRO) for bases """
         import abc
 
         class MyABC(metaclass=abc.ABCMeta):
-            __slots__ = "a"
+            __slots__ = "a"  # noqa: PLC0205
 
         class Unrelated:
             pass
@@ -2019,7 +2020,7 @@ order (MRO) for bases """
         self.assertEqual(x, None)
         self.assertEqual(a, a1)
         self.assertEqual(d, d1)
-        x, a1, d2 = spam.spamlist().staticmeth(*a, **d)
+        x, a1, _d2 = spam.spamlist().staticmeth(*a, **d)
         self.assertEqual(x, None)
         self.assertEqual(a, a1)
         self.assertEqual(d, d1)
@@ -2460,8 +2461,8 @@ order (MRO) for bases """
             ),
             ("__sizeof__", sys.getsizeof, zero, set(), {}),
             ("__instancecheck__", do_isinstance, return_true, set(), {}),
-            ("__missing__", do_dict_missing, some_number, set(("__class__",)), {}),
-            ("__subclasscheck__", do_issubclass, return_true, set(("__bases__",)), {}),
+            ("__missing__", do_dict_missing, some_number, {"__class__"}, {}),
+            ("__subclasscheck__", do_issubclass, return_true, {"__bases__"}, {}),
             ("__enter__", run_context, iden, set(), {"__exit__": swallow}),
             ("__exit__", run_context, swallow, set(), {"__enter__": iden}),
             ("__complex__", complex, complex_num, set(), {}),
@@ -2546,7 +2547,7 @@ order (MRO) for bases """
         hash(c2)
         self.assertEqual(c1, c1)
         self.assertTrue(c1 != c2)
-        self.assertFalse(c1 != c1)
+        self.assertFalse(c1 != c1)  # noqa: PLR0124
         self.assertFalse(c1 == c2)
         # Note that the module name appears in str/repr, and that varies
         # depending on whether this test is run standalone or from a framework.
@@ -2572,7 +2573,7 @@ order (MRO) for bases """
         hash(d2)
         self.assertEqual(d1, d1)
         self.assertNotEqual(d1, d2)
-        self.assertFalse(d1 != d1)
+        self.assertFalse(d1 != d1)  # noqa: PLR0124
         self.assertFalse(d1 == d2)
         # Note that the module name appears in str/repr, and that varies
         # depending on whether this test is run standalone or from a framework.
@@ -2613,23 +2614,23 @@ order (MRO) for bases """
                 return self.x < other
 
             def __str__(self):
-                return "Proxy:%s" % self.x
+                return f"Proxy:{self.x}"
 
             def __repr__(self):
-                return "Proxy(%r)" % self.x
+                return f"Proxy({self.x!r})"
 
             def __contains__(self, value):
                 return value in self.x
 
         p0 = Proxy(0)
         p1 = Proxy(1)
-        p_1 = Proxy(-1)
+        Proxy(-1)
         self.assertFalse(p0)
         self.assertFalse(not p1)
         self.assertEqual(hash(p0), hash(0))
         self.assertEqual(p0, p0)
         self.assertNotEqual(p0, p1)
-        self.assertFalse(p0 != p0)
+        self.assertFalse(p0 != p0)  # noqa: PLR0124
         self.assertEqual(not p0, p1)
         self.assertTrue(p0 < p1)
         self.assertTrue(p0 <= p1)
@@ -2727,13 +2728,13 @@ order (MRO) for bases """
             except AttributeError as msg:
                 if str(msg).find("readonly") < 0:
                     self.fail(
-                        "when setting readonly attr %r on a property, "
-                        "got unexpected AttributeError msg %r" % (attr, str(msg))
+                        f"when setting readonly attr {attr!r} on a property, "
+                        f"got unexpected AttributeError msg {str(msg)!r}"
                     )
             else:
                 self.fail(
-                    "expected AttributeError from trying to set readonly %r "
-                    "attr on a property" % attr
+                    f"expected AttributeError from trying to set readonly {attr!r} "
+                    "attr on a property"
                 )
 
         raw.__doc__ = 42
@@ -2859,16 +2860,16 @@ order (MRO) for bases """
 
     def test_dict_constructors(self):
         # Testing dict constructor ...
-        d = dict()
+        d = {}
         self.assertEqual(d, {})
-        d = dict({})
+        d = {}
         self.assertEqual(d, {})
-        d = dict({1: 2, "a": "b"})
+        d = {1: 2, "a": "b"}
         self.assertEqual(d, {1: 2, "a": "b"})
         self.assertEqual(d, dict(list(d.items())))
         self.assertEqual(d, dict(iter(d.items())))
-        d = dict({"one": 1, "two": 2})
-        self.assertEqual(d, dict(one=1, two=2))
+        d = {"one": 1, "two": 2}
+        self.assertEqual(d, {"one": 1, "two": 2})
         self.assertEqual(d, dict(**d))
         self.assertEqual(d, dict({"one": 1}, two=2))
         self.assertEqual(d, dict([("two", 2)], one=1))
@@ -2887,9 +2888,9 @@ order (MRO) for bases """
                     # one seemed better as a ValueError than a TypeError.
                     pass
                 else:
-                    self.fail("no TypeError from dict(%r)" % badarg)
+                    self.fail(f"no TypeError from dict({badarg!r})")
             else:
-                self.fail("no TypeError from dict(%r)" % badarg)
+                self.fail(f"no TypeError from dict({badarg!r})")
 
         try:
             dict({}, {})
@@ -2900,7 +2901,7 @@ order (MRO) for bases """
 
         class Mapping:
             # Lacks a .keys() method; will be added later.
-            dict = {1: 2, 3: 4, "a": 1j}
+            dict = {1: 2, 3: 4, "a": 1j}  # noqa: RUF012
 
         try:
             dict(Mapping())
@@ -2934,7 +2935,7 @@ order (MRO) for bases """
         self.assertEqual(d, {"Barry": "Warsaw", "Tim": "Peters"})
 
         d = dict(zip(range(4), range(1, 5)))
-        self.assertEqual(d, dict([(i, i + 1) for i in range(4)]))
+        self.assertEqual(d, {i: i + 1 for i in range(4)})
 
         # Bad sequence lengths.
         for bad in [("tooshort",)], [("too", "long", "by 1")]:
@@ -2943,7 +2944,7 @@ order (MRO) for bases """
             except ValueError:
                 pass
             else:
-                self.fail("no ValueError from dict(%r)" % bad)
+                self.fail(f"no ValueError from dict({bad!r})")
 
     def test_dir(self):
         # Testing dir() ...
@@ -3036,7 +3037,7 @@ order (MRO) for bases """
                 self.__obj = obj
 
             def __repr__(self):
-                return "Wrapper(%s)" % repr(self.__obj)
+                return f"Wrapper({self.__obj!r})"
 
             def __getitem__(self, key):
                 return Wrapper(self.__obj[key])
@@ -3060,7 +3061,7 @@ order (MRO) for bases """
 
         class A:
             def meth(self, a):
-                return "A(%r)" % a
+                return f"A({a!r})"
 
         self.assertEqual(A().meth(1), "A(1)")
 
@@ -3069,13 +3070,13 @@ order (MRO) for bases """
                 self.__super = super(B, self)
 
             def meth(self, a):
-                return "B(%r)" % a + self.__super.meth(a)
+                return f"B({a!r})" + self.__super.meth(a)
 
         self.assertEqual(B().meth(2), "B(2)A(2)")
 
         class C(A):
             def meth(self, a):
-                return "C(%r)" % a + self.__super.meth(a)
+                return f"C({a!r})" + self.__super.meth(a)
 
         C._C__super = super(C)
 
@@ -3083,7 +3084,7 @@ order (MRO) for bases """
 
         class D(C, B):
             def meth(self, a):
-                return "D(%r)" % a + super(D, self).meth(a)
+                return f"D({a!r})" + super(D, self).meth(a)
 
         self.assertEqual(D().meth(4), "D(4)C(4)B(4)A(4)")
 
@@ -3091,18 +3092,18 @@ order (MRO) for bases """
 
         class mysuper(super):
             def __init__(self, *args):
-                return super(mysuper, self).__init__(*args)
+                return super(mysuper, self).__init__(*args)  # noqa: PLE0101
 
         class E(D):
             def meth(self, a):
-                return "E(%r)" % a + mysuper(E, self).meth(a)
+                return f"E({a!r})" + mysuper(E, self).meth(a)
 
         self.assertEqual(E().meth(5), "E(5)D(5)C(5)B(5)A(5)")
 
         class F(E):
             def meth(self, a):
                 s = self.__super  # == mysuper(F, self)
-                return "F(%r)[%s]" % (a, s.__class__.__name__) + s.meth(a)
+                return f"F({a!r})[{s.__class__.__name__}]" + s.meth(a)
 
         F._F__super = mysuper(F)
 
@@ -3260,7 +3261,7 @@ order (MRO) for bases """
                 self.prec = int(prec)
 
             def __repr__(self):
-                return "%.*g" % (self.prec, self)
+                return "%.*g" % (self.prec, self)  # noqa: UP031
 
         self.assertEqual(repr(precfloat(1.1)), "1.1")
         a = precfloat(12345)
@@ -3272,7 +3273,7 @@ order (MRO) for bases """
 
         class madcomplex(complex):
             def __repr__(self):
-                return "%.17gj%+.17g" % (self.imag, self.real)
+                return f"{self.imag:.17g}j{self.real:+.17g}"
 
         a = madcomplex(-3, 4)
         self.assertEqual(repr(a), "4j-3")
@@ -3551,7 +3552,7 @@ order (MRO) for bases """
                 pass
             else:
                 self.fail(
-                    "expected TypeError from bogus keyword argument to %r" % constructor
+                    f"expected TypeError from bogus keyword argument to {constructor!r}"
                 )
 
     def test_str_subclass_as_dict_key(self):
@@ -3600,67 +3601,66 @@ order (MRO) for bases """
                 def __eq__(self, other):
                     if isinstance(other, C):
                         return self.value == other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value == other
                     return NotImplemented
 
                 def __ne__(self, other):
                     if isinstance(other, C):
                         return self.value != other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value != other
                     return NotImplemented
 
                 def __lt__(self, other):
                     if isinstance(other, C):
                         return self.value < other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value < other
                     return NotImplemented
 
                 def __le__(self, other):
                     if isinstance(other, C):
                         return self.value <= other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value <= other
                     return NotImplemented
 
                 def __gt__(self, other):
                     if isinstance(other, C):
                         return self.value > other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value > other
                     return NotImplemented
 
                 def __ge__(self, other):
                     if isinstance(other, C):
                         return self.value >= other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value >= other
                     return NotImplemented
 
             c1 = C(1)
-            c2 = C(2)
-            c3 = C(3)
+            C(2)
+            C(3)
             self.assertEqual(c1, 1)
-            c = {1: c1, 2: c2, 3: c3}
             for x in 1, 2, 3:
                 for y in 1, 2, 3:
                     for op in "<", "<=", "==", "!=", ">", ">=":
                         self.assertEqual(
-                            eval("c[x] %s c[y]" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"c[x] {op} c[y]"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
                         self.assertEqual(
-                            eval("c[x] %s y" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"c[x] {op} y"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
                         self.assertEqual(
-                            eval("x %s c[y]" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"x {op} c[y]"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
 
     def test_rich_comparisons(self):
@@ -3676,7 +3676,7 @@ order (MRO) for bases """
             def __eq__(self, other):
                 try:
                     return abs(self - other) <= 1e-6
-                except:
+                except:  # noqa: E722
                     return NotImplemented
 
         zz = ZZ(1.0000003)
@@ -3698,67 +3698,66 @@ order (MRO) for bases """
                 def __eq__(self, other):
                     if isinstance(other, C):
                         return self.value == other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value == other
                     return NotImplemented
 
                 def __ne__(self, other):
                     if isinstance(other, C):
                         return self.value != other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value != other
                     return NotImplemented
 
                 def __lt__(self, other):
                     if isinstance(other, C):
                         return self.value < other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value < other
                     return NotImplemented
 
                 def __le__(self, other):
                     if isinstance(other, C):
                         return self.value <= other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value <= other
                     return NotImplemented
 
                 def __gt__(self, other):
                     if isinstance(other, C):
                         return self.value > other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value > other
                     return NotImplemented
 
                 def __ge__(self, other):
                     if isinstance(other, C):
                         return self.value >= other.value
-                    if isinstance(other, int) or isinstance(other, int):
+                    if isinstance(other, (int, int)):
                         return self.value >= other
                     return NotImplemented
 
             c1 = C(1)
-            c2 = C(2)
-            c3 = C(3)
+            C(2)
+            C(3)
             self.assertEqual(c1, 1)
-            c = {1: c1, 2: c2, 3: c3}
             for x in 1, 2, 3:
                 for y in 1, 2, 3:
                     for op in "<", "<=", "==", "!=", ">", ">=":
                         self.assertEqual(
-                            eval("c[x] %s c[y]" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"c[x] {op} c[y]"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
                         self.assertEqual(
-                            eval("c[x] %s y" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"c[x] {op} y"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
                         self.assertEqual(
-                            eval("x %s c[y]" % op),
-                            eval("x %s y" % op),
-                            "x=%d, y=%d" % (x, y),
+                            eval(f"x {op} c[y]"),
+                            eval(f"x {op} y"),
+                            "x=%d, y=%d" % (x, y),  # noqa: UP031
                         )
 
     def test_descrdoc(self):
@@ -3780,7 +3779,7 @@ order (MRO) for bases """
                     object = object.__class__.__name__ + " instance"
                 if otype:
                     otype = otype.__name__
-                return "object=%s; type=%s" % (object, otype)
+                return f"object={object}; type={otype}"
 
         class OldClass:
             __doc__ = DocDescr()
@@ -3821,20 +3820,20 @@ order (MRO) for bases """
             except TypeError:
                 pass
             else:
-                self.fail("shouldn't allow %r.__class__ = %r" % (x, C))
+                self.fail(f"shouldn't allow {x!r}.__class__ = {C!r}")
             try:
                 delattr(x, "__class__")
             except (TypeError, AttributeError):
                 pass
             else:
-                self.fail("shouldn't allow del %r.__class__" % x)
+                self.fail(f"shouldn't allow del {x!r}.__class__")
 
         cant(C(), list)
-        cant(list(), C)
+        cant([], C)
         cant(C(), 1)
         cant(C(), object)
         cant(object(), list)
-        cant(list(), object)
+        cant([], object)
 
         class Int(int):
             __slots__ = []
@@ -3886,14 +3885,14 @@ order (MRO) for bases """
             self.assertIs(
                 x.__class__,
                 cls2,
-                "assigning %r as __class__ for %r silently failed" % (cls2, x),
+                f"assigning {cls2!r} as __class__ for {x!r} silently failed",
             )
             self.assertEqual(x.a, 1)
             x.__class__ = cls
             self.assertIs(
                 x.__class__,
                 cls,
-                "assigning %r as __class__ for %r silently failed" % (cls, x),
+                f"assigning {cls!r} as __class__ for {x!r} silently failed",
             )
             self.assertEqual(x.a, 1)
         for cls in G, J, K, L, M, N, P, R, list, Int:
@@ -3929,7 +3928,7 @@ order (MRO) for bases """
             except (AttributeError, TypeError):
                 pass
             else:
-                self.fail("shouldn't allow %r.__dict__ = %r" % (x, dict))
+                self.fail(f"shouldn't allow {x!r}.__dict__ = {dict!r}")
 
         cant(a, None)
         cant(a, [])
@@ -3949,14 +3948,14 @@ order (MRO) for bases """
             except (AttributeError, TypeError):
                 pass
             else:
-                self.fail("shouldn't allow del %r.__dict__" % x)
+                self.fail(f"shouldn't allow del {x!r}.__dict__")
             dict_descr = Base.__dict__["__dict__"]
             try:
                 dict_descr.__set__(x, {})
             except (AttributeError, TypeError):
                 pass
             else:
-                self.fail("dict_descr allowed access to %r's dict" % x)
+                self.fail(f"dict_descr allowed access to {x!r}'s dict")
 
         # Classes don't allow __dict__ assignment and have readonly dicts
         class Meta1(type, Base):
@@ -3979,7 +3978,7 @@ order (MRO) for bases """
             except TypeError:
                 pass
             else:
-                self.fail("%r's __dict__ can be modified" % cls)
+                self.fail(f"{cls!r}'s __dict__ can be modified")
 
         # Modules also disallow __dict__ assignment
         class Module1(types.ModuleType, Base):
@@ -4021,7 +4020,7 @@ order (MRO) for bases """
         # Testing overrides of binary operations...
         class I(int):
             def __repr__(self):
-                return "I(%r)" % int(self)
+                return f"I({int(self)!r})"
 
             def __add__(self, other):
                 return I(int(self) + int(other))
@@ -4122,7 +4121,7 @@ order (MRO) for bases """
         self.assertEqual(d.bar, 42)
         del B.__getattr__
         try:
-            d.foo
+            d.foo  # noqa: B018
         except AttributeError:
             pass
         else:
@@ -4269,21 +4268,21 @@ order (MRO) for bases """
 
     def test_str_operations(self):
         try:
-            "a" + 5
+            "a" + 5  # noqa: B018
         except TypeError:
             pass
         else:
             self.fail("'' + 5 doesn't raise TypeError")
 
         try:
-            ["", ""]
+            ["", ""]  # noqa: B018
         except ValueError:
             pass
         else:
             self.fail("''.split('') doesn't raise ValueError")
 
         try:
-            "".join([0])
+            f"{0}"
         except TypeError:
             pass
         else:
@@ -4297,42 +4296,42 @@ order (MRO) for bases """
             self.fail("''.rindex('5') doesn't raise ValueError")
 
         try:
-            "%(n)s" % None
+            "{n}".format()  # noqa: F524
         except TypeError:
             pass
         else:
             self.fail("'%(n)s' % None doesn't raise TypeError")
 
         try:
-            "%(n" % {}
+            "%(n" % {}  # noqa: B018, F501
         except ValueError:
             pass
         else:
             self.fail("'%(n' % {} '' doesn't raise ValueError")
 
         try:
-            "%*s" % ("abc")
+            "%*s" % ("abc")  # noqa: B018, F507, UP031
         except TypeError:
             pass
         else:
             self.fail("'%*s' % ('abc') doesn't raise TypeError")
 
         try:
-            "%*.*s" % ("abc", 5)
+            "%*.*s" % ("abc", 5)  # noqa: B018, F507, UP031
         except TypeError:
             pass
         else:
             self.fail("'%*.*s' % ('abc', 5) doesn't raise TypeError")
 
         try:
-            "%s" % (1, 2)
+            f"{1}"
         except TypeError:
             pass
         else:
             self.fail("'%s' % (1, 2) doesn't raise TypeError")
 
         try:
-            "%" % None
+            "%" % None  # noqa: B018, F501
         except ValueError:
             pass
         else:
@@ -4340,8 +4339,8 @@ order (MRO) for bases """
 
         self.assertEqual("534253".isdigit(), 1)
         self.assertEqual("534253x".isdigit(), 0)
-        self.assertEqual("%c" % 5, "\x05")
-        self.assertEqual("%c" % "5", "5")
+        self.assertEqual("%c" % 5, "\x05")  # noqa: UP031
+        self.assertEqual("%c" % "5", "5")  # noqa: UP031
 
     def test_deepcopy_recursive(self):
         # Testing deepcopy of recursive objects...
@@ -4352,7 +4351,7 @@ order (MRO) for bases """
         b = Node()
         a.b = b
         b.a = a
-        z = deepcopy(a)  # This blew up before
+        deepcopy(a)  # This blew up before
 
     def test_uninitialized_modules(self):
         # Testing uninitialized module objects...
@@ -4531,7 +4530,7 @@ order (MRO) for bases """
         # Testing resurrection of new-style instance...
 
         class C:
-            container = []
+            container = []  # noqa: RUF012
 
             def __del__(self):
                 # resurrect the instance
@@ -4766,7 +4765,7 @@ order (MRO) for bases """
     def test_mutable_bases_with_failing_mro(self):
         # Testing mutable bases with failing mro...
         class WorkOnce(type):
-            def __new__(self, name, bases, ns):
+            def __new__(self, name, bases, ns):  # noqa: PLW0211
                 self.flag = 0
                 return super(WorkOnce, self).__new__(WorkOnce, name, bases, ns)
 
@@ -5101,7 +5100,7 @@ order (MRO) for bases """
                 self.ref = weakref.ref(referrent)
 
             def __del__(self):
-                x = self.ref()
+                self.ref()
 
         class Oops:
             pass
@@ -5124,7 +5123,7 @@ order (MRO) for bases """
         class StdoutGuard:
             def __getattr__(self, attr):
                 sys.stdout = sys.__stdout__
-                raise RuntimeError("Premature access to sys.stdout.%s" % attr)
+                raise RuntimeError(f"Premature access to sys.stdout.{attr}")
 
         sys.stdout = StdoutGuard()
         try:
@@ -5172,7 +5171,7 @@ order (MRO) for bases """
         # SF 1155938
         class Foo:
             def __init__(self):
-                return 10
+                return 10  # noqa: PLE0101
 
         try:
             Foo()
@@ -5183,13 +5182,13 @@ order (MRO) for bases """
 
     def assertNotOrderable(self, a, b):
         with self.assertRaises(TypeError):
-            a < b
+            a < b  # noqa: B015
         with self.assertRaises(TypeError):
-            a > b
+            a > b  # noqa: B015
         with self.assertRaises(TypeError):
-            a <= b
+            a <= b  # noqa: B015
         with self.assertRaises(TypeError):
-            a >= b
+            a >= b  # noqa: B015
 
     def test_method_wrapper(self):
         # Testing method-wrapper objects...
@@ -5257,11 +5256,11 @@ order (MRO) for bases """
 
         def check(expr, x, y):
             try:
-                exec(expr, {"x": x, "y": y, "operator": operator})
+                exec(expr, {"x": x, "y": y, "operator": operator})  # noqa: S102
             except TypeError:
                 pass
             else:
-                self.fail("no TypeError from %r" % (expr,))
+                self.fail(f"no TypeError from {expr!r}")
 
         N1 = sys.maxsize + 1  # might trigger OverflowErrors instead of
         # TypeErrors
@@ -5283,7 +5282,7 @@ order (MRO) for bases """
             ("__or__", "x | y", "x |= y"),
             ("__xor__", "x ^ y", "x ^= y"),
         ]:
-            rname = "__r" + name[2:]
+            "__r" + name[2:]
             A = type("A", (), {name: specialmethod})
             a = A()
             check(expr, a, a)
@@ -5453,7 +5452,7 @@ order (MRO) for bases """
 
         a = A()
         with self.assertRaises(TypeError):
-            a == a
+            a == a  # noqa: B015, PLR0124
         with self.assertRaises(TypeError):
             a + a
 
@@ -5555,7 +5554,7 @@ order (MRO) for bases """
 
         class OverrideInit:
             def __init__(self, foo, kw=0, *args, **kwargs):
-                return object.__init__(self, *args, **kwargs)
+                return object.__init__(self, *args, **kwargs)  # noqa: PLE0101
 
         class OverrideBoth(OverrideNew, OverrideInit):
             pass
@@ -5662,7 +5661,7 @@ order (MRO) for bases """
                 # Create this large list to corrupt some unused memory
                 cls.lst = [2**i for i in range(10000)]
 
-        X.descr
+        X.descr  # noqa: B018
 
 
 class DictProxyTests(unittest.TestCase):
@@ -5752,7 +5751,7 @@ class PTypesLongInitTest(unittest.TestCase):
 
         try:
             pow(0, UserLong(), 0)
-        except:
+        except:  # noqa: E722, S110
             pass
 
         # Another segfault only when run early
@@ -5789,8 +5788,17 @@ class MiscTests(unittest.TestCase):
 
 class PicklingTests(unittest.TestCase):
     def _check_reduce(
-        self, proto, obj, args=(), kwargs={}, state=None, listitems=None, dictitems=None
+        self,
+        proto,
+        obj,
+        args=(),
+        kwargs=None,
+        state=None,
+        listitems=None,
+        dictitems=None,
     ):
+        if kwargs is None:
+            kwargs = {}
         if proto >= 2:
             reduce_value = obj.__reduce_ex__(proto)
             if kwargs:
@@ -6070,7 +6078,7 @@ class PicklingTests(unittest.TestCase):
                     setattr(self, k, v)
 
             def __repr__(self):
-                return "%s()<%r>" % (type(self).__name__, self.__getstate__())
+                return f"{type(self).__name__}()<{self.__getstate__()!r}>"
 
         class D(C):
             "A subclass of a class with slots."
@@ -6121,7 +6129,7 @@ class PicklingTests(unittest.TestCase):
                 self.b = b
 
             def __repr__(self):
-                return "C1(%r, %r)" % (self.a, self.b)
+                return f"C1({self.a!r}, {self.b!r})"
 
         global C2
 
@@ -6148,7 +6156,7 @@ class PicklingTests(unittest.TestCase):
                 return cls.ARGS
 
             def __repr__(self):
-                return "C2(%r, %r)<%r>" % (self.a, self.b, list(self))
+                return f"C2({self.a!r}, {self.b!r})<{list(self)!r}>"
 
         global C3
 
@@ -6175,7 +6183,7 @@ class PicklingTests(unittest.TestCase):
                 self.b = b
 
             def __repr__(self):
-                return "C3(%r, %r)<%r>" % (self.a, self.b, list(self))
+                return f"C3({self.a!r}, {self.b!r})<{list(self)!r}>"
 
         global C4
 
@@ -6196,7 +6204,7 @@ class PicklingTests(unittest.TestCase):
                 return cls.ARGS
 
             def __repr__(self):
-                return "C4(%r, %r)<%r>" % (self.a, self.b, int(self))
+                return f"C4({self.a!r}, {self.b!r})<{int(self)!r}>"
 
         global C5
 
@@ -6204,7 +6212,7 @@ class PicklingTests(unittest.TestCase):
             "An int subclass copyable via __getnewargs_ex__."
 
             ARGS = (1, 2)
-            KWARGS = {"value": 3}
+            KWARGS = {"value": 3}  # noqa: RUF012
             NEED_DICT_COPYING = False
 
             def __new__(cls, a, b, *, value=0):
@@ -6218,7 +6226,7 @@ class PicklingTests(unittest.TestCase):
                 return (cls.ARGS, cls.KWARGS)
 
             def __repr__(self):
-                return "C5(%r, %r)<%r>" % (self.a, self.b, int(self))
+                return f"C5({self.a!r}, {self.b!r})<{int(self)!r}>"
 
         test_classes = (C1, C2, C3, C4, C5)
         # Testing copying through pickle
@@ -6261,7 +6269,7 @@ class PicklingTests(unittest.TestCase):
             pass
 
         class A:
-            __slotnames__ = [S("spam")]
+            __slotnames__ = [S("spam")]  # noqa: RUF012
 
             def __getattr__(self, attr):
                 if attr == "spam":
@@ -6367,7 +6375,7 @@ class MroTest(unittest.TestCase):
 
         class M(DebugHelperMeta):
             def mro(cls):
-                if cls.__mro__ is not None and cls.__name__ == "B":
+                if cls.__mro__ is not None and cls.__name__ == "B":  # noqa: SIM102
                     # 4-5 steps are usually enough to make it crash somewhere
                     if self.step_until(10):
                         A.__bases__ += ()
@@ -6390,9 +6398,8 @@ class MroTest(unittest.TestCase):
         class M(DebugHelperMeta):
             def mro(cls):
                 base = cls.__bases__[0]
-                if base is not object:
-                    if self.step_until(5):
-                        base.__bases__ += ()
+                if base is not object and self.step_until(5):
+                    base.__bases__ += ()
 
                 return type.mro(cls)
 
@@ -6553,7 +6560,7 @@ class MroTest(unittest.TestCase):
             def mro(cls):
                 if cls.__mro__ is None:
                     with self.assertRaises(AttributeError):
-                        super(cls, cls).xxx
+                        super(cls, cls).xxx  # noqa: B018
 
                 return type.mro(cls)
 

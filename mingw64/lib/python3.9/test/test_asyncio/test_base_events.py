@@ -333,7 +333,7 @@ class BaseEventLoopTests(test_utils.TestCase):
                         loop2.close()
                 else:
                     self.check_thread(loop, debug)
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 loop.call_soon_threadsafe(fut.set_exception, exc)
             else:
                 loop.call_soon_threadsafe(fut.set_result, None)
@@ -457,11 +457,9 @@ class BaseEventLoopTests(test_utils.TestCase):
         # Need enough events to pass _MIN_CANCELLED_TIMER_HANDLES_FRACTION
         # so that deletion of cancelled events will occur on next _run_once
         add_cancel_count = (
-            int(
-                math.ceil(
-                    base_events._MIN_SCHEDULED_TIMER_HANDLES
-                    * base_events._MIN_CANCELLED_TIMER_HANDLES_FRACTION
-                )
+            math.ceil(
+                base_events._MIN_SCHEDULED_TIMER_HANDLES
+                * base_events._MIN_CANCELLED_TIMER_HANDLES_FRACTION
             )
             + 1
         )
@@ -492,7 +490,7 @@ class BaseEventLoopTests(test_utils.TestCase):
         self.assertEqual(len(self.loop._scheduled), not_cancelled_count)
 
         # Ensure only uncancelled events remain scheduled
-        self.assertTrue(all([not x._cancelled for x in self.loop._scheduled]))
+        self.assertTrue(all(not x._cancelled for x in self.loop._scheduled))
 
     def test_run_until_complete_type_error(self):
         self.assertRaises(TypeError, self.loop.run_until_complete, "blah")
@@ -626,7 +624,7 @@ class BaseEventLoopTests(test_utils.TestCase):
 
         def zero_error(fut):
             fut.set_result(True)
-            1 / 0
+            1 / 0  # noqa: B018
 
         # Test call_soon (events.Handle)
         with mock.patch("asyncio.base_events.logger") as log:
@@ -655,7 +653,7 @@ class BaseEventLoopTests(test_utils.TestCase):
 
         async def zero_error_coro():
             await asyncio.sleep(0.01)
-            1 / 0
+            1 / 0  # noqa: B018
 
         # Test Future.__del__
         with mock.patch("asyncio.base_events.logger") as log:
@@ -684,7 +682,7 @@ class BaseEventLoopTests(test_utils.TestCase):
 
     def test_set_exc_handler_custom(self):
         def zero_error():
-            1 / 0
+            1 / 0  # noqa: B018
 
         def run_loop():
             handle = self.loop.call_soon(zero_error)
@@ -723,7 +721,7 @@ class BaseEventLoopTests(test_utils.TestCase):
     def test_set_exc_handler_broken(self):
         def run_loop():
             def zero_error():
-                1 / 0
+                1 / 0  # noqa: B018
 
             self.loop.call_soon(zero_error)
             self.loop._run_once()
@@ -761,7 +759,7 @@ class BaseEventLoopTests(test_utils.TestCase):
 
         def run_loop():
             def zero_error():
-                1 / 0
+                1 / 0  # noqa: B018
 
             loop.call_soon(zero_error)
             loop._run_once()
@@ -827,12 +825,8 @@ class BaseEventLoopTests(test_utils.TestCase):
         self.loop.run_until_complete(task)
 
     def test_env_var_debug(self):
-        code = "\n".join(
-            (
-                "import asyncio",
-                "loop = asyncio.get_event_loop()",
-                "print(loop.get_debug())",
-            )
+        code = (
+            "import asyncio\nloop = asyncio.get_event_loop()\nprint(loop.get_debug())"
         )
 
         # Test with -E to not fail if the unit test was run with
@@ -850,11 +844,11 @@ class BaseEventLoopTests(test_utils.TestCase):
         )
         self.assertEqual(stdout.rstrip(), b"True")
 
-        sts, stdout, stderr = assert_python_ok("-E", "-c", code, PYTHONASYNCIODEBUG="1")
+        sts, stdout, stderr = assert_python_ok("-E", "-c", code, PYTHONASYNCIODEBUG="1")  # noqa: RUF059
         self.assertEqual(stdout.rstrip(), b"False")
 
         # -X dev
-        sts, stdout, stderr = assert_python_ok("-E", "-X", "dev", "-c", code)
+        _sts, stdout, _stderr = assert_python_ok("-E", "-X", "dev", "-c", code)
         self.assertEqual(stdout.rstrip(), b"True")
 
     def test_create_task(self):
@@ -976,7 +970,7 @@ class BaseEventLoopTests(test_utils.TestCase):
         self.loop._selector.select.return_value = (event_sentinel,)
 
         for i in range(1, 3):
-            with self.subTest("Loop %d/2" % i):
+            with self.subTest("Loop %d/2" % i):  # noqa: UP031
                 self.loop.call_soon(self.loop.stop)
                 self.loop.run_forever()
                 self.assertEqual(callcount, 1)
@@ -1351,7 +1345,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.loop._add_writer._is_coroutine = False
 
         coro = self.loop.create_connection(asyncio.Protocol, "1.2.3.4", 80)
-        t, p = self.loop.run_until_complete(coro)
+        t, p = self.loop.run_until_complete(coro)  # noqa: RUF059
         try:
             sock.connect.assert_called_with(("1.2.3.4", 80))
             _, kwargs = m_socket.socket.call_args
@@ -1364,7 +1358,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         if socket_helper.IPV6_ENABLED:
             sock.family = socket.AF_INET6
             coro = self.loop.create_connection(asyncio.Protocol, "::1", 80)
-            t, p = self.loop.run_until_complete(coro)
+            t, _p = self.loop.run_until_complete(coro)
             try:
                 # Without inet_pton we use getaddrinfo, which transforms
                 # ('::1', 80) to ('::1', 80, 0, 0). The last 0s are flow info,
@@ -1397,7 +1391,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         self.loop._add_writer._is_coroutine = False
 
         coro = self.loop.create_connection(asyncio.Protocol, "fe80::1%1", 80)
-        t, p = self.loop.run_until_complete(coro)
+        t, _p = self.loop.run_until_complete(coro)
         try:
             sock.connect.assert_called_with(("fe80::1", 80, 0, 1))
             _, kwargs = m_socket.socket.call_args
@@ -1428,7 +1422,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
         for service, port in ("http", 80), (b"http", 80):
             coro = self.loop.create_connection(asyncio.Protocol, "127.0.0.1", service)
 
-            t, p = self.loop.run_until_complete(coro)
+            t, _p = self.loop.run_until_complete(coro)
             try:
                 sock.connect.assert_called_with(("127.0.0.1", port))
                 _, kwargs = m_socket.socket.call_args
@@ -1952,7 +1946,7 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
             reuse_port=reuseport_supported,
         )
 
-        t, p = self.loop.run_until_complete(coro)
+        t, _p = self.loop.run_until_complete(coro)
         try:
             bind.assert_called_with(("1.2.3.4", 0))
             m_socket.socket.assert_called_with(
@@ -2108,7 +2102,7 @@ class BaseLoopSockSendfileTests(test_utils.TestCase):
         # BaseSelectorEventLoop() has no native implementation
         self.loop = BaseSelectorEventLoop()
         self.set_event_loop(self.loop)
-        self.file = open(support.TESTFN, "rb")
+        self.file = open(support.TESTFN, "rb")  # noqa: SIM115
         self.addCleanup(self.file.close)
         super().setUp()
 
@@ -2207,7 +2201,7 @@ class BaseLoopSockSendfileTests(test_utils.TestCase):
 
     def test_nonbinary_file(self):
         sock = self.make_socket()
-        with open(support.TESTFN, "r") as f:
+        with open(support.TESTFN, "r") as f:  # noqa: SIM117
             with self.assertRaisesRegex(ValueError, "binary mode"):
                 self.run_loop(self.loop.sock_sendfile(sock, f))
 

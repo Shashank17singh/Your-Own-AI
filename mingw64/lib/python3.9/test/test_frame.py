@@ -12,7 +12,7 @@ class ClearTest(unittest.TestCase):
     """
 
     def inner(self, x=5, **kwargs):
-        1 / 0
+        1 / 0  # noqa: B018
 
     def outer(self, **kwargs):
         try:
@@ -66,7 +66,7 @@ class ClearTest(unittest.TestCase):
     def test_clear_executing(self):
         # Attempting to clear an executing frame is forbidden.
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             f = e.__traceback__.tb_frame
         with self.assertRaises(RuntimeError):
@@ -81,7 +81,7 @@ class ClearTest(unittest.TestCase):
         def g():
             nonlocal endly
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             except ZeroDivisionError as e:
                 f = e.__traceback__.tb_frame
                 with self.assertRaises(RuntimeError):
@@ -120,12 +120,10 @@ class FrameAttrsTest(unittest.TestCase):
     def make_frames(self):
         def outer():
             x = 5
-            y = 6
 
             def inner():
-                z = x + 2
-                1 / 0
-                t = 9
+                x + 2
+                1 / 0  # noqa: B018
 
             return inner()
 
@@ -140,7 +138,7 @@ class FrameAttrsTest(unittest.TestCase):
         return frames
 
     def test_locals(self):
-        f, outer, inner = self.make_frames()
+        _f, outer, inner = self.make_frames()
         outer_locals = outer.f_locals
         self.assertIsInstance(outer_locals.pop("inner"), types.FunctionType)
         self.assertEqual(outer_locals, {"x": 5, "y": 6})
@@ -149,7 +147,7 @@ class FrameAttrsTest(unittest.TestCase):
 
     def test_clear_locals(self):
         # Test f_locals after clear() (issue #21897)
-        f, outer, inner = self.make_frames()
+        _f, outer, inner = self.make_frames()
         outer.clear()
         inner.clear()
         self.assertEqual(outer.f_locals, {})
@@ -157,9 +155,9 @@ class FrameAttrsTest(unittest.TestCase):
 
     def test_locals_clear_locals(self):
         # Test f_locals before and after clear() (to exercise caching)
-        f, outer, inner = self.make_frames()
-        outer.f_locals
-        inner.f_locals
+        _f, outer, inner = self.make_frames()
+        outer.f_locals  # noqa: B018
+        inner.f_locals  # noqa: B018
         outer.clear()
         inner.clear()
         self.assertEqual(outer.f_locals, {})
@@ -179,12 +177,10 @@ class ReprTest(unittest.TestCase):
     def test_repr(self):
         def outer():
             x = 5
-            y = 6
 
             def inner():
-                z = x + 2
-                1 / 0
-                t = 9
+                x + 2
+                1 / 0  # noqa: B018
 
             return inner()
 
@@ -204,17 +200,17 @@ class ReprTest(unittest.TestCase):
         file_repr = re.escape(repr(__file__))
         self.assertRegex(
             repr(f_this),
-            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code test_repr>$"
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code test_repr>$"  # noqa: UP031
             % (file_repr, offset + 23),
         )
         self.assertRegex(
             repr(f_outer),
-            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code outer>$"
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code outer>$"  # noqa: UP031
             % (file_repr, offset + 7),
         )
         self.assertRegex(
             repr(f_inner),
-            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code inner>$"
+            r"^<frame at 0x[0-9a-fA-F]+, file %s, line %d, code inner>$"  # noqa: UP031
             % (file_repr, offset + 5),
         )
 

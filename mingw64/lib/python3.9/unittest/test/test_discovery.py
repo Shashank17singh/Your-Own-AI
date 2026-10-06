@@ -95,7 +95,7 @@ class TestDiscovery(unittest.TestCase):
         suite = list(loader._find_tests(top_level, "test*.py"))
         expected = [[name + " module tests"] for name in ("test1", "test2", "test_dir")]
         expected.extend(
-            [[("test_dir.%s" % name) + " module tests"] for name in ("test3", "test4")]
+            [[(f"test_dir.{name}") + " module tests"] for name in ("test3", "test4")]
         )
         self.assertEqual(suite, expected)
 
@@ -164,8 +164,8 @@ class TestDiscovery(unittest.TestCase):
         self.addCleanup(restore_isfile)
 
         class Module:
-            paths = []
-            load_tests_args = []
+            paths = []  # noqa: RUF012
+            load_tests_args = []  # noqa: RUF012
 
             def __init__(self, path):
                 self.path = path
@@ -232,8 +232,8 @@ class TestDiscovery(unittest.TestCase):
         self.addCleanup(restore_isfile)
 
         class Module:
-            paths = []
-            load_tests_args = []
+            paths = []  # noqa: RUF012
+            load_tests_args = []  # noqa: RUF012
 
             def __init__(self, path):
                 self.path = path
@@ -306,8 +306,8 @@ class TestDiscovery(unittest.TestCase):
         os.path.isfile = lambda path: path.endswith(".py")
 
         class Module:
-            paths = []
-            load_tests_args = []
+            paths = []  # noqa: RUF012
+            load_tests_args = []  # noqa: RUF012
 
             def __init__(self, path):
                 self.path = path
@@ -408,8 +408,8 @@ class TestDiscovery(unittest.TestCase):
         self.addCleanup(sys.path.remove, abspath("/toplevel"))
 
         class Module:
-            paths = []
-            load_tests_args = []
+            paths = []  # noqa: RUF012
+            load_tests_args = []  # noqa: RUF012
 
             def __init__(self, path):
                 self.path = path
@@ -464,9 +464,9 @@ class TestDiscovery(unittest.TestCase):
         error = loader.errors[0]
         self.assertTrue(
             "Failed to import test module: test_this_does_not_exist" in error,
-            "missing error string in %r" % error,
+            f"missing error string in {error!r}",
         )
-        test = list(list(suite)[0])[0]  # extract test from suite
+        test = next(iter(next(iter(suite))))  # extract test from suite
         with self.assertRaises(ImportError):
             test.test_this_does_not_exist()
 
@@ -492,9 +492,9 @@ class TestDiscovery(unittest.TestCase):
         error = loader.errors[0]
         self.assertTrue(
             "Failed to import test module: my_package" in error,
-            "missing error string in %r" % error,
+            f"missing error string in {error!r}",
         )
-        test = list(list(suite)[0])[0]  # extract test from suite
+        test = next(iter(next(iter(suite))))  # extract test from suite
         with self.assertRaises(ImportError):
             test.my_package()
         self.assertEqual(import_calls, ["my_package"])
@@ -591,7 +591,7 @@ class TestDiscovery(unittest.TestCase):
         program._initArgParsers()
 
         class Loader:
-            args = []
+            args = []  # noqa: RUF012
 
             def discover(self, start_dir, pattern, top_level_dir):
                 self.args.append((start_dir, pattern, top_level_dir))
@@ -605,7 +605,7 @@ class TestDiscovery(unittest.TestCase):
         program = TestableTestProgram()
 
         class Loader:
-            args = []
+            args = []  # noqa: RUF012
 
             def discover(self, start_dir, pattern, top_level_dir):
                 self.args.append((start_dir, pattern, top_level_dir))
@@ -712,12 +712,12 @@ class TestDiscovery(unittest.TestCase):
         mod_dir = os.path.abspath("bar")
         expected_dir = os.path.abspath("foo")
         msg = re.escape(
-            r"'foo' module incorrectly imported from %r. Expected %r. "
-            "Is this module globally installed?" % (mod_dir, expected_dir)
+            rf"'foo' module incorrectly imported from {mod_dir!r}. Expected {expected_dir!r}. "
+            "Is this module globally installed?"
         )
         self.assertRaisesRegex(
             ImportError,
-            "^%s$" % msg,
+            f"^{msg}$",
             loader.discover,
             start_dir="foo",
             pattern="foo.py",
@@ -725,7 +725,7 @@ class TestDiscovery(unittest.TestCase):
         self.assertEqual(sys.path[0], full_path)
 
     def test_module_symlink_ok(self):
-        full_path = self.setup_module_clash()
+        self.setup_module_clash()
         original_realpath = os.path.realpath
         mod_dir = os.path.abspath("bar")
         expected_dir = os.path.abspath("foo")
@@ -798,11 +798,11 @@ class TestDiscovery(unittest.TestCase):
 
         def _find_tests(start_dir, pattern, namespace=None):
             _find_tests_args.append((start_dir, pattern))
-            return ["%s/tests" % start_dir]
+            return [f"{start_dir}/tests"]
 
         loader._find_tests = _find_tests
         loader.suiteClass = list
-        with unittest.mock.patch("builtins.__import__", _import):
+        with unittest.mock.patch("builtins.__import__", _import):  # noqa: SIM117
             with support.DirsOnSysPath():
                 with test.test_importlib.util.uncache("package"):
                     suite = loader.discover("package")
@@ -816,7 +816,7 @@ class TestDiscovery(unittest.TestCase):
             sys.modules[packagename] = package
             return package
 
-        with unittest.mock.patch("builtins.__import__", _import):
+        with unittest.mock.patch("builtins.__import__", _import):  # noqa: SIM117
             with support.DirsOnSysPath():
                 with test.test_importlib.util.uncache("package"):
                     with self.assertRaises(TypeError) as cm:

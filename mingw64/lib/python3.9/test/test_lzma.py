@@ -550,13 +550,13 @@ class TempFile:
 
 class FileTestCase(unittest.TestCase):
     def test_init(self):
-        with LZMAFile(BytesIO(COMPRESSED_XZ)) as f:
+        with LZMAFile(BytesIO(COMPRESSED_XZ)):
             pass
-        with LZMAFile(BytesIO(), "w") as f:
+        with LZMAFile(BytesIO(), "w"):
             pass
-        with LZMAFile(BytesIO(), "x") as f:
+        with LZMAFile(BytesIO(), "x"):
             pass
-        with LZMAFile(BytesIO(), "a") as f:
+        with LZMAFile(BytesIO(), "a"):
             pass
 
     def test_init_with_PathLike_filename(self):
@@ -571,11 +571,11 @@ class FileTestCase(unittest.TestCase):
 
     def test_init_with_filename(self):
         with TempFile(TESTFN, COMPRESSED_XZ):
-            with LZMAFile(TESTFN) as f:
+            with LZMAFile(TESTFN):
                 pass
-            with LZMAFile(TESTFN, "w") as f:
+            with LZMAFile(TESTFN, "w"):
                 pass
-            with LZMAFile(TESTFN, "a") as f:
+            with LZMAFile(TESTFN, "a"):
                 pass
 
     def test_init_mode(self):
@@ -604,88 +604,88 @@ class FileTestCase(unittest.TestCase):
 
     def test_init_bad_mode(self):
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), (3, "x"))
+            LZMAFile(BytesIO(COMPRESSED_XZ), (3, "x"))  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "xt")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "xt")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "x+")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "x+")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "rx")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "rx")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "wx")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "wx")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "rt")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "rt")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "r+")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "r+")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "wt")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "wt")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "w+")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "w+")  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), "rw")
+            LZMAFile(BytesIO(COMPRESSED_XZ), "rw")  # noqa: SIM115
 
     def test_init_bad_check(self):
         with self.assertRaises(TypeError):
-            LZMAFile(BytesIO(), "w", check=b"asd")
+            LZMAFile(BytesIO(), "w", check=b"asd")  # noqa: SIM115
         # CHECK_UNKNOWN and anything above CHECK_ID_MAX should be invalid.
         with self.assertRaises(LZMAError):
-            LZMAFile(BytesIO(), "w", check=lzma.CHECK_UNKNOWN)
+            LZMAFile(BytesIO(), "w", check=lzma.CHECK_UNKNOWN)  # noqa: SIM115
         with self.assertRaises(LZMAError):
-            LZMAFile(BytesIO(), "w", check=lzma.CHECK_ID_MAX + 3)
+            LZMAFile(BytesIO(), "w", check=lzma.CHECK_ID_MAX + 3)  # noqa: SIM115
         # Cannot specify a check with mode="r".
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_NONE)
+            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_NONE)  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_CRC32)
+            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_CRC32)  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_CRC64)
+            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_CRC64)  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_SHA256)
+            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_SHA256)  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_UNKNOWN)
+            LZMAFile(BytesIO(COMPRESSED_XZ), check=lzma.CHECK_UNKNOWN)  # noqa: SIM115
 
     def test_init_bad_preset(self):
         with self.assertRaises(TypeError):
-            LZMAFile(BytesIO(), "w", preset=4.39)
+            LZMAFile(BytesIO(), "w", preset=4.39)  # noqa: SIM115
         with self.assertRaises(LZMAError):
-            LZMAFile(BytesIO(), "w", preset=10)
+            LZMAFile(BytesIO(), "w", preset=10)  # noqa: SIM115
         with self.assertRaises(LZMAError):
-            LZMAFile(BytesIO(), "w", preset=23)
+            LZMAFile(BytesIO(), "w", preset=23)  # noqa: SIM115
         with self.assertRaises(OverflowError):
-            LZMAFile(BytesIO(), "w", preset=-1)
+            LZMAFile(BytesIO(), "w", preset=-1)  # noqa: SIM115
         with self.assertRaises(OverflowError):
-            LZMAFile(BytesIO(), "w", preset=-7)
+            LZMAFile(BytesIO(), "w", preset=-7)  # noqa: SIM115
         with self.assertRaises(TypeError):
-            LZMAFile(BytesIO(), "w", preset="foo")
+            LZMAFile(BytesIO(), "w", preset="foo")  # noqa: SIM115
         # Cannot specify a preset with mode="r".
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(COMPRESSED_XZ), preset=3)
+            LZMAFile(BytesIO(COMPRESSED_XZ), preset=3)  # noqa: SIM115
 
     def test_init_bad_filter_spec(self):
         with self.assertRaises(TypeError):
-            LZMAFile(BytesIO(), "w", filters=[b"wobsite"])
+            LZMAFile(BytesIO(), "w", filters=[b"wobsite"])  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(), "w", filters=[{"xyzzy": 3}])
+            LZMAFile(BytesIO(), "w", filters=[{"xyzzy": 3}])  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(), "w", filters=[{"id": 98765}])
+            LZMAFile(BytesIO(), "w", filters=[{"id": 98765}])  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_LZMA2, "foo": 0}])
+            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_LZMA2, "foo": 0}])  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_DELTA, "foo": 0}])
+            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_DELTA, "foo": 0}])  # noqa: SIM115
         with self.assertRaises(ValueError):
-            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_X86, "foo": 0}])
+            LZMAFile(BytesIO(), "w", filters=[{"id": lzma.FILTER_X86, "foo": 0}])  # noqa: SIM115
 
     def test_init_with_preset_and_filters(self):
         with self.assertRaises(ValueError):
-            LZMAFile(
+            LZMAFile(  # noqa: SIM115
                 BytesIO(), "w", format=lzma.FORMAT_RAW, preset=6, filters=FILTERS_RAW_1
             )
 
     def test_close(self):
         with BytesIO(COMPRESSED_XZ) as src:
-            f = LZMAFile(src)
+            f = LZMAFile(src)  # noqa: SIM115
             f.close()
             # LZMAFile.close() should not close the underlying file object.
             self.assertFalse(src.closed)
@@ -695,7 +695,7 @@ class FileTestCase(unittest.TestCase):
 
         # Test with a real file on disk, opened directly by LZMAFile.
         with TempFile(TESTFN, COMPRESSED_XZ):
-            f = LZMAFile(TESTFN)
+            f = LZMAFile(TESTFN)  # noqa: SIM115
             fp = f._fp
             f.close()
             # Here, LZMAFile.close() *should* close the underlying file object.
@@ -704,7 +704,7 @@ class FileTestCase(unittest.TestCase):
             f.close()
 
     def test_closed(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         try:
             self.assertFalse(f.closed)
             f.read()
@@ -713,7 +713,7 @@ class FileTestCase(unittest.TestCase):
             f.close()
         self.assertTrue(f.closed)
 
-        f = LZMAFile(BytesIO(), "w")
+        f = LZMAFile(BytesIO(), "w")  # noqa: SIM115
         try:
             self.assertFalse(f.closed)
         finally:
@@ -721,14 +721,14 @@ class FileTestCase(unittest.TestCase):
         self.assertTrue(f.closed)
 
     def test_fileno(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         try:
             self.assertRaises(UnsupportedOperation, f.fileno)
         finally:
             f.close()
         self.assertRaises(ValueError, f.fileno)
         with TempFile(TESTFN, COMPRESSED_XZ):
-            f = LZMAFile(TESTFN)
+            f = LZMAFile(TESTFN)  # noqa: SIM115
             try:
                 self.assertEqual(f.fileno(), f._fp.fileno())
                 self.assertIsInstance(f.fileno(), int)
@@ -737,7 +737,7 @@ class FileTestCase(unittest.TestCase):
         self.assertRaises(ValueError, f.fileno)
 
     def test_seekable(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         try:
             self.assertTrue(f.seekable())
             f.read()
@@ -746,7 +746,7 @@ class FileTestCase(unittest.TestCase):
             f.close()
         self.assertRaises(ValueError, f.seekable)
 
-        f = LZMAFile(BytesIO(), "w")
+        f = LZMAFile(BytesIO(), "w")  # noqa: SIM115
         try:
             self.assertFalse(f.seekable())
         finally:
@@ -755,7 +755,7 @@ class FileTestCase(unittest.TestCase):
 
         src = BytesIO(COMPRESSED_XZ)
         src.seekable = lambda: False
-        f = LZMAFile(src)
+        f = LZMAFile(src)  # noqa: SIM115
         try:
             self.assertFalse(f.seekable())
         finally:
@@ -763,7 +763,7 @@ class FileTestCase(unittest.TestCase):
         self.assertRaises(ValueError, f.seekable)
 
     def test_readable(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         try:
             self.assertTrue(f.readable())
             f.read()
@@ -772,7 +772,7 @@ class FileTestCase(unittest.TestCase):
             f.close()
         self.assertRaises(ValueError, f.readable)
 
-        f = LZMAFile(BytesIO(), "w")
+        f = LZMAFile(BytesIO(), "w")  # noqa: SIM115
         try:
             self.assertFalse(f.readable())
         finally:
@@ -780,7 +780,7 @@ class FileTestCase(unittest.TestCase):
         self.assertRaises(ValueError, f.readable)
 
     def test_writable(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         try:
             self.assertFalse(f.writable())
             f.read()
@@ -789,7 +789,7 @@ class FileTestCase(unittest.TestCase):
             f.close()
         self.assertRaises(ValueError, f.writable)
 
-        f = LZMAFile(BytesIO(), "w")
+        f = LZMAFile(BytesIO(), "w")  # noqa: SIM115
         try:
             self.assertTrue(f.writable())
         finally:
@@ -912,7 +912,7 @@ class FileTestCase(unittest.TestCase):
                 self.assertRaises(EOFError, f.read, 1)
 
     def test_read_bad_args(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         f.close()
         self.assertRaises(ValueError, f.read)
         with LZMAFile(BytesIO(), "w") as f:
@@ -962,7 +962,7 @@ class FileTestCase(unittest.TestCase):
             self.assertEqual(f.read1(), b"")
 
     def test_read1_bad_args(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         f.close()
         self.assertRaises(ValueError, f.read1)
         with LZMAFile(BytesIO(), "w") as f:
@@ -1020,7 +1020,7 @@ class FileTestCase(unittest.TestCase):
         bomb = lzma.compress(b"\0" * int(2e6), preset=6)
         self.assertLess(len(bomb), _compression.BUFFER_SIZE)
 
-        decomp = LZMAFile(BytesIO(bomb))
+        decomp = LZMAFile(BytesIO(bomb))  # noqa: SIM115
         self.assertEqual(decomp.read(1), b"\0")
         max_decomp = 1 + DEFAULT_BUFFER_SIZE
         self.assertLessEqual(
@@ -1117,7 +1117,7 @@ class FileTestCase(unittest.TestCase):
             unlink(TESTFN)
 
     def test_write_bad_args(self):
-        f = LZMAFile(BytesIO(), "w")
+        f = LZMAFile(BytesIO(), "w")  # noqa: SIM115
         f.close()
         self.assertRaises(ValueError, f.write, b"foo")
         with LZMAFile(BytesIO(COMPRESSED_XZ), "r") as f:
@@ -1187,7 +1187,7 @@ class FileTestCase(unittest.TestCase):
             self.assertEqual(f.read(), INPUT)
 
     def test_seek_bad_args(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         f.close()
         self.assertRaises(ValueError, f.seek, 0)
         with LZMAFile(BytesIO(), "w") as f:
@@ -1216,7 +1216,7 @@ class FileTestCase(unittest.TestCase):
             self.assertEqual(f.tell(), len(INPUT))
 
     def test_tell_bad_args(self):
-        f = LZMAFile(BytesIO(COMPRESSED_XZ))
+        f = LZMAFile(BytesIO(COMPRESSED_XZ))  # noqa: SIM115
         f.close()
         self.assertRaises(ValueError, f.tell)
 
@@ -1352,7 +1352,7 @@ class OpenTestCase(unittest.TestCase):
 
     def test_encoding_error_handler(self):
         # Test with non-default encoding error handler.
-        with BytesIO(lzma.compress(b"foo\xffbar")) as bio:
+        with BytesIO(lzma.compress(b"foo\xffbar")) as bio:  # noqa: SIM117
             with lzma.open(bio, "rt", encoding="ascii", errors="ignore") as f:
                 self.assertEqual(f.read(), "foobar")
 
@@ -1372,7 +1372,7 @@ class OpenTestCase(unittest.TestCase):
             unlink(TESTFN)
             with lzma.open(TESTFN, mode):
                 pass
-            with self.assertRaises(FileExistsError):
+            with self.assertRaises(FileExistsError):  # noqa: SIM117
                 with lzma.open(TESTFN, mode):
                     pass
 

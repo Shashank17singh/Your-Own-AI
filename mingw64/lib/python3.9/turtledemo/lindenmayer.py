@@ -34,7 +34,7 @@ def draw(commands, rules):
         except TypeError:
             try:
                 draw(rules[b], rules)
-            except:
+            except:  # noqa: E722, S110
                 pass
 
 

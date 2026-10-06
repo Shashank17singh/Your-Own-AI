@@ -15,7 +15,7 @@ def server(evt, serv):
     serv.listen()
     evt.set()
     try:
-        conn, addr = serv.accept()
+        conn, _addr = serv.accept()
         conn.close()
     except TimeoutError:
         pass
@@ -326,7 +326,7 @@ class WriteTests(unittest.TestCase):
 
 class OptionTests(unittest.TestCase):
     # RFC 854 commands
-    cmds = [tl.AO, tl.AYT, tl.BRK, tl.EC, tl.EL, tl.GA, tl.IP, tl.NOP]
+    cmds = [tl.AO, tl.AYT, tl.BRK, tl.EC, tl.EL, tl.GA, tl.IP, tl.NOP]  # noqa: RUF012
 
     def _test_command(self, data):
         """helper for testing IAC + cmd"""
@@ -384,7 +384,7 @@ class OptionTests(unittest.TestCase):
         for a, b in given_a_expect_b:
             telnet = test_telnet([a])
             telnet.set_debuglevel(1)
-            txt = telnet.read_all()
+            telnet.read_all()
             self.assertIn(b, telnet._messages)
 
     def test_debuglevel_write(self):

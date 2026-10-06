@@ -165,11 +165,11 @@ class TclTest(unittest.TestCase):
     def test_getint(self):
         tcl = self.interp.tk
         for i in self.get_integers():
-            self.assertEqual(tcl.getint(" %d " % i), i)
+            self.assertEqual(tcl.getint(" %d " % i), i)  # noqa: UP031
             if tcl_version >= (8, 5):
-                self.assertEqual(tcl.getint(" %#o " % i), i)
-            self.assertEqual(tcl.getint((" %#o " % i).replace("o", "")), i)
-            self.assertEqual(tcl.getint(" %#x " % i), i)
+                self.assertEqual(tcl.getint(f" {i:#o} "), i)
+            self.assertEqual(tcl.getint((f" {i:#o} ").replace("o", "")), i)
+            self.assertEqual(tcl.getint(f" {i:#x} "), i)
         if tcl_version < (8, 5):  # bignum was added in Tcl 8.5
             self.assertRaises(TclError, tcl.getint, str(2**1000))
         self.assertEqual(tcl.getint(42), 42)
@@ -263,7 +263,7 @@ class TclTest(unittest.TestCase):
         filename = "doesnotexists"
         try:
             os.remove(filename)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         self.assertRaises(TclError, tcl.evalfile, filename)
 
@@ -280,7 +280,7 @@ class TclTest(unittest.TestCase):
         fullname = os.path.abspath(sys.executable)
         if fullname[1] != ":":
             raise unittest.SkipTest("Absolute path should have drive part")
-        unc_name = r"\\%s\%s$\%s" % (
+        unc_name = r"\\{}\{}$\{}".format(
             os.environ["COMPUTERNAME"],
             fullname[0],
             fullname[3:],
@@ -416,12 +416,12 @@ class TclTest(unittest.TestCase):
         check("", False)
         for value in ("0", "false", "no", "off"):
             check(value, False)
-            check('"%s"' % value, False)
-            check("{%s}" % value, False)
+            check(f'"{value}"', False)
+            check(f"{{{value}}}", False)
         for value in ("1", "true", "yes", "on"):
             check(value, True)
-            check('"%s"' % value, True)
-            check("{%s}" % value, True)
+            check(f'"{value}"', True)
+            check(f"{{{value}}}", True)
         check("8.2 + 6", True)
         check("3.1 + $a", True)
         check('2 + "$a.$b"', True)
@@ -665,13 +665,9 @@ class TclTest(unittest.TestCase):
                     expected,
                 ),
             ]
-        dbg_info = "want objects? %s, Tcl version: %s, Tk patchlevel: %s" % (
-            self.wantobjects,
-            tcl_version,
-            tk_patchlevel,
-        )
+        dbg_info = f"want objects? {self.wantobjects}, Tcl version: {tcl_version}, Tk patchlevel: {tk_patchlevel}"
         for arg, res in testcases:
-            self.assertEqual(splitlist(arg), res, "arg=%a, %s" % (arg, dbg_info))
+            self.assertEqual(splitlist(arg), res, f"arg={arg!a}, {dbg_info}")
         self.assertRaises(TclError, splitlist, "{")
 
     def test_split(self):

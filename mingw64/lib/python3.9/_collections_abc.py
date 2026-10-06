@@ -81,7 +81,7 @@ dict_values = type({}.values())
 dict_items = type({}.items())
 ## misc ##
 mappingproxy = type(type.__dict__)
-generator = type((lambda: (yield))())
+generator = type((lambda: (yield))())  # noqa: PLC3002
 
 
 ## coroutine ##
@@ -947,11 +947,8 @@ class MutableMapping(Mapping):
         If E present and lacks .keys() method, does:     for (k, v) in E: D[k] = v
         In either case, this is followed by: for k, v in F.items(): D[k] = v
         """
-        if isinstance(other, Mapping):
+        if isinstance(other, Mapping) or hasattr(other, "keys"):
             for key in other:
-                self[key] = other[key]
-        elif hasattr(other, "keys"):
-            for key in other.keys():
                 self[key] = other[key]
         else:
             for key, value in other:

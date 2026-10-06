@@ -10,19 +10,19 @@ import types
 from types import GenericAlias
 
 __all__ = [
-    "dataclass",
-    "field",
+    "MISSING",
     "Field",
     "FrozenInstanceError",
     "InitVar",
-    "MISSING",
-    # Helper functions.
-    "fields",
     "asdict",
     "astuple",
+    "dataclass",
+    "field",
+    # Helper functions.
+    "fields",
+    "is_dataclass",
     "make_dataclass",
     "replace",
-    "is_dataclass",
 ]
 
 # Conditions for adding methods.  The boxes indicate what action the
@@ -420,7 +420,7 @@ def _create_fn(name, args, body, *, globals=None, locals=None, return_type=MISSI
     txt = f"def __create_fn__({local_vars}):\n{txt}\n return {name}"
 
     ns = {}
-    exec(txt, globals, ns)
+    exec(txt, globals, ns)  # noqa: S102
     return ns["__create_fn__"](**locals)
 
 
@@ -748,12 +748,14 @@ def _get_field(cls, a_name, a_type):
     # typing has been imported by any module (not necessarily cls's
     # module).
     typing = sys.modules.get("typing")
-    if typing:
-        if _is_classvar(a_type, typing) or (
+    if typing and (
+        _is_classvar(a_type, typing)
+        or (
             isinstance(f.type, str)
             and _is_type(f.type, cls, typing, typing.ClassVar, _is_classvar)
-        ):
-            f._field_type = _FIELD_CLASSVAR
+        )
+    ):
+        f._field_type = _FIELD_CLASSVAR
 
     # If the type is InitVar, or if it's a matching string annotation,
     # then it's an InitVar.
@@ -772,7 +774,7 @@ def _get_field(cls, a_name, a_type):
     # know the field name, which allows for better error reporting.
 
     # Special restrictions for ClassVar and InitVar.
-    if f._field_type in (_FIELD_CLASSVAR, _FIELD_INITVAR):
+    if f._field_type in (_FIELD_CLASSVAR, _FIELD_INITVAR):  # noqa: SIM102
         if f.default_factory is not MISSING:
             raise TypeError(f"field {f.name} cannot have a default factory")
         # Should I check for other field settings? default_factory
@@ -899,7 +901,7 @@ def _process_class(cls, init, repr, eq, order, unsafe_hash, frozen):
     # actual default value.  Pseudo-fields ClassVars and InitVars are
     # included, despite the fact that they're not real fields.  That's
     # dealt with later.
-    cls_annotations = cls.__dict__.get("__annotations__", {})
+    cls_annotations = cls.__dict__.get("__annotations__", {})  # noqa: RUF063
 
     # Now find fields in our class.  While doing so, validate some
     # things, and set the default values (as class attributes) where

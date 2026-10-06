@@ -112,7 +112,7 @@ def not_(a):
 
 def truth(a):
     "Return True if a is true, False otherwise."
-    return True if a else False
+    return bool(a)
 
 
 def is_(a, b):
@@ -227,7 +227,7 @@ def xor(a, b):
 def concat(a, b):
     "Same as a + b, for a and b sequences."
     if not hasattr(a, "__getitem__"):
-        msg = "'%s' object can't be concatenated" % type(a).__name__
+        msg = f"'{type(a).__name__}' object can't be concatenated"
         raise TypeError(msg)
     return a + b
 
@@ -279,7 +279,7 @@ def length_hint(obj, default=0):
     integer >= 0.
     """
     if not isinstance(default, int):
-        msg = "'%s' object cannot be interpreted as an integer" % type(default).__name__
+        msg = f"'{type(default).__name__}' object cannot be interpreted as an integer"
         raise TypeError(msg)
 
     try:
@@ -299,7 +299,7 @@ def length_hint(obj, default=0):
     if val is NotImplemented:
         return default
     if not isinstance(val, int):
-        msg = "__length_hint__ must be integer, not %s" % type(val).__name__
+        msg = f"__length_hint__ must be integer, not {type(val).__name__}"
         raise TypeError(msg)
     if val < 0:
         msg = "__length_hint__() should return >= 0"
@@ -347,7 +347,7 @@ class attrgetter:
         return self._call(obj)
 
     def __repr__(self):
-        return "%s.%s(%s)" % (
+        return "{}.{}({})".format(
             self.__class__.__module__,
             self.__class__.__qualname__,
             ", ".join(map(repr, self._attrs)),
@@ -386,7 +386,7 @@ class itemgetter:
         return self._call(obj)
 
     def __repr__(self):
-        return "%s.%s(%s)" % (
+        return "{}.{}({})".format(
             self.__class__.__module__,
             self.__class__.__name__,
             ", ".join(map(repr, self._items)),
@@ -419,8 +419,8 @@ class methodcaller:
     def __repr__(self):
         args = [repr(self._name)]
         args.extend(map(repr, self._args))
-        args.extend("%s=%r" % (k, v) for k, v in self._kwargs.items())
-        return "%s.%s(%s)" % (
+        args.extend(f"{k}={v!r}" for k, v in self._kwargs.items())
+        return "{}.{}({})".format(
             self.__class__.__module__,
             self.__class__.__name__,
             ", ".join(args),
@@ -453,7 +453,7 @@ def iand(a, b):
 def iconcat(a, b):
     "Same as a += b, for a and b sequences."
     if not hasattr(a, "__getitem__"):
-        msg = "'%s' object can't be concatenated" % type(a).__name__
+        msg = f"'{type(a).__name__}' object can't be concatenated"
         raise TypeError(msg)
     a += b
     return a

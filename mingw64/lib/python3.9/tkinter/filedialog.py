@@ -200,7 +200,7 @@ class FileDialog:
         self.files.delete(0, END)
         for name in matchingfiles:
             self.files.insert(END, name)
-        head, tail = os.path.split(self.get_selection())
+        _head, tail = os.path.split(self.get_selection())
         if tail == os.curdir:
             tail = ""
         self.set_selection(tail)
@@ -264,7 +264,7 @@ class SaveFileDialog(FileDialog):
             d = Dialog(
                 self.top,
                 title="Overwrite Existing File Question",
-                text="Overwrite existing file %r?" % (file,),
+                text=f"Overwrite existing file {file!r}?",
                 bitmap="questhead",
                 default=1,
                 strings=("Yes", "Cancel"),
@@ -272,7 +272,7 @@ class SaveFileDialog(FileDialog):
             if d.num != 0:
                 return
         else:
-            head, tail = os.path.split(file)
+            head, _tail = os.path.split(file)
             if not os.path.isdir(head):
                 self.master.bell()
                 return
@@ -308,7 +308,7 @@ class Open(_Dialog):
         if isinstance(result, tuple):
             result = tuple([getattr(r, "string", r) for r in result])
             if result:
-                path, file = os.path.split(result[0])
+                path, _file = os.path.split(result[0])
                 self.options["initialdir"] = path
             return result
         if not widget.tk.wantobjects() and "multiple" in self.options:
@@ -375,7 +375,7 @@ def askopenfiles(mode="r", **options):
     if files:
         ofiles = []
         for filename in files:
-            ofiles.append(open(filename, mode))
+            ofiles.append(open(filename, mode))  # noqa: SIM115
         files = ofiles
     return files
 
@@ -414,9 +414,9 @@ def test():
         pass
     openfilename = askopenfilename(filetypes=[("all files", "*")])
     try:
-        fp = open(openfilename, "r")
+        fp = open(openfilename, "r")  # noqa: SIM115
         fp.close()
-    except:
+    except:  # noqa: E722
         print("Could not open File: ")
         print(sys.exc_info()[1])
     print("open", openfilename.encode(enc))

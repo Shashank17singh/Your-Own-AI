@@ -60,7 +60,7 @@ class MinidomTest(unittest.TestCase):
 
     def checkWholeText(self, node, s):
         t = node.wholeText
-        self.confirm(t == s, "looking for %r, found %r" % (s, t))
+        self.confirm(t == s, f"looking for {s!r}, found {t!r}")
 
     def testDocumentAsyncAttr(self):
         doc = Document()
@@ -1595,13 +1595,13 @@ class MinidomTest(unittest.TestCase):
         self.checkWholeText(text2, "d")
         self.confirm(len(elem.childNodes) == 3)
 
-        doc, elem, text1, splitter, text2 = setup()
+        doc, elem, text1, splitter, text2 = setup()  # noqa: RUF059
         text = text2.replaceWholeText("new content")
         self.checkWholeText(text, "new content")
         self.checkWholeText(text1, "cab")
         self.confirm(len(elem.childNodes) == 5)
 
-        doc, elem, text1, splitter, text2 = setup()
+        _doc, elem, text1, _splitter, text2 = setup()
         text = text1.replaceWholeText("")
         self.checkWholeText(text2, "d")
         self.confirm(text is None and len(elem.childNodes) == 2)

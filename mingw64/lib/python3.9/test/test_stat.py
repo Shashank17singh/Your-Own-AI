@@ -12,7 +12,7 @@ py_stat = import_fresh_module("stat", blocked=["_stat"])
 class TestFilemode:
     statmod = None
 
-    file_flags = {
+    file_flags = {  # noqa: RUF012
         "SF_APPEND",
         "SF_ARCHIVED",
         "SF_IMMUTABLE",
@@ -27,7 +27,7 @@ class TestFilemode:
         "UF_OPAQUE",
     }
 
-    formats = {
+    formats = {  # noqa: RUF012
         "S_IFBLK",
         "S_IFCHR",
         "S_IFDIR",
@@ -40,7 +40,7 @@ class TestFilemode:
         "S_IFWHT",
     }
 
-    format_funcs = {
+    format_funcs = {  # noqa: RUF012
         "S_ISBLK",
         "S_ISCHR",
         "S_ISDIR",
@@ -53,7 +53,7 @@ class TestFilemode:
         "S_ISWHT",
     }
 
-    stat_struct = {
+    stat_struct = {  # noqa: RUF012
         "ST_MODE": 0,
         "ST_INO": 1,
         "ST_DEV": 2,
@@ -67,7 +67,7 @@ class TestFilemode:
     }
 
     # permission bit value are defined by POSIX
-    permission_bits = {
+    permission_bits = {  # noqa: RUF012
         "S_ISUID": 0o4000,
         "S_ISGID": 0o2000,
         "S_ENFMT": 0o2000,
@@ -90,7 +90,7 @@ class TestFilemode:
     }
 
     # defined by the Windows API documentation
-    file_attributes = {
+    file_attributes = {  # noqa: RUF012
         "FILE_ATTRIBUTE_ARCHIVE": 32,
         "FILE_ATTRIBUTE_COMPRESSED": 2048,
         "FILE_ATTRIBUTE_DEVICE": 64,
@@ -206,7 +206,7 @@ class TestFilemode:
         try:
             os.mkfifo(TESTFN, 0o700)
         except PermissionError as e:
-            self.skipTest("os.mkfifo(): %s" % e)
+            self.skipTest(f"os.mkfifo(): {e}")
         st_mode, modestr = self.get_mode()
         self.assertEqual(modestr, "prwx------")
         self.assertS_IS("FIFO", st_mode)

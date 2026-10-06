@@ -90,7 +90,7 @@ def _set_locale_in_subprocess(locale_name):
         # If there's no valid CODESET, we expect coercion to be skipped
         cmd_fmt += "; import sys; sys.exit(not locale.nl_langinfo(locale.CODESET))"
     cmd = cmd_fmt.format(locale_name)
-    result, py_cmd = run_python_until_end("-c", cmd, PYTHONCOERCECLOCALE="")
+    result, _py_cmd = run_python_until_end("-c", cmd, PYTHONCOERCECLOCALE="")
     return result.rc == 0
 
 
@@ -100,18 +100,7 @@ _EncodingDetails = namedtuple("EncodingDetails", _fields)
 
 class EncodingDetails(_EncodingDetails):
     # XXX (ncoghlan): Using JSON for child state reporting may be less fragile
-    CHILD_PROCESS_SCRIPT = ";".join(
-        [
-            "import sys, os",
-            "print(sys.getfilesystemencoding())",
-            "print(sys.stdin.encoding + ':' + sys.stdin.errors)",
-            "print(sys.stdout.encoding + ':' + sys.stdout.errors)",
-            "print(sys.stderr.encoding + ':' + sys.stderr.errors)",
-            "print(os.environ.get('LANG', 'not set'))",
-            "print(os.environ.get('LC_CTYPE', 'not set'))",
-            "print(os.environ.get('LC_ALL', 'not set'))",
-        ]
-    )
+    CHILD_PROCESS_SCRIPT = "import sys, os;print(sys.getfilesystemencoding());print(sys.stdin.encoding + ':' + sys.stdin.errors);print(sys.stdout.encoding + ':' + sys.stdout.errors);print(sys.stderr.encoding + ':' + sys.stderr.errors);print(os.environ.get('LANG', 'not set'));print(os.environ.get('LC_CTYPE', 'not set'));print(os.environ.get('LC_ALL', 'not set'))"
 
     @classmethod
     def get_expected_details(
@@ -148,7 +137,7 @@ class EncodingDetails(_EncodingDetails):
         result, py_cmd = run_python_until_end(
             "-X", "utf8=0", "-c", cls.CHILD_PROCESS_SCRIPT, **env_vars
         )
-        if not result.rc == 0:
+        if result.rc != 0:
             result.fail(py_cmd)
         # All subprocess outputs in this test case should be pure ASCII
         stdout_lines = result.out.decode("ascii").splitlines()
@@ -440,13 +429,13 @@ class LocaleCoercionTests(_LocaleHandlingTestCase):
         if loc == "C":
             self.skipTest("test requires LC_CTYPE locale different than C")
         if loc in TARGET_LOCALES:
-            self.skipTest("coerced LC_CTYPE locale: %s" % loc)
+            self.skipTest(f"coerced LC_CTYPE locale: {loc}")
 
         # bpo-35336: PYTHONCOERCECLOCALE=1 must not coerce the LC_CTYPE locale
         # if it's not equal to "C"
         code = "import locale; print(locale.setlocale(locale.LC_CTYPE, None))"
         env = dict(os.environ, PYTHONCOERCECLOCALE="1")
-        cmd = subprocess.run(
+        cmd = subprocess.run(  # noqa: PLW1510
             [sys.executable, "-c", code], stdout=subprocess.PIPE, env=env, text=True
         )
         self.assertEqual(cmd.stdout.rstrip(), loc)

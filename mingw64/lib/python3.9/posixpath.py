@@ -258,7 +258,7 @@ def ismount(path):
         return True  # path/.. on a different device as path
     ino1 = s1.st_ino
     ino2 = s2.st_ino
-    if ino1 == ino2:
+    if ino1 == ino2:  # noqa: SIM103
         return True  # path/.. is the same i-node as path
     return False
 
@@ -446,7 +446,7 @@ def realpath(filename):
     """Return the canonical path of the specified filename, eliminating any
     symbolic links encountered in the path."""
     filename = os.fspath(filename)
-    path, ok = _joinrealpath(filename[:0], filename, {})
+    path, _ok = _joinrealpath(filename[:0], filename, {})
     return abspath(path)
 
 
@@ -566,7 +566,7 @@ def commonpath(paths):
         split_paths = [path.split(sep) for path in paths]
 
         try:
-            (isabs,) = set(p[:1] == sep for p in paths)
+            (isabs,) = {p[:1] == sep for p in paths}
         except ValueError:
             raise ValueError("Can't mix absolute and relative paths") from None
 

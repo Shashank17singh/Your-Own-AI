@@ -66,7 +66,7 @@ class TestPkg(unittest.TestCase):
                 del sys.modules[name]
 
     def run_code(self, code):
-        exec(textwrap.dedent(code), globals(), {"self": self})
+        exec(textwrap.dedent(code), globals(), {"self": self})  # noqa: S102
 
     def mkhier(self, descr):
         root = tempfile.mkdtemp()
@@ -128,7 +128,7 @@ class TestPkg(unittest.TestCase):
         self.assertEqual(subsub.__name__, "t2.sub.subsub")
         self.assertEqual(sub.subsub.__name__, "t2.sub.subsub")
         for name in ["spam", "sub", "subsub", "t2"]:
-            self.assertTrue(locals()["name"], "Failed to import %s" % name)
+            self.assertTrue(locals()["name"], f"Failed to import {name}")
 
         import t2.sub
         import t2.sub.subsub

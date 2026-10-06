@@ -157,7 +157,7 @@ class UnixGetpassTest(unittest.TestCase):
         ):
             os_open.side_effect = IOError
             stdin.fileno.side_effect = AttributeError
-            with support.captured_stderr() as stderr:
+            with support.captured_stderr() as stderr:  # noqa: SIM117
                 with self.assertWarns(getpass.GetPassWarning):
                     getpass.unix_getpass()
             stdin.readline.assert_called_once_with()

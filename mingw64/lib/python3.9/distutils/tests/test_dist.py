@@ -18,7 +18,7 @@ from test.support import TESTFN, captured_stderr, captured_stdout, run_unittest
 class test_dist(Command):
     """Sample distutils extension command."""
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("sample-option=", "S", "help text"),
     ]
 
@@ -115,7 +115,7 @@ class DistributionTestCase(
             )
 
         # Base case: Not in a Virtual Environment
-        with mock.patch.multiple(sys, prefix="/a", base_prefix="/a") as values:
+        with mock.patch.multiple(sys, prefix="/a", base_prefix="/a"):
             d = self.create_distribution([TESTFN])
 
         option_tuple = (TESTFN, fakepath)
@@ -144,7 +144,7 @@ class DistributionTestCase(
             self.assertEqual(value, result_dict[key])
 
         # Test case: In a Virtual Environment
-        with mock.patch.multiple(sys, prefix="/a", base_prefix="/b") as values:
+        with mock.patch.multiple(sys, prefix="/a", base_prefix="/b"):
             d = self.create_distribution([TESTFN])
 
         for key in result_dict:
@@ -153,7 +153,7 @@ class DistributionTestCase(
     def test_command_packages_configfile(self):
         sys.argv.append("build")
         self.addCleanup(os.unlink, TESTFN)
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             print("[global]", file=f)
             print("command_packages = foo.bar, splat", file=f)
@@ -471,7 +471,7 @@ class MetadataTestCase(support.TempdirManager, support.EnvironGuard, unittest.Te
 
         temp_dir = self.mkdtemp()
         user_filename = os.path.join(temp_dir, user_filename)
-        f = open(user_filename, "w")
+        f = open(user_filename, "w")  # noqa: SIM115
         try:
             f.write(".")
         finally:
@@ -492,7 +492,7 @@ class MetadataTestCase(support.TempdirManager, support.EnvironGuard, unittest.Te
                 os.environ["USERPROFILE"] = temp_dir
                 files = dist.find_config_files()
                 self.assertIn(
-                    user_filename, files, "%r not found in %r" % (user_filename, files)
+                    user_filename, files, f"{user_filename!r} not found in {files!r}"
                 )
         finally:
             os.remove(user_filename)

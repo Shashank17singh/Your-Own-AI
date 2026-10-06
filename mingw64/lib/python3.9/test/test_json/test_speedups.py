@@ -2,8 +2,8 @@ from test.test_json import CTest
 
 
 class BadBool:
-    def __bool__(self):
-        1 / 0
+    def __bool__(self):  # noqa: PLE0304
+        1 / 0  # noqa: B018
 
 
 class TestSpeedups(CTest):
@@ -62,7 +62,7 @@ class TestEncode(CTest):
             enc({"spam": 42}, 4)
 
         def bad_encoder2(*args):
-            1 / 0
+            1 / 0  # noqa: B018
 
         enc = self.json.encoder.c_make_encoder(
             None,

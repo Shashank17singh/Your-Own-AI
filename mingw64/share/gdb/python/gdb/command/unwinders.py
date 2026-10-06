@@ -7,7 +7,7 @@ def validate_regexp(exp, idstring):
     try:
         return re.compile(exp)
     except SyntaxError:
-        raise SyntaxError("Invalid %s regexp: %s." % (idstring, exp))
+        raise SyntaxError(f"Invalid {idstring} regexp: {exp}.")
 
 
 def parse_unwinder_command_args(arg):
@@ -64,8 +64,9 @@ class InfoUnwinder(gdb.Command):
         for unwinder in unwinders:
             if name_re.match(unwinder.name):
                 print(
-                    "  %s%s"
-                    % (unwinder.name, "" if unwinder.enabled else " [disabled]")
+                    "  {}{}".format(
+                        unwinder.name, "" if unwinder.enabled else " [disabled]"
+                    )
                 )
 
     def invoke(self, arg, from_tty):
@@ -75,12 +76,12 @@ class InfoUnwinder(gdb.Command):
         if locus_re.match("progspace"):
             cp = gdb.current_progspace()
             self.list_unwinders(
-                "Progspace %s:" % cp.filename, cp.frame_unwinders, name_re
+                f"Progspace {cp.filename}:", cp.frame_unwinders, name_re
             )
         for objfile in gdb.objfiles():
             if locus_re.match(objfile.filename):
                 self.list_unwinders(
-                    "Objfile %s:" % objfile.filename, objfile.frame_unwinders, name_re
+                    f"Objfile {objfile.filename}:", objfile.frame_unwinders, name_re
                 )
 
 
@@ -117,7 +118,7 @@ def do_enable_unwinder(arg, flag):
     if total > 0:
         gdb.invalidate_cached_frames()
     print(
-        "%d unwinder%s %s"
+        "%d unwinder%s %s"  # noqa: UP031
         % (total, "" if total == 1 else "s", "enabled" if flag else "disabled")
     )
 

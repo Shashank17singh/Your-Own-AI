@@ -235,7 +235,7 @@ class _ProactorReadPipeTransport(_ProactorBasePipeTransport, transports.ReadTran
             keep_open = self._protocol.eof_received()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal error: protocol.eof_received() call failed.")
             return
 
@@ -259,7 +259,7 @@ class _ProactorReadPipeTransport(_ProactorBasePipeTransport, transports.ReadTran
                 protocols._feed_data_to_buffered_proto(self._protocol, data)
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._fatal_error(
                     exc, "Fatal error: protocol.buffer_updated() call failed."
                 )
@@ -527,7 +527,7 @@ class _ProactorDatagramTransport(_ProactorBasePipeTransport):
                 )
         except OSError as exc:
             self._protocol.error_received(exc)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal write error on datagram transport")
         else:
             self._write_fut.add_done_callback(self._loop_writing)
@@ -786,7 +786,7 @@ class BaseProactorEventLoop(base_events.BaseEventLoop):
             return
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self.call_exception_handler(
                 {
                     "message": "Error on reading from the event loop self pipe",

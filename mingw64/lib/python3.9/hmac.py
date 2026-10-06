@@ -50,7 +50,7 @@ class HMAC:
 
         if not isinstance(key, (bytes, bytearray)):
             raise TypeError(
-                "key: expected bytes or bytearray, but got %r" % type(key).__name__
+                f"key: expected bytes or bytearray, but got {type(key).__name__!r}"
             )
 
         if not digestmod:
@@ -71,7 +71,7 @@ class HMAC:
             blocksize = self._inner.block_size
             if blocksize < 16:
                 _warnings.warn(
-                    "block_size of %d seems too small; using our "
+                    "block_size of %d seems too small; using our "  # noqa: UP031
                     "default of %d." % (blocksize, self.blocksize),
                     RuntimeWarning,
                     2,
@@ -79,7 +79,7 @@ class HMAC:
                 blocksize = self.blocksize
         else:
             _warnings.warn(
-                "No block_size attribute on given digest object; "
+                "No block_size attribute on given digest object; "  # noqa: UP031
                 "Assuming %d." % (self.blocksize),
                 RuntimeWarning,
                 2,

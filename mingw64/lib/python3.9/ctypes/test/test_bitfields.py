@@ -6,7 +6,7 @@ from ctypes.test import need_symbol
 
 
 class BITS(Structure):
-    _fields_ = [
+    _fields_ = [  # noqa: RUF012
         ("A", c_int, 1),
         ("B", c_int, 2),
         ("C", c_int, 3),
@@ -61,7 +61,7 @@ int_types = unsigned_int_types + signed_int_types
 class BitFieldTest(unittest.TestCase):
     def test_longlong(self):
         class X(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_longlong, 1),
                 ("b", c_longlong, 62),
                 ("c", c_longlong, 1),
@@ -74,7 +74,7 @@ class BitFieldTest(unittest.TestCase):
 
     def test_ulonglong(self):
         class X(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_ulonglong, 1),
                 ("b", c_ulonglong, 62),
                 ("c", c_ulonglong, 1),
@@ -90,7 +90,7 @@ class BitFieldTest(unittest.TestCase):
         for c_typ in signed_int_types:
 
             class X(Structure):
-                _fields_ = [
+                _fields_ = [  # noqa: RUF012
                     ("dummy", c_typ),
                     ("a", c_typ, 3),
                     ("b", c_typ, 3),
@@ -110,7 +110,7 @@ class BitFieldTest(unittest.TestCase):
         for c_typ in unsigned_int_types:
 
             class X(Structure):
-                _fields_ = [("a", c_typ, 3), ("b", c_typ, 3), ("c", c_typ, 1)]
+                _fields_ = [("a", c_typ, 3), ("b", c_typ, 3), ("c", c_typ, 1)]  # noqa: RUF012
 
             self.assertEqual(sizeof(X), sizeof(c_typ))
 
@@ -146,7 +146,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(result, (TypeError, "bit fields not allowed for type c_char"))
 
         class Dummy(Structure):
-            _fields_ = []
+            _fields_ = []  # noqa: RUF012
 
         result = self.fail_fields(("a", Dummy, 1))
         self.assertEqual(result, (TypeError, "bit fields not allowed for type Dummy"))
@@ -169,12 +169,12 @@ class BitFieldTest(unittest.TestCase):
             )
 
             class X(Structure):
-                _fields_ = [("a", c_typ, 1)]
+                _fields_ = [("a", c_typ, 1)]  # noqa: RUF012
 
             self.assertEqual(sizeof(X), sizeof(c_typ))
 
             class X(Structure):
-                _fields_ = [("a", c_typ, sizeof(c_typ) * 8)]
+                _fields_ = [("a", c_typ, sizeof(c_typ) * 8)]  # noqa: RUF012
 
             self.assertEqual(sizeof(X), sizeof(c_typ))
 
@@ -185,12 +185,12 @@ class BitFieldTest(unittest.TestCase):
 
     def test_multi_bitfields_size(self):
         class X(Structure):
-            _fields_ = [("a", c_short, 1), ("b", c_short, 14), ("c", c_short, 1)]
+            _fields_ = [("a", c_short, 1), ("b", c_short, 14), ("c", c_short, 1)]  # noqa: RUF012
 
         self.assertEqual(sizeof(X), sizeof(c_short))
 
         class X(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_short, 1),
                 ("a1", c_short),
                 ("b", c_short, 14),
@@ -204,7 +204,7 @@ class BitFieldTest(unittest.TestCase):
         self.assertEqual(X.c.offset, sizeof(c_short) * 2)
 
         class X(Structure):
-            _fields_ = [("a", c_short, 3), ("b", c_short, 14), ("c", c_short, 14)]
+            _fields_ = [("a", c_short, 3), ("b", c_short, 14), ("c", c_short, 14)]  # noqa: RUF012
 
         self.assertEqual(sizeof(X), sizeof(c_short) * 3)
         self.assertEqual(X.a.offset, sizeof(c_short) * 0)
@@ -214,12 +214,12 @@ class BitFieldTest(unittest.TestCase):
     def get_except(self, func, *args, **kw):
         try:
             func(*args, **kw)
-        except Exception as detail:
+        except Exception as detail:  # noqa: BLE001
             return detail.__class__, str(detail)
 
     def test_mixed_1(self):
         class X(Structure):
-            _fields_ = [("a", c_byte, 4), ("b", c_int, 4)]
+            _fields_ = [("a", c_byte, 4), ("b", c_int, 4)]  # noqa: RUF012
 
         if os.name == "nt":
             self.assertEqual(sizeof(X), sizeof(c_int) * 2)
@@ -228,19 +228,19 @@ class BitFieldTest(unittest.TestCase):
 
     def test_mixed_2(self):
         class X(Structure):
-            _fields_ = [("a", c_byte, 4), ("b", c_int, 32)]
+            _fields_ = [("a", c_byte, 4), ("b", c_int, 32)]  # noqa: RUF012
 
         self.assertEqual(sizeof(X), alignment(c_int) + sizeof(c_int))
 
     def test_mixed_3(self):
         class X(Structure):
-            _fields_ = [("a", c_byte, 4), ("b", c_ubyte, 4)]
+            _fields_ = [("a", c_byte, 4), ("b", c_ubyte, 4)]  # noqa: RUF012
 
         self.assertEqual(sizeof(X), sizeof(c_byte))
 
     def test_mixed_4(self):
         class X(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_short, 4),
                 ("b", c_short, 4),
                 ("c", c_int, 24),
@@ -260,16 +260,16 @@ class BitFieldTest(unittest.TestCase):
     def test_anon_bitfields(self):
         # anonymous bit-fields gave a strange error message
         class X(Structure):
-            _fields_ = [("a", c_byte, 4), ("b", c_ubyte, 4)]
+            _fields_ = [("a", c_byte, 4), ("b", c_ubyte, 4)]  # noqa: RUF012
 
         class Y(Structure):
-            _anonymous_ = ["_"]
-            _fields_ = [("_", X)]
+            _anonymous_ = ["_"]  # noqa: RUF012
+            _fields_ = [("_", X)]  # noqa: RUF012
 
     @need_symbol("c_uint32")
     def test_uint32(self):
         class X(Structure):
-            _fields_ = [("a", c_uint32, 32)]
+            _fields_ = [("a", c_uint32, 32)]  # noqa: RUF012
 
         x = X()
         x.a = 10
@@ -280,7 +280,7 @@ class BitFieldTest(unittest.TestCase):
     @need_symbol("c_uint64")
     def test_uint64(self):
         class X(Structure):
-            _fields_ = [("a", c_uint64, 64)]
+            _fields_ = [("a", c_uint64, 64)]  # noqa: RUF012
 
         x = X()
         x.a = 10
@@ -292,7 +292,7 @@ class BitFieldTest(unittest.TestCase):
     def test_uint32_swap_little_endian(self):
         # Issue #23319
         class Little(LittleEndianStructure):
-            _fields_ = [("a", c_uint32, 24), ("b", c_uint32, 4), ("c", c_uint32, 4)]
+            _fields_ = [("a", c_uint32, 24), ("b", c_uint32, 4), ("c", c_uint32, 4)]  # noqa: RUF012
 
         b = bytearray(4)
         x = Little.from_buffer(b)
@@ -305,7 +305,7 @@ class BitFieldTest(unittest.TestCase):
     def test_uint32_swap_big_endian(self):
         # Issue #23319
         class Big(BigEndianStructure):
-            _fields_ = [("a", c_uint32, 24), ("b", c_uint32, 4), ("c", c_uint32, 4)]
+            _fields_ = [("a", c_uint32, 24), ("b", c_uint32, 4), ("c", c_uint32, 4)]  # noqa: RUF012
 
         b = bytearray(4)
         x = Big.from_buffer(b)

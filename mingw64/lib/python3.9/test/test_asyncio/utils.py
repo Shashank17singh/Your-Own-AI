@@ -222,7 +222,7 @@ if hasattr(socket, "AF_UNIX"):
             self.setup_environ()
 
         def get_request(self):
-            request, client_addr = super().get_request()
+            request, _client_addr = super().get_request()
             request.settimeout(self.request_timeout)
             # Code in the stdlib expects that get_request
             # will return a socket and a tuple (host, port).
@@ -496,7 +496,7 @@ class MockInstanceOf:
 def get_function_source(func):
     source = format_helpers._get_function_source(func)
     if source is None:
-        raise ValueError("unable to get the source of %r" % (func,))
+        raise ValueError(f"unable to get the source of {func!r}")
     return source
 
 

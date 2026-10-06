@@ -48,7 +48,7 @@ def typed_subpart_iterator(msg, maintype="text", subtype=None):
     omitted, only the main type is matched.
     """
     for subpart in msg.walk():
-        if subpart.get_content_maintype() == maintype:
+        if subpart.get_content_maintype() == maintype:  # noqa: SIM102
             if subtype is None or subpart.get_content_subtype() == subtype:
                 yield subpart
 
@@ -60,7 +60,7 @@ def _structure(msg, fp=None, level=0, include_default=False):
     tab = " " * (level * 4)
     print(tab + msg.get_content_type(), end="", file=fp)
     if include_default:
-        print(" [%s]" % msg.get_default_type(), file=fp)
+        print(f" [{msg.get_default_type()}]", file=fp)
     else:
         print(file=fp)
     if msg.is_multipart():

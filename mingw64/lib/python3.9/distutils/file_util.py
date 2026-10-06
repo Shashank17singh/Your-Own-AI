@@ -24,30 +24,26 @@ def _copy_file_contents(src, dst, buffer_size=16 * 1024):
     fdst = None
     try:
         try:
-            fsrc = open(src, "rb")
+            fsrc = open(src, "rb")  # noqa: SIM115
         except OSError as e:
-            raise DistutilsFileError("could not open '%s': %s" % (src, e.strerror))
+            raise DistutilsFileError(f"could not open '{src}': {e.strerror}")
 
         if os.path.exists(dst):
             try:
                 os.unlink(dst)
             except OSError as e:
-                raise DistutilsFileError(
-                    "could not delete '%s': %s" % (dst, e.strerror)
-                )
+                raise DistutilsFileError(f"could not delete '{dst}': {e.strerror}")
 
         try:
-            fdst = open(dst, "wb")
+            fdst = open(dst, "wb")  # noqa: SIM115
         except OSError as e:
-            raise DistutilsFileError("could not create '%s': %s" % (dst, e.strerror))
+            raise DistutilsFileError(f"could not create '{dst}': {e.strerror}")
 
         while True:
             try:
                 buf = fsrc.read(buffer_size)
             except OSError as e:
-                raise DistutilsFileError(
-                    "could not read from '%s': %s" % (src, e.strerror)
-                )
+                raise DistutilsFileError(f"could not read from '{src}': {e.strerror}")
 
             if not buf:
                 break
@@ -55,9 +51,7 @@ def _copy_file_contents(src, dst, buffer_size=16 * 1024):
             try:
                 fdst.write(buf)
             except OSError as e:
-                raise DistutilsFileError(
-                    "could not write to '%s': %s" % (dst, e.strerror)
-                )
+                raise DistutilsFileError(f"could not write to '{dst}': {e.strerror}")
     finally:
         if fdst:
             fdst.close()
@@ -111,7 +105,7 @@ def copy_file(
 
     if not os.path.isfile(src):
         raise DistutilsFileError(
-            "can't copy '%s': doesn't exist or not a regular file" % src
+            f"can't copy '{src}': doesn't exist or not a regular file"
         )
 
     if os.path.isdir(dst):
@@ -128,7 +122,7 @@ def copy_file(
     try:
         action = _copy_action[link]
     except KeyError:
-        raise ValueError("invalid value '%s' for 'link' argument" % link)
+        raise ValueError(f"invalid value '{link}' for 'link' argument")
 
     if verbose >= 1:
         if os.path.basename(dst) == os.path.basename(src):
@@ -151,10 +145,9 @@ def copy_file(
                 # (some special filesystems don't support hard linking
                 #  even under Unix, see issue #8876).
                 pass
-    elif link == "sym":
-        if not (os.path.exists(dst) and os.path.samefile(src, dst)):
-            os.symlink(src, dst)
-            return (dst, 1)
+    elif link == "sym" and not (os.path.exists(dst) and os.path.samefile(src, dst)):
+        os.symlink(src, dst)
+        return (dst, 1)
 
     # Otherwise (non-Mac, not linking), copy the file contents and
     # (optionally) copy the times and mode.
@@ -191,18 +184,18 @@ def move_file(src, dst, verbose=1, dry_run=0):
         return dst
 
     if not isfile(src):
-        raise DistutilsFileError("can't move '%s': not a regular file" % src)
+        raise DistutilsFileError(f"can't move '{src}': not a regular file")
 
     if isdir(dst):
         dst = os.path.join(dst, basename(src))
     elif exists(dst):
         raise DistutilsFileError(
-            "can't move '%s': destination '%s' already exists" % (src, dst)
+            f"can't move '{src}': destination '{dst}' already exists"
         )
 
     if not isdir(dirname(dst)):
         raise DistutilsFileError(
-            "can't move '%s': destination '%s' not a valid path" % (src, dst)
+            f"can't move '{src}': destination '{dst}' not a valid path"
         )
 
     copy_it = False
@@ -213,7 +206,7 @@ def move_file(src, dst, verbose=1, dry_run=0):
         if num == errno.EXDEV:
             copy_it = True
         else:
-            raise DistutilsFileError("couldn't move '%s' to '%s': %s" % (src, dst, msg))
+            raise DistutilsFileError(f"couldn't move '{src}' to '{dst}': {msg}")
 
     if copy_it:
         copy_file(src, dst, verbose=verbose)
@@ -226,8 +219,8 @@ def move_file(src, dst, verbose=1, dry_run=0):
             except OSError:
                 pass
             raise DistutilsFileError(
-                "couldn't move '%s' to '%s' by copy/delete: "
-                "delete '%s' failed: %s" % (src, dst, src, msg)
+                f"couldn't move '{src}' to '{dst}' by copy/delete: "
+                f"delete '{src}' failed: {msg}"
             )
     return dst
 
@@ -236,7 +229,7 @@ def write_file(filename, contents):
     """Create a file with the specified name and write 'contents' (a
     sequence of strings without line terminators) to it.
     """
-    f = open(filename, "w")
+    f = open(filename, "w")  # noqa: SIM115
     try:
         f.writelines(line + "\n" for line in contents)
     finally:

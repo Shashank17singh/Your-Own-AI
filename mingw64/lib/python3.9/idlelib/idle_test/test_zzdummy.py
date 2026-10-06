@@ -61,7 +61,7 @@ class ZZDummyTest(unittest.TestCase):
         text.insert("1.0", code_sample)
         text.undo_block_start.reset_mock()
         text.undo_block_stop.reset_mock()
-        zz = self.zz = zzdummy.ZzDummy(self.editor)
+        self.zz = zzdummy.ZzDummy(self.editor)
         zzdummy.ZzDummy.ztext = "# ignore #"
 
     def tearDown(self):

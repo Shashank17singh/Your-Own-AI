@@ -11,7 +11,7 @@ class OpcodeTest(unittest.TestCase):
         for i in range(10):
             n = n + i
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             except NameError:
                 pass
             except ZeroDivisionError:
@@ -20,7 +20,7 @@ class OpcodeTest(unittest.TestCase):
                 pass
             try:
                 pass
-            except:
+            except:  # noqa: E722, S110
                 pass
             try:
                 pass
@@ -45,11 +45,11 @@ class OpcodeTest(unittest.TestCase):
             pass
 
         with self.assertRaises(AttributeError):
-            C.__annotations__
+            C.__annotations__  # noqa: B018
 
     def test_use_existing_annotations(self):
         ns = {"__annotations__": {1: 2}}
-        exec("x: int", ns)
+        exec("x: int", ns)  # noqa: S102
         self.assertEqual(ns["__annotations__"], {"x": int, 1: 2})
 
     def test_do_not_recreate_annotations(self):
@@ -58,7 +58,7 @@ class OpcodeTest(unittest.TestCase):
             del globals()["__annotations__"]
 
             class C:
-                del __annotations__
+                del __annotations__  # noqa: F821
                 with self.assertRaises(NameError):
                     x: int
 
@@ -79,7 +79,7 @@ class OpcodeTest(unittest.TestCase):
 
         try:
             raise AClass()
-        except:
+        except:  # noqa: E722, S110
             pass
 
         try:
@@ -96,7 +96,7 @@ class OpcodeTest(unittest.TestCase):
             raise BClass()
         except CClass:
             self.fail()
-        except:
+        except:  # noqa: E722, S110
             pass
 
         a = AClass()

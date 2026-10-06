@@ -71,7 +71,7 @@ from errno import (
 _DISCONNECTED = frozenset({ECONNRESET, ENOTCONN, ESHUTDOWN, ECONNABORTED, EPIPE, EBADF})
 
 try:
-    socket_map
+    socket_map  # noqa: B018
 except NameError:
     socket_map = {}
 
@@ -82,7 +82,7 @@ def _strerror(err):
     except (ValueError, OverflowError, NameError):
         if err in errorcode:
             return errorcode[err]
-        return "Unknown error %s" % err
+        return f"Unknown error {err}"
 
 
 class ExitNow(Exception):
@@ -97,7 +97,7 @@ def read(obj):
         obj.handle_read_event()
     except _reraised_exceptions:
         raise
-    except:
+    except:  # noqa: E722
         obj.handle_error()
 
 
@@ -106,7 +106,7 @@ def write(obj):
         obj.handle_write_event()
     except _reraised_exceptions:
         raise
-    except:
+    except:  # noqa: E722
         obj.handle_error()
 
 
@@ -115,7 +115,7 @@ def _exception(obj):
         obj.handle_expt_event()
     except _reraised_exceptions:
         raise
-    except:
+    except:  # noqa: E722
         obj.handle_error()
 
 
@@ -136,7 +136,7 @@ def readwrite(obj, flags):
             obj.handle_close()
     except _reraised_exceptions:
         raise
-    except:
+    except:  # noqa: E722
         obj.handle_error()
 
 
@@ -280,10 +280,10 @@ class dispatcher:
             status.append("connected")
         if self.addr is not None:
             try:
-                status.append("%s:%d" % self.addr)
+                status.append("%s:%d" % self.addr)  # noqa: UP031
             except TypeError:
                 status.append(repr(self.addr))
-        return "<%s at %#x>" % (" ".join(status), id(self))
+        return "<{} at {:#x}>".format(" ".join(status), id(self))
 
     def add_channel(self, map=None):
         # self.log_info('adding channel %s' % self)
@@ -427,11 +427,11 @@ class dispatcher:
     # and 'log_info' is for informational, warning and error logging.
 
     def log(self, message):
-        sys.stderr.write("log: %s\n" % str(message))
+        sys.stderr.write(f"log: {message!s}\n")
 
     def log_info(self, message, type="info"):
         if type not in self.ignore_log_types:
-            print("%s: %s" % (type, message))
+            print(f"{type}: {message}")
 
     def handle_read_event(self):
         if self.accepting:
@@ -459,9 +459,8 @@ class dispatcher:
             # We will pretend it didn't happen.
             return
 
-        if not self.connected:
-            if self.connecting:
-                self.handle_connect_event()
+        if not self.connected and self.connecting:
+            self.handle_connect_event()
         self.handle_write()
 
     def handle_expt_event(self):
@@ -480,17 +479,16 @@ class dispatcher:
             self.handle_expt()
 
     def handle_error(self):
-        nil, t, v, tbinfo = compact_traceback()
+        _nil, t, v, tbinfo = compact_traceback()
 
         # sometimes a user repr method will crash.
         try:
             self_repr = repr(self)
-        except:
-            self_repr = "<__repr__(self) failed for object at %0x>" % id(self)
+        except:  # noqa: E722
+            self_repr = f"<__repr__(self) failed for object at {id(self):0x}>"
 
         self.log_info(
-            "uncaptured python exception, closing channel %s (%s:%s %s)"
-            % (self_repr, t, v, tbinfo),
+            f"uncaptured python exception, closing channel {self_repr} ({t}:{v} {tbinfo})",
             "error",
         )
         self.handle_close()
@@ -545,7 +543,7 @@ class dispatcher_with_send(dispatcher):
 
     def send(self, data):
         if self.debug:
-            self.log_info("sending %s" % repr(data))
+            self.log_info(f"sending {data!r}")
         self.out_buffer = self.out_buffer + data
         self.initiate_send()
 
@@ -574,7 +572,7 @@ def compact_traceback():
     del tb
 
     file, function, line = tbinfo[-1]
-    info = " ".join(["[%s|%s|%s]" % x for x in tbinfo])
+    info = " ".join(["[{}|{}|{}]".format(*x) for x in tbinfo])
     return (file, function, line), t, v, info
 
 
@@ -591,7 +589,7 @@ def close_all(map=None, ignore_all=False):
                 raise
         except _reraised_exceptions:
             raise
-        except:
+        except:  # noqa: E722
             if not ignore_all:
                 raise
     map.clear()
@@ -622,7 +620,7 @@ if os.name == "posix":
 
         def __del__(self):
             if self.fd >= 0:
-                warnings.warn("unclosed file %r" % self, ResourceWarning, source=self)
+                warnings.warn(f"unclosed file {self!r}", ResourceWarning, source=self)
             self.close()
 
         def recv(self, *args):

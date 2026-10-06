@@ -91,7 +91,7 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
 
     def setUp(self):
         self.name = "_testmultiphase"
-        finder = self.machinery.FileFinder(None)
+        self.machinery.FileFinder(None)
         self.spec = importlib.util.find_spec(self.name)
         assert self.spec
         self.loader = self.machinery.ExtensionFileLoader(self.name, self.spec.origin)
@@ -116,7 +116,7 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
             ]:
                 self.assertEqual(getattr(module, attr), value)
             with self.assertRaises(AttributeError):
-                module.__path__
+                module.__path__  # noqa: B018
             self.assertIs(module, sys.modules[self.name])
             self.assertIsInstance(module.__loader__, self.machinery.ExtensionFileLoader)
 
@@ -129,7 +129,7 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
             self.assertEqual(ex.demo("abcd"), "abcd")
             self.assertEqual(ex.demo(), None)
             with self.assertRaises(AttributeError):
-                ex.abc
+                ex.abc  # noqa: B018
             ex.abc = 0
             self.assertEqual(ex.abc, 0)
             self.assertEqual(module.foo(9, 9), 18)
@@ -155,7 +155,7 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
             self.assertEqual(module.call_state_registration_func(0), None)
         with self.subTest("PyState_AddModule"), self.assertRaises(SystemError):
             module.call_state_registration_func(1)
-        with self.subTest("PyState_RemoveModule"):
+        with self.subTest("PyState_RemoveModule"):  # noqa: SIM117
             with self.assertRaises(SystemError):
                 module.call_state_registration_func(2)
 
@@ -266,7 +266,7 @@ class MultiPhaseExtensionModuleTests(abc.LoaderTests):
             with self.subTest(name):
                 module = self.load_module_by_name(name)
                 self.assertEqual(module.__name__, name)
-                self.assertEqual(module.__doc__, "Module named in %s" % lang)
+                self.assertEqual(module.__doc__, f"Module named in {lang}")
 
 
 Frozen_MultiPhaseExtensionModuleTests, Source_MultiPhaseExtensionModuleTests = (

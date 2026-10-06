@@ -26,13 +26,11 @@ def mkpath(name, mode=0o777, verbose=1, dry_run=0):
     Return the list of directories actually created.
     """
 
-    global _path_created
+    global _path_created  # noqa: PLW0602
 
     # Detect a common bug -- name is None
     if not isinstance(name, str):
-        raise DistutilsInternalError(
-            "mkpath: 'name' must be a string (got %r)" % (name,)
-        )
+        raise DistutilsInternalError(f"mkpath: 'name' must be a string (got {name!r})")
 
     # XXX what's the better way to handle verbosity? print as we create
     # each directory in the path (the current behaviour), or only announce
@@ -73,7 +71,7 @@ def mkpath(name, mode=0o777, verbose=1, dry_run=0):
             except OSError as exc:
                 if not (exc.errno == errno.EEXIST and os.path.isdir(head)):
                     raise DistutilsFileError(
-                        "could not create '%s': %s" % (head, exc.args[-1])
+                        f"could not create '{head}': {exc.args[-1]}"
                     )
             created_dirs.append(head)
 
@@ -133,16 +131,14 @@ def copy_tree(
     from distutils.file_util import copy_file
 
     if not dry_run and not os.path.isdir(src):
-        raise DistutilsFileError("cannot copy tree '%s': not a directory" % src)
+        raise DistutilsFileError(f"cannot copy tree '{src}': not a directory")
     try:
         names = os.listdir(src)
     except OSError as e:
         if dry_run:
             names = []
         else:
-            raise DistutilsFileError(
-                "error listing files in '%s': %s" % (src, e.strerror)
-            )
+            raise DistutilsFileError(f"error listing files in '{src}': {e.strerror}")
 
     if not dry_run:
         mkpath(dst, verbose=verbose)
@@ -210,7 +206,7 @@ def remove_tree(directory, verbose=1, dry_run=0):
     Any errors are ignored (apart from being reported to stdout if 'verbose'
     is true).
     """
-    global _path_created
+    global _path_created  # noqa: PLW0602
 
     if verbose >= 1:
         log.info("removing '%s' (and everything under it)", directory)

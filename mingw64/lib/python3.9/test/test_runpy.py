@@ -81,7 +81,7 @@ class CodeExecutionMixin:
 
     # Figuring out the loader details in advance is hard to do, so we skip
     # checking the full details of loader and loader_state
-    CHECKED_SPEC_ATTRIBUTES = [
+    CHECKED_SPEC_ATTRIBUTES = [  # noqa: RUF012
         "name",
         "parent",
         "origin",
@@ -457,7 +457,7 @@ from __future__ import absolute_import
 from . import sibling
 from ..uncle.cousin import nephew
 """
-        pkg_dir, mod_fname, mod_name, mod_spec = self._make_pkg(contents, depth)
+        pkg_dir, mod_fname, mod_name, _mod_spec = self._make_pkg(contents, depth)
         if run_name is None:
             expected_name = mod_name
         else:
@@ -650,7 +650,7 @@ from ..uncle.cousin import nephew
         pkg_name = ".".join([base_name] * max_depth)
         expected_packages.add(pkg_name)
         expected_modules.add(pkg_name + ".runpy_test")
-        pkg_dir, mod_fname, mod_name, mod_spec = self._make_pkg("", max_depth)
+        pkg_dir, _mod_fname, _mod_name, _mod_spec = self._make_pkg("", max_depth)
         self.addCleanup(self._del_pkg, pkg_dir)
         for depth in range(2, max_depth + 1):
             self._add_relative_modules(pkg_dir, "", depth)
@@ -786,7 +786,7 @@ class RunPathTestCase(unittest.TestCase, CodeExecutionMixin):
         with temp_dir() as script_dir:
             mod_name = "__main__"
             script_name = self._make_test_script(script_dir, mod_name)
-            compiled_name = py_compile.compile(script_name, doraise=True)
+            py_compile.compile(script_name, doraise=True)
             os.remove(script_name)
             if not sys.dont_write_bytecode:
                 legacy_pyc = make_legacy_pyc(script_name)
@@ -797,8 +797,8 @@ class RunPathTestCase(unittest.TestCase, CodeExecutionMixin):
     def test_directory_error(self):
         with temp_dir() as script_dir:
             mod_name = "not_main"
-            script_name = self._make_test_script(script_dir, mod_name)
-            msg = "can't find '__main__' module in %r" % script_dir
+            self._make_test_script(script_dir, mod_name)
+            msg = f"can't find '__main__' module in {script_dir!r}"
             self._check_import_error(script_dir, msg)
 
     def test_zipfile(self):
@@ -834,17 +834,17 @@ class RunPathTestCase(unittest.TestCase, CodeExecutionMixin):
         with temp_dir() as script_dir:
             mod_name = "not_main"
             script_name = self._make_test_script(script_dir, mod_name)
-            zip_name, fname = make_zip_script(script_dir, "test_zip", script_name)
-            msg = "can't find '__main__' module in %r" % zip_name
+            zip_name, _fname = make_zip_script(script_dir, "test_zip", script_name)
+            msg = f"can't find '__main__' module in {zip_name!r}"
             self._check_import_error(zip_name, msg)
 
     @no_tracing
     def test_main_recursion_error(self):
         with temp_dir() as script_dir, temp_dir() as dummy_dir:
             mod_name = "__main__"
-            source = ("import runpy\nrunpy.run_path(%r)\n") % dummy_dir
+            source = f"import runpy\nrunpy.run_path({dummy_dir!r})\n"
             script_name = self._make_test_script(script_dir, mod_name, source)
-            zip_name, fname = make_zip_script(script_dir, "test_zip", script_name)
+            zip_name, _fname = make_zip_script(script_dir, "test_zip", script_name)
             msg = "recursion depth exceeded"
             self.assertRaisesRegex(RecursionError, msg, run_path, zip_name)
 
@@ -881,7 +881,7 @@ class TestExit(unittest.TestCase):
             super().run(*args, **kwargs)
 
     def assertSigInt(self, *args, **kwargs):
-        proc = subprocess.run(*args, **kwargs, text=True, stderr=subprocess.PIPE)
+        proc = subprocess.run(*args, **kwargs, text=True, stderr=subprocess.PIPE)  # noqa: PLW1510
         self.assertTrue(proc.stderr.endswith("\nKeyboardInterrupt\n"))
         self.assertEqual(proc.returncode, self.EXPECTED_CODE)
 

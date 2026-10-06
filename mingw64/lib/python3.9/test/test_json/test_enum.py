@@ -99,18 +99,18 @@ class TestEnum:
         self.assertEqual(nd["NaN"], "NaN")
 
     def test_dict_values(self):
-        d = dict(
-            tiny=BigNum.small,
-            large=BigNum.big,
-            larger=BigNum.huge,
-            largest=BigNum.really_huge,
-            e=FloatNum.e,
-            pi=FloatNum.pi,
-            tau=FloatNum.tau,
-            i=WierdNum.inf,
-            j=WierdNum.neg_inf,
-            n=WierdNum.nan,
-        )
+        d = {
+            "tiny": BigNum.small,
+            "large": BigNum.big,
+            "larger": BigNum.huge,
+            "largest": BigNum.really_huge,
+            "e": FloatNum.e,
+            "pi": FloatNum.pi,
+            "tau": FloatNum.tau,
+            "i": WierdNum.inf,
+            "j": WierdNum.neg_inf,
+            "n": WierdNum.nan,
+        }
         nd = self.loads(self.dumps(d))
         self.assertEqual(nd["tiny"], SMALL)
         self.assertEqual(nd["large"], BIG)

@@ -81,7 +81,7 @@ def Value(typecode_or_type, *args, lock=True, ctx=None):
         ctx = ctx or get_context()
         lock = ctx.RLock()
     if not hasattr(lock, "acquire"):
-        raise AttributeError("%r has no method 'acquire'" % lock)
+        raise AttributeError(f"{lock!r} has no method 'acquire'")
     return synchronized(obj, lock, ctx=ctx)
 
 
@@ -96,7 +96,7 @@ def Array(typecode_or_type, size_or_initializer, *, lock=True, ctx=None):
         ctx = ctx or get_context()
         lock = ctx.RLock()
     if not hasattr(lock, "acquire"):
-        raise AttributeError("%r has no method 'acquire'" % lock)
+        raise AttributeError(f"{lock!r} has no method 'acquire'")
     return synchronized(obj, lock, ctx=ctx)
 
 
@@ -161,7 +161,7 @@ def make_property(name):
         return prop_cache[name]
     except KeyError:
         d = {}
-        exec(template % ((name,) * 7), d)
+        exec(template % ((name,) * 7), d)  # noqa: S102
         prop_cache[name] = d[name]
         return d[name]
 
@@ -218,7 +218,7 @@ class SynchronizedBase:
         return self._lock
 
     def __repr__(self):
-        return "<%s wrapper for %s>" % (type(self).__name__, self._obj)
+        return f"<{type(self).__name__} wrapper for {self._obj}>"
 
 
 class Synchronized(SynchronizedBase):

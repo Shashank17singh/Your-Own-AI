@@ -40,9 +40,9 @@ class APITests(
         )
 
     def test_read_text(self):
-        top_level = [
+        top_level = next(
             path for path in files("egginfo-pkg") if path.name == "top_level.txt"
-        ][0]
+        )
         self.assertEqual(top_level.read_text(), "mod\n")
 
     def test_entry_points(self):
@@ -75,7 +75,7 @@ class APITests(
     def test_file_hash_repr(self):
         assertRegex = self.assertRegex
 
-        util = [p for p in files("distinfo-pkg") if p.name == "mod.py"][0]
+        util = next(p for p in files("distinfo-pkg") if p.name == "mod.py")
         assertRegex(repr(util.hash), "<FileHash mode: sha256 value: .*>")
 
     def test_files_dist_info(self):

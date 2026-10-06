@@ -35,9 +35,9 @@ class AutoFileTests:
     def testAttributes(self):
         # verify expected attributes exist
         f = self.f
-        f.name  # merely shouldn't blow up
-        f.mode  # ditto
-        f.closed  # ditto
+        f.name  # merely shouldn't blow up  # noqa: B018
+        f.mode  # ditto  # noqa: B018
+        f.closed  # ditto  # noqa: B018
 
     def testReadinto(self):
         # verify readinto
@@ -123,8 +123,8 @@ class AutoFileTests:
         self.assertEqual(self.f.__exit__(None, None, None), None)
         # it must also return None if an exception was given
         try:
-            1 / 0
-        except:
+            1 / 0  # noqa: B018
+        except:  # noqa: E722
             self.assertEqual(self.f.__exit__(*sys.exc_info()), None)
 
     def testReadWhenWriting(self):
@@ -153,7 +153,7 @@ class OtherFileTests:
                 pass
             else:
                 f.close()
-                self.fail("%r is an invalid file mode" % mode)
+                self.fail(f"{mode!r} is an invalid file mode")
 
     def testStdin(self):
         if sys.platform == "osf1V5":
@@ -180,12 +180,12 @@ class OtherFileTests:
             if msg.args[0] != 0:
                 s = str(msg)
                 if TESTFN in s or bad_mode not in s:
-                    self.fail("bad error message for invalid mode: %s" % s)
+                    self.fail(f"bad error message for invalid mode: {s}")
             # if msg.args[0] == 0, we're probably on Windows where there may be
             # no obvious way to discover why open() failed.
         else:
             f.close()
-            self.fail("no error for invalid mode: %s" % bad_mode)
+            self.fail(f"no error for invalid mode: {bad_mode}")
 
     def _checkBufferSize(self, s):
         try:
@@ -198,7 +198,7 @@ class OtherFileTests:
             f.close()
             f.close()
         except OSError as msg:
-            self.fail("error setting buffer size %d: %s" % (s, str(msg)))
+            self.fail("error setting buffer size %d: %s" % (s, str(msg)))  # noqa: UP031
         self.assertEqual(d, s)
 
     def testSetBufferSize(self):
@@ -228,18 +228,18 @@ class OtherFileTests:
             f = self.open(TESTFN, "rb+")
             data = f.read(5)
             if data != b"12345":
-                self.fail("Read on file opened for update failed %r" % data)
+                self.fail(f"Read on file opened for update failed {data!r}")
             if f.tell() != 5:
-                self.fail("File pos after read wrong %d" % f.tell())
+                self.fail("File pos after read wrong %d" % f.tell())  # noqa: UP031
 
             f.truncate()
             if f.tell() != 5:
-                self.fail("File pos after ftruncate wrong %d" % f.tell())
+                self.fail("File pos after ftruncate wrong %d" % f.tell())  # noqa: UP031
 
             f.close()
             size = os.path.getsize(TESTFN)
             if size != 5:
-                self.fail("File size after ftruncate wrong %d" % size)
+                self.fail("File size after ftruncate wrong %d" % size)  # noqa: UP031
         finally:
             f.close()
 
@@ -301,7 +301,7 @@ class OtherFileTests:
         if line != testline:
             self.fail(
                 "readline() after next() with empty buffer "
-                "failed. Got %r, expected %r" % (line, testline)
+                f"failed. Got {line!r}, expected {testline!r}"
             )
         testline = testlines.pop(0)
         buf = array("b", b"\x00" * len(testline))
@@ -316,7 +316,7 @@ class OtherFileTests:
         if line != testline:
             self.fail(
                 "readinto() after next() with empty buffer "
-                "failed. Got %r, expected %r" % (line, testline)
+                f"failed. Got {line!r}, expected {testline!r}"
             )
 
         testline = testlines.pop(0)
@@ -330,7 +330,7 @@ class OtherFileTests:
         if line != testline:
             self.fail(
                 "read() after next() with empty buffer "
-                "failed. Got %r, expected %r" % (line, testline)
+                f"failed. Got {line!r}, expected {testline!r}"
             )
         try:
             lines = f.readlines()
@@ -342,7 +342,7 @@ class OtherFileTests:
         if lines != testlines:
             self.fail(
                 "readlines() after next() with empty buffer "
-                "failed. Got %r, expected %r" % (line, testline)
+                f"failed. Got {line!r}, expected {testline!r}"
             )
         f.close()
 

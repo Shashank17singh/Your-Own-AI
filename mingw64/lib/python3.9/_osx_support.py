@@ -47,7 +47,7 @@ def _find_executable(executable, path=None):
         path = os.environ["PATH"]
 
     paths = path.split(os.pathsep)
-    base, ext = os.path.splitext(executable)
+    _base, ext = os.path.splitext(executable)
 
     if (sys.platform == "win32") and (ext != ".exe"):
         executable = executable + ".exe"
@@ -74,15 +74,15 @@ def _read_output(commandstring, capture_stderr=False):
     try:
         import tempfile
 
-        fp = tempfile.NamedTemporaryFile()
+        fp = tempfile.NamedTemporaryFile()  # noqa: SIM115
     except ImportError:
-        fp = open("/tmp/_osx_support.%s" % (os.getpid(),), "w+b")
+        fp = open(f"/tmp/_osx_support.{os.getpid()}", "w+b")  # noqa: SIM115
 
     with contextlib.closing(fp) as fp:
         if capture_stderr:
-            cmd = "%s >'%s' 2>&1" % (commandstring, fp.name)
+            cmd = f"{commandstring} >'{fp.name}' 2>&1"
         else:
-            cmd = "%s 2>/dev/null >'%s'" % (commandstring, fp.name)
+            cmd = f"{commandstring} 2>/dev/null >'{fp.name}'"
         return fp.read().decode("utf-8").strip() if not os.system(cmd) else None
 
 
@@ -90,7 +90,7 @@ def _find_build_tool(toolname):
     """Find a build tool on current path or using xcrun"""
     return (
         _find_executable(toolname)
-        or _read_output("/usr/bin/xcrun -find %s" % (toolname,))
+        or _read_output(f"/usr/bin/xcrun -find {toolname}")
         or ""
     )
 
@@ -111,7 +111,7 @@ def _get_system_version():
     if _SYSTEM_VERSION is None:
         _SYSTEM_VERSION = ""
         try:
-            f = open("/System/Library/CoreServices/SystemVersion.plist")
+            f = open("/System/Library/CoreServices/SystemVersion.plist")  # noqa: SIM115
         except OSError:
             # We're on a plain darwin box, fall back to the default
             # behaviour.
@@ -181,7 +181,7 @@ def _default_sysroot(cc):
     if _cache_default_sysroot is not None:
         return _cache_default_sysroot
 
-    contents = _read_output("%s -c -E -v - </dev/null" % (cc,), True)
+    contents = _read_output(f"{cc} -c -E -v - </dev/null", True)
     in_incdirs = False
     for line in contents.splitlines():
         if line.startswith("#include <...>"):
@@ -260,7 +260,7 @@ def _find_appropriate_compiler(_config_vars):
 
     elif os.path.basename(cc).startswith("gcc"):
         # Compiler is GCC, check if it is LLVM-GCC
-        data = _read_output("'%s' --version" % (cc.replace("'", "'\"'\"'"),))
+        data = _read_output("'{}' --version".format(cc.replace("'", "'\"'\"'")))
         if data and "llvm-gcc" in data:
             # Found LLVM-GCC, fall back to clang
             cc = _find_build_tool("clang")
@@ -314,9 +314,10 @@ def _remove_unsupported_archs(_config_vars):
         # NOTE: Cannot use subprocess here because of bootstrap
         # issues when building Python itself
         status = os.system(
-            """echo 'int main{};' | """
-            """'%s' -c -arch ppc -x c -o /dev/null /dev/null 2>/dev/null"""
-            % (_config_vars["CC"].replace("'", "'\"'\"'"),)
+            """echo 'int main{{}};' | """
+            """'{}' -c -arch ppc -x c -o /dev/null /dev/null 2>/dev/null""".format(
+                _config_vars["CC"].replace("'", "'\"'\"'")
+            )
         )
         if status:
             # The compile failed for some reason.  Because of differences
@@ -580,7 +581,7 @@ def get_platform_osx(_config_vars, osname, release, machine):
             elif archs == ("i386", "ppc", "ppc64", "x86_64"):
                 machine = "universal"
             else:
-                raise ValueError("Don't know machine value for archs=%r" % (archs,))
+                raise ValueError(f"Don't know machine value for archs={archs!r}")
 
         elif machine == "i386":
             # On OSX the machine type returned by uname is always the

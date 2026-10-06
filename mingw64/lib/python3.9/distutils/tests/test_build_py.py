@@ -16,12 +16,12 @@ class BuildPyTestCase(
 ):
     def test_package_data(self):
         sources = self.mkdtemp()
-        f = open(os.path.join(sources, "__init__.py"), "w")
+        f = open(os.path.join(sources, "__init__.py"), "w")  # noqa: SIM115
         try:
             f.write("# Pretend this is a package.")
         finally:
             f.close()
-        f = open(os.path.join(sources, "README.txt"), "w")
+        f = open(os.path.join(sources, "README.txt"), "w")  # noqa: SIM115
         try:
             f.write("Info about this package")
         finally:
@@ -57,7 +57,7 @@ class BuildPyTestCase(
             self.assertFalse(os.path.exists(pycache_dir))
         else:
             pyc_files = os.listdir(pycache_dir)
-            self.assertIn("__init__.%s.pyc" % sys.implementation.cache_tag, pyc_files)
+            self.assertIn(f"__init__.{sys.implementation.cache_tag}.pyc", pyc_files)
 
     def test_empty_package_dir(self):
         # See bugs #1668596/#1720897
@@ -100,7 +100,7 @@ class BuildPyTestCase(
         found = os.listdir(cmd.build_lib)
         self.assertEqual(sorted(found), ["__pycache__", "boiledeggs.py"])
         found = os.listdir(os.path.join(cmd.build_lib, "__pycache__"))
-        self.assertEqual(found, ["boiledeggs.%s.pyc" % sys.implementation.cache_tag])
+        self.assertEqual(found, [f"boiledeggs.{sys.implementation.cache_tag}.pyc"])
 
     @unittest.skipIf(sys.dont_write_bytecode, "byte-compile disabled")
     def test_byte_compile_optimized(self):

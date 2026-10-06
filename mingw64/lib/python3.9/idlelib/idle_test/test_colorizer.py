@@ -101,7 +101,7 @@ class ColorDelegatorInstantiationTest(unittest.TestCase):
         requires("gui")
         root = cls.root = Tk()
         root.withdraw()
-        text = cls.text = Text(root)
+        cls.text = Text(root)
 
     @classmethod
     def tearDownClass(cls):

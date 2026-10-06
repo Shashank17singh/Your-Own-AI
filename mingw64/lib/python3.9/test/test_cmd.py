@@ -212,7 +212,7 @@ class TestAlternateInput(unittest.TestCase):
 
 
 def test_main(verbose=None):
-    from test import test_cmd
+    from test import test_cmd  # noqa: PLW0406
 
     support.run_doctest(test_cmd, verbose)
     support.run_unittest(TestAlternateInput)

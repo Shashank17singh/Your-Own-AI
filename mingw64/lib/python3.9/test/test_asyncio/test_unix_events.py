@@ -464,7 +464,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
     def setUp(self):
         self.loop = asyncio.new_event_loop()
         self.set_event_loop(self.loop)
-        self.file = open(support.TESTFN, "rb")
+        self.file = open(support.TESTFN, "rb")  # noqa: SIM115
         self.addCleanup(self.file.close)
         super().setUp()
 
@@ -502,8 +502,8 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         return sock, proto
 
     def test_sock_sendfile_not_available(self):
-        sock, proto = self.prepare()
-        with mock.patch("asyncio.unix_events.os", spec=[]):
+        sock, _proto = self.prepare()
+        with mock.patch("asyncio.unix_events.os", spec=[]):  # noqa: SIM117
             with self.assertRaisesRegex(
                 asyncio.SendfileNotAvailableError,
                 "os[.]sendfile[(][)] is not available",
@@ -512,7 +512,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_not_a_file(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = object()
         with self.assertRaisesRegex(
             asyncio.SendfileNotAvailableError, "not a regular file"
@@ -521,7 +521,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_iobuffer(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = io.BytesIO()
         with self.assertRaisesRegex(
             asyncio.SendfileNotAvailableError, "not a regular file"
@@ -530,7 +530,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_not_regular_file(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = mock.Mock()
         f.fileno.return_value = -1
         with self.assertRaisesRegex(
@@ -540,7 +540,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_cancel1(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fut = self.loop.create_future()
         fileno = self.file.fileno()
@@ -554,7 +554,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
             self.loop._selector.get_key(sock)
 
     def test_sock_sendfile_cancel2(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fut = self.loop.create_future()
         fileno = self.file.fileno()
@@ -569,7 +569,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
             self.loop._selector.get_key(sock)
 
     def test_sock_sendfile_blocking_error(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fileno = self.file.fileno()
         fut = mock.Mock()
@@ -583,7 +583,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         fut.add_done_callback.assert_called_once_with(mock.ANY)
 
     def test_sock_sendfile_os_error_first_call(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fileno = self.file.fileno()
         fut = self.loop.create_future()
@@ -598,7 +598,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(0, self.file.tell())
 
     def test_sock_sendfile_os_error_next_call(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fileno = self.file.fileno()
         fut = self.loop.create_future()
@@ -614,7 +614,7 @@ class SelectorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(1000, self.file.tell())
 
     def test_sock_sendfile_exception(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
 
         fileno = self.file.fileno()
         fut = self.loop.create_future()
@@ -1903,7 +1903,7 @@ class TestFunctional(unittest.TestCase):
             )
 
         async def runner():
-            tr, pr = await self.loop.create_connection(
+            tr, _pr = await self.loop.create_connection(
                 lambda: asyncio.Protocol(), sock=rsock
             )
 

@@ -520,7 +520,7 @@ class DirectoryTestCase(ASTTestCase):
 
     lib_dir = pathlib.Path(__file__).parent / ".."
     test_directories = (lib_dir, lib_dir / "test")
-    run_always_files = {
+    run_always_files = {  # noqa: RUF012
         "test_grammar.py",
         "test_syntax.py",
         "test_compile.py",

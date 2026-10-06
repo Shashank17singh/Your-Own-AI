@@ -28,6 +28,6 @@ class Dialog:
         finally:
             try:
                 w.destroy()
-            except:
+            except:  # noqa: E722, S110
                 pass
         return s

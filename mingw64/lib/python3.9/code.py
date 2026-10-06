@@ -89,10 +89,10 @@ class InteractiveInterpreter:
 
         """
         try:
-            exec(code, self.locals)
+            exec(code, self.locals)  # noqa: S102
         except SystemExit:
             raise
-        except:
+        except:  # noqa: E722
             self.showtraceback()
 
     def showsyntaxerror(self, filename=None):
@@ -114,7 +114,7 @@ class InteractiveInterpreter:
         if filename and type is SyntaxError:
             # Work hard to stuff the correct filename in the exception
             try:
-                msg, (dummy_filename, lineno, offset, line) = value.args
+                msg, (_dummy_filename, lineno, offset, line) = value.args
             except ValueError:
                 # Not the format we expect; leave it alone
                 pass
@@ -204,21 +204,20 @@ class InteractiveConsole(InteractiveInterpreter):
 
         """
         try:
-            sys.ps1
+            sys.ps1  # noqa: B018
         except AttributeError:
             sys.ps1 = ">>> "
         try:
-            sys.ps2
+            sys.ps2  # noqa: B018
         except AttributeError:
             sys.ps2 = "... "
         cprt = 'Type "help", "copyright", "credits" or "license" for more information.'
         if banner is None:
             self.write(
-                "Python %s on %s\n%s\n(%s)\n"
-                % (sys.version, sys.platform, cprt, self.__class__.__name__)
+                f"Python {sys.version} on {sys.platform}\n{cprt}\n({self.__class__.__name__})\n"
             )
         elif banner:
-            self.write("%s\n" % str(banner))
+            self.write(f"{banner!s}\n")
         more = 0
         while 1:
             try:
@@ -238,9 +237,9 @@ class InteractiveConsole(InteractiveInterpreter):
                 self.resetbuffer()
                 more = 0
         if exitmsg is None:
-            self.write("now exiting %s...\n" % self.__class__.__name__)
+            self.write(f"now exiting {self.__class__.__name__}...\n")
         elif exitmsg != "":
-            self.write("%s\n" % exitmsg)
+            self.write(f"{exitmsg}\n")
 
     def push(self, line):
         """Push a line to the interpreter.
@@ -297,7 +296,7 @@ def interact(banner=None, readfunc=None, local=None, exitmsg=None):
         console.raw_input = readfunc
     else:
         try:
-            import readline
+            import readline  # noqa: F401
         except ImportError:
             pass
     console.interact(banner, exitmsg)

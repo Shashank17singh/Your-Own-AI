@@ -53,7 +53,7 @@ def _iterdump(connection):
         q = """SELECT 'INSERT INTO "{0}" VALUES({1})' FROM "{0}";""".format(
             table_name_ident,
             ",".join(
-                """'||quote("{0}")||'""".format(col.replace('"', '""'))
+                """'||quote("{}")||'""".format(col.replace('"', '""'))
                 for col in column_names
             ),
         )

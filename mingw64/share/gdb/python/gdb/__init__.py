@@ -101,13 +101,13 @@ def _auto_load_packages():
                 lambda x: x.endswith(".py") and x != "__init__.py", os.listdir(location)
             )
             for py_file in py_files:
-                modname = "%s.%s.%s" % (__name__, package, py_file[:-3])
+                modname = f"{__name__}.{package}.{py_file[:-3]}"
                 try:
                     if modname in sys.modules:
                         reload(__import__(modname))
                     else:
                         __import__(modname)
-                except Exception:
+                except Exception:  # noqa: BLE001
                     sys.stderr.write(traceback.format_exc() + "\n")
 
 
@@ -212,7 +212,7 @@ def _filter_missing_file_handlers(handlers, handler_type):
     an iterable over all of the handler objects (extracted from the
     tuples) which match HANDLER_TYPE.
     """
-    return map(lambda t: t[1], filter(lambda t: t[0] == handler_type, handlers))
+    return (t[1] for t in filter(lambda t: t[0] == handler_type, handlers))
 
 
 def _handle_missing_files(pspace, handler_type, cb):

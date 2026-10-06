@@ -17,7 +17,7 @@ from test.support.script_helper import assert_python_failure, assert_python_ok
 class ProfileTest(unittest.TestCase):
     profilerclass = profile.Profile
     profilermodule = profile
-    methodnames = ["print_stats", "print_callers", "print_callees"]
+    methodnames = ["print_stats", "print_callers", "print_callees"]  # noqa: RUF012
     expected_max_output = ":0(max)"
 
     def tearDown(self):
@@ -132,7 +132,7 @@ class ProfileTest(unittest.TestCase):
 
 def regenerate_expected_output(filename, cls):
     filename = filename.rstrip("co")
-    print("Regenerating %s..." % filename)
+    print(f"Regenerating {filename}...")
     results = cls.do_profiling()
 
     newfile = []
@@ -146,7 +146,7 @@ def regenerate_expected_output(filename, cls):
         f.writelines(newfile)
         f.write("_ProfileOutput = {}\n")
         f.writelines(
-            '_ProfileOutput[%r] = """\\\n%s"""\n' % (method, results[i + 1])
+            f'_ProfileOutput[{method!r}] = """\\\n{results[i + 1]}"""\n'
             for i, method in enumerate(cls.methodnames)
         )
         f.write('\nif __name__ == "__main__":\n    main()\n')

@@ -1,4 +1,3 @@
-import sys
 import unittest
 
 ################################################################
@@ -11,10 +10,7 @@ from sys import getrefcount as grc
 
 from test import support
 
-if sys.version_info > (2, 4):
-    c_py_ssize_t = c_size_t
-else:
-    c_py_ssize_t = c_int
+c_py_ssize_t = c_size_t
 
 
 class PythonAPITestCase(unittest.TestCase):
@@ -86,7 +82,7 @@ class PythonAPITestCase(unittest.TestCase):
     def test_pyobject_repr(self):
         self.assertEqual(repr(py_object()), "py_object(<NULL>)")
         self.assertEqual(repr(py_object(42)), "py_object(42)")
-        self.assertEqual(repr(py_object(object)), "py_object(%r)" % object)
+        self.assertEqual(repr(py_object(object)), f"py_object({object!r})")
 
 
 if __name__ == "__main__":

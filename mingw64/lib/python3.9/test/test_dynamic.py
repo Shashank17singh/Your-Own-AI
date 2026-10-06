@@ -98,14 +98,14 @@ class RebindBuiltinsTests(unittest.TestCase):
         self.configure_func(foo)
 
         globals_dict = {"foo": foo}
-        exec("x = foo()", globals_dict)
+        exec("x = foo()", globals_dict)  # noqa: S102
         self.assertEqual(globals_dict["x"], 3)
 
         # Note that this *doesn't* change the definition of len() seen by foo().
         builtins_dict = {"len": lambda x: 7}
         globals_dict = {"foo": foo, "__builtins__": builtins_dict, "len": lambda x: 8}
 
-        exec("x = foo()", globals_dict)
+        exec("x = foo()", globals_dict)  # noqa: S102
         self.assertEqual(globals_dict["x"], 3)
 
     def test_cannot_replace_builtins_dict_while_active(self):

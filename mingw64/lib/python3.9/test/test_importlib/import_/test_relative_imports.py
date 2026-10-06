@@ -65,7 +65,7 @@ class RelativeImports:
                 uncache_names.append(name)
             else:
                 uncache_names.append(name[: -len(".__init__")])
-        with util.mock_spec(*create) as importer:
+        with util.mock_spec(*create) as importer:  # noqa: SIM117
             with util.import_state(meta_path=[importer]):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
@@ -147,7 +147,7 @@ class RelativeImports:
         create = ["pkg.__init__"]
         for count in range(1, 6):
             create.append(
-                "{0}.pkg{1}.__init__".format(create[-1][: -len(".__init__")], count)
+                "{}.pkg{}.__init__".format(create[-1][: -len(".__init__")], count)
             )
         globals_ = (
             {"__package__": "pkg.pkg1.pkg2.pkg3.pkg4.pkg5"},

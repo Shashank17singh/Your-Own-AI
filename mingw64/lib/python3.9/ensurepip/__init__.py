@@ -1,6 +1,6 @@
 import os
 import os.path
-import runpy
+import runpy  # noqa: F401
 import subprocess
 import sys
 import tempfile

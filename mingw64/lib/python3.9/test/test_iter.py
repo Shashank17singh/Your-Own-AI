@@ -147,7 +147,7 @@ class TestCase(unittest.TestCase):
             self.check_pickle(iter(expr), seq)
         res = []
         for val in expr:
-            res.append(val)
+            res.append(val)  # noqa: PERF402
         self.assertEqual(res, seq)
 
     # Helper to check picklability
@@ -295,7 +295,9 @@ class TestCase(unittest.TestCase):
 
     # Test two-argument iter() with function
     def test_iter_function(self):
-        def spam(state=[0]):
+        def spam(state=None):
+            if state is None:
+                state = [0]
             i = state[0]
             state[0] = i + 1
             return i
@@ -304,7 +306,9 @@ class TestCase(unittest.TestCase):
 
     # Test two-argument iter() with function that raises StopIteration
     def test_iter_function_stop(self):
-        def spam(state=[0]):
+        def spam(state=None):
+            if state is None:
+                state = [0]
             i = state[0]
             if i == 10:
                 raise StopIteration
@@ -315,7 +319,9 @@ class TestCase(unittest.TestCase):
 
     # Test exception propagation through function iterator
     def test_exception_function(self):
-        def spam(state=[0]):
+        def spam(state=None):
+            if state is None:
+                state = [0]
             i = state[0]
             state[0] = i + 1
             if i == 10:
@@ -325,7 +331,7 @@ class TestCase(unittest.TestCase):
         res = []
         try:
             for x in iter(spam, 20):
-                res.append(x)
+                res.append(x)  # noqa: PERF402
         except RuntimeError:
             self.assertEqual(res, list(range(10)))
         else:
@@ -342,7 +348,7 @@ class TestCase(unittest.TestCase):
         res = []
         try:
             for x in MySequenceClass(20):
-                res.append(x)
+                res.append(x)  # noqa: PERF402
         except RuntimeError:
             self.assertEqual(res, list(range(10)))
         else:
@@ -387,12 +393,12 @@ class TestCase(unittest.TestCase):
 
     # Test a file
     def test_iter_file(self):
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
-            f.writelines("%d\n" % i for i in range(5))
+            f.writelines("%d\n" % i for i in range(5))  # noqa: UP031
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.check_for_loop(f, ["0\n", "1\n", "2\n", "3\n", "4\n"], pickle=False)
             self.check_for_loop(f, [], pickle=False)
@@ -407,7 +413,7 @@ class TestCase(unittest.TestCase):
     def test_builtin_list(self):
         self.assertEqual(list(SequenceClass(5)), list(range(5)))
         self.assertEqual(list(SequenceClass(0)), [])
-        self.assertEqual(list(()), [])
+        self.assertEqual([], [])
 
         d = {"one": 1, "two": 2, "three": 3}
         self.assertEqual(list(d), list(d.keys()))
@@ -415,12 +421,12 @@ class TestCase(unittest.TestCase):
         self.assertRaises(TypeError, list, list)
         self.assertRaises(TypeError, list, 42)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
-            f.writelines("%d\n" % i for i in range(5))
+            f.writelines("%d\n" % i for i in range(5))  # noqa: UP031
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.assertEqual(list(f), ["0\n", "1\n", "2\n", "3\n", "4\n"])
             f.seek(0, 0)
@@ -436,8 +442,8 @@ class TestCase(unittest.TestCase):
     def test_builtin_tuple(self):
         self.assertEqual(tuple(SequenceClass(5)), (0, 1, 2, 3, 4))
         self.assertEqual(tuple(SequenceClass(0)), ())
-        self.assertEqual(tuple([]), ())
-        self.assertEqual(tuple(()), ())
+        self.assertEqual((), ())
+        self.assertEqual((), ())
         self.assertEqual(tuple("abc"), ("a", "b", "c"))
 
         d = {"one": 1, "two": 2, "three": 3}
@@ -446,12 +452,12 @@ class TestCase(unittest.TestCase):
         self.assertRaises(TypeError, tuple, list)
         self.assertRaises(TypeError, tuple, 42)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
-            f.writelines("%d\n" % i for i in range(5))
+            f.writelines("%d\n" % i for i in range(5))  # noqa: UP031
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.assertEqual(tuple(f), ("0\n", "1\n", "2\n", "3\n", "4\n"))
             f.seek(0, 0)
@@ -526,14 +532,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(max(d.values()), 3)
         self.assertEqual(min(iter(d.values())), 1)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("medium line\n")
             f.write("xtra large line\n")
             f.write("itty-bitty line\n")
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.assertEqual(min(f), "itty-bitty line\n")
             f.seek(0, 0)
@@ -547,24 +553,22 @@ class TestCase(unittest.TestCase):
 
     # Test map()'s use of iterators.
     def test_builtin_map(self):
-        self.assertEqual(
-            list(map(lambda x: x + 1, SequenceClass(5))), list(range(1, 6))
-        )
+        self.assertEqual([x + 1 for x in SequenceClass(5)], list(range(1, 6)))
 
         d = {"one": 1, "two": 2, "three": 3}
         self.assertEqual(list(map(lambda k, d=d: (k, d[k]), d)), list(d.items()))
         dkeys = list(d.keys())
-        expected = [
+        [
             (i < len(d) and dkeys[i] or None, i, i < len(d) and dkeys[i] or None)
             for i in range(3)
         ]
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.writelines("xy" * i + "\n" for i in range(10))  # line i has len 2*i+1
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.assertEqual(list(map(len, f)), list(range(1, 21, 2)))
         finally:
@@ -603,12 +607,12 @@ class TestCase(unittest.TestCase):
                 self.i = i + 1
                 return i
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("a\nbbb\ncc\n")
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             self.assertEqual(
                 list(zip(IntsFrom(0), f, IntsFrom(-100))),
@@ -671,13 +675,13 @@ class TestCase(unittest.TestCase):
                     return "fooled you!"
                 return next(self.it)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("a\n" + "b\n" + "c\n")
         finally:
             f.close()
 
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         # Nasty:  string.join(s) can't know whether unicode.join() is needed
         # until it's seen all of s's elements.  But in this case, f's
         # iterator cannot be restarted.  So what we're testing here is
@@ -708,7 +712,7 @@ class TestCase(unittest.TestCase):
         self.assertIn(NEVER_EQ, IteratorProxyClass(iter([ALWAYS_EQ])))
         self.assertIn(NEVER_EQ, SequenceProxyClass([ALWAYS_EQ]))
 
-        self.assertRaises(TypeError, lambda: 3 in 12)
+        self.assertRaises(TypeError, lambda: 3 in 12)  # noqa: PLR0133
         self.assertRaises(TypeError, lambda: 3 not in map)
         self.assertRaises(ZeroDivisionError, lambda: 3 in BadIterableClass())
 
@@ -723,12 +727,12 @@ class TestCase(unittest.TestCase):
             self.assertIn((k, v), d.items())
             self.assertNotIn((v, k), d.items())
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("a\nb\nc\n")
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             for chunk in "abc":
                 f.seek(0, 0)
@@ -761,12 +765,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual(countOf(d.values(), 2j), 1)
         self.assertEqual(countOf(d.values(), 1j), 0)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("a\nb\nc\nb\n")
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             for letter, count in ("a", 1), ("b", 2), ("c", 1), ("d", 0):
                 f.seek(0, 0)
@@ -797,12 +801,12 @@ class TestCase(unittest.TestCase):
         self.assertRaises(TypeError, indexOf, indexOf, indexOf)
         self.assertRaises(ZeroDivisionError, indexOf, BadIterableClass(), 1)
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("a\nb\nc\nd\ne\n")
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             fiter = iter(f)
             self.assertEqual(indexOf(fiter, "b\n"), 1)
@@ -823,7 +827,7 @@ class TestCase(unittest.TestCase):
 
     # Test iterators with file.writelines().
     def test_writelines(self):
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
 
         try:
             self.assertRaises(TypeError, f.writelines, None)
@@ -862,7 +866,7 @@ class TestCase(unittest.TestCase):
             f.writelines(Whatever(6, 6 + 2000))
             f.close()
 
-            f = open(TESTFN)
+            f = open(TESTFN)  # noqa: SIM115
             expected = [str(i) + "\n" for i in range(1, 2006)]
             self.assertEqual(list(f), expected)
 
@@ -905,13 +909,13 @@ class TestCase(unittest.TestCase):
         a, b, c = {1: 42, 2: 42, 3: 42}.values()
         self.assertEqual((a, b, c), (42, 42, 42))
 
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         lines = ("a\n", "bb\n", "ccc\n")
         try:
             f.writelines(lines)
         finally:
             f.close()
-        f = open(TESTFN, "r")
+        f = open(TESTFN, "r")  # noqa: SIM115
         try:
             a, b, c = f
             self.assertEqual((a, b, c), lines)
@@ -946,7 +950,7 @@ class TestCase(unittest.TestCase):
         l = [C(), C(), C()]
         self.assertEqual(C.count, 3)
         try:
-            a, b = iter(l)
+            _a, _b = iter(l)
         except ValueError:
             pass
         del l
@@ -986,7 +990,9 @@ class TestCase(unittest.TestCase):
 
     def test_sinkstate_callable(self):
         # This used to fail
-        def spam(state=[0]):
+        def spam(state=None):
+            if state is None:
+                state = [0]
             i = state[0]
             state[0] = i + 1
             if i == 10:
@@ -1008,8 +1014,7 @@ class TestCase(unittest.TestCase):
 
     def test_sinkstate_yield(self):
         def gen():
-            for i in range(5):
-                yield i
+            yield from range(5)
 
         b = gen()
         self.assertEqual(list(b), list(range(5)))
@@ -1051,8 +1056,7 @@ class TestCase(unittest.TestCase):
         # and then shrinking at the end.  This is a basic smoke
         # test for that scenario.
         def gen():
-            for i in range(500):
-                yield i
+            yield from range(500)
 
         lst = [0] * 500
         for i in range(240):

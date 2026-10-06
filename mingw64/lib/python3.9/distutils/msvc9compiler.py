@@ -106,7 +106,7 @@ class Reg:
         i = 0
         while True:
             try:
-                name, value, type = RegEnumValue(handle, i)
+                name, value, _type = RegEnumValue(handle, i)
             except RegError:
                 break
             name = name.lower()
@@ -135,7 +135,7 @@ class MacroExpander:
         self.load_macros(version)
 
     def set_macro(self, macro, path, key):
-        self.macros["$(%s)" % macro] = Reg.get_value(path, key)
+        self.macros[f"$({macro})"] = Reg.get_value(path, key)
 
     def load_macros(self, version):
         self.set_macro("VCInstallDir", self.vsbase + r"\Setup\VC", "productdir")
@@ -163,7 +163,7 @@ you can try compiling with MingW32, by passing "-c mingw32" to setup.py.""")
                 except RegError:
                     continue
                 key = RegEnumKey(h, 0)
-                d = Reg.get_value(base, r"%s\%s" % (p, key))
+                d = Reg.get_value(base, rf"{p}\{key}")
                 self.macros["$(FrameworkVersion)"] = d["version"]
 
     def sub(self, s):
@@ -183,7 +183,7 @@ def get_build_version():
     if i == -1:
         return 6
     i = i + len(prefix)
-    s, rest = sys.version[i:].split(" ", 1)
+    s, _rest = sys.version[i:].split(" ", 1)
     majorVersion = int(s[:-2]) - 6
     if majorVersion >= 13:
         # v13 was skipped and should be v14
@@ -232,23 +232,23 @@ def find_vcvarsall(version):
     """
     vsbase = VS_BASE % version
     try:
-        productdir = Reg.get_value(r"%s\Setup\VC" % vsbase, "productdir")
+        productdir = Reg.get_value(rf"{vsbase}\Setup\VC", "productdir")
     except KeyError:
         log.debug("Unable to find productdir in registry")
         productdir = None
 
     if not productdir or not os.path.isdir(productdir):
-        toolskey = "VS%0.f0COMNTOOLS" % version
+        toolskey = f"VS{version:0.0f}0COMNTOOLS"
         toolsdir = os.environ.get(toolskey, None)
 
         if toolsdir and os.path.isdir(toolsdir):
             productdir = os.path.join(toolsdir, os.pardir, os.pardir, "VC")
             productdir = os.path.abspath(productdir)
             if not os.path.isdir(productdir):
-                log.debug("%s is not a valid directory" % productdir)
+                log.debug(f"{productdir} is not a valid directory")
                 return None
         else:
-            log.debug("Env var %s is not set or invalid" % toolskey)
+            log.debug(f"Env var {toolskey} is not set or invalid")
     if not productdir:
         log.debug("No productdir found")
         return None
@@ -269,7 +269,7 @@ def query_vcvarsall(version, arch="x86"):
         raise DistutilsPlatformError("Unable to find vcvarsall.bat")
     log.debug("Calling 'vcvarsall.bat %s' (version=%s)", arch, version)
     popen = subprocess.Popen(
-        '"%s" %s & set' % (vcvarsall, arch),
+        f'"{vcvarsall}" {arch} & set',
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
@@ -317,13 +317,13 @@ class MSVCCompiler(CCompiler):
     # as it really isn't necessary for this sort of single-compiler class.
     # Would be nice to have a consistent interface with UnixCCompiler,
     # though, so it's worth thinking about.
-    executables = {}
+    executables = {}  # noqa: RUF012
 
     # Private class data (need to distinguish C from C++ source for compiler)
-    _c_extensions = [".c"]
-    _cpp_extensions = [".cc", ".cpp", ".cxx"]
-    _rc_extensions = [".rc"]
-    _mc_extensions = [".mc"]
+    _c_extensions = [".c"]  # noqa: RUF012
+    _cpp_extensions = [".cc", ".cpp", ".cxx"]  # noqa: RUF012
+    _rc_extensions = [".rc"]  # noqa: RUF012
+    _mc_extensions = [".mc"]  # noqa: RUF012
 
     # Needed for the filename generation methods provided by the
     # base class, CCompiler.
@@ -339,7 +339,7 @@ class MSVCCompiler(CCompiler):
         CCompiler.__init__(self, verbose, dry_run, force)
         if VERSION < 8.0:
             raise DistutilsPlatformError(
-                "VC %0.1f is not supported by this module" % VERSION
+                f"VC {VERSION:0.1f} is not supported by this module"
             )
         self.__version = VERSION
         self.__root = r"Software\Microsoft\VisualStudio"
@@ -358,7 +358,7 @@ class MSVCCompiler(CCompiler):
         # sanity check for platforms to prevent obscure errors later.
         ok_plats = "win32", "win-amd64"
         if plat_name not in ok_plats:
-            raise DistutilsPlatformError("--plat-name must be one of %s" % (ok_plats,))
+            raise DistutilsPlatformError(f"--plat-name must be one of {ok_plats}")
 
         if (
             "DISTUTILS_USE_SDK" in os.environ
@@ -394,9 +394,9 @@ class MSVCCompiler(CCompiler):
 
             if len(self.__paths) == 0:
                 raise DistutilsPlatformError(
-                    "Python was built with %s, "
+                    f"Python was built with {self.__product}, "
                     "and extensions need to be built with the same "
-                    "version of the compiler, but it isn't installed." % self.__product
+                    "version of the compiler, but it isn't installed."
                 )
 
             self.cc = self.find_exe("cl.exe")
@@ -463,7 +463,7 @@ class MSVCCompiler(CCompiler):
                 # Better to raise an exception instead of silently continuing
                 # and later complain about sources and targets having
                 # different lengths
-                raise CompileError("Don't know how to compile %s" % src_name)
+                raise CompileError(f"Don't know how to compile {src_name}")
             if strip_dir:
                 base = os.path.basename(base)
             if ext in self._rc_extensions or ext in self._mc_extensions:
@@ -549,7 +549,7 @@ class MSVCCompiler(CCompiler):
                 continue
             else:
                 # how to handle this file?
-                raise CompileError("Don't know how to compile %s to %s" % (src, obj))
+                raise CompileError(f"Don't know how to compile {src} to {obj}")
 
             output_opt = "/Fo" + obj
             try:
@@ -645,7 +645,7 @@ class MSVCCompiler(CCompiler):
             # builds, they can go into the same directory.
             build_temp = os.path.dirname(objects[0])
             if export_symbols is not None:
-                dll_name, dll_ext = os.path.splitext(os.path.basename(output_filename))
+                dll_name, _dll_ext = os.path.splitext(os.path.basename(output_filename))
                 implib_file = os.path.join(build_temp, self.library_filename(dll_name))
                 ld_args.append("/IMPLIB:" + implib_file)
 
@@ -670,7 +670,7 @@ class MSVCCompiler(CCompiler):
             mfinfo = self.manifest_get_embed_info(target_desc, ld_args)
             if mfinfo is not None:
                 mffilename, mfid = mfinfo
-                out_arg = "-outputresource:%s;%s" % (output_filename, mfid)
+                out_arg = f"-outputresource:{output_filename};{mfid}"
                 try:
                     self.spawn(["mt.exe", "-nologo", "-manifest", mffilename, out_arg])
                 except DistutilsExecError as msg:
@@ -724,7 +724,7 @@ class MSVCCompiler(CCompiler):
             # with .pyd's.
             # Returns either the filename of the modified manifest or
             # None if no manifest should be embedded.
-            manifest_f = open(manifest_file)
+            manifest_f = open(manifest_file)  # noqa: SIM115
             try:
                 manifest_buf = manifest_f.read()
             finally:
@@ -747,7 +747,7 @@ class MSVCCompiler(CCompiler):
             if re.search(pattern, manifest_buf) is None:
                 return None
 
-            manifest_f = open(manifest_file, "w")
+            manifest_f = open(manifest_file, "w")  # noqa: SIM115
             try:
                 manifest_f.write(manifest_buf)
                 return manifest_file

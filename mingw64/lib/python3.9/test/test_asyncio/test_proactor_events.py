@@ -929,7 +929,7 @@ class ProactorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.loop = asyncio.ProactorEventLoop()
         self.set_event_loop(self.loop)
         self.addCleanup(self.loop.close)
-        self.file = open(support.TESTFN, "rb")
+        self.file = open(support.TESTFN, "rb")  # noqa: SIM115
         self.addCleanup(self.file.close)
         super().setUp()
 
@@ -969,7 +969,7 @@ class ProactorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         return sock, proto
 
     def test_sock_sendfile_not_a_file(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = object()
         with self.assertRaisesRegex(
             asyncio.SendfileNotAvailableError, "not a regular file"
@@ -978,7 +978,7 @@ class ProactorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_iobuffer(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = io.BytesIO()
         with self.assertRaisesRegex(
             asyncio.SendfileNotAvailableError, "not a regular file"
@@ -987,7 +987,7 @@ class ProactorEventLoopUnixSockSendfileTests(test_utils.TestCase):
         self.assertEqual(self.file.tell(), 0)
 
     def test_sock_sendfile_not_regular_file(self):
-        sock, proto = self.prepare()
+        sock, _proto = self.prepare()
         f = mock.Mock()
         f.fileno.return_value = -1
         with self.assertRaisesRegex(

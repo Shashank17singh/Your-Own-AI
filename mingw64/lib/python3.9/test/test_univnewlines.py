@@ -18,7 +18,7 @@ DATA_TEMPLATE = [
     + "buffer limits that exist in io.py but we also want to test "
     + "the uncommon case, naturally.'",
     "def line3():pass",
-    "line4 = '%s'" % FATX,
+    f"line4 = '{FATX}'",
 ]
 
 DATA_LF = "\n".join(DATA_TEMPLATE) + "\n"
@@ -55,7 +55,7 @@ class TestGenericUnivNewlines:
     def tearDown(self):
         try:
             os.unlink(support.TESTFN)
-        except:
+        except:  # noqa: E722, S110
             pass
 
     def test_read(self):
@@ -124,8 +124,8 @@ class TestCRLFNewlines(TestGenericUnivNewlines):
     def test_tell(self):
         with self.open(support.TESTFN, self.READMODE) as fp:
             self.assertEqual(repr(fp.newlines), repr(None))
-            data = fp.readline()
-            pos = fp.tell()
+            fp.readline()
+            fp.tell()
         self.assertEqual(repr(fp.newlines), repr(self.NEWLINE))
 
 

@@ -80,7 +80,7 @@ class _Database(collections.abc.MutableMapping):
                     pass
         # Mod by Jack: create data file if needed
         try:
-            f = builtins.open(self._datfile, "r", encoding="Latin-1")
+            f = builtins.open(self._datfile, "r", encoding="Latin-1")  # noqa: SIM115
         except OSError:
             if flag not in ("c", "n"):
                 raise
@@ -94,7 +94,7 @@ class _Database(collections.abc.MutableMapping):
         self._modified = False
         self._index = {}
         try:
-            f = builtins.open(self._dirfile, "r", encoding="Latin-1")
+            f = builtins.open(self._dirfile, "r", encoding="Latin-1")  # noqa: SIM115
         except OSError:
             if flag not in ("c", "n"):
                 raise
@@ -132,7 +132,7 @@ class _Database(collections.abc.MutableMapping):
             for key, pos_and_siz_pair in self._index.items():
                 # Use Latin-1 since it has no qualms with any value in any
                 # position; UTF-8, though, does care sometimes.
-                entry = "%r, %r\n" % (key.decode("Latin-1"), pos_and_siz_pair)
+                entry = "{!r}, {!r}\n".format(key.decode("Latin-1"), pos_and_siz_pair)
                 f.write(entry)
 
     sync = _commit
@@ -182,7 +182,7 @@ class _Database(collections.abc.MutableMapping):
         self._index[key] = pos_and_siz_pair
         with builtins.open(self._dirfile, "a", encoding="Latin-1") as f:
             self._chmod(self._dirfile)
-            f.write("%r, %r\n" % (key.decode("Latin-1"), pos_and_siz_pair))
+            f.write("{!r}, {!r}\n".format(key.decode("Latin-1"), pos_and_siz_pair))
 
     def __setitem__(self, key, val):
         if self._readonly:
@@ -244,7 +244,7 @@ class _Database(collections.abc.MutableMapping):
 
     def items(self):
         self._verify_open()
-        return [(key, self[key]) for key in self._index.keys()]
+        return [(key, self[key]) for key in self._index]
 
     def __contains__(self, key):
         if isinstance(key, str):

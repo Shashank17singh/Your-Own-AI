@@ -10,13 +10,13 @@ class ParentModuleTests:
     """Importing a submodule should import the parent modules."""
 
     def test_import_parent(self):
-        with util.mock_spec("pkg.__init__", "pkg.module") as mock:
+        with util.mock_spec("pkg.__init__", "pkg.module") as mock:  # noqa: SIM117
             with util.import_state(meta_path=[mock]):
-                module = self.__import__("pkg.module")
+                self.__import__("pkg.module")
                 self.assertIn("pkg", sys.modules)
 
     def test_bad_parent(self):
-        with util.mock_spec("pkg.module") as mock:
+        with util.mock_spec("pkg.module") as mock:  # noqa: SIM117
             with util.import_state(meta_path=[mock]):
                 with self.assertRaises(ImportError) as cm:
                     self.__import__("pkg.module")
@@ -25,7 +25,7 @@ class ParentModuleTests:
     def test_raising_parent_after_importing_child(self):
         def __init__():
 
-            1 / 0
+            1 / 0  # noqa: B018
 
         mock = util.mock_spec(
             "pkg.__init__", "pkg.module", module_code={"pkg": __init__}
@@ -43,7 +43,7 @@ class ParentModuleTests:
     def test_raising_parent_after_relative_importing_child(self):
         def __init__():
 
-            1 / 0
+            1 / 0  # noqa: B018
 
         mock = util.mock_spec(
             "pkg.__init__", "pkg.module", module_code={"pkg": __init__}
@@ -63,7 +63,7 @@ class ParentModuleTests:
     def test_raising_parent_after_double_relative_importing_child(self):
         def __init__():
 
-            1 / 0
+            1 / 0  # noqa: B018
 
         mock = util.mock_spec(
             "pkg.__init__",
@@ -102,7 +102,7 @@ class ParentModuleTests:
         mock_spec = util.mock_spec("mod", module_code={"mod": module_injection})
         with mock_spec as mock, util.import_state(meta_path=[mock]):
             try:
-                submodule = self.__import__(subname)
+                self.__import__(subname)
             finally:
                 support.unload(subname)
 

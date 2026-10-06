@@ -103,7 +103,7 @@ def available_timezones():
         try:
             with open(fpath, "rb") as f:
                 return f.read(4) == b"TZif"
-        except Exception:  # pragma: nocover
+        except Exception:  # pragma: nocover  # noqa: BLE001
             return False
 
     for tz_root in TZPATH:
@@ -124,8 +124,7 @@ def available_timezones():
                     continue
                 if valid_key(fpath):
                     valid_zones.add(key)
-    if "posixrules" in valid_zones:
-        valid_zones.remove("posixrules")
+    valid_zones.discard("posixrules")
     return valid_zones
 
 

@@ -54,7 +54,7 @@ class TestCopy(unittest.TestCase):
         x = C(42)
         self.assertRaises(TypeError, copy.copy, x)
         copyreg.pickle(C, pickle_C, C)
-        y = copy.copy(x)
+        copy.copy(x)
 
     def test_copy_reduce_ex(self):
         class C:
@@ -372,7 +372,7 @@ class TestCopy(unittest.TestCase):
         x = C(42)
         self.assertRaises(TypeError, copy.deepcopy, x)
         copyreg.pickle(C, pickle_C, C)
-        y = copy.deepcopy(x)
+        copy.deepcopy(x)
 
     def test_deepcopy_reduce_ex(self):
         class C:
@@ -508,7 +508,7 @@ class TestCopy(unittest.TestCase):
     def test_deepcopy_keepalive(self):
         memo = {}
         x = []
-        y = copy.deepcopy(x, memo)
+        copy.deepcopy(x, memo)
         self.assertIs(memo[id(memo)][0], x)
 
     def test_deepcopy_dont_memo_immutable(self):

@@ -23,7 +23,7 @@ class BaseTestSuite:
         self.addTests(tests)
 
     def __repr__(self):
-        return "<%s tests=%s>" % (util.strclass(self.__class__), list(self))
+        return f"<{util.strclass(self.__class__)} tests={list(self)}>"
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -203,7 +203,7 @@ class TestSuite(BaseTestSuite):
                 if result._moduleSetUpFailed:
                     try:
                         case.doModuleCleanups()
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         self._createClassOrModuleLevelException(
                             result, e, "setUpModule", currentModule
                         )
@@ -319,7 +319,7 @@ class _ErrorHolder:
         return None
 
     def __repr__(self):
-        return "<ErrorHolder description=%r>" % (self.description,)
+        return f"<ErrorHolder description={self.description!r}>"
 
     def __str__(self):
         return self.id()

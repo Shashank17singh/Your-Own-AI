@@ -52,7 +52,7 @@ class TestBasicOps:
             with self.assertWarns(DeprecationWarning):
                 self.gen.seed(arg)
 
-        for arg in [list(range(3)), dict(one=1)]:
+        for arg in [list(range(3)), {"one": 1}]:
             with self.assertWarns(DeprecationWarning):
                 self.assertRaises(TypeError, self.gen.seed, arg)
         self.assertRaises(TypeError, self.gen.seed, 1, 2, 3, 4)
@@ -482,7 +482,7 @@ class SystemRandom_TestBasicOps(TestBasicOps, unittest.TestCase):
         for start, stop in [(-2, 0), (-(2**60) - 2, -(2**60)), (2**60, 2**60 + 2)]:
             self.assertEqual(
                 set(range(start, stop)),
-                set([self.gen.randrange(start, stop) for i in range(100)]),
+                {self.gen.randrange(start, stop) for i in range(100)},
             )
 
     def test_randrange_nonunit_step(self):
@@ -781,7 +781,7 @@ class MersenneTwister_TestBasicOps(TestBasicOps, unittest.TestCase):
         for start, stop in [(-2, 0), (-(2**60) - 2, -(2**60)), (2**60, 2**60 + 2)]:
             self.assertEqual(
                 set(range(start, stop)),
-                set([self.gen.randrange(start, stop) for i in range(100)]),
+                {self.gen.randrange(start, stop) for i in range(100)},
             )
 
     def test_getrandbits(self):
@@ -867,7 +867,6 @@ class MersenneTwister_TestBasicOps(TestBasicOps, unittest.TestCase):
 
     def test_choices_algorithms(self):
         # The various ways of specifying weights should produce the same results
-        choices = self.gen.choices
         n = 104729
 
         self.gen.seed(8675309)
@@ -1076,10 +1075,10 @@ class TestDistributions(unittest.TestCase):
                 s2 += (e - mu) ** 2
             N = len(y)
             self.assertAlmostEqual(
-                s1 / N, mu, places=2, msg="%s%r" % (variate.__name__, args)
+                s1 / N, mu, places=2, msg=f"{variate.__name__}{args!r}"
             )
             self.assertAlmostEqual(
-                s2 / (N - 1), sigmasqrd, places=2, msg="%s%r" % (variate.__name__, args)
+                s2 / (N - 1), sigmasqrd, places=2, msg=f"{variate.__name__}{args!r}"
             )
 
     def test_constant(self):
@@ -1208,7 +1207,7 @@ class TestDistributions(unittest.TestCase):
         _log = random._log
         alpha = 0.35
         beta = 1.45
-        b = (_e + alpha) / _e
+        (_e + alpha) / _e
         epsilon = 0.01
 
         r1 = 0.8859296441566  # 1.0 / b

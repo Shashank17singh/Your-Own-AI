@@ -38,14 +38,14 @@ class PkgutilTests(unittest.TestCase):
         package_dir = os.path.join(self.dirname, pkg)
         os.mkdir(package_dir)
         # Empty init.py
-        f = open(os.path.join(package_dir, "__init__.py"), "wb")
+        f = open(os.path.join(package_dir, "__init__.py"), "wb")  # noqa: SIM115
         f.close()
         # Resource files, res.txt, sub/res.txt
-        f = open(os.path.join(package_dir, "res.txt"), "wb")
+        f = open(os.path.join(package_dir, "res.txt"), "wb")  # noqa: SIM115
         f.write(RESOURCE_DATA)
         f.close()
         os.mkdir(os.path.join(package_dir, "sub"))
-        f = open(os.path.join(package_dir, "sub", "res.txt"), "wb")
+        f = open(os.path.join(package_dir, "sub", "res.txt"), "wb")  # noqa: SIM115
         f.write(RESOURCE_DATA)
         f.close()
 
@@ -146,26 +146,26 @@ class PkgutilTests(unittest.TestCase):
         pkg1 = "test_walkpackages_filesys"
         pkg1_dir = os.path.join(self.dirname, pkg1)
         os.mkdir(pkg1_dir)
-        f = open(os.path.join(pkg1_dir, "__init__.py"), "wb")
+        f = open(os.path.join(pkg1_dir, "__init__.py"), "wb")  # noqa: SIM115
         f.close()
         os.mkdir(os.path.join(pkg1_dir, "sub"))
-        f = open(os.path.join(pkg1_dir, "sub", "__init__.py"), "wb")
+        f = open(os.path.join(pkg1_dir, "sub", "__init__.py"), "wb")  # noqa: SIM115
         f.close()
-        f = open(os.path.join(pkg1_dir, "sub", "mod.py"), "wb")
+        f = open(os.path.join(pkg1_dir, "sub", "mod.py"), "wb")  # noqa: SIM115
         f.close()
 
         # Now, to juice it up, let's add the opposite packages, too.
         pkg2 = "sub"
         pkg2_dir = os.path.join(self.dirname, pkg2)
         os.mkdir(pkg2_dir)
-        f = open(os.path.join(pkg2_dir, "__init__.py"), "wb")
+        f = open(os.path.join(pkg2_dir, "__init__.py"), "wb")  # noqa: SIM115
         f.close()
         os.mkdir(os.path.join(pkg2_dir, "test_walkpackages_filesys"))
-        f = open(
+        f = open(  # noqa: SIM115
             os.path.join(pkg2_dir, "test_walkpackages_filesys", "__init__.py"), "wb"
         )
         f.close()
-        f = open(os.path.join(pkg2_dir, "test_walkpackages_filesys", "mod.py"), "wb")
+        f = open(os.path.join(pkg2_dir, "test_walkpackages_filesys", "mod.py"), "wb")  # noqa: SIM115
         f.close()
 
         expected = [
@@ -344,7 +344,7 @@ class PkgutilPEP302Tests(unittest.TestCase):
             loader = PkgutilPEP302Tests.MyTestLoader()
             return spec_from_file_location(
                 fullname,
-                "<%s>" % loader.__class__.__name__,
+                f"<{loader.__class__.__name__}>",
                 loader=loader,
                 submodule_search_locations=[],
             )
@@ -580,14 +580,13 @@ class ImportlibMigrationTests(unittest.TestCase):
     @unittest.skipIf(__name__ == "__main__", "not compatible with __main__")
     def test_get_loader_handles_missing_loader_attribute(self):
         global __loader__
-        this_loader = __loader__
         del __loader__
         try:
             with check_warnings() as w:
                 self.assertIsNotNone(pkgutil.get_loader(__name__))
                 self.assertEqual(len(w.warnings), 0)
         finally:
-            __loader__ = this_loader
+            pass
 
     def test_get_loader_handles_missing_spec_attribute(self):
         name = "spam"

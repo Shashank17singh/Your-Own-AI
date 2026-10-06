@@ -6,7 +6,7 @@ from importlib.abc import ResourceLoader
 from io import BytesIO, TextIOWrapper
 from pathlib import Path
 from types import ModuleType
-from typing import BinaryIO, ContextManager, TextIO, Union, cast
+from typing import BinaryIO, ContextManager, TextIO, Union, cast  # noqa: UP035
 
 from . import _common
 from . import abc as resources_abc
@@ -27,8 +27,8 @@ __all__ = [
 ]
 
 
-Package = Union[str, ModuleType]
-Resource = Union[str, os.PathLike]
+Package = Union[str, ModuleType]  # noqa: UP007
+Resource = Union[str, os.PathLike]  # noqa: UP007
 
 
 def _resolve(name) -> ModuleType:
@@ -215,4 +215,4 @@ def contents(package: Package) -> Iterable[str]:
     )
     if namespace or not package.__spec__.has_location:
         return ()
-    return list(item.name for item in _common.from_package(package).iterdir())
+    return [item.name for item in _common.from_package(package).iterdir()]

@@ -36,7 +36,7 @@ class Using__package__:
     """
 
     def import_module(self, globals_):
-        with self.mock_modules("pkg.__init__", "pkg.fake") as importer:
+        with self.mock_modules("pkg.__init__", "pkg.fake") as importer:  # noqa: SIM117
             with util.import_state(meta_path=[importer]):
                 self.__import__("pkg.fake")
                 module = self.__import__(
@@ -130,7 +130,7 @@ class Setting__package__:
 
     # [top-level]
     def test_top_level(self):
-        with self.mock_modules("top_level") as mock:
+        with self.mock_modules("top_level") as mock:  # noqa: SIM117
             with util.import_state(meta_path=[mock]):
                 del mock["top_level"].__package__
                 module = self.__import__("top_level")
@@ -138,7 +138,7 @@ class Setting__package__:
 
     # [package]
     def test_package(self):
-        with self.mock_modules("pkg.__init__") as mock:
+        with self.mock_modules("pkg.__init__") as mock:  # noqa: SIM117
             with util.import_state(meta_path=[mock]):
                 del mock["pkg"].__package__
                 module = self.__import__("pkg")
@@ -146,7 +146,7 @@ class Setting__package__:
 
     # [submodule]
     def test_submodule(self):
-        with self.mock_modules("pkg.__init__", "pkg.mod") as mock:
+        with self.mock_modules("pkg.__init__", "pkg.mod") as mock:  # noqa: SIM117
             with util.import_state(meta_path=[mock]):
                 del mock["pkg.mod"].__package__
                 pkg = self.__import__("pkg.mod")

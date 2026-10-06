@@ -37,8 +37,8 @@ def task(N, done, done_tasks, errors):
         else:
             import random
         # This will fail if random is not completely initialized
-        x = random.randrange(1, 3)
-    except Exception as e:
+        random.randrange(1, 3)
+    except Exception as e:  # noqa: BLE001
         errors.append(e.with_traceback(None))
     finally:
         done_tasks.append(threading.get_ident())
@@ -152,7 +152,7 @@ class ThreadedImportTests(unittest.TestCase):
             dt = time.monotonic() - t0
             if verbose:
                 print("%.1f ms" % (dt * 1e3), flush=True, end=" ")
-            dbg_info = "done: %s/%s" % (len(done_tasks), N)
+            dbg_info = f"done: {len(done_tasks)}/{N}"
             self.assertFalse(errors, dbg_info)
             self.assertTrue(completed, dbg_info)
             if verbose:
@@ -189,7 +189,7 @@ class ThreadedImportTests(unittest.TestCase):
         try:
             # Flush the cache a first time
             flushing_finder.find_spec("")
-            numtests = self.check_parallel_module_init()
+            self.check_parallel_module_init()
             self.assertGreater(finder.numcalls, 0)
             self.assertEqual(finder.x, finder.numcalls)
         finally:

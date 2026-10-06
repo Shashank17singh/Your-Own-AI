@@ -205,7 +205,7 @@ class SimpleTypesTestCase(unittest.TestCase):
         class WorseStruct(Structure):
             @property
             def __dict__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         with self.assertRaises(ZeroDivisionError):
             WorseStruct().__setstate__({}, b"foo")

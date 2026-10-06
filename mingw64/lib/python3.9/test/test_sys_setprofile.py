@@ -76,7 +76,7 @@ class ProfileSimulator(HookWatcher):
     def trace_pass(self, frame):
         pass
 
-    dispatch = {
+    dispatch = {  # noqa: RUF012
         "call": trace_call,
         "exception": trace_exception,
         "return": trace_return,
@@ -91,8 +91,7 @@ class TestCaseBase(unittest.TestCase):
         events = capture_events(callable, self.new_watcher())
         if events != expected:
             self.fail(
-                "Expected events:\n%s\nReceived events:\n%s"
-                % (pprint.pformat(expected), pprint.pformat(events))
+                f"Expected events:\n{pprint.pformat(expected)}\nReceived events:\n{pprint.pformat(events)}"
             )
 
 
@@ -115,7 +114,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_exception(self):
         def f(p):
-            1 / 0
+            1 / 0  # noqa: B018
 
         f_ident = ident(f)
         self.check_events(
@@ -129,8 +128,8 @@ class ProfileHookTestCase(TestCaseBase):
     def test_caught_exception(self):
         def f(p):
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722, S110
                 pass
 
         f_ident = ident(f)
@@ -145,8 +144,8 @@ class ProfileHookTestCase(TestCaseBase):
     def test_caught_nested_exception(self):
         def f(p):
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722, S110
                 pass
 
         f_ident = ident(f)
@@ -160,7 +159,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_nested_exception(self):
         def f(p):
-            1 / 0
+            1 / 0  # noqa: B018
 
         f_ident = ident(f)
         self.check_events(
@@ -176,15 +175,15 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_exception_in_except_clause(self):
         def f(p):
-            1 / 0
+            1 / 0  # noqa: B018
 
         def g(p):
             try:
                 f(p)
-            except:
+            except:  # noqa: E722
                 try:
                     f(p)
-                except:
+                except:  # noqa: E722, S110
                     pass
 
         f_ident = ident(f)
@@ -203,7 +202,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_exception_propagation(self):
         def f(p):
-            1 / 0
+            1 / 0  # noqa: B018
 
         def g(p):
             try:
@@ -227,9 +226,9 @@ class ProfileHookTestCase(TestCaseBase):
     def test_raise_twice(self):
         def f(p):
             try:
-                1 / 0
-            except:
-                1 / 0
+                1 / 0  # noqa: B018
+            except:  # noqa: E722
+                1 / 0  # noqa: B018
 
         f_ident = ident(f)
         self.check_events(
@@ -243,8 +242,8 @@ class ProfileHookTestCase(TestCaseBase):
     def test_raise_reraise(self):
         def f(p):
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: TRY203
                 raise
 
         f_ident = ident(f)
@@ -258,7 +257,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_raise(self):
         def f(p):
-            raise Exception()
+            raise Exception()  # noqa: TRY002
 
         f_ident = ident(f)
         self.check_events(
@@ -271,7 +270,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_distant_exception(self):
         def f():
-            1 / 0
+            1 / 0  # noqa: B018
 
         def g():
             f()
@@ -308,8 +307,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_generator(self):
         def f():
-            for i in range(2):
-                yield i
+            yield from range(2)
 
         def g(p):
             for i in f():
@@ -336,8 +334,7 @@ class ProfileHookTestCase(TestCaseBase):
 
     def test_stop_iteration(self):
         def f():
-            for i in range(2):
-                yield i
+            yield from range(2)
 
         def g(p):
             for i in f():
@@ -381,7 +378,7 @@ class ProfileSimulatorTestCase(TestCaseBase):
 
     def test_basic_exception(self):
         def f(p):
-            1 / 0
+            1 / 0  # noqa: B018
 
         f_ident = ident(f)
         self.check_events(
@@ -395,8 +392,8 @@ class ProfileSimulatorTestCase(TestCaseBase):
     def test_caught_exception(self):
         def f(p):
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722, S110
                 pass
 
         f_ident = ident(f)
@@ -410,7 +407,7 @@ class ProfileSimulatorTestCase(TestCaseBase):
 
     def test_distant_exception(self):
         def f():
-            1 / 0
+            1 / 0  # noqa: B018
 
         def g():
             f()
@@ -503,7 +500,7 @@ def ident(function):
 def protect(f, p):
     try:
         f(p)
-    except:
+    except:  # noqa: E722, S110
         pass
 
 

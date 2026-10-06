@@ -7,7 +7,7 @@ import types
 from opcode import *
 from opcode import __all__ as _opcodes_all
 
-__all__ = [
+__all__ = [  # noqa: PLE0605
     "code_info",
     "dis",
     "disassemble",
@@ -85,7 +85,7 @@ def dis(x=None, *, file=None, depth=None):
         items = sorted(x.__dict__.items())
         for name, x1 in items:
             if isinstance(x1, _have_code):
-                print("Disassembly of %s:" % name, file=file)
+                print(f"Disassembly of {name}:", file=file)
                 try:
                     dis(x1, file=file, depth=depth)
                 except TypeError as msg:
@@ -98,7 +98,7 @@ def dis(x=None, *, file=None, depth=None):
     elif isinstance(x, str):  # Source code
         _disassemble_str(x, file=file, depth=depth)
     else:
-        raise TypeError("don't know how to disassemble %s objects" % type(x).__name__)
+        raise TypeError(f"don't know how to disassemble {type(x).__name__} objects")
 
 
 def distb(tb=None, *, file=None):
@@ -165,7 +165,7 @@ def _get_code_object(x):
     # By now, if we don't have a code object, we can't disassemble x.
     if hasattr(x, "co_code"):
         return x
-    raise TypeError("don't know how to disassemble %s objects" % type(x).__name__)
+    raise TypeError(f"don't know how to disassemble {type(x).__name__} objects")
 
 
 def code_info(x):
@@ -175,34 +175,34 @@ def code_info(x):
 
 def _format_code_info(co):
     lines = []
-    lines.append("Name:              %s" % co.co_name)
-    lines.append("Filename:          %s" % co.co_filename)
-    lines.append("Argument count:    %s" % co.co_argcount)
-    lines.append("Positional-only arguments: %s" % co.co_posonlyargcount)
-    lines.append("Kw-only arguments: %s" % co.co_kwonlyargcount)
-    lines.append("Number of locals:  %s" % co.co_nlocals)
-    lines.append("Stack size:        %s" % co.co_stacksize)
-    lines.append("Flags:             %s" % pretty_flags(co.co_flags))
+    lines.append(f"Name:              {co.co_name}")
+    lines.append(f"Filename:          {co.co_filename}")
+    lines.append(f"Argument count:    {co.co_argcount}")
+    lines.append(f"Positional-only arguments: {co.co_posonlyargcount}")
+    lines.append(f"Kw-only arguments: {co.co_kwonlyargcount}")
+    lines.append(f"Number of locals:  {co.co_nlocals}")
+    lines.append(f"Stack size:        {co.co_stacksize}")
+    lines.append(f"Flags:             {pretty_flags(co.co_flags)}")
     if co.co_consts:
         lines.append("Constants:")
         for i_c in enumerate(co.co_consts):
-            lines.append("%4d: %r" % i_c)
+            lines.append("%4d: %r" % i_c)  # noqa: UP031
     if co.co_names:
         lines.append("Names:")
         for i_n in enumerate(co.co_names):
-            lines.append("%4d: %s" % i_n)
+            lines.append("%4d: %s" % i_n)  # noqa: UP031
     if co.co_varnames:
         lines.append("Variable names:")
         for i_n in enumerate(co.co_varnames):
-            lines.append("%4d: %s" % i_n)
+            lines.append("%4d: %s" % i_n)  # noqa: UP031
     if co.co_freevars:
         lines.append("Free variables:")
         for i_n in enumerate(co.co_freevars):
-            lines.append("%4d: %s" % i_n)
+            lines.append("%4d: %s" % i_n)  # noqa: UP031
     if co.co_cellvars:
         lines.append("Cell variables:")
         for i_n in enumerate(co.co_cellvars):
-            lines.append("%4d: %s" % i_n)
+            lines.append("%4d: %s" % i_n)  # noqa: UP031
     return "\n".join(lines)
 
 
@@ -260,7 +260,7 @@ class Instruction(_Instruction):
         # Column: Source code line number
         if lineno_width:
             if self.starts_line is not None:
-                lineno_fmt = "%%%dd" % lineno_width
+                lineno_fmt = "%%%dd" % lineno_width  # noqa: UP031
                 fields.append(lineno_fmt % self.starts_line)
             else:
                 fields.append(" " * lineno_width)
@@ -432,7 +432,7 @@ def _disassemble_recursive(co, *, file=None, depth=None):
         for x in co.co_consts:
             if hasattr(x, "co_code"):
                 print(file=file)
-                print("Disassembly of %r:" % (x,), file=file)
+                print(f"Disassembly of {x!r}:", file=file)
                 _disassemble_recursive(x, file=file, depth=depth)
 
 

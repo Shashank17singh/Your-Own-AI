@@ -17,14 +17,14 @@ class Quitter:
         self.eof = eof
 
     def __repr__(self):
-        return "Use %s() or %s to exit" % (self.name, self.eof)
+        return f"Use {self.name}() or {self.eof} to exit"
 
     def __call__(self, code=None):
         # Shells like IDLE catch the SystemExit, but listen when their
         # stdin wrapper is closed.
         try:
             sys.stdin.close()
-        except:
+        except:  # noqa: E722, S110
             pass
         raise SystemExit(code)
 

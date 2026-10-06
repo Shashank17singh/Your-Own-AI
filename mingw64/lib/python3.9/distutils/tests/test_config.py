@@ -121,7 +121,7 @@ class PyPIRCCommandTestCase(BasePyPIRCCommandTestCase):
         self.assertFalse(os.path.exists(rc))
         cmd._store_pypirc("tarek", "xxx")
         self.assertTrue(os.path.exists(rc))
-        f = open(rc)
+        f = open(rc)  # noqa: SIM115
         try:
             content = f.read()
             self.assertEqual(content, WANTED)

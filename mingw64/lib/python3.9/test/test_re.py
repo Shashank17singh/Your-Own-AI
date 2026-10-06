@@ -69,7 +69,6 @@ class ReTests(unittest.TestCase):
         b.extend(b"x" * 400)
 
     def test_weakref(self):
-        s = "QabbbcR"
         x = re.compile("ab+c")
         y = proxy(x)
         self.assertEqual(x.findall("QabbbcR"), y.findall("QabbbcR"))
@@ -100,7 +99,7 @@ class ReTests(unittest.TestCase):
             re.sub(b"y", memoryview(b"a"), memoryview(b"xyz")), b"xaz"
         )
         for y in ("\xe0", "\u0430", "\U0001d49c"):
-            self.assertEqual(re.sub(y, "a", "x%sz" % y), "xaz")
+            self.assertEqual(re.sub(y, "a", f"x{y}z"), "xaz")
 
         self.assertEqual(re.sub("(?i)b+", "x", "bbbb BBBB"), "x x")
         self.assertEqual(
@@ -259,8 +258,8 @@ class ReTests(unittest.TestCase):
         re.compile("(?P<𝔘𝔫𝔦𝔠𝔬𝔡𝔢>x)(?P=𝔘𝔫𝔦𝔠𝔬𝔡𝔢)(?(𝔘𝔫𝔦𝔠𝔬𝔡𝔢)y)")
         self.checkPatternError("(?P<©>x)", "bad character in group name '©'", 4)
         # Support > 100 groups.
-        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))
-        pat = "(?:%s)(?(200)z|t)" % pat
+        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))  # noqa: UP031
+        pat = f"(?:{pat})(?(200)z|t)"
         self.assertEqual(re.match(pat, "xc8yz").span(), (0, 5))
 
     def test_symbolic_refs(self):
@@ -294,7 +293,7 @@ class ReTests(unittest.TestCase):
             "(?P<a>x)", r"\g<©>", "xx", "bad character in group name '©'", 3
         )
         # Support > 100 groups.
-        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))
+        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))  # noqa: UP031
         self.assertEqual(re.sub(pat, r"\g<200>", "xc8yzxc8y"), "c8zc8")
 
     def test_re_subn(self):
@@ -306,7 +305,7 @@ class ReTests(unittest.TestCase):
         self.assertEqual(re.subn("b*", "x", "xyz", count=2), ("xxxyz", 2))
 
     def test_re_split(self):
-        for string in ":a:b::c", S(":a:b::c"):
+        for string in ":a:b::c", S(":a:b::c"):  # noqa: F402
             self.assertTypedEqual(re.split(":", string), ["", "a", "b", "", "c"])
             self.assertTypedEqual(re.split(":+", string), ["", "a", "b", "c"])
             self.assertTypedEqual(
@@ -328,7 +327,7 @@ class ReTests(unittest.TestCase):
             "\u0430\u0431\u0432",
             "\U0001d49c\U0001d49e\U0001d4b5",
         ):
-            string = ":%s:%s::%s" % (a, b, c)
+            string = f":{a}:{b}::{c}"
             self.assertEqual(re.split(":", string), ["", a, b, "", c])
             self.assertEqual(re.split(":+", string), ["", a, b, c])
             self.assertEqual(re.split("(:+)", string), ["", ":", a, ":", b, "::", c])
@@ -400,7 +399,7 @@ class ReTests(unittest.TestCase):
 
     def test_re_findall(self):
         self.assertEqual(re.findall(":+", "abc"), [])
-        for string in "a:b::c:::d", S("a:b::c:::d"):
+        for string in "a:b::c:::d", S("a:b::c:::d"):  # noqa: F402
             self.assertTypedEqual(re.findall(":+", string), [":", "::", ":::"])
             self.assertTypedEqual(re.findall("(:+)", string), [":", "::", ":::"])
             self.assertTypedEqual(
@@ -421,11 +420,11 @@ class ReTests(unittest.TestCase):
         for x in ("\xe0", "\u0430", "\U0001d49c"):
             xx = x * 2
             xxx = x * 3
-            string = "a%sb%sc%sd" % (x, xx, xxx)
-            self.assertEqual(re.findall("%s+" % x, string), [x, xx, xxx])
-            self.assertEqual(re.findall("(%s+)" % x, string), [x, xx, xxx])
+            string = f"a{x}b{xx}c{xxx}d"
+            self.assertEqual(re.findall(f"{x}+", string), [x, xx, xxx])
+            self.assertEqual(re.findall(f"({x}+)", string), [x, xx, xxx])
             self.assertEqual(
-                re.findall("(%s)(%s*)" % (x, x), string), [(x, ""), (x, x), (x, xx)]
+                re.findall(f"({x})({x}*)", string), [(x, ""), (x, x), (x, xx)]
             )
 
     def test_bug_117612(self):
@@ -434,7 +433,7 @@ class ReTests(unittest.TestCase):
         )
 
     def test_re_match(self):
-        for string in "a", S("a"):
+        for string in "a", S("a"):  # noqa: F402
             self.assertEqual(re.match("a", string).groups(), ())
             self.assertEqual(re.match("(a)", string).groups(), ("a",))
             self.assertEqual(re.match("(a)", string).group(0), "a")
@@ -448,10 +447,10 @@ class ReTests(unittest.TestCase):
             self.assertEqual(re.match(b"(a)", string).group(1, 1), (b"a", b"a"))
         for a in ("\xe0", "\u0430", "\U0001d49c"):
             self.assertEqual(re.match(a, a).groups(), ())
-            self.assertEqual(re.match("(%s)" % a, a).groups(), (a,))
-            self.assertEqual(re.match("(%s)" % a, a).group(0), a)
-            self.assertEqual(re.match("(%s)" % a, a).group(1), a)
-            self.assertEqual(re.match("(%s)" % a, a).group(1, 1), (a, a))
+            self.assertEqual(re.match(f"({a})", a).groups(), (a,))
+            self.assertEqual(re.match(f"({a})", a).group(0), a)
+            self.assertEqual(re.match(f"({a})", a).group(1), a)
+            self.assertEqual(re.match(f"({a})", a).group(1, 1), (a, a))
 
         pat = re.compile("((a)|(b))(c)?")
         self.assertEqual(pat.match("a").groups(), ("a", "a", None, None))
@@ -537,12 +536,12 @@ class ReTests(unittest.TestCase):
     def test_re_fullmatch(self):
         # Issue 16203: Proposal: add re.fullmatch() method.
         self.assertEqual(re.fullmatch(r"a", "a").span(), (0, 1))
-        for string in "ab", S("ab"):
+        for string in "ab", S("ab"):  # noqa: F402
             self.assertEqual(re.fullmatch(r"a|ab", string).span(), (0, 2))
         for string in b"ab", B(b"ab"), bytearray(b"ab"), memoryview(b"ab"):
             self.assertEqual(re.fullmatch(rb"a|ab", string).span(), (0, 2))
         for a, b in "\xe0\xdf", "\u0430\u0431", "\U0001d49c\U0001d49e":
-            r = r"%s|%s" % (a, a + b)
+            r = rf"{a}|{a + b}"
             self.assertEqual(re.fullmatch(r, a + b).span(), (0, 2))
         self.assertEqual(re.fullmatch(r".*?$", "abc").span(), (0, 3))
         self.assertEqual(re.fullmatch(r".*?", "abc").span(), (0, 3))
@@ -591,8 +590,8 @@ class ReTests(unittest.TestCase):
         self.assertIsNone(p.match("ac"))
 
         # Support > 100 groups.
-        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))
-        pat = "(?:%s)(?(200)z)" % pat
+        pat = "|".join("x(?P<a%d>%x)y" % (i, i) for i in range(1, 200 + 1))  # noqa: UP031
+        pat = f"(?:{pat})(?(200)z)"
         self.assertEqual(re.match(pat, "xc8yz").span(), (0, 5))
 
         self.checkPatternError(r"(?P<a>)(?(0))", "bad group number", 10)
@@ -606,13 +605,15 @@ class ReTests(unittest.TestCase):
 
         self.checkTemplateError(
             "()",
-            r"\g<%s>" % MAXGROUPS,
+            rf"\g<{MAXGROUPS}>",
             "xx",
-            "invalid group reference %d" % MAXGROUPS,
+            "invalid group reference %d" % MAXGROUPS,  # noqa: UP031
             3,
         )
         self.checkPatternError(
-            r"(?P<a>)(?(%d))" % MAXGROUPS, "invalid group reference %d" % MAXGROUPS, 10
+            r"(?P<a>)(?(%d))" % MAXGROUPS,
+            "invalid group reference %d" % MAXGROUPS,
+            10,  # noqa: UP031
         )
 
     def test_re_groupref(self):
@@ -754,10 +755,10 @@ class ReTests(unittest.TestCase):
         re.purge()  # for warnings
         for c in "ceghijklmopqyzCEFGHIJKLMNOPQRTVXY":
             with self.subTest(c):
-                self.assertRaises(re.error, re.compile, "\\%c" % c)
+                self.assertRaises(re.error, re.compile, "\\%c" % c)  # noqa: UP031
         for c in "ceghijklmopqyzABCEFGHIJKLMNOPQRTVXYZ":
             with self.subTest(c):
-                self.assertRaises(re.error, re.compile, "[\\%c]" % c)
+                self.assertRaises(re.error, re.compile, "[\\%c]" % c)  # noqa: UP031
 
     def test_named_unicode_escapes(self):
         # test individual Unicode named escapes
@@ -819,12 +820,12 @@ class ReTests(unittest.TestCase):
 
     def test_bigcharset(self):
         self.assertEqual(re.match("([\u2222\u2223])", "\u2222").group(1), "\u2222")
-        r = "[%s]" % "".join(map(chr, range(256, 2**16, 255)))
+        r = "[{}]".format("".join(map(chr, range(256, 2**16, 255))))
         self.assertEqual(re.match(r, "\uff01").group(), "\uff01")
 
     def test_big_codesize(self):
         # Issue #1160
-        r = re.compile("|".join("%d" % x for x in range(10000)))
+        r = re.compile("|".join("%d" % x for x in range(10000)))  # noqa: UP031
         self.assertTrue(r.match("1000"))
         self.assertTrue(r.match("9999"))
 
@@ -1117,7 +1118,11 @@ class ReTests(unittest.TestCase):
         self.assertEqual(s_escaped, s)
         self.assertMatch(s_escaped, s)
         self.assertMatch(
-            ".%s+." % re.escape("\u2620"), s, "x\u2620\u2620\u2620x", (2, 7), re.search
+            ".{}+.".format(re.escape("\u2620")),
+            s,
+            "x\u2620\u2620\u2620x",
+            (2, 7),
+            re.search,
         )
 
     def test_re_escape_non_ascii_bytes(self):
@@ -1178,19 +1183,19 @@ class ReTests(unittest.TestCase):
     def test_sre_character_literals(self):
         for i in [0, 8, 16, 32, 64, 127, 128, 255, 256, 0xFFFF, 0x10000, 0x10FFFF]:
             if i < 256:
-                self.assertTrue(re.match(r"\%03o" % i, chr(i)))
-                self.assertTrue(re.match(r"\%03o0" % i, chr(i) + "0"))
-                self.assertTrue(re.match(r"\%03o8" % i, chr(i) + "8"))
-                self.assertTrue(re.match(r"\x%02x" % i, chr(i)))
-                self.assertTrue(re.match(r"\x%02x0" % i, chr(i) + "0"))
-                self.assertTrue(re.match(r"\x%02xz" % i, chr(i) + "z"))
+                self.assertTrue(re.match(rf"\{i:03o}", chr(i)))
+                self.assertTrue(re.match(rf"\{i:03o}0", chr(i) + "0"))
+                self.assertTrue(re.match(rf"\{i:03o}8", chr(i) + "8"))
+                self.assertTrue(re.match(rf"\x{i:02x}", chr(i)))
+                self.assertTrue(re.match(rf"\x{i:02x}0", chr(i) + "0"))
+                self.assertTrue(re.match(rf"\x{i:02x}z", chr(i) + "z"))
             if i < 0x10000:
-                self.assertTrue(re.match(r"\u%04x" % i, chr(i)))
-                self.assertTrue(re.match(r"\u%04x0" % i, chr(i) + "0"))
-                self.assertTrue(re.match(r"\u%04xz" % i, chr(i) + "z"))
-            self.assertTrue(re.match(r"\U%08x" % i, chr(i)))
-            self.assertTrue(re.match(r"\U%08x0" % i, chr(i) + "0"))
-            self.assertTrue(re.match(r"\U%08xz" % i, chr(i) + "z"))
+                self.assertTrue(re.match(rf"\u{i:04x}", chr(i)))
+                self.assertTrue(re.match(rf"\u{i:04x}0", chr(i) + "0"))
+                self.assertTrue(re.match(rf"\u{i:04x}z", chr(i) + "z"))
+            self.assertTrue(re.match(rf"\U{i:08x}", chr(i)))
+            self.assertTrue(re.match(rf"\U{i:08x}0", chr(i) + "0"))
+            self.assertTrue(re.match(rf"\U{i:08x}z", chr(i) + "z"))
         self.assertTrue(re.match(r"\0", "\000"))
         self.assertTrue(re.match(r"\08", "\0008"))
         self.assertTrue(re.match(r"\01", "\001"))
@@ -1210,21 +1215,21 @@ class ReTests(unittest.TestCase):
     def test_sre_character_class_literals(self):
         for i in [0, 8, 16, 32, 64, 127, 128, 255, 256, 0xFFFF, 0x10000, 0x10FFFF]:
             if i < 256:
-                self.assertTrue(re.match(r"[\%o]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\%o8]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\%03o]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\%03o0]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\%03o8]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\x%02x]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\x%02x0]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\x%02xz]" % i, chr(i)))
+                self.assertTrue(re.match(rf"[\{i:o}]", chr(i)))
+                self.assertTrue(re.match(rf"[\{i:o}8]", chr(i)))
+                self.assertTrue(re.match(rf"[\{i:03o}]", chr(i)))
+                self.assertTrue(re.match(rf"[\{i:03o}0]", chr(i)))
+                self.assertTrue(re.match(rf"[\{i:03o}8]", chr(i)))
+                self.assertTrue(re.match(rf"[\x{i:02x}]", chr(i)))
+                self.assertTrue(re.match(rf"[\x{i:02x}0]", chr(i)))
+                self.assertTrue(re.match(rf"[\x{i:02x}z]", chr(i)))
             if i < 0x10000:
-                self.assertTrue(re.match(r"[\u%04x]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\u%04x0]" % i, chr(i)))
-                self.assertTrue(re.match(r"[\u%04xz]" % i, chr(i)))
-            self.assertTrue(re.match(r"[\U%08x]" % i, chr(i)))
-            self.assertTrue(re.match(r"[\U%08x0]" % i, chr(i) + "0"))
-            self.assertTrue(re.match(r"[\U%08xz]" % i, chr(i) + "z"))
+                self.assertTrue(re.match(rf"[\u{i:04x}]", chr(i)))
+                self.assertTrue(re.match(rf"[\u{i:04x}0]", chr(i)))
+                self.assertTrue(re.match(rf"[\u{i:04x}z]", chr(i)))
+            self.assertTrue(re.match(rf"[\U{i:08x}]", chr(i)))
+            self.assertTrue(re.match(rf"[\U{i:08x}0]", chr(i) + "0"))
+            self.assertTrue(re.match(rf"[\U{i:08x}z]", chr(i) + "z"))
         self.checkPatternError(
             r"[\567]", r"octal escape value \567 outside of " r"range 0-0o377", 1
         )
@@ -1237,12 +1242,12 @@ class ReTests(unittest.TestCase):
 
     def test_sre_byte_literals(self):
         for i in [0, 8, 16, 32, 64, 127, 128, 255]:
-            self.assertTrue(re.match((r"\%03o" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"\%03o0" % i).encode(), bytes([i]) + b"0"))
-            self.assertTrue(re.match((r"\%03o8" % i).encode(), bytes([i]) + b"8"))
-            self.assertTrue(re.match((r"\x%02x" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"\x%02x0" % i).encode(), bytes([i]) + b"0"))
-            self.assertTrue(re.match((r"\x%02xz" % i).encode(), bytes([i]) + b"z"))
+            self.assertTrue(re.match((rf"\{i:03o}").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"\{i:03o}0").encode(), bytes([i]) + b"0"))
+            self.assertTrue(re.match((rf"\{i:03o}8").encode(), bytes([i]) + b"8"))
+            self.assertTrue(re.match((rf"\x{i:02x}").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"\x{i:02x}0").encode(), bytes([i]) + b"0"))
+            self.assertTrue(re.match((rf"\x{i:02x}z").encode(), bytes([i]) + b"z"))
         self.assertRaises(re.error, re.compile, rb"\u1234")
         self.assertRaises(re.error, re.compile, rb"\U00012345")
         self.assertTrue(re.match(rb"\0", b"\000"))
@@ -1258,14 +1263,14 @@ class ReTests(unittest.TestCase):
 
     def test_sre_byte_class_literals(self):
         for i in [0, 8, 16, 32, 64, 127, 128, 255]:
-            self.assertTrue(re.match((r"[\%o]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\%o8]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\%03o]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\%03o0]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\%03o8]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\x%02x]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\x%02x0]" % i).encode(), bytes([i])))
-            self.assertTrue(re.match((r"[\x%02xz]" % i).encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\{i:o}]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\{i:o}8]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\{i:03o}]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\{i:03o}0]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\{i:03o}8]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\x{i:02x}]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\x{i:02x}0]").encode(), bytes([i])))
+            self.assertTrue(re.match((rf"[\x{i:02x}z]").encode(), bytes([i])))
         self.assertRaises(re.error, re.compile, rb"[\u1234]")
         self.assertRaises(re.error, re.compile, rb"[\U00012345]")
         self.checkPatternError(
@@ -1325,8 +1330,8 @@ class ReTests(unittest.TestCase):
     def test_nothing_to_repeat(self):
         for reps in "*", "+", "?", "{1,2}":
             for mod in "", "?":
-                self.checkPatternError("%s%s" % (reps, mod), "nothing to repeat", 0)
-                self.checkPatternError("(?:%s%s)" % (reps, mod), "nothing to repeat", 3)
+                self.checkPatternError(f"{reps}{mod}", "nothing to repeat", 0)
+                self.checkPatternError(f"(?:{reps}{mod})", "nothing to repeat", 3)
 
     def test_multiple_repeat(self):
         for outer_reps in "*", "+", "{1,2}":
@@ -1336,7 +1341,7 @@ class ReTests(unittest.TestCase):
                     for inner_mod in "", "?":
                         inner_op = inner_reps + inner_mod
                         self.checkPatternError(
-                            r"x%s%s" % (inner_op, outer_op),
+                            rf"x{inner_op}{outer_op}",
                             "multiple repeat",
                             1 + len(inner_op),
                         )
@@ -1355,7 +1360,7 @@ class ReTests(unittest.TestCase):
             return token
 
         def s_operator(scanner, token):
-            return "op%s" % token
+            return f"op{token}"
 
         def s_float(scanner, token):
             return float(token)
@@ -1384,8 +1389,8 @@ class ReTests(unittest.TestCase):
         # bug 448951 (similar to 429357, but with single char match)
         # (Also test greedy matches.)
         for op in "", "?", "*":
-            self.assertEqual(re.match(r"((.%s):)?z" % op, "z").groups(), (None, None))
-            self.assertEqual(re.match(r"((.%s):)?z" % op, "a:z").groups(), ("a:", "a"))
+            self.assertEqual(re.match(rf"((.{op}):)?z", "z").groups(), (None, None))
+            self.assertEqual(re.match(rf"((.{op}):)?z", "a:z").groups(), ("a:", "a"))
 
     def test_bug_725106(self):
         # capturing groups in alternatives in repeats
@@ -1531,7 +1536,7 @@ class ReTests(unittest.TestCase):
             self.assertTrue(re.match(p, lower_char))
         self.assertEqual(
             str(warns.warnings[0].message),
-            "Flags not at the start of the expression %r" % p,
+            f"Flags not at the start of the expression {p!r}",
         )
         self.assertEqual(warns.warnings[0].filename, __file__)
 
@@ -1540,7 +1545,7 @@ class ReTests(unittest.TestCase):
             self.assertTrue(re.match(p, lower_char))
         self.assertEqual(
             str(warns.warnings[0].message),
-            "Flags not at the start of the expression %r (truncated)" % p[:20],
+            f"Flags not at the start of the expression {p[:20]!r} (truncated)",
         )
         self.assertEqual(warns.warnings[0].filename, __file__)
 
@@ -1552,7 +1557,7 @@ class ReTests(unittest.TestCase):
                 self.assertTrue(re.match(p, b"a"))
             self.assertEqual(
                 str(warns.warnings[0].message),
-                "Flags not at the start of the expression %r" % p,
+                f"Flags not at the start of the expression {p!r}",
             )
             self.assertEqual(warns.warnings[0].filename, __file__)
 
@@ -1814,10 +1819,10 @@ class ReTests(unittest.TestCase):
         self.assertEqual(re.match(r".{,65536}", string).span(), (0, 65536))
         self.assertEqual(re.match(r".{65536,}?", string).span(), (0, 65536))
         # 2**128 should be big enough to overflow both SRE_CODE and Py_ssize_t.
-        self.assertRaises(OverflowError, re.compile, r".{%d}" % 2**128)
-        self.assertRaises(OverflowError, re.compile, r".{,%d}" % 2**128)
-        self.assertRaises(OverflowError, re.compile, r".{%d,}?" % 2**128)
-        self.assertRaises(OverflowError, re.compile, r".{%d,%d}" % (2**129, 2**128))
+        self.assertRaises(OverflowError, re.compile, r".{%d}" % 2**128)  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{,%d}" % 2**128)  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{%d,}?" % 2**128)  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{%d,%d}" % (2**129, 2**128))  # noqa: UP031
 
     @cpython_only
     def test_repeat_minmax_overflow_maxrepeat(self):
@@ -1826,14 +1831,15 @@ class ReTests(unittest.TestCase):
         except ImportError:
             self.skipTest("requires _sre.MAXREPEAT constant")
         string = "x" * 100000
-        self.assertIsNone(re.match(r".{%d}" % (MAXREPEAT - 1), string))
+        self.assertIsNone(re.match(r".{%d}" % (MAXREPEAT - 1), string))  # noqa: UP031
         self.assertEqual(
-            re.match(r".{,%d}" % (MAXREPEAT - 1), string).span(), (0, 100000)
+            re.match(r".{,%d}" % (MAXREPEAT - 1), string).span(),
+            (0, 100000),  # noqa: UP031
         )
-        self.assertIsNone(re.match(r".{%d,}?" % (MAXREPEAT - 1), string))
-        self.assertRaises(OverflowError, re.compile, r".{%d}" % MAXREPEAT)
-        self.assertRaises(OverflowError, re.compile, r".{,%d}" % MAXREPEAT)
-        self.assertRaises(OverflowError, re.compile, r".{%d,}?" % MAXREPEAT)
+        self.assertIsNone(re.match(r".{%d,}?" % (MAXREPEAT - 1), string))  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{%d}" % MAXREPEAT)  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{,%d}" % MAXREPEAT)  # noqa: UP031
+        self.assertRaises(OverflowError, re.compile, r".{%d,}?" % MAXREPEAT)  # noqa: UP031
 
     def test_backref_group_name_in_exception(self):
         # Issue 17341: Poor error message when compiling invalid regex
@@ -1858,12 +1864,9 @@ class ReTests(unittest.TestCase):
                 )
 
     def test_match_repr(self):
-        for string in "[abracadabra]", S("[abracadabra]"):
+        for string in "[abracadabra]", S("[abracadabra]"):  # noqa: F402
             m = re.search(r"(.+)(.*?)\1", string)
-            pattern = r"<(%s\.)?%s object; span=\(1, 12\), match='abracadabra'>" % (
-                type(m).__module__,
-                type(m).__qualname__,
-            )
+            pattern = rf"<({type(m).__module__}\.)?{type(m).__qualname__} object; span=\(1, 12\), match='abracadabra'>"
             self.assertRegex(repr(m), pattern)
         for string in (
             b"[abracadabra]",
@@ -1872,22 +1875,13 @@ class ReTests(unittest.TestCase):
             memoryview(b"[abracadabra]"),
         ):
             m = re.search(rb"(.+)(.*?)\1", string)
-            pattern = r"<(%s\.)?%s object; span=\(1, 12\), match=b'abracadabra'>" % (
-                type(m).__module__,
-                type(m).__qualname__,
-            )
+            pattern = rf"<({type(m).__module__}\.)?{type(m).__qualname__} object; span=\(1, 12\), match=b'abracadabra'>"
             self.assertRegex(repr(m), pattern)
 
         first, second = list(re.finditer("(aa)|(bb)", "aa bb"))
-        pattern = r"<(%s\.)?%s object; span=\(0, 2\), match='aa'>" % (
-            type(second).__module__,
-            type(second).__qualname__,
-        )
+        pattern = rf"<({type(second).__module__}\.)?{type(second).__qualname__} object; span=\(0, 2\), match='aa'>"
         self.assertRegex(repr(first), pattern)
-        pattern = r"<(%s\.)?%s object; span=\(3, 5\), match='bb'>" % (
-            type(second).__module__,
-            type(second).__qualname__,
-        )
+        pattern = rf"<({type(second).__module__}\.)?{type(second).__qualname__} object; span=\(3, 5\), match='bb'>"
         self.assertRegex(repr(second), pattern)
 
     def test_zerowidth(self):
@@ -1917,7 +1911,7 @@ class ReTests(unittest.TestCase):
         # issue 2537: empty submatches
         for outer_op in ("{0,}", "*", "+", "{1,187}"):
             for inner_op in ("{0,}", "*", "?"):
-                r = re.compile("^((x|y)%s)%s" % (inner_op, outer_op))
+                r = re.compile(f"^((x|y){inner_op}){outer_op}")
                 m = r.match("xyyzy")
                 self.assertEqual(m.group(0), "xyy")
                 self.assertEqual(m.group(1), "")
@@ -2011,7 +2005,7 @@ ELSE
                 locale.setlocale(locale.LC_CTYPE, loc)
             except locale.Error:
                 # Unsupported locale on this system
-                self.skipTest("test needs %s locale" % loc)
+                self.skipTest(f"test needs {loc} locale")
 
         re.purge()
         self.check_en_US_iso88591()
@@ -2046,7 +2040,7 @@ ELSE
                 locale.setlocale(locale.LC_CTYPE, loc)
             except locale.Error:
                 # Unsupported locale on this system
-                self.skipTest("test needs %s locale" % loc)
+                self.skipTest(f"test needs {loc} locale")
 
         locale.setlocale(locale.LC_CTYPE, "en_US.iso88591")
         p1 = re.compile(b"\xc5\xe5", re.LOCALE | re.IGNORECASE)
@@ -2133,7 +2127,7 @@ ELSE
 
         # equal to itself
         self.assertEqual(pattern1, pattern1)
-        self.assertFalse(pattern1 != pattern1)
+        self.assertFalse(pattern1 != pattern1)  # noqa: PLR0124
 
         # equal
         re.purge()
@@ -2155,7 +2149,7 @@ ELSE
 
         # only == and != comparison operators are supported
         with self.assertRaises(TypeError):
-            pattern1 < pattern2
+            pattern1 < pattern2  # noqa: B015
 
     def test_pattern_compare_bytes(self):
         pattern1 = re.compile(b"abc")
@@ -2400,8 +2394,8 @@ class ExternalTests(unittest.TestCase):
                                 gi = "None"
                         except IndexError:
                             gi = "Error"
-                        vardict["g%d" % i] = gi
-                    for i in result.re.groupindex.keys():
+                        vardict["g%d" % i] = gi  # noqa: UP031
+                    for i in result.re.groupindex:
                         try:
                             gi = result.group(i)
                             if gi is None:

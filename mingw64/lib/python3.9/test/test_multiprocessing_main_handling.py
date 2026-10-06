@@ -161,15 +161,15 @@ class MultiProcessingCmdLineMixin:
 
     def setUp(self):
         if self.start_method not in AVAILABLE_START_METHODS:
-            self.skipTest("%r start method not available" % self.start_method)
+            self.skipTest(f"{self.start_method!r} start method not available")
 
     def _check_output(self, script_name, exit_code, out, err):
         if verbose > 1:
-            print("Output from test script %r:" % script_name)
+            print(f"Output from test script {script_name!r}:")
             print(repr(out))
         self.assertEqual(exit_code, 0)
         self.assertEqual(err.decode("utf-8"), "")
-        expected_results = "%s -> [1, 4, 9]" % self.start_method
+        expected_results = f"{self.start_method} -> [1, 4, 9]"
         self.assertEqual(out.decode("utf-8").strip(), expected_results)
 
     def _check_script(self, script_name, *cmd_line_switches):
@@ -214,7 +214,7 @@ class MultiProcessingCmdLineMixin:
     def test_directory(self):
         source = self.main_in_children_source
         with support.temp_dir() as script_dir:
-            script_name = _make_test_script(script_dir, "__main__", source=source)
+            _make_test_script(script_dir, "__main__", source=source)
             self._check_script(script_dir)
 
     def test_directory_compiled(self):
@@ -223,14 +223,14 @@ class MultiProcessingCmdLineMixin:
             script_name = _make_test_script(script_dir, "__main__", source=source)
             py_compile.compile(script_name, doraise=True)
             os.remove(script_name)
-            pyc_file = support.make_legacy_pyc(script_name)
+            support.make_legacy_pyc(script_name)
             self._check_script(script_dir)
 
     def test_zipfile(self):
         source = self.main_in_children_source
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "__main__", source=source)
-            zip_name, run_name = make_zip_script(script_dir, "test_zip", script_name)
+            zip_name, _run_name = make_zip_script(script_dir, "test_zip", script_name)
             self._check_script(zip_name)
 
     def test_zipfile_compiled(self):
@@ -238,14 +238,14 @@ class MultiProcessingCmdLineMixin:
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "__main__", source=source)
             compiled_name = py_compile.compile(script_name, doraise=True)
-            zip_name, run_name = make_zip_script(script_dir, "test_zip", compiled_name)
+            zip_name, _run_name = make_zip_script(script_dir, "test_zip", compiled_name)
             self._check_script(zip_name)
 
     def test_module_in_package(self):
         with support.temp_dir() as script_dir:
             pkg_dir = os.path.join(script_dir, "test_pkg")
             make_pkg(pkg_dir)
-            script_name = _make_test_script(pkg_dir, "check_sibling")
+            _make_test_script(pkg_dir, "check_sibling")
             launch_name = _make_launch_script(
                 script_dir, "launch", "test_pkg.check_sibling"
             )
@@ -253,7 +253,7 @@ class MultiProcessingCmdLineMixin:
 
     def test_module_in_package_in_zipfile(self):
         with support.temp_dir() as script_dir:
-            zip_name, run_name = _make_test_zip_pkg(
+            zip_name, _run_name = _make_test_zip_pkg(
                 script_dir, "test_zip", "test_pkg", "script"
             )
             launch_name = _make_launch_script(
@@ -263,7 +263,7 @@ class MultiProcessingCmdLineMixin:
 
     def test_module_in_subpackage_in_zipfile(self):
         with support.temp_dir() as script_dir:
-            zip_name, run_name = _make_test_zip_pkg(
+            zip_name, _run_name = _make_test_zip_pkg(
                 script_dir, "test_zip", "test_pkg", "script", depth=2
             )
             launch_name = _make_launch_script(
@@ -276,7 +276,7 @@ class MultiProcessingCmdLineMixin:
         with support.temp_dir() as script_dir:
             pkg_dir = os.path.join(script_dir, "test_pkg")
             make_pkg(pkg_dir)
-            script_name = _make_test_script(pkg_dir, "__main__", source=source)
+            _make_test_script(pkg_dir, "__main__", source=source)
             launch_name = _make_launch_script(script_dir, "launch", "test_pkg")
             self._check_script(launch_name)
 
@@ -286,9 +286,9 @@ class MultiProcessingCmdLineMixin:
             pkg_dir = os.path.join(script_dir, "test_pkg")
             make_pkg(pkg_dir)
             script_name = _make_test_script(pkg_dir, "__main__", source=source)
-            compiled_name = py_compile.compile(script_name, doraise=True)
+            py_compile.compile(script_name, doraise=True)
             os.remove(script_name)
-            pyc_file = support.make_legacy_pyc(script_name)
+            support.make_legacy_pyc(script_name)
             launch_name = _make_launch_script(script_dir, "launch", "test_pkg")
             self._check_script(launch_name)
 

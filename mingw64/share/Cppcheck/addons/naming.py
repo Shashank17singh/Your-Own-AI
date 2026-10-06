@@ -41,7 +41,7 @@ for arg in sys.argv[1:]:
     print("Checking " + arg + "...")
     data = cppcheckdata.CppcheckData(arg)
     for cfg in data.iterconfigurations():
-        print("Checking %s, config %s..." % (arg, cfg.name))
+        print(f"Checking {arg}, config {cfg.name}...")
         if RE_VARNAME:
             for var in cfg.variables:
                 if var.access == "Private":

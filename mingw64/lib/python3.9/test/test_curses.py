@@ -24,7 +24,7 @@ except ImportError:
 
 
 def requires_curses_func(name):
-    return unittest.skipUnless(hasattr(curses, name), "requires curses.%s" % name)
+    return unittest.skipUnless(hasattr(curses, name), f"requires curses.{name}")
 
 
 def requires_curses_window_meth(name):
@@ -32,7 +32,7 @@ def requires_curses_window_meth(name):
         @functools.wraps(test)
         def wrapped(self, *args, **kwargs):
             if not hasattr(self.stdscr, name):
-                raise unittest.SkipTest("requires curses.window.%s" % name)
+                raise unittest.SkipTest(f"requires curses.window.{name}")
             test(self, *args, **kwargs)
 
         return wrapped
@@ -57,7 +57,7 @@ SHORT_MAX = 0x7FFF
 
 # If newterm was supported we could use it instead of initscr and not exit
 @unittest.skipIf(
-    not term or term == "unknown", "$TERM=%r, calling initscr() may cause exit" % term
+    not term or term == "unknown", f"$TERM={term!r}, calling initscr() may cause exit"
 )
 @unittest.skipIf(sys.platform == "cygwin", "cygwin's curses mostly just hangs")
 class TestCurses(unittest.TestCase):
@@ -91,13 +91,13 @@ class TestCurses(unittest.TestCase):
             else:
                 try:
                     # Try to open the terminal device.
-                    tmp = open("/dev/tty", "wb", buffering=0)
+                    tmp = open("/dev/tty", "wb", buffering=0)  # noqa: SIM115
                 except OSError:
                     # As a fallback, use regular file to write control codes.
                     # Some functions (like savetty) will not work, but at
                     # least the garbage control sequences will not be mixed
                     # with the testing report.
-                    tmp = tempfile.TemporaryFile(mode="wb", buffering=0)
+                    tmp = tempfile.TemporaryFile(mode="wb", buffering=0)  # noqa: SIM115
                     self.isatty = False
                 self.addCleanup(tmp.close)
                 self.output = None
@@ -997,13 +997,13 @@ class TestCurses(unittest.TestCase):
 
     @requires_curses_func("getmouse")
     def test_getmouse(self):
-        availmask, oldmask = curses.mousemask(curses.BUTTON1_PRESSED)
+        availmask, _oldmask = curses.mousemask(curses.BUTTON1_PRESSED)
         if availmask == 0:
             self.skipTest("mouse stuff not available")
         curses.mouseinterval(10)
         # just verify these don't cause errors
         curses.ungetmouse(0, 0, 0, 0, curses.BUTTON1_PRESSED)
-        m = curses.getmouse()
+        curses.getmouse()
 
     @requires_curses_func("panel")
     def test_userptr_without_set(self):
@@ -1106,10 +1106,9 @@ class TestCurses(unittest.TestCase):
                 continue
             try:
                 curses.unget_wch(ch)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 self.fail(
-                    "unget_wch(%a) failed with encoding %s: %s"
-                    % (ch, stdscr.encoding, err)
+                    f"unget_wch({ch!a}) failed with encoding {stdscr.encoding}: {err}"
                 )
             read = stdscr.get_wch()
             self.assertEqual(read, ch)

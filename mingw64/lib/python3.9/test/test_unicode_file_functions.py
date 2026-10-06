@@ -60,7 +60,7 @@ if not os.path.supports_unicode_filenames:
 
 
 class UnicodeFileTests(unittest.TestCase):
-    files = set(filenames)
+    files = set(filenames)  # noqa: RUF012
     normal_form = None
 
     def setUp(self):
@@ -94,9 +94,8 @@ class UnicodeFileTests(unittest.TestCase):
             self.assertEqual(
                 exc_filename,
                 filename,
-                "Function '%s(%a) failed "
-                "with bad filename in the exception: %a"
-                % (fn.__name__, filename, exc_filename),
+                f"Function '{fn.__name__}({filename!a}) failed "
+                f"with bad filename in the exception: {exc_filename!a}",
             )
 
     def test_failures(self):
@@ -118,7 +117,7 @@ class UnicodeFileTests(unittest.TestCase):
 
     def test_open(self):
         for name in self.files:
-            f = open(name, "wb")
+            f = open(name, "wb")  # noqa: SIM115
             f.write((name + "\n").encode("utf-8"))
             f.close()
             os.stat(name)
@@ -132,8 +131,8 @@ class UnicodeFileTests(unittest.TestCase):
     def test_normalize(self):
         files = set(self.files)
         others = set()
-        for nf in set(["NFC", "NFD", "NFKC", "NFKD"]):
-            others |= set(normalize(nf, file) for file in files)
+        for nf in ("NFC", "NFD", "NFKC", "NFKD"):
+            others |= {normalize(nf, file) for file in files}
         others -= files
         for name in others:
             self._apply_failure(open, name)
@@ -153,8 +152,8 @@ class UnicodeFileTests(unittest.TestCase):
             warnings.simplefilter("ignore", DeprecationWarning)
             f1 = os.listdir(support.TESTFN.encode(sys.getfilesystemencoding()))
         f2 = os.listdir(support.TESTFN)
-        sf2 = set(os.path.join(support.TESTFN, f) for f in f2)
-        self.assertEqual(sf0, sf2, "%a != %a" % (sf0, sf2))
+        sf2 = {os.path.join(support.TESTFN, f) for f in f2}
+        self.assertEqual(sf0, sf2, f"{sf0!a} != {sf2!a}")
         self.assertEqual(len(f1), len(f2))
 
     def test_rename(self):

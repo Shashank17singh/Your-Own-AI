@@ -64,7 +64,7 @@ class TestTranforms(BytecodeTestCase):
     def test_unot(self):
         # UNARY_NOT POP_JUMP_IF_FALSE  -->  POP_JUMP_IF_TRUE'
         def unot(x):
-            if not x == 2:
+            if x != 2:
                 del x
 
         self.assertNotInBytecode(unot, "UNARY_NOT")
@@ -190,7 +190,7 @@ class TestTranforms(BytecodeTestCase):
         # . . . opcode_with_arg 100   unary_opcode   BUILD_TUPLE 1  . . .
         # The following would segfault upon compilation
         def crater():
-            (
+            (  # noqa: B018
                 ~[
                     0,
                     1,
@@ -469,12 +469,12 @@ class TestTranforms(BytecodeTestCase):
     def test_elim_jump_to_uncond_jump(self):
         # POP_JUMP_IF_FALSE to JUMP_FORWARD --> POP_JUMP_IF_FALSE to non-jump
         def f():
-            if a:
+            if a:  # noqa: F821
                 # Intentionally use two-line expression to test issue37213.
-                if c or d:
-                    foo()
+                if c or d:  # noqa: F821
+                    foo()  # noqa: F821
             else:
-                baz()
+                baz()  # noqa: F821
 
         self.check_jump_targets(f)
         self.check_lnotab(f)
@@ -482,10 +482,10 @@ class TestTranforms(BytecodeTestCase):
     def test_elim_jump_to_uncond_jump2(self):
         # POP_JUMP_IF_FALSE to JUMP_ABSOLUTE --> POP_JUMP_IF_FALSE to non-jump
         def f():
-            while a:
+            while a:  # noqa: F821
                 # Intentionally use two-line expression to test issue37213.
-                if c or d:
-                    a = foo()
+                if c or d:  # noqa: F821
+                    foo()  # noqa: F821
 
         self.check_jump_targets(f)
         self.check_lnotab(f)
@@ -605,14 +605,14 @@ class TestTranforms(BytecodeTestCase):
 
     def test_in_literal_list(self):
         def containtest():
-            return x in [a, b]
+            return x in [a, b]  # noqa: F821
 
         self.assertEqual(count_instr_recursively(containtest, "BUILD_LIST"), 0)
         self.check_lnotab(containtest)
 
     def test_iterate_literal_list(self):
         def forloop():
-            for x in [a, b]:
+            for x in [a, b]:  # noqa: F821
                 pass
 
         self.assertEqual(count_instr_recursively(forloop, "BUILD_LIST"), 0)
@@ -620,7 +620,7 @@ class TestTranforms(BytecodeTestCase):
 
     def test_condition_with_binop_with_bools(self):
         def f():
-            if True or False:
+            if True:
                 return 1
             return 0
 
@@ -630,9 +630,7 @@ class TestTranforms(BytecodeTestCase):
     def test_if_with_if_expression(self):
         # Check bpo-37289
         def f(x):
-            if True if x else False:
-                return True
-            return False
+            return bool(bool(x))
 
         self.assertTrue(f(True))
         self.check_lnotab(f)
@@ -652,22 +650,22 @@ class TestTranforms(BytecodeTestCase):
 
     def test_assignment_idiom_in_comprehensions(self):
         def listcomp():
-            return [y for x in a for y in [f(x)]]
+            return [y for x in a for y in [f(x)]]  # noqa: F821
 
         self.assertEqual(count_instr_recursively(listcomp, "FOR_ITER"), 1)
 
         def setcomp():
-            return {y for x in a for y in [f(x)]}
+            return {y for x in a for y in [f(x)]}  # noqa: F821
 
         self.assertEqual(count_instr_recursively(setcomp, "FOR_ITER"), 1)
 
         def dictcomp():
-            return {y: y for x in a for y in [f(x)]}
+            return {y: y for x in a for y in [f(x)]}  # noqa: F821
 
         self.assertEqual(count_instr_recursively(dictcomp, "FOR_ITER"), 1)
 
         def genexpr():
-            return (y for x in a for y in [f(x)])
+            return (y for x in a for y in [f(x)])  # noqa: F821
 
         self.assertEqual(count_instr_recursively(genexpr, "FOR_ITER"), 1)
 
@@ -687,8 +685,8 @@ class TestBuglets(unittest.TestCase):
     def test_bpo_42057(self):
         for i in range(10):
             try:
-                raise Exception
-            except Exception or Exception:
+                raise Exception  # noqa: TRY002
+            except Exception or Exception:  # noqa: B030, PLW0711
                 pass
 
 

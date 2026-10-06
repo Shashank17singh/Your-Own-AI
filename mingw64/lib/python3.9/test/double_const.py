@@ -25,7 +25,7 @@ def check_ok(x, x_str):
     # If diff is no larger than 3 ULP (wrt x2), then diff/8 is no larger
     # than 0.375 ULP, so adding diff/8 to x2 should have no effect.
     if x2 + (diff / 8.0) != x2:
-        raise TestFailed("Manifest const %s lost too much precision " % x_str)
+        raise TestFailed(f"Manifest const {x_str} lost too much precision ")
 
 
 check_ok(PI, PI_str)

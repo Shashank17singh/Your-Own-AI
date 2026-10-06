@@ -145,7 +145,7 @@ class ZoneInfoTest(TzPathUserMixin, ZoneInfoTestBase):
                 self.assertEqual(str(zi), key)
         file_key = self.zoneinfo_data.keys[0]
         file_path = self.zoneinfo_data.path_from_key(file_key)
-        with open(file_path, "rb") as f:
+        with open(file_path, "rb") as f:  # noqa: SIM117
             with self.subTest(test_name="Repr test", path=file_path):
                 zi_ff = self.klass.from_file(f)
                 self.assertEqual(str(zi_ff), repr(zi_ff))
@@ -183,7 +183,7 @@ class ZoneInfoTest(TzPathUserMixin, ZoneInfoTestBase):
             zi = constructor(key)
             with self.subTest(msg):
                 self.assertEqual(zi.key, expected)
-            with self.subTest(f"{msg}: readonly"):
+            with self.subTest(f"{msg}: readonly"):  # noqa: SIM117
                 with self.assertRaises(AttributeError):
                     zi.key = "Some/Value"
 
@@ -226,7 +226,7 @@ class ZoneInfoTest(TzPathUserMixin, ZoneInfoTestBase):
         zone = self.zone_from_key(key)
         bad_values = [
             (datetime(2019, 1, 1, tzinfo=timezone.utc), ValueError),
-            (datetime(2019, 1, 1), ValueError),
+            (datetime(2019, 1, 1), ValueError),  # noqa: DTZ001
             (date(2019, 1, 1), TypeError),
             (time(0), TypeError),
             (0, TypeError),
@@ -279,7 +279,6 @@ class ZoneInfoTest(TzPathUserMixin, ZoneInfoTestBase):
                 elif zt.gap:
                     test_group = tests["gaps"]
                 else:
-                    no_peephole_opt = None
                     continue
                 dt = zt.anomaly_start - timedelta(seconds=1)
                 test_group.append((dt, 0, zt.offset_before))
@@ -430,7 +429,7 @@ class ZoneInfoV1Test(ZoneInfoTest):
         return ZONEINFO_DATA_V1
 
     def load_transition_examples(self, key):
-        epoch = datetime(1970, 1, 1)
+        epoch = datetime(1970, 1, 1)  # noqa: DTZ001
         max_offset_32 = timedelta(seconds=2**31)
         min_dt = epoch - max_offset_32
         max_dt = epoch + max_offset_32
@@ -480,7 +479,7 @@ class WeirdZoneTest(ZoneInfoTestBase):
         LMT = ZoneOffset("LMT", -timedelta(hours=6, minutes=31, seconds=2))
         STD = ZoneOffset("STD", -timedelta(hours=6))
         transitions = [
-            ZoneTransition(datetime(1883, 6, 9, 14), LMT, STD),
+            ZoneTransition(datetime(1883, 6, 9, 14), LMT, STD),  # noqa: DTZ001
         ]
         after = "STD6"
         zf = self.construct_zone(transitions, after)
@@ -512,17 +511,17 @@ class WeirdZoneTest(ZoneInfoTestBase):
     def test_one_zone_dst(self):
         DST = ZoneOffset("DST", ONE_H, ONE_H)
         transitions = [
-            ZoneTransition(datetime(1970, 1, 1), DST, DST),
+            ZoneTransition(datetime(1970, 1, 1), DST, DST),  # noqa: DTZ001
         ]
         after = "STD0DST-1,0/0,J365/25"
         zf = self.construct_zone(transitions, after)
         zi = self.klass.from_file(zf)
         dts = [
-            datetime(1900, 3, 1),
-            datetime(1965, 9, 12),
-            datetime(1970, 1, 1),
-            datetime(2010, 11, 3),
-            datetime(2040, 1, 1),
+            datetime(1900, 3, 1),  # noqa: DTZ001
+            datetime(1965, 9, 12),  # noqa: DTZ001
+            datetime(1970, 1, 1),  # noqa: DTZ001
+            datetime(2010, 11, 3),  # noqa: DTZ001
+            datetime(2040, 1, 1),  # noqa: DTZ001
         ]
         for dt in dts:
             dt = dt.replace(tzinfo=zi)
@@ -536,16 +535,16 @@ class WeirdZoneTest(ZoneInfoTestBase):
         DST = ZoneOffset("DST", 2 * ONE_H, ONE_H)
         transitions = []
         for year in range(1996, 2000):
-            transitions.append(ZoneTransition(datetime(year, 3, 1, 2), STD, DST))
-            transitions.append(ZoneTransition(datetime(year, 11, 1, 2), DST, STD))
+            transitions.append(ZoneTransition(datetime(year, 3, 1, 2), STD, DST))  # noqa: DTZ001
+            transitions.append(ZoneTransition(datetime(year, 11, 1, 2), DST, STD))  # noqa: DTZ001
         after = ""
         zf = self.construct_zone(transitions, after)
         zi = self.klass.from_file(zf)
         cases = [
-            (datetime(1995, 1, 1), STD),
-            (datetime(1996, 4, 1), DST),
-            (datetime(1996, 11, 2), STD),
-            (datetime(2001, 1, 1), STD),
+            (datetime(1995, 1, 1), STD),  # noqa: DTZ001
+            (datetime(1996, 4, 1), DST),  # noqa: DTZ001
+            (datetime(1996, 11, 2), STD),  # noqa: DTZ001
+            (datetime(2001, 1, 1), STD),  # noqa: DTZ001
         ]
         for dt, offset in cases:
             dt = dt.replace(tzinfo=zi)
@@ -572,9 +571,9 @@ class WeirdZoneTest(ZoneInfoTestBase):
             zf = self.construct_zone(transitions, after)
             zi = self.klass.from_file(zf)
             dts = [
-                datetime(1900, 1, 1),
-                datetime(1970, 1, 1),
-                datetime(2000, 1, 1),
+                datetime(1900, 1, 1),  # noqa: DTZ001
+                datetime(1970, 1, 1),  # noqa: DTZ001
+                datetime(2000, 1, 1),  # noqa: DTZ001
             ]
             for dt in dts:
                 dt = dt.replace(tzinfo=zi)
@@ -602,17 +601,17 @@ class WeirdZoneTest(ZoneInfoTestBase):
         GMT = ZoneOffset("GMT", ZERO)
         transitions = [
             (-(1 << 62), LMT, LMT),
-            ZoneTransition(datetime(1912, 1, 1), LMT, GMT),
+            ZoneTransition(datetime(1912, 1, 1), LMT, GMT),  # noqa: DTZ001
             ((1 << 62), GMT, GMT),
         ]
         after = "GMT0"
         zf = self.construct_zone(transitions, after)
         zi = self.klass.from_file(zf, key="Africa/Abidjan")
         offset_cases = [
-            (datetime.min, LMT),
-            (datetime.max, GMT),
-            (datetime(1911, 12, 31), LMT),
-            (datetime(1912, 1, 2), GMT),
+            (datetime.min, LMT),  # noqa: DTZ901
+            (datetime.max, GMT),  # noqa: DTZ901
+            (datetime(1911, 12, 31), LMT),  # noqa: DTZ001
+            (datetime(1912, 1, 2), GMT),  # noqa: DTZ001
         ]
         for dt_naive, offset in offset_cases:
             dt = dt_naive.replace(tzinfo=zi)
@@ -621,15 +620,15 @@ class WeirdZoneTest(ZoneInfoTestBase):
                 self.assertEqual(dt.utcoffset(), offset.utcoffset)
                 self.assertEqual(dt.dst(), offset.dst)
         utc_cases = [
-            (datetime.min, datetime.min + timedelta(seconds=968)),
-            (datetime(1898, 12, 31, 23, 43, 52), datetime(1899, 1, 1)),
+            (datetime.min, datetime.min + timedelta(seconds=968)),  # noqa: DTZ901
+            (datetime(1898, 12, 31, 23, 43, 52), datetime(1899, 1, 1)),  # noqa: DTZ001
             (
-                datetime(1911, 12, 31, 23, 59, 59, 999999),
-                datetime(1912, 1, 1, 0, 16, 7, 999999),
+                datetime(1911, 12, 31, 23, 59, 59, 999999),  # noqa: DTZ001
+                datetime(1912, 1, 1, 0, 16, 7, 999999),  # noqa: DTZ001
             ),
-            (datetime(1912, 1, 1, 0, 16, 8), datetime(1912, 1, 1, 0, 16, 8)),
-            (datetime(1970, 1, 1), datetime(1970, 1, 1)),
-            (datetime.max, datetime.max),
+            (datetime(1912, 1, 1, 0, 16, 8), datetime(1912, 1, 1, 0, 16, 8)),  # noqa: DTZ001
+            (datetime(1970, 1, 1), datetime(1970, 1, 1)),  # noqa: DTZ001
+            (datetime.max, datetime.max),  # noqa: DTZ901
         ]
         for naive_dt, naive_dt_utc in utc_cases:
             dt = naive_dt.replace(tzinfo=zi)
@@ -639,7 +638,7 @@ class WeirdZoneTest(ZoneInfoTestBase):
 
     def test_fixed_offset_phantom_transition(self):
         UTC = ZoneOffset("UTC", ZERO, ZERO)
-        transitions = [ZoneTransition(datetime(1970, 1, 1), UTC, UTC)]
+        transitions = [ZoneTransition(datetime(1970, 1, 1), UTC, UTC)]  # noqa: DTZ001
         after = "UTC0"
         zf = self.construct_zone(transitions, after)
         zi = self.klass.from_file(zf, key="UTC")
@@ -860,22 +859,22 @@ class TZStrTest(ZoneInfoTestBase):
             EST = ZoneOffset("EST", timedelta(hours=-5), ZERO)
             EDT = ZoneOffset("EDT", timedelta(hours=-4), ONE_H)
             cases[tzstr] = (
-                (datetime(2019, 3, 9), EST, NORMAL),
-                (datetime(2019, 3, 10, 3, 59), EST, NORMAL),
-                (datetime(2019, 3, 10, 4, 0, fold=0), EST, GAP),
-                (datetime(2019, 3, 10, 4, 0, fold=1), EDT, GAP),
-                (datetime(2019, 3, 10, 4, 1, fold=0), EST, GAP),
-                (datetime(2019, 3, 10, 4, 1, fold=1), EDT, GAP),
-                (datetime(2019, 11, 2), EDT, NORMAL),
-                (datetime(2019, 11, 3, 1, 59, fold=1), EDT, NORMAL),
-                (datetime(2019, 11, 3, 2, 0, fold=0), EDT, FOLD),
-                (datetime(2019, 11, 3, 2, 0, fold=1), EST, FOLD),
-                (datetime(2020, 3, 8, 3, 59), EST, NORMAL),
-                (datetime(2020, 3, 8, 4, 0, fold=0), EST, GAP),
-                (datetime(2020, 3, 8, 4, 0, fold=1), EDT, GAP),
-                (datetime(2020, 11, 1, 1, 59, fold=1), EDT, NORMAL),
-                (datetime(2020, 11, 1, 2, 0, fold=0), EDT, FOLD),
-                (datetime(2020, 11, 1, 2, 0, fold=1), EST, FOLD),
+                (datetime(2019, 3, 9), EST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 10, 3, 59), EST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 10, 4, 0, fold=0), EST, GAP),  # noqa: DTZ001
+                (datetime(2019, 3, 10, 4, 0, fold=1), EDT, GAP),  # noqa: DTZ001
+                (datetime(2019, 3, 10, 4, 1, fold=0), EST, GAP),  # noqa: DTZ001
+                (datetime(2019, 3, 10, 4, 1, fold=1), EDT, GAP),  # noqa: DTZ001
+                (datetime(2019, 11, 2), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 11, 3, 1, 59, fold=1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 11, 3, 2, 0, fold=0), EDT, FOLD),  # noqa: DTZ001
+                (datetime(2019, 11, 3, 2, 0, fold=1), EST, FOLD),  # noqa: DTZ001
+                (datetime(2020, 3, 8, 3, 59), EST, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 8, 4, 0, fold=0), EST, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 8, 4, 0, fold=1), EDT, GAP),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 1, 59, fold=1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 2, 0, fold=0), EDT, FOLD),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 2, 0, fold=1), EST, FOLD),  # noqa: DTZ001
             )
 
         @call
@@ -884,18 +883,18 @@ class TZStrTest(ZoneInfoTestBase):
             GMT = ZoneOffset("GMT", ZERO, ZERO)
             BST = ZoneOffset("BST", ONE_H, ONE_H)
             cases[tzstr] = (
-                (datetime(2019, 3, 30), GMT, NORMAL),
-                (datetime(2019, 3, 31, 0, 59), GMT, NORMAL),
-                (datetime(2019, 3, 31, 2, 0), BST, NORMAL),
-                (datetime(2019, 10, 26), BST, NORMAL),
-                (datetime(2019, 10, 27, 0, 59, fold=1), BST, NORMAL),
-                (datetime(2019, 10, 27, 1, 0, fold=0), BST, GAP),
-                (datetime(2019, 10, 27, 2, 0, fold=1), GMT, GAP),
-                (datetime(2020, 3, 29, 0, 59), GMT, NORMAL),
-                (datetime(2020, 3, 29, 2, 0), BST, NORMAL),
-                (datetime(2020, 10, 25, 0, 59, fold=1), BST, NORMAL),
-                (datetime(2020, 10, 25, 1, 0, fold=0), BST, FOLD),
-                (datetime(2020, 10, 25, 2, 0, fold=1), GMT, NORMAL),
+                (datetime(2019, 3, 30), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 31, 0, 59), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 31, 2, 0), BST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 26), BST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 0, 59, fold=1), BST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 1, 0, fold=0), BST, GAP),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 2, 0, fold=1), GMT, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 29, 0, 59), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 29, 2, 0), BST, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 0, 59, fold=1), BST, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 1, 0, fold=0), BST, FOLD),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 2, 0, fold=1), GMT, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -904,20 +903,20 @@ class TZStrTest(ZoneInfoTestBase):
             AEST = ZoneOffset("AEST", timedelta(hours=10), ZERO)
             AEDT = ZoneOffset("AEDT", timedelta(hours=11), ONE_H)
             cases[tzstr] = (
-                (datetime(2019, 4, 6), AEDT, NORMAL),
-                (datetime(2019, 4, 7, 1, 59), AEDT, NORMAL),
-                (datetime(2019, 4, 7, 1, 59, fold=1), AEDT, NORMAL),
-                (datetime(2019, 4, 7, 2, 0, fold=0), AEDT, FOLD),
-                (datetime(2019, 4, 7, 2, 1, fold=0), AEDT, FOLD),
-                (datetime(2019, 4, 7, 2, 0, fold=1), AEST, FOLD),
-                (datetime(2019, 4, 7, 2, 1, fold=1), AEST, FOLD),
-                (datetime(2019, 4, 7, 3, 0, fold=0), AEST, NORMAL),
-                (datetime(2019, 4, 7, 3, 0, fold=1), AEST, NORMAL),
-                (datetime(2019, 10, 5, 0), AEST, NORMAL),
-                (datetime(2019, 10, 6, 1, 59), AEST, NORMAL),
-                (datetime(2019, 10, 6, 2, 0, fold=0), AEST, GAP),
-                (datetime(2019, 10, 6, 2, 0, fold=1), AEDT, GAP),
-                (datetime(2019, 10, 6, 3, 0), AEDT, NORMAL),
+                (datetime(2019, 4, 6), AEDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 1, 59), AEDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 1, 59, fold=1), AEDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 2, 0, fold=0), AEDT, FOLD),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 2, 1, fold=0), AEDT, FOLD),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 2, 0, fold=1), AEST, FOLD),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 2, 1, fold=1), AEST, FOLD),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 3, 0, fold=0), AEST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 4, 7, 3, 0, fold=1), AEST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 5, 0), AEST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 6, 1, 59), AEST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 6, 2, 0, fold=0), AEST, GAP),  # noqa: DTZ001
+                (datetime(2019, 10, 6, 2, 0, fold=1), AEDT, GAP),  # noqa: DTZ001
+                (datetime(2019, 10, 6, 3, 0), AEDT, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -926,19 +925,19 @@ class TZStrTest(ZoneInfoTestBase):
             GMT = ZoneOffset("GMT", ZERO, -ONE_H)
             IST = ZoneOffset("IST", ONE_H, ZERO)
             cases[tzstr] = (
-                (datetime(2019, 3, 30), GMT, NORMAL),
-                (datetime(2019, 3, 31, 0, 59), GMT, NORMAL),
-                (datetime(2019, 3, 31, 2, 0), IST, NORMAL),
-                (datetime(2019, 10, 26), IST, NORMAL),
-                (datetime(2019, 10, 27, 0, 59, fold=1), IST, NORMAL),
-                (datetime(2019, 10, 27, 1, 0, fold=0), IST, FOLD),
-                (datetime(2019, 10, 27, 1, 0, fold=1), GMT, FOLD),
-                (datetime(2019, 10, 27, 2, 0, fold=1), GMT, NORMAL),
-                (datetime(2020, 3, 29, 0, 59), GMT, NORMAL),
-                (datetime(2020, 3, 29, 2, 0), IST, NORMAL),
-                (datetime(2020, 10, 25, 0, 59, fold=1), IST, NORMAL),
-                (datetime(2020, 10, 25, 1, 0, fold=0), IST, FOLD),
-                (datetime(2020, 10, 25, 2, 0, fold=1), GMT, NORMAL),
+                (datetime(2019, 3, 30), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 31, 0, 59), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 31, 2, 0), IST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 26), IST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 0, 59, fold=1), IST, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 1, 0, fold=0), IST, FOLD),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 1, 0, fold=1), GMT, FOLD),  # noqa: DTZ001
+                (datetime(2019, 10, 27, 2, 0, fold=1), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 29, 0, 59), GMT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 29, 2, 0), IST, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 0, 59, fold=1), IST, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 1, 0, fold=0), IST, FOLD),  # noqa: DTZ001
+                (datetime(2020, 10, 25, 2, 0, fold=1), GMT, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -946,7 +945,7 @@ class TZStrTest(ZoneInfoTestBase):
             tzstr = "<+11>-11"
             cases[tzstr] = (
                 (
-                    datetime(2020, 1, 1),
+                    datetime(2020, 1, 1),  # noqa: DTZ001
                     ZoneOffset("+11", timedelta(hours=11)),
                     NORMAL,
                 ),
@@ -958,8 +957,8 @@ class TZStrTest(ZoneInfoTestBase):
             M04 = ZoneOffset("-04", timedelta(hours=-4))
             M03 = ZoneOffset("-03", timedelta(hours=-3), ONE_H)
             cases[tzstr] = (
-                (datetime(2020, 5, 1), M04, NORMAL),
-                (datetime(2020, 11, 1), M03, NORMAL),
+                (datetime(2020, 5, 1), M04, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 11, 1), M03, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -967,16 +966,16 @@ class TZStrTest(ZoneInfoTestBase):
             tzstr = "EST5EDT,0/0,J365/25"
             EDT = ZoneOffset("EDT", timedelta(hours=-4), ONE_H)
             cases[tzstr] = (
-                (datetime(2019, 1, 1), EDT, NORMAL),
-                (datetime(2019, 6, 1), EDT, NORMAL),
-                (datetime(2019, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),
-                (datetime(2020, 1, 1), EDT, NORMAL),
-                (datetime(2020, 3, 1), EDT, NORMAL),
-                (datetime(2020, 6, 1), EDT, NORMAL),
-                (datetime(2020, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),
-                (datetime(2400, 1, 1), EDT, NORMAL),
-                (datetime(2400, 3, 1), EDT, NORMAL),
-                (datetime(2400, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),
+                (datetime(2019, 1, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 6, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 1, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 6, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2400, 1, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2400, 3, 1), EDT, NORMAL),  # noqa: DTZ001
+                (datetime(2400, 12, 31, 23, 59, 59, 999999), EDT, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -985,28 +984,28 @@ class TZStrTest(ZoneInfoTestBase):
             AAA = ZoneOffset("AAA", timedelta(hours=-3))
             BBB = ZoneOffset("BBB", timedelta(hours=-2), ONE_H)
             cases[tzstr] = (
-                (datetime(2019, 1, 1), AAA, NORMAL),
-                (datetime(2019, 2, 28), AAA, NORMAL),
-                (datetime(2019, 3, 1, 11, 59), AAA, NORMAL),
-                (datetime(2019, 3, 1, 12, fold=0), AAA, GAP),
-                (datetime(2019, 3, 1, 12, fold=1), BBB, GAP),
-                (datetime(2019, 3, 1, 13), BBB, NORMAL),
-                (datetime(2019, 11, 1, 10, 59), BBB, NORMAL),
-                (datetime(2019, 11, 1, 11, fold=0), BBB, FOLD),
-                (datetime(2019, 11, 1, 11, fold=1), AAA, FOLD),
-                (datetime(2019, 11, 1, 12), AAA, NORMAL),
-                (datetime(2019, 12, 31, 23, 59, 59, 999999), AAA, NORMAL),
-                (datetime(2020, 1, 1), AAA, NORMAL),
-                (datetime(2020, 2, 29), AAA, NORMAL),
-                (datetime(2020, 3, 1, 11, 59), AAA, NORMAL),
-                (datetime(2020, 3, 1, 12, fold=0), AAA, GAP),
-                (datetime(2020, 3, 1, 12, fold=1), BBB, GAP),
-                (datetime(2020, 3, 1, 13), BBB, NORMAL),
-                (datetime(2020, 11, 1, 10, 59), BBB, NORMAL),
-                (datetime(2020, 11, 1, 11, fold=0), BBB, FOLD),
-                (datetime(2020, 11, 1, 11, fold=1), AAA, FOLD),
-                (datetime(2020, 11, 1, 12), AAA, NORMAL),
-                (datetime(2020, 12, 31, 23, 59, 59, 999999), AAA, NORMAL),
+                (datetime(2019, 1, 1), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 2, 28), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 1, 11, 59), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 3, 1, 12, fold=0), AAA, GAP),  # noqa: DTZ001
+                (datetime(2019, 3, 1, 12, fold=1), BBB, GAP),  # noqa: DTZ001
+                (datetime(2019, 3, 1, 13), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 11, 1, 10, 59), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 11, 1, 11, fold=0), BBB, FOLD),  # noqa: DTZ001
+                (datetime(2019, 11, 1, 11, fold=1), AAA, FOLD),  # noqa: DTZ001
+                (datetime(2019, 11, 1, 12), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2019, 12, 31, 23, 59, 59, 999999), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 1, 1), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 2, 29), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 1, 11, 59), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 1, 12, fold=0), AAA, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 1, 12, fold=1), BBB, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 1, 13), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 10, 59), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 11, fold=0), BBB, FOLD),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 11, fold=1), AAA, FOLD),  # noqa: DTZ001
+                (datetime(2020, 11, 1, 12), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 12, 31, 23, 59, 59, 999999), AAA, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -1015,15 +1014,15 @@ class TZStrTest(ZoneInfoTestBase):
             N03 = ZoneOffset("-03", timedelta(hours=-3))
             N02 = ZoneOffset("-02", timedelta(hours=-2), ONE_H)
             cases[tzstr] = (
-                (datetime(2020, 3, 27), N03, NORMAL),
-                (datetime(2020, 3, 28, 21, 59, 59), N03, NORMAL),
-                (datetime(2020, 3, 28, 22, fold=0), N03, GAP),
-                (datetime(2020, 3, 28, 22, fold=1), N02, GAP),
-                (datetime(2020, 3, 28, 23), N02, NORMAL),
-                (datetime(2020, 10, 24, 21), N02, NORMAL),
-                (datetime(2020, 10, 24, 22, fold=0), N02, FOLD),
-                (datetime(2020, 10, 24, 22, fold=1), N03, FOLD),
-                (datetime(2020, 10, 24, 23), N03, NORMAL),
+                (datetime(2020, 3, 27), N03, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 28, 21, 59, 59), N03, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 3, 28, 22, fold=0), N03, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 28, 22, fold=1), N02, GAP),  # noqa: DTZ001
+                (datetime(2020, 3, 28, 23), N02, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 24, 21), N02, NORMAL),  # noqa: DTZ001
+                (datetime(2020, 10, 24, 22, fold=0), N02, FOLD),  # noqa: DTZ001
+                (datetime(2020, 10, 24, 22, fold=1), N03, FOLD),  # noqa: DTZ001
+                (datetime(2020, 10, 24, 23), N03, NORMAL),  # noqa: DTZ001
             )
 
         @call
@@ -1032,14 +1031,14 @@ class TZStrTest(ZoneInfoTestBase):
             AAA = ZoneOffset("AAA", timedelta(hours=-3))
             BBB = ZoneOffset("BBB", timedelta(hours=-2), ONE_H)
             cases[tzstr] = (
-                (datetime(2012, 3, 11, 1, 0), AAA, NORMAL),
-                (datetime(2012, 3, 11, 1, 30, fold=0), AAA, GAP),
-                (datetime(2012, 3, 11, 1, 30, fold=1), BBB, GAP),
-                (datetime(2012, 3, 11, 2, 30), BBB, NORMAL),
-                (datetime(2012, 11, 4, 1, 15, 44, 999999), BBB, NORMAL),
-                (datetime(2012, 11, 4, 1, 15, 45, fold=0), BBB, FOLD),
-                (datetime(2012, 11, 4, 1, 15, 45, fold=1), AAA, FOLD),
-                (datetime(2012, 11, 4, 2, 15, 45), AAA, NORMAL),
+                (datetime(2012, 3, 11, 1, 0), AAA, NORMAL),  # noqa: DTZ001
+                (datetime(2012, 3, 11, 1, 30, fold=0), AAA, GAP),  # noqa: DTZ001
+                (datetime(2012, 3, 11, 1, 30, fold=1), BBB, GAP),  # noqa: DTZ001
+                (datetime(2012, 3, 11, 2, 30), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2012, 11, 4, 1, 15, 44, 999999), BBB, NORMAL),  # noqa: DTZ001
+                (datetime(2012, 11, 4, 1, 15, 45, fold=0), BBB, FOLD),  # noqa: DTZ001
+                (datetime(2012, 11, 4, 1, 15, 45, fold=1), AAA, FOLD),  # noqa: DTZ001
+                (datetime(2012, 11, 4, 2, 15, 45), AAA, NORMAL),  # noqa: DTZ001
             )
 
         cls.test_cases = cases
@@ -1184,7 +1183,7 @@ class ZoneInfoPickleTest(TzPathUserMixin, ZoneInfoTestBase):
             (zi_nokey, "ZoneInfo without key"),
         ]
         for zi, test_name in test_cases:
-            with self.subTest(test_name=test_name):
+            with self.subTest(test_name=test_name):  # noqa: SIM117
                 with self.assertRaises(pickle.PicklingError):
                     pickle.dumps(zi)
 
@@ -1220,7 +1219,7 @@ class CallingConventionTest(ZoneInfoTestBase):
         return ZONEINFO_DATA
 
     def test_from_file(self):
-        with open(self.zoneinfo_data.path_from_key("UTC"), "rb") as f:
+        with open(self.zoneinfo_data.path_from_key("UTC"), "rb") as f:  # noqa: SIM117
             with self.assertRaises(TypeError):
                 self.klass.from_file(fobj=f)
 
@@ -1259,7 +1258,7 @@ class TzPathTest(TzPathUserMixin, ZoneInfoTestBase):
             (f"/a/b/c{os.pathsep}/d/e/f", ["/a/b/c", "/d/e/f"]),
         ]
         for new_path_var, expected_result in new_paths:
-            with self.python_tzpath_context(new_path_var):
+            with self.python_tzpath_context(new_path_var):  # noqa: SIM117
                 with self.subTest(tzpath=new_path_var):
                     self.module.reset_tzpath()
                     tzpath = self.module.TZPATH
@@ -1302,7 +1301,7 @@ class TzPathTest(TzPathUserMixin, ZoneInfoTestBase):
         for input_paths, expected_paths in test_cases:
             path_var = os.pathsep.join(input_paths)
             with self.python_tzpath_context(path_var):
-                with self.subTest("warning", path_var=path_var):
+                with self.subTest("warning", path_var=path_var):  # noqa: SIM117
                     with self.assertWarns(self.module.InvalidTZPathWarning):
                         self.module.reset_tzpath()
                 tzpath = self.module.TZPATH
@@ -1336,7 +1335,7 @@ class TzPathTest(TzPathUserMixin, ZoneInfoTestBase):
             ),
         ]
         for input_paths in bad_values:
-            with self.subTest(input_paths=input_paths):
+            with self.subTest(input_paths=input_paths):  # noqa: SIM117
                 with self.assertRaises(ValueError):
                     self.module.reset_tzpath(to=input_paths)
 
@@ -1347,7 +1346,7 @@ class TzPathTest(TzPathUserMixin, ZoneInfoTestBase):
             0,
         ]
         for bad_value in bad_values:
-            with self.subTest(value=bad_value):
+            with self.subTest(value=bad_value):  # noqa: SIM117
                 with self.assertRaises(TypeError):
                     self.module.reset_tzpath(bad_value)
 
@@ -1394,7 +1393,7 @@ class TestModule(ZoneInfoTestBase):
 
     def test_getattr_error(self):
         with self.assertRaises(AttributeError):
-            self.module.NOATTRIBUTE
+            self.module.NOATTRIBUTE  # noqa: B018
 
     def test_dir_contains_all(self):
         """dir(self.module) should at least contain everything in __all__."""
@@ -1450,7 +1449,7 @@ class TestModule(ZoneInfoTestBase):
                 os.mkdir(tz_root)
                 for key in tree:
                     self.touch_zone(key, tz_root)
-                with self.tzpath_context([tz_root]):
+                with self.tzpath_context([tz_root]):  # noqa: SIM117
                     with self.subTest(case_name):
                         actual = self.module.available_timezones()
                         self.assertEqual(actual, expected)
@@ -1624,7 +1623,7 @@ class ZoneDumpData:
             LMT = ZoneOffset("LMT", timedelta(seconds=-968))
             GMT = ZoneOffset("GMT", ZERO)
             return [
-                ZoneTransition(datetime(1912, 1, 1), LMT, GMT),
+                ZoneTransition(datetime(1912, 1, 1), LMT, GMT),  # noqa: DTZ001
             ]
 
         def _Africa_Casablanca():
@@ -1633,12 +1632,12 @@ class ZoneDumpData:
             P00_d = ZoneOffset("+00", ZERO, -ONE_H)
             P01_s = ZoneOffset("+01", ONE_H, ZERO)
             return [
-                ZoneTransition(datetime(2018, 3, 25, 2), P00_s, P01_d),
-                ZoneTransition(datetime(2018, 5, 13, 3), P01_d, P00_s),
-                ZoneTransition(datetime(2018, 6, 17, 2), P00_s, P01_d),
-                ZoneTransition(datetime(2018, 10, 28, 3), P01_d, P01_s),
-                ZoneTransition(datetime(2019, 5, 5, 3), P01_s, P00_d),
-                ZoneTransition(datetime(2019, 6, 9, 2), P00_d, P01_s),
+                ZoneTransition(datetime(2018, 3, 25, 2), P00_s, P01_d),  # noqa: DTZ001
+                ZoneTransition(datetime(2018, 5, 13, 3), P01_d, P00_s),  # noqa: DTZ001
+                ZoneTransition(datetime(2018, 6, 17, 2), P00_s, P01_d),  # noqa: DTZ001
+                ZoneTransition(datetime(2018, 10, 28, 3), P01_d, P01_s),  # noqa: DTZ001
+                ZoneTransition(datetime(2019, 5, 5, 3), P01_s, P00_d),  # noqa: DTZ001
+                ZoneTransition(datetime(2019, 6, 9, 2), P00_d, P01_s),  # noqa: DTZ001
             ]
 
         def _America_Los_Angeles():
@@ -1648,17 +1647,17 @@ class ZoneDumpData:
             PWT = ZoneOffset("PWT", timedelta(hours=-7), ONE_H)
             PPT = ZoneOffset("PPT", timedelta(hours=-7), ONE_H)
             return [
-                ZoneTransition(datetime(1883, 11, 18, 12, 7, 2), LMT, PST),
-                ZoneTransition(datetime(1918, 3, 31, 2), PST, PDT),
-                ZoneTransition(datetime(1918, 3, 31, 2), PST, PDT),
-                ZoneTransition(datetime(1918, 10, 27, 2), PDT, PST),
-                ZoneTransition(datetime(1942, 2, 9, 2), PST, PWT),
-                ZoneTransition(datetime(1945, 8, 14, 16), PWT, PPT),
-                ZoneTransition(datetime(1945, 9, 30, 2), PPT, PST),
-                ZoneTransition(datetime(2015, 3, 8, 2), PST, PDT),
-                ZoneTransition(datetime(2015, 11, 1, 2), PDT, PST),
-                ZoneTransition(datetime(2450, 3, 13, 2), PST, PDT),
-                ZoneTransition(datetime(2450, 11, 6, 2), PDT, PST),
+                ZoneTransition(datetime(1883, 11, 18, 12, 7, 2), LMT, PST),  # noqa: DTZ001
+                ZoneTransition(datetime(1918, 3, 31, 2), PST, PDT),  # noqa: DTZ001
+                ZoneTransition(datetime(1918, 3, 31, 2), PST, PDT),  # noqa: DTZ001
+                ZoneTransition(datetime(1918, 10, 27, 2), PDT, PST),  # noqa: DTZ001
+                ZoneTransition(datetime(1942, 2, 9, 2), PST, PWT),  # noqa: DTZ001
+                ZoneTransition(datetime(1945, 8, 14, 16), PWT, PPT),  # noqa: DTZ001
+                ZoneTransition(datetime(1945, 9, 30, 2), PPT, PST),  # noqa: DTZ001
+                ZoneTransition(datetime(2015, 3, 8, 2), PST, PDT),  # noqa: DTZ001
+                ZoneTransition(datetime(2015, 11, 1, 2), PDT, PST),  # noqa: DTZ001
+                ZoneTransition(datetime(2450, 3, 13, 2), PST, PDT),  # noqa: DTZ001
+                ZoneTransition(datetime(2450, 11, 6, 2), PDT, PST),  # noqa: DTZ001
             ]
 
         def _America_Santiago():
@@ -1668,22 +1667,22 @@ class ZoneDumpData:
             N04 = ZoneOffset("-04", timedelta(seconds=-14400), ZERO)
             N03 = ZoneOffset("-03", timedelta(seconds=-10800), ONE_H)
             return [
-                ZoneTransition(datetime(1890, 1, 1), LMT, SMT),
-                ZoneTransition(datetime(1910, 1, 10), SMT, N05),
-                ZoneTransition(datetime(1916, 7, 1), N05, SMT),
-                ZoneTransition(datetime(2008, 3, 30), N03, N04),
-                ZoneTransition(datetime(2008, 10, 12), N04, N03),
-                ZoneTransition(datetime(2040, 4, 8), N03, N04),
-                ZoneTransition(datetime(2040, 9, 2), N04, N03),
+                ZoneTransition(datetime(1890, 1, 1), LMT, SMT),  # noqa: DTZ001
+                ZoneTransition(datetime(1910, 1, 10), SMT, N05),  # noqa: DTZ001
+                ZoneTransition(datetime(1916, 7, 1), N05, SMT),  # noqa: DTZ001
+                ZoneTransition(datetime(2008, 3, 30), N03, N04),  # noqa: DTZ001
+                ZoneTransition(datetime(2008, 10, 12), N04, N03),  # noqa: DTZ001
+                ZoneTransition(datetime(2040, 4, 8), N03, N04),  # noqa: DTZ001
+                ZoneTransition(datetime(2040, 9, 2), N04, N03),  # noqa: DTZ001
             ]
 
         def _Asia_Tokyo():
             JST = ZoneOffset("JST", timedelta(seconds=32400), ZERO)
             JDT = ZoneOffset("JDT", timedelta(seconds=36000), ONE_H)
             return [
-                ZoneTransition(datetime(1948, 5, 2), JST, JDT),
-                ZoneTransition(datetime(1948, 9, 12, 1), JDT, JST),
-                ZoneTransition(datetime(1951, 9, 9, 1), JDT, JST),
+                ZoneTransition(datetime(1948, 5, 2), JST, JDT),  # noqa: DTZ001
+                ZoneTransition(datetime(1948, 9, 12, 1), JDT, JST),  # noqa: DTZ001
+                ZoneTransition(datetime(1951, 9, 9, 1), JDT, JST),  # noqa: DTZ001
             ]
 
         def _Australia_Sydney():
@@ -1691,13 +1690,13 @@ class ZoneDumpData:
             AEST = ZoneOffset("AEST", timedelta(seconds=36000), ZERO)
             AEDT = ZoneOffset("AEDT", timedelta(seconds=39600), ONE_H)
             return [
-                ZoneTransition(datetime(1895, 2, 1), LMT, AEST),
-                ZoneTransition(datetime(1917, 1, 1, 0, 1), AEST, AEDT),
-                ZoneTransition(datetime(1917, 3, 25, 2), AEDT, AEST),
-                ZoneTransition(datetime(2012, 4, 1, 3), AEDT, AEST),
-                ZoneTransition(datetime(2012, 10, 7, 2), AEST, AEDT),
-                ZoneTransition(datetime(2040, 4, 1, 3), AEDT, AEST),
-                ZoneTransition(datetime(2040, 10, 7, 2), AEST, AEDT),
+                ZoneTransition(datetime(1895, 2, 1), LMT, AEST),  # noqa: DTZ001
+                ZoneTransition(datetime(1917, 1, 1, 0, 1), AEST, AEDT),  # noqa: DTZ001
+                ZoneTransition(datetime(1917, 3, 25, 2), AEDT, AEST),  # noqa: DTZ001
+                ZoneTransition(datetime(2012, 4, 1, 3), AEDT, AEST),  # noqa: DTZ001
+                ZoneTransition(datetime(2012, 10, 7, 2), AEST, AEDT),  # noqa: DTZ001
+                ZoneTransition(datetime(2040, 4, 1, 3), AEDT, AEST),  # noqa: DTZ001
+                ZoneTransition(datetime(2040, 10, 7, 2), AEST, AEDT),  # noqa: DTZ001
             ]
 
         def _Europe_Dublin():
@@ -1709,14 +1708,14 @@ class ZoneDumpData:
             GMT_1 = ZoneOffset("GMT", ZERO, -ONE_H)
             IST_1 = ZoneOffset("IST", ONE_H, ZERO)
             return [
-                ZoneTransition(datetime(1880, 8, 2, 0), LMT, DMT),
-                ZoneTransition(datetime(1916, 5, 21, 2), DMT, IST_0),
-                ZoneTransition(datetime(1916, 10, 1, 3), IST_0, GMT_0),
-                ZoneTransition(datetime(1917, 4, 8, 2), GMT_0, BST),
-                ZoneTransition(datetime(2016, 3, 27, 1), GMT_1, IST_1),
-                ZoneTransition(datetime(2016, 10, 30, 2), IST_1, GMT_1),
-                ZoneTransition(datetime(2487, 3, 30, 1), GMT_1, IST_1),
-                ZoneTransition(datetime(2487, 10, 26, 2), IST_1, GMT_1),
+                ZoneTransition(datetime(1880, 8, 2, 0), LMT, DMT),  # noqa: DTZ001
+                ZoneTransition(datetime(1916, 5, 21, 2), DMT, IST_0),  # noqa: DTZ001
+                ZoneTransition(datetime(1916, 10, 1, 3), IST_0, GMT_0),  # noqa: DTZ001
+                ZoneTransition(datetime(1917, 4, 8, 2), GMT_0, BST),  # noqa: DTZ001
+                ZoneTransition(datetime(2016, 3, 27, 1), GMT_1, IST_1),  # noqa: DTZ001
+                ZoneTransition(datetime(2016, 10, 30, 2), IST_1, GMT_1),  # noqa: DTZ001
+                ZoneTransition(datetime(2487, 3, 30, 1), GMT_1, IST_1),  # noqa: DTZ001
+                ZoneTransition(datetime(2487, 10, 26, 2), IST_1, GMT_1),  # noqa: DTZ001
             ]
 
         def _Europe_Lisbon():
@@ -1725,12 +1724,12 @@ class ZoneDumpData:
             CET = ZoneOffset("CET", ONE_H, ZERO)
             CEST = ZoneOffset("CEST", timedelta(seconds=7200), ONE_H)
             return [
-                ZoneTransition(datetime(1992, 3, 29, 1), WET, WEST),
-                ZoneTransition(datetime(1992, 9, 27, 2), WEST, CET),
-                ZoneTransition(datetime(1993, 3, 28, 2), CET, CEST),
-                ZoneTransition(datetime(1993, 9, 26, 3), CEST, CET),
-                ZoneTransition(datetime(1996, 3, 31, 2), CET, WEST),
-                ZoneTransition(datetime(1996, 10, 27, 2), WEST, WET),
+                ZoneTransition(datetime(1992, 3, 29, 1), WET, WEST),  # noqa: DTZ001
+                ZoneTransition(datetime(1992, 9, 27, 2), WEST, CET),  # noqa: DTZ001
+                ZoneTransition(datetime(1993, 3, 28, 2), CET, CEST),  # noqa: DTZ001
+                ZoneTransition(datetime(1993, 9, 26, 3), CEST, CET),  # noqa: DTZ001
+                ZoneTransition(datetime(1996, 3, 31, 2), CET, WEST),  # noqa: DTZ001
+                ZoneTransition(datetime(1996, 10, 27, 2), WEST, WET),  # noqa: DTZ001
             ]
 
         def _Europe_London():
@@ -1738,11 +1737,11 @@ class ZoneDumpData:
             GMT = ZoneOffset("GMT", ZERO, ZERO)
             BST = ZoneOffset("BST", ONE_H, ONE_H)
             return [
-                ZoneTransition(datetime(1847, 12, 1), LMT, GMT),
-                ZoneTransition(datetime(2005, 3, 27, 1), GMT, BST),
-                ZoneTransition(datetime(2005, 10, 30, 2), BST, GMT),
-                ZoneTransition(datetime(2043, 3, 29, 1), GMT, BST),
-                ZoneTransition(datetime(2043, 10, 25, 2), BST, GMT),
+                ZoneTransition(datetime(1847, 12, 1), LMT, GMT),  # noqa: DTZ001
+                ZoneTransition(datetime(2005, 3, 27, 1), GMT, BST),  # noqa: DTZ001
+                ZoneTransition(datetime(2005, 10, 30, 2), BST, GMT),  # noqa: DTZ001
+                ZoneTransition(datetime(2043, 3, 29, 1), GMT, BST),  # noqa: DTZ001
+                ZoneTransition(datetime(2043, 10, 25, 2), BST, GMT),  # noqa: DTZ001
             ]
 
         def _Pacific_Kiritimati():
@@ -1751,9 +1750,9 @@ class ZoneDumpData:
             N10 = ZoneOffset("-10", timedelta(seconds=-36000), ZERO)
             P14 = ZoneOffset("+14", timedelta(seconds=50400), ZERO)
             return [
-                ZoneTransition(datetime(1901, 1, 1), LMT, N1040),
-                ZoneTransition(datetime(1979, 10, 1), N1040, N10),
-                ZoneTransition(datetime(1994, 12, 31), N10, P14),
+                ZoneTransition(datetime(1901, 1, 1), LMT, N1040),  # noqa: DTZ001
+                ZoneTransition(datetime(1979, 10, 1), N1040, N10),  # noqa: DTZ001
+                ZoneTransition(datetime(1994, 12, 31), N10, P14),  # noqa: DTZ001
             ]
 
         cls._ZONEDUMP_DATA = {

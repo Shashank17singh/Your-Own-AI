@@ -28,7 +28,7 @@ class ModuleTests(unittest.TestCase):
         self.assertRaises(SystemError, dir, foo)
         try:
             s = foo.__name__
-            self.fail("__name__ = %s" % repr(s))
+            self.fail(f"__name__ = {s!r}")
         except AttributeError:
             pass
         self.assertEqual(foo.__doc__, ModuleType.__doc__)
@@ -150,7 +150,7 @@ class ModuleTests(unittest.TestCase):
     def __del__(self):
         self.l.append(1)
 a = A(destroyed)"""
-        exec(s, m.__dict__)
+        exec(s, m.__dict__)  # noqa: S102
         del m
         gc_collect()
         self.assertEqual(destroyed, [1])
@@ -171,7 +171,7 @@ a = A(destroyed)"""
         self.assertEqual(gga.x, 1)
         self.assertEqual(gga.y, 2)
         with self.assertRaisesRegex(AttributeError, "Deprecated, use whatever instead"):
-            gga.yolo
+            gga.yolo  # noqa: B018
         self.assertEqual(gga.whatever, "There is whatever")
         del sys.modules["test.good_getattr"]
 
@@ -182,9 +182,9 @@ a = A(destroyed)"""
         self.assertEqual(bga.x, 1)
         self.assertEqual(bad_getattr2.x, 1)
         with self.assertRaises(TypeError):
-            bga.nope
+            bga.nope  # noqa: B018
         with self.assertRaises(TypeError):
-            bad_getattr2.nope
+            bad_getattr2.nope  # noqa: B018
         del sys.modules["test.bad_getattr"]
         if "test.bad_getattr2" in sys.modules:
             del sys.modules["test.bad_getattr2"]
@@ -212,9 +212,9 @@ a = A(destroyed)"""
 
         # these lookups should not crash
         with self.assertRaises(AttributeError):
-            bad_getattr3.one
+            bad_getattr3.one  # noqa: B018
         with self.assertRaises(AttributeError):
-            bad_getattr3.delgetattr
+            bad_getattr3.delgetattr  # noqa: B018
         if "test.bad_getattr3" in sys.modules:
             del sys.modules["test.bad_getattr3"]
 
@@ -312,7 +312,7 @@ a = A(destroyed)"""
 
     def test_module_finalization_at_shutdown(self):
         # Module globals and builtins should still be available during shutdown
-        rc, out, err = assert_python_ok("-c", "from test import final_a")
+        _rc, out, err = assert_python_ok("-c", "from test import final_a")
         self.assertFalse(err)
         lines = out.splitlines()
         self.assertEqual(

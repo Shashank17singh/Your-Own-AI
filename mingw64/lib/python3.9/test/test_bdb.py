@@ -103,7 +103,7 @@ def info_breakpoints():
 
         disp = "yes " if bp.temporary else "no  "
         enab = "yes" if bp.enabled else "no "
-        info += "%-5d %s %s %-4d %-6d at %s:%d" % (
+        info += "%-5d %s %s %-4d %-6d at %s:%d" % (  # noqa: UP031
             bp.number,
             disp,
             enab,
@@ -113,7 +113,7 @@ def info_breakpoints():
             bp.line,
         )
         if bp.cond:
-            info += "\n\tstop only if %s" % (bp.cond,)
+            info += f"\n\tstop only if {bp.cond}"
         info += "\n"
     return info
 
@@ -191,7 +191,7 @@ class Tracer(Bdb):
         self.expect_set = expect_set
         self.dry_run = dry_run
         self.header = (
-            "Dry-run results for %s:" % test_case if test_case is not None else None
+            f"Dry-run results for {test_case}:" if test_case is not None else None
         )
         self.init_test()
 
@@ -267,7 +267,7 @@ class Tracer(Bdb):
             self.expect = self.expected_list.pop(0)
         except IndexError:
             raise BdbNotExpectedError(
-                "expect_set list exhausted, cannot pop item %d" % self.expect_set_no
+                "expect_set list exhausted, cannot pop item %d" % self.expect_set_no  # noqa: UP031
             )
         self.set_tuple = self.set_list.pop(0)
 
@@ -304,7 +304,7 @@ class Tracer(Bdb):
                 bpnums = sorted(bps.keys())
                 if not self.breakpoint_hits:
                     self.raise_not_expected(
-                        "No breakpoints hit at expect_set item %d" % self.expect_set_no
+                        "No breakpoints hit at expect_set item %d" % self.expect_set_no  # noqa: UP031
                     )
                 self.check_equal(
                     bpnums, self.breakpoint_hits[0], "Breakpoint numbers do not match"
@@ -323,7 +323,7 @@ class Tracer(Bdb):
             elif event == "exception":
                 if not isinstance(self.exc_info[1], self.expect[3]):
                     self.raise_not_expected(
-                        "Wrong exception at expect_set item %d, got '%s'"
+                        "Wrong exception at expect_set item %d, got '%s'"  # noqa: UP031
                         % (self.expect_set_no, self.exc_info)
                     )
 
@@ -331,7 +331,7 @@ class Tracer(Bdb):
         if expected == result:
             return
         self.raise_not_expected(
-            "%s at expect_set item %d, got '%s'" % (msg, self.expect_set_no, result)
+            "%s at expect_set item %d, got '%s'" % (msg, self.expect_set_no, result)  # noqa: UP031
         )
 
     def check_lno_name(self):
@@ -348,7 +348,7 @@ class Tracer(Bdb):
     def check_expect_max_size(self, size):
         if len(self.expect) > size:
             raise BdbSyntaxError(
-                "Invalid size of the %s expect tuple: %s" % (self.event, self.expect)
+                f"Invalid size of the {self.event} expect tuple: {self.expect}"
             )
 
     def lno_abs2rel(self):
@@ -370,13 +370,13 @@ class Tracer(Bdb):
     def get_state(self):
         lineno = self.lno_abs2rel()
         co_name = self.frame.f_code.co_name
-        state = "('%s', %d, '%s'" % (self.event, lineno, co_name)
+        state = "('%s', %d, '%s'" % (self.event, lineno, co_name)  # noqa: UP031
         if self.breakpoint_hits:
             bps = "{"
             for n in self.breakpoint_hits[0]:
                 if bps != "{":
                     bps += ", "
-                bps += "%s: %s" % (n, self.get_bpbynumber(n).hits)
+                bps += f"{n}: {self.get_bpbynumber(n).hits}"
             bps += "}"
             bps = "(" + bps + ", " + str(self.breakpoint_hits[1]) + ")"
             state += ", " + bps
@@ -389,11 +389,11 @@ class Tracer(Bdb):
         if header is not None and self.expect_set_no == 1:
             print()
             print(header)
-        print("%d: %s" % (self.expect_set_no, self.get_state()))
+        print("%d: %s" % (self.expect_set_no, self.get_state()))  # noqa: UP031
 
     def raise_not_expected(self, msg):
         msg += "\n"
-        msg += "  Expected: %s\n" % str(self.expect)
+        msg += f"  Expected: {self.expect!s}\n"
         msg += "  Got:      " + self.get_state()
         raise BdbNotExpectedError(msg)
 
@@ -444,7 +444,7 @@ class Tracer(Bdb):
                 self.check_expect_max_size(3)
             self.next_set_method()
         else:
-            raise BdbSyntaxError('"%s" is an invalid set_tuple' % self.set_tuple)
+            raise BdbSyntaxError(f'"{self.set_tuple}" is an invalid set_tuple')
 
 
 class TracerRun:
@@ -474,7 +474,7 @@ class TracerRun:
         not_empty = ""
         if self.tracer.set_list:
             not_empty += "All paired tuples have not been processed, "
-            not_empty += "the last one was number %d" % self.tracer.expect_set_no
+            not_empty += "the last one was number %d" % self.tracer.expect_set_no  # noqa: UP031
 
         # Make a BdbNotExpectedError a unittest failure.
         if type_ is not None and issubclass(BdbNotExpectedError, type_):
@@ -605,22 +605,16 @@ def tfunc_import():
 
 
 def tfunc_main():
-    lno = 2
     tfunc_first()
     tfunc_second()
-    lno = 5
-    lno = 6
-    lno = 7
 
 
 def tfunc_first():
-    lno = 2
-    lno = 3
-    lno = 4
+    pass
 
 
 def tfunc_second():
-    lno = 2
+    pass
 
 
 class BaseTestCase(unittest.TestCase):

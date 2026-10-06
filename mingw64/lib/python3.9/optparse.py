@@ -81,7 +81,7 @@ import textwrap
 
 
 def _repr(self):
-    return "<%s at 0x%x: %s>" % (self.__class__.__name__, id(self), self)
+    return f"<{self.__class__.__name__} at 0x{id(self):x}: {self}>"
 
 
 # This file was generated from:
@@ -126,7 +126,7 @@ class OptionError(OptParseError):
 
     def __str__(self):
         if self.option_id:
-            return "option %s: %s" % (self.option_id, self.msg)
+            return f"option {self.option_id}: {self.msg}"
         else:
             return self.msg
 
@@ -243,12 +243,12 @@ class HelpFormatter:
 
     def set_short_opt_delimiter(self, delim):
         if delim not in ("", " "):
-            raise ValueError("invalid metavar delimiter for short options: %r" % delim)
+            raise ValueError(f"invalid metavar delimiter for short options: {delim!r}")
         self._short_opt_fmt = "%s" + delim + "%s"
 
     def set_long_opt_delimiter(self, delim):
         if delim not in ("=", " "):
-            raise ValueError("invalid metavar delimiter for long options: %r" % delim)
+            raise ValueError(f"invalid metavar delimiter for long options: {delim!r}")
         self._long_opt_fmt = "%s" + delim + "%s"
 
     def indent(self):
@@ -318,18 +318,18 @@ class HelpFormatter:
         opts = self.option_strings[option]
         opt_width = self.help_position - self.current_indent - 2
         if len(opts) > opt_width:
-            opts = "%*s%s\n" % (self.current_indent, "", opts)
+            opts = "%*s%s\n" % (self.current_indent, "", opts)  # noqa: UP031
             indent_first = self.help_position
         else:  # start help on same line as opts
-            opts = "%*s%-*s  " % (self.current_indent, "", opt_width, opts)
+            opts = "%*s%-*s  " % (self.current_indent, "", opt_width, opts)  # noqa: UP031
             indent_first = 0
         result.append(opts)
         if option.help:
             help_text = self.expand_default(option)
             help_lines = textwrap.wrap(help_text, self.help_width)
-            result.append("%*s%s\n" % (indent_first, "", help_lines[0]))
+            result.append("%*s%s\n" % (indent_first, "", help_lines[0]))  # noqa: UP031
             result.extend(
-                ["%*s%s\n" % (self.help_position, "", line) for line in help_lines[1:]]
+                ["%*s%s\n" % (self.help_position, "", line) for line in help_lines[1:]]  # noqa: UP031
             )
         elif opts[-1] != "\n":
             result.append("\n")
@@ -389,7 +389,7 @@ class IndentedHelpFormatter(HelpFormatter):
         return _("Usage: %s\n") % usage
 
     def format_heading(self, heading):
-        return "%*s%s:\n" % (self.current_indent, "", heading)
+        return "%*s%s:\n" % (self.current_indent, "", heading)  # noqa: UP031
 
 
 class TitledHelpFormatter(HelpFormatter):
@@ -403,10 +403,10 @@ class TitledHelpFormatter(HelpFormatter):
         )
 
     def format_usage(self, usage):
-        return "%s  %s\n" % (self.format_heading(_("Usage")), usage)
+        return "{}  {}\n".format(self.format_heading(_("Usage")), usage)
 
     def format_heading(self, heading):
-        return "%s\n%s\n" % (heading, "=-"[self.level] * len(heading))
+        return "{}\n{}\n".format(heading, "=-"[self.level] * len(heading))
 
 
 def _parse_num(val, type):
@@ -482,7 +482,7 @@ class Option:
 
     # The list of instance attributes that may be set through
     # keyword args to the constructor.
-    ATTRS = [
+    ATTRS = [  # noqa: RUF012
         "action",
         "type",
         "dest",
@@ -556,7 +556,7 @@ class Option:
     #
     # If no checker is defined for a type, arguments will be
     # unchecked and remain strings.
-    TYPE_CHECKER = {
+    TYPE_CHECKER = {  # noqa: RUF012
         "int": check_builtin,
         "long": check_builtin,
         "float": check_builtin,
@@ -608,23 +608,23 @@ class Option:
         for opt in opts:
             if len(opt) < 2:
                 raise OptionError(
-                    "invalid option string %r: "
-                    "must be at least two characters long" % opt,
+                    f"invalid option string {opt!r}: "
+                    "must be at least two characters long",
                     self,
                 )
             elif len(opt) == 2:
                 if not (opt[0] == "-" and opt[1] != "-"):
                     raise OptionError(
-                        "invalid short option string %r: "
-                        "must be of the form -x, (x any non-dash char)" % opt,
+                        f"invalid short option string {opt!r}: "
+                        "must be of the form -x, (x any non-dash char)",
                         self,
                     )
                 self._short_opts.append(opt)
             else:
                 if not (opt[0:2] == "--" and opt[2] != "-"):
                     raise OptionError(
-                        "invalid long option string %r: "
-                        "must start with --, followed by non-dash" % opt,
+                        f"invalid long option string {opt!r}: "
+                        "must start with --, followed by non-dash",
                         self,
                     )
                 self._long_opts.append(opt)
@@ -641,7 +641,9 @@ class Option:
                     setattr(self, attr, None)
         if attrs:
             attrs = sorted(attrs.keys())
-            raise OptionError("invalid keyword arguments: %s" % ", ".join(attrs), self)
+            raise OptionError(
+                "invalid keyword arguments: {}".format(", ".join(attrs)), self
+            )
 
     # -- Constructor validation methods --------------------------------
 
@@ -649,7 +651,7 @@ class Option:
         if self.action is None:
             self.action = "store"
         elif self.action not in self.ACTIONS:
-            raise OptionError("invalid action: %r" % self.action, self)
+            raise OptionError(f"invalid action: {self.action!r}", self)
 
     def _check_type(self):
         if self.type is None:
@@ -670,10 +672,10 @@ class Option:
                 self.type = "string"
 
             if self.type not in self.TYPES:
-                raise OptionError("invalid option type: %r" % self.type, self)
+                raise OptionError(f"invalid option type: {self.type!r}", self)
             if self.action not in self.TYPED_ACTIONS:
                 raise OptionError(
-                    "must not supply a type for action %r" % self.action, self
+                    f"must not supply a type for action {self.action!r}", self
                 )
 
     def _check_choice(self):
@@ -684,12 +686,13 @@ class Option:
                 )
             elif not isinstance(self.choices, (tuple, list)):
                 raise OptionError(
-                    "choices must be a list of strings ('%s' supplied)"
-                    % str(type(self.choices)).split("'")[1],
+                    "choices must be a list of strings ('{}' supplied)".format(
+                        str(type(self.choices)).split("'")[1]
+                    ),
                     self,
                 )
         elif self.choices is not None:
-            raise OptionError("must not supply choices for type %r" % self.type, self)
+            raise OptionError(f"must not supply choices for type {self.type!r}", self)
 
     def _check_dest(self):
         # No destination given, and we need one for this action.  The
@@ -707,7 +710,7 @@ class Option:
     def _check_const(self):
         if self.action not in self.CONST_ACTIONS and self.const is not None:
             raise OptionError(
-                "'const' must not be supplied for action %r" % self.action, self
+                f"'const' must not be supplied for action {self.action!r}", self
             )
 
     def _check_nargs(self):
@@ -716,33 +719,31 @@ class Option:
                 self.nargs = 1
         elif self.nargs is not None:
             raise OptionError(
-                "'nargs' must not be supplied for action %r" % self.action, self
+                f"'nargs' must not be supplied for action {self.action!r}", self
             )
 
     def _check_callback(self):
         if self.action == "callback":
             if not callable(self.callback):
-                raise OptionError("callback not callable: %r" % self.callback, self)
+                raise OptionError(f"callback not callable: {self.callback!r}", self)
             if self.callback_args is not None and not isinstance(
                 self.callback_args, tuple
             ):
                 raise OptionError(
-                    "callback_args, if supplied, must be a tuple: not %r"
-                    % self.callback_args,
+                    f"callback_args, if supplied, must be a tuple: not {self.callback_args!r}",
                     self,
                 )
             if self.callback_kwargs is not None and not isinstance(
                 self.callback_kwargs, dict
             ):
                 raise OptionError(
-                    "callback_kwargs, if supplied, must be a dict: not %r"
-                    % self.callback_kwargs,
+                    f"callback_kwargs, if supplied, must be a dict: not {self.callback_kwargs!r}",
                     self,
                 )
         else:
             if self.callback is not None:
                 raise OptionError(
-                    "callback supplied (%r) for non-callback option" % self.callback,
+                    f"callback supplied ({self.callback!r}) for non-callback option",
                     self,
                 )
             if self.callback_args is not None:
@@ -753,16 +754,6 @@ class Option:
                 raise OptionError(
                     "callback_kwargs supplied for non-callback option", self
                 )
-
-    CHECK_METHODS = [
-        _check_action,
-        _check_type,
-        _check_choice,
-        _check_dest,
-        _check_const,
-        _check_nargs,
-        _check_callback,
-    ]
 
     # -- Miscellaneous methods -----------------------------------------
 
@@ -833,7 +824,7 @@ class Option:
             parser.print_version()
             parser.exit()
         else:
-            raise ValueError("unknown action %r" % self.action)
+            raise ValueError(f"unknown action {self.action!r}")
 
         return 1
 
@@ -891,7 +882,7 @@ class Values:
         elif mode == "loose":
             self._update_loose(dict)
         else:
-            raise ValueError("invalid update mode: %r" % mode)
+            raise ValueError(f"invalid update mode: {mode!r}")
 
     def read_module(self, modname, mode="careful"):
         __import__(modname)
@@ -900,7 +891,7 @@ class Values:
 
     def read_file(self, filename, mode="careful"):
         vars = {}
-        exec(open(filename).read(), vars)
+        exec(open(filename).read(), vars)  # noqa: S102, SIM115
         self._update(vars, mode)
 
     def ensure_value(self, attr, value):
@@ -968,7 +959,7 @@ class OptionContainer:
 
     def set_conflict_handler(self, handler):
         if handler not in ("error", "resolve"):
-            raise ValueError("invalid conflict_resolution value %r" % handler)
+            raise ValueError(f"invalid conflict_resolution value {handler!r}")
         self.conflict_handler = handler
 
     def set_description(self, description):
@@ -998,8 +989,9 @@ class OptionContainer:
             handler = self.conflict_handler
             if handler == "error":
                 raise OptionConflictError(
-                    "conflicting option string(s): %s"
-                    % ", ".join([co[0] for co in conflict_opts]),
+                    "conflicting option string(s): {}".format(
+                        ", ".join([co[0] for co in conflict_opts])
+                    ),
                     option,
                 )
             elif handler == "resolve":
@@ -1022,7 +1014,7 @@ class OptionContainer:
         elif len(args) == 1 and not kwargs:
             option = args[0]
             if not isinstance(option, Option):
-                raise TypeError("not an Option instance: %r" % option)
+                raise TypeError(f"not an Option instance: {option!r}")
         else:
             raise TypeError("invalid arguments")
 
@@ -1060,7 +1052,7 @@ class OptionContainer:
         if option is None:
             option = self._long_opt.get(opt_str)
         if option is None:
-            raise ValueError("no such option %r" % opt_str)
+            raise ValueError(f"no such option {opt_str!r}")
 
         for opt in option._short_opts:
             del self._short_opt[opt]
@@ -1190,7 +1182,7 @@ class OptionParser(OptionContainer):
 
     """
 
-    standard_option_list = []
+    standard_option_list = []  # noqa: RUF012
 
     def __init__(
         self,
@@ -1342,7 +1334,7 @@ class OptionParser(OptionContainer):
         elif len(args) == 1 and not kwargs:
             group = args[0]
             if not isinstance(group, OptionGroup):
-                raise TypeError("not an OptionGroup instance: %r" % group)
+                raise TypeError(f"not an OptionGroup instance: {group!r}")
             if group.parser is not self:
                 raise ValueError("invalid OptionGroup (wrong parser)")
         else:
@@ -1397,7 +1389,7 @@ class OptionParser(OptionContainer):
         self.values = values
 
         try:
-            stop = self._process_args(largs, rargs, values)
+            self._process_args(largs, rargs, values)
         except (BadOptionError, OptionValueError) as err:
             self.error(str(err))
 
@@ -1586,7 +1578,7 @@ class OptionParser(OptionContainer):
         should either exit or raise an exception.
         """
         self.print_usage(sys.stderr)
-        self.exit(2, "%s: error: %s\n" % (self.get_prog_name(), msg))
+        self.exit(2, f"{self.get_prog_name()}: error: {msg}\n")
 
     def get_usage(self):
         if self.usage:
@@ -1681,7 +1673,7 @@ def _match_abbrev(s, wordmap):
         return s
     else:
         # Isolate all words with s as a prefix.
-        possibilities = [word for word in wordmap.keys() if word.startswith(s)]
+        possibilities = [word for word in wordmap if word.startswith(s)]
         # No exact match, so there had better be just one possibility.
         if len(possibilities) == 1:
             return possibilities[0]

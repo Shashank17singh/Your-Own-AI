@@ -36,7 +36,7 @@ class C(B):
         pass
 
     @staticmethod
-    def sm(self):
+    def sm(self):  # noqa: PLW0211
         pass
 
     @classmethod

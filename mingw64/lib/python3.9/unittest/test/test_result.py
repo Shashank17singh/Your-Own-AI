@@ -115,7 +115,7 @@ class Test_TestResult(unittest.TestCase):
         test = Foo("test_1")
         try:
             test.fail("foo")
-        except:
+        except:  # noqa: E722
             exc_info_tuple = sys.exc_info()
         result = unittest.TestResult()
         result.startTest(test)
@@ -138,7 +138,7 @@ class Test_TestResult(unittest.TestCase):
         test = Foo("test_1")
         try:
             raise TypeError()
-        except:
+        except:  # noqa: E722
             exc_info_tuple = sys.exc_info()
         result = unittest.TestResult()
         result.startTest(test)
@@ -156,7 +156,7 @@ class Test_TestResult(unittest.TestCase):
     def test_addError_locals(self):
         class Foo(unittest.TestCase):
             def test_1(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         test = Foo("test_1")
         result = unittest.TestResult()
@@ -167,7 +167,7 @@ class Test_TestResult(unittest.TestCase):
         test.run(result)
         result.stopTestRun()
         self.assertEqual(len(result.errors), 1)
-        test_case, formatted_exc = result.errors[0]
+        _test_case, formatted_exc = result.errors[0]
         self.assertEqual("A tracebacklocals", formatted_exc)
 
     def test_addSubTest(self):
@@ -177,7 +177,7 @@ class Test_TestResult(unittest.TestCase):
                 with self.subTest(foo=1):
                     subtest = self._subtest
                     try:
-                        1 / 0
+                        1 / 0  # noqa: B018
                     except ZeroDivisionError:
                         exc_info_tuple = sys.exc_info()
                     result.addSubTest(test, subtest, exc_info_tuple)
@@ -331,7 +331,7 @@ class Test_TestResult(unittest.TestCase):
     def testStackFrameTrimming(self):
         class Frame:
             class tb_frame:
-                f_globals = {}
+                f_globals = {}  # noqa: RUF012
 
         result = unittest.TestResult()
         self.assertFalse(result._is_relevant_tb_level(Frame))
@@ -361,7 +361,7 @@ class Test_TestResult(unittest.TestCase):
         def test(result):
             self.assertTrue(result.failfast)
 
-        result = runner.run(test)
+        runner.run(test)
 
 
 classDict = dict(unittest.TestResult.__dict__)
@@ -508,8 +508,6 @@ class TestOutputBuffering(unittest.TestCase):
             ("failures", "addFailure", False),
         ]:
             result = self.getStartedResult()
-            buffered_out = sys.stdout
-            buffered_err = sys.stderr
             result._original_stdout = io.StringIO()
             result._original_stderr = io.StringIO()
             print("foo", file=sys.stdout)
@@ -531,10 +529,7 @@ class TestOutputBuffering(unittest.TestCase):
                 Stderr:
                 bar
             """)
-            expectedFullMessage = "A traceback%s%s" % (
-                expectedOutMessage,
-                expectedErrMessage,
-            )
+            expectedFullMessage = f"A traceback{expectedOutMessage}{expectedErrMessage}"
             self.assertIs(test, self)
             self.assertEqual(result._original_stdout.getvalue(), expectedOutMessage)
             self.assertEqual(result._original_stderr.getvalue(), expectedErrMessage)
@@ -548,7 +543,7 @@ class TestOutputBuffering(unittest.TestCase):
         class Foo(unittest.TestCase):
             def setUp(self):
                 print("set up")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -572,7 +567,7 @@ class TestOutputBuffering(unittest.TestCase):
         class Foo(unittest.TestCase):
             def tearDown(self):
                 print("tear down")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -629,7 +624,7 @@ class TestOutputBuffering(unittest.TestCase):
                 print("set up")
                 self.addCleanup(bad_cleanup1)
                 self.addCleanup(bad_cleanup2)
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -672,7 +667,7 @@ class TestOutputBuffering(unittest.TestCase):
 
             def tearDown(self):
                 print("tear down")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -711,7 +706,7 @@ class TestOutputBuffering(unittest.TestCase):
             @classmethod
             def setUpClass(cls):
                 print("set up class")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -736,7 +731,7 @@ class TestOutputBuffering(unittest.TestCase):
             @classmethod
             def tearDownClass(cls):
                 print("tear down class")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -799,7 +794,7 @@ class TestOutputBuffering(unittest.TestCase):
                 print("set up class")
                 cls.addClassCleanup(bad_cleanup1)
                 cls.addClassCleanup(bad_cleanup2)
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -844,7 +839,7 @@ class TestOutputBuffering(unittest.TestCase):
             @classmethod
             def tearDownClass(cls):
                 print("tear down class")
-                1 / 0
+                1 / 0  # noqa: B018
 
             def test_foo(self):
                 pass
@@ -887,7 +882,7 @@ class TestOutputBuffering(unittest.TestCase):
             @staticmethod
             def setUpModule():
                 print("set up module")
-                1 / 0
+                1 / 0  # noqa: B018
 
         Foo.__module__ = "Module"
         sys.modules["Module"] = Module
@@ -916,7 +911,7 @@ class TestOutputBuffering(unittest.TestCase):
             @staticmethod
             def tearDownModule():
                 print("tear down module")
-                1 / 0
+                1 / 0  # noqa: B018
 
         Foo.__module__ = "Module"
         sys.modules["Module"] = Module
@@ -978,7 +973,7 @@ class TestOutputBuffering(unittest.TestCase):
                 print("set up module")
                 unittest.addModuleCleanup(bad_cleanup1)
                 unittest.addModuleCleanup(bad_cleanup2)
-                1 / 0
+                1 / 0  # noqa: B018
 
         Foo.__module__ = "Module"
         sys.modules["Module"] = Module
@@ -1022,7 +1017,7 @@ class TestOutputBuffering(unittest.TestCase):
             @staticmethod
             def tearDownModule():
                 print("tear down module")
-                1 / 0
+                1 / 0  # noqa: B018
 
         Foo.__module__ = "Module"
         sys.modules["Module"] = Module

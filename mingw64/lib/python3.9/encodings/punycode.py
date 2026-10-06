@@ -156,9 +156,7 @@ def decode_generalized_number(extended, extpos, bias, errors):
         elif 0x30 <= char <= 0x39:
             digit = char - 22  # 0x30-26
         elif errors == "strict":
-            raise UnicodeError(
-                "Invalid extended code point '%s'" % extended[extpos - 1]
-            )
+            raise UnicodeError(f"Invalid extended code point '{extended[extpos - 1]}'")
         else:
             return extpos, None
         t = T(j, bias)
@@ -185,7 +183,7 @@ def insertion_sort(base, extended, errors):
         char += pos // (len(base) + 1)
         if char > 0x10FFFF:
             if errors == "strict":
-                raise UnicodeError("Invalid character U+%x" % char)
+                raise UnicodeError(f"Invalid character U+{char:x}")
             char = ord("?")
         pos = pos % (len(base) + 1)
         base = base[:pos] + chr(char) + base[pos:]

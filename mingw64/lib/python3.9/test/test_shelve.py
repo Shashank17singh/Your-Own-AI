@@ -30,7 +30,7 @@ class byteskeydict(MutableMapping):
         return len(self.d)
 
     def iterkeys(self):
-        for k in self.d.keys():
+        for k in self.d:
             yield k.encode("latin-1")
 
     __iter__ = iterkeys
@@ -65,7 +65,7 @@ class TestCase(unittest.TestCase):
             self.fail("Closed shelf should not find a key")
 
     def test_ascii_file_shelf(self):
-        s = shelve.open(self.fn, protocol=0)
+        s = shelve.open(self.fn, protocol=0)  # noqa: SIM115
         try:
             s["key1"] = (1, 2, 3, 4)
             self.assertEqual(s["key1"], (1, 2, 3, 4))
@@ -73,7 +73,7 @@ class TestCase(unittest.TestCase):
             s.close()
 
     def test_binary_file_shelf(self):
-        s = shelve.open(self.fn, protocol=1)
+        s = shelve.open(self.fn, protocol=1)  # noqa: SIM115
         try:
             s["key1"] = (1, 2, 3, 4)
             self.assertEqual(s["key1"], (1, 2, 3, 4))
@@ -81,7 +81,7 @@ class TestCase(unittest.TestCase):
             s.close()
 
     def test_proto2_file_shelf(self):
-        s = shelve.open(self.fn, protocol=2)
+        s = shelve.open(self.fn, protocol=2)  # noqa: SIM115
         try:
             s["key1"] = (1, 2, 3, 4)
             self.assertEqual(s["key1"], (1, 2, 3, 4))
@@ -185,7 +185,7 @@ class TestShelveBase(mapping_tests.BasicTestMappingProtocol):
             x = shelve.Shelf(byteskeydict(), **self._args)
         else:
             self.counter += 1
-            x = shelve.open(self.fn + str(self.counter), **self._args)
+            x = shelve.open(self.fn + str(self.counter), **self._args)  # noqa: SIM115
         self._db.append(x)
         return x
 
@@ -199,32 +199,32 @@ class TestShelveBase(mapping_tests.BasicTestMappingProtocol):
 
 
 class TestAsciiFileShelve(TestShelveBase):
-    _args = {"protocol": 0}
+    _args = {"protocol": 0}  # noqa: RUF012
     _in_mem = False
 
 
 class TestBinaryFileShelve(TestShelveBase):
-    _args = {"protocol": 1}
+    _args = {"protocol": 1}  # noqa: RUF012
     _in_mem = False
 
 
 class TestProto2FileShelve(TestShelveBase):
-    _args = {"protocol": 2}
+    _args = {"protocol": 2}  # noqa: RUF012
     _in_mem = False
 
 
 class TestAsciiMemShelve(TestShelveBase):
-    _args = {"protocol": 0}
+    _args = {"protocol": 0}  # noqa: RUF012
     _in_mem = True
 
 
 class TestBinaryMemShelve(TestShelveBase):
-    _args = {"protocol": 1}
+    _args = {"protocol": 1}  # noqa: RUF012
     _in_mem = True
 
 
 class TestProto2MemShelve(TestShelveBase):
-    _args = {"protocol": 2}
+    _args = {"protocol": 2}  # noqa: RUF012
     _in_mem = True
 
 

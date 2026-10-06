@@ -150,7 +150,7 @@ class ComplexTest(unittest.TestCase):
         for i in range(1, 10):
             pow = 52 + i
             mult = 2**i
-            check(2**pow, range(1, 101), lambda delta: delta % mult == 0)
+            check(2**pow, range(1, 101), lambda delta: delta % mult == 0)  # noqa: B023
             check(2**pow, range(1, 101), lambda delta: False, float(i))
         check(2**53, range(-100, 0), lambda delta: True)
 
@@ -463,7 +463,7 @@ class ComplexTest(unittest.TestCase):
         class complex1(complex):
             """Test usage of __complex__() with a __new__() method"""
 
-            def __new__(self, value=0j):
+            def __new__(self, value=0j):  # noqa: PLW0211
                 return complex.__new__(self, 2 * value)
 
             def __complex__(self):
@@ -580,11 +580,11 @@ class ComplexTest(unittest.TestCase):
 
         fo = None
         try:
-            fo = open(support.TESTFN, "w")
+            fo = open(support.TESTFN, "w")  # noqa: SIM115
             print(a, b, file=fo)
             fo.close()
-            fo = open(support.TESTFN, "r")
-            self.assertEqual(fo.read(), ("%s %s\n" % (a, b)))
+            fo = open(support.TESTFN, "r")  # noqa: SIM115
+            self.assertEqual(fo.read(), (f"{a} {b}\n"))
         finally:
             if (fo is not None) and (not fo.closed):
                 fo.close()
@@ -644,7 +644,7 @@ class ComplexTest(unittest.TestCase):
         # if we predefine some constants, then eval(repr(z)) should
         # also work, except that it might change the sign of zeros
         inf, nan = float("inf"), float("nan")
-        infj, nanj = complex(0.0, inf), complex(0.0, nan)
+        _infj, _nanj = complex(0.0, inf), complex(0.0, nan)
         for x in vals:
             for y in vals:
                 z = complex(x, y)

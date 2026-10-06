@@ -115,7 +115,7 @@ class Fraction(numbers.Rational):
                 # Handle construction from strings.
                 m = _RATIONAL_FORMAT.match(numerator)
                 if m is None:
-                    raise ValueError("Invalid literal for Fraction: %r" % numerator)
+                    raise ValueError(f"Invalid literal for Fraction: {numerator!r}")
                 numerator = int(m.group("num") or "0")
                 denom = m.group("denom")
                 if denom:
@@ -154,7 +154,7 @@ class Fraction(numbers.Rational):
             raise TypeError("both arguments should be Rational instances")
 
         if denominator == 0:
-            raise ZeroDivisionError("Fraction(%s, 0)" % numerator)
+            raise ZeroDivisionError(f"Fraction({numerator}, 0)")
         if _normalize:
             g = math.gcd(numerator, denominator)
             if denominator < 0:
@@ -176,8 +176,7 @@ class Fraction(numbers.Rational):
             return cls(f)
         elif not isinstance(f, float):
             raise TypeError(
-                "%s.from_float() only takes floats, not %r (%s)"
-                % (cls.__name__, f, type(f).__name__)
+                f"{cls.__name__}.from_float() only takes floats, not {f!r} ({type(f).__name__})"
             )
         return cls(*f.as_integer_ratio())
 
@@ -190,8 +189,7 @@ class Fraction(numbers.Rational):
             dec = Decimal(int(dec))
         elif not isinstance(dec, Decimal):
             raise TypeError(
-                "%s.from_decimal() only takes Decimals, not %r (%s)"
-                % (cls.__name__, dec, type(dec).__name__)
+                f"{cls.__name__}.from_decimal() only takes Decimals, not {dec!r} ({type(dec).__name__})"
             )
         return cls(*dec.as_integer_ratio())
 
@@ -268,18 +266,14 @@ class Fraction(numbers.Rational):
 
     def __repr__(self):
         """repr(self)"""
-        return "%s(%s, %s)" % (
-            self.__class__.__name__,
-            self._numerator,
-            self._denominator,
-        )
+        return f"{self.__class__.__name__}({self._numerator}, {self._denominator})"
 
     def __str__(self):
         """str(self)"""
         if self._denominator == 1:
             return str(self._numerator)
         else:
-            return "%s/%s" % (self._numerator, self._denominator)
+            return f"{self._numerator}/{self._denominator}"
 
     def _operator_fallbacks(monomorphic_operator, fallback_operator):
         """Generates forward and reverse operators given a purely-rational

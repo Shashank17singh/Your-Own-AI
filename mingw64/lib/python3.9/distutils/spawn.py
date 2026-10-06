@@ -67,8 +67,8 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
             if _cfg_target_split[:2] >= [10, 3] and cur_target_split[:2] < [10, 3]:
                 my_msg = (
                     "$MACOSX_DEPLOYMENT_TARGET mismatch: "
-                    'now "%s" but "%s" during configure;'
-                    "must use 10.3 or later" % (cur_target, _cfg_target)
+                    f'now "{cur_target}" but "{_cfg_target}" during configure;'
+                    "must use 10.3 or later"
                 )
                 raise DistutilsPlatformError(my_msg)
             env = dict(os.environ, MACOSX_DEPLOYMENT_TARGET=cur_target)
@@ -80,14 +80,12 @@ def spawn(cmd, search_path=1, verbose=0, dry_run=0):
     except OSError as exc:
         if not DEBUG:
             cmd = cmd[0]
-        raise DistutilsExecError("command %r failed: %s" % (cmd, exc.args[-1])) from exc
+        raise DistutilsExecError(f"command {cmd!r} failed: {exc.args[-1]}") from exc
 
     if exitcode:
         if not DEBUG:
             cmd = cmd[0]
-        raise DistutilsExecError(
-            "command %r failed with exit code %s" % (cmd, exitcode)
-        )
+        raise DistutilsExecError(f"command {cmd!r} failed with exit code {exitcode}")
 
 
 def find_executable(executable, path=None):

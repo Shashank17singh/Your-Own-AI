@@ -48,7 +48,7 @@ _TYPE_MAPPING = {
     "XRangeType": "range",
 }
 
-_pats = ["power< 'types' trailer< '.' name='%s' > >" % t for t in _TYPE_MAPPING]
+_pats = [f"power< 'types' trailer< '.' name='{t}' > >" for t in _TYPE_MAPPING]
 
 
 class FixTypes(fixer_base.BaseFix):

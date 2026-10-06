@@ -64,7 +64,7 @@ class BaseTest(unittest.TestCase):
             self.include = "Include"
         else:
             self.bindir = "bin"
-            self.lib = ("lib", "python%d.%d" % sys.version_info[:2])
+            self.lib = ("lib", "python%d.%d" % sys.version_info[:2])  # noqa: UP031
             self.include = "include"
         executable = sys._base_executable
         self.exe = os.path.split(executable)[-1]
@@ -124,13 +124,13 @@ class BasicTest(BaseTest):
         data = self.get_text_file_contents("pyvenv.cfg")
         executable = sys._base_executable
         path = os.path.dirname(executable)
-        self.assertIn("home = %s" % path, data)
+        self.assertIn(f"home = {path}", data)
         fn = self.get_env_file(self.bindir, self.exe)
         if not os.path.exists(fn):  # diagnostics for Windows buildbot failures
             bd = self.get_env_file(self.bindir)
-            print("Contents of %r:" % bd)
-            print("    %r" % os.listdir(bd))
-        self.assertTrue(os.path.exists(fn), "File %r should exist." % fn)
+            print(f"Contents of {bd!r}:")
+            print(f"    {os.listdir(bd)!r}")
+        self.assertTrue(os.path.exists(fn), f"File {fn!r} should exist.")
 
     def test_prompt(self):
         env_name = os.path.split(self.env_dir)[1]
@@ -140,7 +140,7 @@ class BasicTest(BaseTest):
         self.run_with_capture(builder.create, self.env_dir)
         context = builder.ensure_directories(self.env_dir)
         data = self.get_text_file_contents("pyvenv.cfg")
-        self.assertEqual(context.prompt, "(%s) " % env_name)
+        self.assertEqual(context.prompt, f"({env_name}) ")
         self.assertNotIn("prompt = ", data)
 
         rmtree(self.env_dir)
@@ -157,8 +157,8 @@ class BasicTest(BaseTest):
         self.run_with_capture(builder.create, self.env_dir)
         context = builder.ensure_directories(self.env_dir)
         data = self.get_text_file_contents("pyvenv.cfg")
-        self.assertEqual(context.prompt, "(%s) " % cwd)
-        self.assertIn("prompt = '%s'\n" % cwd, data)
+        self.assertEqual(context.prompt, f"({cwd}) ")
+        self.assertIn(f"prompt = '{cwd}'\n", data)
 
     def test_upgrade_dependencies(self):
         builder = venv.EnvBuilder()
@@ -200,8 +200,8 @@ class BasicTest(BaseTest):
             ("base_prefix", sys.base_prefix),
             ("base_exec_prefix", sys.base_exec_prefix),
         ):
-            cmd[2] = "import sys; print(sys.%s)" % prefix
-            out, err = check_output(cmd)
+            cmd[2] = f"import sys; print(sys.{prefix})"
+            out, _err = check_output(cmd)
             self.assertEqual(out.strip(), expected.encode())
 
     if sys.platform == "win32":
@@ -216,8 +216,8 @@ class BasicTest(BaseTest):
             ("bin",),
             ("include",),
             ("lib",),
-            ("lib", "python%d.%d" % sys.version_info[:2]),
-            ("lib", "python%d.%d" % sys.version_info[:2], "site-packages"),
+            ("lib", "python%d.%d" % sys.version_info[:2]),  # noqa: UP031
+            ("lib", "python%d.%d" % sys.version_info[:2], "site-packages"),  # noqa: UP031
         )
 
     def create_contents(self, paths, filename):
@@ -284,9 +284,9 @@ class BasicTest(BaseTest):
             if not os.path.exists(fn):
                 # diagnostics for Windows buildbot failures
                 bd = self.get_env_file(self.bindir)
-                print("Contents of %r:" % bd)
-                print("    %r" % os.listdir(bd))
-            self.assertTrue(os.path.exists(fn), "File %r should exist." % fn)
+                print(f"Contents of {bd!r}:")
+                print(f"    {os.listdir(bd)!r}")
+            self.assertTrue(os.path.exists(fn), f"File {fn!r} should exist.")
 
     def test_isolation(self):
         """
@@ -296,7 +296,7 @@ class BasicTest(BaseTest):
             builder = venv.EnvBuilder(clear=True, system_site_packages=ssp)
             builder.create(self.env_dir)
             data = self.get_text_file_contents("pyvenv.cfg")
-            self.assertIn("include-system-site-packages = %s\n" % s, data)
+            self.assertIn(f"include-system-site-packages = {s}\n", data)
 
     @unittest.skipUnless(can_symlink(), "Needs symlinks")
     def test_symlinking(self):
@@ -330,7 +330,7 @@ class BasicTest(BaseTest):
         rmtree(self.env_dir)
         self.run_with_capture(venv.create, self.env_dir)
         envpy = os.path.join(os.path.realpath(self.env_dir), self.bindir, self.exe)
-        out, err = check_output([envpy, "-c", "import sys; print(sys.executable)"])
+        out, _err = check_output([envpy, "-c", "import sys; print(sys.executable)"])
         self.assertEqual(out.strip(), envpy.encode())
 
     @unittest.skipUnless(can_symlink(), "Needs symlinks")
@@ -342,7 +342,7 @@ class BasicTest(BaseTest):
         builder = venv.EnvBuilder(clear=True, symlinks=True)
         builder.create(self.env_dir)
         envpy = os.path.join(os.path.realpath(self.env_dir), self.bindir, self.exe)
-        out, err = check_output([envpy, "-c", "import sys; print(sys.executable)"])
+        out, _err = check_output([envpy, "-c", "import sys; print(sys.executable)"])
         self.assertEqual(out.strip(), envpy.encode())
 
     @unittest.skipUnless(os.name == "nt", "only relevant on Windows")
@@ -355,8 +355,8 @@ class BasicTest(BaseTest):
         builder = venv.EnvBuilder(clear=True)
         builder.create(env_dir)
         activate = os.path.join(env_dir, self.bindir, "activate.bat")
-        envpy = os.path.join(env_dir, self.bindir, self.exe)
-        out, err = check_output(
+        os.path.join(env_dir, self.bindir, self.exe)
+        out, _err = check_output(
             [activate, "&", self.exe, "-c", "print(0)"],
             encoding="oem",
         )
@@ -375,14 +375,16 @@ class BasicTest(BaseTest):
         rmtree(self.env_dir)
         self.run_with_capture(venv.create, self.env_dir)
         envpy = os.path.join(os.path.realpath(self.env_dir), self.bindir, self.exe)
-        out, err = check_output(
+        out, _err = check_output(
             [
                 envpy,
                 "-c",
-                "from multiprocessing import Pool; "
-                "pool = Pool(1); "
-                'print(pool.apply_async("Python".lower).get(3)); '
-                "pool.terminate()",
+                (
+                    "from multiprocessing import Pool; "
+                    "pool = Pool(1); "
+                    'print(pool.apply_async("Python".lower).get(3)); '
+                    "pool.terminate()"
+                ),
             ]
         )
         self.assertEqual(out.strip(), b"python")
@@ -410,7 +412,7 @@ class BasicTest(BaseTest):
         builder.create(self.env_dir)
 
         envpy = os.path.join(os.path.realpath(self.env_dir), self.bindir, self.exe)
-        out, err = check_output(
+        out, _err = check_output(
             [envpy, "-c", 'import os; print("__PYVENV_LAUNCHER__" in os.environ)']
         )
         self.assertEqual(out.strip(), b"False")
@@ -472,7 +474,6 @@ class EnsurePipTest(BaseTest):
                 bad_config = "[global]\nno-install=1"
                 # Write to both config file names on all platforms to reduce
                 # cross-platform variation in test code behaviour
-                win_location = ("pip", "pip.ini")
                 posix_location = (".pip", "pip.conf")
                 # Skips win_location due to http://bugs.python.org/issue20541
                 for dirname, fname in (posix_location,):

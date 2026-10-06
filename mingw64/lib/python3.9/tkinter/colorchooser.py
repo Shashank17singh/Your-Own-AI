@@ -27,7 +27,7 @@ class Chooser(Dialog):
         try:
             color = self.options["initialcolor"]
             if isinstance(color, tuple):
-                self.options["initialcolor"] = "#%02x%02x%02x" % color
+                self.options["initialcolor"] = "#{:02x}{:02x}{:02x}".format(*color)
         except KeyError:
             pass
 

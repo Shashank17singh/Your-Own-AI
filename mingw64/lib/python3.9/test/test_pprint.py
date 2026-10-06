@@ -95,14 +95,14 @@ class QueryTestCase(unittest.TestCase):
         self.a[-12] = self.b
 
     def test_init(self):
-        pp = pprint.PrettyPrinter()
-        pp = pprint.PrettyPrinter(
+        pprint.PrettyPrinter()
+        pprint.PrettyPrinter(
             indent=4, width=40, depth=5, stream=io.StringIO(), compact=True
         )
-        pp = pprint.PrettyPrinter(4, 40, 5, io.StringIO())
-        pp = pprint.PrettyPrinter(sort_dicts=False)
+        pprint.PrettyPrinter(4, 40, 5, io.StringIO())
+        pprint.PrettyPrinter(sort_dicts=False)
         with self.assertRaises(TypeError):
-            pp = pprint.PrettyPrinter(4, 40, 5, io.StringIO(), True)
+            pprint.PrettyPrinter(4, 40, 5, io.StringIO(), True)
         self.assertRaises(ValueError, pprint.PrettyPrinter, indent=-1)
         self.assertRaises(ValueError, pprint.PrettyPrinter, depth=0)
         self.assertRaises(ValueError, pprint.PrettyPrinter, depth=-1)
@@ -130,16 +130,16 @@ class QueryTestCase(unittest.TestCase):
         ):
             # module-level convenience functions
             self.assertFalse(
-                pprint.isrecursive(safe), "expected not isrecursive for %r" % (safe,)
+                pprint.isrecursive(safe), f"expected not isrecursive for {safe!r}"
             )
             self.assertTrue(
-                pprint.isreadable(safe), "expected isreadable for %r" % (safe,)
+                pprint.isreadable(safe), f"expected isreadable for {safe!r}"
             )
             # PrettyPrinter methods
             self.assertFalse(
-                pp.isrecursive(safe), "expected not isrecursive for %r" % (safe,)
+                pp.isrecursive(safe), f"expected not isrecursive for {safe!r}"
             )
-            self.assertTrue(pp.isreadable(safe), "expected isreadable for %r" % (safe,))
+            self.assertTrue(pp.isreadable(safe), f"expected isreadable for {safe!r}")
 
     def test_knotted(self):
         # Verify .isrecursive() and .isreadable() w/ recursion
@@ -165,16 +165,16 @@ class QueryTestCase(unittest.TestCase):
         for safe in self.a, self.b, self.d, (self.d, self.d):
             # module-level convenience functions
             self.assertFalse(
-                pprint.isrecursive(safe), "expected not isrecursive for %r" % (safe,)
+                pprint.isrecursive(safe), f"expected not isrecursive for {safe!r}"
             )
             self.assertTrue(
-                pprint.isreadable(safe), "expected isreadable for %r" % (safe,)
+                pprint.isreadable(safe), f"expected isreadable for {safe!r}"
             )
             # PrettyPrinter methods
             self.assertFalse(
-                pp.isrecursive(safe), "expected not isrecursive for %r" % (safe,)
+                pp.isrecursive(safe), f"expected not isrecursive for {safe!r}"
             )
-            self.assertTrue(pp.isreadable(safe), "expected isreadable for %r" % (safe,))
+            self.assertTrue(pp.isreadable(safe), f"expected isreadable for {safe!r}")
 
     def test_unreadable(self):
         # Not recursive but not readable anyway
@@ -183,20 +183,20 @@ class QueryTestCase(unittest.TestCase):
             # module-level convenience functions
             self.assertFalse(
                 pprint.isrecursive(unreadable),
-                "expected not isrecursive for %r" % (unreadable,),
+                f"expected not isrecursive for {unreadable!r}",
             )
             self.assertFalse(
                 pprint.isreadable(unreadable),
-                "expected not isreadable for %r" % (unreadable,),
+                f"expected not isreadable for {unreadable!r}",
             )
             # PrettyPrinter methods
             self.assertFalse(
                 pp.isrecursive(unreadable),
-                "expected not isrecursive for %r" % (unreadable,),
+                f"expected not isrecursive for {unreadable!r}",
             )
             self.assertFalse(
                 pp.isreadable(unreadable),
-                "expected not isreadable for %r" % (unreadable,),
+                f"expected not isreadable for {unreadable!r}",
             )
 
     def test_same_as_repr(self):
@@ -297,24 +297,24 @@ class QueryTestCase(unittest.TestCase):
             self.assertEqual(pprint.pformat(type(o)), exp)
 
         o = range(100)
-        exp = "[%s]" % ",\n ".join(map(str, o))
+        exp = "[{}]".format(",\n ".join(map(str, o)))
         for type in [list, list2]:
             self.assertEqual(pprint.pformat(type(o)), exp)
 
         o = tuple(range(100))
-        exp = "(%s)" % ",\n ".join(map(str, o))
+        exp = "({})".format(",\n ".join(map(str, o)))
         for type in [tuple, tuple2]:
             self.assertEqual(pprint.pformat(type(o)), exp)
 
         # indent parameter
         o = range(100)
-        exp = "[   %s]" % ",\n    ".join(map(str, o))
+        exp = "[   {}]".format(",\n    ".join(map(str, o)))
         for type in [list, list2]:
             self.assertEqual(pprint.pformat(type(o), indent=4), exp)
 
     def test_nested_indentations(self):
         o1 = list(range(10))
-        o2 = dict(first=1, second=2, third=3)
+        o2 = {"first": 1, "second": 2, "third": 3}
         o = [o1, o2]
         expected = """\
 [   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -833,7 +833,7 @@ frozenset2({0,
         )
         self.assertEqual(
             clean(pprint.pformat(dict.fromkeys(keys))),
-            "{" + ",".join("%r:None" % k for k in skeys) + "}",
+            "{" + ",".join(f"{k!r}:None" for k in skeys) + "}",
         )
 
         # Issue 10017: TypeError on user-defined types as dict keys.
@@ -846,7 +846,7 @@ frozenset2({0,
         keys = [(1,), (None,)]
         self.assertEqual(
             pprint.pformat(dict.fromkeys(keys, 0)),
-            "{%r: 0, %r: 0}" % tuple(sorted(keys, key=id)),
+            "{{{!r}: 0, {!r}: 0}}".format(*tuple(sorted(keys, key=id))),
         )
 
     def test_sort_orderable_and_unorderable_values(self):
@@ -859,16 +859,16 @@ frozenset2({0,
         self.assertEqual(sorted([b, a]), [a, b])
         self.assertEqual(sorted([a, b]), [a, b])
         # set
-        self.assertEqual(pprint.pformat(set([b, a]), width=1), "{%r,\n %r}" % (a, b))
-        self.assertEqual(pprint.pformat(set([a, b]), width=1), "{%r,\n %r}" % (a, b))
+        self.assertEqual(pprint.pformat({b, a}, width=1), f"{{{a!r},\n {b!r}}}")
+        self.assertEqual(pprint.pformat({a, b}, width=1), f"{{{a!r},\n {b!r}}}")
         # dict
         self.assertEqual(
             pprint.pformat(dict.fromkeys([b, a]), width=1),
-            "{%r: None,\n %r: None}" % (a, b),
+            f"{{{a!r}: None,\n {b!r}: None}}",
         )
         self.assertEqual(
             pprint.pformat(dict.fromkeys([a, b]), width=1),
-            "{%r: None,\n %r: None}" % (a, b),
+            f"{{{a!r}: None,\n {b!r}: None}}",
         )
 
     def test_str_wrap(self):

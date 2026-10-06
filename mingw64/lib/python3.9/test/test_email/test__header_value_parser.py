@@ -408,7 +408,7 @@ class TestParser(TestParserMixin, TestEmailBase):
             "",
         )
 
-    def test_get_unstructured_invalid_ew(self):
+    def test_get_unstructured_invalid_ew(self):  # noqa: F811
         self._test_get_x(
             self._get_unst,
             "=?utf-8?q?=somevalue?=",
@@ -438,7 +438,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         with_qp = self.rfc_printable_ascii.replace("\\", "\\\\")
         with_qp = with_qp.replace("(", r"\(")
         with_qp = with_qp.replace(")", r"\)")
-        ptext = self._test_get_x(
+        self._test_get_x(
             parser.get_qp_ctext, with_qp, self.rfc_printable_ascii, " ", [], ""
         )
 
@@ -488,7 +488,7 @@ class TestParser(TestParserMixin, TestEmailBase):
     def test_get_qcontent_all_printables(self):
         with_qp = self.rfc_printable_ascii.replace("\\", "\\\\")
         with_qp = with_qp.replace('"', r"\"")
-        ptext = self._test_get_x(
+        self._test_get_x(
             parser.get_qcontent,
             with_qp,
             self.rfc_printable_ascii,
@@ -530,7 +530,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(atext.token_type, "atext")
 
     def test_get_atext_all_atext(self):
-        atext = self._test_get_x(
+        self._test_get_x(
             parser.get_atext,
             self.rfc_atext_chars,
             self.rfc_atext_chars,
@@ -1116,9 +1116,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(len(dot_atom_text), 5)
 
     def test_get_dot_atom_text_lone_atom_is_valid(self):
-        dot_atom_text = self._test_get_x(
-            parser.get_dot_atom_text, "foo", "foo", "foo", [], ""
-        )
+        self._test_get_x(parser.get_dot_atom_text, "foo", "foo", "foo", [], "")
 
     def test_get_dot_atom_text_raises_on_leading_dot(self):
         with self.assertRaises(errors.HeaderParseError):
@@ -1137,12 +1135,10 @@ class TestParser(TestParserMixin, TestEmailBase):
             parser.get_dot_atom_text('"foo.bar"')
 
     def test_get_dot_atom_text_trailing_text_preserved(self):
-        dot_atom_text = self._test_get_x(
-            parser.get_dot_atom_text, "foo@bar", "foo", "foo", [], "@bar"
-        )
+        self._test_get_x(parser.get_dot_atom_text, "foo@bar", "foo", "foo", [], "@bar")
 
     def test_get_dot_atom_text_trailing_ws_preserved(self):
-        dot_atom_text = self._test_get_x(
+        self._test_get_x(
             parser.get_dot_atom_text, "foo .bar", "foo", "foo", [], " .bar"
         )
 
@@ -1537,7 +1533,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(dtext.token_type, "ptext")
 
     def test_get_dtext_all_dtext(self):
-        dtext = self._test_get_x(
+        self._test_get_x(
             parser.get_dtext,
             self.rfc_dtext_chars,
             self.rfc_dtext_chars,
@@ -1564,7 +1560,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(dtext.defects[0].non_printables[0], "\x00")
 
     def test_get_dtext_with_qp(self):
-        ptext = self._test_get_x(
+        self._test_get_x(
             parser.get_dtext,
             r"foo\]\[\\bar\b\e\l\l",
             r"foo][\barbell",
@@ -1594,7 +1590,7 @@ class TestParser(TestParserMixin, TestEmailBase):
     # get_domain_literal
 
     def test_get_domain_literal_only(self):
-        domain_literal = domain_literal = self._test_get_x(
+        domain_literal = domain_literal = self._test_get_x(  # noqa: PLW0127, PLW0128
             parser.get_domain_literal,
             "[127.0.0.1]",
             "[127.0.0.1]",
@@ -3050,7 +3046,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(str(address_list.addresses[1]), str(address_list.mailboxes[2]))
 
     def test_invalid_content_disposition(self):
-        content_disp = self._test_parse_x(
+        self._test_parse_x(
             parser.parse_content_disposition_header,
             ";attachment",
             "; attachment",
@@ -3059,7 +3055,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         )
 
     def test_invalid_content_transfer_encoding(self):
-        cte = self._test_parse_x(
+        self._test_parse_x(
             parser.parse_content_transfer_encoding_header,
             ";foo",
             ";foo",
@@ -3108,7 +3104,7 @@ class TestParser(TestParserMixin, TestEmailBase):
         self.assertEqual(msg_id.token_type, "msg-id")
 
     def test_get_msg_id_obsolete_domain_part(self):
-        msg_id = self._test_get_x(
+        self._test_get_x(
             parser.get_msg_id,
             "<simplelocal@(old)example.com>",
             "<simplelocal@(old)example.com>",
@@ -3190,7 +3186,7 @@ class Test_parse_mime_parameters(TestParserMixin, TestEmailBase):
         self.assertEqual(mime_parameters.token_type, "mime-parameters")
         self.assertEqual(list(mime_parameters.params), params)
 
-    mime_parameters_params = {
+    mime_parameters_params = {  # noqa: RUF012
         "simple": (
             'filename="abc.py"',
             ' filename="abc.py"',
@@ -3226,29 +3222,41 @@ class Test_parse_mime_parameters(TestParserMixin, TestEmailBase):
             [errors.InvalidHeaderDefect],
         ),
         "duplicate_key_with_split_value": (
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
-            " filename=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
+                " filename=abc.gif"
+            ),
             ' filename="201.tif"',
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
-            " filename=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
+                " filename=abc.gif"
+            ),
             [("filename", "201.tif")],
             [errors.InvalidHeaderDefect],
         ),
         "duplicate_key_with_split_value_other_order": (
-            "filename=abc.gif; "
-            " filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66",
+            (
+                "filename=abc.gif; "
+                " filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66"
+            ),
             ' filename="abc.gif"',
-            "filename=abc.gif;"
-            " filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66",
+            (
+                "filename=abc.gif;"
+                " filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66"
+            ),
             [("filename", "abc.gif")],
             [errors.InvalidHeaderDefect],
         ),
         "duplicate_in_split_value": (
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
-            " filename*1*=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
+                " filename*1*=abc.gif"
+            ),
             ' filename="201.tifabc.gif"',
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
-            " filename*1*=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*1*=%74%69%66;"
+                " filename*1*=abc.gif"
+            ),
             [("filename", "201.tifabc.gif")],
             [errors.InvalidHeaderDefect],
         ),
@@ -3260,21 +3268,29 @@ class Test_parse_mime_parameters(TestParserMixin, TestEmailBase):
             [errors.InvalidHeaderDefect],
         ),
         "duplicate_and_missing_split_value": (
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66;"
-            " filename*3*=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66;"
+                " filename*3*=abc.gif"
+            ),
             ' filename="201.tifabc.gif"',
-            "filename*0*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66;"
-            " filename*3*=abc.gif",
+            (
+                "filename*0*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66;"
+                " filename*3*=abc.gif"
+            ),
             [("filename", "201.tifabc.gif")],
             [errors.InvalidHeaderDefect] * 2,
         ),
         # Here we depart from get_param and assume the *0* was missing.
         "duplicate_with_broken_split_value": (
-            "filename=abc.gif; "
-            " filename*2*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66",
+            (
+                "filename=abc.gif; "
+                " filename*2*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66"
+            ),
             ' filename="abc.gif201.tif"',
-            "filename=abc.gif;"
-            " filename*2*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66",
+            (
+                "filename=abc.gif;"
+                " filename*2*=iso-8859-1''%32%30%31%2E; filename*3*=%74%69%66"
+            ),
             [("filename", "abc.gif201.tif")],
             # Defects are apparent missing *0*, and two 'out of sequence'.
             [errors.InvalidHeaderDefect] * 3,
@@ -3299,7 +3315,7 @@ class Test_parse_mime_version(TestParserMixin, TestEmailBase):
         self.assertEqual(mime_version.major, major)
         self.assertEqual(mime_version.minor, minor)
 
-    mime_version_params = {
+    mime_version_params = {  # noqa: RUF012
         "rfc_2045_1": ("1.0", "1.0", "1.0", 1, 0, []),
         "RFC_2045_2": (
             "1.0 (produced by MetaSend Vx.x)",

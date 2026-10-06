@@ -40,7 +40,7 @@ def add_call_counting(func):
 
 
 def _make_top_and_button(testobj):
-    global root
+    global root  # noqa: PLW0602
     top = Toplevel(root)
     testobj.addCleanup(top.destroy)
     top.title("Test tooltip")
@@ -56,7 +56,7 @@ class ToolTipBaseTest(unittest.TestCase):
         self.top, self.button = _make_top_and_button(self)
 
     def test_base_class_is_unusable(self):
-        global root
+        global root  # noqa: PLW0602
         top = Toplevel(root)
         self.addCleanup(top.destroy)
 

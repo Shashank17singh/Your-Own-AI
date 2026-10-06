@@ -113,17 +113,17 @@ class CmdLineTest(unittest.TestCase):
         expected_cwd=None,
     ):
         if verbose > 1:
-            print("Output from test script %r:" % script_name)
+            print(f"Output from test script {script_name!r}:")
             print(repr(data))
         self.assertEqual(exit_code, 0)
-        printed_loader = "__loader__==%a" % expected_loader
-        printed_file = "__file__==%a" % expected_file
-        printed_package = "__package__==%r" % expected_package
-        printed_argv0 = "sys.argv[0]==%a" % expected_argv0
-        printed_path0 = "sys.path[0]==%a" % expected_path0
+        printed_loader = f"__loader__=={expected_loader!a}"
+        printed_file = f"__file__=={expected_file!a}"
+        printed_package = f"__package__=={expected_package!r}"
+        printed_argv0 = f"sys.argv[0]=={expected_argv0!a}"
+        printed_path0 = f"sys.path[0]=={expected_path0!a}"
         if expected_cwd is None:
             expected_cwd = os.getcwd()
-        printed_cwd = "cwd==%a" % expected_cwd
+        printed_cwd = f"cwd=={expected_cwd!a}"
         if verbose > 1:
             print("Expected output:")
             print(printed_file)
@@ -180,17 +180,17 @@ class CmdLineTest(unittest.TestCase):
         else:
             script_exec_args = tuple(script_exec_args)
         run_args = cmd_line_switches + script_exec_args
-        rc, out, err = assert_python_failure(
+        _rc, _out, err = assert_python_failure(
             *run_args, __isolated=False, __cwd=cwd, **env_vars
         )
         if verbose > 1:
             print(f"Output from test script {script_exec_args!r:}")
             print(repr(err))
-            print("Expected output: %r" % expected_msg)
+            print(f"Expected output: {expected_msg!r}")
         self.assertIn(expected_msg.encode("utf-8"), err)
 
     def test_dash_c_loader(self):
-        rc, out, err = assert_python_ok("-c", "print(__loader__)")
+        _rc, out, _err = assert_python_ok("-c", "print(__loader__)")
         expected = repr(importlib.machinery.BuiltinImporter).encode("utf-8")
         self.assertIn(expected, out)
 
@@ -328,7 +328,7 @@ class CmdLineTest(unittest.TestCase):
 
     def test_directory_error(self):
         with support.temp_dir() as script_dir:
-            msg = "can't find '__main__' module in %r" % script_dir
+            msg = f"can't find '__main__' module in {script_dir!r}"
             self._check_import_error(script_dir, msg)
 
     def test_zipfile(self):
@@ -381,8 +381,8 @@ class CmdLineTest(unittest.TestCase):
     def test_zipfile_error(self):
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "not_main")
-            zip_name, run_name = make_zip_script(script_dir, "test_zip", script_name)
-            msg = "can't find '__main__' module in %r" % zip_name
+            zip_name, _run_name = make_zip_script(script_dir, "test_zip", script_name)
+            msg = f"can't find '__main__' module in {zip_name!r}"
             self._check_import_error(zip_name, msg)
 
     def test_module_in_package(self):
@@ -452,7 +452,7 @@ class CmdLineTest(unittest.TestCase):
             pkg_dir = os.path.join(script_dir, "test_pkg")
             make_pkg(pkg_dir)
             script_name = _make_test_script(pkg_dir, "__main__")
-            compiled_name = py_compile.compile(script_name, doraise=True)
+            py_compile.compile(script_name, doraise=True)
             os.remove(script_name)
             pyc_file = support.make_legacy_pyc(script_name)
             self._check_script(
@@ -488,17 +488,17 @@ class CmdLineTest(unittest.TestCase):
     def test_issue8202(self):
         # Make sure package __init__ modules see "-m" in sys.argv0 while
         # searching for the module to execute
-        with support.temp_dir() as script_dir:
+        with support.temp_dir() as script_dir:  # noqa: SIM117
             with support.change_cwd(path=script_dir):
                 pkg_dir = os.path.join(script_dir, "test_pkg")
                 make_pkg(pkg_dir, "import sys; print('init_argv0==%r' % sys.argv[0])")
                 script_name = _make_test_script(pkg_dir, "script")
-                rc, out, err = assert_python_ok(
+                rc, out, _err = assert_python_ok(
                     "-m", "test_pkg.script", *example_args, __isolated=False
                 )
                 if verbose > 1:
                     print(repr(out))
-                expected = "init_argv0==%r" % "-m"
+                expected = "init_argv0=={!r}".format("-m")
                 self.assertIn(expected.encode("utf-8"), out)
                 self._check_output(
                     script_name,
@@ -514,18 +514,18 @@ class CmdLineTest(unittest.TestCase):
     def test_issue8202_dash_c_file_ignored(self):
         # Make sure a "-c" file in the current directory
         # does not alter the value of sys.path[0]
-        with support.temp_dir() as script_dir:
+        with support.temp_dir() as script_dir:  # noqa: SIM117
             with support.change_cwd(path=script_dir):
                 with open("-c", "w") as f:
                     f.write("data")
-                    rc, out, err = assert_python_ok(
+                    _rc, out, _err = assert_python_ok(
                         "-c",
                         'import sys; print("sys.path[0]==%r" % sys.path[0])',
                         __isolated=False,
                     )
                     if verbose > 1:
                         print(repr(out))
-                    expected = "sys.path[0]==%r" % ""
+                    expected = "sys.path[0]=={!r}".format("")
                     self.assertIn(expected.encode("utf-8"), out)
 
     def test_issue8202_dash_m_file_ignored(self):
@@ -535,7 +535,7 @@ class CmdLineTest(unittest.TestCase):
             script_name = _make_test_script(script_dir, "other")
             with support.change_cwd(path=script_dir), open("-m", "w") as f:
                 f.write("data")
-                rc, out, err = assert_python_ok(
+                rc, out, _err = assert_python_ok(
                     "-m", "other", *example_args, __isolated=False
                 )
                 self._check_output(
@@ -561,7 +561,7 @@ class CmdLineTest(unittest.TestCase):
                 f.write('"""\n')
 
             with support.change_cwd(path=script_dir):
-                rc, out, err = assert_python_ok(script_name)
+                _rc, out, err = assert_python_ok(script_name)
             self.assertEqual(b"", out)
             self.assertEqual(b"", err)
 
@@ -584,7 +584,7 @@ class CmdLineTest(unittest.TestCase):
         # and results in an error that the return code to the
         # shell is '1'
         with self.setup_test_pkg() as pkg_dir:
-            script_name = _make_test_script(
+            _make_test_script(
                 pkg_dir, "other", "if __name__ == '__main__': raise ValueError"
             )
             err = self.check_dash_m_failure("test_pkg.other", *example_args)
@@ -596,17 +596,25 @@ class CmdLineTest(unittest.TestCase):
             ("builtins", rb"No code object available"),
             (
                 "builtins.x",
-                rb"Error while finding module specification.*" rb"ModuleNotFoundError",
+                (
+                    rb"Error while finding module specification.*"
+                    rb"ModuleNotFoundError"
+                ),
             ),
             (
                 "builtins.x.y",
-                rb"Error while finding module specification.*"
-                rb"ModuleNotFoundError.*No module named.*not a package",
+                (
+                    rb"Error while finding module specification.*"
+                    rb"ModuleNotFoundError.*No module named.*not a package"
+                ),
             ),
             ("os.path", rb"loader.*cannot handle"),
             (
                 "importlib",
-                rb"No module named.*" rb"is a package and cannot be directly executed",
+                (
+                    rb"No module named.*"
+                    rb"is a package and cannot be directly executed"
+                ),
             ),
             ("importlib.nonexistent", rb"No module named"),
             (".unittest", rb"Relative module names not supported"),
@@ -651,7 +659,7 @@ class CmdLineTest(unittest.TestCase):
         for exception in exceptions:
             exception = exception.__name__
             init = f"raise {exception}('Exception in __init__.py')"
-            with self.subTest(exception), self.setup_test_pkg(init) as pkg_dir:
+            with self.subTest(exception), self.setup_test_pkg(init):
                 err = self.check_dash_m_failure("test_pkg")
                 self.assertIn(exception.encode("ascii"), err)
                 self.assertIn(b"Exception in __init__.py", err)
@@ -678,7 +686,7 @@ class CmdLineTest(unittest.TestCase):
             """)
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            _exitcode, _stdout, stderr = assert_python_failure(script_name)
             text = stderr.decode("ascii").split("\n")
             self.assertEqual(len(text), 5)
             self.assertTrue(text[0].startswith("Traceback"))
@@ -704,7 +712,7 @@ class CmdLineTest(unittest.TestCase):
         self.assertEqual(
             ascii(script_name),
             stdout.rstrip().decode("ascii"),
-            "stdout=%r stderr=%r" % (stdout, stderr),
+            f"stdout={stdout!r} stderr={stderr!r}",
         )
         self.assertEqual(0, rc)
 
@@ -722,7 +730,7 @@ class CmdLineTest(unittest.TestCase):
             """)
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            _exitcode, _stdout, stderr = assert_python_failure(script_name)
             text = stderr.decode("ascii")
             self.assertEqual(text.rstrip(), "some text")
 
@@ -730,7 +738,7 @@ class CmdLineTest(unittest.TestCase):
         script = "1 + 1 = 2\n"
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            _exitcode, _stdout, stderr = assert_python_failure(script_name)
             text = io.TextIOWrapper(io.BytesIO(stderr), "ascii").read()
             # Confirm that the caret is located under the first 1 character
             self.assertIn("\n    1 + 1 = 2\n    ^", text)
@@ -742,7 +750,7 @@ class CmdLineTest(unittest.TestCase):
             """)
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            exitcode, stdout, stderr = assert_python_failure(script_name)  # noqa: RUF059
             text = io.TextIOWrapper(io.BytesIO(stderr), "ascii").read()
             # Confirm that the caret is located under the first 1 character
             self.assertIn("\n    1 + 1 = 2\n    ^", text)
@@ -750,7 +758,7 @@ class CmdLineTest(unittest.TestCase):
             # Try the same with a form feed at the start of the indented line
             script = "if True:\n\f    1 + 1 = 2\n"
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            _exitcode, _stdout, stderr = assert_python_failure(script_name)
             text = io.TextIOWrapper(io.BytesIO(stderr), "ascii").read()
             self.assertNotIn("\f", text)
             self.assertIn("\n    1 + 1 = 2\n    ^", text)
@@ -759,7 +767,7 @@ class CmdLineTest(unittest.TestCase):
         script = 'foo = f"""{}\nfoo"""\n'
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(script_name)
+            _exitcode, _stdout, stderr = assert_python_failure(script_name)
             self.assertEqual(
                 stderr.splitlines()[-3:],
                 [
@@ -773,7 +781,7 @@ class CmdLineTest(unittest.TestCase):
         script = 'foo = """\\q"""\n'
         with support.temp_dir() as script_dir:
             script_name = _make_test_script(script_dir, "script", script)
-            exitcode, stdout, stderr = assert_python_failure(
+            _exitcode, _stdout, stderr = assert_python_failure(
                 "-Werror",
                 script_name,
             )
@@ -835,7 +843,7 @@ class CmdLineTest(unittest.TestCase):
         with support.temp_dir() as work_dir:
             script_dir = os.path.join(work_dir, "script_pkg")
             os.mkdir(script_dir)
-            script_name = _make_test_script(script_dir, "__main__", script)
+            _make_test_script(script_dir, "__main__", script)
             # Reference output comes from `-m script_pkg.__main__`
             # We omit PYTHONPATH and user site to better align with the
             # direct execution test cases
@@ -848,7 +856,7 @@ class CmdLineTest(unittest.TestCase):
             out_by_package = kill_python(p).decode().splitlines()
             self.assertEqual(out_by_package, out_by_module)
             # Isolated mode should fail with an import error
-            exitcode, stdout, stderr = assert_python_failure(
+            _exitcode, _stdout, stderr = assert_python_failure(
                 "-Im", "script_pkg", cwd=work_dir
             )
             traceback_lines = stderr.decode().splitlines()
@@ -865,7 +873,7 @@ class CmdLineTest(unittest.TestCase):
         proc = spawn_python(
             script, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        out, err = proc.communicate()
+        _out, err = proc.communicate()
         self.assertIn(": can't open file ", err)
         self.assertNotEqual(proc.returncode, 0)
 

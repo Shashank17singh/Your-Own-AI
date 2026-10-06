@@ -56,7 +56,7 @@ def Dot():
     return Leaf(token.DOT, ".")
 
 
-def ArgList(args, lparen=LParen(), rparen=RParen()):
+def ArgList(args, lparen=LParen(), rparen=RParen()):  # noqa: B008
     """A parenthesised argument list, used by Call()"""
     node = Node(syms.trailer, [lparen.clone(), rparen.clone()])
     if args:
@@ -301,7 +301,7 @@ def is_probably_builtin(node):
     if parent.type == syms.expr_stmt and parent.children[0] is node:
         # Assignment.
         return False
-    if parent.type == syms.parameters or (
+    if parent.type == syms.parameters or (  # noqa: SIM103
         parent.type == syms.typedargslist
         and (
             (prev is not None and prev.type == token.COMMA)
@@ -382,7 +382,7 @@ def touch_import(package, name, node):
     # figure out where to insert the new import.  First try to find
     # the first import and then skip to the last one.
     insert_pos = offset = 0
-    for idx, node in enumerate(root.children):
+    for idx, node in enumerate(root.children):  # noqa: PLR1704
         if not is_import_stmt(node):
             continue
         for offset, node2 in enumerate(root.children[idx:]):

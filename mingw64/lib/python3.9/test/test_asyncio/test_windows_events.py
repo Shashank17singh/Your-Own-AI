@@ -94,7 +94,7 @@ class ProactorTests(test_utils.TestCase):
         b.close()
 
     def test_double_bind(self):
-        ADDRESS = r"\\.\pipe\test_double_bind-%s" % os.getpid()
+        ADDRESS = rf"\\.\pipe\test_double_bind-{os.getpid()}"
         server1 = windows_events.PipeServer(ADDRESS)
         with self.assertRaises(PermissionError):
             windows_events.PipeServer(ADDRESS)
@@ -105,7 +105,7 @@ class ProactorTests(test_utils.TestCase):
         self.assertEqual(res, "done")
 
     async def _test_pipe(self):
-        ADDRESS = r"\\.\pipe\_test_pipe-%s" % os.getpid()
+        ADDRESS = rf"\\.\pipe\_test_pipe-{os.getpid()}"
 
         with self.assertRaises(FileNotFoundError):
             await self.loop.create_pipe_connection(asyncio.Protocol, ADDRESS)
@@ -118,7 +118,8 @@ class ProactorTests(test_utils.TestCase):
             stream_reader = asyncio.StreamReader(loop=self.loop)
             protocol = asyncio.StreamReaderProtocol(stream_reader, loop=self.loop)
             trans, proto = await self.loop.create_pipe_connection(
-                lambda: protocol, ADDRESS
+                lambda: protocol,
+                ADDRESS,  # noqa: B023
             )
             self.assertIsInstance(trans, asyncio.Transport)
             self.assertEqual(protocol, proto)
@@ -142,7 +143,7 @@ class ProactorTests(test_utils.TestCase):
     def test_connect_pipe_cancel(self):
         exc = OSError()
         exc.winerror = _overlapped.ERROR_PIPE_BUSY
-        with mock.patch.object(_overlapped, "ConnectPipe", side_effect=exc) as connect:
+        with mock.patch.object(_overlapped, "ConnectPipe", side_effect=exc):
             coro = self.loop._proactor.connect_pipe("pipe_address")
             task = self.loop.create_task(coro)
 

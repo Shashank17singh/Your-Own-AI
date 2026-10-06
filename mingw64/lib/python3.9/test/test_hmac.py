@@ -387,7 +387,7 @@ class ConstructorTestCase(unittest.TestCase):
         # Standard constructor call.
         try:
             hmac.HMAC(b"key", digestmod="sha256")
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("Standard constructor call raised exception.")
 
     @hashlib_helper.requires_hashdigest("sha256")
@@ -395,21 +395,21 @@ class ConstructorTestCase(unittest.TestCase):
         # Pass a key of type str, which is an error, because it expects a key
         # of type bytes
         with self.assertRaises(TypeError):
-            h = hmac.HMAC("key", digestmod="sha256")
+            hmac.HMAC("key", digestmod="sha256")
 
     @hashlib_helper.requires_hashdigest("sha256")
     def test_dot_new_with_str_key(self):
         # Pass a key of type str, which is an error, because it expects a key
         # of type bytes
         with self.assertRaises(TypeError):
-            h = hmac.new("key", digestmod="sha256")
+            hmac.new("key", digestmod="sha256")
 
     @hashlib_helper.requires_hashdigest("sha256")
     def test_withtext(self):
         # Constructor call with text.
         try:
             h = hmac.HMAC(b"key", b"hash this!", digestmod="sha256")
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("Constructor call with text argument raised exception.")
         self.assertEqual(h.hexdigest(), self.expected)
 
@@ -419,7 +419,7 @@ class ConstructorTestCase(unittest.TestCase):
             h = hmac.HMAC(
                 bytearray(b"key"), bytearray(b"hash this!"), digestmod="sha256"
             )
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("Constructor call with bytearray arguments raised exception.")
         self.assertEqual(h.hexdigest(), self.expected)
 
@@ -427,7 +427,7 @@ class ConstructorTestCase(unittest.TestCase):
     def test_with_memoryview_msg(self):
         try:
             h = hmac.HMAC(b"key", memoryview(b"hash this!"), digestmod="sha256")
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("Constructor call with memoryview msg raised exception.")
         self.assertEqual(h.hexdigest(), self.expected)
 
@@ -435,8 +435,8 @@ class ConstructorTestCase(unittest.TestCase):
     def test_withmodule(self):
         # Constructor call with text and digest module.
         try:
-            h = hmac.HMAC(b"key", b"", hashlib.sha256)
-        except Exception:
+            hmac.HMAC(b"key", b"", hashlib.sha256)
+        except Exception:  # noqa: BLE001
             self.fail("Constructor call with hashlib.sha256 raised exception.")
 
     @unittest.skipUnless(C_HMAC is not None, "need _hashlib")
@@ -457,7 +457,7 @@ class SanityTestCase(unittest.TestCase):
             h.digest()
             h.hexdigest()
             h.copy()
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.fail("Exception raised during normal usage of HMAC class.")
 
 

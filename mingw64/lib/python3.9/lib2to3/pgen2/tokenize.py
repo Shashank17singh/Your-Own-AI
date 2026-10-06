@@ -43,7 +43,7 @@ __all__ = [x for x in dir(token) if x[0] != "_"] + [
 del token
 
 try:
-    bytes
+    bytes  # noqa: B018
 except NameError:
     # Support bytes type in Python <= 2.5, so 2to3 turns itself into
     # valid Python 3 code.
@@ -63,7 +63,7 @@ def maybe(*choices):
 
 
 def _combinations(*l):
-    return set(x + y for x in l for y in l + ("",) if x.casefold() != y.casefold())
+    return {x + y for x in l for y in l + ("",) if x.casefold() != y.casefold()}
 
 
 Whitespace = r"[ \f\t]*"
@@ -177,7 +177,7 @@ def printtoken(type, token, xxx_todo_changeme, xxx_todo_changeme1, line):  # for
     srow, scol = xxx_todo_changeme
     erow, ecol = xxx_todo_changeme1
     print(
-        "%d,%d-%d,%d:\t%s\t%s" % (srow, scol, erow, ecol, tok_name[type], repr(token))
+        "%d,%d-%d,%d:\t%s\t%s" % (srow, scol, erow, ecol, tok_name[type], repr(token))  # noqa: UP031
     )
 
 
@@ -224,7 +224,7 @@ class Untokenizer:
             if len(t) == 2:
                 self.compat(t, iterable)
                 break
-            tok_type, token, start, end, line = t
+            tok_type, token, start, end, _line = t
             self.add_whitespace(start)
             self.tokens.append(token)
             self.prev_row, self.prev_col = end
@@ -552,7 +552,6 @@ def generate_tokens(readline):
                             stashed = None
                         yield (STRING, token, spos, (lnum, pos), line)
                     else:
-                        strstart = (lnum, start)  # multiple lines
                         contstr = line[start:]
                         contline = line
                         break
@@ -562,7 +561,6 @@ def generate_tokens(readline):
                     or token[:3] in single_quoted
                 ):
                     if token[-1] == "\n":  # continued string
-                        strstart = (lnum, start)
                         endprog = (
                             endprogs[initial]
                             or endprogs[token[1]]
@@ -577,23 +575,22 @@ def generate_tokens(readline):
                             stashed = None
                         yield (STRING, token, spos, epos, line)
                 elif initial.isidentifier():  # ordinary name
-                    if token in ("async", "await"):
-                        if async_def:
-                            yield (
-                                ASYNC if token == "async" else AWAIT,
-                                token,
-                                spos,
-                                epos,
-                                line,
-                            )
-                            continue
+                    if token in ("async", "await") and async_def:
+                        yield (
+                            ASYNC if token == "async" else AWAIT,
+                            token,
+                            spos,
+                            epos,
+                            line,
+                        )
+                        continue
 
                     tok = (NAME, token, spos, epos, line)
                     if token == "async" and not stashed:
                         stashed = tok
                         continue
 
-                    if token in ("def", "for"):
+                    if token in ("def", "for"):  # noqa: SIM102
                         if stashed and stashed[0] == NAME and stashed[1] == "async":
                             if token == "def":
                                 async_def = True
@@ -646,6 +643,6 @@ if __name__ == "__main__":  # testing
     import sys
 
     if len(sys.argv) > 1:
-        tokenize(open(sys.argv[1]).readline)
+        tokenize(open(sys.argv[1]).readline)  # noqa: SIM115
     else:
         tokenize(sys.stdin.readline)

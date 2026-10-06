@@ -284,7 +284,7 @@ else:
 
 
 def test_main(verbose=None):
-    from test import support, test_genexps
+    from test import support, test_genexps  # noqa: PLW0406
 
     support.run_doctest(test_genexps, verbose)
 

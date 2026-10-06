@@ -52,7 +52,7 @@ class Popen:
         rhandle, whandle = _winapi.CreatePipe(None, 0)
         wfd = msvcrt.open_osfhandle(whandle, 0)
         cmd = spawn.get_command_line(parent_pid=os.getpid(), pipe_handle=rhandle)
-        cmd = " ".join('"%s"' % x for x in cmd)
+        cmd = " ".join(f'"{x}"' for x in cmd)
 
         python_exe = spawn.get_executable()
 
@@ -68,7 +68,7 @@ class Popen:
         with open(wfd, "wb", closefd=True) as to_child:
             # start process
             try:
-                hp, ht, pid, tid = _winapi.CreateProcess(
+                hp, ht, pid, _tid = _winapi.CreateProcess(
                     python_exe, cmd, None, None, False, 0, env, None, None
                 )
                 _winapi.CloseHandle(ht)

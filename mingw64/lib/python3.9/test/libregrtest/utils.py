@@ -14,18 +14,18 @@ def format_duration(seconds):
 
     parts = []
     if hours:
-        parts.append("%s hour" % hours)
+        parts.append(f"{hours} hour")
     if minutes:
-        parts.append("%s min" % minutes)
+        parts.append(f"{minutes} min")
     if seconds:
         if parts:
             # 2 min 1 sec
-            parts.append("%s sec" % seconds)
+            parts.append(f"{seconds} sec")
         else:
             # 1.0 sec
             parts.append("%.1f sec" % (seconds + ms / 1000))
     if not parts:
-        return "%s ms" % ms
+        return f"{ms} ms"
 
     parts = parts[:2]
     return " ".join(parts)
@@ -42,9 +42,9 @@ def removepy(names):
 
 def count(n, word):
     if n == 1:
-        return "%d %s" % (n, word)
+        return "%d %s" % (n, word)  # noqa: UP031
     else:
-        return "%d %ss" % (n, word)
+        return "%d %ss" % (n, word)  # noqa: UP031
 
 
 def printlist(x, width=70, indent=4, file=None):
@@ -76,7 +76,7 @@ orig_unraisablehook = None
 
 
 def regrtest_unraisable_hook(unraisable):
-    global orig_unraisablehook
+    global orig_unraisablehook  # noqa: PLW0602
     support.environment_altered = True
     print_warning("Unraisable exception")
     old_stderr = sys.stderr

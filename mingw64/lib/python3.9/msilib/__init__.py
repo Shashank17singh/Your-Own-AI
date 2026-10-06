@@ -47,12 +47,12 @@ class Table:
             index -= 1
             unk = type & ~knownbits
             if unk:
-                print("%s.%s unknown bits %x" % (self.name, name, unk))
+                print(f"{self.name}.{name} unknown bits {unk:x}")
             size = type & datasizemask
             dtype = type & typemask
             if dtype == type_string:
                 if size:
-                    tname = "CHAR(%d)" % size
+                    tname = "CHAR(%d)" % size  # noqa: UP031
                 else:
                     tname = "CHAR"
             elif dtype == type_short:
@@ -66,19 +66,19 @@ class Table:
                 tname = "OBJECT"
             else:
                 tname = "unknown"
-                print("%s.%sunknown integer type %d" % (self.name, name, size))
+                print("%s.%sunknown integer type %d" % (self.name, name, size))  # noqa: UP031
             if type & type_nullable:
                 flags = ""
             else:
                 flags = " NOT NULL"
             if type & type_localizable:
                 flags += " LOCALIZABLE"
-            fields[index] = "`%s` %s%s" % (name, tname, flags)
+            fields[index] = f"`{name}` {tname}{flags}"
             if type & type_key:
-                keys.append("`%s`" % name)
+                keys.append(f"`{name}`")
         fields = ", ".join(fields)
         keys = ", ".join(keys)
-        return "CREATE TABLE %s (%s PRIMARY KEY %s)" % (self.name, fields, keys)
+        return f"CREATE TABLE {self.name} ({fields} PRIMARY KEY {keys})"
 
     def create(self, db):
         v = db.OpenView(self.sql())
@@ -104,7 +104,7 @@ def change_sequence(seq, action, seqno=_Unspecified, cond=_Unspecified):
 
 
 def add_data(db, table, values):
-    v = db.OpenView("SELECT * FROM `%s`" % table)
+    v = db.OpenView(f"SELECT * FROM `{table}`")
     count = v.GetColumnInfo(MSICOLINFO_NAMES).GetFieldCount()
     r = CreateRecord(count)
     for value in values:
@@ -120,10 +120,10 @@ def add_data(db, table, values):
             elif isinstance(field, Binary):
                 r.SetStream(i + 1, field.name)
             else:
-                raise TypeError("Unsupported type %s" % field.__class__.__name__)
+                raise TypeError(f"Unsupported type {field.__class__.__name__}")
         try:
             v.Modify(MSIMODIFY_INSERT, r)
-        except Exception:
+        except Exception:  # noqa: BLE001
             raise MSIError("Could not insert " + repr(values) + " into " + table)
 
         r.ClearData()
@@ -131,7 +131,7 @@ def add_data(db, table, values):
 
 
 def add_stream(db, name, path):
-    v = db.OpenView("INSERT INTO _Streams (Name, Data) VALUES ('%s', ?)" % name)
+    v = db.OpenView(f"INSERT INTO _Streams (Name, Data) VALUES ('{name}', ?)")
     r = CreateRecord(1)
     r.SetStream(1, path)
     v.Execute(r)
@@ -210,7 +210,7 @@ class CAB:
         logical = _logical = make_id(file)
         pos = 1
         while logical in self.filenames:
-            logical = "%s.%d" % (_logical, pos)
+            logical = "%s.%d" % (_logical, pos)  # noqa: UP031
             pos += 1
         self.filenames.add(logical)
         return logical
@@ -254,7 +254,7 @@ class Directory:
         _logical = make_id(_logical)
         logical = _logical
         while logical in _directories:
-            logical = "%s%d" % (_logical, index)
+            logical = "%s%d" % (_logical, index)  # noqa: UP031
             index += 1
         _directories.add(logical)
         self.db = db
@@ -339,9 +339,9 @@ class Directory:
             pos = 1
             while 1:
                 if suffix:
-                    file = "%s~%d.%s" % (prefix, pos, suffix)
+                    file = "%s~%d.%s" % (prefix, pos, suffix)  # noqa: UP031
                 else:
-                    file = "%s~%d" % (prefix, pos)
+                    file = "%s~%d" % (prefix, pos)  # noqa: UP031
                 if file not in self.short_names:
                     break
                 pos += 1
@@ -376,7 +376,7 @@ class Directory:
         assert logical not in self.ids
         self.ids.add(logical)
         short = self.make_short(file)
-        full = "%s|%s" % (short, file)
+        full = f"{short}|{file}"
         filesize = os.stat(absolute).st_size
         # constants.msidbFileAttributesVital
         # Compressed omitted, since it is the database default
@@ -416,14 +416,14 @@ class Directory:
                     (
                         logical + "c",
                         self.component,
-                        "%sC|%sc" % (short, file),
+                        f"{short}C|{file}c",
                         self.logical,
                         2,
                     ),
                     (
                         logical + "o",
                         self.component,
-                        "%sO|%so" % (short, file),
+                        f"{short}O|{file}o",
                         self.logical,
                         2,
                     ),
@@ -461,7 +461,7 @@ class Binary:
         self.name = fname
 
     def __repr__(self):
-        return 'msilib.Binary(os.path.join(dirname,"%s"))' % self.name
+        return f'msilib.Binary(os.path.join(dirname,"{self.name}"))'
 
 
 class Feature:

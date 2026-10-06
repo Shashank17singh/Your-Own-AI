@@ -103,7 +103,7 @@ class UserDictTest(mapping_tests.TestHashMappingProtocol):
         self.assertEqual(sorted(u2.values()), sorted(d2.values()))
 
         # Test "in".
-        for i in u2.keys():
+        for i in u2:
             self.assertIn(i, u2)
             self.assertEqual(i in u1, i in d1)
             self.assertEqual(i in u0, i in d0)
@@ -114,7 +114,7 @@ class UserDictTest(mapping_tests.TestHashMappingProtocol):
         self.assertEqual(t, u2)
 
         # Test get
-        for i in u2.keys():
+        for i in u2:
             self.assertEqual(u2.get(i), u2[i])
             self.assertEqual(u1.get(i), d1.get(i))
             self.assertEqual(u0.get(i), d0.get(i))
@@ -124,7 +124,7 @@ class UserDictTest(mapping_tests.TestHashMappingProtocol):
             u2[i] = str(i)
         ikeys = []
         for k in u2:
-            ikeys.append(k)
+            ikeys.append(k)  # noqa: PERF402
         keys = u2.keys()
         self.assertEqual(set(ikeys), set(keys))
 

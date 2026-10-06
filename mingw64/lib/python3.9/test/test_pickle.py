@@ -417,7 +417,7 @@ def getmodule(module):
                 __import__(module)
         except AttributeError as exc:
             if support.verbose:
-                print("Can't import module %r: %s" % (module, exc))
+                print(f"Can't import module {module!r}: {exc}")
             raise ImportError
         except ImportError as exc:
             if support.verbose:
@@ -501,9 +501,7 @@ class CompatPickleTests(unittest.TestCase):
                         if (module3, module2) == (m3, m2):
                             break
                     else:
-                        self.fail(
-                            "No reverse mapping from %r to %r" % (module3, module2)
-                        )
+                        self.fail(f"No reverse mapping from {module3!r} to {module2!r}")
                 module = REVERSE_IMPORT_MAPPING.get(module3, module3)
                 module = IMPORT_MAPPING.get(module, module)
                 self.assertEqual(module, module3)
@@ -512,7 +510,7 @@ class CompatPickleTests(unittest.TestCase):
         for (module2, name2), (module3, name3) in NAME_MAPPING.items():
             with self.subTest(((module2, name2), (module3, name3))):
                 try:
-                    attr = getattribute(module3, name3)
+                    getattribute(module3, name3)
                 except ImportError:
                     pass
                 module, name = reverse_mapping(module3, name3)

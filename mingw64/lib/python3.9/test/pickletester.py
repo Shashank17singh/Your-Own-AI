@@ -208,7 +208,7 @@ class pickling_metaclass(type):
 
 
 def create_dynamic_class(name, bases):
-    result = pickling_metaclass(name, bases, dict())
+    result = pickling_metaclass(name, bases, {})
     result.reduce_args = (name, bases)
     return result
 
@@ -892,7 +892,7 @@ class AbstractUnpickleTests(unittest.TestCase):
                 self.loads(data)
             except BaseException as exc:
                 if support.verbose > 1:
-                    print("%-32r - %s: %s" % (data, exc.__class__.__name__, exc))
+                    print("%-32r - %s: %s" % (data, exc.__class__.__name__, exc))  # noqa: UP031
                 raise
 
     def test_load_from_data0(self):
@@ -975,7 +975,7 @@ class AbstractUnpickleTests(unittest.TestCase):
     def test_unpickle_from_2x(self):
         # Unpickle non-trivial data from Python 2.x.
         loaded = self.loads(DATA_SET)
-        self.assertEqual(loaded, set([1, 2]))
+        self.assertEqual(loaded, {1, 2})
         loaded = self.loads(DATA_XRANGE)
         self.assertEqual(type(loaded), type(range(0)))
         self.assertEqual(list(loaded), list(range(5)))
@@ -1648,8 +1648,8 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertIsInstance(x, cls)
             y = asdict(x)
             self.assertEqual(len(y.keys()), 1)
-            self.assertIsInstance(list(y.keys())[0], K)
-            self.assertIs(list(y.keys())[0].value, x)
+            self.assertIsInstance(next(iter(y.keys())), K)
+            self.assertIs(next(iter(y.keys())).value, x)
 
     def test_recursive_dict_key(self):
         self._test_recursive_dict_key(dict)
@@ -1673,8 +1673,8 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertIsInstance(x[0], cls)
             y = asdict(x[0])
             self.assertEqual(len(y), 1)
-            self.assertIsInstance(list(y.keys())[0], K)
-            self.assertIs(list(y.keys())[0].value, x)
+            self.assertIsInstance(next(iter(y.keys())), K)
+            self.assertIs(next(iter(y.keys())).value, x)
 
         # Dict containing an immutable object (as key) containing a tuple
         # containing the original dict.
@@ -1685,8 +1685,8 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertIsInstance(x, cls)
             y = asdict(x)
             self.assertEqual(len(y), 1)
-            self.assertIsInstance(list(y.keys())[0], K)
-            self.assertIs(list(y.keys())[0].value[0], x)
+            self.assertIsInstance(next(iter(y.keys())), K)
+            self.assertIs(next(iter(y.keys())).value[0], x)
 
     def test_recursive_tuple_and_dict_key(self):
         self._test_recursive_tuple_and_dict_key(dict)
@@ -1706,8 +1706,8 @@ class AbstractPickleTests(unittest.TestCase):
             x = self.loads(s)
             self.assertIsInstance(x, set)
             self.assertEqual(len(x), 1)
-            self.assertIsInstance(list(x)[0], K)
-            self.assertIs(list(x)[0].value, x)
+            self.assertIsInstance(next(iter(x)), K)
+            self.assertIs(next(iter(x)).value, x)
 
         # Immutable object containing a set containing the original object.
         (y,) = y
@@ -1717,7 +1717,7 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertIsInstance(x, K)
             self.assertIsInstance(x.value, set)
             self.assertEqual(len(x.value), 1)
-            self.assertIs(list(x.value)[0], x)
+            self.assertIs(next(iter(x.value)), x)
 
     def test_recursive_inst(self):
         # Mutable object containing itself.
@@ -1756,8 +1756,8 @@ class AbstractPickleTests(unittest.TestCase):
             x = self.loads(s)
             self.assertIsInstance(x.attr, t)
             self.assertEqual(len(x.attr), 1)
-            self.assertIsInstance(list(x.attr)[0], Object)
-            self.assertIs(list(x.attr)[0], x)
+            self.assertIsInstance(next(iter(x.attr)), Object)
+            self.assertIs(next(iter(x.attr)), x)
 
         # Collection containing a mutable object containing the original
         # collection.
@@ -1767,8 +1767,8 @@ class AbstractPickleTests(unittest.TestCase):
             x = self.loads(s)
             self.assertIsInstance(x, t)
             self.assertEqual(len(x), 1)
-            self.assertIsInstance(list(x)[0], Object)
-            self.assertIs(list(x)[0].attr, x)
+            self.assertIsInstance(next(iter(x)), Object)
+            self.assertIs(next(iter(x)).attr, x)
 
     def test_recursive_list_and_inst(self):
         self._test_recursive_collection_and_inst(list)
@@ -2444,7 +2444,7 @@ class AbstractPickleTests(unittest.TestCase):
         # Test that internal data structures correctly deal with lots of
         # puts/gets.
         keys = ("aaa" + str(i) for i in range(100))
-        large_dict = dict((k, [4, 5, 6]) for k in keys)
+        large_dict = {k: [4, 5, 6] for k in keys}
         obj = [dict(large_dict), dict(large_dict), dict(large_dict)]
 
         for proto in protocols:
@@ -2474,7 +2474,7 @@ class AbstractPickleTests(unittest.TestCase):
         # bytecode that 2.x will still understand.
         dumped = self.dumps(range(5), 2)
         self.assertEqual(dumped, DATA_XRANGE)
-        dumped = self.dumps(set([3]), 2)
+        dumped = self.dumps({3}, 2)
         self.assertEqual(dumped, DATA_SET2)
 
     def test_large_pickles(self):
@@ -2868,7 +2868,7 @@ class AbstractPickleTests(unittest.TestCase):
             for proto in range(3):
                 with self.subTest(type=type(val), proto=proto):
                     pickled = self.dumps(val, proto)
-                    self.assertIn(("c%s\n%s" % (mod, name)).encode(), pickled)
+                    self.assertIn((f"c{mod}\n{name}").encode(), pickled)
                     self.assertIs(type(self.loads(pickled)), type(val))
 
     def test_local_lookup_error(self):
@@ -2904,7 +2904,7 @@ class AbstractPickleTests(unittest.TestCase):
         yield ZeroCopyBytearray(bytestring)
         if _testbuffer is not None:
             items = list(bytestring)
-            value = int.from_bytes(bytestring, byteorder="little")
+            int.from_bytes(bytestring, byteorder="little")
             for flags in (0, _testbuffer.ND_WRITABLE):
                 # 1-D, contiguous
                 yield PicklableNDArray(items, format="B", shape=(8,), flags=flags)
@@ -2961,7 +2961,7 @@ class AbstractPickleTests(unittest.TestCase):
                     self.dumps(obj, proto, buffer_callback=[].append)
             for proto in range(5, pickle.HIGHEST_PROTOCOL + 1):
                 buffers = []
-                buffer_callback = lambda pb: buffers.append(pb.raw())
+                buffer_callback = lambda pb: buffers.append(pb.raw())  # noqa: B023
                 data = self.dumps(obj, proto, buffer_callback=buffer_callback)
                 self.assertNotIn(b"abcdefgh", data)
                 self.assertEqual(count_opcode(pickle.SHORT_BINBYTES, data), 0)
@@ -3015,7 +3015,7 @@ class AbstractPickleTests(unittest.TestCase):
 
     def test_buffer_callback_error(self):
         def buffer_callback(buffers):
-            1 / 0
+            1 / 0  # noqa: B018
 
         pb = pickle.PickleBuffer(b"foobar")
         with self.assertRaises(ZeroDivisionError):
@@ -3035,7 +3035,7 @@ class AbstractPickleTests(unittest.TestCase):
     def test_inband_accept_default_buffers_argument(self):
         for proto in range(5, pickle.HIGHEST_PROTOCOL + 1):
             data_pickled = self.dumps(1, proto, buffer_callback=None)
-            data = self.loads(data_pickled, buffers=None)
+            self.loads(data_pickled, buffers=None)
 
     @unittest.skipIf(np is None, "Test needs Numpy")
     def test_buffers_numpy(self):
@@ -3093,7 +3093,7 @@ class BigmemPickleTests(unittest.TestCase):
             for proto in protocols:
                 if proto < 2:
                     continue
-                with self.subTest(proto=proto):
+                with self.subTest(proto=proto):  # noqa: SIM117
                     with self.assertRaises((ValueError, OverflowError)):
                         self.dumps(data, protocol=proto)
         finally:
@@ -3353,15 +3353,15 @@ class MyTuple(tuple):
 
 
 class MyList(list):
-    sample = [1, 2, 3]
+    sample = [1, 2, 3]  # noqa: RUF012
 
 
 class MyDict(dict):
-    sample = {"a": 1, "b": 2}
+    sample = {"a": 1, "b": 2}  # noqa: RUF012
 
 
 class MySet(set):
-    sample = {"a", "b"}
+    sample = {"a", "b"}  # noqa: RUF012
 
 
 class MyFrozenSet(frozenset):
@@ -3395,7 +3395,7 @@ class SlotList(MyList):
     __slots__ = ["foo"]
 
 
-class SimpleNewObj(int):
+class SimpleNewObj(int):  # noqa: F811
     def __init__(self, *args, **kwargs):
         # raise an error, to make sure this isn't called
         raise TypeError("SimpleNewObj.__init__() didn't expect to get called")
@@ -3406,22 +3406,22 @@ class SimpleNewObj(int):
 
 class ComplexNewObj(SimpleNewObj):
     def __getnewargs__(self):
-        return ("%X" % self, 16)
+        return (f"{self:X}", 16)
 
 
 class ComplexNewObjEx(SimpleNewObj):
     def __getnewargs_ex__(self):
-        return ("%X" % self,), {"base": 16}
+        return (f"{self:X}",), {"base": 16}
 
 
 class BadGetattr:
     def __getattr__(self, key):
-        self.foo
+        self.foo  # noqa: B018
 
 
 class AbstractPickleModuleTests(unittest.TestCase):
     def test_dump_closed_file(self):
-        f = open(TESTFN, "wb")
+        f = open(TESTFN, "wb")  # noqa: SIM115
         try:
             f.close()
             self.assertRaises(ValueError, self.dump, 123, f)
@@ -3429,7 +3429,7 @@ class AbstractPickleModuleTests(unittest.TestCase):
             support.unlink(TESTFN)
 
     def test_load_closed_file(self):
-        f = open(TESTFN, "wb")
+        f = open(TESTFN, "wb")  # noqa: SIM115
         try:
             f.close()
             self.assertRaises(ValueError, self.dump, 123, f)
@@ -3459,7 +3459,7 @@ class AbstractPickleModuleTests(unittest.TestCase):
         self.Pickler(f, protocol=-1)
 
     def test_dump_text_file(self):
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             for proto in protocols:
                 self.assertRaises(TypeError, self.dump, 123, f, proto)
@@ -3882,7 +3882,7 @@ class AbstractDispatchTableTests(unittest.TestCase):
         f = io.BytesIO()
         p = self.pickler_class(f, 0)
         with self.assertRaises(AttributeError):
-            p.dispatch_table
+            p.dispatch_table  # noqa: B018
         self.assertFalse(hasattr(p, "dispatch_table"))
 
     def test_class_dispatch_table(self):

@@ -89,7 +89,7 @@ def bind_port(sock, host=HOST):
     """
 
     if sock.family == socket.AF_INET and sock.type == socket.SOCK_STREAM:
-        if hasattr(socket, "SO_REUSEADDR"):
+        if hasattr(socket, "SO_REUSEADDR"):  # noqa: SIM102
             if sock.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR) == 1:
                 raise support.TestFailed(
                     "tests should never set the "
@@ -167,7 +167,7 @@ def skip_unless_bind_unix_socket(test):
             finally:
                 unlink(path)
     if _bind_nix_socket_error:
-        msg = "Requires a functional unix bind(): %s" % _bind_nix_socket_error
+        msg = f"Requires a functional unix bind(): {_bind_nix_socket_error}"
         return unittest.skip(msg)(test)
     else:
         return test
@@ -226,7 +226,7 @@ def transient_internet(resource_name, *, timeout=_NOT_SET, errnos=()):
         ("WSANO_DATA", 11004),
     ]
 
-    denied = support.ResourceDenied("Resource %r is not available" % resource_name)
+    denied = support.ResourceDenied(f"Resource {resource_name!r} is not available")
     captured_errnos = errnos
     gai_errnos = []
     if not captured_errnos:

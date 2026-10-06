@@ -16,7 +16,7 @@ class TestPickleCopyHeader(TestEmailBase):
 
     unstructured = header_factory("subject", "this is a test")
 
-    header_params = {
+    header_params = {  # noqa: RUF012
         "subject": ("subject", "this is a test"),
         "from": ("from", "frodo@mordor.net"),
         "to": ("to", "a: k@b.com, y@z.com;, j@f.com"),
@@ -41,7 +41,7 @@ class TestPickleCopyMessage(TestEmailBase):
     # Message objects are a sequence, so we have to make them a one-tuple in
     # msg_params so they get passed to the parameterized test method as a
     # single argument instead of as a list of headers.
-    msg_params = {}
+    msg_params = {}  # noqa: RUF012
 
     # Note: there will be no custom header objects in the parsed message.
     msg_params["parsed"] = (

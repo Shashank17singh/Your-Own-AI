@@ -106,7 +106,7 @@ class ModuleBrowser:
         top.protocol("WM_DELETE_WINDOW", self.close)
         top.bind("<Escape>", self.close)
         if self._htest:  # place dialog below parent if running htest
-            top.geometry("+%d+%d" % (root.winfo_rootx(), root.winfo_rooty() + 200))
+            top.geometry("+%d+%d" % (root.winfo_rootx(), root.winfo_rooty() + 200))  # noqa: UP031
         self.settitle()
         top.focus_set()
 

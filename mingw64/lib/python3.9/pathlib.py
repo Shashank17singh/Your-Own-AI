@@ -136,13 +136,13 @@ class _WindowsFlavour(_Flavour):
 
     is_supported = os.name == "nt"
 
-    drive_letters = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    drive_letters = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")  # noqa: RUF012
     ext_namespace_prefix = "\\\\?\\"
 
     reserved_names = (
         {"CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"}
-        | {"COM%s" % c for c in "123456789\xb9\xb2\xb3"}
-        | {"LPT%s" % c for c in "123456789\xb9\xb2\xb3"}
+        | {f"COM{c}" for c in "123456789\xb9\xb2\xb3"}
+        | {f"LPT{c}" for c in "123456789\xb9\xb2\xb3"}
     )
 
     # Interesting findings about extended paths:
@@ -265,7 +265,9 @@ class _WindowsFlavour(_Flavour):
         if len(drive) == 2 and drive[1] == ":":
             # It's a path on a local drive => 'file:///c:/a/b'
             rest = path.as_posix()[2:].lstrip("/")
-            return "file:///%s/%s" % (drive, urlquote_from_bytes(rest.encode("utf-8")))
+            return "file:///{}/{}".format(
+                drive, urlquote_from_bytes(rest.encode("utf-8"))
+            )
         else:
             # It's a path on a network drive => 'file://host/share/a/b'
             return "file:" + urlquote_from_bytes(path.as_posix().encode("utf-8"))
@@ -282,7 +284,7 @@ class _WindowsFlavour(_Flavour):
         else:
             raise RuntimeError("Can't determine home directory")
 
-        if username:
+        if username:  # noqa: SIM102
             # Try to guess user home directory.  By default all users
             # directories are located in the same place and are named by
             # corresponding usernames.  If current user home directory points
@@ -291,7 +293,7 @@ class _WindowsFlavour(_Flavour):
                 drv, root, parts = self.parse_parts((userhome,))
                 if parts[-1] != os.environ["USERNAME"]:
                     raise RuntimeError(
-                        "Can't determine home directory for %r" % username
+                        f"Can't determine home directory for {username!r}"
                     )
                 parts[-1] = username
                 if drv or root:
@@ -361,7 +363,7 @@ class _PosixFlavour(_Flavour):
                         # use cached value
                         continue
                     # The symlink is not resolved, so we must have a symlink loop.
-                    raise RuntimeError("Symlink loop from %r" % newpath)
+                    raise RuntimeError(f"Symlink loop from {newpath!r}")
                 # Resolve the symbolic link
                 try:
                     target = accessor.readlink(newpath)
@@ -406,7 +408,7 @@ class _PosixFlavour(_Flavour):
             try:
                 return pwd.getpwnam(username).pw_dir
             except KeyError:
-                raise RuntimeError("Can't determine home directory for %r" % username)
+                raise RuntimeError(f"Can't determine home directory for {username!r}")
 
 
 _windows_flavour = _WindowsFlavour()
@@ -447,7 +449,7 @@ class _NormalAccessor(_Accessor):
     else:
 
         @staticmethod
-        def link_to(self, target):
+        def link_to(self, target):  # noqa: PLW0211
             raise NotImplementedError("os.link() not available on this system")
 
     rmdir = os.rmdir
@@ -558,8 +560,7 @@ class _PreciseSelector(_Selector):
         try:
             path = parent_path._make_child_relpath(self.name)
             if (is_dir if self.dironly else exists)(path):
-                for p in self.successor._select_from(path, is_dir, exists, scandir):
-                    yield p
+                yield from self.successor._select_from(path, is_dir, exists, scandir)
         except PermissionError:
             return
 
@@ -588,8 +589,9 @@ class _WildcardSelector(_Selector):
                 name = entry.name
                 if self.match(name):
                     path = parent_path._make_child_relpath(name)
-                    for p in self.successor._select_from(path, is_dir, exists, scandir):
-                        yield p
+                    yield from self.successor._select_from(
+                        path, is_dir, exists, scandir
+                    )
         except PermissionError:
             return
 
@@ -612,8 +614,7 @@ class _RecursiveWildcardSelector(_Selector):
                         raise
                 if entry_is_dir and not entry.is_symlink():
                     path = parent_path._make_child_relpath(entry.name)
-                    for p in self._iterate_directories(path, is_dir, scandir):
-                        yield p
+                    yield from self._iterate_directories(path, is_dir, scandir)
         except PermissionError:
             return
 
@@ -697,7 +698,7 @@ class PurePath:
         new PurePath object.
         """
         if cls is PurePath:
-            cls = PureWindowsPath if os.name == "nt" else PurePosixPath
+            cls = PureWindowsPath if os.name == "nt" else PurePosixPath  # noqa: PLW0642
         return cls._from_parts(args)
 
     def __reduce__(self):
@@ -721,7 +722,7 @@ class PurePath:
                 else:
                     raise TypeError(
                         "argument should be a str object or an os.PathLike "
-                        "object returning str, not %r" % type(a)
+                        f"object returning str, not {type(a)!r}"
                     )
         return cls._flavour.parse_parts(parts)
 
@@ -904,7 +905,7 @@ class PurePath:
     def with_name(self, name):
         """Return a new path with the file name changed."""
         if not self.name:
-            raise ValueError("%r has an empty name" % (self,))
+            raise ValueError(f"{self!r} has an empty name")
         drv, root, parts = self._flavour.parse_parts((name,))
         if (
             not name
@@ -913,7 +914,7 @@ class PurePath:
             or root
             or len(parts) != 1
         ):
-            raise ValueError("Invalid name %r" % (name))
+            raise ValueError(f"Invalid name {name!r}")
         return self._from_parsed_parts(self._drv, self._root, self._parts[:-1] + [name])
 
     def with_stem(self, stem):
@@ -927,12 +928,12 @@ class PurePath:
         """
         f = self._flavour
         if f.sep in suffix or f.altsep and f.altsep in suffix:
-            raise ValueError("Invalid suffix %r" % (suffix,))
+            raise ValueError(f"Invalid suffix {suffix!r}")
         if suffix and not suffix.startswith(".") or suffix == ".":
-            raise ValueError("Invalid suffix %r" % (suffix))
+            raise ValueError(f"Invalid suffix {suffix!r}")
         name = self.name
         if not name:
-            raise ValueError("%r has an empty name" % (self,))
+            raise ValueError(f"{self!r} has an empty name")
         old_suffix = self.suffix
         if not old_suffix:
             name = name + suffix
@@ -1110,11 +1111,11 @@ class Path(PurePath):
 
     def __new__(cls, *args, **kwargs):
         if cls is Path:
-            cls = WindowsPath if os.name == "nt" else PosixPath
+            cls = WindowsPath if os.name == "nt" else PosixPath  # noqa: PLW0642
         self = cls._from_parts(args, init=False)
         if not self._flavour.is_supported:
             raise NotImplementedError(
-                "cannot instantiate %r on your system" % (cls.__name__,)
+                f"cannot instantiate {cls.__name__!r} on your system"
             )
         self._init()
         return self
@@ -1208,8 +1209,7 @@ class Path(PurePath):
         if drv or root:
             raise NotImplementedError("Non-relative patterns are unsupported")
         selector = _make_selector(tuple(pattern_parts), self._flavour)
-        for p in selector.select_from(self):
-            yield p
+        yield from selector.select_from(self)
 
     def rglob(self, pattern):
         """Recursively yield all existing files (of any kind, including
@@ -1221,8 +1221,7 @@ class Path(PurePath):
         if drv or root:
             raise NotImplementedError("Non-relative patterns are unsupported")
         selector = _make_selector(("**",) + tuple(pattern_parts), self._flavour)
-        for p in selector.select_from(self):
-            yield p
+        yield from selector.select_from(self)
 
     def absolute(self):
         """Return an absolute version of this path.  This function works
@@ -1314,7 +1313,7 @@ class Path(PurePath):
         Open the file in text mode, write to it, and close the file.
         """
         if not isinstance(data, str):
-            raise TypeError("data must be str, not %s" % data.__class__.__name__)
+            raise TypeError(f"data must be str, not {data.__class__.__name__}")
         with self.open(mode="w", encoding=encoding, errors=errors) as f:
             return f.write(data)
 

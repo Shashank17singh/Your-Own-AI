@@ -23,7 +23,7 @@ class StructFieldsTestCase(unittest.TestCase):
 
     def test_1_B(self):
         class X(Structure):
-            _fields_ = []  # finalized
+            _fields_ = []  # finalized  # noqa: RUF012
 
         self.assertRaises(AttributeError, setattr, X, "_fields_", [])
 
@@ -39,7 +39,7 @@ class StructFieldsTestCase(unittest.TestCase):
             pass
 
         class Y(Structure):
-            _fields_ = [("x", X)]  # finalizes X
+            _fields_ = [("x", X)]  # finalizes X  # noqa: RUF012
 
         self.assertRaises(AttributeError, setattr, X, "_fields_", [])
 

@@ -233,12 +233,11 @@ class Task(futures._PyFuture):  # Inherit Python Task implementation
         self._log_traceback = False
         if self.done():
             return False
-        if self._fut_waiter is not None:
-            if self._fut_waiter.cancel(msg=msg):
-                # Leave self._fut_waiter; it may be a Task that
-                # catches and ignores the cancellation so we may have
-                # to cancel it again later.
-                return True
+        if self._fut_waiter is not None and self._fut_waiter.cancel(msg=msg):
+            # Leave self._fut_waiter; it may be a Task that
+            # catches and ignores the cancellation so we may have
+            # to cancel it again later.
+            return True
         # It must be the case that self.__step is already scheduled.
         self._must_cancel = True
         self._cancel_message = msg
@@ -279,7 +278,7 @@ class Task(futures._PyFuture):  # Inherit Python Task implementation
         except (KeyboardInterrupt, SystemExit) as exc:
             super().set_exception(exc)
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             super().set_exception(exc)
         else:
             blocking = getattr(result, "_asyncio_future_blocking", None)
@@ -301,7 +300,7 @@ class Task(futures._PyFuture):  # Inherit Python Task implementation
                         result._asyncio_future_blocking = False
                         result.add_done_callback(self.__wakeup, context=self._context)
                         self._fut_waiter = result
-                        if self._must_cancel:
+                        if self._must_cancel:  # noqa: SIM102
                             if self._fut_waiter.cancel(msg=self._cancel_message):
                                 self._must_cancel = False
                 else:
@@ -327,12 +326,12 @@ class Task(futures._PyFuture):  # Inherit Python Task implementation
                 self._loop.call_soon(self.__step, new_exc, context=self._context)
         finally:
             _leave_task(self._loop, self)
-            self = None  # Needed to break cycles when an exception occurs.
+            self = None  # Needed to break cycles when an exception occurs.  # noqa: PLW0642
 
     def __wakeup(self, future):
         try:
             future.result()
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             # This may also be a cancellation.
             self.__step(exc)
         else:
@@ -343,7 +342,7 @@ class Task(futures._PyFuture):  # Inherit Python Task implementation
             # instead of `__next__()`, which is slower for futures
             # that return non-generator iterators from their `__iter__`.
             self.__step()
-        self = None  # Needed to break cycles when an exception occurs.
+        self = None  # Needed to break cycles when an exception occurs.  # noqa: PLW0642
 
 
 _PyTask = Task
@@ -819,7 +818,7 @@ def gather(*coros_or_futures, loop=None, return_exceptions=False):
             # and set it to the 'outer' future.
             results = []
 
-            for fut in children:
+            for fut in children:  # noqa: PLR1704
                 if fut.cancelled():
                     # Check if 'fut' is cancelled first, as 'fut.exception()'
                     # will *raise* a CancelledError instead of returning it.

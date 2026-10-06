@@ -13,7 +13,7 @@ async def staggered_race(
     coro_fns: typing.Iterable[typing.Callable[[], typing.Awaitable]],
     delay: float | None,
     *,
-    loop: events.AbstractEventLoop = None,
+    loop: events.AbstractEventLoop | None = None,
 ) -> tuple[typing.Any, int | None, list[Exception | None]]:
     """Run coroutines with staggered start times and take the first to finish.
 
@@ -100,7 +100,7 @@ async def staggered_race(
             result = await coro_fn()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             exceptions[this_index] = e
             this_failed.set()  # Kickstart the next coroutine
         else:

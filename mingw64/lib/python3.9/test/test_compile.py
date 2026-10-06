@@ -77,19 +77,19 @@ class TestSpecifics(unittest.TestCase):
 
         m = M()
         g = globals()
-        exec("z = a", g, m)
+        exec("z = a", g, m)  # noqa: S102
         self.assertEqual(m.results, ("z", 12))
         try:
-            exec("z = b", g, m)
+            exec("z = b", g, m)  # noqa: S102
         except NameError:
             pass
         else:
             self.fail("Did not detect a KeyError")
-        exec("z = dir()", g, m)
+        exec("z = dir()", g, m)  # noqa: S102
         self.assertEqual(m.results, ("z", list("xyz")))
-        exec("z = globals()", g, m)
+        exec("z = globals()", g, m)  # noqa: S102
         self.assertEqual(m.results, ("z", g))
-        exec("z = locals()", g, m)
+        exec("z = locals()", g, m)  # noqa: S102
         self.assertEqual(m.results, ("z", m))
         self.assertRaises(TypeError, exec, "z = b", m)
 
@@ -107,7 +107,7 @@ class TestSpecifics(unittest.TestCase):
                 return dict.__getitem__(self, key)
 
         d = D()
-        exec("z = a", g, d)
+        exec("z = a", g, d)  # noqa: S102
         self.assertEqual(d["z"], 12)
 
     def test_extended_arg(self):
@@ -131,7 +131,7 @@ def f(x):
         # EXTENDED_ARG/JUMP_ABSOLUTE here
     return x
 """ % ((longexpr,) * 10)
-        exec(code, g)
+        exec(code, g)  # noqa: S102
         self.assertEqual(g["f"](5), 0)
 
     def test_argument_order(self):
@@ -238,14 +238,6 @@ if 1:
     if sys.maxsize == 9223372036854775807:
 
         def test_32_63_bit_values(self):
-            a = +4294967296  # 1 << 32
-            b = -4294967296  # 1 << 32
-            c = +281474976710656  # 1 << 48
-            d = -281474976710656  # 1 << 48
-            e = +4611686018427387904  # 1 << 62
-            f = -4611686018427387904  # 1 << 62
-            g = +9223372036854775807  # 1 << 63 - 1
-            h = -9223372036854775807  # 1 << 63 - 1
 
             for variable in self.test_32_63_bit_values.__code__.co_consts:
                 if variable is not None:
@@ -253,7 +245,7 @@ if 1:
 
     def test_sequence_unpacking_error(self):
         # Verify sequence packing/unpacking with "or".  SF bug #757818
-        i, j = (1, -1) or (-1, 1)
+        i, j = (1, -1)
         self.assertEqual(i, 1)
         self.assertEqual(j, -1)
 
@@ -439,14 +431,13 @@ if 1:
     def test_annotation_limit(self):
         # more than 255 annotations, should compile ok
         s = "def f(%s): pass"
-        s %= ", ".join("a%d:%d" % (i, i) for i in range(300))
+        s %= ", ".join("a%d:%d" % (i, i) for i in range(300))  # noqa: UP031
         compile(s, "?", "exec")
 
     def test_mangling(self):
         class A:
             def f():
                 __mangled = 1
-                __not_mangled__ = 2
 
         self.assertIn("_A__mangled", A.f.__code__.co_varnames)
         self.assertIn("__not_mangled__", A.f.__code__.co_varnames)
@@ -468,13 +459,13 @@ if 1:
         ]
 
         for fname, code in sample_code:
-            co1 = compile(code, "%s1" % fname, "exec")
-            ast = compile(code, "%s2" % fname, "exec", _ast.PyCF_ONLY_AST)
+            co1 = compile(code, f"{fname}1", "exec")
+            ast = compile(code, f"{fname}2", "exec", _ast.PyCF_ONLY_AST)
             self.assertTrue(type(ast) == _ast.Module)
-            co2 = compile(ast, "%s3" % fname, "exec")
+            co2 = compile(ast, f"{fname}3", "exec")
             self.assertEqual(co1, co2)
             # the code object's filename comes from the second compilation step
-            self.assertEqual(co2.co_filename, "%s3" % fname)
+            self.assertEqual(co2.co_filename, f"{fname}3")
 
         # raise exception when node type doesn't match with compile mode
         co1 = compile("print(1)", "<string>", "exec", _ast.PyCF_ONLY_AST)
@@ -604,8 +595,8 @@ if 1:
 
         # Also test when eval() and exec() do the compilation step
         self.assertEqual(eval(memoryview(b"1234")[1:-1]), 23)
-        namespace = dict()
-        exec(memoryview(b"ax = 123")[1:-1], namespace)
+        namespace = {}
+        exec(memoryview(b"ax = 123")[1:-1], namespace)  # noqa: S102
         self.assertEqual(namespace["x"], 12)
 
     def check_constant(self, func, expected):
@@ -614,7 +605,7 @@ if 1:
                 break
         else:
             self.fail(
-                "unable to find constant %r in %r" % (expected, func.__code__.co_consts)
+                f"unable to find constant {expected!r} in {func.__code__.co_consts!r}"
             )
 
     # Merging equal constants is not a strict requirement for the Python
@@ -626,8 +617,8 @@ if 1:
 
         def check_same_constant(const):
             ns = {}
-            code = "f1, f2 = lambda: %r, lambda: %r" % (const, const)
-            exec(code, ns)
+            code = f"f1, f2 = lambda: {const!r}, lambda: {const!r}"
+            exec(code, ns)  # noqa: S102
             f1 = ns["f1"]
             f2 = ns["f2"]
             self.assertIs(f1.__code__, f2.__code__)
@@ -686,7 +677,7 @@ if 1:
 
         def check_different_constants(const1, const2):
             ns = {}
-            exec("f1, f2 = lambda: %r, lambda: %r" % (const1, const2), ns)
+            exec(f"f1, f2 = lambda: {const1!r}, lambda: {const2!r}", ns)  # noqa: S102
             f1 = ns["f1"]
             f2 = ns["f2"]
             self.assertIsNot(f1.__code__, f2.__code__)
@@ -845,7 +836,7 @@ class TestStackSizeStability(unittest.TestCase):
             if async_:
                 script = "async " + script
             code = compile(script, "<script>", "exec")
-            exec(code, ns, ns)
+            exec(code, ns, ns)  # noqa: S102
             return ns["func"].__code__
 
         sizes = [compile_snippet(i).co_stacksize for i in range(2, 5)]
@@ -857,7 +848,7 @@ class TestStackSizeStability(unittest.TestCase):
             dis.dis(compile_snippet(1), file=out)
             self.fail(
                 "stack sizes diverge with # of consecutive snippets: "
-                "%s\n%s\n%s" % (sizes, snippet, out.getvalue())
+                f"{sizes}\n{snippet}\n{out.getvalue()}"
             )
 
     def test_if(self):

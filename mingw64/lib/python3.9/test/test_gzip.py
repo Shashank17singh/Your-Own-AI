@@ -406,7 +406,7 @@ class TestGzip(BaseTest):
             self.fail("__enter__ on a closed file didn't raise an exception")
         try:
             with gzip.GzipFile(self.filename, "wb") as f:
-                1 / 0
+                1 / 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
@@ -450,8 +450,7 @@ class TestGzip(BaseTest):
 
         def sizes():
             while True:
-                for n in range(5, 50, 10):
-                    yield n
+                yield from range(5, 50, 10)
 
         with gzip.GzipFile(self.filename, "rb") as f:
             f.max_read_chunk = 33
@@ -469,7 +468,7 @@ class TestGzip(BaseTest):
         # Issue #10791: TextIOWrapper.readlines() fails when wrapping GzipFile.
         lines = (data1 * 50).decode("ascii").splitlines(keepends=True)
         self.test_write()
-        with gzip.GzipFile(self.filename, "r") as f:
+        with gzip.GzipFile(self.filename, "r") as f:  # noqa: SIM117
             with io.TextIOWrapper(f, encoding="ascii") as t:
                 self.assertEqual(t.readlines(), lines)
 
@@ -477,7 +476,7 @@ class TestGzip(BaseTest):
         # Issue #13781: Opening a GzipFile for writing fails when using a
         # fileobj created with os.fdopen().
         fd = os.open(self.filename, os.O_WRONLY | os.O_CREAT)
-        with os.fdopen(fd, "wb") as f, gzip.GzipFile(fileobj=f, mode="w") as g:
+        with os.fdopen(fd, "wb") as f, gzip.GzipFile(fileobj=f, mode="w"):
             pass
 
     def test_fileobj_mode(self):
@@ -494,7 +493,7 @@ class TestGzip(BaseTest):
             with self.assertRaises(ValueError):
                 gzip.GzipFile(fileobj=f, mode="z")
         for mode in "rb", "r+b":
-            with open(self.filename, mode) as f:
+            with open(self.filename, mode) as f:  # noqa: SIM117
                 with gzip.GzipFile(fileobj=f) as g:
                     self.assertEqual(g.mode, gzip.READ)
         for mode in "wb", "ab", "xb":
@@ -804,7 +803,7 @@ class TestCommandLine(unittest.TestCase):
         with open(local_testgzip, "wb") as fp:
             fp.write(self.data)
 
-        rc, out, err = assert_python_ok("-m", "gzip", local_testgzip)
+        _rc, out, err = assert_python_ok("-m", "gzip", local_testgzip)
 
         self.assertTrue(os.path.exists(gzipname))
         self.assertEqual(out, b"")
@@ -821,7 +820,7 @@ class TestCommandLine(unittest.TestCase):
                 with open(local_testgzip, "wb") as fp:
                     fp.write(self.data)
 
-                rc, out, err = assert_python_ok(
+                _rc, out, err = assert_python_ok(
                     "-m", "gzip", compress_level, local_testgzip
                 )
 
@@ -832,12 +831,12 @@ class TestCommandLine(unittest.TestCase):
                 self.assertFalse(os.path.exists(gzipname))
 
     def test_compress_fast_best_are_exclusive(self):
-        rc, out, err = assert_python_failure("-m", "gzip", "--fast", "--best")
+        _rc, out, err = assert_python_failure("-m", "gzip", "--fast", "--best")
         self.assertIn(b"error: argument --best: not allowed with argument --fast", err)
         self.assertEqual(out, b"")
 
     def test_decompress_cannot_have_flags_compression(self):
-        rc, out, err = assert_python_failure("-m", "gzip", "--fast", "-d")
+        _rc, out, err = assert_python_failure("-m", "gzip", "--fast", "-d")
         self.assertIn(
             b"error: argument -d/--decompress: not allowed with argument --fast", err
         )

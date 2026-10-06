@@ -22,7 +22,7 @@ fcntl = import_module("fcntl")
 
 def get_lockdata():
     try:
-        os.O_LARGEFILE
+        os.O_LARGEFILE  # noqa: B018
     except AttributeError:
         start_len = "ll"
     else:
@@ -45,9 +45,8 @@ def get_lockdata():
         lockdata = struct.pack("hhlllii", fcntl.F_WRLCK, 0, 0, 0, 0, 0, 0)
     else:
         lockdata = struct.pack("hh" + start_len + "hh", fcntl.F_WRLCK, 0, 0, 0, 0, 0)
-    if lockdata:
-        if verbose:
-            print("struct.pack: ", repr(lockdata))
+    if lockdata and verbose:
+        print("struct.pack: ", repr(lockdata))
     return lockdata
 
 
@@ -63,7 +62,7 @@ class BadFile:
 
 
 def try_lockf_on_other_process_fail(fname, cmd):
-    f = open(fname, "wb+")
+    f = open(fname, "wb+")  # noqa: SIM115
     try:
         fcntl.lockf(f, cmd)
     except BlockingIOError:
@@ -73,7 +72,7 @@ def try_lockf_on_other_process_fail(fname, cmd):
 
 
 def try_lockf_on_other_process(fname, cmd):
-    f = open(fname, "wb+")
+    f = open(fname, "wb+")  # noqa: SIM115
     fcntl.lockf(f, cmd)
     fcntl.lockf(f, fcntl.LOCK_UN)
     f.close()
@@ -90,7 +89,7 @@ class TestFcntl(unittest.TestCase):
 
     def test_fcntl_fileno(self):
         # the example from the library docs
-        self.f = open(TESTFN, "wb")
+        self.f = open(TESTFN, "wb")  # noqa: SIM115
         rv = fcntl.fcntl(self.f.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
         if verbose:
             print("Status from fcntl with O_NONBLOCK: ", rv)
@@ -101,7 +100,7 @@ class TestFcntl(unittest.TestCase):
 
     def test_fcntl_file_descriptor(self):
         # again, but pass the file rather than numeric descriptor
-        self.f = open(TESTFN, "wb")
+        self.f = open(TESTFN, "wb")  # noqa: SIM115
         rv = fcntl.fcntl(self.f, fcntl.F_SETFL, os.O_NONBLOCK)
         if verbose:
             print("Status from fcntl with O_NONBLOCK: ", rv)
@@ -155,7 +154,7 @@ class TestFcntl(unittest.TestCase):
 
     def test_flock(self):
         # Solaris needs readable file for shared lock
-        self.f = open(TESTFN, "wb+")
+        self.f = open(TESTFN, "wb+")  # noqa: SIM115
         fileno = self.f.fileno()
         fcntl.flock(fileno, fcntl.LOCK_SH)
         fcntl.flock(fileno, fcntl.LOCK_UN)
@@ -169,7 +168,7 @@ class TestFcntl(unittest.TestCase):
 
     @unittest.skipIf(platform.system() == "AIX", "AIX returns PermissionError")
     def test_lockf_exclusive(self):
-        self.f = open(TESTFN, "wb+")
+        self.f = open(TESTFN, "wb+")  # noqa: SIM115
         cmd = fcntl.LOCK_EX | fcntl.LOCK_NB
         fcntl.lockf(self.f, cmd)
         p = Process(target=try_lockf_on_other_process_fail, args=(TESTFN, cmd))
@@ -180,7 +179,7 @@ class TestFcntl(unittest.TestCase):
 
     @unittest.skipIf(platform.system() == "AIX", "AIX returns PermissionError")
     def test_lockf_share(self):
-        self.f = open(TESTFN, "wb+")
+        self.f = open(TESTFN, "wb+")  # noqa: SIM115
         cmd = fcntl.LOCK_SH | fcntl.LOCK_NB
         fcntl.lockf(self.f, cmd)
         p = Process(target=try_lockf_on_other_process, args=(TESTFN, cmd))
@@ -199,7 +198,7 @@ class TestFcntl(unittest.TestCase):
 
     @unittest.skipIf(sys.platform != "darwin", "F_GETPATH is only available on macos")
     def test_fcntl_f_getpath(self):
-        self.f = open(TESTFN, "wb")
+        self.f = open(TESTFN, "wb")  # noqa: SIM115
         expected = os.path.abspath(TESTFN).encode("utf-8")
         res = fcntl.fcntl(self.f.fileno(), fcntl.F_GETPATH, bytes(len(expected)))
         self.assertEqual(expected, res)

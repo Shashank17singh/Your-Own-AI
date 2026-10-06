@@ -69,11 +69,11 @@ class ReprTests(unittest.TestCase):
         eq(r([1, 2, 3, 4, 5, 6, 7]), "[1, 2, 3, 4, 5, 6, ...]")
 
         # Sets give up after 6 as well
-        eq(r(set([])), "set()")
-        eq(r(set([1])), "{1}")
-        eq(r(set([1, 2, 3])), "{1, 2, 3}")
-        eq(r(set([1, 2, 3, 4, 5, 6])), "{1, 2, 3, 4, 5, 6}")
-        eq(r(set([1, 2, 3, 4, 5, 6, 7])), "{1, 2, 3, 4, 5, 6, ...}")
+        eq(r(set()), "set()")
+        eq(r({1}), "{1}")
+        eq(r({1, 2, 3}), "{1, 2, 3}")
+        eq(r({1, 2, 3, 4, 5, 6}), "{1, 2, 3, 4, 5, 6}")
+        eq(r({1, 2, 3, 4, 5, 6, 7}), "{1, 2, 3, 4, 5, 6, ...}")
 
         # Frozensets give up after 6 as well
         eq(r(frozenset([])), "frozenset()")
@@ -135,7 +135,7 @@ class ReprTests(unittest.TestCase):
         eq(r(i2), expected)
 
         i3 = ClassWithFailingRepr()
-        eq(r(i3), ("<ClassWithFailingRepr instance at %#x>" % id(i3)))
+        eq(r(i3), (f"<ClassWithFailingRepr instance at {id(i3):#x}>"))
 
         s = r(ClassWithFailingRepr)
         self.assertTrue(s.startswith("<class "))
@@ -221,7 +221,7 @@ class ReprTests(unittest.TestCase):
     def test_unsortable(self):
         # Repr.repr() used to call sorted() on sets, frozensets and dicts
         # without taking into account that not all objects are comparable
-        x = set([1j, 2j, 3j])
+        x = {1j, 2j, 3j}
         y = frozenset(x)
         z = {1j: 1, 2j: 2}
         r(x)
@@ -286,7 +286,7 @@ class LongReprTest(unittest.TestCase):
             # NUL character.
             # (see http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx#maxpath)
             self.skipTest(
-                "test paths too long (%d characters) for Windows' 260 character limit"
+                "test paths too long (%d characters) for Windows' 260 character limit"  # noqa: UP031
                 % cached_path_len
             )
         elif os.name == "nt" and verbose:
@@ -303,7 +303,7 @@ class LongReprTest(unittest.TestCase):
 
         module = areallylongpackageandmodulenametotestreprtruncation
         self.assertEqual(
-            repr(module), "<module %r from %r>" % (module.__name__, module.__file__)
+            repr(module), f"<module {module.__name__!r} from {module.__file__!r}>"
         )
         self.assertEqual(repr(sys), "<module 'sys' (built-in)>")
 
@@ -322,7 +322,7 @@ class foo(object):
             foo,
         )
 
-        eq(repr(foo.foo), "<class '%s.foo'>" % foo.__name__)
+        eq(repr(foo.foo), f"<class '{foo.__name__}.foo'>")
 
     @unittest.skip("need a suitable object")
     def test_object(self):
@@ -345,7 +345,7 @@ class bar:
         )
 
         # Module name may be prefixed with "test.", depending on how run.
-        self.assertEqual(repr(bar.bar), "<class '%s.bar'>" % bar.__name__)
+        self.assertEqual(repr(bar.bar), f"<class '{bar.__name__}.bar'>")
 
     def test_instance(self):
         self._check_path_limitations("baz")
@@ -362,11 +362,10 @@ class baz:
         )
 
         ibaz = baz.baz()
-        self.assertTrue(repr(ibaz).startswith("<%s.baz object at 0x" % baz.__name__))
+        self.assertTrue(repr(ibaz).startswith(f"<{baz.__name__}.baz object at 0x"))
 
     def test_method(self):
         self._check_path_limitations("qux")
-        eq = self.assertEqual
         write_file(
             os.path.join(self.subpkgname, "qux.py"),
             """\
@@ -394,8 +393,7 @@ class aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         r = repr(iqux.amethod)
         self.assertTrue(
             r.startswith(
-                "<bound method aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.amethod of <%s.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa object at 0x"
-                % (qux.__name__,)
+                f"<bound method aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.amethod of <{qux.__name__}.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa object at 0x"
             ),
             r,
         )
@@ -411,12 +409,12 @@ class ClassWithRepr:
         self.s = s
 
     def __repr__(self):
-        return "ClassWithRepr(%r)" % self.s
+        return f"ClassWithRepr({self.s!r})"
 
 
 class ClassWithFailingRepr:
     def __repr__(self):
-        raise Exception("This should be caught by Repr.repr_instance")
+        raise Exception("This should be caught by Repr.repr_instance")  # noqa: TRY002
 
 
 class MyContainer:

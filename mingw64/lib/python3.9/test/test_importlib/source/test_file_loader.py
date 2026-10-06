@@ -43,7 +43,7 @@ class SimpleTest(abc.LoaderTests):
         self.addCleanup(unload, "blah")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            module = loader.load_module()  # Should not raise an exception.
+            loader.load_module()  # Should not raise an exception.
 
     def test_get_filename_API(self):
         # If fullname is not set then assume self.path is desired.
@@ -286,7 +286,7 @@ class SimpleTest(abc.LoaderTests):
             unittest.mock.patch("_imp.check_hash_based_pycs", "never"),
         ):
             source = mapping["_temp"]
-            pyc = self.util.cache_from_source(source)
+            self.util.cache_from_source(source)
             with open(source, "wb") as fp:
                 fp.write(b'state = "old"')
             os.utime(source, (50, 50))
@@ -541,7 +541,7 @@ class BadBytecodeTestPEP302(BadBytecodeTest):
         loader = self.loader(module_name, file)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
-            module = loader.load_module(module_name)
+            loader.load_module(module_name)
         self.assertIn(module_name, sys.modules)
 
 

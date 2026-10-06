@@ -8,7 +8,7 @@ def t():
     try:
         with multiprocessing.Pool(1):
             pass
-    except Exception:
+    except Exception:  # noqa: BLE001
         traceback.print_exc()
         os._exit(1)
 

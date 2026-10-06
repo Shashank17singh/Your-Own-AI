@@ -53,17 +53,17 @@ class Test_OpenGL_libs(unittest.TestCase):
     def test_gl(self):
         if self.gl is None:
             self.skipTest("lib_gl not available")
-        self.gl.glClearIndex
+        self.gl.glClearIndex  # noqa: B018
 
     def test_glu(self):
         if self.glu is None:
             self.skipTest("lib_glu not available")
-        self.glu.gluBeginCurve
+        self.glu.gluBeginCurve  # noqa: B018
 
     def test_gle(self):
         if self.gle is None:
             self.skipTest("lib_gle not available")
-        self.gle.gleGetJoinStyle
+        self.gle.gleGetJoinStyle  # noqa: B018
 
     def test_shell_injection(self):
         result = find_library("; echo Hello shell > " + test.support.TESTFN)
@@ -81,15 +81,15 @@ class FindLibraryLinux(unittest.TestCase):
             p = subprocess.Popen(
                 ["gcc", "--version"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
             )
-            out, _ = p.communicate()
+            _out, _ = p.communicate()
         except OSError:
             raise unittest.SkipTest("gcc, needed for test, not available")
         with tempfile.TemporaryDirectory() as d:
             # create an empty temporary file
             srcname = os.path.join(d, "dummy.c")
             libname = "py_ctypes_test_dummy"
-            dstname = os.path.join(d, "lib%s.so" % libname)
-            with open(srcname, "w") as f:
+            dstname = os.path.join(d, f"lib{libname}.so")
+            with open(srcname, "w"):
                 pass
             self.assertTrue(os.path.exists(srcname))
             # compile the file to a shared library
@@ -98,10 +98,10 @@ class FindLibraryLinux(unittest.TestCase):
                 "-o",
                 dstname,
                 "--shared",
-                "-Wl,-soname,lib%s.so" % libname,
+                f"-Wl,-soname,lib{libname}.so",
                 srcname,
             ]
-            out = subprocess.check_output(cmd)
+            subprocess.check_output(cmd)
             self.assertTrue(os.path.exists(dstname))
             # now check that the .so can't be found (since not in
             # LD_LIBRARY_PATH)
@@ -112,11 +112,11 @@ class FindLibraryLinux(unittest.TestCase):
                 if KEY not in env:
                     v = d
                 else:
-                    v = "%s:%s" % (env[KEY], d)
+                    v = f"{env[KEY]}:{d}"
                 env.set(KEY, v)
                 # now check that the .so can be found (since in
                 # LD_LIBRARY_PATH)
-                self.assertEqual(find_library(libname), "lib%s.so" % libname)
+                self.assertEqual(find_library(libname), f"lib{libname}.so")
 
     def test_find_library_with_gcc(self):
         with unittest.mock.patch(

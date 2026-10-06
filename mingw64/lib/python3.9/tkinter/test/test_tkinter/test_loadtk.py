@@ -18,7 +18,6 @@ class TkLoadTest(unittest.TestCase):
         tcl.destroy()
 
     def testLoadTkFailure(self):
-        old_display = None
         if sys.platform.startswith(("win", "darwin", "cygwin")):
             return
         with test_support.EnvironmentVarGuard() as env:

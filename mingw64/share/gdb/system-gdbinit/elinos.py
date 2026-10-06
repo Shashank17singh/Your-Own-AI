@@ -7,7 +7,7 @@ import gdb
 
 
 def warn(msg):
-    print("warning: %s" % msg)
+    print(f"warning: {msg}")
 
 
 def get_elinos_environment():
@@ -28,7 +28,7 @@ def get_elinos_environment():
         if var in os.environ:
             result[key] = os.environ[var]
         else:
-            warn("%s not set" % var)
+            warn(f"{var} not set")
             result[key] = None
     if result["project"] is not None:
         result["xenomai"] = glob.glob(result["project"] + "/xenomai-[0-9.]*")
@@ -48,16 +48,16 @@ def elinos_init():
     if None in (elinos_env[key] for key in ("cdk", "target")):
         warn("ELinOS system libraries will not be loaded")
     else:
-        solib_prefix = "%s/%s" % (elinos_env["cdk"], elinos_env["target"])
-        solib_dirs += ["%s/%s" % (solib_prefix, "lib")]
-        gdb.execute("set solib-absolute-prefix %s" % solib_prefix)
+        solib_prefix = "{}/{}".format(elinos_env["cdk"], elinos_env["target"])
+        solib_dirs += ["{}/{}".format(solib_prefix, "lib")]
+        gdb.execute(f"set solib-absolute-prefix {solib_prefix}")
     if elinos_env["project"] is None:
         warn("Xenomai libraries may not be loaded")
     else:
         for dir in elinos_env["xenomai"]:
-            solib_dirs += ["%s/%s" % (dir, "xenomai-build/usr/realtime/lib")]
+            solib_dirs += ["{}/{}".format(dir, "xenomai-build/usr/realtime/lib")]
     if len(solib_dirs) != 0:
-        gdb.execute("set solib-search-path %s" % ":".join(solib_dirs))
+        gdb.execute("set solib-search-path {}".format(":".join(solib_dirs)))
 
 
 if __name__ == "__main__":

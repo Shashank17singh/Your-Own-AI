@@ -127,9 +127,9 @@ def __%s__(self, *args):
 """
 
 d = {}
-exec(statictests, globals(), d)
+exec(statictests, globals(), d)  # noqa: S102
 for method in testmeths:
-    exec(method_template % method, globals(), d)
+    exec(method_template % method, globals(), d)  # noqa: S102
 AllTests = type("AllTests", (object,), d)
 del d, statictests, method, method_template
 
@@ -145,8 +145,7 @@ class ClassTests(unittest.TestCase):
         # additional calls to callLst
         if expected_calls != actualCallList:
             self.fail(
-                "Expected call list:\n  %s\ndoes not match actual call list\n  %s"
-                % (expected_calls, actualCallList)
+                f"Expected call list:\n  {expected_calls}\ndoes not match actual call list\n  {actualCallList}"
             )
 
     def testInit(self):
@@ -278,13 +277,13 @@ class ClassTests(unittest.TestCase):
             pass
 
         try:
-            1 in Empty()
+            1 in Empty()  # noqa: B015
             self.fail("failed, should have raised TypeError")
         except TypeError:
             pass
 
         callLst[:] = []
-        1 in testme
+        1 in testme  # noqa: B015
         self.assertCallStack([("__contains__", (testme, 1))])
 
         callLst[:] = []
@@ -385,10 +384,10 @@ class ClassTests(unittest.TestCase):
         testme = AllTests()
 
         callLst[:] = []
-        -testme
+        -testme  # noqa: B018
         self.assertCallStack([("__neg__", (testme,))])
         callLst[:] = []
-        +testme
+        +testme  # noqa: B018
         self.assertCallStack([("__pos__", (testme,))])
         callLst[:] = []
         abs(testme)
@@ -422,35 +421,35 @@ class ClassTests(unittest.TestCase):
         self.assertCallStack([("__str__", (testme,))])
 
         callLst[:] = []
-        testme == 1
+        testme == 1  # noqa: B015
         self.assertCallStack([("__eq__", (testme, 1))])
 
         callLst[:] = []
-        testme < 1
+        testme < 1  # noqa: B015
         self.assertCallStack([("__lt__", (testme, 1))])
 
         callLst[:] = []
-        testme > 1
+        testme > 1  # noqa: B015
         self.assertCallStack([("__gt__", (testme, 1))])
 
         callLst[:] = []
-        testme != 1
+        testme != 1  # noqa: B015
         self.assertCallStack([("__ne__", (testme, 1))])
 
         callLst[:] = []
-        1 == testme
+        1 == testme  # noqa: B015
         self.assertCallStack([("__eq__", (1, testme))])
 
         callLst[:] = []
-        1 < testme
+        1 < testme  # noqa: B015
         self.assertCallStack([("__gt__", (1, testme))])
 
         callLst[:] = []
-        1 > testme
+        1 > testme  # noqa: B015
         self.assertCallStack([("__lt__", (1, testme))])
 
         callLst[:] = []
-        1 != testme
+        1 != testme  # noqa: B015
         self.assertCallStack([("__ne__", (1, testme))])
 
     def testGetSetAndDel(self):
@@ -471,7 +470,7 @@ class ClassTests(unittest.TestCase):
         testme = ExtraTests()
 
         callLst[:] = []
-        testme.spam
+        testme.spam  # noqa: B018
         self.assertCallStack([("__getattr__", (testme, "spam"))])
 
         callLst[:] = []
@@ -559,15 +558,15 @@ class ClassTests(unittest.TestCase):
             a = property(booh)
 
         try:
-            A().a  # Raised AttributeError: A instance has no attribute 'a'
+            A().a  # Raised AttributeError: A instance has no attribute 'a'  # noqa: B018
         except AttributeError as x:
             if str(x) != "booh":
-                self.fail("attribute error for A().a got masked: %s" % x)
+                self.fail(f"attribute error for A().a got masked: {x}")
 
         class E:
             __eq__ = property(booh)
 
-        E() == E()  # In debug mode, caused a C-level assert() to fail
+        E() == E()  # In debug mode, caused a C-level assert() to fail  # noqa: B015
 
         class I:
             __init__ = property(booh)
@@ -583,13 +582,13 @@ class ClassTests(unittest.TestCase):
 
     def assertNotOrderable(self, a, b):
         with self.assertRaises(TypeError):
-            a < b
+            a < b  # noqa: B015
         with self.assertRaises(TypeError):
-            a > b
+            a > b  # noqa: B015
         with self.assertRaises(TypeError):
-            a <= b
+            a <= b  # noqa: B015
         with self.assertRaises(TypeError):
-            a >= b
+            a >= b  # noqa: B015
 
     def testHashComparisonOfMethods(self):
         # Test comparison and hash of methods

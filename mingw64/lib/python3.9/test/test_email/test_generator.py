@@ -17,7 +17,7 @@ class TestGeneratorBase:
         policy = self.policy if policy is None else policy
         return self.msgfunc(msg, policy=policy)
 
-    refold_long_expected = {
+    refold_long_expected = {  # noqa: RUF012
         0: textwrap.dedent("""\
             To: whom_it_may_concern@example.com
             From: nobody_you_want_to_know@example.com
@@ -83,7 +83,7 @@ class TestGeneratorBase:
         "None\n"
     )
 
-    length_params = [n for n in refold_long_expected]
+    length_params = [n for n in refold_long_expected]  # noqa: RUF012
 
     def length_as_maxheaderlen_parameter(self, n):
         msg = self.msgmaker(self.typ(self.refold_long_expected[0]))

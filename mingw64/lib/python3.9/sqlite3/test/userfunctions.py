@@ -59,7 +59,7 @@ def func_returnlonglong():
 
 
 def func_raiseexception():
-    5 / 0
+    5 / 0  # noqa: B018
 
 
 def func_isstring(v):
@@ -108,7 +108,7 @@ class AggrNoFinalize:
 
 class AggrExceptionInInit:
     def __init__(self):
-        5 / 0
+        5 / 0  # noqa: B018
 
     def step(self, x):
         pass
@@ -122,7 +122,7 @@ class AggrExceptionInStep:
         pass
 
     def step(self, x):
-        5 / 0
+        5 / 0  # noqa: B018
 
     def finalize(self):
         return 42
@@ -136,7 +136,7 @@ class AggrExceptionInFinalize:
         pass
 
     def finalize(self):
-        5 / 0
+        5 / 0  # noqa: B018
 
 
 class AggrCheckType:
@@ -452,7 +452,7 @@ class AggregateTests(unittest.TestCase):
         cur = self.con.cursor()
         with self.assertRaises(sqlite.OperationalError) as cm:
             cur.execute("select nofinalize(t) from test")
-            val = cur.fetchone()[0]
+            cur.fetchone()[0]
         self.assertEqual(
             str(cm.exception), "user-defined aggregate's 'finalize' method raised error"
         )
@@ -461,7 +461,7 @@ class AggregateTests(unittest.TestCase):
         cur = self.con.cursor()
         with self.assertRaises(sqlite.OperationalError) as cm:
             cur.execute("select excInit(t) from test")
-            val = cur.fetchone()[0]
+            cur.fetchone()[0]
         self.assertEqual(
             str(cm.exception), "user-defined aggregate's '__init__' method raised error"
         )
@@ -470,7 +470,7 @@ class AggregateTests(unittest.TestCase):
         cur = self.con.cursor()
         with self.assertRaises(sqlite.OperationalError) as cm:
             cur.execute("select excStep(t) from test")
-            val = cur.fetchone()[0]
+            cur.fetchone()[0]
         self.assertEqual(
             str(cm.exception), "user-defined aggregate's 'step' method raised error"
         )
@@ -479,7 +479,7 @@ class AggregateTests(unittest.TestCase):
         cur = self.con.cursor()
         with self.assertRaises(sqlite.OperationalError) as cm:
             cur.execute("select excFinalize(t) from test")
-            val = cur.fetchone()[0]
+            cur.fetchone()[0]
         self.assertEqual(
             str(cm.exception), "user-defined aggregate's 'finalize' method raised error"
         )

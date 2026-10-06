@@ -118,7 +118,7 @@ class WeakValueDictionary(_collections_abc.MutableMapping):
     # way in).
 
     def __init__(self, other=(), /, **kw):
-        def remove(wr, selfref=ref(self), _atomic_removal=_remove_dead_weakref):
+        def remove(wr, selfref=ref(self), _atomic_removal=_remove_dead_weakref):  # noqa: B008
             self = selfref()
             if self is not None:
                 if self._iterating:
@@ -176,7 +176,7 @@ class WeakValueDictionary(_collections_abc.MutableMapping):
         return o is not None
 
     def __repr__(self):
-        return "<%s at %#x>" % (self.__class__.__name__, id(self))
+        return f"<{self.__class__.__name__} at {id(self):#x}>"
 
     def __setitem__(self, key, value):
         if self._pending_removals:
@@ -385,7 +385,7 @@ class WeakKeyDictionary(_collections_abc.MutableMapping):
     def __init__(self, dict=None):
         self.data = {}
 
-        def remove(k, selfref=ref(self)):
+        def remove(k, selfref=ref(self)):  # noqa: B008
             self = selfref()
             if self is not None:
                 if self._iterating:
@@ -442,7 +442,7 @@ class WeakKeyDictionary(_collections_abc.MutableMapping):
         return len(self.data) - len(self._pending_removals)
 
     def __repr__(self):
-        return "<%s at %#x>" % (self.__class__.__name__, id(self))
+        return f"<{self.__class__.__name__} at {id(self):#x}>"
 
     def __setitem__(self, key, value):
         self.data[ref(key, self._remove)] = value
@@ -577,7 +577,7 @@ class finalize:
     # ensures that they cannot be part of a ref-cycle.
 
     __slots__ = ()
-    _registry = {}
+    _registry = {}  # noqa: RUF012
     _shutdown = False
     _index_iter = itertools.count()
     _dirty = False
@@ -648,14 +648,9 @@ class finalize:
         info = self._registry.get(self)
         obj = info and info.weakref()
         if obj is None:
-            return "<%s object at %#x; dead>" % (type(self).__name__, id(self))
+            return f"<{type(self).__name__} object at {id(self):#x}; dead>"
         else:
-            return "<%s object at %#x; for %r at %#x>" % (
-                type(self).__name__,
-                id(self),
-                type(obj).__name__,
-                id(obj),
-            )
+            return f"<{type(self).__name__} object at {id(self):#x}; for {type(obj).__name__!r} at {id(obj):#x}>"
 
     @classmethod
     def _select_for_exit(cls):
@@ -691,7 +686,7 @@ class finalize:
                         # this function which might trigger creation
                         # of a new finalizer
                         f()
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         sys.excepthook(*sys.exc_info())
                     assert f not in cls._registry
         finally:

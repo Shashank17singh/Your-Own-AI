@@ -31,7 +31,7 @@ class install_lib(Command):
     # decides both whether to generate .pyc files and what level of
     # optimization to use.
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("install-dir=", "d", "directory to install to"),
         ("build-dir=", "b", "build directory (where to install from)"),
         ("force", "f", "force installation (overwrite existing files)"),
@@ -40,14 +40,16 @@ class install_lib(Command):
         (
             "optimize=",
             "O",
-            'also compile with optimization: -O1 for "python -O", '
-            '-O2 for "python -OO", and -O0 to disable [default: -O0]',
+            (
+                'also compile with optimization: -O1 for "python -O", '
+                '-O2 for "python -OO", and -O0 to disable [default: -O0]'
+            ),
         ),
         ("skip-build", None, "skip the build steps"),
     ]
 
-    boolean_options = ["force", "compile", "skip-build"]
-    negative_opt = {"no-compile": "compile"}
+    boolean_options = ["force", "compile", "skip-build"]  # noqa: RUF012
+    negative_opt = {"no-compile": "compile"}  # noqa: RUF012
 
     def initialize_options(self):
         # let the 'install' command dictate our installation directory
@@ -113,7 +115,7 @@ class install_lib(Command):
             outfiles = self.copy_tree(self.build_dir, self.install_dir)
         else:
             self.warn(
-                "'%s' does not exist -- no Python modules to install" % self.build_dir
+                f"'{self.build_dir}' does not exist -- no Python modules to install"
             )
             return
         return outfiles

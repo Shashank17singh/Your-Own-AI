@@ -20,7 +20,7 @@ def fallback_resources(spec):
         archive_path = spec.loader.archive
         rel_path = package_directory.relative_to(archive_path)
         return zipfile.Path(archive_path, str(rel_path) + "/")
-    except Exception:
+    except Exception:  # noqa: BLE001, S110
         pass
     return package_directory
 

@@ -115,7 +115,7 @@ class TestSetups(unittest.TestCase):
         self.assertEqual(len(result.errors), 1)
         error, _ = result.errors[0]
         self.assertEqual(
-            str(error), "setUpClass (%s.%s)" % (__name__, BrokenTest.__qualname__)
+            str(error), f"setUpClass ({__name__}.{BrokenTest.__qualname__})"
         )
 
     def test_error_in_teardown_class(self):
@@ -153,9 +153,7 @@ class TestSetups(unittest.TestCase):
         self.assertEqual(Test.tornDown, 1)
         self.assertEqual(Test2.tornDown, 1)
         error, _ = result.errors[0]
-        self.assertEqual(
-            str(error), "tearDownClass (%s.%s)" % (__name__, Test.__qualname__)
-        )
+        self.assertEqual(str(error), f"tearDownClass ({__name__}.{Test.__qualname__})")
 
     def test_class_not_torndown_when_setup_fails(self):
         class Test(unittest.TestCase):
@@ -472,9 +470,7 @@ class TestSetups(unittest.TestCase):
         self.assertEqual(len(result.errors), 0)
         self.assertEqual(len(result.skipped), 1)
         skipped = result.skipped[0][0]
-        self.assertEqual(
-            str(skipped), "setUpClass (%s.%s)" % (__name__, Test.__qualname__)
-        )
+        self.assertEqual(str(skipped), f"setUpClass ({__name__}.{Test.__qualname__})")
 
     def test_skiptest_in_setupmodule(self):
         class Test(unittest.TestCase):
@@ -540,27 +536,27 @@ class TestSetups(unittest.TestCase):
             @staticmethod
             def setUpModule():
                 if phase == 0:
-                    raise Exception("setUpModule")
+                    raise Exception("setUpModule")  # noqa: TRY002
 
             @staticmethod
             def tearDownModule():
                 if phase == 1:
-                    raise Exception("tearDownModule")
+                    raise Exception("tearDownModule")  # noqa: TRY002
 
         class Test(unittest.TestCase):
             @classmethod
             def setUpClass(cls):
                 if phase == 2:
-                    raise Exception("setUpClass")
+                    raise Exception("setUpClass")  # noqa: TRY002
 
             @classmethod
             def tearDownClass(cls):
                 if phase == 3:
-                    raise Exception("tearDownClass")
+                    raise Exception("tearDownClass")  # noqa: TRY002
 
             def test_something(self):
                 if phase == 4:
-                    raise Exception("test_something")
+                    raise Exception("test_something")  # noqa: TRY002
 
         Test.__module__ = "Module"
         sys.modules["Module"] = Module

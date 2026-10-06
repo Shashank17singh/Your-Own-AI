@@ -37,7 +37,7 @@ EXTENSIONS.name = "_testcapi"
 
 
 def _extension_details():
-    global EXTENSIONS
+    global EXTENSIONS  # noqa: PLW0602
     for path in sys.path:
         for ext in machinery.EXTENSION_SUFFIXES:
             filename = EXTENSIONS.name + ext
@@ -164,7 +164,7 @@ def uncache(*names):
 @contextlib.contextmanager
 def temp_module(name, content="", *, pkg=False):
     conflicts = [n for n in sys.modules if n.partition(".")[0] == name]
-    with support.temp_cwd(None) as cwd, uncache(name, *conflicts):
+    with support.temp_cwd(None) as cwd, uncache(name, *conflicts):  # noqa: SIM117
         with support.DirsOnSysPath(cwd):
             invalidate_caches()
 
@@ -220,7 +220,9 @@ def import_state(**kwargs):
 class _ImporterMock:
     """Base class to help with creating importer mocks."""
 
-    def __init__(self, *names, module_code={}):
+    def __init__(self, *names, module_code=None):
+        if module_code is None:
+            module_code = {}
         self.modules = {}
         self.module_code = {}
         for name in names:
@@ -465,8 +467,7 @@ def create_package(file, path, is_package=True, contents=()):
             if isinstance(path, Exception):
                 raise path
             # There's no yield from in baseball, er, Python 2.
-            for entry in contents:
-                yield entry
+            yield from contents
 
     name = "testingpackage"
     # Unfortunately importlib.util.module_from_spec() was not introduced until

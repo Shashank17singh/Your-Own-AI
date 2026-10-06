@@ -132,7 +132,7 @@ class TestUnstructuredHeader(TestHeaderBase):
         self.assertDefectsEqual(h.defects, defects)
         self.assertEqual(h.fold(policy=policy.default), folded)
 
-    string_params = {
+    string_params = {  # noqa: RUF012
         "rfc2047_simple_quopri": (
             "=?utf-8?q?this_is_a_test?=",
             "this is a test",
@@ -222,7 +222,7 @@ class TestContentTypeHeader(TestHeaderBase):
         self.assertEqual(h, decoded)
         self.assertEqual(h.fold(policy=policy.default), folded)
 
-    content_type_params = {
+    content_type_params = {  # noqa: RUF012
         # Examples from RFC 2045.
         "RFC_2045_1": (
             "text/plain; charset=us-ascii (Plain text)",
@@ -469,8 +469,10 @@ class TestContentTypeHeader(TestHeaderBase):
             # punting for now.  In practice this is unlikely to be encountered
             # since headers with binary in them only come from a binary source
             # and are almost certain to be re-emitted without refolding.
-            'Content-Type: =?unknown-8bit?q?foo=A7?=/bar; b\udca7r="two";\n'
-            " baz*=unknown-8bit''thr%A7e\n",
+            (
+                'Content-Type: =?unknown-8bit?q?foo=A7?=/bar; b\udca7r="two";\n'
+                " baz*=unknown-8bit''thr%A7e\n"
+            ),
         ),
         # RFC 2231 parameter tests.
         "rfc2231_segmented_normal_values": (
@@ -505,8 +507,10 @@ class TestContentTypeHeader(TestHeaderBase):
             {"charset": "us-ascii", "title": "This is not f\ufffdn"},
             [errors.UndecodableBytesDefect],
             'text/plain; charset="us-ascii"; title="This is not f�n"',
-            'Content-Type: text/plain; charset="us-ascii";\n'
-            " title*=unknown-8bit''This%20is%20not%20f%A7n\n",
+            (
+                'Content-Type: text/plain; charset="us-ascii";\n'
+                " title*=unknown-8bit''This%20is%20not%20f%A7n\n"
+            ),
         ),
         "rfc2231_encoded_charset": (
             "text/plain; charset*=ansi-x3.4-1968''us-ascii",
@@ -746,10 +750,12 @@ class TestContentTypeHeader(TestHeaderBase):
             {"name": "with spaces" * 8},
             [],
             'application/x-foo; name="' + "with spaces" * 8 + '"',
-            "Content-Type: application/x-foo;\n"
-            " name*0*=us-ascii''with%20spaceswith%20spaceswith%20spaceswith"
-            "%20spaceswith;\n"
-            " name*1*=%20spaceswith%20spaceswith%20spaceswith%20spaces\n",
+            (
+                "Content-Type: application/x-foo;\n"
+                " name*0*=us-ascii''with%20spaceswith%20spaceswith%20spaceswith"
+                "%20spaceswith;\n"
+                " name*1*=%20spaceswith%20spaceswith%20spaceswith%20spaces\n"
+            ),
         ),
     }
 
@@ -768,7 +774,7 @@ class TestContentTransferEncoding(TestHeaderBase):
         self.assertEqual(h, decoded)
         self.assertEqual(h.fold(policy=policy.default), folded)
 
-    cte_params = {
+    cte_params = {  # noqa: RUF012
         "RFC_2183_1": (
             "base64",
             "base64",
@@ -804,7 +810,7 @@ class TestContentDisposition(TestHeaderBase):
         self.assertEqual(h, decoded)
         self.assertEqual(h.fold(policy=policy.default), folded)
 
-    content_disp_params = {
+    content_disp_params = {  # noqa: RUF012
         # Examples from RFC 2183.
         "RFC_2183_1": (
             "inline",
@@ -846,8 +852,10 @@ class TestContentDisposition(TestHeaderBase):
             [errors.InvalidHeaderDefect],
         ),
         "invalid_parameter_value_with_fws_between_ew": (
-            'attachment; filename="=?UTF-8?Q?Schulbesuchsbest=C3=A4ttigung=2E?='
-            '               =?UTF-8?Q?pdf?="',
+            (
+                'attachment; filename="=?UTF-8?Q?Schulbesuchsbest=C3=A4ttigung=2E?='
+                '               =?UTF-8?Q?pdf?="'
+            ),
             "attachment",
             {"filename": "Schulbesuchsbestättigung.pdf"},
             [errors.InvalidHeaderDefect] * 3,
@@ -883,7 +891,7 @@ class TestMIMEVersionHeader(TestHeaderBase):
             source = " " + source
         self.assertEqual(h.fold(policy=policy.default), "MIME-Version:" + source + "\n")
 
-    version_string_params = {
+    version_string_params = {  # noqa: RUF012
         # Examples from the RFC.
         "RFC_2045_1": ("1.0", "1.0", "1.0", 1, 0, []),
         "RFC_2045_2": (
@@ -961,7 +969,7 @@ class TestMIMEVersionHeader(TestHeaderBase):
 
 @parameterize
 class TestAddressHeader(TestHeaderBase):
-    example_params = {
+    example_params = {  # noqa: RUF012
         "empty": ("<>", [errors.InvalidHeaderDefect], "<>", "", "<>", "", "", None),
         "address_only": (
             "zippy@pinhead.com",
@@ -1394,18 +1402,18 @@ class TestAddressAndGroup(TestEmailBase):
 
     def test_crlf_in_constructor_args_raises(self):
         cases = (
-            dict(display_name="foo\r"),
-            dict(display_name="foo\n"),
-            dict(display_name="foo\r\n"),
-            dict(domain="example.com\r"),
-            dict(domain="example.com\n"),
-            dict(domain="example.com\r\n"),
-            dict(username="wok\r"),
-            dict(username="wok\n"),
-            dict(username="wok\r\n"),
-            dict(addr_spec="wok@example.com\r"),
-            dict(addr_spec="wok@example.com\n"),
-            dict(addr_spec="wok@example.com\r\n"),
+            {"display_name": "foo\r"},
+            {"display_name": "foo\n"},
+            {"display_name": "foo\r\n"},
+            {"domain": "example.com\r"},
+            {"domain": "example.com\n"},
+            {"domain": "example.com\r\n"},
+            {"username": "wok\r"},
+            {"username": "wok\n"},
+            {"username": "wok\r\n"},
+            {"addr_spec": "wok@example.com\r"},
+            {"addr_spec": "wok@example.com\n"},
+            {"addr_spec": "wok@example.com\r\n"},
         )
         for kwargs in cases:
             with (
@@ -1441,19 +1449,19 @@ class TestAddressAndGroup(TestEmailBase):
     def test_empty_group(self):
         g = Group("foo")
         self.assertEqual(g.display_name, "foo")
-        self.assertEqual(g.addresses, tuple())
+        self.assertEqual(g.addresses, ())
         self.assertEqual(str(g), "foo:;")
 
     def test_empty_group_list(self):
         g = Group("foo", addresses=[])
         self.assertEqual(g.display_name, "foo")
-        self.assertEqual(g.addresses, tuple())
+        self.assertEqual(g.addresses, ())
         self.assertEqual(str(g), "foo:;")
 
     def test_null_group(self):
         g = Group()
         self.assertIsNone(g.display_name)
-        self.assertEqual(g.addresses, tuple())
+        self.assertEqual(g.addresses, ())
         self.assertEqual(str(g), "None:;")
 
     def test_group_with_addresses(self):
@@ -1480,13 +1488,13 @@ class TestAddressAndGroup(TestEmailBase):
     def test_display_name_quoting(self):
         g = Group("foo.bar")
         self.assertEqual(g.display_name, "foo.bar")
-        self.assertEqual(g.addresses, tuple())
+        self.assertEqual(g.addresses, ())
         self.assertEqual(str(g), '"foo.bar":;')
 
     def test_display_name_blanks_not_quoted(self):
         g = Group("foo bar")
         self.assertEqual(g.display_name, "foo bar")
-        self.assertEqual(g.addresses, tuple())
+        self.assertEqual(g.addresses, ())
         self.assertEqual(str(g), "foo bar:;")
 
     def test_set_message_header_from_address(self):
@@ -1535,18 +1543,20 @@ class TestFolding(TestHeaderBase):
             ("Foo Bär, France", "Foo =?utf-8?q?B=C3=A4r=2C?= France"),
             ("Foo Bär <France>", "Foo =?utf-8?q?B=C3=A4r_=3CFrance=3E?="),
             (
-                "Lôrem ipsum dôlôr sit amet, cônsectetuer adipiscing. "
-                "Suspendisse pôtenti. Aliquam nibh. Suspendisse pôtenti.",
-                "=?utf-8?q?L=C3=B4rem_ipsum_d=C3=B4l=C3=B4r_sit_amet=2C_c"
-                "=C3=B4nsectetuer?=\n =?utf-8?q?adipiscing=2E_Suspendisse"
-                "_p=C3=B4tenti=2E_Aliquam_nibh=2E?=\n Suspendisse =?utf-8"
-                "?q?p=C3=B4tenti=2E?=",
+                (
+                    "Lôrem ipsum dôlôr sit amet, cônsectetuer adipiscing. "
+                    "Suspendisse pôtenti. Aliquam nibh. Suspendisse pôtenti."
+                ),
+                (
+                    "=?utf-8?q?L=C3=B4rem_ipsum_d=C3=B4l=C3=B4r_sit_amet=2C_c"
+                    "=C3=B4nsectetuer?=\n =?utf-8?q?adipiscing=2E_Suspendisse"
+                    "_p=C3=B4tenti=2E_Aliquam_nibh=2E?=\n Suspendisse =?utf-8"
+                    "?q?p=C3=B4tenti=2E?="
+                ),
             ),
         ):
             h = self.make_header("To", Address(name, addr_spec="a@b.com"))
-            self.assertEqual(
-                h.fold(policy=policy.default), "To: %s <a@b.com>\n" % result
-            )
+            self.assertEqual(h.fold(policy=policy.default), f"To: {result} <a@b.com>\n")
 
     def test_short_unstructured(self):
         h = self.make_header("subject", "this is a test")

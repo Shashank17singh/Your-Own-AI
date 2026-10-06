@@ -216,7 +216,7 @@ class InsertCommand(Command):
             # Insert before the final newline
             self.index1 = text.index("end-1c")
         text.insert(self.index1, self.chars, self.tags)
-        self.index2 = text.index("%s+%dc" % (self.index1, len(self.chars)))
+        self.index2 = text.index("%s+%dc" % (self.index1, len(self.chars)))  # noqa: UP031
         self.marks_after = self.save_marks(text)
         ##sys.__stderr__.write("do: %s\n" % self)
 
@@ -307,7 +307,7 @@ class CommandSequence(Command):
         s = self.__class__.__name__
         strs = []
         for cmd in self.cmds:
-            strs.append("    %r" % (cmd,))
+            strs.append(f"    {cmd!r}")
         return s + "(\n" + ",\n".join(strs) + "\n)"
 
     def __len__(self):
@@ -341,7 +341,7 @@ def _undo_delegator(parent):  # htest #
     undowin = Toplevel(parent)
     undowin.title("Test UndoDelegator")
     x, y = map(int, parent.geometry().split("+")[1:])
-    undowin.geometry("+%d+%d" % (x, y + 175))
+    undowin.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
 
     text = Text(undowin, height=10)
     text.pack()

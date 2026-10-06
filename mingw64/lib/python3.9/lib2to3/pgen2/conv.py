@@ -59,18 +59,18 @@ class Converter(grammar.Grammar):
 
         """
         try:
-            f = open(filename)
+            f = open(filename)  # noqa: SIM115
         except OSError as err:
-            print("Can't open %s: %s" % (filename, err))
+            print(f"Can't open {filename}: {err}")
             return False
         self.symbol2number = {}
         self.number2symbol = {}
         lineno = 0
         for line in f:
-            lineno += 1
+            lineno += 1  # noqa: SIM113
             mo = re.match(r"^#define\s+(\w+)\s+(\d+)$", line)
             if not mo and line.strip():
-                print("%s(%s): can't parse %s" % (filename, lineno, line.strip()))
+                print(f"{filename}({lineno}): can't parse {line.strip()}")
             else:
                 symbol, number = mo.groups()
                 number = int(number)
@@ -109,9 +109,9 @@ class Converter(grammar.Grammar):
 
         """
         try:
-            f = open(filename)
+            f = open(filename)  # noqa: SIM115
         except OSError as err:
-            print("Can't open %s: %s" % (filename, err))
+            print(f"Can't open {filename}: {err}")
             return False
         # The code below essentially uses f's iterator-ness!
         lineno = 0

@@ -110,7 +110,7 @@ def replace_stdout():
         # and ValueError on a closed stream.
         return
 
-    sys.stdout = open(
+    sys.stdout = open(  # noqa: SIM115
         fd,
         "w",
         encoding=stdout.encoding,

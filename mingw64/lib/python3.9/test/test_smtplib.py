@@ -44,13 +44,13 @@ def server(evt, buf, serv):
     serv.listen()
     evt.set()
     try:
-        conn, addr = serv.accept()
+        conn, _addr = serv.accept()
     except TimeoutError:
         pass
     else:
         n = 500
         while buf and n > 0:
-            r, w, e = select.select([], [conn], [])
+            _r, w, _e = select.select([], [conn], [])
             if w:
                 sent = conn.send(buf)
                 buf = buf[sent:]
@@ -94,7 +94,7 @@ class GeneralTests:
     def testBasic2(self):
         mock_socket.reply_with(b"220 Hola mundo")
         # connects, include port in host name
-        client = self.client("%s:%s" % (HOST, self.port))
+        client = self.client(f"{HOST}:{self.port}")
         client.close()
 
     def testLocalHostName(self):
@@ -308,7 +308,7 @@ class DebuggingServerTests(unittest.TestCase):
             smtp.quit()
         except OSError as e:
             if e.errno == errno.EADDRINUSE:
-                self.skipTest("couldn't bind to source port %d" % src_port)
+                self.skipTest("couldn't bind to source port %d" % src_port)  # noqa: UP031
             raise
 
     def testNOOP(self):
@@ -441,7 +441,7 @@ class DebuggingServerTests(unittest.TestCase):
         self.client_evt.set()
         self.serv_evt.wait()
         self.output.flush()
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m, MSG_END)
+        mexpect = f"{MSG_BEGIN}{m}\n{MSG_END}"
         self.assertEqual(self.output.getvalue(), mexpect)
 
     def testSendBinary(self):
@@ -461,7 +461,7 @@ class DebuggingServerTests(unittest.TestCase):
         self.client_evt.set()
         self.serv_evt.wait()
         self.output.flush()
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.decode("ascii"), MSG_END)
+        mexpect = "{}{}\n{}".format(MSG_BEGIN, m.decode("ascii"), MSG_END)
         self.assertEqual(self.output.getvalue(), mexpect)
 
     def testSendNeedingDotQuote(self):
@@ -482,7 +482,7 @@ class DebuggingServerTests(unittest.TestCase):
         self.client_evt.set()
         self.serv_evt.wait()
         self.output.flush()
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m, MSG_END)
+        mexpect = f"{MSG_BEGIN}{m}\n{MSG_END}"
         self.assertEqual(self.output.getvalue(), mexpect)
 
     def test_issue43124_escape_localhostname(self):
@@ -556,7 +556,7 @@ class DebuggingServerTests(unittest.TestCase):
         self.client_evt.set()
         self.serv_evt.wait()
         self.output.flush()
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m, MSG_END)
+        mexpect = f"{MSG_BEGIN}{m}\n{MSG_END}"
         self.assertEqual(self.output.getvalue(), mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile("^sender: <>$", re.MULTILINE)
@@ -585,7 +585,7 @@ class DebuggingServerTests(unittest.TestCase):
         # not always the same as socket.gethostbyname(HOST). :(
         test_output = self.get_output_without_xpeer()
         del m["X-Peer"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
 
     def testSendMessageWithAddresses(self):
@@ -619,7 +619,7 @@ class DebuggingServerTests(unittest.TestCase):
         del m["X-Peer"]
         # The Bcc header should not be transmitted.
         del m["Bcc"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile("^sender: foo@bar.com$", re.MULTILINE)
@@ -657,7 +657,7 @@ class DebuggingServerTests(unittest.TestCase):
         # Remove the X-Peer header that DebuggingServer adds.
         test_output = self.get_output_without_xpeer()
         del m["X-Peer"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile("^sender: foo@bar.com$", re.MULTILINE)
@@ -689,7 +689,7 @@ class DebuggingServerTests(unittest.TestCase):
         # Remove the X-Peer header that DebuggingServer adds.
         test_output = self.get_output_without_xpeer()
         del m["X-Peer"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile("^sender: joe@example.com$", re.MULTILINE)
@@ -724,7 +724,7 @@ class DebuggingServerTests(unittest.TestCase):
         # Remove the X-Peer header that DebuggingServer adds.
         test_output = self.get_output_without_xpeer()
         del m["X-Peer"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile(
@@ -766,7 +766,7 @@ class DebuggingServerTests(unittest.TestCase):
         # Remove the X-Peer header that DebuggingServer adds.
         test_output = self.get_output_without_xpeer()
         del m["X-Peer"]
-        mexpect = "%s%s\n%s" % (MSG_BEGIN, m.as_string(), MSG_END)
+        mexpect = f"{MSG_BEGIN}{m.as_string()}\n{MSG_END}"
         self.assertEqual(test_output, mexpect)
         debugout = smtpd.DEBUGSTREAM.getvalue()
         sender = re.compile("^sender: holy@grail.net$", re.MULTILINE)
@@ -951,7 +951,7 @@ class SimSMTPChannel(smtpd.SMTPChannel):
                 self.auth_object(line)
             except ResponseException as e:
                 self.smtp_state = self.COMMAND
-                self.push("%s %s" % (e.smtp_code, e.smtp_error))
+                self.push(f"{e.smtp_code} {e.smtp_error}")
             return
         super().found_terminator()
 
@@ -969,7 +969,7 @@ class SimSMTPChannel(smtpd.SMTPChannel):
         if len(args) not in [1, 2]:
             self.push("501 Syntax: AUTH <mechanism> [initial-response]")
             return
-        auth_object_name = "_auth_%s" % args[0].lower().replace("-", "_")
+        auth_object_name = "_auth_{}".format(args[0].lower().replace("-", "_"))
         try:
             self.auth_object = getattr(self, auth_object_name)
         except AttributeError:
@@ -1063,9 +1063,9 @@ class SimSMTPChannel(smtpd.SMTPChannel):
     def smtp_VRFY(self, arg):
         # For max compatibility smtplib should be sending the raw address.
         if arg in sim_users:
-            self.push("250 %s %s" % (sim_users[arg], smtplib.quoteaddr(arg)))
+            self.push(f"250 {sim_users[arg]} {smtplib.quoteaddr(arg)}")
         else:
-            self.push("550 No such user: %s" % arg)
+            self.push(f"550 No such user: {arg}")
 
     def smtp_EXPN(self, arg):
         list_name = arg.lower()
@@ -1074,9 +1074,9 @@ class SimSMTPChannel(smtpd.SMTPChannel):
             for n, user_email in enumerate(user_list):
                 quoted_addr = smtplib.quoteaddr(user_email)
                 if n < len(user_list) - 1:
-                    self.push("250-%s %s" % (sim_users[user_email], quoted_addr))
+                    self.push(f"250-{sim_users[user_email]} {quoted_addr}")
                 else:
-                    self.push("250 %s %s" % (sim_users[user_email], quoted_addr))
+                    self.push(f"250 {sim_users[user_email]} {quoted_addr}")
         else:
             self.push("550 No access for you!")
 
@@ -1113,7 +1113,7 @@ class SimSMTPChannel(smtpd.SMTPChannel):
             self.push(self.data_response)
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
 
 class SimSMTPServer(smtpd.SMTPServer):
@@ -1137,7 +1137,7 @@ class SimSMTPServer(smtpd.SMTPServer):
         self._extra_features.append(feature)
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
 
 # Test various SMTP & ESMTP commands/behaviors that require a simulated server
@@ -1220,12 +1220,12 @@ class SMTPSimTests(unittest.TestCase):
         for addr_spec, name in sim_users.items():
             expected_known = (
                 250,
-                bytes("%s %s" % (name, smtplib.quoteaddr(addr_spec)), "ascii"),
+                bytes(f"{name} {smtplib.quoteaddr(addr_spec)}", "ascii"),
             )
             self.assertEqual(smtp.vrfy(addr_spec), expected_known)
 
         u = "nobody@nowhere.com"
-        expected_unknown = (550, ("No such user: %s" % u).encode("ascii"))
+        expected_unknown = (550, (f"No such user: {u}").encode("ascii"))
         self.assertEqual(smtp.vrfy(u), expected_unknown)
         smtp.quit()
 
@@ -1240,7 +1240,7 @@ class SMTPSimTests(unittest.TestCase):
         for listname, members in sim_lists.items():
             users = []
             for m in members:
-                users.append("%s %s" % (sim_users[m], smtplib.quoteaddr(m)))
+                users.append(f"{sim_users[m]} {smtplib.quoteaddr(m)}")
             expected_known = (250, bytes("\n".join(users), "ascii"))
             self.assertEqual(smtp.expn(listname), expected_known)
 
@@ -1316,7 +1316,7 @@ class SMTPSimTests(unittest.TestCase):
             smtp.user, smtp.password = sim_auth
             smtp.ehlo("test_auth_buggy")
             expect = r"^Server AUTH mechanism infinite loop.*"
-            with self.assertRaisesRegex(smtplib.SMTPException, expect) as cm:
+            with self.assertRaisesRegex(smtplib.SMTPException, expect):
                 smtp.auth("BUGGY", auth_buggy, initial_response_ok=False)
         finally:
             smtp.close()
@@ -1380,7 +1380,7 @@ class SMTPSimTests(unittest.TestCase):
             local_hostname="localhost",
             timeout=support.LOOPBACK_TIMEOUT,
         )
-        code, message = smtp.ehlo()
+        code, _message = smtp.ehlo()
         self.assertEqual(code, 250)
         self.assertIn("size", smtp.esmtp_features)
         smtp.quit()
@@ -1393,7 +1393,7 @@ class SMTPSimTests(unittest.TestCase):
 
     def test_with_statement(self):
         with smtplib.SMTP(HOST, self.port) as smtp:
-            code, message = smtp.noop()
+            code, _message = smtp.noop()
             self.assertEqual(code, 250)
         self.assertRaises(smtplib.SMTPServerDisconnected, smtp.send, b"foo")
         with smtplib.SMTP(HOST, self.port) as smtp:
@@ -1401,7 +1401,7 @@ class SMTPSimTests(unittest.TestCase):
         self.assertRaises(smtplib.SMTPServerDisconnected, smtp.send, b"foo")
 
     def test_with_statement_QUIT_failure(self):
-        with self.assertRaises(smtplib.SMTPResponseException) as error:
+        with self.assertRaises(smtplib.SMTPResponseException) as error:  # noqa: SIM117
             with smtplib.SMTP(HOST, self.port) as smtp:
                 smtp.noop()
                 self.serv._SMTPchannel.quit_response = "421 QUIT FAILED"
@@ -1709,13 +1709,12 @@ class SimSMTPAUTHInitialResponseChannel(SimSMTPChannel):
         # Not all AUTH methods support this; some require a challenge.  AUTH
         # PLAIN does those, so test that here.  See issue #15014.
         args = arg.split()
-        if args[0].lower() == "plain":
-            if len(args) == 2:
-                # AUTH PLAIN <initial-response> with the response base 64
-                # encoded.  Hard code the expected response for the test.
-                if args[1] == EXPECTED_RESPONSE:
-                    self.push("235 Ok")
-                    return
+        if args[0].lower() == "plain" and len(args) == 2:  # noqa: SIM102
+            # AUTH PLAIN <initial-response> with the response base 64
+            # encoded.  Hard code the expected response for the test.
+            if args[1] == EXPECTED_RESPONSE:
+                self.push("235 Ok")
+                return
         self.push("571 Bad authentication")
 
 
@@ -1776,7 +1775,7 @@ class SMTPAUTHInitialResponseSimTests(unittest.TestCase):
         )
         smtp.user = "psu"
         smtp.password = "doesnotexist"
-        code, response = smtp.auth("plain", smtp.auth_plain)
+        code, _response = smtp.auth("plain", smtp.auth_plain)
         smtp.close()
         self.assertEqual(code, 235)
 

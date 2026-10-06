@@ -183,13 +183,12 @@ class VariableReference(BaseReference):
                 result["indexedVariables"] = num_children
             else:
                 result["namedVariables"] = num_children
-        if client_bool_capability("supportsMemoryReferences"):
-            if (
-                self._value.type.strip_typedefs().code == gdb.TYPE_CODE_PTR
-                and not self._value.is_optimized_out
-                and not self._value.is_unavailable
-            ):
-                result["memoryReference"] = hex(int(self._value))
+        if client_bool_capability("supportsMemoryReferences") and (
+            self._value.type.strip_typedefs().code == gdb.TYPE_CODE_PTR
+            and not self._value.is_optimized_out
+            and not self._value.is_unavailable
+        ):
+            result["memoryReference"] = hex(int(self._value))
         if client_bool_capability("supportsVariableType"):
             result["type"] = str(self._value.type)
         return result

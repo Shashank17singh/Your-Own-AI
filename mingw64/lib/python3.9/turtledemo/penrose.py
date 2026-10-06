@@ -150,7 +150,7 @@ def test(l=200, n=4, fun=sun, startpos=(0, 0), th=2):
     tracer(1)
     nk = len([x for x in tiledict if tiledict[x]])
     nd = len([x for x in tiledict if not tiledict[x]])
-    print("%d kites and %d darts = %d pieces." % (nk, nd, nk + nd))
+    print("%d kites and %d darts = %d pieces." % (nk, nd, nk + nd))  # noqa: UP031
 
 
 def demo(fun=sun):

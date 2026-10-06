@@ -28,7 +28,7 @@ class Test_iskeyword(unittest.TestCase):
             all_keywords.discard("__peg_parser__")
         for key in all_keywords:
             with self.assertRaises(SyntaxError):
-                exec(f"{key} = 42")
+                exec(f"{key} = 42")  # noqa: S102
 
     def test_async_and_await_are_keywords(self):
         self.assertIn("async", keyword.kwlist)

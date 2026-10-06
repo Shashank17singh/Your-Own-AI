@@ -101,7 +101,7 @@ class ResourceTracker:
             fds_to_pass = []
             try:
                 fds_to_pass.append(sys.stderr.fileno())
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             cmd = "from multiprocessing.resource_tracker import main;main(%d)"
             r, w = os.pipe()
@@ -181,7 +181,7 @@ def main(fd):
     for f in (sys.stdin, sys.stdout):
         try:
             f.close()
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
 
     cache = {rtype: set() for rtype in _CLEANUP_FUNCS}
@@ -205,11 +205,11 @@ def main(fd):
                     elif cmd == "PROBE":
                         pass
                     else:
-                        raise RuntimeError("unrecognized command %r" % cmd)
-                except Exception:
+                        raise RuntimeError(f"unrecognized command {cmd!r}")
+                except Exception:  # noqa: BLE001
                     try:
                         sys.excepthook(*sys.exc_info())
-                    except:
+                    except:  # noqa: E722, S110
                         pass
     finally:
         # all processes have terminated; cleanup any remaining resources
@@ -217,11 +217,11 @@ def main(fd):
             if rtype_cache:
                 try:
                     warnings.warn(
-                        "resource_tracker: There appear to be %d "
+                        "resource_tracker: There appear to be %d "  # noqa: UP031
                         "leaked %s objects to clean up at shutdown"
                         % (len(rtype_cache), rtype)
                     )
-                except Exception:
+                except Exception:  # noqa: BLE001, S110
                     pass
             for name in rtype_cache:
                 # For some reason the process which created and registered this
@@ -230,7 +230,7 @@ def main(fd):
                 try:
                     try:
                         _CLEANUP_FUNCS[rtype](name)
-                    except Exception as e:
-                        warnings.warn("resource_tracker: %r: %s" % (name, e))
+                    except Exception as e:  # noqa: BLE001
+                        warnings.warn(f"resource_tracker: {name!r}: {e}")
                 finally:
                     pass

@@ -220,7 +220,7 @@ def itn(n, digits=8, format=DEFAULT_FORMAT):
     # number.
     n = int(n)
     if 0 <= n < 8 ** (digits - 1):
-        s = bytes("%0*o" % (digits - 1, n), "ascii") + NUL
+        s = bytes("%0*o" % (digits - 1, n), "ascii") + NUL  # noqa: UP031
     elif format == GNU_FORMAT and -(256 ** (digits - 1)) <= n < 256 ** (digits - 1):
         if n >= 0:
             s = bytearray([0o200])
@@ -428,7 +428,7 @@ class _Stream:
                     self.cmp = lzma.LZMACompressor()
 
             elif comptype != "tar":
-                raise CompressionError("unknown compression type %r" % comptype)
+                raise CompressionError(f"unknown compression type {comptype!r}")
 
         except:
             if not self._extfileobj:
@@ -648,7 +648,7 @@ class _FileInFile:
         self.map = []
         lastpos = 0
         realpos = self.offset
-        for offset, size in blockinfo:
+        for offset, size in blockinfo:  # noqa: PLR1704
             if offset > lastpos:
                 self.map.append((False, lastpos, offset, None))
             self.map.append((True, offset, offset + size, realpos))
@@ -752,38 +752,38 @@ class TarInfo:
     usually created internally.
     """
 
-    __slots__ = dict(
-        name="Name of the archive member.",
-        mode="Permission bits.",
-        uid="User ID of the user who originally stored this member.",
-        gid="Group ID of the user who originally stored this member.",
-        size="Size in bytes.",
-        mtime="Time of last modification.",
-        chksum="Header checksum.",
-        type=(
+    __slots__ = {  # noqa: RUF023
+        "name": "Name of the archive member.",
+        "mode": "Permission bits.",
+        "uid": "User ID of the user who originally stored this member.",
+        "gid": "Group ID of the user who originally stored this member.",
+        "size": "Size in bytes.",
+        "mtime": "Time of last modification.",
+        "chksum": "Header checksum.",
+        "type": (
             "File type. type is usually one of these constants: "
             "REGTYPE, AREGTYPE, LNKTYPE, SYMTYPE, DIRTYPE, FIFOTYPE, "
             "CONTTYPE, CHRTYPE, BLKTYPE, GNUTYPE_SPARSE."
         ),
-        linkname=(
+        "linkname": (
             "Name of the target file name, which is only present "
             "in TarInfo objects of type LNKTYPE and SYMTYPE."
         ),
-        uname="User name.",
-        gname="Group name.",
-        devmajor="Device major number.",
-        devminor="Device minor number.",
-        offset="The tar header starts here.",
-        offset_data="The file's data starts here.",
-        pax_headers=(
+        "uname": "User name.",
+        "gname": "Group name.",
+        "devmajor": "Device major number.",
+        "devminor": "Device minor number.",
+        "offset": "The tar header starts here.",
+        "offset_data": "The file's data starts here.",
+        "pax_headers": (
             "A dictionary containing key-value pairs of an "
             "associated pax extended header."
         ),
-        sparse="Sparse member information.",
-        tarfile=None,
-        _sparse_structs=None,
-        _link_target=None,
-    )
+        "sparse": "Sparse member information.",
+        "tarfile": None,
+        "_sparse_structs": None,
+        "_link_target": None,
+    }
 
     def __init__(self, name=""):
         """Construct a TarInfo object. name is the optional name
@@ -828,7 +828,7 @@ class TarInfo:
         self.linkname = linkname
 
     def __repr__(self):
-        return "<%s %r at %#x>" % (self.__class__.__name__, self.name, id(self))
+        return f"<{self.__class__.__name__} {self.name!r} at {id(self):#x}>"
 
     def get_info(self):
         """Return the TarInfo's attributes as a dictionary."""
@@ -1002,9 +1002,9 @@ class TarInfo:
             stn(info.get("prefix", ""), 155, encoding, errors),
         ]
 
-        buf = struct.pack("%ds" % BLOCKSIZE, b"".join(parts))
+        buf = struct.pack("%ds" % BLOCKSIZE, b"".join(parts))  # noqa: UP031
         chksum = calc_chksums(buf[-BLOCKSIZE:])[0]
-        buf = buf[:-364] + bytes("%06o\0" % chksum, "ascii") + buf[-357:]
+        buf = buf[:-364] + bytes(f"{chksum:06o}\0", "ascii") + buf[-357:]
         return buf
 
     @staticmethod
@@ -1012,7 +1012,7 @@ class TarInfo:
         """Return the string payload filled with zero bytes
         up to the next 512 byte border.
         """
-        blocks, remainder = divmod(len(payload), BLOCKSIZE)
+        _blocks, remainder = divmod(len(payload), BLOCKSIZE)
         if remainder > 0:
             payload += (BLOCKSIZE - remainder) * NUL
         return payload
@@ -1525,7 +1525,7 @@ class TarFile:
                 # Create nonexistent files in append mode.
                 self.mode = "w"
                 self._mode = "wb"
-            fileobj = bltn_open(name, self._mode)
+            fileobj = bltn_open(name, self._mode)  # noqa: SIM115
             self._extfileobj = False
         else:
             if (
@@ -1683,7 +1683,7 @@ class TarFile:
             if comptype in cls.OPEN_METH:
                 func = getattr(cls, cls.OPEN_METH[comptype])
             else:
-                raise CompressionError("unknown compression type %r" % comptype)
+                raise CompressionError(f"unknown compression type {comptype!r}")
             return func(name, filemode, fileobj, **kwargs)
 
         elif "|" in mode:
@@ -1789,7 +1789,7 @@ class TarFile:
         except ImportError:
             raise CompressionError("lzma module is not available")
 
-        fileobj = LZMAFile(fileobj or name, mode, preset=preset)
+        fileobj = LZMAFile(fileobj or name, mode, preset=preset)  # noqa: SIM115
 
         try:
             t = cls.taropen(name, mode, fileobj, **kwargs)
@@ -1805,7 +1805,7 @@ class TarFile:
         return t
 
     # All *open() methods are registered here.
-    OPEN_METH = {
+    OPEN_METH = {  # noqa: RUF012
         "tar": "taropen",  # uncompressed tar
         "gz": "gzopen",  # gzip compressed tar
         "bz2": "bz2open",  # bzip2 compressed tar
@@ -1829,7 +1829,7 @@ class TarFile:
                 self.offset += BLOCKSIZE * 2
                 # fill up the end with zero-blocks
                 # (like option -b20 for tar does)
-                blocks, remainder = divmod(self.offset, RECORDSIZE)
+                _blocks, remainder = divmod(self.offset, RECORDSIZE)
                 if remainder > 0:
                     self.fileobj.write(NUL * (RECORDSIZE - remainder))
         finally:
@@ -1844,7 +1844,7 @@ class TarFile:
         """
         tarinfo = self._getmember(name)
         if tarinfo is None:
-            raise KeyError("filename %r not found" % name)
+            raise KeyError(f"filename {name!r} not found")
         return tarinfo
 
     def getmembers(self):
@@ -1884,7 +1884,7 @@ class TarFile:
         # Absolute paths are turned to relative paths.
         if arcname is None:
             arcname = name
-        drv, arcname = os.path.splitdrive(arcname)
+        _drv, arcname = os.path.splitdrive(arcname)
         arcname = arcname.replace(os.sep, "/")
         arcname = arcname.lstrip("/")
 
@@ -1960,7 +1960,7 @@ class TarFile:
             except KeyError:
                 pass
 
-        if type in (CHRTYPE, BLKTYPE):
+        if type in (CHRTYPE, BLKTYPE):  # noqa: SIM102
             if hasattr(os, "major") and hasattr(os, "minor"):
                 tarinfo.devmajor = os.major(statres.st_rdev)
                 tarinfo.devminor = os.minor(statres.st_rdev)
@@ -1980,17 +1980,16 @@ class TarFile:
             if verbose:
                 _safe_print(stat.filemode(tarinfo.mode))
                 _safe_print(
-                    "%s/%s"
-                    % (tarinfo.uname or tarinfo.uid, tarinfo.gname or tarinfo.gid)
+                    f"{tarinfo.uname or tarinfo.uid}/{tarinfo.gname or tarinfo.gid}"
                 )
                 if tarinfo.ischr() or tarinfo.isblk():
                     _safe_print(
-                        "%10s" % ("%d,%d" % (tarinfo.devmajor, tarinfo.devminor))
+                        "%10s" % ("%d,%d" % (tarinfo.devmajor, tarinfo.devminor))  # noqa: UP031
                     )
                 else:
-                    _safe_print("%10d" % tarinfo.size)
+                    _safe_print("%10d" % tarinfo.size)  # noqa: UP031
                 _safe_print(
-                    "%d-%02d-%02d %02d:%02d:%02d" % time.localtime(tarinfo.mtime)[:6]
+                    "%d-%02d-%02d %02d:%02d:%02d" % time.localtime(tarinfo.mtime)[:6]  # noqa: UP031
                 )
 
             _safe_print(tarinfo.name + ("/" if tarinfo.isdir() else ""))
@@ -2019,7 +2018,7 @@ class TarFile:
 
         # Skip if somebody tries to archive the archive...
         if self.name is not None and os.path.abspath(name) == self.name:
-            self._dbg(2, "tarfile: Skipped %r" % name)
+            self._dbg(2, f"tarfile: Skipped {name!r}")
             return
 
         self._dbg(1, name)
@@ -2028,14 +2027,14 @@ class TarFile:
         tarinfo = self.gettarinfo(name, arcname)
 
         if tarinfo is None:
-            self._dbg(1, "tarfile: Unsupported type %r" % name)
+            self._dbg(1, f"tarfile: Unsupported type {name!r}")
             return
 
         # Change or exclude the TarInfo object.
         if filter is not None:
             tarinfo = filter(tarinfo)
             if tarinfo is None:
-                self._dbg(2, "tarfile: Excluded %r" % name)
+                self._dbg(2, f"tarfile: Excluded {name!r}")
                 return
 
         # Append the tar header and data to the archive.
@@ -2124,7 +2123,7 @@ class TarFile:
                 if self.errorlevel > 1:
                     raise
                 else:
-                    self._dbg(1, "tarfile: %s" % e)
+                    self._dbg(1, f"tarfile: {e}")
 
     def extract(self, member, path="", set_attrs=True, *, numeric_owner=False):
         """Extract a member from the archive to the current working directory,
@@ -2158,14 +2157,14 @@ class TarFile:
                 raise
             else:
                 if e.filename is None:
-                    self._dbg(1, "tarfile: %s" % e.strerror)
+                    self._dbg(1, f"tarfile: {e.strerror}")
                 else:
-                    self._dbg(1, "tarfile: %s %r" % (e.strerror, e.filename))
+                    self._dbg(1, f"tarfile: {e.strerror} {e.filename!r}")
         except ExtractError as e:
             if self.errorlevel > 1:
                 raise
             else:
-                self._dbg(1, "tarfile: %s" % e)
+                self._dbg(1, f"tarfile: {e}")
 
     def extractfile(self, member):
         """Extract a member from the archive as a file object. `member' may be
@@ -2217,7 +2216,7 @@ class TarFile:
             os.makedirs(upperdirs)
 
         if tarinfo.islnk() or tarinfo.issym():
-            self._dbg(1, "%s -> %s" % (tarinfo.name, tarinfo.linkname))
+            self._dbg(1, f"{tarinfo.name} -> {tarinfo.linkname}")
         else:
             self._dbg(1, tarinfo.name)
 
@@ -2278,7 +2277,7 @@ class TarFile:
         self.makefile(tarinfo, targetpath)
         self._dbg(
             1,
-            "tarfile: Unknown file type %r, extracted as regular file." % tarinfo.type,
+            f"tarfile: Unknown file type {tarinfo.type!r}, extracted as regular file.",
         )
 
     def makefifo(self, tarinfo, targetpath):
@@ -2395,12 +2394,12 @@ class TarFile:
                 tarinfo = self.tarinfo.fromtarfile(self)
             except EOFHeaderError as e:
                 if self.ignore_zeros:
-                    self._dbg(2, "0x%X: %s" % (self.offset, e))
+                    self._dbg(2, f"0x{self.offset:X}: {e}")
                     self.offset += BLOCKSIZE
                     continue
             except InvalidHeaderError as e:
                 if self.ignore_zeros:
-                    self._dbg(2, "0x%X: %s" % (self.offset, e))
+                    self._dbg(2, f"0x{self.offset:X}: {e}")
                     self.offset += BLOCKSIZE
                     continue
                 elif self.offset == 0:
@@ -2463,9 +2462,9 @@ class TarFile:
         corresponds to TarFile's mode.
         """
         if self.closed:
-            raise OSError("%s is closed" % self.__class__.__name__)
+            raise OSError(f"{self.__class__.__name__} is closed")
         if mode is not None and self.mode not in mode:
-            raise OSError("bad operation for mode %r" % self.mode)
+            raise OSError(f"bad operation for mode {self.mode!r}")
 
     def _find_link_target(self, tarinfo):
         """Find the target member of a symlink or hardlink member in the
@@ -2485,7 +2484,7 @@ class TarFile:
 
         member = self._getmember(linkname, tarinfo=limit, normalize=True)
         if member is None:
-            raise KeyError("linkname %r not found" % linkname)
+            raise KeyError(f"linkname {linkname!r} not found")
         return member
 
     def __iter__(self):

@@ -176,7 +176,7 @@ class SearchDialogBase:
             command=command,
             default=isdef and "active" or "normal",
         )
-        cols, rows = self.buttonframe.grid_size()
+        _cols, rows = self.buttonframe.grid_size()
         b.grid(pady=1, row=rows, column=0, sticky="ew")
         self.buttonframe.grid(rowspan=rows + 1)
         return b
@@ -201,8 +201,8 @@ class _searchbase(SearchDialogBase):  # htest #
         self.engine = searchengine.get(parent)
         self.create_widgets()
         print(parent.geometry())
-        width, height, x, y = list(map(int, re.split("[x+]", parent.geometry())))
-        self.top.geometry("+%d+%d" % (x + 40, y + 175))
+        _width, _height, x, y = list(map(int, re.split("[x+]", parent.geometry())))
+        self.top.geometry("+%d+%d" % (x + 40, y + 175))  # noqa: UP031
 
     def default_command(self, dummy):
         pass

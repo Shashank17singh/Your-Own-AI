@@ -67,12 +67,13 @@ It is returned in place of lists of (ctext/quoted-pair) and
 XXX: provide complete list of token types.
 """
 
+import functools
 import re
 import sys
 import urllib  # For urllib.parse.unquote
 from email import _encoded_words as _ew
 from email import errors, utils
-from operator import itemgetter
+from operator import iadd, itemgetter
 from string import hexdigits
 
 #
@@ -262,7 +263,8 @@ class Comment(WhiteSpaceTokenList):
 
     def __str__(self):
         return "".join(
-            sum(
+            functools.reduce(
+                iadd,
                 [
                     ["("],
                     [self.quote(x) for x in self],
@@ -295,11 +297,15 @@ class AddressList(TokenList):
 
     @property
     def mailboxes(self):
-        return sum((x.mailboxes for x in self if x.token_type == "address"), [])
+        return functools.reduce(
+            iadd, (x.mailboxes for x in self if x.token_type == "address"), []
+        )
 
     @property
     def all_mailboxes(self):
-        return sum((x.all_mailboxes for x in self if x.token_type == "address"), [])
+        return functools.reduce(
+            iadd, (x.all_mailboxes for x in self if x.token_type == "address"), []
+        )
 
 
 class Address(TokenList):
@@ -649,9 +655,9 @@ class Parameter(TokenList):
             if token.token_type == "value":
                 return token.stripped_value
             if token.token_type == "quoted-string":
-                for token in token:
+                for token in token:  # noqa: B020
                     if token.token_type == "bare-quoted-string":
-                        for token in token:
+                        for token in token:  # noqa: B020
                             if token.token_type == "value":
                                 return token.stripped_value
         return ""
@@ -719,7 +725,7 @@ class MimeParameters(TokenList):
             # Our arbitrary error recovery is to ignore duplicate parameters,
             # to use appearance order if there are duplicate rfc 2231 parts,
             # and to ignore gaps.  This mimics the error recovery of get_param.
-            if not first_param.extended and len(parts) > 1:
+            if not first_param.extended and len(parts) > 1:  # noqa: SIM102
                 if parts[1][0] == 0:
                     parts[1][1].defects.append(
                         errors.InvalidHeaderDefect(
@@ -1111,7 +1117,7 @@ def get_unstructured(value):
                 pass
             else:
                 have_ws = True
-                if len(unstructured) > 0:
+                if len(unstructured) > 0:  # noqa: SIM102
                     if unstructured[-1].token_type != "fws":
                         unstructured.defects.append(
                             errors.InvalidHeaderDefect(
@@ -1119,7 +1125,7 @@ def get_unstructured(value):
                             )
                         )
                         have_ws = False
-                if have_ws and len(unstructured) > 1:
+                if have_ws and len(unstructured) > 1:  # noqa: SIM102
                     if unstructured[-2].token_type == "encoded-word":
                         unstructured[-1] = EWWhiteSpaceTerminal(unstructured[-1], "fws")
                 unstructured.append(token)
@@ -1219,14 +1225,17 @@ def get_bare_quoted_string(value):
                 token, value = get_qcontent(value)
             # Collapse the whitespace between two encoded words that occur in a
             # bare-quoted-string.
-            if valid_ew and len(bare_quoted_string) > 1:
-                if (
+            if (
+                valid_ew
+                and len(bare_quoted_string) > 1
+                and (
                     bare_quoted_string[-1].token_type == "fws"
                     and bare_quoted_string[-2].token_type == "encoded-word"
-                ):
-                    bare_quoted_string[-1] = EWWhiteSpaceTerminal(
-                        bare_quoted_string[-1], "fws"
-                    )
+                )
+            ):
+                bare_quoted_string[-1] = EWWhiteSpaceTerminal(
+                    bare_quoted_string[-1], "fws"
+                )
         else:
             token, value = get_qcontent(value)
         bare_quoted_string.append(token)
@@ -2500,7 +2509,6 @@ def get_parameter(value):
         raise errors.HeaderParseError("Parameter not followed by '='")
     param.append(ValueTerminal("=", "parameter-separator"))
     value = value[1:]
-    leader = None
     if value and value[0] in CFWS_LEADER:
         token, value = get_cfws(value)
         param.append(token)
@@ -2523,7 +2531,7 @@ def get_parameter(value):
         else:
             try:
                 token, rest = get_extended_attrtext(inner_value)
-            except:
+            except:  # noqa: E722, S110
                 pass
             else:
                 if not rest:
@@ -2579,7 +2587,7 @@ def get_parameter(value):
             for t in token:
                 if t.token_type == "extended-attrtext":
                     break
-            t.token_type == "attrtext"
+            t.token_type == "attrtext"  # noqa: B015
             appendto.append(t)
             param.charset = t.value
         if value[0] != "'":
@@ -2701,7 +2709,6 @@ def parse_content_type_header(value):
     don't do that.
     """
     ctype = ContentType()
-    recover = False
     if not value:
         ctype.defects.append(
             errors.HeaderMissingRequiredValue("Missing content type specification")

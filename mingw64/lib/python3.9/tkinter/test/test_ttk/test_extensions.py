@@ -144,9 +144,9 @@ class LabeledScaleTest(AbstractTkTest, unittest.TestCase):
         width_new, height_new = width * 2, height * 2
         x.value = 3
         x.update()
-        x.master.wm_geometry("%dx%d" % (width_new, height_new))
+        x.master.wm_geometry("%dx%d" % (width_new, height_new))  # noqa: UP031
         self.assertEqual(int(x.label.place_info()["x"]), x.scale.coords()[0])
-        x.master.wm_geometry("%dx%d" % (width, height))
+        x.master.wm_geometry("%dx%d" % (width, height))  # noqa: UP031
         x.destroy()
 
 
@@ -216,7 +216,7 @@ class OptionMenuTest(AbstractTkTest, unittest.TestCase):
             self.assertEqual(item, items[1])
             success.append(True)
 
-        optmenu = ttk.OptionMenu(self.root, self.textvar, "a", command=cb_test, *items)
+        optmenu = ttk.OptionMenu(self.root, self.textvar, "a", command=cb_test, *items)  # noqa: B026
         optmenu["menu"].invoke(1)
         if not success:
             self.fail("Menu callback not invoked")

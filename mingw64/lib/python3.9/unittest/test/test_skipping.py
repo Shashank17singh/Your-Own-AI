@@ -103,7 +103,7 @@ class Test_TestSkipping(unittest.TestCase):
 
             class Foo(unittest.TestCase):
                 def defaultTestResult(self):
-                    return LoggingResult(events)
+                    return LoggingResult(events)  # noqa: B023
 
                 @deco(do_skip, "testing")
                 def test_skip(self):

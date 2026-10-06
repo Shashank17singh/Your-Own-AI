@@ -46,7 +46,7 @@ class BaseTestBufferedProtocol(func_tests.FunctionalTestCaseMixin):
 
             conn_lost_fut = self.loop.create_future()
 
-            tr, pr = await self.loop.create_connection(
+            tr, _pr = await self.loop.create_connection(
                 lambda: ReceiveStuffProto(on_buf, conn_lost_fut), *addr
             )
 

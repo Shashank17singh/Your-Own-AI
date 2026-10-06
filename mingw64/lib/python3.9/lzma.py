@@ -152,7 +152,7 @@ class LZMAFile(_compression.BaseStream):
         if isinstance(filename, (str, bytes, os.PathLike)):
             if "b" not in mode:
                 mode += "b"
-            self._fp = builtins.open(filename, mode)
+            self._fp = builtins.open(filename, mode)  # noqa: SIM115
             self._closefp = True
             self._mode = mode_code
         elif hasattr(filename, "read") or hasattr(filename, "write"):
@@ -345,7 +345,7 @@ def open(
     """
     if "t" in mode:
         if "b" in mode:
-            raise ValueError("Invalid mode: %r" % (mode,))
+            raise ValueError(f"Invalid mode: {mode!r}")
     else:
         if encoding is not None:
             raise ValueError("Argument 'encoding' not supported in binary mode")
@@ -355,7 +355,7 @@ def open(
             raise ValueError("Argument 'newline' not supported in binary mode")
 
     lz_mode = mode.replace("t", "")
-    binary_file = LZMAFile(
+    binary_file = LZMAFile(  # noqa: SIM115
         filename, lz_mode, format=format, check=check, preset=preset, filters=filters
     )
 

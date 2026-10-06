@@ -99,13 +99,13 @@ class GeneralTest(unittest.TestCase):
     def test_print_tracebacks(self):
         # Issue #18776: the tracebacks should be printed when errors occur.
         def f():
-            1 / 0  # one
+            1 / 0  # one  # noqa: B018
 
         def g():
-            1 / 0  # two
+            1 / 0  # two  # noqa: B018
 
         def h():
-            1 / 0  # three
+            1 / 0  # three  # noqa: B018
 
         atexit.register(f)
         atexit.register(g)
@@ -231,7 +231,7 @@ class SubinterpreterTest(unittest.TestCase):
                 os.write({w:d}, b"The test has passed!")
             atexit.register(callback)
         """
-        ret = support.run_in_subinterp(code)
+        support.run_in_subinterp(code)
         os.close(w)
         self.assertEqual(os.read(r, len(expected)), expected)
         os.close(r)

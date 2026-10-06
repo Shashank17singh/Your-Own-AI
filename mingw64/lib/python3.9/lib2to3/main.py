@@ -82,8 +82,8 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
                 )
             else:
                 raise ValueError(
-                    "filename %s does not start with the "
-                    "input_base_dir %s" % (filename, self._input_base_dir)
+                    f"filename {filename} does not start with the "
+                    f"input_base_dir {self._input_base_dir}"
                 )
         if self._append_suffix:
             filename += self._append_suffix
@@ -130,12 +130,12 @@ class StdoutRefactoringTool(refactor.MultiprocessRefactoringTool):
                         for line in diff_lines:
                             print(line)
                 except UnicodeEncodeError:
-                    warn("couldn't encode %s's diff for your terminal" % (filename,))
+                    warn(f"couldn't encode {filename}'s diff for your terminal")
                     return
 
 
 def warn(msg):
-    print("WARNING: %s" % (msg,), file=sys.stderr)
+    print(f"WARNING: {msg}", file=sys.stderr)
 
 
 def main(fixer_pkg, args=None):
@@ -280,7 +280,7 @@ def main(fixer_pkg, args=None):
 
     # Initialize the refactoring tool
     avail_fixes = set(refactor.get_fixers_from_package(fixer_pkg))
-    unwanted_fixes = set(fixer_pkg + ".fix_" + fix for fix in options.nofix)
+    unwanted_fixes = {fixer_pkg + ".fix_" + fix for fix in options.nofix}
     explicit = set()
     if options.fix:
         all_present = False

@@ -21,7 +21,7 @@ try:
     del button
 except TclError as msg:
     # assuming ttk is not available
-    raise unittest.SkipTest("ttk not available: %s" % msg)
+    raise unittest.SkipTest(f"ttk not available: {msg}")
 finally:
     if root is not None:
         root.destroy()

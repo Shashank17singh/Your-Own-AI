@@ -163,7 +163,7 @@ class AbstractMemoryTests:
                 self.assertTrue(m != tp_comp(b"abcde"))
                 self.assertFalse(m == tp_comp(b"abcde1"))
                 self.assertTrue(m != tp_comp(b"abcde1"))
-            self.assertTrue(m == m)
+            self.assertTrue(m == m)  # noqa: PLR0124
             self.assertTrue(m == m[:])
             self.assertTrue(m[0:6] == m[:])
             self.assertFalse(m[0:5] == m)
@@ -176,10 +176,10 @@ class AbstractMemoryTests:
 
             # Unordered comparisons
             for c in (m, b"abcdef"):
-                self.assertRaises(TypeError, lambda: m < c)
-                self.assertRaises(TypeError, lambda: c <= m)
-                self.assertRaises(TypeError, lambda: m >= c)
-                self.assertRaises(TypeError, lambda: c > m)
+                self.assertRaises(TypeError, lambda: m < c)  # noqa: B023
+                self.assertRaises(TypeError, lambda: c <= m)  # noqa: B023
+                self.assertRaises(TypeError, lambda: m >= c)  # noqa: B023
+                self.assertRaises(TypeError, lambda: c > m)  # noqa: B023
 
     def check_attributes_with_type(self, tp):
         m = self._view(tp(self._source))
@@ -272,17 +272,17 @@ class AbstractMemoryTests:
         with check:
             len(m)
         with check:
-            m.format
+            m.format  # noqa: B018
         with check:
-            m.itemsize
+            m.itemsize  # noqa: B018
         with check:
-            m.ndim
+            m.ndim  # noqa: B018
         with check:
-            m.readonly
+            m.readonly  # noqa: B018
         with check:
-            m.shape
+            m.shape  # noqa: B018
         with check:
-            m.strides
+            m.strides  # noqa: B018
         with check, m:
             pass
         # str() and repr() still function
@@ -363,7 +363,7 @@ class AbstractMemoryTests:
             L = []
 
             def callback(wr, b=b):
-                L.append(b)
+                L.append(b)  # noqa: B023
 
             wr = weakref.ref(m, callback)
             self.assertIs(wr(), m)

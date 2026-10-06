@@ -604,7 +604,7 @@ class MathTests(unittest.TestCase):
         def testfrexp(name, result, expected):
             (mant, exp), (emant, eexp) = result, expected
             if abs(mant - emant) > eps or exp != eexp:
-                self.fail("%s returned %r, expected %r" % (name, result, expected))
+                self.fail(f"{name} returned {result!r}, expected {expected!r}")
 
         testfrexp("frexp(-1)", math.frexp(-1), (-0.5, 1))
         testfrexp("frexp(0)", math.frexp(0), (0, 0))
@@ -700,12 +700,12 @@ class MathTests(unittest.TestCase):
                 actual = math.fsum(vals)
             except OverflowError:
                 self.fail(
-                    "test %d failed: got OverflowError, expected %r "
+                    "test %d failed: got OverflowError, expected %r "  # noqa: UP031
                     "for math.fsum(%.100r)" % (i, expected, vals)
                 )
             except ValueError:
                 self.fail(
-                    "test %d failed: got ValueError, expected %r "
+                    "test %d failed: got ValueError, expected %r "  # noqa: UP031
                     "for math.fsum(%.100r)" % (i, expected, vals)
                 )
             self.assertEqual(actual, expected)
@@ -1094,8 +1094,8 @@ class MathTests(unittest.TestCase):
         self.ftest("log(1/e)", math.log(1 / math.e), -1)
         self.ftest("log(1)", math.log(1), 0)
         self.ftest("log(e)", math.log(math.e), 1)
-        self.ftest("log(32,2)", math.log(32, 2), 5)
-        self.ftest("log(10**40, 10)", math.log(10**40, 10), 40)
+        self.ftest("log(32,2)", math.log2(32), 5)
+        self.ftest("log(10**40, 10)", math.log10(10**40), 40)
         self.ftest("log(10**40, 10**20)", math.log(10**40, 10**20), 2)
         self.ftest("log(10**1000)", math.log(10**1000), 2302.5850929940457)
         self.assertRaises(ValueError, math.log, -1.5)
@@ -1156,7 +1156,7 @@ class MathTests(unittest.TestCase):
         def testmodf(name, result, expected):
             (v1, v2), (e1, e2) = result, expected
             if abs(v1 - e1) > eps or abs(v2 - e2):
-                self.fail("%s returned %r, expected %r" % (name, result, expected))
+                self.fail(f"{name} returned {result!r}, expected {expected!r}")
 
         testmodf("modf(1.5)", math.modf(1.5), (0.5, 1.0))
         testmodf("modf(-1.5)", math.modf(-1.5), (-0.5, -1.0))
@@ -1490,7 +1490,7 @@ class MathTests(unittest.TestCase):
         try:
             self.assertTrue(math.isnan(math.tan(INF)))
             self.assertTrue(math.isnan(math.tan(NINF)))
-        except:
+        except:  # noqa: E722
             self.assertRaises(ValueError, math.tan, INF)
             self.assertRaises(ValueError, math.tan, NINF)
         self.assertTrue(math.isnan(math.tan(NAN)))
@@ -1588,7 +1588,7 @@ class MathTests(unittest.TestCase):
     def test_exceptions(self):
         try:
             x = math.exp(-1000000000)
-        except:
+        except:  # noqa: E722
             # mathmodule.c is failing to weed out underflows from libm, or
             # we've got an fp format with huge dynamic range
             self.fail("underflowing exp() should not have raised an exception")
@@ -1640,7 +1640,7 @@ class MathTests(unittest.TestCase):
                 # no real versions of rect, polar
                 continue
             # Skip certain tests on OS X 10.4.
-            if osx_version is not None and osx_version < (10, 5):
+            if osx_version is not None and osx_version < (10, 5):  # noqa: SIM102
                 if id in SKIP_ON_TIGER:
                     continue
 
@@ -1821,7 +1821,7 @@ class MathTests(unittest.TestCase):
         self.assertEqual(type(prod(range(1, 10000))), int)
         self.assertEqual(type(prod(range(1, 10000), start=1.0)), float)
         self.assertEqual(
-            type(prod([1, decimal.Decimal(2.0), 3, 4, 5, 6])), decimal.Decimal
+            type(prod([1, decimal.Decimal("2.0"), 3, 4, 5, 6])), decimal.Decimal
         )
 
     def testPerm(self):
@@ -1851,10 +1851,10 @@ class MathTests(unittest.TestCase):
         # Raises TypeError if any argument is non-integer or argument count is
         # not 1 or 2
         self.assertRaises(TypeError, perm, 10, 1.0)
-        self.assertRaises(TypeError, perm, 10, decimal.Decimal(1.0))
+        self.assertRaises(TypeError, perm, 10, decimal.Decimal("1.0"))
         self.assertRaises(TypeError, perm, 10, "1")
         self.assertRaises(TypeError, perm, 10.0, 1)
-        self.assertRaises(TypeError, perm, decimal.Decimal(10.0), 1)
+        self.assertRaises(TypeError, perm, decimal.Decimal("10.0"), 1)
         self.assertRaises(TypeError, perm, "10", 1)
 
         self.assertRaises(TypeError, perm)
@@ -1919,10 +1919,10 @@ class MathTests(unittest.TestCase):
         # Raises TypeError if any argument is non-integer or argument count is
         # not 2
         self.assertRaises(TypeError, comb, 10, 1.0)
-        self.assertRaises(TypeError, comb, 10, decimal.Decimal(1.0))
+        self.assertRaises(TypeError, comb, 10, decimal.Decimal("1.0"))
         self.assertRaises(TypeError, comb, 10, "1")
         self.assertRaises(TypeError, comb, 10.0, 1)
-        self.assertRaises(TypeError, comb, decimal.Decimal(10.0), 1)
+        self.assertRaises(TypeError, comb, decimal.Decimal("10.0"), 1)
         self.assertRaises(TypeError, comb, "10", 1)
 
         self.assertRaises(TypeError, comb, 10)
@@ -2035,7 +2035,7 @@ class MathTests(unittest.TestCase):
         class F:
             def __float__(self):
                 self.converted = True
-                1 / 0
+                1 / 0  # noqa: B018
 
         for func in math.atan2, math.copysign, math.remainder:
             y = F()
@@ -2067,13 +2067,13 @@ class IsCloseTests(unittest.TestCase):
     def assertIsClose(self, a, b, *args, **kwargs):
         self.assertTrue(
             self.isclose(a, b, *args, **kwargs),
-            msg="%s and %s should be close!" % (a, b),
+            msg=f"{a} and {b} should be close!",
         )
 
     def assertIsNotClose(self, a, b, *args, **kwargs):
         self.assertFalse(
             self.isclose(a, b, *args, **kwargs),
-            msg="%s and %s should not be close!" % (a, b),
+            msg=f"{a} and {b} should not be close!",
         )
 
     def assertAllClose(self, examples, *args, **kwargs):

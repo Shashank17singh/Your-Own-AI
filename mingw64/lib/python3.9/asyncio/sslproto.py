@@ -151,7 +151,7 @@ class _SSLPipe:
         unexpected.
         """
         self._incoming.write_eof()
-        ssldata, appdata = self.feed_ssldata(b"")
+        _ssldata, appdata = self.feed_ssldata(b"")
         assert appdata == [] or appdata == [b""]
 
     def feed_ssldata(self, data, only_handshake=False):
@@ -444,7 +444,7 @@ class SSLProtocol(protocols.Protocol):
         self._sslcontext = sslcontext
         # SSL-specific extra info. More info are set when the handshake
         # completes.
-        self._extra = dict(sslcontext=sslcontext)
+        self._extra = {"sslcontext": sslcontext}
 
         # App data write buffering
         self._write_backlog = collections.deque()
@@ -540,7 +540,7 @@ class SSLProtocol(protocols.Protocol):
             ssldata, appdata = self._sslpipe.feed_ssldata(data)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             self._fatal_error(e, "SSL error in data received")
             return
 
@@ -558,7 +558,7 @@ class SSLProtocol(protocols.Protocol):
                         self._app_protocol.data_received(chunk)
                 except (SystemExit, KeyboardInterrupt):
                     raise
-                except BaseException as ex:
+                except BaseException as ex:  # noqa: BLE001
                     self._fatal_error(
                         ex, "application protocol failed to receive SSL data"
                     )
@@ -649,7 +649,7 @@ class SSLProtocol(protocols.Protocol):
             peercert = sslobj.getpeercert()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             if isinstance(exc, ssl.CertificateError):
                 msg = "SSL handshake failed on verifying the certificate"
             else:
@@ -714,7 +714,7 @@ class SSLProtocol(protocols.Protocol):
                 self._write_buffer_size -= len(data)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             if self._in_handshake:
                 # Exceptions will be re-raised in _on_handshake_complete.
                 self._on_handshake_complete(exc)

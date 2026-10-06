@@ -749,9 +749,9 @@ def get_close_matches(word, possibilities, n=3, cutoff=0.6):
     """
 
     if not n > 0:
-        raise ValueError("n must be > 0: %r" % (n,))
+        raise ValueError(f"n must be > 0: {n!r}")
     if not 0.0 <= cutoff <= 1.0:
-        raise ValueError("cutoff must be in [0.0, 1.0]: %r" % (cutoff,))
+        raise ValueError(f"cutoff must be in [0.0, 1.0]: {cutoff!r}")
     result = []
     s = SequenceMatcher()
     s.set_seq2(word)
@@ -931,14 +931,14 @@ class Differ:
             elif tag == "equal":
                 g = self._dump(" ", a, alo, ahi)
             else:
-                raise ValueError("unknown tag %r" % (tag,))
+                raise ValueError(f"unknown tag {tag!r}")
 
             yield from g
 
     def _dump(self, tag, x, lo, hi):
         """Generate comparison results for a same-tagged range."""
         for i in range(lo, hi):
-            yield "%s %s" % (tag, x[i])
+            yield f"{tag} {x[i]}"
 
     def _plain_replace(self, a, alo, ahi, b, blo, bhi):
         assert alo < ahi and blo < bhi
@@ -1041,7 +1041,7 @@ class Differ:
                     atags += " " * la
                     btags += " " * lb
                 else:
-                    raise ValueError("unknown tag %r" % (tag,))
+                    raise ValueError(f"unknown tag {tag!r}")
             yield from self._qformat(aelt, belt, atags, btags)
         else:
             # the synch pair is identical
@@ -1297,7 +1297,7 @@ def context_diff(
     """
 
     _check_types(a, b, fromfile, tofile, fromfiledate, tofiledate, lineterm)
-    prefix = dict(insert="+ ", delete="- ", replace="! ", equal="  ")
+    prefix = {"insert": "+ ", "delete": "- ", "replace": "! ", "equal": "  "}
     started = False
     for group in SequenceMatcher(None, a, b).get_grouped_opcodes(n):
         if not started:
@@ -1338,15 +1338,15 @@ def _check_types(a, b, *args):
     # because of how str.format() incorporates bytes objects.
     if a and not isinstance(a[0], str):
         raise TypeError(
-            "lines to compare must be str, not %s (%r)" % (type(a[0]).__name__, a[0])
+            f"lines to compare must be str, not {type(a[0]).__name__} ({a[0]!r})"
         )
     if b and not isinstance(b[0], str):
         raise TypeError(
-            "lines to compare must be str, not %s (%r)" % (type(b[0]).__name__, b[0])
+            f"lines to compare must be str, not {type(b[0]).__name__} ({b[0]!r})"
         )
     for arg in args:
         if not isinstance(arg, str):
-            raise TypeError("all arguments must be str, not: %r" % (arg,))
+            raise TypeError(f"all arguments must be str, not: {arg!r}")
 
 
 def diff_bytes(
@@ -1374,7 +1374,7 @@ def diff_bytes(
         try:
             return s.decode("ascii", "surrogateescape")
         except AttributeError as err:
-            msg = "all arguments must be bytes, not %s (%r)" % (type(s).__name__, s)
+            msg = f"all arguments must be bytes, not {type(s).__name__} ({s!r})"
             raise TypeError(msg) from err
 
     a = list(map(decode, a))
@@ -1469,7 +1469,7 @@ def _mdiff(fromlines, tolines, context=None, linejunk=None, charjunk=IS_CHARACTE
     # create the difference iterator to generate the differences
     diff_lines_iterator = ndiff(fromlines, tolines, linejunk, charjunk)
 
-    def _make_line(lines, format_key, side, num_lines=[0, 0]):
+    def _make_line(lines, format_key, side, num_lines=None):
         """Returns line of text with user's change markup and line formatting.
 
         lines -- list of lines from the ndiff generator to produce a line of
@@ -1492,6 +1492,8 @@ def _mdiff(fromlines, tolines, context=None, linejunk=None, charjunk=IS_CHARACTE
         that data it needs from its parent function (within whose context it
         is defined) does not need to be of module scope.
         """
+        if num_lines is None:
+            num_lines = [0, 0]
         num_lines[side] += 1
         # Handle case where no user markup is to be added, just return line of
         # text with user's line format to allow for usage of the line number.
@@ -1827,10 +1829,10 @@ class HtmlDiff:
         return (
             (
                 self._file_template
-                % dict(
-                    styles=self._styles,
-                    legend=self._legend,
-                    table=self.make_table(
+                % {
+                    "styles": self._styles,
+                    "legend": self._legend,
+                    "table": self.make_table(
                         fromlines,
                         tolines,
                         fromdesc,
@@ -1838,8 +1840,8 @@ class HtmlDiff:
                         context=context,
                         numlines=numlines,
                     ),
-                    charset=charset,
-                )
+                    "charset": charset,
+                }
             )
             .encode(charset, "xmlcharrefreplace")
             .decode(charset)
@@ -1983,8 +1985,8 @@ class HtmlDiff:
         text -- line text to be marked up
         """
         try:
-            linenum = "%d" % linenum
-            id = ' id="%s%s"' % (self._prefix[side], linenum)
+            linenum = "%d" % linenum  # noqa: UP031
+            id = f' id="{self._prefix[side]}{linenum}"'
         except TypeError:
             # handle blank lines where linenum is '>' or ''
             id = ""
@@ -1994,10 +1996,8 @@ class HtmlDiff:
         # make space non-breakable so they don't get compressed or line wrapped
         text = text.replace(" ", "&nbsp;").rstrip()
 
-        return '<td class="diff_header"%s>%s</td><td nowrap="nowrap">%s</td>' % (
-            id,
-            linenum,
-            text,
+        return (
+            f'<td class="diff_header"{id}>{linenum}</td><td nowrap="nowrap">{text}</td>'
         )
 
     def _make_prefix(self):
@@ -2005,8 +2005,8 @@ class HtmlDiff:
 
         # Generate a unique anchor prefix so multiple tables
         # can exist on the same HTML page without conflicts.
-        fromprefix = "from%d_" % HtmlDiff._default_prefix
-        toprefix = "to%d_" % HtmlDiff._default_prefix
+        fromprefix = "from%d_" % HtmlDiff._default_prefix  # noqa: UP031
+        toprefix = "to%d_" % HtmlDiff._default_prefix  # noqa: UP031
         HtmlDiff._default_prefix += 1
         # store prefixes so line format method has access
         self._prefix = [fromprefix, toprefix]
@@ -2031,11 +2031,11 @@ class HtmlDiff:
                     # (the context lines) before the change for the previous
                     # link
                     i = max([0, i - numlines])
-                    next_id[i] = ' id="difflib_chg_%s_%d"' % (toprefix, num_chg)
+                    next_id[i] = ' id="difflib_chg_%s_%d"' % (toprefix, num_chg)  # noqa: UP031
                     # at the beginning of a change, drop a link to the next
                     # change
                     num_chg += 1
-                    next_href[last] = '<a href="#difflib_chg_%s_%d">n</a>' % (
+                    next_href[last] = '<a href="#difflib_chg_%s_%d">n</a>' % (  # noqa: UP031
                         toprefix,
                         num_chg,
                     )
@@ -2054,9 +2054,9 @@ class HtmlDiff:
                 fromlist = tolist = ["<td></td><td>&nbsp;Empty File&nbsp;</td>"]
         # if not a change on first line, drop a link
         if not flaglist[0]:
-            next_href[0] = '<a href="#difflib_chg_%s_0">f</a>' % toprefix
+            next_href[0] = f'<a href="#difflib_chg_{toprefix}_0">f</a>'
         # redo the last link to link to the top
-        next_href[last] = '<a href="#difflib_chg_%s_top">t</a>' % (toprefix)
+        next_href[last] = f'<a href="#difflib_chg_{toprefix}_top">t</a>'
 
         return fromlist, tolist, flaglist, next_href, next_id
 
@@ -2129,18 +2129,20 @@ class HtmlDiff:
                     % (next_id[i], next_href[i], fromlist[i], next_href[i], tolist[i])
                 )
         if fromdesc or todesc:
-            header_row = "<thead><tr>%s%s%s%s</tr></thead>" % (
+            header_row = "<thead><tr>{}{}{}{}</tr></thead>".format(
                 '<th class="diff_next"><br /></th>',
-                '<th colspan="2" class="diff_header">%s</th>' % fromdesc,
+                f'<th colspan="2" class="diff_header">{fromdesc}</th>',
                 '<th class="diff_next"><br /></th>',
-                '<th colspan="2" class="diff_header">%s</th>' % todesc,
+                f'<th colspan="2" class="diff_header">{todesc}</th>',
             )
         else:
             header_row = ""
 
-        table = self._table_template % dict(
-            data_rows="".join(s), header_row=header_row, prefix=self._prefix[1]
-        )
+        table = self._table_template % {
+            "data_rows": "".join(s),
+            "header_row": header_row,
+            "prefix": self._prefix[1],
+        }
 
         return (
             table.replace("\0+", '<span class="diff_add">')
@@ -2179,7 +2181,7 @@ def restore(delta, which):
     try:
         tag = {1: "- ", 2: "+ "}[int(which)]
     except KeyError:
-        raise ValueError("unknown delta choice (must be 1 or 2): %r" % which) from None
+        raise ValueError(f"unknown delta choice (must be 1 or 2): {which!r}") from None
     prefixes = ("  ", tag)
     for line in delta:
         if line[:2] in prefixes:

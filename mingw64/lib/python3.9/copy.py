@@ -99,7 +99,7 @@ def copy(x):
             if reductor:
                 rv = reductor()
             else:
-                raise Error("un(shallow)copyable object of type %s" % cls)
+                raise Error(f"un(shallow)copyable object of type {cls}")
 
     if isinstance(rv, str):
         return x
@@ -149,12 +149,14 @@ if PyStringMap is not None:
 del d, t
 
 
-def deepcopy(x, memo=None, _nil=[]):
+def deepcopy(x, memo=None, _nil=None):
     """Deep copy operation on arbitrary Python objects.
 
     See the module's __doc__ string for more info.
     """
 
+    if _nil is None:
+        _nil = []
     if memo is None:
         memo = {}
 
@@ -188,7 +190,7 @@ def deepcopy(x, memo=None, _nil=[]):
                         if reductor:
                             rv = reductor()
                         else:
-                            raise Error("un(deep)copyable object of type %s" % cls)
+                            raise Error(f"un(deep)copyable object of type {cls}")
                 if isinstance(rv, str):
                     y = x
                 else:

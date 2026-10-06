@@ -15,8 +15,8 @@ from test.support.bytecode_helper import BytecodeTestCase
 def get_tb():
     def _error():
         try:
-            1 / 0
-        except Exception as e:
+            1 / 0  # noqa: B018
+        except Exception as e:  # noqa: BLE001
             tb = e.__traceback__
         return tb
 
@@ -50,7 +50,7 @@ dis_c_instance_method = """\
               8 STORE_ATTR               0 (x)
              10 LOAD_CONST               0 (None)
              12 RETURN_VALUE
-""" % (_C.__init__.__code__.co_firstlineno + 1,)
+""" % (_C.__init__.__code__.co_firstlineno + 1,)  # noqa: UP031
 
 dis_c_instance_method_bytes = """\
           0 LOAD_FAST                1 (1)
@@ -70,7 +70,7 @@ dis_c_class_method = """\
               8 STORE_ATTR               0 (x)
              10 LOAD_CONST               0 (None)
              12 RETURN_VALUE
-""" % (_C.cm.__code__.co_firstlineno + 2,)
+""" % (_C.cm.__code__.co_firstlineno + 2,)  # noqa: UP031
 
 dis_c_static_method = """\
 %3d           0 LOAD_FAST                0 (x)
@@ -79,24 +79,17 @@ dis_c_static_method = """\
               6 STORE_FAST               0 (x)
               8 LOAD_CONST               0 (None)
              10 RETURN_VALUE
-""" % (_C.sm.__code__.co_firstlineno + 2,)
+""" % (_C.sm.__code__.co_firstlineno + 2,)  # noqa: UP031
 
 # Class disassembling info has an extra newline at end.
-dis_c = """\
-Disassembly of %s:
-%s
-Disassembly of %s:
-%s
-Disassembly of %s:
-%s
-""" % (
-    _C.__init__.__name__,
-    dis_c_instance_method,
-    _C.cm.__name__,
-    dis_c_class_method,
-    _C.sm.__name__,
-    dis_c_static_method,
-)
+dis_c = f"""\
+Disassembly of {_C.__init__.__name__}:
+{dis_c_instance_method}
+Disassembly of {_C.cm.__name__}:
+{dis_c_class_method}
+Disassembly of {_C.sm.__name__}:
+{dis_c_static_method}
+"""
 
 
 def _f(a):
@@ -112,7 +105,7 @@ dis_f = """\
 
 %3d           8 LOAD_CONST               1 (1)
              10 RETURN_VALUE
-""" % (_f.__code__.co_firstlineno + 1, _f.__code__.co_firstlineno + 2)
+""" % (_f.__code__.co_firstlineno + 1, _f.__code__.co_firstlineno + 2)  # noqa: UP031
 
 
 dis_f_co_code = """\
@@ -130,7 +123,8 @@ def bug708901():
         pass
 
 
-dis_bug708901 = """\
+dis_bug708901 = (
+    """\
 %3d           0 LOAD_GLOBAL              0 (range)
               2 LOAD_CONST               1 (1)
 
@@ -144,19 +138,24 @@ dis_bug708901 = """\
 %3d          14 JUMP_ABSOLUTE           10
         >>   16 LOAD_CONST               0 (None)
              18 RETURN_VALUE
-""" % (
-    bug708901.__code__.co_firstlineno + 1,
-    bug708901.__code__.co_firstlineno + 2,
-    bug708901.__code__.co_firstlineno + 1,
-    bug708901.__code__.co_firstlineno + 3,
+"""
+    % (  # noqa: UP031
+        bug708901.__code__.co_firstlineno + 1,
+        bug708901.__code__.co_firstlineno + 2,
+        bug708901.__code__.co_firstlineno + 1,
+        bug708901.__code__.co_firstlineno + 3,
+    )
 )
 
 
-def bug1333982(x=[]):
+def bug1333982(x=None):
+    if x is None:
+        x = []
     assert 0, [s for s in x] + 1
 
 
-dis_bug1333982 = """\
+dis_bug1333982 = (
+    """\
 %3d           0 LOAD_CONST               1 (0)
               2 POP_JUMP_IF_TRUE        26
               4 LOAD_ASSERTION_ERROR
@@ -175,13 +174,15 @@ dis_bug1333982 = """\
 
 %3d     >>   26 LOAD_CONST               0 (None)
              28 RETURN_VALUE
-""" % (
-    bug1333982.__code__.co_firstlineno + 1,
-    __file__,
-    bug1333982.__code__.co_firstlineno + 1,
-    bug1333982.__code__.co_firstlineno + 2,
-    bug1333982.__code__.co_firstlineno + 1,
-    bug1333982.__code__.co_firstlineno + 3,
+"""
+    % (  # noqa: UP031
+        bug1333982.__code__.co_firstlineno + 1,
+        __file__,
+        bug1333982.__code__.co_firstlineno + 1,
+        bug1333982.__code__.co_firstlineno + 2,
+        bug1333982.__code__.co_firstlineno + 1,
+        bug1333982.__code__.co_firstlineno + 3,
+    )
 )
 
 _BIG_LINENO_FORMAT = """\
@@ -284,7 +285,8 @@ dis_compound_stmt_str = """\
              16 RETURN_VALUE
 """
 
-dis_traceback = """\
+dis_traceback = (
+    """\
 %3d           0 SETUP_FINALLY           12 (to 14)
 
 %3d           2 LOAD_CONST               1 (1)
@@ -319,12 +321,14 @@ dis_traceback = """\
 
 %3d     >>   56 LOAD_FAST                1 (tb)
              58 RETURN_VALUE
-""" % (
-    TRACEBACK_CODE.co_firstlineno + 1,
-    TRACEBACK_CODE.co_firstlineno + 2,
-    TRACEBACK_CODE.co_firstlineno + 3,
-    TRACEBACK_CODE.co_firstlineno + 4,
-    TRACEBACK_CODE.co_firstlineno + 5,
+"""
+    % (  # noqa: UP031
+        TRACEBACK_CODE.co_firstlineno + 1,
+        TRACEBACK_CODE.co_firstlineno + 2,
+        TRACEBACK_CODE.co_firstlineno + 3,
+        TRACEBACK_CODE.co_firstlineno + 4,
+        TRACEBACK_CODE.co_firstlineno + 5,
+    )
 )
 
 
@@ -348,7 +352,7 @@ dis_fstring = """\
              24 FORMAT_VALUE             6 (repr, with format)
              26 BUILD_STRING             7
              28 RETURN_VALUE
-""" % (_fstring.__code__.co_firstlineno + 1,)
+""" % (_fstring.__code__.co_firstlineno + 1,)  # noqa: UP031
 
 
 def _tryfinally(a, b):
@@ -365,7 +369,8 @@ def _tryfinallyconst(b):
         b()
 
 
-dis_tryfinally = """\
+dis_tryfinally = (
+    """\
 %3d           0 SETUP_FINALLY           12 (to 14)
 
 %3d           2 LOAD_FAST                0 (a)
@@ -383,15 +388,18 @@ dis_tryfinally = """\
              20 RERAISE
              22 LOAD_CONST               0 (None)
              24 RETURN_VALUE
-""" % (
-    _tryfinally.__code__.co_firstlineno + 1,
-    _tryfinally.__code__.co_firstlineno + 2,
-    _tryfinally.__code__.co_firstlineno + 4,
-    _tryfinally.__code__.co_firstlineno + 2,
-    _tryfinally.__code__.co_firstlineno + 4,
+"""
+    % (  # noqa: UP031
+        _tryfinally.__code__.co_firstlineno + 1,
+        _tryfinally.__code__.co_firstlineno + 2,
+        _tryfinally.__code__.co_firstlineno + 4,
+        _tryfinally.__code__.co_firstlineno + 2,
+        _tryfinally.__code__.co_firstlineno + 4,
+    )
 )
 
-dis_tryfinallyconst = """\
+dis_tryfinallyconst = (
+    """\
 %3d           0 SETUP_FINALLY           12 (to 14)
 
 %3d           2 POP_BLOCK
@@ -409,12 +417,14 @@ dis_tryfinallyconst = """\
              20 RERAISE
              22 LOAD_CONST               0 (None)
              24 RETURN_VALUE
-""" % (
-    _tryfinallyconst.__code__.co_firstlineno + 1,
-    _tryfinallyconst.__code__.co_firstlineno + 2,
-    _tryfinallyconst.__code__.co_firstlineno + 4,
-    _tryfinallyconst.__code__.co_firstlineno + 2,
-    _tryfinallyconst.__code__.co_firstlineno + 4,
+"""
+    % (  # noqa: UP031
+        _tryfinallyconst.__code__.co_firstlineno + 1,
+        _tryfinallyconst.__code__.co_firstlineno + 2,
+        _tryfinallyconst.__code__.co_firstlineno + 4,
+        _tryfinallyconst.__code__.co_firstlineno + 2,
+        _tryfinallyconst.__code__.co_firstlineno + 4,
+    )
 )
 
 
@@ -439,7 +449,8 @@ def _h(y):
     return foo
 
 
-dis_nested_0 = """\
+dis_nested_0 = (
+    """\
 %3d           0 LOAD_CLOSURE             0 (y)
               2 BUILD_TUPLE              1
               4 LOAD_CONST               1 (<code object foo at 0x..., file "%s", line %d>)
@@ -449,14 +460,17 @@ dis_nested_0 = """\
 
 %3d          12 LOAD_FAST                1 (foo)
              14 RETURN_VALUE
-""" % (
-    _h.__code__.co_firstlineno + 1,
-    __file__,
-    _h.__code__.co_firstlineno + 1,
-    _h.__code__.co_firstlineno + 4,
+"""
+    % (  # noqa: UP031
+        _h.__code__.co_firstlineno + 1,
+        __file__,
+        _h.__code__.co_firstlineno + 1,
+        _h.__code__.co_firstlineno + 4,
+    )
 )
 
-dis_nested_1 = """%s
+dis_nested_1 = (
+    """%s
 Disassembly of <code object foo at 0x..., file "%s", line %d>:
 %3d           0 LOAD_CLOSURE             0 (x)
               2 BUILD_TUPLE              1
@@ -467,16 +481,19 @@ Disassembly of <code object foo at 0x..., file "%s", line %d>:
              12 GET_ITER
              14 CALL_FUNCTION            1
              16 RETURN_VALUE
-""" % (
-    dis_nested_0,
-    __file__,
-    _h.__code__.co_firstlineno + 1,
-    _h.__code__.co_firstlineno + 3,
-    __file__,
-    _h.__code__.co_firstlineno + 3,
+"""
+    % (  # noqa: UP031
+        dis_nested_0,
+        __file__,
+        _h.__code__.co_firstlineno + 1,
+        _h.__code__.co_firstlineno + 3,
+        __file__,
+        _h.__code__.co_firstlineno + 3,
+    )
 )
 
-dis_nested_2 = """%s
+dis_nested_2 = (
+    """%s
 Disassembly of <code object <listcomp> at 0x..., file "%s", line %d>:
 %3d           0 BUILD_LIST               0
               2 LOAD_FAST                0 (.0)
@@ -488,11 +505,13 @@ Disassembly of <code object <listcomp> at 0x..., file "%s", line %d>:
              14 LIST_APPEND              2
              16 JUMP_ABSOLUTE            4
         >>   18 RETURN_VALUE
-""" % (
-    dis_nested_1,
-    __file__,
-    _h.__code__.co_firstlineno + 3,
-    _h.__code__.co_firstlineno + 3,
+"""
+    % (  # noqa: UP031
+        dis_nested_1,
+        __file__,
+        _h.__code__.co_firstlineno + 3,
+        _h.__code__.co_firstlineno + 3,
+    )
 )
 
 
@@ -565,7 +584,7 @@ class DisTests(unittest.TestCase):
         def func(count):
             namespace = {}
             func = "def foo():\n " + "".join(["\n "] * count + ["spam\n"])
-            exec(func, namespace)
+            exec(func, namespace)  # noqa: S102
             return namespace["foo"]
 
         # Test all small ranges
@@ -590,7 +609,7 @@ class DisTests(unittest.TestCase):
         def func(count):
             namespace = {}
             func = "def foo(x):\n " + ";".join(["x = x + 1"] * count) + "\n return x"
-            exec(func, namespace)
+            exec(func, namespace)  # noqa: S102
             return namespace["foo"]
 
         def expected(count, w):
@@ -600,7 +619,7 @@ class DisTests(unittest.TestCase):
            %*d LOAD_CONST               1 (1)
            %*d BINARY_ADD
            %*d STORE_FAST               0 (x)
-"""
+"""  # noqa: UP031
                 % (w, 8 * i, w, 8 * i + 2, w, 8 * i + 4, w, 8 * i + 6)
                 for i in range(count)
             ]
@@ -609,7 +628,7 @@ class DisTests(unittest.TestCase):
 
   3        %*d LOAD_FAST                0 (x)
            %*d RETURN_VALUE
-"""
+"""  # noqa: UP031
                 % (w, 8 * count, w, 8 * count + 2)
             ]
             s[0] = "  2" + s[0][3:]
@@ -683,8 +702,8 @@ class DisTests(unittest.TestCase):
             pass
 
         try:
-            1 / 0
-        except Exception as e:
+            1 / 0  # noqa: B018
+        except Exception as e:  # noqa: BLE001
             tb = e.__traceback__
             sys.last_traceback = tb
 
@@ -742,7 +761,10 @@ Variable names:
 
 
 @staticmethod
-def tricky(a, b, /, x, y, z=True, *args, c, d, e=[], **kwds):
+def tricky(a, b, /, x, y, z=True, *args, c, d, e=None, **kwds):
+    if e is None:
+        e = []
+
     def f(c=c):
         print(a, b, x, y, z, c, d, e, f)
 
@@ -854,9 +876,9 @@ Names:
 
 async def async_def():
     await 1
-    async for a in b:
+    async for a in b:  # noqa: F821
         pass
-    async with c as d:
+    async with c:  # noqa: F821
         pass
 
 
@@ -881,7 +903,7 @@ Variable names:
 
 
 class CodeInfoTests(unittest.TestCase):
-    test_pairs = [
+    test_pairs = [  # noqa: RUF012
         (dis.code_info, code_info_code_info),
         (tricky, code_info_tricky),
         (co_tricky_nested_f, code_info_tricky_nested_f),
@@ -947,11 +969,11 @@ def jumpy():
     else:
         print("Who let lolcatz into this test suite?")
     try:
-        1 / 0
+        1 / 0  # noqa: B018
     except ZeroDivisionError:
         print("Here we go, here we go, here we go...")
     else:
-        with i as dodgy:
+        with i:
             print("Never reach this")
     finally:
         print("OK, now we're done")

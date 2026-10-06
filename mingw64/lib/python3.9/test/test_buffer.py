@@ -251,8 +251,7 @@ def iter_mode(n, obj="ndarray"):
 def iter_format(nitems, testobj="ndarray"):
     """Yield (format, items, item) for all possible modes and format
     characters plus one random compound format string."""
-    for t in iter_mode(nitems, testobj):
-        yield t
+    yield from iter_mode(nitems, testobj)
     if testobj != "ndarray":
         return
     yield struct_items(nitems, testobj)
@@ -516,7 +515,7 @@ def get_item(lst, indices):
 
 def memory_index(indices, t):
     """Location of an item in the underlying memory."""
-    memlen, itemsize, ndim, shape, strides, offset = t
+    _memlen, _itemsize, ndim, _shape, strides, offset = t
     p = offset
     for i in range(ndim):
         p += strides[i] * indices[i]
@@ -527,7 +526,7 @@ def is_overlapping(t):
     """The structure 't' is overlapping if at least one memory location
     is visited twice while iterating through all possible tuples of
     indices."""
-    memlen, itemsize, ndim, shape, strides, offset = t
+    memlen, _itemsize, _ndim, shape, _strides, _offset = t
     visited = 1 << memlen
     for ind in indices(shape):
         i = memory_index(ind, t)
@@ -570,7 +569,7 @@ def rand_structure(itemsize, valid, maxdim=5, maxshape=16, shape=()):
 
     maxstride = 5
     n = randrange(100)
-    zero_stride = True if n >= 95 and n & 1 else False
+    zero_stride = bool(n >= 95 and n & 1)
 
     strides = [0] * ndim
     strides[ndim - 1] = itemsize * randrange(-maxstride, maxstride + 1)
@@ -637,7 +636,7 @@ def rand_aligned_slices(maxdim=5, maxshape=16):
         minshape = 0
     elif n >= 90:
         minshape = 1
-    all_random = True if randrange(100) >= 80 else False
+    all_random = randrange(100) >= 80
     lshape = [0] * ndim
     rshape = [0] * ndim
     lslices = [0] * ndim
@@ -681,7 +680,7 @@ def randitems_from_structure(fmt, t):
 
 def ndarray_from_structure(items, fmt, t, flags=0):
     """Return ndarray from the tuple returned by rand_structure()"""
-    memlen, itemsize, ndim, shape, strides, offset = t
+    _memlen, _itemsize, _ndim, shape, strides, offset = t
     return ndarray(
         items,
         shape=shape,
@@ -694,7 +693,7 @@ def ndarray_from_structure(items, fmt, t, flags=0):
 
 def numpy_array_from_structure(items, fmt, t):
     """Return numpy_array from the tuple returned by rand_structure()"""
-    memlen, itemsize, ndim, shape, strides, offset = t
+    memlen, itemsize, _ndim, shape, strides, offset = t
     buf = bytearray(memlen)
     for j, v in enumerate(items):
         struct.pack_into(fmt, buf, j * itemsize, v)
@@ -735,7 +734,7 @@ def cast_items(exporter, fmt, itemsize, shape=None):
     items = []
     for v in byteitems:
         item = struct.unpack(fmt, v)[0]
-        if item != item:
+        if item != item:  # noqa: PLR0124
             return "nan", shape
         items.append(item)
 
@@ -816,18 +815,8 @@ def ndarray_print(nd):
         offset = "unknown"
         flags = "unknown"
     print(
-        "ndarray(%s, shape=%s, strides=%s, suboffsets=%s, offset=%s, "
-        "format='%s', itemsize=%s, flags=%s)"
-        % (
-            x,
-            nd.shape,
-            nd.strides,
-            nd.suboffsets,
-            offset,
-            nd.format,
-            nd.itemsize,
-            flags,
-        )
+        f"ndarray({x}, shape={nd.shape}, strides={nd.strides}, suboffsets={nd.suboffsets}, offset={offset}, "
+        f"format='{nd.format}', itemsize={nd.itemsize}, flags={flags})"
     )
     sys.stdout.flush()
 
@@ -944,7 +933,7 @@ class TestBufferProtocol(unittest.TestCase):
 
                 # test hex()
                 m = memoryview(result)
-                h = "".join("%02x" % c for c in b)
+                h = "".join(f"{c:02x}" for c in b)
                 self.assertEqual(m.hex(), h)
 
                 # lst := expected multi-dimensional logical representation
@@ -1155,7 +1144,7 @@ class TestBufferProtocol(unittest.TestCase):
         )
         # items and format
         items_fmt = (
-            ([True if x % 2 else False for x in range(12)], "?"),
+            ([bool(x % 2) for x in range(12)], "?"),
             ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "b"),
             ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "B"),
             ([(2**31 - x) if x % 2 else (-(2**31) + x) for x in range(12)], "l"),
@@ -1838,7 +1827,7 @@ class TestBufferProtocol(unittest.TestCase):
 
         # differing itemsize
         xl = ndarray(items, shape=[8], format="B", flags=ND_WRITABLE)
-        yr = ndarray(items, shape=[8], format="L")
+        ndarray(items, shape=[8], format="L")
         ml = memoryview(xl)
         mr = memoryview(xr)
         self.assertRaises(ValueError, xl.__setitem__, slice(0, 1, 1), xr[7:8])
@@ -1903,7 +1892,7 @@ class TestBufferProtocol(unittest.TestCase):
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
             fmt, items, _ = randitems(nitems)
-            itemsize = struct.calcsize(fmt)
+            struct.calcsize(fmt)
 
             for flags in (0, ND_PIL):
                 nd = ndarray(items, shape=shape, format=fmt, flags=flags)
@@ -1913,13 +1902,13 @@ class TestBufferProtocol(unittest.TestCase):
                     listerr = None
                     try:
                         sliced = multislice(lst, slices)
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         listerr = e.__class__
 
                     nderr = None
                     try:
                         ndsliced = nd[slices]
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         nderr = e.__class__
 
                     if nderr or listerr:
@@ -1933,26 +1922,26 @@ class TestBufferProtocol(unittest.TestCase):
         nitems = prod(shape_t)
         for shape in permutations(shape_t):
             fmt, items, _ = randitems(nitems)
-            itemsize = struct.calcsize(fmt)
+            struct.calcsize(fmt)
 
             nd = ndarray(items, shape=shape, format=fmt)
             nd.add_suboffsets()
             ex = ndarray(items, shape=shape, format=fmt)
             ex.add_suboffsets()
-            mv = memoryview(ex)
+            memoryview(ex)
             lst = carray(items, shape)
 
             for slices in rslices_ndim(ndim, shape):
                 listerr = None
                 try:
                     sliced = multislice(lst, slices)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     listerr = e.__class__
 
                 nderr = None
                 try:
                     ndsliced = nd[slices]
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     nderr = e.__class__
 
                 if nderr or listerr:
@@ -1978,13 +1967,13 @@ class TestBufferProtocol(unittest.TestCase):
                             rval = lst[rslice]
                             lst[lslice] = lst[rslice]
                             diff_structure = len(lval) != len(rval)
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             lsterr = e.__class__
 
                         nderr = None
                         try:
                             nd[lslice] = nd[rslice]
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             nderr = e.__class__
 
                         if diff_structure:  # ndarray cannot change shape
@@ -1999,7 +1988,7 @@ class TestBufferProtocol(unittest.TestCase):
                         mverr = None
                         try:
                             mv[lslice] = mv[rslice]
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             mverr = e.__class__
 
                         if diff_structure:  # memoryview cannot change shape
@@ -2039,13 +2028,13 @@ class TestBufferProtocol(unittest.TestCase):
                     listerr = None
                     try:
                         result = multislice_assign(lst, lst, lslices, rslices)
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         listerr = e.__class__
 
                     nderr = None
                     try:
                         nd[lslices] = nd[rslices]
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         nderr = e.__class__
 
                     if nderr or listerr:
@@ -2112,16 +2101,16 @@ class TestBufferProtocol(unittest.TestCase):
 
                 nderr = False
                 try:
-                    x = ndarray_from_structure(items, fmt, t)
-                except Exception as e:
+                    ndarray_from_structure(items, fmt, t)
+                except Exception as e:  # noqa: BLE001
                     nderr = e.__class__
                 self.assertTrue(nderr)
 
                 if numpy_array:
                     numpy_err = False
                     try:
-                        y = numpy_array_from_structure(items, fmt, t)
-                    except Exception as e:
+                        numpy_array_from_structure(items, fmt, t)
+                    except Exception as e:  # noqa: BLE001
                         numpy_err = e.__class__
 
                     if 0:  # http://projects.scipy.org/numpy/ticket/1910
@@ -2942,7 +2931,7 @@ class TestBufferProtocol(unittest.TestCase):
         self.assertRaises(TypeError, m.cast, "B", shape=[2, 3, 4, 5, 6, 7, "x"])
 
         # N-D -> N-D cast
-        ex = ndarray(list([9 for _ in range(3 * 5 * 7 * 11)]), shape=[3, 5, 7, 11])
+        ex = ndarray([9 for _ in range(3 * 5 * 7 * 11)], shape=[3, 5, 7, 11])
         m = memoryview(ex)
         self.assertRaises(TypeError, m.cast, "I", shape=[2, 3, 4, 5])
 
@@ -2952,12 +2941,12 @@ class TestBufferProtocol(unittest.TestCase):
         self.assertRaises(ValueError, m.cast, "I", [1] * 128)
 
         # view->len not a multiple of itemsize
-        ex = ndarray(list([9 for _ in range(3 * 5 * 7 * 11)]), shape=[3 * 5 * 7 * 11])
+        ex = ndarray([9 for _ in range(3 * 5 * 7 * 11)], shape=[3 * 5 * 7 * 11])
         m = memoryview(ex)
         self.assertRaises(TypeError, m.cast, "I", shape=[2, 3, 4, 5])
 
         # product(shape) * itemsize != buffer size
-        ex = ndarray(list([9 for _ in range(3 * 5 * 7 * 11)]), shape=[3 * 5 * 7 * 11])
+        ex = ndarray([9 for _ in range(3 * 5 * 7 * 11)], shape=[3 * 5 * 7 * 11])
         m = memoryview(ex)
         self.assertRaises(TypeError, m.cast, "B", shape=[2, 3, 4, 5])
 
@@ -3027,7 +3016,7 @@ class TestBufferProtocol(unittest.TestCase):
                 )
 
         # cast from ndim = 0 to ndim = 1
-        srcsize = struct.calcsize("I")
+        struct.calcsize("I")
         ex = ndarray(9, shape=[], format="I")
         destitems, destshape = cast_items(ex, "B", 1)
         m = memoryview(ex)
@@ -3161,7 +3150,7 @@ class TestBufferProtocol(unittest.TestCase):
         if ctypes:
             # format: "T{>l:x:>d:y:}"
             class BEPoint(ctypes.BigEndianStructure):
-                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_double)]
+                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_double)]  # noqa: RUF012
 
             point = BEPoint(100, 200.1)
             m1 = memoryview(point)
@@ -3245,7 +3234,8 @@ class TestBufferProtocol(unittest.TestCase):
         with self.assertRaises(IndexError) as cm:
             yield
         self.assertEqual(
-            str(cm.exception), "index out of bounds on dimension %d" % (dim,)
+            str(cm.exception),
+            "index out of bounds on dimension %d" % (dim,),  # noqa: UP031
         )
 
     def test_memoryview_index(self):
@@ -3516,13 +3506,13 @@ class TestBufferProtocol(unittest.TestCase):
                             ar = a[rslice]
                             a[lslice] = a[rslice]
                             have_resize = len(al) != len(ar)
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             array_err = e.__class__
 
                         m_err = None
                         try:
                             m[lslice] = m[rslice]
-                        except Exception as e:
+                        except Exception as e:  # noqa: BLE001
                             m_err = e.__class__
 
                         if have_resize:  # memoryview cannot change shape
@@ -3579,7 +3569,7 @@ class TestBufferProtocol(unittest.TestCase):
         if ctypes:
             # format: "T{>l:x:>l:y:}"
             class BEPoint(ctypes.BigEndianStructure):
-                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]  # noqa: RUF012
 
             point = BEPoint(100, 200)
             a = memoryview(point)
@@ -3783,7 +3773,7 @@ class TestBufferProtocol(unittest.TestCase):
         # random single character native formats
         n = 10
         for char in fmtdict["@m"]:
-            fmt, items, singleitem = randitems(n, "memoryview", "@", char)
+            fmt, items, singleitem = randitems(n, "memoryview", "@", char)  # noqa: RUF059
             for flags in (0, ND_PIL):
                 nd = ndarray(items, shape=[n], format=fmt, flags=flags)
                 m = memoryview(nd)
@@ -3796,7 +3786,7 @@ class TestBufferProtocol(unittest.TestCase):
         # random formats
         n = 10
         for _ in range(100):
-            fmt, items, singleitem = randitems(n)
+            fmt, items, _singleitem = randitems(n)
             for flags in (0, ND_PIL):
                 nd = ndarray(items, shape=[n], format=fmt, flags=flags)
                 m = memoryview(nd)
@@ -4360,7 +4350,7 @@ class TestBufferProtocol(unittest.TestCase):
         if ctypes:
             # format: "T{>l:x:>l:y:}"
             class BEPoint(ctypes.BigEndianStructure):
-                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+                _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]  # noqa: RUF012
 
             point = BEPoint(100, 200)
             a = memoryview(point)
@@ -4637,7 +4627,7 @@ class TestBufferProtocol(unittest.TestCase):
         # release() in the context manager's __exit__() method should still
         # work.
         def catch22(b):
-            with memoryview(b) as m2:
+            with memoryview(b):
                 pass
 
         x = bytearray(b"123")
@@ -4694,8 +4684,8 @@ class TestBufferProtocol(unittest.TestCase):
         # memoryview.release() fails if the view has exported buffers.
         x = bytearray(b"123")
         with self.assertRaises(BufferError), memoryview(x) as m:
-            ex = ndarray(m)
-            m[0] == ord(b"1")
+            ndarray(m)
+            m[0] == ord(b"1")  # noqa: B015
 
     def test_memoryview_redirect(self):
 

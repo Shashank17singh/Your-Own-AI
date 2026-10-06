@@ -244,7 +244,7 @@ class JSONEncoder:
             # and/or platform-specific, so do tests which don't depend on the
             # internals.
 
-            if o != o:
+            if o != o:  # noqa: PLR0124
                 text = "NaN"
             elif o == _inf:
                 text = "Infinity"

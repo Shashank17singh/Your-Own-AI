@@ -17,7 +17,7 @@ def test_scaled_msg(scale, name):
     localCF = creatorFunc
     start = time.perf_counter()
     for f in range(iterations):
-        x = localCF(longStr).digest()
+        localCF(longStr).digest()
     end = time.perf_counter()
 
     print(
@@ -34,7 +34,7 @@ def test_scaled_msg(scale, name):
 def test_create():
     start = time.perf_counter()
     for f in range(20000):
-        d = creatorFunc()
+        creatorFunc()
     end = time.perf_counter()
 
     print(("%2.2f" % (end - start)), "seconds", "[20000 creations]")
@@ -43,7 +43,7 @@ def test_create():
 def test_zero():
     start = time.perf_counter()
     for f in range(20000):
-        x = creatorFunc().digest()
+        creatorFunc().digest()
     end = time.perf_counter()
 
     print(("%2.2f" % (end - start)), "seconds", '[20000 "" digests]')
@@ -55,25 +55,25 @@ hName = sys.argv[1]
 # setup our creatorFunc to test the requested hash
 #
 if hName in ("_md5", "_sha"):
-    exec("import " + hName)
-    exec("creatorFunc = " + hName + ".new")
+    exec("import " + hName)  # noqa: S102
+    exec("creatorFunc = " + hName + ".new")  # noqa: S102
     print("testing speed of old", hName, "legacy interface")
 elif hName == "_hashlib" and len(sys.argv) > 3:
     import _hashlib
 
-    exec("creatorFunc = _hashlib.%s" % sys.argv[2])
-    print("testing speed of _hashlib.%s" % sys.argv[2], getattr(_hashlib, sys.argv[2]))
+    exec(f"creatorFunc = _hashlib.{sys.argv[2]}")  # noqa: S102
+    print(f"testing speed of _hashlib.{sys.argv[2]}", getattr(_hashlib, sys.argv[2]))
 elif hName == "_hashlib" and len(sys.argv) == 3:
     import _hashlib
 
-    exec("creatorFunc = lambda x=_hashlib.new : x(%r)" % sys.argv[2])
-    print("testing speed of _hashlib.new(%r)" % sys.argv[2])
-elif hasattr(hashlib, hName) and hasattr(getattr(hashlib, hName), "__call__"):
+    exec(f"creatorFunc = lambda x=_hashlib.new : x({sys.argv[2]!r})")  # noqa: S102
+    print(f"testing speed of _hashlib.new({sys.argv[2]!r})")
+elif hasattr(hashlib, hName) and callable(getattr(hashlib, hName)):
     creatorFunc = getattr(hashlib, hName)
     print("testing speed of hashlib." + hName, getattr(hashlib, hName))
 else:
-    exec("creatorFunc = lambda x=hashlib.new : x(%r)" % hName)
-    print("testing speed of hashlib.new(%r)" % hName)
+    exec(f"creatorFunc = lambda x=hashlib.new : x({hName!r})")  # noqa: S102
+    print(f"testing speed of hashlib.new({hName!r})")
 
 try:
     test_create()

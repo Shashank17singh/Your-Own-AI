@@ -29,7 +29,7 @@ class ___:
 
 
 class WithSingleString:
-    __slots__ = "spam"
+    __slots__ = "spam"  # noqa: PLC0205
 
 
 class WithInherited(WithSingleString):

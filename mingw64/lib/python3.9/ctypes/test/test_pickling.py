@@ -7,7 +7,7 @@ dll = CDLL(_ctypes_test.__file__)
 
 
 class X(Structure):
-    _fields_ = [("a", c_int), ("b", c_double)]
+    _fields_ = [("a", c_int), ("b", c_double)]  # noqa: RUF012
     init_called = 0
 
     def __init__(self, *args, **kw):
@@ -16,7 +16,7 @@ class X(Structure):
 
 
 class Y(X):
-    _fields_ = [("str", c_char_p)]
+    _fields_ = [("str", c_char_p)]  # noqa: RUF012
 
 
 class PickleTest:
@@ -67,7 +67,7 @@ class PickleTest:
             dll._testfunc_p_p,
             prototype(lambda: 42),
         ]:
-            self.assertRaises(ValueError, lambda: self.dumps(item))
+            self.assertRaises(ValueError, lambda: self.dumps(item))  # noqa: B023
 
     def test_wchar(self):
         self.dumps(c_char(b"x"))
@@ -76,7 +76,7 @@ class PickleTest:
 
 
 for proto in range(pickle.HIGHEST_PROTOCOL + 1):
-    name = "PickleTest_%s" % proto
+    name = f"PickleTest_{proto}"
     globals()[name] = type(name, (PickleTest, unittest.TestCase), {"proto": proto})
 
 if __name__ == "__main__":

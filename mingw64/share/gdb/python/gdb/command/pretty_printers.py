@@ -36,16 +36,16 @@ def parse_printer_regexps(arg):
     try:
         object_re = re.compile(object_regexp)
     except SyntaxError:
-        raise SyntaxError("invalid object regexp: %s" % object_regexp)
+        raise SyntaxError(f"invalid object regexp: {object_regexp}")
     try:
         name_re = re.compile(name_regexp)
     except SyntaxError:
-        raise SyntaxError("invalid name regexp: %s" % name_regexp)
+        raise SyntaxError(f"invalid name regexp: {name_regexp}")
     if subname_regexp is not None:
         try:
             subname_re = re.compile(subname_regexp)
         except SyntaxError:
-            raise SyntaxError("invalid subname regexp: %s" % subname_regexp)
+            raise SyntaxError(f"invalid subname regexp: {subname_regexp}")
     else:
         subname_re = None
     return (object_re, name_re, subname_re)
@@ -98,7 +98,7 @@ class InfoPrettyPrinter(gdb.Command):
             name = self.printer_name(printer)
             enabled = self.enabled_string(printer)
             if name_re.match(name):
-                print("  %s%s" % (name, enabled))
+                print(f"  {name}{enabled}")
                 if hasattr(printer, "subprinters") and printer.subprinters is not None:
                     sorted_subprinters = sorted(
                         copy.copy(printer.subprinters), key=self.printer_name
@@ -106,8 +106,7 @@ class InfoPrettyPrinter(gdb.Command):
                     for subprinter in sorted_subprinters:
                         if not subname_re or subname_re.match(subprinter.name):
                             print(
-                                "    %s%s"
-                                % (subprinter.name, self.enabled_string(subprinter))
+                                f"    {subprinter.name}{self.enabled_string(subprinter)}"
                             )
 
     def invoke1(
@@ -131,7 +130,7 @@ class InfoPrettyPrinter(gdb.Command):
         )
         cp = gdb.current_progspace()
         self.invoke1(
-            "progspace %s pretty-printers:" % cp.filename,
+            f"progspace {cp.filename} pretty-printers:",
             cp.pretty_printers,
             "progspace",
             object_re,
@@ -140,7 +139,7 @@ class InfoPrettyPrinter(gdb.Command):
         )
         for objfile in gdb.objfiles():
             self.invoke1(
-                "objfile %s pretty-printers:" % objfile.filename,
+                f"objfile {objfile.filename} pretty-printers:",
                 objfile.pretty_printers,
                 objfile.filename,
                 object_re,
@@ -189,7 +188,7 @@ def count_all_enabled_printers():
 def pluralize(text, n, suffix="s"):
     """Return TEXT pluralized if N != 1."""
     if n != 1:
-        return "%s%s" % (text, suffix)
+        return f"{text}{suffix}"
     else:
         return text
 
@@ -199,7 +198,7 @@ def show_pretty_printer_enabled_summary():
     We count subprinters individually.
     """
     enabled_count, total_count = count_all_enabled_printers()
-    print("%d of %d printers enabled" % (enabled_count, total_count))
+    print("%d of %d printers enabled" % (enabled_count, total_count))  # noqa: UP031
 
 
 def do_enable_pretty_printer_1(pretty_printers, name_re, subname_re, flag):
@@ -268,7 +267,7 @@ def do_enable_pretty_printer(arg, flag):
         state = "enabled"
     else:
         state = "disabled"
-    print("%d %s %s" % (total, pluralize("printer", total), state))
+    print("%d %s %s" % (total, pluralize("printer", total), state))  # noqa: UP031
     show_pretty_printer_enabled_summary()
 
 

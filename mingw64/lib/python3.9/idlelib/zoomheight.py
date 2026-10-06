@@ -12,7 +12,7 @@ class WmInfoGatheringError(Exception):
 class ZoomHeight:
     # Cached values for maximized window dimensions, one for each set
     # of screen dimensions.
-    _max_height_and_y_coords = {}
+    _max_height_and_y_coords = {}  # noqa: RUF012
 
     def __init__(self, editwin):
         self.editwin = editwin
@@ -34,7 +34,7 @@ class ZoomHeight:
     def zoom_height(self):
         top = self.top
 
-        width, height, x, y = get_window_geometry(top)
+        width, height, x, _y = get_window_geometry(top)
 
         if top.wm_state() != "normal":
             # Can't zoom/restore window height for windows not in the 'normal'
@@ -76,7 +76,7 @@ class ZoomHeight:
                     + 'the "zoomed" window state is unavailable.'
                 )
             top.update()
-            maxwidth, maxheight, maxx, maxy = get_window_geometry(top)
+            _maxwidth, maxheight, _maxx, maxy = get_window_geometry(top)
             if sys.platform == "win32":
                 # On Windows, the returned Y coordinate is the one before
                 # maximizing, so we use 0 which is correct unless a user puts

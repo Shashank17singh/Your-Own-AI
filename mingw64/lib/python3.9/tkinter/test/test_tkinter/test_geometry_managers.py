@@ -25,7 +25,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_pack_configure_after(self):
         pack, a, b, c, d = self.create2()
-        with self.assertRaisesRegex(TclError, 'window "%s" isn\'t packed' % b):
+        with self.assertRaisesRegex(TclError, f'window "{b}" isn\'t packed'):
             a.pack_configure(after=b)
         with self.assertRaisesRegex(TclError, 'bad window path name ".foo"'):
             a.pack_configure(after=".foo")
@@ -40,7 +40,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(pack.pack_slaves(), [b, a, c, d])
 
     def test_pack_configure_anchor(self):
-        pack, a, b, c, d = self.create2()
+        _pack, a, _b, _c, _d = self.create2()
 
         def check(anchor, geom):
             a.pack_configure(
@@ -67,7 +67,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_pack_configure_before(self):
         pack, a, b, c, d = self.create2()
-        with self.assertRaisesRegex(TclError, 'window "%s" isn\'t packed' % b):
+        with self.assertRaisesRegex(TclError, f'window "{b}" isn\'t packed'):
             a.pack_configure(before=b)
         with self.assertRaisesRegex(TclError, 'bad window path name ".foo"'):
             a.pack_configure(before=".foo")
@@ -82,7 +82,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(pack.pack_slaves(), [b, c, a, d])
 
     def test_pack_configure_expand(self):
-        pack, a, b, c, d = self.create2()
+        _pack, a, b, c, d = self.create2()
 
         def check(*geoms):
             self.root.update()
@@ -118,13 +118,13 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         a.pack_configure(in_=c)
         self.assertEqual(pack.pack_slaves(), [b, c, d])
         self.assertEqual(c.pack_slaves(), [a])
-        with self.assertRaisesRegex(TclError, "can't pack %s inside itself" % (a,)):
+        with self.assertRaisesRegex(TclError, f"can't pack {a} inside itself"):
             a.pack_configure(in_=a)
         with self.assertRaisesRegex(TclError, 'bad window path name ".foo"'):
             a.pack_configure(in_=".foo")
 
     def test_pack_configure_padx_ipadx_fill(self):
-        pack, a, b, c, d = self.create2()
+        pack, a, b, _c, _d = self.create2()
 
         def check(geom1, geom2, **kwargs):
             a.pack_forget()
@@ -162,7 +162,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(a.pack_info()["ipadx"], self._str(pack.winfo_pixels("1c")))
 
     def test_pack_configure_pady_ipady_fill(self):
-        pack, a, b, c, d = self.create2()
+        pack, a, b, _c, _d = self.create2()
 
         def check(geom1, geom2, **kwargs):
             a.pack_forget()
@@ -200,7 +200,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(a.pack_info()["ipady"], self._str(pack.winfo_pixels("1c")))
 
     def test_pack_configure_side(self):
-        pack, a, b, c, d = self.create2()
+        _pack, a, b, _c, _d = self.create2()
 
         def check(side, geom1, geom2):
             a.pack_configure(side=side)
@@ -228,8 +228,8 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         d.pack_forget()
 
     def test_pack_info(self):
-        pack, a, b, c, d = self.create2()
-        with self.assertRaisesRegex(TclError, 'window "%s" isn\'t packed' % a):
+        pack, a, b, _c, _d = self.create2()
+        with self.assertRaisesRegex(TclError, f'window "{a}" isn\'t packed'):
             a.pack_info()
         a.pack_configure()
         b.pack_configure(
@@ -267,7 +267,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(info["side"], "right")
 
     def test_pack_propagate(self):
-        pack, a, b, c, d = self.create2()
+        pack, a, _b, _c, _d = self.create2()
         pack.configure(width=300, height=200)
         a.pack_configure()
         pack.pack_propagate(False)
@@ -280,7 +280,7 @@ class PackTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(pack.winfo_reqheight(), 40)
 
     def test_pack_slaves(self):
-        pack, a, b, c, d = self.create2()
+        pack, a, b, _c, _d = self.create2()
         self.assertEqual(pack.pack_slaves(), [])
         a.pack_configure()
         self.assertEqual(pack.pack_slaves(), [a])
@@ -301,10 +301,10 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         return t, f, f2
 
     def test_place_configure_in(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         self.assertEqual(f2.winfo_manager(), "")
         with self.assertRaisesRegex(
-            TclError, "can't place %s relative to itself" % re.escape(str(f2))
+            TclError, f"can't place {re.escape(str(f2))} relative to itself"
         ):
             f2.place_configure(in_=f2)
         if tcl_version >= (8, 5):
@@ -315,7 +315,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(f2.winfo_manager(), "place")
 
     def test_place_configure_x(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f)
         self.assertEqual(f2.place_info()["x"], "0")
         self.root.update()
@@ -332,7 +332,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(in_=f, x="spam")
 
     def test_place_configure_y(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f)
         self.assertEqual(f2.place_info()["y"], "0")
         self.root.update()
@@ -349,7 +349,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(in_=f, y="spam")
 
     def test_place_configure_relx(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f)
         self.assertEqual(f2.place_info()["relx"], "0")
         self.root.update()
@@ -368,7 +368,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(in_=f, relx="spam")
 
     def test_place_configure_rely(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f)
         self.assertEqual(f2.place_info()["rely"], "0")
         self.root.update()
@@ -397,7 +397,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             self.assertEqual(f.place_info()["anchor"], value)
 
     def test_place_configure_width(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f, width=120)
         self.root.update()
         self.assertEqual(f2.winfo_width(), 120)
@@ -408,7 +408,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(width="abcd")
 
     def test_place_configure_height(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f, height=120)
         self.root.update()
         self.assertEqual(f2.winfo_height(), 120)
@@ -419,7 +419,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(height="abcd")
 
     def test_place_configure_relwidth(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f, relwidth=0.5)
         self.root.update()
         self.assertEqual(f2.winfo_width(), 75)
@@ -432,7 +432,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             f2.place_configure(relwidth="abcd")
 
     def test_place_configure_relheight(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(in_=f, relheight=0.5)
         self.root.update()
         self.assertEqual(f2.winfo_height(), 40)
@@ -465,7 +465,7 @@ class PlaceTest(AbstractWidgetTest, unittest.TestCase):
             foo.place_forget(0)
 
     def test_place_info(self):
-        t, f, f2 = self.create2()
+        _t, f, f2 = self.create2()
         f2.place_configure(
             in_=f,
             x=1,

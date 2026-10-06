@@ -87,10 +87,10 @@ def initlog(*allargs):
     send an error message).
 
     """
-    global log, logfile, logfp
+    global log, logfile, logfp  # noqa: PLW0602
     if logfile and not logfp:
         try:
-            logfp = open(logfile, "a")
+            logfp = open(logfile, "a")  # noqa: SIM115
         except OSError:
             pass
     if not logfp:
@@ -284,10 +284,10 @@ class MiniFieldStorage:
     list = None
     type = None
     file = None
-    type_options = {}
+    type_options = {}  # noqa: RUF012
     disposition = None
-    disposition_options = {}
-    headers = {}
+    disposition_options = {}  # noqa: RUF012
+    headers = {}  # noqa: RUF012
 
     def __init__(self, name, value):
         """Constructor from field name and value."""
@@ -297,7 +297,7 @@ class MiniFieldStorage:
 
     def __repr__(self):
         """Return printable representation."""
-        return "MiniFieldStorage(%r, %r)" % (self.name, self.value)
+        return f"MiniFieldStorage({self.name!r}, {self.value!r})"
 
 
 class FieldStorage:
@@ -451,7 +451,7 @@ class FieldStorage:
 
         if not isinstance(outerboundary, bytes):
             raise TypeError(
-                "outerboundary must be bytes, not %s" % type(outerboundary).__name__
+                f"outerboundary must be bytes, not {type(outerboundary).__name__}"
             )
         self.outerboundary = outerboundary
 
@@ -532,7 +532,7 @@ class FieldStorage:
 
     def __repr__(self):
         """Return a printable representation."""
-        return "FieldStorage(%r, %r, %r)" % (self.name, self.filename, self.value)
+        return f"FieldStorage({self.name!r}, {self.filename!r}, {self.value!r})"
 
     def __iter__(self):
         return iter(self.keys())
@@ -602,7 +602,7 @@ class FieldStorage:
         """Dictionary style keys() method."""
         if self.list is None:
             raise TypeError("not indexable")
-        return list(set(item.name for item in self.list))
+        return list({item.name for item in self.list})
 
     def __contains__(self, key):
         """Dictionary style __contains__ method."""
@@ -623,8 +623,8 @@ class FieldStorage:
         """Internal: read data in query string format."""
         qs = self.fp.read(self.length)
         if not isinstance(qs, bytes):
-            raise ValueError(
-                "%s should return bytes, got %s" % (self.fp, type(qs).__name__)
+            raise ValueError(  # noqa: TRY004
+                f"{self.fp} should return bytes, got {type(qs).__name__}"
             )
         qs = qs.decode(self.encoding, self.errors)
         if self.qs_on_post:
@@ -647,7 +647,7 @@ class FieldStorage:
         """Internal: read a part that is itself multipart."""
         ib = self.innerboundary
         if not valid_boundary(ib):
-            raise ValueError("Invalid boundary in multipart form: %r" % (ib,))
+            raise ValueError(f"Invalid boundary in multipart form: {ib!r}")
         self.list = []
         if self.qs_on_post:
             query = urllib.parse.parse_qsl(
@@ -664,8 +664,8 @@ class FieldStorage:
         klass = self.FieldStorageClass or self.__class__
         first_line = self.fp.readline()  # bytes
         if not isinstance(first_line, bytes):
-            raise ValueError(
-                "%s should return bytes, got %s" % (self.fp, type(first_line).__name__)
+            raise ValueError(  # noqa: TRY004
+                f"{self.fp} should return bytes, got {type(first_line).__name__}"
             )
         self.bytes_read += len(first_line)
 
@@ -745,9 +745,8 @@ class FieldStorage:
             while todo > 0:
                 data = self.fp.read(min(todo, self.bufsize))  # bytes
                 if not isinstance(data, bytes):
-                    raise ValueError(
-                        "%s should return bytes, got %s"
-                        % (self.fp, type(data).__name__)
+                    raise ValueError(  # noqa: TRY004
+                        f"{self.fp} should return bytes, got {type(data).__name__}"
                     )
                 self.bytes_read += len(data)
                 if not data:
@@ -769,12 +768,11 @@ class FieldStorage:
 
     def __write(self, line):
         """line is always bytes, not string"""
-        if self.__file is not None:
-            if self.__file.tell() + len(line) > 1000:
-                self.file = self.make_file()
-                data = self.__file.getvalue()
-                self.file.write(data)
-                self.__file = None
+        if self.__file is not None and self.__file.tell() + len(line) > 1000:
+            self.file = self.make_file()
+            data = self.__file.getvalue()
+            self.file.write(data)
+            self.__file = None
         if self._binary_file:
             # keep bytes
             self.file.write(line)
@@ -916,14 +914,14 @@ def test(environ=os.environ):
         print_environ_usage()
 
         def f():
-            exec("testing print_exception() -- <I>italics?</I>")
+            exec("testing print_exception() -- <I>italics?</I>")  # noqa: S102
 
         def g(f=f):
             f()
 
         print("<H3>What follows is a test, not an actual exception:</H3>")
         g()
-    except:
+    except:  # noqa: E722
         print_exception()
 
     print("<H1>Second try with a small maxlen...</H1>")
@@ -936,7 +934,7 @@ def test(environ=os.environ):
         print_arguments()
         print_form(form)
         print_environ(environ)
-    except:
+    except:  # noqa: E722
         print_exception()
 
 
@@ -949,8 +947,7 @@ def print_exception(type=None, value=None, tb=None, limit=None):
     print("<H3>Traceback (most recent call last):</H3>")
     list = traceback.format_tb(tb, limit) + traceback.format_exception_only(type, value)
     print(
-        "<PRE>%s<B>%s</B></PRE>"
-        % (
+        "<PRE>{}<B>{}</B></PRE>".format(
             html.escape("".join(list[:-1])),
             html.escape(list[-1]),
         )

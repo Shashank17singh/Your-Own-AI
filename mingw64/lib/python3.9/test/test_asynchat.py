@@ -34,7 +34,7 @@ class echo_server(threading.Thread):
     def run(self):
         self.sock.listen()
         self.event.set()
-        conn, client = self.sock.accept()
+        conn, _client = self.sock.accept()
         self.buffer = b""
         # collect data until quit message is seen
         while SERVER_QUIT not in self.buffer:
@@ -57,7 +57,7 @@ class echo_server(threading.Thread):
                 n = conn.send(self.buffer[: self.chunk_size])
                 time.sleep(0.001)
                 self.buffer = self.buffer[n:]
-        except:
+        except:  # noqa: E722, S110
             pass
 
         conn.close()
@@ -148,7 +148,7 @@ class TestAsynchat(unittest.TestCase):
 
     def numeric_terminator_check(self, termlen):
         # Try reading a fixed number of bytes
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(termlen, s.port)
         data = b"hello world, I'm not dead yet!\n"
         c.push(data)
@@ -168,7 +168,7 @@ class TestAsynchat(unittest.TestCase):
 
     def test_none_terminator(self):
         # Try reading a fixed number of bytes
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(None, s.port)
         data = b"hello world, I'm not dead yet!\n"
         c.push(data)
@@ -180,7 +180,7 @@ class TestAsynchat(unittest.TestCase):
         self.assertEqual(c.buffer, data)
 
     def test_simple_producer(self):
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(b"\n", s.port)
         data = b"hello world\nI'm not dead yet!\n"
         p = asynchat.simple_producer(data + SERVER_QUIT, buffer_size=8)
@@ -191,7 +191,7 @@ class TestAsynchat(unittest.TestCase):
         self.assertEqual(c.contents, [b"hello world", b"I'm not dead yet!"])
 
     def test_string_producer(self):
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(b"\n", s.port)
         data = b"hello world\nI'm not dead yet!\n"
         c.push_with_producer(data + SERVER_QUIT)
@@ -202,7 +202,7 @@ class TestAsynchat(unittest.TestCase):
 
     def test_empty_line(self):
         # checks that empty lines are handled correctly
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(b"\n", s.port)
         c.push(b"hello world\n\nI'm not dead yet!\n")
         c.push(SERVER_QUIT)
@@ -212,7 +212,7 @@ class TestAsynchat(unittest.TestCase):
         self.assertEqual(c.contents, [b"hello world", b"", b"I'm not dead yet!"])
 
     def test_close_when_done(self):
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         s.start_resend_event = threading.Event()
         c = echo_client(b"\n", s.port)
         c.push(b"hello world\nI'm not dead yet!\n")
@@ -236,7 +236,7 @@ class TestAsynchat(unittest.TestCase):
     def test_push(self):
         # Issue #12523: push() should raise a TypeError if it doesn't get
         # a bytes string
-        s, event = start_echo_server()
+        s, _event = start_echo_server()
         c = echo_client(b"\n", s.port)
         data = b"bytes\n"
         c.push(data)

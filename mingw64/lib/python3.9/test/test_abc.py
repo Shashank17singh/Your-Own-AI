@@ -606,7 +606,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
             exc_msg = "exception from __subclasses__"
 
             def raise_exc():
-                raise Exception(exc_msg)
+                raise Exception(exc_msg)  # noqa: TRY002
 
             class S(metaclass=abc_ABCMeta):
                 __subclasses__ = raise_exc
@@ -690,7 +690,7 @@ def test_factory(abc_ABCMeta, abc_get_cache_token):
             class Receiver(ReceivesClassKwargs, abc_ABC, x=1, y=2, z=3):
                 pass
 
-            self.assertEqual(saved_kwargs, dict(x=1, y=2, z=3))
+            self.assertEqual(saved_kwargs, {"x": 1, "y": 2, "z": 3})
 
     return TestLegacyAPI, TestABC, TestABCWithInitSubclass
 

@@ -16,7 +16,7 @@ class CallingOrder:
     def test_first_called(self):
         # [first called]
         mod = "top_level"
-        with util.mock_spec(mod) as first, util.mock_spec(mod) as second:
+        with util.mock_spec(mod) as first, util.mock_spec(mod) as second:  # noqa: SIM117
             with util.import_state(meta_path=[first, second]):
                 self.assertIs(self.__import__(mod), first.modules[mod])
 
@@ -35,7 +35,7 @@ class CallingOrder:
             del sys.modules[module_name]
         except KeyError:
             pass
-        with util.import_state(meta_path=[]):
+        with util.import_state(meta_path=[]):  # noqa: SIM117
             with warnings.catch_warnings(record=True) as w:
                 warnings.simplefilter("always")
                 self.assertIsNone(importlib._bootstrap._find_spec("nothing", None))

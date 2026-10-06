@@ -155,7 +155,7 @@ class DictReader:
     def __next__(self):
         if self.line_num == 0:
             # Used only for its side effect.
-            self.fieldnames
+            self.fieldnames  # noqa: B018
         row = next(self.reader)
         self.line_num = self.reader.line_num
 
@@ -190,7 +190,7 @@ class DictWriter:
         self.restval = restval  # for writing short dicts
         if extrasaction.lower() not in ("raise", "ignore"):
             raise ValueError(
-                "extrasaction (%s) must be 'raise' or 'ignore'" % extrasaction
+                f"extrasaction ({extrasaction}) must be 'raise' or 'ignore'"
             )
         self.extrasaction = extrasaction
         self.writer = writer(f, dialect, *args, **kwds)
@@ -218,7 +218,7 @@ class DictWriter:
 
 # Guard Sniffer's type checking against builds that exclude complex()
 try:
-    complex
+    complex  # noqa: B018
 except NameError:
     complex = float
 
@@ -326,8 +326,9 @@ class Sniffer:
         # if we see an extra quote between delimiters, we've got a
         # double quoted format
         dq_regexp = re.compile(
-            r"((%(delim)s)|^)\W*%(quote)s[^%(delim)s\n]*%(quote)s[^%(delim)s\n]*%(quote)s\W*((%(delim)s)|$)"
-            % {"delim": re.escape(delim), "quote": quotechar},
+            r"(({delim})|^)\W*{quote}[^{delim}\n]*{quote}[^{delim}\n]*{quote}\W*(({delim})|$)".format(
+                delim=re.escape(delim), quote=quotechar
+            ),
             re.MULTILINE,
         )
 
@@ -379,7 +380,7 @@ class Sniffer:
                     metaFrequency[freq] = metaFrequency.get(freq, 0) + 1
                     charFrequency[char] = metaFrequency
 
-            for char in charFrequency:
+            for char in charFrequency:  # noqa: PLC0206
                 items = list(charFrequency[char].items())
                 if len(items) == 1 and items[0][0] == 0:
                     continue
@@ -405,7 +406,7 @@ class Sniffer:
             threshold = 0.9
             while len(delims) == 0 and consistency >= threshold:
                 for k, v in modeList:
-                    if v[0] > 0 and v[1] > 0:
+                    if v[0] > 0 and v[1] > 0:  # noqa: SIM102
                         if (v[1] / total) >= consistency and (
                             delimiters is None or k in delimiters
                         ):
@@ -413,8 +414,8 @@ class Sniffer:
                 consistency -= 0.01
 
             if len(delims) == 1:
-                delim = list(delims.keys())[0]
-                skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)
+                delim = next(iter(delims.keys()))
+                skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)  # noqa: UP031
                 return (delim, skipinitialspace)
 
             # analyze another chunkLength lines
@@ -428,7 +429,7 @@ class Sniffer:
         if len(delims) > 1:
             for d in self.preferred:
                 if d in delims:
-                    skipinitialspace = data[0].count(d) == data[0].count("%c " % d)
+                    skipinitialspace = data[0].count(d) == data[0].count("%c " % d)  # noqa: UP031
                     return (d, skipinitialspace)
 
         # nothing else indicates a preference, pick the character that
@@ -437,7 +438,7 @@ class Sniffer:
         items.sort()
         delim = items[-1][1]
 
-        skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)
+        skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)  # noqa: UP031
         return (delim, skipinitialspace)
 
     def has_header(self, sample):

@@ -15,7 +15,7 @@ class ABC(type):
 
 
 class Integer(metaclass=ABC):
-    __subclass__ = {int}
+    __subclass__ = {int}  # noqa: RUF012
 
 
 class SubInt(Integer):

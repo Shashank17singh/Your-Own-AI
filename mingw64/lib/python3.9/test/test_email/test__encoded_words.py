@@ -6,7 +6,9 @@ from test.test_email import TestEmailBase
 
 
 class TestDecodeQ(TestEmailBase):
-    def _test(self, source, ex_result, ex_defects=[]):
+    def _test(self, source, ex_result, ex_defects=None):
+        if ex_defects is None:
+            ex_defects = []
         result, defects = _ew.decode_q(source)
         self.assertEqual(result, ex_result)
         self.assertDefectsEqual(defects, ex_defects)
@@ -23,7 +25,9 @@ class TestDecodeQ(TestEmailBase):
 
 
 class TestDecodeB(TestEmailBase):
-    def _test(self, source, ex_result, ex_defects=[]):
+    def _test(self, source, ex_result, ex_defects=None):
+        if ex_defects is None:
+            ex_defects = []
         result, defects = _ew.decode_b(source)
         self.assertEqual(result, ex_result)
         self.assertDefectsEqual(defects, ex_defects)
@@ -62,7 +66,9 @@ class TestDecode(TestEmailBase):
         with self.assertRaises(KeyError):
             _ew.decode("=?utf-8?X?somevalue?=")
 
-    def _test(self, source, result, charset="us-ascii", lang="", defects=[]):
+    def _test(self, source, result, charset="us-ascii", lang="", defects=None):
+        if defects is None:
+            defects = []
         res, char, l, d = _ew.decode(source)
         self.assertEqual(res, result)
         self.assertEqual(char, charset)

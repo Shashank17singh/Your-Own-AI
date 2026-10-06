@@ -233,9 +233,8 @@ class UUID:
                 | (clock_seq << 48)
                 | node
             )
-        if int is not None:
-            if not 0 <= int < 1 << 128:
-                raise ValueError("int is out of range (need a 128-bit value)")
+        if int is not None and not 0 <= int < 1 << 128:
+            raise ValueError("int is out of range (need a 128-bit value)")
         if version is not None:
             if not 1 <= version <= 5:
                 raise ValueError("illegal version number")
@@ -300,14 +299,14 @@ class UUID:
         return self.int
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, str(self))
+        return f"{self.__class__.__name__}({str(self)!r})"
 
     def __setattr__(self, name, value):
         raise TypeError("UUID objects are immutable")
 
     def __str__(self):
-        hex = "%032x" % self.int
-        return "%s-%s-%s-%s-%s" % (hex[:8], hex[8:12], hex[12:16], hex[16:20], hex[20:])
+        hex = f"{self.int:032x}"
+        return f"{hex[:8]}-{hex[8:12]}-{hex[12:16]}-{hex[16:20]}-{hex[20:]}"
 
     @property
     def bytes(self):
@@ -372,7 +371,7 @@ class UUID:
 
     @property
     def hex(self):
-        return "%032x" % self.int
+        return f"{self.int:032x}"
 
     @property
     def urn(self):
@@ -421,7 +420,7 @@ def _get_command_stdout(command, *args):
         )
         if not proc:
             return None
-        stdout, stderr = proc.communicate()
+        stdout, _stderr = proc.communicate()
         return io.BytesIO(stdout)
     except (OSError, subprocess.SubprocessError):
         return None
@@ -590,7 +589,7 @@ def _arp_getnode():
 
     # This works on Linux, FreeBSD and NetBSD
     mac = _find_mac_near_keyword(
-        "arp", "-an", [os.fsencode("(%s)" % ip_addr)], lambda i: i + 2
+        "arp", "-an", [os.fsencode(f"({ip_addr})")], lambda i: i + 2
     )
     # Return None instead of 0.
     if mac:
@@ -719,7 +718,7 @@ def getnode():
     for getter in _GETTERS + [_random_getnode]:
         try:
             _node = getter()
-        except:
+        except:  # noqa: E722, S112
             continue
         if (_node is not None) and (0 <= _node < (1 << 48)):
             return _node

@@ -83,7 +83,7 @@ class DummyDTPHandler(asynchat.async_chat):
         super().push(what.encode(self.encoding))
 
     def handle_error(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 class DummyFTPHandler(asynchat.async_chat):
@@ -129,17 +129,17 @@ class DummyFTPHandler(asynchat.async_chat):
             method = getattr(self, "cmd_" + cmd)
             method(arg)
         else:
-            self.push('550 command "%s" not understood.' % cmd)
+            self.push(f'550 command "{cmd}" not understood.')
 
     def handle_error(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
     def push(self, data):
         asynchat.async_chat.push(self, data.encode(self.encoding) + b"\r\n")
 
     def cmd_port(self, arg):
         addr = list(map(int, arg.split(",")))
-        ip = "%d.%d.%d.%d" % tuple(addr[:4])
+        ip = "%d.%d.%d.%d" % tuple(addr[:4])  # noqa: UP031
         port = (addr[4] * 256) + addr[5]
         s = socket.create_connection((ip, port), timeout=TIMEOUT)
         self.dtp = self.dtp_handler(s, baseclass=self)
@@ -153,12 +153,12 @@ class DummyFTPHandler(asynchat.async_chat):
             ip = ip.replace(".", ",")
             p1 = port / 256
             p2 = port % 256
-            self.push("227 entering passive mode (%s,%d,%d)" % (ip, p1, p2))
-            conn, addr = sock.accept()
+            self.push("227 entering passive mode (%s,%d,%d)" % (ip, p1, p2))  # noqa: UP031
+            conn, _addr = sock.accept()
             self.dtp = self.dtp_handler(conn, baseclass=self)
 
     def cmd_eprt(self, arg):
-        af, ip, port = arg.split(arg[0])[1:-1]
+        _af, ip, port = arg.split(arg[0])[1:-1]
         port = int(port)
         s = socket.create_connection((ip, port), timeout=TIMEOUT)
         self.dtp = self.dtp_handler(s, baseclass=self)
@@ -170,8 +170,8 @@ class DummyFTPHandler(asynchat.async_chat):
         ) as sock:
             sock.settimeout(TIMEOUT)
             port = sock.getsockname()[1]
-            self.push("229 entering extended passive mode (|||%d|)" % port)
-            conn, addr = sock.accept()
+            self.push("229 entering extended passive mode (|||%d|)" % port)  # noqa: UP031
+            conn, _addr = sock.accept()
             self.dtp = self.dtp_handler(conn, baseclass=self)
 
     def cmd_echo(self, arg):
@@ -206,7 +206,7 @@ class DummyFTPHandler(asynchat.async_chat):
         self.push("250 1000")
 
     def cmd_mkd(self, arg):
-        self.push('257 "%s"' % arg)
+        self.push(f'257 "{arg}"')
 
     def cmd_rmd(self, arg):
         self.push("250 rmd ok")
@@ -313,7 +313,7 @@ class DummyFTPServer(asyncore.dispatcher, threading.Thread):
         return 0
 
     def handle_error(self):
-        raise Exception
+        raise Exception  # noqa: TRY002
 
 
 if ssl is not None:
@@ -417,7 +417,7 @@ if ssl is not None:
                 raise
 
         def handle_error(self):
-            raise Exception
+            raise Exception  # noqa: TRY002
 
         def close(self):
             if (
@@ -708,7 +708,7 @@ class TestFTPClass(TestCase):
         self.assertRaises(StopIteration, next, self.client.mlsd())
         set_data("")
         for x in self.client.mlsd():
-            self.fail("unexpected data %s" % x)
+            self.fail(f"unexpected data {x}")
 
     def test_makeport(self):
         with self.client.makeport():
@@ -799,7 +799,7 @@ class TestFTPClass(TestCase):
             self.client.quit()
         except OSError as e:
             if e.errno == errno.EADDRINUSE:
-                self.skipTest("couldn't bind to port %d" % port)
+                self.skipTest("couldn't bind to port %d" % port)  # noqa: UP031
             raise
 
     def test_source_address_passive_connection(self):
@@ -810,7 +810,7 @@ class TestFTPClass(TestCase):
                 self.assertEqual(sock.getsockname()[1], port)
         except OSError as e:
             if e.errno == errno.EADDRINUSE:
-                self.skipTest("couldn't bind to port %d" % port)
+                self.skipTest("couldn't bind to port %d" % port)  # noqa: UP031
             raise
 
     def test_parse257(self):
@@ -831,7 +831,7 @@ class TestFTPClass(TestCase):
         )
 
     def test_retrlines_too_long(self):
-        self.client.sendcmd("SETLONGRETR %d" % (self.client.maxline * 2))
+        self.client.sendcmd("SETLONGRETR %d" % (self.client.maxline * 2))  # noqa: UP031
         received = []
         self.assertRaises(ftplib.Error, self.client.retrlines, "retr", received.append)
 
@@ -1022,8 +1022,8 @@ class TestTLS_FTPClass(TestCase):
 
         self.client.connect(self.server.host, self.server.port)
         self.client.prot_p()
-        with self.assertRaises(ssl.CertificateError):
-            with self.client.transfercmd("list") as sock:
+        with self.assertRaises(ssl.CertificateError):  # noqa: SIM117
+            with self.client.transfercmd("list"):
                 pass
         self.client.quit()
 
@@ -1033,7 +1033,7 @@ class TestTLS_FTPClass(TestCase):
 
         self.client.connect("localhost", self.server.port)
         self.client.prot_p()
-        with self.client.transfercmd("list") as sock:
+        with self.client.transfercmd("list"):
             pass
 
 
@@ -1067,7 +1067,7 @@ class TestTimeouts(TestCase):
         # (1) Signal the caller that we are ready to accept the connection.
         self.evt.set()
         try:
-            conn, addr = self.sock.accept()
+            conn, _addr = self.sock.accept()
         except TimeoutError:
             pass
         else:

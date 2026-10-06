@@ -19,17 +19,17 @@ class BaseTestCase(unittest.TestCase):
         if isinstance(textin, list):
             result = []
             for i in range(len(textin)):
-                result.append("  %d: %r" % (i, textin[i]))
+                result.append("  %d: %r" % (i, textin[i]))  # noqa: UP031
             result = "\n".join(result) if result else "  no lines"
         elif isinstance(textin, str):
-            result = "  %s\n" % repr(textin)
+            result = f"  {textin!r}\n"
         return result
 
     def check(self, result, expect):
         self.assertEqual(
             result,
             expect,
-            "expected:\n%s\nbut got:\n%s" % (self.show(expect), self.show(result)),
+            f"expected:\n{self.show(expect)}\nbut got:\n{self.show(result)}",
         )
 
     def check_wrap(self, text, width, expect, **kwargs):
@@ -38,9 +38,7 @@ class BaseTestCase(unittest.TestCase):
 
     def check_split(self, text, expect):
         result = self.wrapper._split(text)
-        self.assertEqual(
-            result, expect, "\nexpected %r\nbut got  %r" % (expect, result)
-        )
+        self.assertEqual(result, expect, f"\nexpected {expect!r}\nbut got  {result!r}")
 
 
 class WrapTestCase(BaseTestCase):

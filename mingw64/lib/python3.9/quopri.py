@@ -236,9 +236,9 @@ def main():
             fp = sys.stdin.buffer
         else:
             try:
-                fp = open(file, "rb")
+                fp = open(file, "rb")  # noqa: SIM115
             except OSError as msg:
-                sys.stderr.write("%s: can't open (%s)\n" % (file, msg))
+                sys.stderr.write(f"{file}: can't open ({msg})\n")
                 sts = 1
                 continue
         try:

@@ -65,7 +65,7 @@ class CryptTestCase(unittest.TestCase):
         for method in (crypt.METHOD_SHA256, crypt.METHOD_SHA512):
             for rounds in 1000, 10_000, 100_000:
                 salt = crypt.mksalt(method, rounds=rounds)
-                self.assertIn("$rounds=%d$" % rounds, salt)
+                self.assertIn("$rounds=%d$" % rounds, salt)  # noqa: UP031
                 self.assertEqual(len(salt) - method.salt_chars, 11 + len(str(rounds)))
                 cr = crypt.crypt("mypassword", salt)
                 self.assertTrue(cr)
@@ -78,7 +78,7 @@ class CryptTestCase(unittest.TestCase):
     def test_blowfish_rounds(self):
         for log_rounds in range(4, 11):
             salt = crypt.mksalt(crypt.METHOD_BLOWFISH, rounds=1 << log_rounds)
-            self.assertIn("$%02d$" % log_rounds, salt)
+            self.assertIn("$%02d$" % log_rounds, salt)  # noqa: UP031
             self.assertIn(len(salt) - crypt.METHOD_BLOWFISH.salt_chars, {6, 7})
             cr = crypt.crypt("mypassword", salt)
             self.assertTrue(cr)

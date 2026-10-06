@@ -71,20 +71,18 @@ class BaseTest(unittest.TestCase):
             optdict,
             expected_opts,
             """
-Options are %(optdict)s.
-Should be %(expected_opts)s.
-Args were %(args)s."""
-            % locals(),
+Options are {optdict}.
+Should be {expected_opts}.
+Args were {args}.""".format(**locals()),
         )
 
         self.assertEqual(
             positional_args,
             expected_positional_args,
             """
-Positional arguments are %(positional_args)s.
-Should be %(expected_positional_args)s.
-Args were %(args)s."""
-            % locals(),
+Positional arguments are {positional_args}.
+Should be {expected_positional_args}.
+Args were {args}.""".format(**locals()),
         )
 
         return (options, positional_args)
@@ -117,36 +115,33 @@ Args were %(args)s."""
             if isinstance(expected_message, re.Pattern):
                 self.assertTrue(
                     expected_message.search(actual_message),
-                    """\
+                    f"""\
 expected exception message pattern:
-/%s/
+/{expected_message.pattern}/
 actual exception message:
-'''%s'''
-"""
-                    % (expected_message.pattern, actual_message),
+'''{actual_message}'''
+""",
                 )
             else:
                 self.assertEqual(
                     actual_message,
                     expected_message,
-                    """\
+                    f"""\
 expected exception message:
-'''%s'''
+'''{expected_message}'''
 actual exception message:
-'''%s'''
-"""
-                    % (expected_message, actual_message),
+'''{actual_message}'''
+""",
                 )
 
             return err
         else:
             self.fail(
-                """expected exception %(expected_exception)s not raised
-called %(func)r
-with args %(args)r
-and kwargs %(kwargs)r
-"""
-                % locals()
+                """expected exception {expected_exception} not raised
+called {func!r}
+with args {args!r}
+and kwargs {kwargs!r}
+""".format(**locals())
             )
 
     # -- Assertions used in more than one class --------------------
@@ -179,7 +174,7 @@ and kwargs %(kwargs)r
         except InterceptedError as err:
             self.assertTrue(
                 isinstance(output, str),
-                "expected output to be an ordinary string, not %r" % type(output),
+                f"expected output to be an ordinary string, not {type(output)!r}",
             )
 
             if output != expected_output:
@@ -222,7 +217,11 @@ class TestOptionChecks(BaseTest):
     def setUp(self):
         self.parser = OptionParser(usage=SUPPRESS_USAGE)
 
-    def assertOptionError(self, expected_message, args=[], kwargs={}):
+    def assertOptionError(self, expected_message, args=None, kwargs=None):
+        if kwargs is None:
+            kwargs = {}
+        if args is None:
+            args = []
         self.assertRaises(make_option, args, kwargs, OptionError, expected_message)
 
     def test_opt_string_empty(self):
@@ -285,7 +284,7 @@ class TestOptionChecks(BaseTest):
         typename = str.__name__
         self.assertOptionError(
             "option -b/--bad: choices must be a list of "
-            "strings ('%s' supplied)" % typename,
+            f"strings ('{typename}' supplied)",
             ["-b", "--bad"],
             {"type": "choice", "choices": "bad choices"},
         )
@@ -509,7 +508,7 @@ def _check_duration(option, opt, value):
         else:
             return int(value[:-1]) * _time_units[value[-1]]
     except (ValueError, IndexError):
-        raise OptionValueError("option %s: invalid duration: %r" % (opt, value))
+        raise OptionValueError(f"option {opt}: invalid duration: {value!r}")
 
 
 class DurationOption(Option):
@@ -762,7 +761,7 @@ class TestStandard(BaseTest):
         )
 
     def test_defaults(self):
-        options, args = self.parser.parse_args([])
+        options, _args = self.parser.parse_args([])
         defaults = self.parser.get_default_values()
         self.assertEqual(vars(defaults), vars(options))
 
@@ -840,11 +839,11 @@ class TestBool(BaseTest):
         self.assertParseOK([], {"verbose": ""}, [])
 
     def test_bool_false(self):
-        options, args = self.assertParseOK(["-q"], {"verbose": 0}, [])
+        options, _args = self.assertParseOK(["-q"], {"verbose": 0}, [])
         self.assertTrue(options.verbose is False)
 
     def test_bool_true(self):
-        options, args = self.assertParseOK(["-v"], {"verbose": 1}, [])
+        options, _args = self.assertParseOK(["-v"], {"verbose": 1}, [])
         self.assertTrue(options.verbose is True)
 
     def test_bool_flicker_on_and_off(self):
@@ -1095,9 +1094,9 @@ class TestExtendAddTypes(BaseTest):
     class MyOption(Option):
         def check_file(option, opt, value):
             if not os.path.exists(value):
-                raise OptionValueError("%s: file does not exist" % value)
+                raise OptionValueError(f"{value}: file does not exist")
             elif not os.path.isfile(value):
-                raise OptionValueError("%s: not a regular file" % value)
+                raise OptionValueError(f"{value}: not a regular file")
             return value
 
         TYPES = Option.TYPES + ("file",)
@@ -1115,14 +1114,14 @@ class TestExtendAddTypes(BaseTest):
     def test_filetype_noexist(self):
         self.assertParseFail(
             ["--file", support.TESTFN, "-afoo"],
-            "%s: file does not exist" % support.TESTFN,
+            f"{support.TESTFN}: file does not exist",
         )
 
     def test_filetype_notfile(self):
         os.mkdir(support.TESTFN)
         self.assertParseFail(
             ["--file", support.TESTFN, "-afoo"],
-            "%s: not a regular file" % support.TESTFN,
+            f"{support.TESTFN}: not a regular file",
         )
 
 
@@ -1194,7 +1193,7 @@ class TestCallback(BaseTest):
 
             setattr(parser_.values, option.dest, value)
         else:
-            self.fail("Unknown option %r in process_opt." % opt)
+            self.fail(f"Unknown option {opt!r} in process_opt.")
 
     def test_callback(self):
         self.assertParseOK(["-x", "--file=foo"], {"filename": "foo", "x": 42}, [])
@@ -1268,7 +1267,7 @@ class TestCallbackMeddleArgs(BaseTest):
         nargs = int(opt[1:])
         rargs = parser_.rargs
         if len(rargs) < nargs:
-            self.fail("Expected %d arguments for %s option." % (nargs, opt))
+            self.fail("Expected %d arguments for %s option." % (nargs, opt))  # noqa: UP031
         dest = parser_.values.ensure_value(option.dest, [])
         dest.append(tuple(rargs[0:nargs]))
         parser_.largs.append(nargs)

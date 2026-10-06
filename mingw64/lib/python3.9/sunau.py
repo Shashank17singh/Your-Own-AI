@@ -165,7 +165,7 @@ class Au_read:
         if type(f) == str:
             import builtins
 
-            f = builtins.open(f, "rb")
+            f = builtins.open(f, "rb")  # noqa: SIM115
             self._opened = True
         else:
             self._opened = False
@@ -321,7 +321,7 @@ class Au_write:
         if type(f) == str:
             import builtins
 
-            f = builtins.open(f, "wb")
+            f = builtins.open(f, "wb")  # noqa: SIM115
             self._opened = True
         else:
             self._opened = False

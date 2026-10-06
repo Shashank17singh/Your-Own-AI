@@ -243,7 +243,7 @@ class Telnet:
 
         """
         if self.debuglevel > 0:
-            print("Telnet(%s,%s):" % (self.host, self.port), end=" ")
+            print(f"Telnet({self.host},{self.port}):", end=" ")
             if args:
                 print(msg % args)
             else:
@@ -464,7 +464,7 @@ class Telnet:
                             # We can't offer automatic processing of
                             # suboptions. Alas, we should not get any
                             # unless we did a WILL/DO before.
-                            self.msg("IAC %d not recognized" % ord(c))
+                            self.msg("IAC %d not recognized" % ord(c))  # noqa: UP031
                 elif len(self.iacseq) == 2:
                     cmd = self.iacseq[1:2]
                     self.iacseq = b""

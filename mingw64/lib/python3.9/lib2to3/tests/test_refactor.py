@@ -35,7 +35,7 @@ class TestRefactoringTool(unittest.TestCase):
     def check_instances(self, instances, classes):
         for inst, cls in zip(instances, classes):
             if not isinstance(inst, cls):
-                self.fail("%s are not instances of %s" % instances, classes)
+                self.fail("{} are not instances of {}".format(*instances), classes)
 
     def rt(self, options=None, fixers=_DEFAULT_FIXERS, explicit=None):
         return refactor.RefactoringTool(fixers, options, explicit)
@@ -247,15 +247,15 @@ from __future__ import print_function"""
         )
         # Testing that it logged this message when write=False was passed is
         # sufficient to see that it did not bail early after "No changes".
-        message_regex = r"Not writing changes to .*%s" % re.escape(
-            os.sep + os.path.basename(test_file)
+        message_regex = r"Not writing changes to .*{}".format(
+            re.escape(os.sep + os.path.basename(test_file))
         )
         for message in debug_messages:
             if "Not writing changes" in message:
                 self.assertRegex(message, message_regex)
                 break
         else:
-            self.fail("%r not matched in %r" % (message_regex, debug_messages))
+            self.fail(f"{message_regex!r} not matched in {debug_messages!r}")
 
     def test_refactor_dir(self):
         def check(structure, expected):
@@ -290,7 +290,7 @@ from __future__ import print_function"""
 
     def test_false_file_encoding(self):
         fn = os.path.join(TEST_DATA_DIR, "false_encoding.py")
-        data = self.check_file_refactoring(fn)
+        self.check_file_refactoring(fn)
 
     def test_bom(self):
         fn = os.path.join(TEST_DATA_DIR, "bom.py")

@@ -94,7 +94,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
 
         if verbose:
             print("1. Simple iteration")
-        fi = FileInput(files=(t1, t2, t3, t4))
+        fi = FileInput(files=(t1, t2, t3, t4))  # noqa: SIM115
         lines = list(fi)
         fi.close()
         self.assertEqual(len(lines), 31)
@@ -105,7 +105,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
 
         if verbose:
             print("2. Status variables")
-        fi = FileInput(files=(t1, t2, t3, t4))
+        fi = FileInput(files=(t1, t2, t3, t4))  # noqa: SIM115
         s = "x"
         while s and s != "Line 6 of file 2\n":
             s = fi.readline()
@@ -124,7 +124,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
 
         if verbose:
             print("4. Stdin")
-        fi = FileInput(files=(t1, t2, t3, t4, "-"))
+        fi = FileInput(files=(t1, t2, t3, t4, "-"))  # noqa: SIM115
         savestdin = sys.stdin
         try:
             sys.stdin = StringIO("Line 1 of stdin\nLine 2 of stdin\n")
@@ -138,7 +138,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
 
         if verbose:
             print("5. Boundary conditions")
-        fi = FileInput(files=(t1, t2, t3, t4))
+        fi = FileInput(files=(t1, t2, t3, t4))  # noqa: SIM115
         self.assertEqual(fi.lineno(), 0)
         self.assertEqual(fi.filename(), None)
         fi.nextfile()
@@ -149,7 +149,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
             print("6. Inplace")
         savestdout = sys.stdout
         try:
-            fi = FileInput(files=(t1, t2, t3, t4), inplace=1)
+            fi = FileInput(files=(t1, t2, t3, t4), inplace=1)  # noqa: SIM115
             for line in fi:
                 line = line[:-1].upper()
                 print(line)
@@ -157,7 +157,7 @@ class BufferSizesTests(BaseTests, unittest.TestCase):
         finally:
             sys.stdout = savestdout
 
-        fi = FileInput(files=(t1, t2, t3, t4))
+        fi = FileInput(files=(t1, t2, t3, t4))  # noqa: SIM115
         for line in fi:
             self.assertEqual(line[-1], "\n")
             m = pat.match(line[:-1])
@@ -182,7 +182,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
         t2 = self.writeTmp("")
         t3 = self.writeTmp("The only line there is.\n")
         t4 = self.writeTmp("")
-        fi = FileInput(files=(t1, t2, t3, t4))
+        fi = FileInput(files=(t1, t2, t3, t4))  # noqa: SIM115
 
         line = fi.readline()
         self.assertEqual(line, "The only line there is.\n")
@@ -200,7 +200,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
     def test_files_that_dont_end_with_newline(self):
         t1 = self.writeTmp("A\nB\nC")
         t2 = self.writeTmp("D\nE\nF")
-        fi = FileInput(files=(t1, t2))
+        fi = FileInput(files=(t1, t2))  # noqa: SIM115
         lines = list(fi)
         self.assertEqual(lines, ["A\n", "B\n", "C", "D\n", "E\n", "F"])
         self.assertEqual(fi.filelineno(), 3)
@@ -220,26 +220,26 @@ class FileInputTests(BaseTests, unittest.TestCase):
     def test_fileno(self):
         t1 = self.writeTmp("A\nB")
         t2 = self.writeTmp("C\nD")
-        fi = FileInput(files=(t1, t2))
+        fi = FileInput(files=(t1, t2))  # noqa: SIM115
         self.assertEqual(fi.fileno(), -1)
-        line = next(fi)
+        next(fi)
         self.assertNotEqual(fi.fileno(), -1)
         fi.nextfile()
         self.assertEqual(fi.fileno(), -1)
-        line = list(fi)
+        list(fi)
         self.assertEqual(fi.fileno(), -1)
 
     def test_opening_mode(self):
         try:
             # invalid mode, should raise ValueError
-            fi = FileInput(mode="w")
+            fi = FileInput(mode="w")  # noqa: SIM115
             self.fail("FileInput should reject invalid mode argument")
         except ValueError:
             pass
         # try opening in universal newline mode
         t1 = self.writeTmp(b"A\nB\r\nC\rD", mode="wb")
         with check_warnings(("", DeprecationWarning)):
-            fi = FileInput(files=t1, mode="U")
+            fi = FileInput(files=t1, mode="U")  # noqa: SIM115
         with check_warnings(("", DeprecationWarning)):
             lines = list(fi)
         self.assertEqual(lines, ["A\n", "B\n", "C\n", "D"])
@@ -247,7 +247,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
     def test_stdin_binary_mode(self):
         with mock.patch("sys.stdin") as m_stdin:
             m_stdin.buffer = BytesIO(b"spam, bacon, sausage, and spam")
-            fi = FileInput(files=["-"], mode="rb")
+            fi = FileInput(files=["-"], mode="rb")  # noqa: SIM115
             lines = list(fi)
             self.assertEqual(lines, [b"spam, bacon, sausage, and spam"])
 
@@ -256,7 +256,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
         try:
             sys.stdin = BytesIO(b"spam, bacon, sausage, and spam")
             self.assertFalse(hasattr(sys.stdin, "buffer"))
-            fi = FileInput(files=["-"], mode="rb")
+            fi = FileInput(files=["-"], mode="rb")  # noqa: SIM115
             lines = list(fi)
             self.assertEqual(lines, [b"spam, bacon, sausage, and spam"])
         finally:
@@ -265,7 +265,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
     def test_file_opening_hook(self):
         try:
             # cannot use openhook and inplace mode
-            fi = FileInput(inplace=1, openhook=lambda f, m: None)
+            fi = FileInput(inplace=1, openhook=lambda f, m: None)  # noqa: SIM115
             self.fail(
                 "FileInput should raise if both inplace "
                 "and openhook arguments are given"
@@ -273,7 +273,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
         except ValueError:
             pass
         try:
-            fi = FileInput(openhook=1)
+            fi = FileInput(openhook=1)  # noqa: SIM115
             self.fail("FileInput should check openhook for being callable")
         except ValueError:
             pass
@@ -519,7 +519,7 @@ class FileInputTests(BaseTests, unittest.TestCase):
         with FileInput(t1, inplace=True) as fi:
             line = fi.readline()
             self.assertEqual(line, "Pathlib file.")
-            print("Modified %s" % line)
+            print(f"Modified {line}")
         with open(t1) as f:
             self.assertEqual(f.read(), "Modified Pathlib file.\n")
 
@@ -605,7 +605,7 @@ class Test_fileinput_input(BaseFileInputGlobalMethodsTest):
         instance._file = object()
         fileinput._state = instance
         with self.assertRaises(RuntimeError) as cm:
-            fileinput.input()
+            fileinput.input()  # noqa: SIM115
         self.assertEqual(("input() already active",), cm.exception.args)
         self.assertIs(instance, fileinput._state, "fileinput._state")
 
@@ -641,7 +641,7 @@ class Test_fileinput_input(BaseFileInputGlobalMethodsTest):
         openhook = object()
 
         # call fileinput.input() with different values for each argument
-        result = fileinput.input(
+        result = fileinput.input(  # noqa: SIM115
             files=files, inplace=inplace, backup=backup, mode=mode, openhook=openhook
         )
 
@@ -900,7 +900,7 @@ class Test_hook_compressed(unittest.TestCase):
         original_open = gzip.open
         gzip.open = self.fake_open
         try:
-            result = fileinput.hook_compressed("test.gz", 3)
+            fileinput.hook_compressed("test.gz", 3)
         finally:
             gzip.open = original_open
 
@@ -912,7 +912,7 @@ class Test_hook_compressed(unittest.TestCase):
         original_open = bz2.BZ2File
         bz2.BZ2File = self.fake_open
         try:
-            result = fileinput.hook_compressed("test.bz2", 4)
+            fileinput.hook_compressed("test.bz2", 4)
         finally:
             bz2.BZ2File = original_open
 
@@ -931,7 +931,7 @@ class Test_hook_compressed(unittest.TestCase):
     def do_test_use_builtin_open(self, filename, mode):
         original_open = self.replace_builtin_open(self.fake_open)
         try:
-            result = fileinput.hook_compressed(filename, mode)
+            fileinput.hook_compressed(filename, mode)
         finally:
             self.replace_builtin_open(original_open)
 
@@ -959,7 +959,7 @@ class Test_hook_encoded(unittest.TestCase):
         try:
             filename = object()
             mode = object()
-            open_result = result(filename, mode)
+            result(filename, mode)
         finally:
             builtins.open = original_open
 

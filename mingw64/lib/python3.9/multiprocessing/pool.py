@@ -70,7 +70,7 @@ class ExceptionWithTraceback:
         tb = traceback.format_exception(type(exc), exc, tb)
         tb = "".join(tb)
         self.exc = exc
-        self.tb = '\n"""\n%s"""' % tb
+        self.tb = f'\n"""\n{tb}"""'
 
     def __reduce__(self):
         return rebuild_exc, (self.exc, self.tb)
@@ -96,10 +96,10 @@ class MaybeEncodingError(Exception):
         super().__init__(self.exc, self.value)
 
     def __str__(self):
-        return "Error sending result: '%s'. Reason: '%s'" % (self.value, self.exc)
+        return f"Error sending result: '{self.value}'. Reason: '{self.exc}'"
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self)
+        return f"<{self.__class__.__name__}: {self}>"
 
 
 def worker(
@@ -136,20 +136,20 @@ def worker(
         job, i, func, args, kwds = task
         try:
             result = (True, func(*args, **kwds))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             if wrap_exception and func is not _helper_reraises_exception:
                 e = ExceptionWithTraceback(e, e.__traceback__)
             result = (False, e)
         try:
             put((job, i, result))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             wrapped = MaybeEncodingError(e, result[1])
-            util.debug("Possible encoding error while sending result: %s" % (wrapped))
+            util.debug(f"Possible encoding error while sending result: {wrapped}")
             put((job, i, (False, wrapped)))
 
         task = job = result = func = args = kwds = None
         completed += 1
-    util.debug("worker exiting after %d tasks" % completed)
+    util.debug("worker exiting after %d tasks" % completed)  # noqa: UP031
 
 
 def _helper_reraises_exception(ex):
@@ -346,7 +346,7 @@ class Pool:
             worker = pool[i]
             if worker.exitcode is not None:
                 # worker exited
-                util.debug("cleaning up worker %d" % i)
+                util.debug("cleaning up worker %d" % i)  # noqa: UP031
                 worker.join()
                 cleaned = True
                 del pool[i]
@@ -439,11 +439,13 @@ class Pool:
         if self._state != RUN:
             raise ValueError("Pool not running")
 
-    def apply(self, func, args=(), kwds={}):
+    def apply(self, func, args=(), kwds=None):
         """
         Equivalent of `func(*args, **kwds)`.
         Pool must be running.
         """
+        if kwds is None:
+            kwds = {}
         return self.apply_async(func, args, kwds).get()
 
     def map(self, func, iterable, chunksize=None):
@@ -479,7 +481,7 @@ class Pool:
             i = -1
             for i, x in enumerate(iterable):
                 yield (result_job, i, func, (x,), {})
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             yield (result_job, i + 1, _helper_reraises_exception, (e,), {})
 
     def imap(self, func, iterable, chunksize=1):
@@ -536,10 +538,12 @@ class Pool:
             )
             return (item for chunk in result for item in chunk)
 
-    def apply_async(self, func, args=(), kwds={}, callback=None, error_callback=None):
+    def apply_async(self, func, args=(), kwds=None, callback=None, error_callback=None):
         """
         Asynchronous version of `apply()` method.
         """
+        if kwds is None:
+            kwds = {}
         self._check_running()
         result = ApplyResult(self, callback, error_callback)
         self._taskqueue.put(([(result._job, 0, func, args, kwds)], None))
@@ -644,7 +648,7 @@ class Pool:
                         break
                     try:
                         put(task)
-                    except Exception as e:
+                    except Exception as e:  # noqa: BLE001
                         job, idx = task[:2]
                         try:
                             cache[job]._set(idx, (False, e))
@@ -846,7 +850,7 @@ class Pool:
             for p in pool:
                 if p.is_alive():
                     # worker has not yet exited
-                    util.debug("cleaning up worker %d" % p.pid)
+                    util.debug("cleaning up worker %d" % p.pid)  # noqa: UP031
                     p.join()
 
     def __enter__(self):

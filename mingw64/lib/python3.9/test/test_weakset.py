@@ -3,7 +3,8 @@ import gc
 import string
 import unittest
 from collections import UserString as ustr
-from collections.abc import MutableSet, Set
+from collections.abc import MutableSet
+from collections.abc import Set as AbstractSet
 from weakref import WeakSet
 
 from test import support
@@ -446,7 +447,7 @@ class TestWeakSet(unittest.TestCase):
         assert repr(self.s) == repr(self.s.data)
 
     def test_abc(self):
-        self.assertIsInstance(self.s, Set)
+        self.assertIsInstance(self.s, AbstractSet)
         self.assertIsInstance(self.s, MutableSet)
 
 

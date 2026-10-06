@@ -56,7 +56,7 @@ class BaseStartServer(func_tests.FunctionalTestCaseMixin):
         main_task = self.loop.create_task(main(srv))
 
         addr = srv.sockets[0].getsockname()
-        with self.assertRaises(asyncio.CancelledError):
+        with self.assertRaises(asyncio.CancelledError):  # noqa: SIM117
             with self.tcp_client(lambda sock: client(sock, addr)):
                 self.loop.run_until_complete(main_task)
 
@@ -112,7 +112,7 @@ class SelectorStartServerTests(BaseStartServer, unittest.TestCase):
 
             main_task = self.loop.create_task(main(srv))
 
-            with self.assertRaises(asyncio.CancelledError):
+            with self.assertRaises(asyncio.CancelledError):  # noqa: SIM117
                 with self.unix_client(lambda sock: client(sock, addr)):
                     self.loop.run_until_complete(main_task)
 

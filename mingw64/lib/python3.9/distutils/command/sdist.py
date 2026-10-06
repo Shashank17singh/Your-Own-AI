@@ -22,7 +22,7 @@ def show_formats():
     from distutils.fancy_getopt import FancyGetopt
 
     formats = []
-    for format in ARCHIVE_FORMATS.keys():
+    for format in ARCHIVE_FORMATS:
         formats.append(("formats=" + format, None, ARCHIVE_FORMATS[format][2]))
     formats.sort()
     FancyGetopt(formats).print_help("List of available source distribution formats:")
@@ -37,22 +37,26 @@ class sdist(Command):
         Placed here so user_options can view it"""
         return self.metadata_check
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("template=", "t", "name of manifest template file [default: MANIFEST.in]"),
         ("manifest=", "m", "name of manifest file [default: MANIFEST]"),
         (
             "use-defaults",
             None,
-            "include the default file set in the manifest "
-            "[default; disable with --no-defaults]",
+            (
+                "include the default file set in the manifest "
+                "[default; disable with --no-defaults]"
+            ),
         ),
         ("no-defaults", None, "don't include the default file set"),
         (
             "prune",
             None,
-            "specifically exclude files/directories that should not be "
-            "distributed (build tree, RCS/CVS dirs, etc.) "
-            "[default; disable with --no-prune]",
+            (
+                "specifically exclude files/directories that should not be "
+                "distributed (build tree, RCS/CVS dirs, etc.) "
+                "[default; disable with --no-prune]"
+            ),
         ),
         ("no-prune", None, "don't automatically exclude anything"),
         (
@@ -63,8 +67,10 @@ class sdist(Command):
         (
             "force-manifest",
             "f",
-            "forcibly regenerate the manifest and carry on as usual. "
-            "Deprecated: now the manifest is always regenerated.",
+            (
+                "forcibly regenerate the manifest and carry on as usual. "
+                "Deprecated: now the manifest is always regenerated."
+            ),
         ),
         ("formats=", None, "formats for source distribution (comma-separated list)"),
         (
@@ -80,8 +86,10 @@ class sdist(Command):
         (
             "metadata-check",
             None,
-            "Ensure that all required elements of meta-data "
-            "are supplied. Warn if any missing. [default]",
+            (
+                "Ensure that all required elements of meta-data "
+                "are supplied. Warn if any missing. [default]"
+            ),
         ),
         (
             "owner=",
@@ -95,7 +103,7 @@ class sdist(Command):
         ),
     ]
 
-    boolean_options = [
+    boolean_options = [  # noqa: RUF012
         "use-defaults",
         "prune",
         "manifest-only",
@@ -104,13 +112,13 @@ class sdist(Command):
         "metadata-check",
     ]
 
-    help_options = [
+    help_options = [  # noqa: RUF012
         ("help-formats", None, "list available distribution formats", show_formats),
     ]
 
-    negative_opt = {"no-defaults": "use-defaults", "no-prune": "prune"}
+    negative_opt = {"no-defaults": "use-defaults", "no-prune": "prune"}  # noqa: RUF012
 
-    sub_commands = [("check", checking_metadata)]
+    sub_commands = [("check", checking_metadata)]  # noqa: RUF012
 
     READMES = ("README", "README.txt", "README.rst")
 
@@ -147,7 +155,7 @@ class sdist(Command):
 
         bad_format = archive_util.check_archive_formats(self.formats)
         if bad_format:
-            raise DistutilsOptionError("unknown archive format '%s'" % bad_format)
+            raise DistutilsOptionError(f"unknown archive format '{bad_format}'")
 
         if self.dist_dir is None:
             self.dist_dir = "dist"
@@ -285,7 +293,7 @@ class sdist(Command):
                 if self._cs_path_exists(fn):
                     self.filelist.append(fn)
                 else:
-                    self.warn("standard file '%s' not found" % fn)
+                    self.warn(f"standard file '{fn}' not found")
 
     def _add_defaults_optional(self):
         optional = ["test/test*.py", "setup.cfg"]
@@ -320,7 +328,7 @@ class sdist(Command):
                         self.filelist.append(item)
                 else:
                     # a (dirname, filenames) tuple
-                    dirname, filenames = item
+                    _dirname, filenames = item
                     for f in filenames:
                         f = convert_path(f)
                         if os.path.isfile(f):
@@ -371,7 +379,7 @@ class sdist(Command):
                 # convert_path function
                 except (DistutilsTemplateError, ValueError) as msg:
                     self.warn(
-                        "%s, line %d: %s"
+                        "%s, line %d: %s"  # noqa: UP031
                         % (template.filename, template.current_line, msg)
                     )
         finally:
@@ -397,7 +405,7 @@ class sdist(Command):
             seps = "/"
 
         vcs_dirs = ["RCS", "CVS", r"\.svn", r"\.hg", r"\.git", r"\.bzr", "_darcs"]
-        vcs_ptrn = r"(^|%s)(%s)(%s).*" % (seps, "|".join(vcs_dirs), seps)
+        vcs_ptrn = r"(^|{})({})({}).*".format(seps, "|".join(vcs_dirs), seps)
         self.filelist.exclude_pattern(vcs_ptrn, is_regex=1)
 
     def write_manifest(self):
@@ -407,7 +415,7 @@ class sdist(Command):
         """
         if self._manifest_is_not_generated():
             log.info(
-                "not writing to manually maintained manifest file '%s'" % self.manifest
+                f"not writing to manually maintained manifest file '{self.manifest}'"
             )
             return
 
@@ -416,7 +424,7 @@ class sdist(Command):
         self.execute(
             file_util.write_file,
             (self.manifest, content),
-            "writing manifest file '%s'" % self.manifest,
+            f"writing manifest file '{self.manifest}'",
         )
 
     def _manifest_is_not_generated(self):
@@ -424,7 +432,7 @@ class sdist(Command):
         if not os.path.isfile(self.manifest):
             return False
 
-        fp = open(self.manifest)
+        fp = open(self.manifest)  # noqa: SIM115
         try:
             first_line = fp.readline()
         finally:
@@ -469,10 +477,10 @@ class sdist(Command):
 
         if hasattr(os, "link"):  # can make hard links on this system
             link = "hard"
-            msg = "making hard links in %s..." % base_dir
+            msg = f"making hard links in {base_dir}..."
         else:  # nope, have to copy
             link = None
-            msg = "copying files to %s..." % base_dir
+            msg = f"copying files to {base_dir}..."
 
         if not files:
             log.warn("no files to distribute -- empty manifest?")

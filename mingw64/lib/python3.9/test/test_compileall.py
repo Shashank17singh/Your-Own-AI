@@ -17,7 +17,7 @@ from unittest import mock, skipUnless
 import test.test_importlib.util
 
 try:
-    from concurrent.futures import ProcessPoolExecutor
+    from concurrent.futures import ProcessPoolExecutor  # noqa: F401
 
     _have_multiprocessing = True
 except ImportError:
@@ -126,7 +126,7 @@ class CompileallTestsBase:
         for fn in (self.bc_path, self.bc_path2):
             try:
                 os.unlink(fn)
-            except:
+            except:  # noqa: E722, S110
                 pass
         self.assertTrue(
             compileall.compile_file(self.source_path, force=False, quiet=True)
@@ -305,7 +305,7 @@ class CompileallTestsBase:
         bc = importlib.util.cache_from_source(script)
         stripdir = os.path.join(self.directory, *fullpath[:2])
         compileall.compile_dir(path, quiet=True, stripdir=stripdir)
-        rc, out, err = script_helper.assert_python_failure(bc)
+        _rc, _out, err = script_helper.assert_python_failure(bc)
         expected_in = os.path.join(*fullpath[2:])
         self.assertIn(expected_in, str(err, encoding=sys.getdefaultencoding()))
         self.assertNotIn(stripdir, str(err, encoding=sys.getdefaultencoding()))
@@ -318,7 +318,7 @@ class CompileallTestsBase:
         bc = importlib.util.cache_from_source(script)
         prependdir = "/foo"
         compileall.compile_dir(path, quiet=True, prependdir=prependdir)
-        rc, out, err = script_helper.assert_python_failure(bc)
+        _rc, _out, err = script_helper.assert_python_failure(bc)
         expected_in = os.path.join(prependdir, self.directory, *fullpath)
         self.assertIn(expected_in, str(err, encoding=sys.getdefaultencoding()))
 
@@ -333,7 +333,7 @@ class CompileallTestsBase:
         compileall.compile_dir(
             path, quiet=True, stripdir=stripdir, prependdir=prependdir
         )
-        rc, out, err = script_helper.assert_python_failure(bc)
+        _rc, _out, err = script_helper.assert_python_failure(bc)
         expected_in = os.path.join(prependdir, *fullpath[2:])
         self.assertIn(expected_in, str(err, encoding=sys.getdefaultencoding()))
         self.assertNotIn(stripdir, str(err, encoding=sys.getdefaultencoding()))
@@ -360,7 +360,7 @@ class CompileallTestsBase:
                 self.assertTrue(os.path.isfile(bc[opt_level]))
                 try:
                     os.unlink(bc[opt_level])
-                except Exception:
+                except Exception:  # noqa: BLE001, S110
                     pass
 
     @support.skip_unless_symlink
@@ -474,7 +474,7 @@ class CommandLineTestsBase:
         ]
 
     def assertRunOK(self, *args, **env_vars):
-        rc, out, err = script_helper.assert_python_ok(
+        _rc, out, err = script_helper.assert_python_ok(
             *self._get_run_args(args), **env_vars, PYTHONIOENCODING="utf-8"
         )
         self.assertEqual(b"", err)
@@ -691,7 +691,7 @@ class CommandLineTestsBase:
 
     def test_d_compile_error(self):
         script_helper.make_script(self.pkgdir, "crunchyfrog", "bad(syntax")
-        rc, out, err = self.assertRunNotOK("-q", "-d", "dinsdale", self.pkgdir)
+        _rc, out, _err = self.assertRunNotOK("-q", "-d", "dinsdale", self.pkgdir)
         self.assertRegex(out, b'File "dinsdale')
 
     def test_d_runtime_error(self):
@@ -701,11 +701,11 @@ class CommandLineTestsBase:
         pyc = importlib.util.cache_from_source(bazfn)
         os.rename(pyc, os.path.join(self.pkgdir, "baz.pyc"))
         os.remove(bazfn)
-        rc, out, err = script_helper.assert_python_failure(fn, __isolated=False)
+        _rc, _out, err = script_helper.assert_python_failure(fn, __isolated=False)
         self.assertRegex(err, b'File "dinsdale')
 
     def test_include_bad_file(self):
-        rc, out, err = self.assertRunNotOK(
+        _rc, out, err = self.assertRunNotOK(
             "-i", os.path.join(self.directory, "nosuchfile"), self.pkgdir
         )
         self.assertRegex(out, b"rror.*nosuchfile")
@@ -756,7 +756,7 @@ class CommandLineTestsBase:
 
     def test_compiles_as_much_as_possible(self):
         bingfn = script_helper.make_script(self.pkgdir, "bing", "syntax(error")
-        rc, out, err = self.assertRunNotOK(
+        _rc, out, _err = self.assertRunNotOK(
             "nosuchfile", self.initfn, bingfn, self.barfn
         )
         self.assertRegex(out, b"rror")
@@ -787,7 +787,7 @@ class CommandLineTestsBase:
         for suffix in range(5):
             pkgdir = os.path.join(self.directory, f"foo{suffix}")
             os.mkdir(pkgdir)
-            fn = script_helper.make_script(pkgdir, "__init__", "")
+            script_helper.make_script(pkgdir, "__init__", "")
             files.append(script_helper.make_script(pkgdir, "bar2", ""))
 
         self.assertRunOK(self.directory, "-j", "0")
@@ -811,7 +811,7 @@ class CommandLineTestsBase:
         stripdir = os.path.join(self.directory, *fullpath[:2])
         prependdir = "/foo"
         self.assertRunOK("-s", stripdir, "-p", prependdir, path)
-        rc, out, err = script_helper.assert_python_failure(bc)
+        _rc, _out, err = script_helper.assert_python_failure(bc)
         expected_in = os.path.join(prependdir, *fullpath[2:])
         self.assertIn(expected_in, str(err, encoding=sys.getdefaultencoding()))
         self.assertNotIn(stripdir, str(err, encoding=sys.getdefaultencoding()))
@@ -830,7 +830,7 @@ class CommandLineTestsBase:
                 self.assertTrue(os.path.isfile(bc[int(opt_level)]))
                 try:
                     os.unlink(bc[opt_level])
-                except Exception:
+                except Exception:  # noqa: BLE001, S110
                     pass
 
     @support.skip_unless_symlink
@@ -874,7 +874,7 @@ class CommandLineTestsBase:
         # If deduplication is disabled, all pyc files must have different
         # inodes.
         for dedup in (True, False):
-            with tempfile.TemporaryDirectory() as path:
+            with tempfile.TemporaryDirectory() as path:  # noqa: SIM117
                 with self.subTest(dedup=dedup):
                     script = script_helper.make_script(path, "script", "a = 0")
                     pycs = get_pycs(script)
@@ -962,7 +962,7 @@ class HardlinkDedupTestsBase:
     def test_disabled(self):
         # Deduplication disabled, no hardlinks
         for code, docstring, assertion in self.iter_codes():
-            with self.subTest(docstring=docstring, assertion=assertion):
+            with self.subTest(docstring=docstring, assertion=assertion):  # noqa: SIM117
                 with self.temporary_directory():
                     script = self.make_script(code)
                     pycs = get_pycs(script)
@@ -980,7 +980,7 @@ class HardlinkDedupTestsBase:
     def test_hardlink(self):
         # Test deduplication on all combinations
         for code, docstring, assertion in self.iter_codes():
-            with self.subTest(docstring=docstring, assertion=assertion):
+            with self.subTest(docstring=docstring, assertion=assertion):  # noqa: SIM117
                 with self.temporary_directory():
                     script = self.make_script(code)
                     self.compile_dir()

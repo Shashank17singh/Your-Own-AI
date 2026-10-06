@@ -43,7 +43,7 @@ class ContentManager:
                 return self.set_handlers[typ]
             qname = typ.__qualname__
             modname = getattr(typ, "__module__", "")
-            full_path = ".".join((modname, qname)) if modname else qname
+            full_path = f"{modname}.{qname}" if modname else qname
             if full_path_for_error is None:
                 full_path_for_error = full_path
             if full_path in self.set_handlers:
@@ -100,7 +100,7 @@ raw_data_manager.add_get_handler("message", get_and_fixup_unknown_message_conten
 
 
 def _prepare_set(msg, maintype, subtype, headers):
-    msg["Content-Type"] = "/".join((maintype, subtype))
+    msg["Content-Type"] = f"{maintype}/{subtype}"
     if headers:
         if not hasattr(headers[0], "name"):
             mp = msg.policy

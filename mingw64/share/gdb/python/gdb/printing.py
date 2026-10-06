@@ -73,7 +73,7 @@ def register_pretty_printer(obj, printer, replace=False):
         raise TypeError("printer missing attribute: name")
     if hasattr(printer, "name") and not hasattr(printer, "enabled"):
         raise TypeError("printer missing attribute: enabled")
-    if not hasattr(printer, "__call__"):
+    if not callable(printer):
         raise TypeError("printer missing attribute: __call__")
     if hasattr(printer, "name"):
         name = printer.name
@@ -81,13 +81,11 @@ def register_pretty_printer(obj, printer, replace=False):
         name = printer.__name__
     if obj is None or obj is gdb:
         if gdb.parameter("verbose"):
-            gdb.write("Registering global %s pretty-printer ...\n" % name)
+            gdb.write(f"Registering global {name} pretty-printer ...\n")
         obj = gdb
     else:
         if gdb.parameter("verbose"):
-            gdb.write(
-                "Registering %s pretty-printer for %s ...\n" % (name, obj.filename)
-            )
+            gdb.write(f"Registering {name} pretty-printer for {obj.filename} ...\n")
     if hasattr(printer, "name"):
         if not isinstance(printer.name, str):
             raise TypeError("printer name is not a string")
@@ -101,7 +99,7 @@ def register_pretty_printer(obj, printer, replace=False):
                     break
                 else:
                     raise RuntimeError(
-                        "pretty-printer already registered: %s" % printer.name
+                        f"pretty-printer already registered: {printer.name}"
                     )
             i = i + 1
     obj.pretty_printers.insert(0, printer)
@@ -168,8 +166,8 @@ class _EnumInstance(gdb.ValuePrinter):
                 v = v & ~e_value
                 any_found = True
         if not any_found or v != 0:
-            flag_list.append("<unknown: 0x%x>" % v)
-        return "0x%x [%s]" % (int(self.__val), " | ".join(flag_list))
+            flag_list.append(f"<unknown: 0x{v:x}>")
+        return "0x{:x} [{}]".format(int(self.__val), " | ".join(flag_list))
 
 
 class FlagEnumerationPrinter(PrettyPrinter):

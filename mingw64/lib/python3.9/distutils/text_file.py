@@ -66,7 +66,7 @@ class TextFile:
     an all-whitespace line), if 'rstrip_ws' is true but 'skip_blanks' is
     not."""
 
-    default_options = {
+    default_options = {  # noqa: RUF012
         "strip_comments": 1,
         "skip_blanks": 1,
         "lstrip_ws": 0,
@@ -88,7 +88,7 @@ class TextFile:
 
         # set values for all options -- either from client option hash
         # or fallback to default_options
-        for opt in self.default_options.keys():
+        for opt in self.default_options:
             if opt in options:
                 setattr(self, opt, options[opt])
             else:
@@ -97,7 +97,7 @@ class TextFile:
         # sanity check client option hash
         for opt in options:
             if opt not in self.default_options:
-                raise KeyError("invalid TextFile option '%s'" % opt)
+                raise KeyError(f"invalid TextFile option '{opt}'")
 
         if file is None:
             self.open(filename)
@@ -115,7 +115,7 @@ class TextFile:
         """Open a new file named 'filename'.  This overrides both the
         'filename' and 'file' arguments to the constructor."""
         self.filename = filename
-        self.file = open(self.filename, "r", errors=self.errors)
+        self.file = open(self.filename, "r", errors=self.errors)  # noqa: SIM115
         self.current_line = 0
 
     def close(self):
@@ -133,9 +133,9 @@ class TextFile:
             line = self.current_line
         outmsg.append(self.filename + ", ")
         if isinstance(line, (list, tuple)):
-            outmsg.append("lines %d-%d: " % tuple(line))
+            outmsg.append("lines %d-%d: " % tuple(line))  # noqa: UP031
         else:
-            outmsg.append("line %d: " % line)
+            outmsg.append("line %d: " % line)  # noqa: UP031
         outmsg.append(str(msg))
         return "".join(outmsg)
 

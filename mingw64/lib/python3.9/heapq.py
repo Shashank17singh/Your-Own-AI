@@ -400,7 +400,7 @@ def merge(*iterables, key=None, reverse=False):
     while len(h) > 1:
         try:
             while True:
-                key_value, order, value, next = s = h[0]
+                key_value, order, value, next = s = h[0]  # noqa: RUF059
                 yield value
                 value = next()
                 s[0] = key(value)
@@ -409,7 +409,7 @@ def merge(*iterables, key=None, reverse=False):
         except StopIteration:
             _heappop(h)
     if h:
-        key_value, order, value, next = h[0]
+        _key_value, order, value, next = h[0]
         yield value
         yield from next.__self__
 

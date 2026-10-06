@@ -77,7 +77,7 @@ def register_adapters_and_converters():
         else:
             microseconds = 0
 
-        val = datetime.datetime(year, month, day, hours, minutes, seconds, microseconds)
+        val = datetime.datetime(year, month, day, hours, minutes, seconds, microseconds)  # noqa: DTZ001
         return val
 
     register_adapter(datetime.date, adapt_date)

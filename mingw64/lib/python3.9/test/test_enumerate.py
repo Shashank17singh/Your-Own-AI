@@ -43,8 +43,7 @@ class Ig:
         self.i = 0
 
     def __iter__(self):
-        for val in self.seqn:
-            yield val
+        yield from self.seqn
 
 
 class X:
@@ -73,7 +72,7 @@ class E:
         return self
 
     def __next__(self):
-        3 // 0
+        3 // 0  # noqa: B018
 
 
 class N:
@@ -116,7 +115,7 @@ class EnumerateTestCase(unittest.TestCase, PickleTest):
         e = self.enum(self.seq)
         self.assertEqual(iter(e), e)
         self.assertEqual(list(self.enum(self.seq)), self.res)
-        self.enum.__doc__
+        self.enum.__doc__  # noqa: B018
 
     def test_pickle(self):
         self.check_pickle(self.enum(self.seq), self.res)
@@ -185,7 +184,7 @@ class TestEmpty(EnumerateTestCase):
 
 class TestBig(EnumerateTestCase):
     seq = range(10, 20000, 2)
-    res = list(zip(range(20000), seq))
+    res = list(zip(range(20000), seq))  # noqa: RUF012
 
 
 class TestReversed(unittest.TestCase, PickleTest):

@@ -92,7 +92,7 @@ class ContextTest(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "ContextVar key was expected"):
             ctx[1]
         with self.assertRaisesRegex(TypeError, "ContextVar key was expected"):
-            1 in ctx
+            1 in ctx  # noqa: B015
         with self.assertRaisesRegex(TypeError, "ContextVar key was expected"):
             ctx.get(1)
 
@@ -134,7 +134,7 @@ class ContextTest(unittest.TestCase):
         ctx = contextvars.Context()
 
         def func(*args, **kwargs):
-            1 / 0
+            1 / 0  # noqa: B018
 
         with self.assertRaises(ZeroDivisionError):
             ctx.run(func)
@@ -175,7 +175,7 @@ class ContextTest(unittest.TestCase):
         def func():
             self.assertIsNone(var.get(None))
             var.set("spam")
-            1 / 0
+            1 / 0  # noqa: B018
 
         with self.assertRaises(ZeroDivisionError):
             ctx.run(func)
@@ -439,7 +439,7 @@ class HamtTest(unittest.TestCase):
         self.assertNotEqual(k1, k2)
         self.assertEqual(hash(k1), hash(k2))
 
-        d = dict()
+        d = {}
         d[k1] = "a"
         d[k2] = "b"
 
@@ -542,20 +542,20 @@ class HamtTest(unittest.TestCase):
 
         for _ in range(RUN_XTIMES):
             h = hamt()
-            d = dict()
+            d = {}
 
             for i in range(COLLECTION_SIZE):
                 key = KeyStr(i)
 
                 if not (i % CRASH_HASH_EVERY):
-                    with HaskKeyCrasher(error_on_hash=True):
+                    with HaskKeyCrasher(error_on_hash=True):  # noqa: SIM117
                         with self.assertRaises(HashingError):
                             h.set(key, i)
 
                 h = h.set(key, i)
 
                 if not (i % CRASH_EQ_EVERY):
-                    with HaskKeyCrasher(error_on_eq=True):
+                    with HaskKeyCrasher(error_on_eq=True):  # noqa: SIM117
                         with self.assertRaises(EqError):
                             h.get(KeyStr(i))  # really trigger __eq__
 
@@ -577,12 +577,12 @@ class HamtTest(unittest.TestCase):
                 key = KeyStr(i)
 
                 if not (iter_i % CRASH_HASH_EVERY):
-                    with HaskKeyCrasher(error_on_hash=True):
+                    with HaskKeyCrasher(error_on_hash=True):  # noqa: SIM117
                         with self.assertRaises(HashingError):
                             h.delete(key)
 
                 if not (iter_i % CRASH_EQ_EVERY):
-                    with HaskKeyCrasher(error_on_eq=True):
+                    with HaskKeyCrasher(error_on_eq=True):  # noqa: SIM117
                         with self.assertRaises(EqError):
                             h.delete(KeyStr(i))
 
@@ -864,7 +864,7 @@ class HamtTest(unittest.TestCase):
 
         it = h.items()
         self.assertEqual(
-            set(list(it)), {(A, "a"), (B, "b"), (C, "c"), (D, "d"), (E, "e"), (F, "f")}
+            set(it), {(A, "a"), (B, "b"), (C, "c"), (D, "d"), (E, "e"), (F, "f")}
         )
 
     def test_hamt_items_2(self):
@@ -885,7 +885,7 @@ class HamtTest(unittest.TestCase):
 
         it = h.items()
         self.assertEqual(
-            set(list(it)), {(A, "a"), (B, "b"), (C, "c"), (D, "d"), (E, "e"), (F, "f")}
+            set(it), {(A, "a"), (B, "b"), (C, "c"), (D, "d"), (E, "e"), (F, "f")}
         )
 
     def test_hamt_keys_1(self):
@@ -904,8 +904,8 @@ class HamtTest(unittest.TestCase):
         h = h.set(E, "e")
         h = h.set(F, "f")
 
-        self.assertEqual(set(list(h.keys())), {A, B, C, D, E, F})
-        self.assertEqual(set(list(h)), {A, B, C, D, E, F})
+        self.assertEqual(set(h.keys()), {A, B, C, D, E, F})
+        self.assertEqual(set(h), {A, B, C, D, E, F})
 
     def test_hamt_items_3(self):
         h = hamt()
@@ -970,10 +970,10 @@ class HamtTest(unittest.TestCase):
         h2 = h2.set(Er, "a")
 
         with self.assertRaisesRegex(ValueError, "cannot compare"):
-            h1 == h2
+            h1 == h2  # noqa: B015
 
         with self.assertRaisesRegex(ValueError, "cannot compare"):
-            h1 != h2
+            h1 != h2  # noqa: B015
 
     def test_hamt_gc_1(self):
         A = HashKey(100, "A")
@@ -1000,7 +1000,7 @@ class HamtTest(unittest.TestCase):
 
     def test_hamt_gc_2(self):
         A = HashKey(100, "A")
-        B = HashKey(101, "B")
+        HashKey(101, "B")
 
         h = hamt()
         h = h.set(A, "a")
@@ -1031,11 +1031,11 @@ class HamtTest(unittest.TestCase):
         self.assertFalse(B in h)
 
         with self.assertRaises(EqError), HaskKeyCrasher(error_on_eq=True):
-            AA in h
+            AA in h  # noqa: B015
 
-        with self.assertRaises(HashingError):
+        with self.assertRaises(HashingError):  # noqa: SIM117
             with HaskKeyCrasher(error_on_hash=True):
-                AA in h
+                AA in h  # noqa: B015
 
     def test_hamt_getitem_1(self):
         A = HashKey(100, "A")
@@ -1055,7 +1055,7 @@ class HamtTest(unittest.TestCase):
         with self.assertRaises(EqError), HaskKeyCrasher(error_on_eq=True):
             h[AA]
 
-        with self.assertRaises(HashingError):
+        with self.assertRaises(HashingError):  # noqa: SIM117
             with HaskKeyCrasher(error_on_hash=True):
                 h[AA]
 

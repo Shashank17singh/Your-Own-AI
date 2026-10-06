@@ -81,19 +81,19 @@ class ImportTests(unittest.TestCase):
 
     def test_import_raises_ModuleNotFoundError(self):
         with self.assertRaises(ModuleNotFoundError):
-            import something_that_should_not_exist_anywhere
+            import something_that_should_not_exist_anywhere  # noqa: F401
 
     def test_from_import_missing_module_raises_ModuleNotFoundError(self):
         with self.assertRaises(ModuleNotFoundError):
-            from something_that_should_not_exist_anywhere import blah
+            from something_that_should_not_exist_anywhere import blah  # noqa: F401
 
     def test_from_import_missing_attr_raises_ImportError(self):
         with self.assertRaises(ImportError):
-            from importlib import something_that_should_not_exist_anywhere
+            from importlib import something_that_should_not_exist_anywhere  # noqa: F401
 
     def test_from_import_missing_attr_has_name_and_path(self):
         with self.assertRaises(ImportError) as cm:
-            from os import i_dont_exist
+            from os import i_dont_exist  # noqa: F401
         self.assertEqual(cm.exception.name, "os")
         self.assertEqual(cm.exception.path, os.__file__)
         self.assertRegex(
@@ -106,7 +106,7 @@ class ImportTests(unittest.TestCase):
         import _testcapi
 
         with self.assertRaises(ImportError) as cm:
-            from _testcapi import i_dont_exist
+            from _testcapi import i_dont_exist  # noqa: F401
         self.assertEqual(cm.exception.name, "_testcapi")
         self.assertEqual(cm.exception.path, _testcapi.__file__)
         self.assertRegex(
@@ -117,13 +117,13 @@ class ImportTests(unittest.TestCase):
     def test_from_import_missing_attr_has_name(self):
         with self.assertRaises(ImportError) as cm:
             # _warning has no path as it's a built-in module.
-            from _warning import i_dont_exist
+            from _warning import i_dont_exist  # noqa: F401
         self.assertEqual(cm.exception.name, "_warning")
         self.assertIsNone(cm.exception.path)
 
     def test_from_import_missing_attr_path_is_canonical(self):
         with self.assertRaises(ImportError) as cm:
-            from os.path import i_dont_exist
+            from os.path import i_dont_exist  # noqa: F401
         self.assertIn(cm.exception.name, {"posixpath", "ntpath"})
         self.assertIsNotNone(cm.exception)
 
@@ -137,7 +137,7 @@ class ImportTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 TypeError, f"{re.escape(name)}\\.__all__ must be str"
             ):
-                exec(f"from {name} import *", globals)
+                exec(f"from {name} import *", globals)  # noqa: S102
             self.assertNotIn(b"invalid_type", globals)
         with _ready_to_import() as (name, path):
             with open(path, "w") as f:
@@ -146,19 +146,21 @@ class ImportTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 TypeError, f"{re.escape(name)}\\.__dict__ must be str"
             ):
-                exec(f"from {name} import *", globals)
+                exec(f"from {name} import *", globals)  # noqa: S102
             self.assertNotIn(b"invalid_type", globals)
 
     def test_case_sensitivity(self):
         # Brief digression to test that import is case-sensitive:  if we got
         # this far, we know for sure that "random" exists.
         with self.assertRaises(ImportError):
-            import RAnDoM
+            import RAnDoM  # noqa: F401
 
     def test_double_const(self):
         # Another brief digression to test the accuracy of manifest float
         # constants.
-        from test import double_const  # don't blink -- that *was* the test
+        from test import (
+            double_const,
+        )  # don't blink -- that *was* the test  # noqa: F401
 
     def test_import(self):
         def test_with_extension(ext):
@@ -183,13 +185,13 @@ class ImportTests(unittest.TestCase):
                 try:
                     mod = __import__(TESTFN)
                 except ImportError as err:
-                    self.fail("import from %s failed: %s" % (ext, err))
+                    self.fail(f"import from {ext} failed: {err}")
 
                 self.assertEqual(
-                    mod.a, a, "module loaded (%s) but contents invalid" % mod
+                    mod.a, a, f"module loaded ({mod}) but contents invalid"
                 )
                 self.assertEqual(
-                    mod.b, b, "module loaded (%s) but contents invalid" % mod
+                    mod.b, b, f"module loaded ({mod}) but contents invalid"
                 )
             finally:
                 forget(TESTFN)
@@ -230,7 +232,7 @@ class ImportTests(unittest.TestCase):
         try:
             make_legacy_pyc(filename)
             # This used to crash.
-            exec("import " + module, None, namespace)
+            exec("import " + module, None, namespace)  # noqa: S102
         finally:
             # Cleanup.
             del sys.path[-1]
@@ -259,7 +261,9 @@ class ImportTests(unittest.TestCase):
             for i in [1, 2, 3]:
                 self.assertRaises(ZeroDivisionError, __import__, TESTFN)
                 self.assertNotIn(
-                    TESTFN, sys.modules, "damaged module in sys.modules on %i try" % i
+                    TESTFN,
+                    sys.modules,
+                    "damaged module in sys.modules on %i try" % i,  # noqa: UP031
                 )
         finally:
             del sys.path[0]
@@ -288,7 +292,7 @@ class ImportTests(unittest.TestCase):
         # import in a 'while' loop resulted in stack overflow
         i = 0
         while i < 10:
-            import test.support.script_helper as x
+            import test.support.script_helper as x  # noqa: F401
 
             i += 1
 
@@ -350,7 +354,7 @@ class ImportTests(unittest.TestCase):
             make_legacy_pyc(source)
             importlib.invalidate_caches()
             mod = __import__(TESTFN)
-            base, ext = os.path.splitext(mod.__file__)
+            _base, ext = os.path.splitext(mod.__file__)
             self.assertEqual(ext, ".pyc")
         finally:
             del sys.path[0]
@@ -365,7 +369,7 @@ class ImportTests(unittest.TestCase):
             path.encode(encoding)
         except UnicodeEncodeError:
             self.skipTest(f"path is not encodable to {encoding}")
-        with self.assertRaises(ImportError) as c:
+        with self.assertRaises(ImportError):
             __import__(path)
 
     def test_import_in_del_does_not_crash(self):
@@ -391,7 +395,7 @@ class ImportTests(unittest.TestCase):
         try:
             source = TESTFN + ".py"
             compiled = importlib.util.cache_from_source(source)
-            with open(source, "w") as f:
+            with open(source, "w"):
                 pass
             try:
                 os.utime(source, (2**33 - 5, 2**33 - 5))
@@ -421,16 +425,16 @@ class ImportTests(unittest.TestCase):
     def test_delete_builtins_import(self):
         args = ["-c", "del __builtins__.__import__; import os"]
         popen = script_helper.spawn_python(*args)
-        stdout, stderr = popen.communicate()
+        stdout, _stderr = popen.communicate()
         self.assertIn(b"ImportError", stdout)
 
     def test_from_import_message_for_nonexistent_module(self):
         with self.assertRaisesRegex(ImportError, "^No module named 'bogus'"):
-            from bogus import foo
+            from bogus import foo  # noqa: F401
 
     def test_from_import_message_for_existing_module(self):
         with self.assertRaisesRegex(ImportError, "^cannot import name 'bogus'"):
-            from re import bogus
+            from re import bogus  # noqa: F401
 
     def test_from_import_AttributeError(self):
         # Issue #24492: trying to import an attribute that raises an
@@ -443,7 +447,7 @@ class ImportTests(unittest.TestCase):
         self.addCleanup(unload, module_name)
         sys.modules[module_name] = AlwaysAttributeError()
         with self.assertRaises(ImportError) as cm:
-            from test_from_import_AttributeError import does_not_exist
+            from test_from_import_AttributeError import does_not_exist  # noqa: F401
 
         self.assertEqual(
             str(cm.exception),
@@ -457,10 +461,10 @@ class ImportTests(unittest.TestCase):
         # to access an attribute of such a module.
         with swap_attr(os, "__name__", None):
             with self.assertRaises(ImportError):
-                from os import does_not_exist
+                from os import does_not_exist  # noqa: F401
 
             with self.assertRaises(AttributeError):
-                os.does_not_exist
+                os.does_not_exist  # noqa: B018
 
     def test_concurrency(self):
         # bpo 38091: this is a hack to slow down the code that calls
@@ -477,8 +481,8 @@ class ImportTests(unittest.TestCase):
                 sys.settrace(delay_has_deadlock)
                 event.wait()
                 try:
-                    import package
-                except BaseException as e:
+                    import package  # noqa: F401
+                except BaseException as e:  # noqa: BLE001
                     nonlocal exc
                     exc = e
                 sys.settrace(None)
@@ -562,7 +566,7 @@ class FilePermissionTests(unittest.TestCase):
         mask = 0o022
         with temp_umask(mask), _ready_to_import() as (name, path):
             cached_path = importlib.util.cache_from_source(path)
-            module = __import__(name)
+            __import__(name)
             if not os.path.exists(cached_path):
                 self.fail("__import__ did not result in creation of a .pyc file")
             stat_info = os.stat(cached_path)
@@ -757,20 +761,20 @@ class PathsTests(unittest.TestCase):
 
         hn = socket.gethostname()
         drive = path[0]
-        unc = "\\\\%s\\%s$" % (hn, drive)
+        unc = f"\\\\{hn}\\{drive}$"
         unc += path[2:]
         try:
             os.listdir(unc)
         except OSError as e:
             if e.errno in (errno.EPERM, errno.EACCES, errno.ENOENT):
                 # See issue #15338
-                self.skipTest("cannot access administrative share %r" % (unc,))
+                self.skipTest(f"cannot access administrative share {unc!r}")
             raise
         sys.path.insert(0, unc)
         try:
             mod = __import__("test_unc_path")
         except ImportError as e:
-            self.fail("could not import 'test_unc_path' from %r: %r" % (unc, e))
+            self.fail(f"could not import 'test_unc_path' from {unc!r}: {e!r}")
         self.assertEqual(mod.testdata, "test_unc_path")
         self.assertTrue(mod.__file__.startswith(unc), mod.__file__)
         unload("test_unc_path")
@@ -795,26 +799,26 @@ class RelativeImportTests(unittest.TestCase):
         #
         # Regression test for http://bugs.python.org/issue3221.
         def check_relative():
-            exec("from . import relimport", ns)
+            exec("from . import relimport", ns)  # noqa: S102
 
         # Check relative import OK with __package__ and __name__ correct
-        ns = dict(__package__="test", __name__="test.notarealmodule")
+        ns = {"__package__": "test", "__name__": "test.notarealmodule"}
         check_relative()
 
         # Check relative import OK with only __name__ wrong
-        ns = dict(__package__="test", __name__="notarealpkg.notarealmodule")
+        ns = {"__package__": "test", "__name__": "notarealpkg.notarealmodule"}
         check_relative()
 
         # Check relative import fails with only __package__ wrong
-        ns = dict(__package__="foo", __name__="test.notarealmodule")
+        ns = {"__package__": "foo", "__name__": "test.notarealmodule"}
         self.assertRaises(ModuleNotFoundError, check_relative)
 
         # Check relative import fails with __package__ and __name__ wrong
-        ns = dict(__package__="foo", __name__="notarealpkg.notarealmodule")
+        ns = {"__package__": "foo", "__name__": "notarealpkg.notarealmodule"}
         self.assertRaises(ModuleNotFoundError, check_relative)
 
         # Check relative import fails with package set to a non-string
-        ns = dict(__package__=object())
+        ns = {"__package__": object()}
         self.assertRaises(TypeError, check_relative)
 
     def test_parentless_import_shadowed_by_global(self):
@@ -828,7 +832,7 @@ class RelativeImportTests(unittest.TestCase):
         # to perform an absolute import in the face of failure.
         # Issue #7902.
         with self.assertRaises(ImportError):
-            from .os import sep
+            from .os import sep  # noqa: F401
 
             self.fail("explicit relative import triggered an implicit absolute import")
 
@@ -836,7 +840,7 @@ class RelativeImportTests(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), "data", "package2")
         with uncache("submodule1", "submodule2"), DirsOnSysPath(path):
             with self.assertRaises(ImportError):
-                import submodule1
+                import submodule1  # noqa: F401
             self.assertNotIn("submodule1", sys.modules)
             self.assertNotIn("submodule2", sys.modules)
 
@@ -847,7 +851,7 @@ class RelativeImportTests(unittest.TestCase):
         ):
             import package2.submodule1
 
-            package2.submodule1.submodule2
+            package2.submodule1.submodule2  # noqa: B018
 
 
 class OverridingImportBuiltinTests(unittest.TestCase):
@@ -1196,7 +1200,7 @@ class ImportTracebackTests(unittest.TestCase):
     def test_nonexistent_module(self):
         try:
             # assertRaises() clears __traceback__
-            import nonexistent_xyzzy
+            import nonexistent_xyzzy  # noqa: F401
         except ImportError as e:
             tb = e.__traceback__
         else:
@@ -1206,7 +1210,7 @@ class ImportTracebackTests(unittest.TestCase):
     def test_nonexistent_module_nested(self):
         self.create_module("foo", "import nonexistent_xyzzy")
         try:
-            import foo
+            import foo  # noqa: F401
         except ImportError as e:
             tb = e.__traceback__
         else:
@@ -1216,7 +1220,7 @@ class ImportTracebackTests(unittest.TestCase):
     def test_exec_failure(self):
         self.create_module("foo", "1/0")
         try:
-            import foo
+            import foo  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1227,7 +1231,7 @@ class ImportTracebackTests(unittest.TestCase):
         self.create_module("foo", "import bar")
         self.create_module("bar", "1/0")
         try:
-            import foo
+            import foo  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1238,7 +1242,7 @@ class ImportTracebackTests(unittest.TestCase):
     def test_syntax_error(self):
         self.create_module("foo", "invalid syntax is invalid")
         try:
-            import foo
+            import foo  # noqa: F401
         except SyntaxError as e:
             tb = e.__traceback__
         else:
@@ -1261,9 +1265,9 @@ class ImportTracebackTests(unittest.TestCase):
         return init_path, bar_path
 
     def test_broken_submodule(self):
-        init_path, bar_path = self._setup_broken_package("", "1/0")
+        _init_path, bar_path = self._setup_broken_package("", "1/0")
         try:
-            import _parent_foo.bar
+            import _parent_foo.bar  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1271,9 +1275,9 @@ class ImportTracebackTests(unittest.TestCase):
         self.assert_traceback(tb, [__file__, bar_path])
 
     def test_broken_from(self):
-        init_path, bar_path = self._setup_broken_package("", "1/0")
+        _init_path, bar_path = self._setup_broken_package("", "1/0")
         try:
-            from _parent_foo import bar
+            from _parent_foo import bar  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1281,9 +1285,9 @@ class ImportTracebackTests(unittest.TestCase):
         self.assert_traceback(tb, [__file__, bar_path])
 
     def test_broken_parent(self):
-        init_path, bar_path = self._setup_broken_package("1/0", "")
+        init_path, _bar_path = self._setup_broken_package("1/0", "")
         try:
-            import _parent_foo.bar
+            import _parent_foo.bar  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1291,9 +1295,9 @@ class ImportTracebackTests(unittest.TestCase):
         self.assert_traceback(tb, [__file__, init_path])
 
     def test_broken_parent_from(self):
-        init_path, bar_path = self._setup_broken_package("1/0", "")
+        init_path, _bar_path = self._setup_broken_package("1/0", "")
         try:
-            from _parent_foo import bar
+            from _parent_foo import bar  # noqa: F401
         except ZeroDivisionError as e:
             tb = e.__traceback__
         else:
@@ -1313,11 +1317,11 @@ class ImportTracebackTests(unittest.TestCase):
         try:
 
             def exec_module(*args):
-                1 / 0
+                1 / 0  # noqa: B018
 
             importlib.SourceLoader.exec_module = exec_module
             try:
-                import foo
+                import foo  # noqa: F401
             except ZeroDivisionError as e:
                 tb = e.__traceback__
             else:
@@ -1337,7 +1341,7 @@ class ImportTracebackTests(unittest.TestCase):
         self.addCleanup(unlink, pyname)
         name = pyname[:-3]
         script_helper.assert_python_ok(
-            "-c", "mod = __import__(%a)" % name, __isolated=False
+            "-c", f"mod = __import__({name!a})", __isolated=False
         )
 
 
@@ -1354,13 +1358,13 @@ class CircularImportTests(unittest.TestCase):
 
     def test_direct(self):
         try:
-            import test.test_import.data.circular_imports.basic
+            import test.test_import.data.circular_imports.basic  # noqa: F401
         except ImportError:
             self.fail("circular import through relative imports failed")
 
     def test_indirect(self):
         try:
-            import test.test_import.data.circular_imports.indirect
+            import test.test_import.data.circular_imports.indirect  # noqa: F401
         except ImportError:
             self.fail(
                 "relative import in module contributing to circular import failed"
@@ -1368,7 +1372,7 @@ class CircularImportTests(unittest.TestCase):
 
     def test_subpackage(self):
         try:
-            import test.test_import.data.circular_imports.subpackage
+            import test.test_import.data.circular_imports.subpackage  # noqa: F401
         except ImportError:
             self.fail("circular import involving a subpackage failed")
 
@@ -1383,17 +1387,17 @@ class CircularImportTests(unittest.TestCase):
 
     def test_binding(self):
         try:
-            import test.test_import.data.circular_imports.binding
+            import test.test_import.data.circular_imports.binding  # noqa: F401
         except ImportError:
             self.fail("circular import with binding a submodule to a name failed")
 
     def test_crossreference1(self):
         import test.test_import.data.circular_imports.source
-        import test.test_import.data.circular_imports.use
+        import test.test_import.data.circular_imports.use  # noqa: F401
 
     def test_crossreference2(self):
         with self.assertRaises(AttributeError) as cm:
-            import test.test_import.data.circular_imports.source
+            import test.test_import.data.circular_imports.source  # noqa: F401
         errmsg = str(cm.exception)
         self.assertIn("test.test_import.data.circular_imports.source", errmsg)
         self.assertIn("spam", errmsg)
@@ -1402,7 +1406,7 @@ class CircularImportTests(unittest.TestCase):
 
     def test_circular_from_import(self):
         with self.assertRaises(ImportError) as cm:
-            import test.test_import.data.circular_imports.from_cycle1
+            import test.test_import.data.circular_imports.from_cycle1  # noqa: F401
         self.assertIn(
             "cannot import name 'b' from partially initialized module "
             "'test.test_import.data.circular_imports.from_cycle1' "

@@ -219,9 +219,7 @@ class Bdb:
             if self.stoplineno == -1:
                 return False
             return frame.f_lineno >= self.stoplineno
-        if not self.stopframe:
-            return True
-        return False
+        return bool(not self.stopframe)
 
     def break_here(self, frame):
         """Return True if there is an effective breakpoint for this line.
@@ -382,11 +380,11 @@ class Bdb:
 
         line = linecache.getline(filename, lineno)
         if not line:
-            return "Line %s:%d does not exist" % (filename, lineno)
+            return "Line %s:%d does not exist" % (filename, lineno)  # noqa: UP031
         list = self.breaks.setdefault(filename, [])
         if lineno not in list:
             list.append(lineno)
-        bp = Breakpoint(filename, lineno, temporary, cond, funcname)
+        Breakpoint(filename, lineno, temporary, cond, funcname)
         return None
 
     def _prune_breaks(self, filename, lineno):
@@ -409,9 +407,9 @@ class Bdb:
         """
         filename = self.canonic(filename)
         if filename not in self.breaks:
-            return "There are no breakpoints in %s" % filename
+            return f"There are no breakpoints in {filename}"
         if lineno not in self.breaks[filename]:
-            return "There is no breakpoint at %s:%d" % (filename, lineno)
+            return "There is no breakpoint at %s:%d" % (filename, lineno)  # noqa: UP031
         # If there's only one bp in the list for that file,line
         # pair, then remove the breaks entry
         for bp in Breakpoint.bplist[filename, lineno][:]:
@@ -439,7 +437,7 @@ class Bdb:
         """
         filename = self.canonic(filename)
         if filename not in self.breaks:
-            return "There are no breakpoints in %s" % filename
+            return f"There are no breakpoints in {filename}"
         for line in self.breaks[filename]:
             blist = Breakpoint.bplist[filename, line]
             for bp in blist:
@@ -471,13 +469,13 @@ class Bdb:
         try:
             number = int(arg)
         except ValueError:
-            raise ValueError("Non-numeric breakpoint number %s" % arg) from None
+            raise ValueError(f"Non-numeric breakpoint number {arg}") from None
         try:
             bp = Breakpoint.bpbynumber[number]
         except IndexError:
-            raise ValueError("Breakpoint number %d out of range" % number) from None
+            raise ValueError("Breakpoint number %d out of range" % number) from None  # noqa: UP031
         if bp is None:
-            raise ValueError("Breakpoint %d already deleted" % number)
+            raise ValueError("Breakpoint %d already deleted" % number)  # noqa: UP031
         return bp
 
     def get_break(self, filename, lineno):
@@ -553,7 +551,7 @@ class Bdb:
 
         frame, lineno = frame_lineno
         filename = self.canonic(frame.f_code.co_filename)
-        s = "%s(%r)" % (filename, lineno)
+        s = f"{filename}({lineno!r})"
         if frame.f_code.co_name:
             s += frame.f_code.co_name
         else:
@@ -588,7 +586,7 @@ class Bdb:
             cmd = compile(cmd, "<string>", "exec")
         sys.settrace(self.trace_dispatch)
         try:
-            exec(cmd, globals, locals)
+            exec(cmd, globals, locals)  # noqa: S102
         except BdbQuit:
             pass
         finally:
@@ -668,8 +666,8 @@ class Breakpoint:
     # you cannot have more than one active Bdb instance.
 
     next = 1  # Next bp to be assigned
-    bplist = {}  # indexed by (file, lineno) tuple
-    bpbynumber = [None]  # Each entry is None or an instance of Bpt
+    bplist = {}  # indexed by (file, lineno) tuple  # noqa: RUF012
+    bpbynumber = [None]  # Each entry is None or an instance of Bpt  # noqa: RUF012
     # index 0 is unused, except for marking an
     # effective break .... see effective()
 
@@ -741,22 +739,22 @@ class Breakpoint:
             disp = disp + "yes  "
         else:
             disp = disp + "no   "
-        ret = "%-4dbreakpoint   %s at %s:%d" % (self.number, disp, self.file, self.line)
+        ret = "%-4dbreakpoint   %s at %s:%d" % (self.number, disp, self.file, self.line)  # noqa: UP031
         if self.cond:
-            ret += "\n\tstop only if %s" % (self.cond,)
+            ret += f"\n\tstop only if {self.cond}"
         if self.ignore:
-            ret += "\n\tignore next %d hits" % (self.ignore,)
+            ret += "\n\tignore next %d hits" % (self.ignore,)  # noqa: UP031
         if self.hits:
             if self.hits > 1:
                 ss = "s"
             else:
                 ss = ""
-            ret += "\n\tbreakpoint already hit %d time%s" % (self.hits, ss)
+            ret += "\n\tbreakpoint already hit %d time%s" % (self.hits, ss)  # noqa: UP031
         return ret
 
     def __str__(self):
         "Return a condensed description of the breakpoint."
-        return "breakpoint %s at %s:%s" % (self.number, self.file, self.line)
+        return f"breakpoint {self.number} at {self.file}:{self.line}"
 
 
 # -----------end of Breakpoint class----------
@@ -772,7 +770,7 @@ def checkfuncname(b, frame):
     """
     if not b.funcname:
         # Breakpoint was set via line number.
-        if b.line != frame.f_lineno:
+        if b.line != frame.f_lineno:  # noqa: SIM103
             # Breakpoint was set at a line with a def statement and the function
             # defined is called: don't break.
             return False
@@ -788,7 +786,7 @@ def checkfuncname(b, frame):
         # The function is entered for the 1st time.
         b.func_first_executable_line = frame.f_lineno
 
-    if b.func_first_executable_line != frame.f_lineno:
+    if b.func_first_executable_line != frame.f_lineno:  # noqa: SIM103
         # But we are not at the first line number: don't break.
         return False
     return True
@@ -834,7 +832,7 @@ def effective(file, line, frame):
                         return (b, True)
                 # else:
                 #   continue
-            except:
+            except:  # noqa: E722
                 # if eval fails, most conservative thing is to stop on
                 # breakpoint regardless of ignore count.  Don't delete
                 # temporary, as another hint to user.

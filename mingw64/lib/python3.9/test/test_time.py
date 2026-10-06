@@ -56,10 +56,10 @@ class TimeTestCase(unittest.TestCase):
         self.t = time.time()
 
     def test_data_attributes(self):
-        time.altzone
-        time.daylight
-        time.timezone
-        time.tzname
+        time.altzone  # noqa: B018
+        time.daylight  # noqa: B018
+        time.timezone  # noqa: B018
+        time.tzname  # noqa: B018
 
     def test_time(self):
         time.time()
@@ -109,7 +109,7 @@ class TimeTestCase(unittest.TestCase):
         clk_id = time.pthread_getcpuclockid(threading.get_ident())
         self.assertTrue(type(clk_id) is int)
         # when in 32-bit mode AIX only returns the predefined constant
-        if not platform.system() == "AIX" or sys.maxsize.bit_length() > 32:
+        if platform.system() != "AIX" or sys.maxsize.bit_length() > 32:
             self.assertNotEqual(clk_id, time.CLOCK_THREAD_CPUTIME_ID)
         else:
             self.assertEqual(clk_id, time.CLOCK_THREAD_CPUTIME_ID)
@@ -173,7 +173,7 @@ class TimeTestCase(unittest.TestCase):
             try:
                 time.strftime(format, tt)
             except ValueError:
-                self.fail("conversion specifier: %r failed." % format)
+                self.fail(f"conversion specifier: {format!r} failed.")
 
         self.assertRaises(TypeError, time.strftime, b"%S", tt)
         # embedded null character
@@ -286,8 +286,7 @@ class TimeTestCase(unittest.TestCase):
                 time.strptime(strf_output, format)
             except ValueError:
                 self.fail(
-                    "conversion specifier %r failed with '%s' input."
-                    % (format, strf_output)
+                    f"conversion specifier {format!r} failed with '{strf_output}' input."
                 )
 
     def test_strptime_bytes(self):
@@ -472,7 +471,7 @@ class TimeTestCase(unittest.TestCase):
         times = [time.monotonic() for n in range(100)]
         t1 = times[0]
         for t2 in times[1:]:
-            self.assertGreaterEqual(t2, t1, "times=%s" % times)
+            self.assertGreaterEqual(t2, t1, f"times={times}")
             t1 = t2
 
         # monotonic() includes time elapsed during a sleep
@@ -509,9 +508,7 @@ class TimeTestCase(unittest.TestCase):
     def test_thread_time(self):
         if not hasattr(time, "thread_time"):
             if sys.platform.startswith(("linux", "win")):
-                self.fail(
-                    "time.thread_time() should be available on %r" % (sys.platform,)
-                )
+                self.fail(f"time.thread_time() should be available on {sys.platform!r}")
             else:
                 self.skipTest("need time.thread_time")
 
@@ -590,7 +587,7 @@ class TestLocale(unittest.TestCase):
 
     def test_bug_3061(self):
         try:
-            tmp = locale.setlocale(locale.LC_ALL, "fr_FR")
+            locale.setlocale(locale.LC_ALL, "fr_FR")
         except locale.Error:
             self.skipTest("could not set locale.LC_ALL to fr_FR")
         # This should not cause an exception
@@ -860,8 +857,8 @@ class CPyTimeTestCase:
                     try:
                         result = pytime_converter(value, time_rnd)
                         expected = expected_func(value)
-                    except Exception:
-                        self.fail("Error on timestamp conversion: %s" % debug_info)
+                    except Exception:  # noqa: BLE001
+                        self.fail(f"Error on timestamp conversion: {debug_info}")
                     self.assertEqual(result, expected, debug_info)
 
         # test overflow

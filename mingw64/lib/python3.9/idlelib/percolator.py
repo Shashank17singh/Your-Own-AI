@@ -73,7 +73,7 @@ def _percolator(parent):  # htest #
     box = tk.Toplevel(parent)
     box.title("Test Percolator")
     x, y = map(int, parent.geometry().split("+")[1:])
-    box.geometry("+%d+%d" % (x, y + 175))
+    box.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
     text = tk.Text(box)
     p = Percolator(text)
     pin = p.insertfilter

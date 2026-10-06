@@ -34,7 +34,7 @@ def cleanup(ordering, blowUp=False):
         ordering.append("cleanup_good")
     else:
         ordering.append("cleanup_exc")
-        raise Exception("CleanUpExc")
+        raise Exception("CleanUpExc")  # noqa: TRY002
 
 
 class TestCleanUp(unittest.TestCase):
@@ -58,13 +58,14 @@ class TestCleanUp(unittest.TestCase):
         self.assertEqual(
             test._cleanups,
             [
-                (cleanup1, (1, 2, 3), dict(four="hello", five="goodbye")),
+                (cleanup1, (1, 2, 3), {"four": "hello", "five": "goodbye"}),
                 (cleanup2, (), {}),
             ],
         )
         self.assertTrue(test.doCleanups())
         self.assertEqual(
-            cleanups, [(2, (), {}), (1, (1, 2, 3), dict(four="hello", five="goodbye"))]
+            cleanups,
+            [(2, (), {}), (1, (1, 2, 3), {"four": "hello", "five": "goodbye"})],
         )
 
     def testCleanUpWithErrors(self):
@@ -101,7 +102,7 @@ class TestCleanUp(unittest.TestCase):
             def setUp(self):
                 ordering.append("setUp")
                 if blowUp:
-                    raise Exception("foo")
+                    raise Exception("foo")  # noqa: TRY002
 
             def testNothing(self):
                 ordering.append("test")
@@ -189,14 +190,14 @@ class TestClassCleanup(unittest.TestCase):
         self.assertEqual(
             test._class_cleanups,
             [
-                (class_cleanup1, (1, 2, 3), dict(four="hello", five="goodbye")),
+                (class_cleanup1, (1, 2, 3), {"four": "hello", "five": "goodbye"}),
                 (class_cleanup2, (), {}),
             ],
         )
         TestableTest.doClassCleanups()
         self.assertEqual(
             class_cleanups,
-            [(4, (), {}), (3, (1, 2, 3), dict(four="hello", five="goodbye"))],
+            [(4, (), {}), (3, (1, 2, 3), {"four": "hello", "five": "goodbye"})],
         )
 
     def test_run_class_cleanUp(self):
@@ -209,7 +210,7 @@ class TestClassCleanup(unittest.TestCase):
                 ordering.append("setUpClass")
                 cls.addClassCleanup(cleanup, ordering)
                 if blowUp:
-                    raise Exception()
+                    raise Exception()  # noqa: TRY002
 
             def testNothing(self):
                 ordering.append("test")
@@ -237,7 +238,7 @@ class TestClassCleanup(unittest.TestCase):
                 ordering.append("setUpClass")
                 cls.addClassCleanup(cleanup, ordering)
                 if blowUp:
-                    raise Exception()
+                    raise Exception()  # noqa: TRY002
 
             def testNothing(self):
                 ordering.append("test")
@@ -301,7 +302,7 @@ class TestClassCleanup(unittest.TestCase):
 
             @classmethod
             def tearDownClass(cls):
-                raise Exception("TearDownClassExc")
+                raise Exception("TearDownClassExc")  # noqa: TRY002
 
         suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestableTest)
         with self.assertRaises(Exception) as cm:
@@ -326,10 +327,10 @@ class TestClassCleanup(unittest.TestCase):
                 pass
 
         def cleanup1():
-            raise Exception("cleanup1")
+            raise Exception("cleanup1")  # noqa: TRY002
 
         def cleanup2():
-            raise Exception("cleanup2")
+            raise Exception("cleanup2")  # noqa: TRY002
 
         TestableTest.addClassCleanup(cleanup1)
         TestableTest.addClassCleanup(cleanup2)
@@ -409,12 +410,12 @@ class TestClassCleanup(unittest.TestCase):
                 ordering.append("setUpClass")
                 cls.addClassCleanup(cleanup, ordering, blowUp=True)
                 if class_blow_up:
-                    raise Exception("ClassExc")
+                    raise Exception("ClassExc")  # noqa: TRY002
 
             def setUp(self):
                 ordering.append("setUp")
                 if method_blow_up:
-                    raise Exception("MethodExc")
+                    raise Exception("MethodExc")  # noqa: TRY002
 
             def testNothing(self):
                 ordering.append("test")
@@ -460,7 +461,7 @@ class TestClassCleanup(unittest.TestCase):
             @classmethod
             def tearDownClass(cls):
                 ordering.append("tearDownClass")
-                raise Exception("TearDownExc")
+                raise Exception("TearDownExc")  # noqa: TRY002
 
         result = runTests(TestableTest)
         self.assertEqual(result.errors[0][1].splitlines()[-1], "Exception: TearDownExc")
@@ -488,14 +489,14 @@ class TestModuleCleanUp(unittest.TestCase):
         self.assertEqual(
             unittest.case._module_cleanups,
             [
-                (module_cleanup1, (1, 2, 3), dict(four="hello", five="goodbye")),
+                (module_cleanup1, (1, 2, 3), {"four": "hello", "five": "goodbye"}),
                 (module_cleanup2, (), {}),
             ],
         )
         unittest.case.doModuleCleanups()
         self.assertEqual(
             module_cleanups,
-            [(4, (), {}), (3, (1, 2, 3), dict(four="hello", five="goodbye"))],
+            [(4, (), {}), (3, (1, 2, 3), {"four": "hello", "five": "goodbye"})],
         )
         self.assertEqual(unittest.case._module_cleanups, [])
 
@@ -506,7 +507,7 @@ class TestModuleCleanUp(unittest.TestCase):
             module_cleanups.append((3, args, kwargs))
 
         def module_cleanup_bad(*args, **kwargs):
-            raise Exception("CleanUpExc")
+            raise Exception("CleanUpExc")  # noqa: TRY002
 
         class Module:
             unittest.addModuleCleanup(
@@ -517,7 +518,7 @@ class TestModuleCleanUp(unittest.TestCase):
         self.assertEqual(
             unittest.case._module_cleanups,
             [
-                (module_cleanup_good, (1, 2, 3), dict(four="hello", five="goodbye")),
+                (module_cleanup_good, (1, 2, 3), {"four": "hello", "five": "goodbye"}),
                 (module_cleanup_bad, (), {}),
             ],
         )
@@ -552,7 +553,7 @@ class TestModuleCleanUp(unittest.TestCase):
                 ordering.append("setUpModule")
                 unittest.addModuleCleanup(cleanup, ordering)
                 if blowUp:
-                    raise Exception("setUpModule Exc")
+                    raise Exception("setUpModule Exc")  # noqa: TRY002
 
             @staticmethod
             def tearDownModule():
@@ -604,7 +605,7 @@ class TestModuleCleanUp(unittest.TestCase):
                 ordering.append("setUpModule")
                 unittest.addModuleCleanup(cleanup, ordering)
                 if blowUp:
-                    raise Exception()
+                    raise Exception()  # noqa: TRY002
 
             @staticmethod
             def tearDownModule():
@@ -616,7 +617,7 @@ class TestModuleCleanUp(unittest.TestCase):
                 ordering.append("setUpModule2")
                 unittest.addModuleCleanup(cleanup, ordering)
                 if blowUp2:
-                    raise Exception()
+                    raise Exception()  # noqa: TRY002
 
             @staticmethod
             def tearDownModule():
@@ -745,7 +746,7 @@ class TestModuleCleanUp(unittest.TestCase):
 
             @staticmethod
             def tearDownModule():
-                raise Exception("CleanUpExc")
+                raise Exception("CleanUpExc")  # noqa: TRY002
 
         class TestableTest(unittest.TestCase):
             @classmethod
@@ -842,7 +843,7 @@ class TestModuleCleanUp(unittest.TestCase):
 
             @staticmethod
             def tearDownModule():
-                raise Exception("TearDownModuleExc")
+                raise Exception("TearDownModuleExc")  # noqa: TRY002
 
         class TestableTest(unittest.TestCase):
             @classmethod
@@ -1020,7 +1021,7 @@ class TestModuleCleanUp(unittest.TestCase):
                 ordering.append("setUpModule")
                 unittest.addModuleCleanup(cleanup, ordering, blowUp=True)
                 if module_blow_up:
-                    raise Exception("ModuleExc")
+                    raise Exception("ModuleExc")  # noqa: TRY002
 
             @staticmethod
             def tearDownModule():
@@ -1031,12 +1032,12 @@ class TestModuleCleanUp(unittest.TestCase):
             def setUpClass(cls):
                 ordering.append("setUpClass")
                 if class_blow_up:
-                    raise Exception("ClassExc")
+                    raise Exception("ClassExc")  # noqa: TRY002
 
             def setUp(self):
                 ordering.append("setUp")
                 if method_blow_up:
-                    raise Exception("MethodExc")
+                    raise Exception("MethodExc")  # noqa: TRY002
 
             def testNothing(self):
                 ordering.append("test")
@@ -1308,11 +1309,11 @@ class Test_TextTestRunner(unittest.TestCase):
         def get_parse_out_err(p):
             return [b.splitlines() for b in p.communicate()]
 
-        opts = dict(
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=os.path.dirname(__file__),
-        )
+        opts = {
+            "stdout": subprocess.PIPE,
+            "stderr": subprocess.PIPE,
+            "cwd": os.path.dirname(__file__),
+        }
         ae_msg = b"Please use assertEqual instead."
         at_msg = b"Please use assertTrue instead."
         p = subprocess.Popen([sys.executable, "-E", "_test_warnings.py"], **opts)

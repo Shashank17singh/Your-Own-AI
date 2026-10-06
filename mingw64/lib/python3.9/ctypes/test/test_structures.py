@@ -17,10 +17,10 @@ MACHINE = platform.machine()
 class SubclassesTest(unittest.TestCase):
     def test_subclass(self):
         class X(Structure):
-            _fields_ = [("a", c_int)]
+            _fields_ = [("a", c_int)]  # noqa: RUF012
 
         class Y(X):
-            _fields_ = [("b", c_int)]
+            _fields_ = [("b", c_int)]  # noqa: RUF012
 
         class Z(X):
             pass
@@ -57,7 +57,7 @@ class SubclassesTest(unittest.TestCase):
 
 
 class StructureTestCase(unittest.TestCase):
-    formats = {
+    formats = {  # noqa: RUF012
         "c": c_char,
         "b": c_byte,
         "B": c_ubyte,
@@ -77,47 +77,48 @@ class StructureTestCase(unittest.TestCase):
         for code, tp in self.formats.items():
 
             class X(Structure):
-                _fields_ = [("x", c_char), ("y", tp)]
+                _fields_ = [("x", c_char), ("y", tp)]  # noqa: RUF012
 
             self.assertEqual(
-                (sizeof(X), code), (calcsize("c%c0%c" % (code, code)), code)
+                (sizeof(X), code),
+                (calcsize("c%c0%c" % (code, code)), code),  # noqa: UP031
             )
 
     def test_unions(self):
         for code, tp in self.formats.items():
 
             class X(Union):
-                _fields_ = [("x", c_char), ("y", tp)]
+                _fields_ = [("x", c_char), ("y", tp)]  # noqa: RUF012
 
-            self.assertEqual((sizeof(X), code), (calcsize("%c" % (code)), code))
+            self.assertEqual((sizeof(X), code), (calcsize("%c" % (code)), code))  # noqa: UP031
 
     def test_struct_alignment(self):
         class X(Structure):
-            _fields_ = [("x", c_char * 3)]
+            _fields_ = [("x", c_char * 3)]  # noqa: RUF012
 
         self.assertEqual(alignment(X), calcsize("s"))
         self.assertEqual(sizeof(X), calcsize("3s"))
 
         class Y(Structure):
-            _fields_ = [("x", c_char * 3), ("y", c_int)]
+            _fields_ = [("x", c_char * 3), ("y", c_int)]  # noqa: RUF012
 
         self.assertEqual(alignment(Y), alignment(c_int))
         self.assertEqual(sizeof(Y), calcsize("3si"))
 
         class SI(Structure):
-            _fields_ = [("a", X), ("b", Y)]
+            _fields_ = [("a", X), ("b", Y)]  # noqa: RUF012
 
         self.assertEqual(alignment(SI), max(alignment(Y), alignment(X)))
         self.assertEqual(sizeof(SI), calcsize("3s0i 3si 0i"))
 
         class IS(Structure):
-            _fields_ = [("b", Y), ("a", X)]
+            _fields_ = [("b", Y), ("a", X)]  # noqa: RUF012
 
         self.assertEqual(alignment(SI), max(alignment(X), alignment(Y)))
         self.assertEqual(sizeof(IS), calcsize("3si 3s 0i"))
 
         class XX(Structure):
-            _fields_ = [("a", X), ("b", X)]
+            _fields_ = [("a", X), ("b", X)]  # noqa: RUF012
 
         self.assertEqual(alignment(XX), alignment(X))
         self.assertEqual(sizeof(XX), calcsize("3s 3s 0s"))
@@ -127,17 +128,17 @@ class StructureTestCase(unittest.TestCase):
         #
         # Although these are pathological cases: Empty Structures!
         class X(Structure):
-            _fields_ = []
+            _fields_ = []  # noqa: RUF012
 
         class Y(Union):
-            _fields_ = []
+            _fields_ = []  # noqa: RUF012
 
         # Is this really the correct alignment, or should it be 0?
         self.assertTrue(alignment(X) == alignment(Y) == 1)
         self.assertTrue(sizeof(X) == sizeof(Y) == 0)
 
         class XX(Structure):
-            _fields_ = [("a", X), ("b", X)]
+            _fields_ = [("a", X), ("b", X)]  # noqa: RUF012
 
         self.assertEqual(alignment(XX), 1)
         self.assertEqual(sizeof(XX), 0)
@@ -145,7 +146,7 @@ class StructureTestCase(unittest.TestCase):
     def test_fields(self):
         # test the offset and size attributes of Structure/Union fields.
         class X(Structure):
-            _fields_ = [("x", c_int), ("y", c_char)]
+            _fields_ = [("x", c_int), ("y", c_char)]  # noqa: RUF012
 
         self.assertEqual(X.x.offset, 0)
         self.assertEqual(X.x.size, sizeof(c_int))
@@ -158,7 +159,7 @@ class StructureTestCase(unittest.TestCase):
         self.assertRaises((TypeError, AttributeError), setattr, X.x, "size", 92)
 
         class X(Union):
-            _fields_ = [("x", c_int), ("y", c_char)]
+            _fields_ = [("x", c_int), ("y", c_char)]  # noqa: RUF012
 
         self.assertEqual(X.x.offset, 0)
         self.assertEqual(X.x.size, sizeof(c_int))
@@ -175,14 +176,14 @@ class StructureTestCase(unittest.TestCase):
 
     def test_packed(self):
         class X(Structure):
-            _fields_ = [("a", c_byte), ("b", c_longlong)]
+            _fields_ = [("a", c_byte), ("b", c_longlong)]  # noqa: RUF012
             _pack_ = 1
 
         self.assertEqual(sizeof(X), 9)
         self.assertEqual(X.b.offset, 1)
 
         class X(Structure):
-            _fields_ = [("a", c_byte), ("b", c_longlong)]
+            _fields_ = [("a", c_byte), ("b", c_longlong)]  # noqa: RUF012
             _pack_ = 2
 
         self.assertEqual(sizeof(X), 10)
@@ -194,14 +195,14 @@ class StructureTestCase(unittest.TestCase):
         longlong_align = struct.calcsize("bq") - longlong_size
 
         class X(Structure):
-            _fields_ = [("a", c_byte), ("b", c_longlong)]
+            _fields_ = [("a", c_byte), ("b", c_longlong)]  # noqa: RUF012
             _pack_ = 4
 
         self.assertEqual(sizeof(X), min(4, longlong_align) + longlong_size)
         self.assertEqual(X.b.offset, min(4, longlong_align))
 
         class X(Structure):
-            _fields_ = [("a", c_byte), ("b", c_longlong)]
+            _fields_ = [("a", c_byte), ("b", c_longlong)]  # noqa: RUF012
             _pack_ = 8
 
         self.assertEqual(sizeof(X), min(8, longlong_align) + longlong_size)
@@ -222,7 +223,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_initializers(self):
         class Person(Structure):
-            _fields_ = [("name", c_char * 6), ("age", c_int)]
+            _fields_ = [("name", c_char * 6), ("age", c_int)]  # noqa: RUF012
 
         self.assertRaises(TypeError, Person, 42)
         self.assertRaises(ValueError, Person, b"asldkjaslkdjaslkdj")
@@ -237,7 +238,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_conflicting_initializers(self):
         class POINT(Structure):
-            _fields_ = [("phi", c_float), ("rho", c_float)]
+            _fields_ = [("phi", c_float), ("rho", c_float)]  # noqa: RUF012
 
         # conflicting positional and keyword args
         self.assertRaisesRegex(TypeError, "phi", POINT, 2, 3, phi=4)
@@ -248,7 +249,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_keyword_initializers(self):
         class POINT(Structure):
-            _fields_ = [("x", c_int), ("y", c_int)]
+            _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
         pt = POINT(1, 2)
         self.assertEqual((pt.x, pt.y), (1, 2))
@@ -266,13 +267,13 @@ class StructureTestCase(unittest.TestCase):
         # field name must be string
         def declare_with_name(name):
             class S(Structure):
-                _fields_ = [(name, c_int)]
+                _fields_ = [(name, c_int)]  # noqa: RUF012
 
         self.assertRaises(TypeError, declare_with_name, b"x")
 
     def test_intarray_fields(self):
         class SomeInts(Structure):
-            _fields_ = [("a", c_int * 4)]
+            _fields_ = [("a", c_int * 4)]  # noqa: RUF012
 
         # can use tuple to initialize array (but not list!)
         self.assertEqual(SomeInts((1, 2)).a[:], [1, 2, 0, 0])
@@ -290,10 +291,10 @@ class StructureTestCase(unittest.TestCase):
     def test_nested_initializers(self):
         # test initializing nested structures
         class Phone(Structure):
-            _fields_ = [("areacode", c_char * 6), ("number", c_char * 12)]
+            _fields_ = [("areacode", c_char * 6), ("number", c_char * 12)]  # noqa: RUF012
 
         class Person(Structure):
-            _fields_ = [("name", c_char * 12), ("phone", Phone), ("age", c_int)]
+            _fields_ = [("name", c_char * 12), ("phone", Phone), ("age", c_int)]  # noqa: RUF012
 
         p = Person(b"Someone", (b"1234", b"5678"), 5)
 
@@ -305,7 +306,7 @@ class StructureTestCase(unittest.TestCase):
     @need_symbol("c_wchar")
     def test_structures_with_wchar(self):
         class PersonW(Structure):
-            _fields_ = [("name", c_wchar * 12), ("age", c_int)]
+            _fields_ = [("name", c_wchar * 12), ("age", c_int)]  # noqa: RUF012
 
         p = PersonW("Someone \xe9")
         self.assertEqual(p.name, "Someone \xe9")
@@ -319,10 +320,10 @@ class StructureTestCase(unittest.TestCase):
 
     def test_init_errors(self):
         class Phone(Structure):
-            _fields_ = [("areacode", c_char * 6), ("number", c_char * 12)]
+            _fields_ = [("areacode", c_char * 6), ("number", c_char * 12)]  # noqa: RUF012
 
         class Person(Structure):
-            _fields_ = [("name", c_char * 12), ("phone", Phone), ("age", c_int)]
+            _fields_ = [("name", c_char * 12), ("phone", Phone), ("age", c_int)]  # noqa: RUF012
 
         cls, msg = self.get_except(Person, b"Someone", (1, 2))
         self.assertEqual(cls, RuntimeError)
@@ -336,7 +337,7 @@ class StructureTestCase(unittest.TestCase):
         # issue12881: segfault with large structure field names
         def create_class(length):
             class S(Structure):
-                _fields_ = [("x" * length, c_int)]
+                _fields_ = [("x" * length, c_int)]  # noqa: RUF012
 
         for length in [10**i for i in range(8)]:
             try:
@@ -348,7 +349,7 @@ class StructureTestCase(unittest.TestCase):
     def get_except(self, func, *args):
         try:
             func(*args)
-        except Exception as detail:
+        except Exception as detail:  # noqa: BLE001
             return detail.__class__, str(detail)
 
     @unittest.skip("test disabled")
@@ -380,16 +381,16 @@ class StructureTestCase(unittest.TestCase):
     def test_positional_args(self):
         # see also http://bugs.python.org/issue5042
         class W(Structure):
-            _fields_ = [("a", c_int), ("b", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
 
         class X(W):
-            _fields_ = [("c", c_int)]
+            _fields_ = [("c", c_int)]  # noqa: RUF012
 
         class Y(X):
             pass
 
         class Z(Y):
-            _fields_ = [("d", c_int), ("e", c_int), ("f", c_int)]
+            _fields_ = [("d", c_int), ("e", c_int), ("f", c_int)]  # noqa: RUF012
 
         z = Z(1, 2, 3, 4, 5, 6)
         self.assertEqual((z.a, z.b, z.c, z.d, z.e, z.f), (1, 2, 3, 4, 5, 6))
@@ -401,7 +402,7 @@ class StructureTestCase(unittest.TestCase):
         # This should mirror the Test structure
         # in Modules/_ctypes/_ctypes_test.c
         class Test(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("first", c_ulong),
                 ("second", c_ulong),
                 ("third", c_ulong),
@@ -428,7 +429,7 @@ class StructureTestCase(unittest.TestCase):
         finalizer_calls = []
 
         class Test(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("first", c_ulong),
                 ("second", c_ulong),
                 ("third", c_ulong),
@@ -461,7 +462,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_pass_by_value_in_register(self):
         class X(Structure):
-            _fields_ = [("first", c_uint), ("second", c_uint)]
+            _fields_ = [("first", c_uint), ("second", c_uint)]  # noqa: RUF012
 
         s = X()
         s.first = 0xDEADBEEF
@@ -482,22 +483,22 @@ class StructureTestCase(unittest.TestCase):
 
         # These should mirror the structures in Modules/_ctypes/_ctypes_test.c
         class Test2(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("data", c_ubyte * 16),
             ]
 
         class Test3(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("data", c_double * 2),
             ]
 
         class Test3A(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("data", c_float * 2),
             ]
 
         class Test3B(Test3A):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("more_data", c_float * 2),
             ]
 
@@ -549,7 +550,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_38368(self):
         class U(Union):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("f1", c_uint8 * 16),
                 ("f2", c_uint16 * 8),
                 ("f3", c_uint32 * 4),
@@ -595,25 +596,25 @@ class StructureTestCase(unittest.TestCase):
         # These should mirror the structures in Modules/_ctypes/_ctypes_test.c
 
         class Nested1(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("an_int", c_int),
                 ("another_int", c_int),
             ]
 
         class Test4(Union):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a_long", c_long),
                 ("a_struct", Nested1),
             ]
 
         class Nested2(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("an_int", c_int),
                 ("a_union", Test4),
             ]
 
         class Test5(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("an_int", c_int),
                 ("nested", Nested2),
                 ("another_int", c_int),
@@ -680,7 +681,7 @@ class StructureTestCase(unittest.TestCase):
         # These should mirror the structures in Modules/_ctypes/_ctypes_test.c
 
         class Test6(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("A", c_int, 1),
                 ("B", c_int, 2),
                 ("C", c_int, 3),
@@ -718,7 +719,7 @@ class StructureTestCase(unittest.TestCase):
         self.assertEqual(test6.D, 0)
 
         class Test7(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("A", c_uint, 1),
                 ("B", c_uint, 2),
                 ("C", c_uint, 3),
@@ -742,7 +743,7 @@ class StructureTestCase(unittest.TestCase):
 
         # for a union with bitfields, the union check happens first
         class Test8(Union):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("A", c_int, 1),
                 ("B", c_int, 2),
                 ("C", c_int, 3),
@@ -765,7 +766,7 @@ class PointerMemberTestCase(unittest.TestCase):
     def test(self):
         # a Structure with a POINTER field
         class S(Structure):
-            _fields_ = [("array", POINTER(c_int))]
+            _fields_ = [("array", POINTER(c_int))]  # noqa: RUF012
 
         s = S()
         # We can assign arrays of the correct type
@@ -793,7 +794,7 @@ class PointerMemberTestCase(unittest.TestCase):
 
     def test_none_to_pointer_fields(self):
         class S(Structure):
-            _fields_ = [("x", c_int), ("p", POINTER(c_int))]
+            _fields_ = [("x", c_int), ("p", POINTER(c_int))]  # noqa: RUF012
 
         s = S()
         s.x = 12345678

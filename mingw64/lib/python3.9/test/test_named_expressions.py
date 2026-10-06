@@ -10,25 +10,25 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         code = """x := 0"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_02(self):
         code = """x = y := 0"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_03(self):
         code = """y := f(x)"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_04(self):
         code = """y0 = y1 := f(x)"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_06(self):
         code = """((a, b) := (1, 2))"""
@@ -36,31 +36,31 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         with self.assertRaisesRegex(
             SyntaxError, "cannot use assignment expressions with tuple"
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_07(self):
         code = """def spam(a = b := 42): pass"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_08(self):
         code = """def spam(a: b := 42 = 5): pass"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_09(self):
         code = """spam(a=b := 'c')"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_10(self):
         code = """spam(x = y := f(x))"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_11(self):
         code = """spam(a=1, b := 2)"""
@@ -68,7 +68,7 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         with self.assertRaisesRegex(
             SyntaxError, "positional argument follows keyword argument"
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_12(self):
         code = """spam(a=1, (b := 2))"""
@@ -76,7 +76,7 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         with self.assertRaisesRegex(
             SyntaxError, "positional argument follows keyword argument"
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_13(self):
         code = """spam(a=1, (b := 2))"""
@@ -84,13 +84,13 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         with self.assertRaisesRegex(
             SyntaxError, "positional argument follows keyword argument"
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_14(self):
         code = """(x := lambda: y := 1)"""
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_15(self):
         code = """(lambda: x := 1)"""
@@ -98,19 +98,19 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         with self.assertRaisesRegex(
             SyntaxError, "cannot use assignment expressions with lambda"
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_16(self):
         code = "[i + 1 for i in i := [1,2]]"
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_17(self):
         code = "[i := 0, j := 1 for i, j in [(1, 2), (3, 4)]]"
 
         with self.assertRaisesRegex(SyntaxError, "invalid syntax"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_in_class_body(self):
         code = """class Foo():
@@ -121,7 +121,7 @@ class NamedExpressionInvalidTest(unittest.TestCase):
             SyntaxError,
             "assignment expression within a comprehension cannot be used in a class body",
         ):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_rebinding_list_comprehension_iteration_variable(
         self,
@@ -145,9 +145,9 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         ]
         for case, target, code in cases:
             msg = f"assignment expression cannot rebind comprehension iteration variable '{target}'"
-            with self.subTest(case=case):
+            with self.subTest(case=case):  # noqa: SIM117
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})
+                    exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_rebinding_list_comprehension_inner_loop(self):
         cases = [
@@ -162,11 +162,11 @@ class NamedExpressionInvalidTest(unittest.TestCase):
             msg = f"comprehension inner loop cannot rebind assignment expression target '{target}'"
             with self.subTest(case=case):
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {})  # Module scope
+                    exec(code, {})  # Module scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})  # Class scope
+                    exec(code, {}, {})  # Class scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(f"lambda: {code}", {})  # Function scope
+                    exec(f"lambda: {code}", {})  # Function scope  # noqa: S102
 
     def test_named_expression_invalid_list_comprehension_iterable_expression(self):
         cases = [
@@ -190,11 +190,11 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         for case, code in cases:
             with self.subTest(case=case):
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {})  # Module scope
+                    exec(code, {})  # Module scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})  # Class scope
+                    exec(code, {}, {})  # Class scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(f"lambda: {code}", {})  # Function scope
+                    exec(f"lambda: {code}", {})  # Function scope  # noqa: S102
 
     @unittest.skipIf(
         use_old_parser(), "Old parser does not support walruses in set comprehensions"
@@ -221,9 +221,9 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         ]
         for case, target, code in cases:
             msg = f"assignment expression cannot rebind comprehension iteration variable '{target}'"
-            with self.subTest(case=case):
+            with self.subTest(case=case):  # noqa: SIM117
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})
+                    exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_invalid_rebinding_set_comprehension_inner_loop(self):
         cases = [
@@ -238,11 +238,11 @@ class NamedExpressionInvalidTest(unittest.TestCase):
             msg = f"comprehension inner loop cannot rebind assignment expression target '{target}'"
             with self.subTest(case=case):
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {})  # Module scope
+                    exec(code, {})  # Module scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})  # Class scope
+                    exec(code, {}, {})  # Class scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(f"lambda: {code}", {})  # Function scope
+                    exec(f"lambda: {code}", {})  # Function scope  # noqa: S102
 
     @unittest.skipIf(
         use_old_parser(), "Old parser does not support walruses in set comprehensions"
@@ -269,32 +269,32 @@ class NamedExpressionInvalidTest(unittest.TestCase):
         for case, code in cases:
             with self.subTest(case=case):
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {})  # Module scope
+                    exec(code, {})  # Module scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(code, {}, {})  # Class scope
+                    exec(code, {}, {})  # Class scope  # noqa: S102
                 with self.assertRaisesRegex(SyntaxError, msg):
-                    exec(f"lambda: {code}", {})  # Function scope
+                    exec(f"lambda: {code}", {})  # Function scope  # noqa: S102
 
 
 class NamedExpressionAssignmentTest(unittest.TestCase):
     def test_named_expression_assignment_01(self):
-        (a := 10)
+        (a := 10)  # noqa: PLW0131
 
         self.assertEqual(a, 10)
 
     def test_named_expression_assignment_02(self):
         a = 20
-        (a := a)
+        (a := a)  # noqa: PLW0131
 
         self.assertEqual(a, 20)
 
     def test_named_expression_assignment_03(self):
-        (total := 1 + 2)
+        (total := 1 + 2)  # noqa: PLW0131
 
         self.assertEqual(total, 3)
 
     def test_named_expression_assignment_04(self):
-        (info := (1, 2, 3))
+        (info := (1, 2, 3))  # noqa: PLW0131
 
         self.assertEqual(info, (1, 2, 3))
 
@@ -304,14 +304,14 @@ class NamedExpressionAssignmentTest(unittest.TestCase):
         self.assertEqual(x, 1)
 
     def test_named_expression_assignment_06(self):
-        (z := (y := (x := 0)))
+        (z := (y := (x := 0)))  # noqa: PLW0131
 
         self.assertEqual(x, 0)
         self.assertEqual(y, 0)
         self.assertEqual(z, 0)
 
     def test_named_expression_assignment_07(self):
-        (loc := (1, 2))
+        (loc := (1, 2))  # noqa: PLW0131
 
         self.assertEqual(loc, (1, 2))
 
@@ -328,7 +328,7 @@ class NamedExpressionAssignmentTest(unittest.TestCase):
             self.fail("variable was not assigned using named expression")
 
     def test_named_expression_assignment_10(self):
-        if (match := 10) == 10:
+        if (match := 10) == 10:  # noqa: F841
             pass
         else:
             self.fail("variable was not assigned using named expression")
@@ -391,7 +391,7 @@ class NamedExpressionScopeTest(unittest.TestCase):
 print(a)"""
 
         with self.assertRaisesRegex(NameError, "name 'a' is not defined"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_named_expression_scope_02(self):
         total = 0
@@ -410,7 +410,7 @@ print(a)"""
         def spam(a):
             return a
 
-        res = [[y := spam(x), x / y] for x in range(1, 5)]
+        [[y := spam(x), x / y] for x in range(1, 5)]
 
         self.assertEqual(y, 4)
 
@@ -539,7 +539,7 @@ print(a)"""
 
         def spam():
             nonlocal a
-            (a := 20)
+            (a := 20)  # noqa: PLW0131
 
         spam()
 
@@ -553,7 +553,7 @@ def spam():
     (a := 20)
 spam()"""
 
-        exec(code, ns, {})
+        exec(code, ns, {})  # noqa: S102
 
         self.assertEqual(ns["a"], 20)
 
@@ -583,7 +583,7 @@ spam()"""
         for case, code in cases:
             with self.subTest(case=case):
                 ns = {}
-                exec(code, ns)
+                exec(code, ns)  # noqa: S102
                 self.assertEqual(ns["x"], 2)
                 self.assertEqual(ns["result"], [0, 1, 2])
 
@@ -635,7 +635,7 @@ spam()"""
             nonlocal_var = None
 
             def g():
-                [nonlocal_var := sentinel for _ in range(1)]
+                [nonlocal_var := sentinel for _ in range(1)]  # noqa: F841
 
             g()
             self.assertEqual(nonlocal_var, None)

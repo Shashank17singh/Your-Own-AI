@@ -277,7 +277,7 @@ class GrammarTests(unittest.TestCase):
         d22v(*(1, 2, 3, 4))
         d22v(1, 2, *(3, 4, 5))
         d22v(1, *(2, 3), **{'d': 4})
-        def d31v((x)): pass
+        def d31v((x)): pass  # noqa: UP034
         d31v(1)
         def d32v((x,)): pass
         d32v((1,))
@@ -650,14 +650,14 @@ hello world
         if 1:
             pass
         if 1:
-            #
-            #
-            #
+            #  # noqa: PLR2044
+            #  # noqa: PLR2044
+            #  # noqa: PLR2044
             pass
             pass
-            #
+            #  # noqa: PLR2044
             pass
-            #
+            #  # noqa: PLR2044
 
     def testTest(self):
         ### and_test ('or' and_test)*

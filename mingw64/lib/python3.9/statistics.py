@@ -525,7 +525,7 @@ def median_grouped(data, interval=1):
     x = data[n // 2]
     for obj in (x, interval):
         if isinstance(obj, (str, bytes)):
-            raise TypeError("expected number but got %r" % obj)
+            raise TypeError(f"expected number but got {obj!r}")
     try:
         L = x - interval / 2  # The lower limit of the median interval.
     except TypeError:
@@ -587,7 +587,7 @@ def multimode(data):
     []
     """
     counts = Counter(iter(data)).most_common()
-    maxcount, mode_items = next(groupby(counts, key=itemgetter(1)), (0, []))
+    _maxcount, mode_items = next(groupby(counts, key=itemgetter(1)), (0, []))
     return list(map(itemgetter(0), mode_items))
 
 
@@ -704,7 +704,7 @@ def _ss(data, c=None):
     U, total2, count2 = _sum((x - c) for x in data)
     assert T == U and count == count2
     total -= total2**2 / len(data)
-    assert not total < 0, "negative sum of square deviations: %f" % total
+    assert not total < 0, f"negative sum of square deviations: {total:f}"
     return (T, total)
 
 

@@ -242,14 +242,11 @@ def has_tls_version(version):
         and version < ctx.minimum_version
     ):
         return False
-    if (
+    return not (
         hasattr(ctx, "maximum_version")
         and ctx.maximum_version != ssl.TLSVersion.MAXIMUM_SUPPORTED
         and version > ctx.maximum_version
-    ):
-        return False
-
-    return True
+    )
 
 
 def requires_tls_version(version):
@@ -325,7 +322,7 @@ def asn1time(cert_time):
     # 0.9.8.i
     if ssl._OPENSSL_API_VERSION == (0, 9, 8, 9, 15):
         fmt = "%b %d %H:%M:%S %Y GMT"
-        dt = datetime.datetime.strptime(cert_time, fmt)
+        dt = datetime.datetime.strptime(cert_time, fmt)  # noqa: DTZ007
         dt = dt.replace(second=0)
         cert_time = dt.strftime(fmt)
         # %d adds leading zero but ASN1_TIME_print() uses leading space
@@ -389,28 +386,28 @@ def testing_context(server_cert=SIGNED_CERTFILE):
 
 class BasicSocketTests(unittest.TestCase):
     def test_constants(self):
-        ssl.CERT_NONE
-        ssl.CERT_OPTIONAL
-        ssl.CERT_REQUIRED
-        ssl.OP_CIPHER_SERVER_PREFERENCE
-        ssl.OP_SINGLE_DH_USE
+        ssl.CERT_NONE  # noqa: B018
+        ssl.CERT_OPTIONAL  # noqa: B018
+        ssl.CERT_REQUIRED  # noqa: B018
+        ssl.OP_CIPHER_SERVER_PREFERENCE  # noqa: B018
+        ssl.OP_SINGLE_DH_USE  # noqa: B018
         if ssl.HAS_ECDH:
-            ssl.OP_SINGLE_ECDH_USE
+            ssl.OP_SINGLE_ECDH_USE  # noqa: B018
         if ssl.OPENSSL_VERSION_INFO >= (1, 0):
-            ssl.OP_NO_COMPRESSION
+            ssl.OP_NO_COMPRESSION  # noqa: B018
         self.assertIn(ssl.HAS_SNI, {True, False})
         self.assertIn(ssl.HAS_ECDH, {True, False})
-        ssl.OP_NO_SSLv2
-        ssl.OP_NO_SSLv3
-        ssl.OP_NO_TLSv1
-        ssl.OP_NO_TLSv1_3
+        ssl.OP_NO_SSLv2  # noqa: B018
+        ssl.OP_NO_SSLv3  # noqa: B018
+        ssl.OP_NO_TLSv1  # noqa: B018
+        ssl.OP_NO_TLSv1_3  # noqa: B018
         if ssl.OPENSSL_VERSION_INFO >= (1, 0, 1):
-            ssl.OP_NO_TLSv1_1
-            ssl.OP_NO_TLSv1_2
+            ssl.OP_NO_TLSv1_1  # noqa: B018
+            ssl.OP_NO_TLSv1_2  # noqa: B018
         self.assertEqual(ssl.PROTOCOL_TLS, ssl.PROTOCOL_SSLv23)
 
     def test_private_init(self):
-        with self.assertRaisesRegex(TypeError, "public constructor"):
+        with self.assertRaisesRegex(TypeError, "public constructor"):  # noqa: SIM117
             with socket.socket() as s:
                 ssl.SSLSocket(s)
 
@@ -426,7 +423,7 @@ class BasicSocketTests(unittest.TestCase):
         v = ssl.RAND_status()
         if support.verbose:
             sys.stdout.write(
-                "\n RAND_status is %d (%s)\n"
+                "\n RAND_status is %d (%s)\n"  # noqa: UP031
                 % (v, (v and "sufficient randomness") or "insufficient randomness")
             )
 
@@ -465,7 +462,7 @@ class BasicSocketTests(unittest.TestCase):
                 self.assertEqual(len(child_random), 16)
                 os.write(wfd, child_random)
                 os.close(wfd)
-            except BaseException:
+            except BaseException:  # noqa: BLE001
                 os._exit(1)
             else:
                 os._exit(0)
@@ -603,9 +600,9 @@ class BasicSocketTests(unittest.TestCase):
         d2 = ssl.PEM_cert_to_DER_cert(p2)
         self.assertEqual(d1, d2)
         if not p2.startswith(ssl.PEM_HEADER + "\n"):
-            self.fail("DER-to-PEM didn't include correct header:\n%r\n" % p2)
+            self.fail(f"DER-to-PEM didn't include correct header:\n{p2!r}\n")
         if not p2.endswith("\n" + ssl.PEM_FOOTER + "\n"):
-            self.fail("DER-to-PEM didn't include correct footer:\n%r\n" % p2)
+            self.fail(f"DER-to-PEM didn't include correct footer:\n{p2!r}\n")
 
     def test_openssl_version(self):
         n = ssl.OPENSSL_VERSION_NUMBER
@@ -972,7 +969,7 @@ class BasicSocketTests(unittest.TestCase):
         s = socket.create_server(("127.0.0.1", 0))
         c = socket.socket(socket.AF_INET)
         c.connect(s.getsockname())
-        with test_wrap_socket(c, do_handshake_on_connect=False) as ss:
+        with test_wrap_socket(c, do_handshake_on_connect=False) as ss:  # noqa: SIM117
             with self.assertRaises(ValueError):
                 ss.get_channel_binding("unknown-type")
         s.close()
@@ -1240,7 +1237,7 @@ class ContextTests(unittest.TestCase):
     def test_get_ciphers(self):
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ctx.set_ciphers("AESGCM")
-        names = set(d["name"] for d in ctx.get_ciphers())
+        names = {d["name"] for d in ctx.get_ciphers()}
         self.assertIn("AES256-GCM-SHA384", names)
         self.assertIn("AES128-GCM-SHA256", names)
 
@@ -1453,7 +1450,7 @@ class ContextTests(unittest.TestCase):
             return 9
 
         def getpass_exception():
-            raise Exception("getpass error")
+            raise Exception("getpass error")  # noqa: TRY002
 
         class GetPassCallable:
             def __call__(self):
@@ -1519,7 +1516,7 @@ class ContextTests(unittest.TestCase):
 
         # combined
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-        combined = "\n".join((cacert_pem, neuronio_pem))
+        combined = f"{cacert_pem}\n{neuronio_pem}"
         ctx.load_verify_locations(cadata=combined)
         self.assertEqual(ctx.cert_store_stats()["x509_ca"], 2)
 
@@ -2244,7 +2241,7 @@ class SimpleBackgroundTests(unittest.TestCase):
                 select.select([], [s], [])
         if support.verbose:
             sys.stdout.write(
-                "\nNeeded %d calls to do_handshake() to establish session.\n" % count
+                "\nNeeded %d calls to do_handshake() to establish session.\n" % count  # noqa: UP031
             )
 
     def test_get_server_certificate(self):
@@ -2265,7 +2262,7 @@ class SimpleBackgroundTests(unittest.TestCase):
         ) as s:
             s.connect(self.server_addr)
         # Error checking can happen at instantiation or when connecting
-        with self.assertRaisesRegex(ssl.SSLError, "No cipher can be selected"):
+        with self.assertRaisesRegex(ssl.SSLError, "No cipher can be selected"):  # noqa: SIM117
             with socket.socket(socket.AF_INET) as sock:
                 s = test_wrap_socket(
                     sock, cert_reqs=ssl.CERT_NONE, ciphers="^$:,;?*'dorothyx"
@@ -2334,7 +2331,7 @@ class SimpleBackgroundTests(unittest.TestCase):
                     incoming.write_eof()
         if support.verbose:
             sys.stdout.write(
-                "Needed %d calls to complete %s().\n" % (count, func.__name__)
+                "Needed %d calls to complete %s().\n" % (count, func.__name__)  # noqa: UP031
             )
         return ret
 
@@ -2417,15 +2414,13 @@ class NetworkedTests(unittest.TestCase):
 def _test_get_server_certificate(test, host, port, cert=None):
     pem = ssl.get_server_certificate((host, port))
     if not pem:
-        test.fail("No server certificate on %s:%s!" % (host, port))
+        test.fail(f"No server certificate on {host}:{port}!")
 
     pem = ssl.get_server_certificate((host, port), ca_certs=cert)
     if not pem:
-        test.fail("No server certificate on %s:%s!" % (host, port))
+        test.fail(f"No server certificate on {host}:{port}!")
     if support.verbose:
-        sys.stdout.write(
-            "\nVerified certificate for %s:%s is\n%s\n" % (host, port, pem)
-        )
+        sys.stdout.write(f"\nVerified certificate for {host}:{port} is\n{pem}\n")
 
 
 def _test_get_server_certificate_fail(test, host, port):
@@ -2434,9 +2429,9 @@ def _test_get_server_certificate_fail(test, host, port):
     except ssl.SSLError as x:
         # should fail
         if support.verbose:
-            sys.stdout.write("%s\n" % x)
+            sys.stdout.write(f"{x}\n")
     else:
-        test.fail("Got server certificate %s for %s:%s!" % (pem, host, port))
+        test.fail(f"Got server certificate {pem} for {host}:{port}!")
 
 
 from test.ssl_servers import make_https_server
@@ -2562,9 +2557,8 @@ class ThreadedEchoServer(threading.Thread):
 
         def run(self):
             self.running = True
-            if not self.server.starttls_server:
-                if not self.wrap_conn():
-                    return
+            if not self.server.starttls_server and not self.wrap_conn():
+                return
             while self.running:
                 try:
                     msg = self.read()
@@ -2641,8 +2635,7 @@ class ThreadedEchoServer(threading.Thread):
                         if support.verbose and self.server.connectionchatty:
                             ctype = (self.sslconn and "encrypted") or "unencrypted"
                             sys.stdout.write(
-                                " server: read %r (%s), sending back %r (%s)...\n"
-                                % (msg, ctype, msg.lower(), ctype)
+                                f" server: read {msg!r} ({ctype}), sending back {msg.lower()!r} ({ctype})...\n"
                             )
                         self.write(msg.lower())
                 except (ConnectionResetError, ConnectionAbortedError):
@@ -2755,7 +2748,7 @@ class ThreadedEchoServer(threading.Thread):
                 pass
             except KeyboardInterrupt:
                 self.stop()
-            except BaseException as e:
+            except BaseException as e:  # noqa: BLE001
                 if support.verbose and self.chatty:
                     sys.stdout.write(" connection handling failed: " + repr(e) + "\n")
 
@@ -2808,7 +2801,7 @@ class AsyncoreEchoServer(threading.Thread):
                 else:
                     data = self.recv(1024)
                     if support.verbose:
-                        sys.stdout.write(" server:  read %s from client\n" % repr(data))
+                        sys.stdout.write(f" server:  read {data!r} from client\n")
                     if not data:
                         self.close()
                     else:
@@ -2817,10 +2810,10 @@ class AsyncoreEchoServer(threading.Thread):
             def handle_close(self):
                 self.close()
                 if support.verbose:
-                    sys.stdout.write(" server:  closed connection %s\n" % self.socket)
+                    sys.stdout.write(f" server:  closed connection {self.socket}\n")
 
             def handle_error(self):
-                raise
+                raise  # noqa: PLE0704
 
         def __init__(self, certfile):
             self.certfile = certfile
@@ -2831,11 +2824,11 @@ class AsyncoreEchoServer(threading.Thread):
 
         def handle_accepted(self, sock_obj, addr):
             if support.verbose:
-                sys.stdout.write(" server:  new connection from %s:%s\n" % addr)
+                sys.stdout.write(" server:  new connection from {}:{}\n".format(*addr))
             self.ConnectionHandler(sock_obj, self.certfile)
 
         def handle_error(self):
-            raise
+            raise  # noqa: PLE0704
 
     def __init__(self, certfile):
         self.flag = None
@@ -2846,7 +2839,7 @@ class AsyncoreEchoServer(threading.Thread):
         self.daemon = True
 
     def __str__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.server)
+        return f"<{self.__class__.__name__} {self.server}>"
 
     def __enter__(self):
         self.start(threading.Event())
@@ -2876,7 +2869,7 @@ class AsyncoreEchoServer(threading.Thread):
         while self.active:
             try:
                 asyncore.loop(1)
-            except:
+            except:  # noqa: E722, S110
                 pass
 
     def stop(self):
@@ -2907,23 +2900,20 @@ def server_params_test(
         ) as s:
             s.connect((HOST, server.port))
             for arg in [indata, bytearray(indata), memoryview(indata)]:
-                if connectionchatty:
-                    if support.verbose:
-                        sys.stdout.write(" client:  sending %r...\n" % indata)
+                if connectionchatty and support.verbose:
+                    sys.stdout.write(f" client:  sending {indata!r}...\n")
                 s.write(arg)
                 outdata = s.read()
-                if connectionchatty:
-                    if support.verbose:
-                        sys.stdout.write(" client:  read %r\n" % outdata)
+                if connectionchatty and support.verbose:
+                    sys.stdout.write(f" client:  read {outdata!r}\n")
                 if outdata != indata.lower():
                     raise AssertionError(
-                        "bad data <<%r>> (%d) received; expected <<%r>> (%d)\n"
+                        "bad data <<%r>> (%d) received; expected <<%r>> (%d)\n"  # noqa: UP031
                         % (outdata[:20], len(outdata), indata[:20].lower(), len(indata))
                     )
             s.write(b"over\n")
-            if connectionchatty:
-                if support.verbose:
-                    sys.stdout.write(" client:  closing connection.\n")
+            if connectionchatty and support.verbose:
+                sys.stdout.write(" client:  closing connection.\n")
             stats.update(
                 {
                     "compression": s.compression(),
@@ -3020,16 +3010,13 @@ def try_protocol_combo(
     else:
         if not expect_success:
             raise AssertionError(
-                "Client protocol %s succeeded with server protocol %s!"
-                % (
-                    ssl.get_protocol_name(client_protocol),
-                    ssl.get_protocol_name(server_protocol),
-                )
+                f"Client protocol {ssl.get_protocol_name(client_protocol)} succeeded with server protocol {ssl.get_protocol_name(server_protocol)}!"
             )
         elif expect_success is not True and expect_success != stats["version"]:
             raise AssertionError(
-                "version mismatch: expected %r, got %r"
-                % (expect_success, stats["version"])
+                "version mismatch: expected {!r}, got {!r}".format(
+                    expect_success, stats["version"]
+                )
             )
 
 
@@ -3106,7 +3093,7 @@ class ThreadedTests(unittest.TestCase):
 
         client_context, server_context, hostname = testing_context()
         server = ThreadedEchoServer(context=server_context, chatty=False)
-        with server:
+        with server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), do_handshake_on_connect=False, server_hostname=hostname
             ) as s:
@@ -3124,7 +3111,7 @@ class ThreadedTests(unittest.TestCase):
                     sys.stdout.write("Connection cipher is " + str(cipher) + ".\n")
                 if "subject" not in cert:
                     self.fail(
-                        "No subject field in certificate: %s." % pprint.pformat(cert)
+                        f"No subject field in certificate: {pprint.pformat(cert)}."
                     )
                 if (("organizationName", "Python Software Foundation"),) not in cert[
                     "subject"
@@ -3393,12 +3380,12 @@ class ThreadedTests(unittest.TestCase):
                 s.connect((HOST, server.port))
             except ssl.SSLError as e:
                 if support.verbose:
-                    sys.stdout.write("\nSSLError is %r\n" % e)
+                    sys.stdout.write(f"\nSSLError is {e!r}\n")
             except OSError as e:
                 if e.errno != errno.ECONNRESET:
                     raise
                 if support.verbose:
-                    sys.stdout.write("\nsocket.error is %r\n" % e)
+                    sys.stdout.write(f"\nsocket.error is {e!r}\n")
             else:
                 self.fail("Use of invalid cert should have failed!")
 
@@ -3427,12 +3414,12 @@ class ThreadedTests(unittest.TestCase):
                 s.read(4)
             except ssl.SSLError as e:
                 if support.verbose:
-                    sys.stdout.write("\nSSLError is %r\n" % e)
+                    sys.stdout.write(f"\nSSLError is {e!r}\n")
             except OSError as e:
                 if e.errno != errno.ECONNRESET:
                     raise
                 if support.verbose:
-                    sys.stdout.write("\nsocket.error is %r\n" % e)
+                    sys.stdout.write(f"\nsocket.error is {e!r}\n")
             else:
                 self.fail("Use of invalid cert should have failed!")
 
@@ -3453,7 +3440,7 @@ class ThreadedTests(unittest.TestCase):
         def listener():
             s.listen()
             listener_ready.set()
-            newsock, addr = s.accept()
+            newsock, _addr = s.accept()
             newsock.close()
             s.close()
             listener_gone.set()
@@ -3464,7 +3451,7 @@ class ThreadedTests(unittest.TestCase):
                 c.connect((HOST, port))
                 listener_gone.wait()
                 try:
-                    ssl_sock = test_wrap_socket(c)
+                    test_wrap_socket(c)
                 except OSError:
                     pass
                 else:
@@ -3546,8 +3533,7 @@ class ThreadedTests(unittest.TestCase):
                 # this fails on some older versions of OpenSSL (0.9.7l, for instance)
                 if support.verbose:
                     sys.stdout.write(
-                        " SSL2 client to SSL23 server test unexpectedly failed:\n %s\n"
-                        % str(x)
+                        f" SSL2 client to SSL23 server test unexpectedly failed:\n {x!s}\n"
                     )
         if has_tls_version("SSLv3"):
             try_protocol_combo(ssl.PROTOCOL_TLS, ssl.PROTOCOL_SSLv3, False)
@@ -3722,10 +3708,10 @@ class ThreadedTests(unittest.TestCase):
                 sys.stdout.write("\n")
             for indata in msgs:
                 if support.verbose:
-                    sys.stdout.write(" client:  sending %r...\n" % indata)
+                    sys.stdout.write(f" client:  sending {indata!r}...\n")
                 if wrapped:
-                    conn.write(indata)
-                    outdata = conn.read()
+                    conn.write(indata)  # noqa: F821
+                    outdata = conn.read()  # noqa: F821
                 else:
                     s.send(indata)
                     outdata = s.recv(1024)
@@ -3734,7 +3720,7 @@ class ThreadedTests(unittest.TestCase):
                     # STARTTLS ok, switch to secure mode
                     if support.verbose:
                         sys.stdout.write(
-                            " client:  read %r from server, starting TLS...\n" % msg
+                            f" client:  read {msg!r} from server, starting TLS...\n"
                         )
                     conn = test_wrap_socket(s)
                     wrapped = True
@@ -3742,13 +3728,13 @@ class ThreadedTests(unittest.TestCase):
                     # ENDTLS ok, switch back to clear text
                     if support.verbose:
                         sys.stdout.write(
-                            " client:  read %r from server, ending TLS...\n" % msg
+                            f" client:  read {msg!r} from server, ending TLS...\n"
                         )
                     s = conn.unwrap()
                     wrapped = False
                 else:
                     if support.verbose:
-                        sys.stdout.write(" client:  read %r from server\n" % msg)
+                        sys.stdout.write(f" client:  read {msg!r} from server\n")
             if support.verbose:
                 sys.stdout.write(" client:  closing connection.\n")
             if wrapped:
@@ -3770,7 +3756,7 @@ class ThreadedTests(unittest.TestCase):
             d1 = f.read()
         d2 = ""
         # now fetch the same data from the HTTPS server
-        url = "https://localhost:%d/%s" % (server.port, os.path.split(CERTFILE)[1])
+        url = "https://localhost:%d/%s" % (server.port, os.path.split(CERTFILE)[1])  # noqa: UP031
         context = ssl.create_default_context(cafile=SIGNING_CA)
         f = urllib.request.urlopen(url, context=context)
         try:
@@ -3779,7 +3765,7 @@ class ThreadedTests(unittest.TestCase):
                 d2 = f.read(int(dlen))
                 if support.verbose:
                     sys.stdout.write(
-                        " client: read %d bytes from remote server '%s'\n"
+                        " client: read %d bytes from remote server '%s'\n"  # noqa: UP031
                         % (len(d2), server)
                     )
         finally:
@@ -3797,14 +3783,14 @@ class ThreadedTests(unittest.TestCase):
             s = test_wrap_socket(socket.socket())
             s.connect(("127.0.0.1", server.port))
             if support.verbose:
-                sys.stdout.write(" client:  sending %r...\n" % indata)
+                sys.stdout.write(f" client:  sending {indata!r}...\n")
             s.write(indata)
             outdata = s.read()
             if support.verbose:
-                sys.stdout.write(" client:  read %r\n" % outdata)
+                sys.stdout.write(f" client:  read {outdata!r}\n")
             if outdata != indata.lower():
                 self.fail(
-                    "bad data <<%r>> (%d) received; expected <<%r>> (%d)\n"
+                    "bad data <<%r>> (%d) received; expected <<%r>> (%d)\n"  # noqa: UP031
                     % (outdata[:20], len(outdata), indata[:20].lower(), len(indata))
                 )
             s.write(b"over\n")
@@ -3846,7 +3832,7 @@ class ThreadedTests(unittest.TestCase):
 
             def _recvfrom_into():
                 b = bytearray(b"\0" * 100)
-                count, addr = s.recvfrom_into(b)
+                count, _addr = s.recvfrom_into(b)
                 return b[:count]
 
             # (name, method, expect success?, *args, return value func)
@@ -4018,7 +4004,7 @@ class ThreadedTests(unittest.TestCase):
             started.set()
             conns = []
             while not finish:
-                r, w, e = select.select([server], [], [], 0.1)
+                r, _w, _e = select.select([server], [], [], 0.1)
                 if server in r:
                     # Let the socket hang around rather than having
                     # it closed by garbage collection.
@@ -4117,7 +4103,7 @@ class ThreadedTests(unittest.TestCase):
         # Force different suites on client and server
         client_context.set_ciphers("AES128")
         server_context.set_ciphers("AES256")
-        with ThreadedEchoServer(context=server_context) as server:
+        with ThreadedEchoServer(context=server_context) as server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), server_hostname=hostname
             ) as s:
@@ -4154,7 +4140,7 @@ class ThreadedTests(unittest.TestCase):
         context = ssl.SSLContext(ssl.PROTOCOL_TLS)
         context.load_cert_chain(CERTFILE)
         context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1 | ssl.OP_NO_TLSv1_2
-        with ThreadedEchoServer(context=context) as server:
+        with ThreadedEchoServer(context=context) as server:  # noqa: SIM117
             with context.wrap_socket(socket.socket()) as s:
                 s.connect((HOST, server.port))
                 self.assertIn(
@@ -4178,7 +4164,7 @@ class ThreadedTests(unittest.TestCase):
         server_context.minimum_version = ssl.TLSVersion.TLSv1_2
         server_context.maximum_version = ssl.TLSVersion.TLSv1_2
 
-        with ThreadedEchoServer(context=server_context) as server:
+        with ThreadedEchoServer(context=server_context) as server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), server_hostname=hostname
             ) as s:
@@ -4196,7 +4182,7 @@ class ThreadedTests(unittest.TestCase):
         server_context.maximum_version = ssl.TLSVersion.TLSv1_1
         seclevel_workaround(client_context, server_context)
 
-        with ThreadedEchoServer(context=server_context) as server:
+        with ThreadedEchoServer(context=server_context) as server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), server_hostname=hostname
             ) as s:
@@ -4215,7 +4201,7 @@ class ThreadedTests(unittest.TestCase):
         client_context.minimum_version = ssl.TLSVersion.TLSv1
         seclevel_workaround(client_context, server_context)
 
-        with ThreadedEchoServer(context=server_context) as server:
+        with ThreadedEchoServer(context=server_context) as server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), server_hostname=hostname
             ) as s:
@@ -4232,7 +4218,7 @@ class ThreadedTests(unittest.TestCase):
         client_context.maximum_version = ssl.TLSVersion.SSLv3
         seclevel_workaround(client_context, server_context)
 
-        with ThreadedEchoServer(context=server_context) as server:
+        with ThreadedEchoServer(context=server_context) as server:  # noqa: SIM117
             with client_context.wrap_socket(
                 socket.socket(), server_hostname=hostname
             ) as s:
@@ -4254,7 +4240,7 @@ class ThreadedTests(unittest.TestCase):
         # automatically.
         if ssl.OPENSSL_VERSION_INFO < (1, 0, 0):
             context.set_ciphers("ECCdraft:ECDH")
-        with ThreadedEchoServer(context=context) as server:
+        with ThreadedEchoServer(context=context) as server:  # noqa: SIM117
             with context.wrap_socket(socket.socket()) as s:
                 s.connect((HOST, server.port))
                 self.assertIn("ECDH", s.cipher()[0])
@@ -4376,7 +4362,7 @@ class ThreadedTests(unittest.TestCase):
         server_context.set_ecdh_curve("secp384r1")
         server_context.set_ciphers("ECDHE:!eNULL:!aNULL")
         server_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
-        stats = server_params_test(
+        server_params_test(
             client_context,
             server_context,
             chatty=True,
@@ -4389,7 +4375,7 @@ class ThreadedTests(unittest.TestCase):
         client_context.set_ecdh_curve("secp384r1")
         server_context.set_ciphers("ECDHE:!eNULL:!aNULL")
         server_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
-        stats = server_params_test(
+        server_params_test(
             client_context,
             server_context,
             chatty=True,
@@ -4404,7 +4390,7 @@ class ThreadedTests(unittest.TestCase):
         server_context.set_ciphers("ECDHE:!eNULL:!aNULL")
         server_context.options |= ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
         try:
-            stats = server_params_test(
+            server_params_test(
                 client_context,
                 server_context,
                 chatty=True,
@@ -4478,9 +4464,8 @@ class ThreadedTests(unittest.TestCase):
                 self.assertIsInstance(stats, ssl.SSLError)
             else:
                 msg = (
-                    "failed trying %s (s) and %s (c).\n"
-                    "was expecting %s, but got %%s from the %%s"
-                    % (str(server_protocols), str(client_protocols), str(expected))
+                    f"failed trying {server_protocols!s} (s) and {client_protocols!s} (c).\n"
+                    f"was expecting {expected!s}, but got %s from the %s"
                 )
                 client_result = stats["client_alpn_protocol"]
                 self.assertEqual(
@@ -4528,9 +4513,8 @@ class ThreadedTests(unittest.TestCase):
                 sni_name=hostname,
             )
             msg = (
-                "failed trying %s (s) and %s (c).\n"
-                "was expecting %s, but got %%s from the %%s"
-                % (str(server_protocols), str(client_protocols), str(expected))
+                f"failed trying {server_protocols!s} (s) and {client_protocols!s} (c).\n"
+                f"was expecting {expected!s}, but got %s from the %s"
             )
             client_result = stats["client_npn_protocol"]
             self.assertEqual(client_result, expected, msg % (client_result, "client"))
@@ -4599,14 +4583,14 @@ class ThreadedTests(unittest.TestCase):
     @needs_sni
     def test_sni_callback_alert(self):
         # Returning a TLS alert is reflected to the connecting client
-        server_context, other_context, client_context = self.sni_contexts()
+        server_context, _other_context, client_context = self.sni_contexts()
 
         def cb_returning_alert(ssl_sock, server_name, initial_context):
             return ssl.ALERT_DESCRIPTION_ACCESS_DENIED
 
         server_context.set_servername_callback(cb_returning_alert)
         with self.assertRaises(ssl.SSLError) as cm:
-            stats = server_params_test(
+            server_params_test(
                 client_context, server_context, chatty=False, sni_name="supermessage"
             )
         self.assertEqual(cm.exception.reason, "TLSV1_ALERT_ACCESS_DENIED")
@@ -4614,16 +4598,16 @@ class ThreadedTests(unittest.TestCase):
     @needs_sni
     def test_sni_callback_raising(self):
         # Raising fails the connection with a TLS handshake failure alert.
-        server_context, other_context, client_context = self.sni_contexts()
+        server_context, _other_context, client_context = self.sni_contexts()
 
         def cb_raising(ssl_sock, server_name, initial_context):
-            1 / 0
+            1 / 0  # noqa: B018
 
         server_context.set_servername_callback(cb_raising)
 
         with support.catch_unraisable_exception() as catch:
             with self.assertRaises(ssl.SSLError) as cm:
-                stats = server_params_test(
+                server_params_test(
                     client_context,
                     server_context,
                     chatty=False,
@@ -4637,7 +4621,7 @@ class ThreadedTests(unittest.TestCase):
     def test_sni_callback_wrong_return_type(self):
         # Returning the wrong return type terminates the TLS connection
         # with an internal error alert.
-        server_context, other_context, client_context = self.sni_contexts()
+        server_context, _other_context, client_context = self.sni_contexts()
 
         def cb_wrong_return_type(ssl_sock, server_name, initial_context):
             return "foo"
@@ -4646,7 +4630,7 @@ class ThreadedTests(unittest.TestCase):
 
         with support.catch_unraisable_exception() as catch:
             with self.assertRaises(ssl.SSLError) as cm:
-                stats = server_params_test(
+                server_params_test(
                     client_context,
                     server_context,
                     chatty=False,
@@ -4876,7 +4860,7 @@ class TestPostHandshakeAuth(unittest.TestCase):
 
         # Ignore expected SSLError in ConnectionHandler of ThreadedEchoServer
         # (it is only raised sometimes on Windows)
-        with support.catch_threading_exception() as cm:
+        with support.catch_threading_exception():
             server = ThreadedEchoServer(context=server_context, chatty=False)
             with (
                 server,
@@ -5127,7 +5111,7 @@ class TestSSLDebug(unittest.TestCase):
             self.assertEqual(ctx.keylog_filename, support.TESTFN)
 
     def test_msg_callback(self):
-        client_context, server_context, hostname = testing_context()
+        client_context, _server_context, _hostname = testing_context()
 
         def msg_cb(conn, direction, version, content_type, msg_type, data):
             pass
@@ -5212,19 +5196,18 @@ def test_main(verbose=False):
         for name, func in plats.items():
             plat = func()
             if plat and plat[0]:
-                plat = "%s %r" % (name, plat)
+                plat = f"{name} {plat!r}"
                 break
         else:
             plat = repr(platform.platform())
         print(
-            "test_ssl: testing with %r %r"
-            % (ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO)
+            f"test_ssl: testing with {ssl.OPENSSL_VERSION!r} {ssl.OPENSSL_VERSION_INFO!r}"
         )
-        print("          under %s" % plat)
-        print("          HAS_SNI = %r" % ssl.HAS_SNI)
-        print("          OP_ALL = 0x%8x" % ssl.OP_ALL)
+        print(f"          under {plat}")
+        print(f"          HAS_SNI = {ssl.HAS_SNI!r}")
+        print(f"          OP_ALL = 0x{ssl.OP_ALL:8x}")
         try:
-            print("          OP_NO_TLSv1_1 = 0x%8x" % ssl.OP_NO_TLSv1_1)
+            print(f"          OP_NO_TLSv1_1 = 0x{ssl.OP_NO_TLSv1_1:8x}")
         except AttributeError:
             pass
 
@@ -5243,7 +5226,7 @@ def test_main(verbose=False):
         EMPTYCERT,
     ]:
         if not os.path.exists(filename):
-            raise support.TestFailed("Can't read certificate file %r" % filename)
+            raise support.TestFailed(f"Can't read certificate file {filename!r}")
 
     tests = [
         ContextTests,

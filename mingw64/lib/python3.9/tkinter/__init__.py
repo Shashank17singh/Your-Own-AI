@@ -55,9 +55,9 @@ def _stringify(value):
         if len(value) == 1:
             value = _stringify(value[0])
             if _magic_re.search(value):
-                value = "{%s}" % value
+                value = f"{{{value}}}"
         else:
-            value = "{%s}" % _join(value)
+            value = f"{{{_join(value)}}}"
     else:
         value = str(value)
         if not value:
@@ -69,7 +69,7 @@ def _stringify(value):
             if value[0] == '"':
                 value = "\\" + value
         elif value[0] == '"' or _space_re.search(value):
-            value = "{%s}" % value
+            value = f"{{{value}}}"
     return value
 
 
@@ -92,7 +92,7 @@ except AttributeError:
 
 def _cnfmerge(cnfs):
     """Internal function."""
-    if isinstance(cnfs, dict) or isinstance(cnfs, (type(None), str)):
+    if isinstance(cnfs, (dict, type(None), str)):
         return cnfs
     else:
         cnf = {}
@@ -269,9 +269,9 @@ class Event:
             "width",
             "height",
         )
-        return "<%s event%s>" % (
+        return "<{} event{}>".format(
             getattr(self.type, "name", self.type),
-            "".join(" %s=%s" % (k, attrs[k]) for k in keys if k in attrs),
+            "".join(f" {k}={attrs[k]}" for k in keys if k in attrs),
         )
 
 
@@ -1259,7 +1259,7 @@ class Misc:
             self.tk.call(what + (sequence, func))
         elif func:
             funcid = self._register(func, self._substitute, needcleanup)
-            cmd = '%sif {"[%s %s]" == "break"} break\n' % (
+            cmd = '{}if {{"[{} {}]" == "break"}} break\n'.format(
                 add and "+" or "",
                 funcid,
                 self._subst_format_str,
@@ -1590,13 +1590,9 @@ class Misc:
         return self._w
 
     def __repr__(self):
-        return "<%s.%s object %s>" % (
-            self.__class__.__module__,
-            self.__class__.__qualname__,
-            self._w,
-        )
+        return f"<{self.__class__.__module__}.{self.__class__.__qualname__} object {self._w}>"
 
-    _noarg_ = ["_noarg_"]
+    _noarg_ = ["_noarg_"]  # noqa: RUF012
 
     def pack_propagate(self, flag=_noarg_):
         """Set or get the status for propagation of geometry information.
@@ -1690,11 +1686,13 @@ class Misc:
         if len(options) == 1:
             return self._gridconvvalue(res)
 
-    def grid_columnconfigure(self, index, cnf={}, **kw):
+    def grid_columnconfigure(self, index, cnf=None, **kw):
         """Configure column INDEX of a grid.
         Valid resources are minsize (minimum size of the column),
         weight (how much does additional space propagate to this column)
         and pad (how much space to let additionally)."""
+        if cnf is None:
+            cnf = {}
         return self._grid_configure("columnconfigure", index, cnf, kw)
 
     columnconfigure = grid_columnconfigure
@@ -1716,11 +1714,13 @@ class Misc:
         else:
             self.tk.call("grid", "propagate", self._w, flag)
 
-    def grid_rowconfigure(self, index, cnf={}, **kw):
+    def grid_rowconfigure(self, index, cnf=None, **kw):
         """Configure row INDEX of a grid.
         Valid resources are minsize (minimum size of the row),
         weight (how much does additional space propagate to this row)
         and pad (how much space to let additionally)."""
+        if cnf is None:
+            cnf = {}
         return self._grid_configure("rowconfigure", index, cnf, kw)
 
     rowconfigure = grid_rowconfigure
@@ -1762,7 +1762,7 @@ class Misc:
         (e.g. x, y, rootx, rooty)."""
         args = ("event", "generate", self._w, sequence)
         for k, v in kw.items():
-            args = args + ("-%s" % k, str(v))
+            args = args + (f"-{k}", str(v))
         self.tk.call(args)
 
     def event_info(self, virtual=None):
@@ -1797,7 +1797,7 @@ class CallWrapper:
             return self.func(*args)
         except SystemExit:
             raise
-        except:
+        except:  # noqa: E722
             self.widget._report_exception()
 
 
@@ -2186,14 +2186,12 @@ class Tk(Misc, Wm):
         tk_version = self.tk.getvar("tk_version")
         if tk_version != _tkinter.TK_VERSION:
             raise RuntimeError(
-                "tk.h version (%s) doesn't match libtk.a version (%s)"
-                % (_tkinter.TK_VERSION, tk_version)
+                f"tk.h version ({_tkinter.TK_VERSION}) doesn't match libtk.a version ({tk_version})"
             )
         tcl_version = str(self.tk.getvar("tcl_version"))
         if tcl_version != _tkinter.TCL_VERSION:
             raise RuntimeError(
-                "tcl.h version (%s) doesn't match libtcl.a version (%s)"
-                % (_tkinter.TCL_VERSION, tcl_version)
+                f"tcl.h version ({_tkinter.TCL_VERSION}) doesn't match libtcl.a version ({tcl_version})"
             )
         if self._tclCommands is None:
             self._tclCommands = []
@@ -2226,20 +2224,20 @@ class Tk(Misc, Wm):
             home = os.environ["HOME"]
         else:
             home = os.curdir
-        class_tcl = os.path.join(home, ".%s.tcl" % className)
-        class_py = os.path.join(home, ".%s.py" % className)
-        base_tcl = os.path.join(home, ".%s.tcl" % baseName)
-        base_py = os.path.join(home, ".%s.py" % baseName)
+        class_tcl = os.path.join(home, f".{className}.tcl")
+        class_py = os.path.join(home, f".{className}.py")
+        base_tcl = os.path.join(home, f".{baseName}.tcl")
+        base_py = os.path.join(home, f".{baseName}.py")
         dir = {"self": self}
-        exec("from tkinter import *", dir)
+        exec("from tkinter import *", dir)  # noqa: S102
         if os.path.isfile(class_tcl):
             self.tk.call("source", class_tcl)
         if os.path.isfile(class_py):
-            exec(open(class_py).read(), dir)
+            exec(open(class_py).read(), dir)  # noqa: S102, SIM115
         if os.path.isfile(base_tcl):
             self.tk.call("source", base_tcl)
         if os.path.isfile(base_py):
-            exec(open(base_py).read(), dir)
+            exec(open(base_py).read(), dir)  # noqa: S102, SIM115
 
     def report_callback_exception(self, exc, val, tb):
         """Report callback exception on sys.stderr.
@@ -2266,7 +2264,7 @@ class Pack:
     """Geometry manager Pack.
     Base class to use the methods pack_* in every widget."""
 
-    def pack_configure(self, cnf={}, **kw):
+    def pack_configure(self, cnf=None, **kw):
         """Pack a widget in the parent widget. Use as options:
         after=widget - pack it after you have packed widget
         anchor=NSEW (or subset) - position widget according to
@@ -2282,6 +2280,8 @@ class Pack:
         pady=amount - add padding in y direction
         side=TOP or BOTTOM or LEFT or RIGHT -  where to add this widget.
         """
+        if cnf is None:
+            cnf = {}
         self.tk.call(("pack", "configure", self._w) + self._options(cnf, kw))
 
     pack = configure = config = pack_configure
@@ -2309,7 +2309,7 @@ class Place:
     """Geometry manager Place.
     Base class to use the methods place_* in every widget."""
 
-    def place_configure(self, cnf={}, **kw):
+    def place_configure(self, cnf=None, **kw):
         """Place a widget in the parent widget. Use as options:
         in=master - master relative to which the widget is placed
         in_=master - see 'in' option description
@@ -2331,6 +2331,8 @@ class Place:
         bordermode="inside" or "outside" - whether to take border width of
                                            master widget into account
         """
+        if cnf is None:
+            cnf = {}
         self.tk.call(("place", "configure", self._w) + self._options(cnf, kw))
 
     place = configure = config = place_configure
@@ -2357,7 +2359,7 @@ class Grid:
     """Geometry manager Grid.
     Base class to use the methods grid_* in every widget."""
 
-    def grid_configure(self, cnf={}, **kw):
+    def grid_configure(self, cnf=None, **kw):
         """Position a widget in the parent widget in a grid. Use as options:
         column=number - use cell identified with given column (starting with 0)
         columnspan=number - this widget will span several columns
@@ -2372,6 +2374,8 @@ class Grid:
         sticky=NSEW - if cell is larger on which sides will this
                       widget stick to the cell boundary
         """
+        if cnf is None:
+            cnf = {}
         self.tk.call(("grid", "configure", self._w) + self._options(cnf, kw))
 
     grid = configure = config = grid_configure
@@ -2424,9 +2428,9 @@ class BaseWidget(Misc):
             count = master._last_child_ids.get(name, 0) + 1
             master._last_child_ids[name] = count
             if count == 1:
-                name = "!%s" % (name,)
+                name = f"!{name}"
             else:
-                name = "!%s%d" % (name, count)
+                name = "!%s%d" % (name, count)  # noqa: UP031
         self._name = name
         if master._w == ".":
             self._w = "." + name
@@ -2437,9 +2441,13 @@ class BaseWidget(Misc):
             self.master.children[self._name].destroy()
         self.master.children[self._name] = self
 
-    def __init__(self, master, widgetName, cnf={}, kw={}, extra=()):
+    def __init__(self, master, widgetName, cnf=None, kw=None, extra=()):
         """Construct a widget with the parent widget MASTER, a name WIDGETNAME
         and appropriate options."""
+        if kw is None:
+            kw = {}
+        if cnf is None:
+            cnf = {}
         if kw:
             cnf = _cnfmerge((cnf, kw))
         self.widgetName = widgetName
@@ -2475,12 +2483,14 @@ class Widget(BaseWidget, Pack, Place, Grid):
 class Toplevel(BaseWidget, Wm):
     """Toplevel widget, e.g. for dialogs."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a toplevel widget with the parent MASTER.
         Valid resource names: background, bd, bg, borderwidth, class,
         colormap, container, cursor, height, highlightbackground,
         highlightcolor, highlightthickness, menu, relief, screen, takefocus,
         use, visual, width."""
+        if cnf is None:
+            cnf = {}
         if kw:
             cnf = _cnfmerge((cnf, kw))
         extra = ()
@@ -2503,7 +2513,7 @@ class Toplevel(BaseWidget, Wm):
 class Button(Widget):
     """Button widget."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a button widget with the parent MASTER.
         STANDARD OPTIONS
             activebackground, activeforeground, anchor,
@@ -2518,6 +2528,8 @@ class Button(Widget):
             command, compound, default, height,
             overrelief, state, width
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "button", cnf, kw)
 
     def flash(self):
@@ -2544,7 +2556,7 @@ class Button(Widget):
 class Canvas(Widget, XView, YView):
     """Canvas widget to display graphical elements like lines or text."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a canvas widget with the parent MASTER.
         Valid resource names: background, bd, bg, borderwidth, closeenough,
         confine, cursor, height, highlightbackground, highlightcolor,
@@ -2553,6 +2565,8 @@ class Canvas(Widget, XView, YView):
         scrollregion, selectbackground, selectborderwidth, selectforeground,
         state, takefocus, width, xscrollcommand, xscrollincrement,
         yscrollcommand, yscrollincrement."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "canvas", cnf, kw)
 
     def addtag(self, *args):
@@ -2783,11 +2797,13 @@ class Canvas(Widget, XView, YView):
         TAGORID remain in the same positions relative to each other."""
         self.tk.call(self._w, "moveto", tagOrId, x, y)
 
-    def postscript(self, cnf={}, **kw):
+    def postscript(self, cnf=None, **kw):
         """Print the contents of the canvas to a postscript
         file. Valid options: colormap, colormode, file, fontmap,
         height, pageanchor, pageheight, pagewidth, pagex, pagey,
         rotate, width, x, y."""
+        if cnf is None:
+            cnf = {}
         return self.tk.call((self._w, "postscript") + self._options(cnf, kw))
 
     def tag_raise(self, *args):
@@ -2839,7 +2855,7 @@ class Canvas(Widget, XView, YView):
 class Checkbutton(Widget):
     """Checkbutton widget which is either in on- or off-state."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a checkbutton widget with the parent MASTER.
         Valid resource names: activebackground, activeforeground, anchor,
         background, bd, bg, bitmap, borderwidth, command, cursor,
@@ -2848,6 +2864,8 @@ class Checkbutton(Widget):
         indicatoron, justify, offvalue, onvalue, padx, pady, relief,
         selectcolor, selectimage, state, takefocus, text, textvariable,
         underline, variable, width, wraplength."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "checkbutton", cnf, kw)
 
     def deselect(self):
@@ -2874,7 +2892,7 @@ class Checkbutton(Widget):
 class Entry(Widget, XView):
     """Entry widget which allows displaying simple text."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct an entry widget with the parent MASTER.
         Valid resource names: background, bd, bg, borderwidth, cursor,
         exportselection, fg, font, foreground, highlightbackground,
@@ -2884,6 +2902,8 @@ class Entry(Widget, XView):
         selectborderwidth, selectforeground, show, state, takefocus,
         textvariable, validate, validatecommand, vcmd, width,
         xscrollcommand."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "entry", cnf, kw)
 
     def delete(self, first, last=None):
@@ -2957,11 +2977,13 @@ class Entry(Widget, XView):
 class Frame(Widget):
     """Frame widget which may contain other widgets and can have a 3D border."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a frame widget with the parent MASTER.
         Valid resource names: background, bd, bg, borderwidth, class,
         colormap, container, cursor, height, highlightbackground,
         highlightcolor, highlightthickness, relief, takefocus, visual, width."""
+        if cnf is None:
+            cnf = {}
         cnf = _cnfmerge((cnf, kw))
         extra = ()
         if "class_" in cnf:
@@ -2976,7 +2998,7 @@ class Frame(Widget):
 class Label(Widget):
     """Label widget which can display text and bitmaps."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a label widget with the parent MASTER.
         STANDARD OPTIONS
             activebackground, activeforeground, anchor,
@@ -2989,19 +3011,23 @@ class Label(Widget):
         WIDGET-SPECIFIC OPTIONS
             height, state, width
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "label", cnf, kw)
 
 
 class Listbox(Widget, XView, YView):
     """Listbox widget which can display a list of strings."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a listbox widget with the parent MASTER.
         Valid resource names: background, bd, bg, borderwidth, cursor,
         exportselection, fg, font, foreground, height, highlightbackground,
         highlightcolor, highlightthickness, relief, selectbackground,
         selectborderwidth, selectforeground, selectmode, setgrid, takefocus,
         width, xscrollcommand, yscrollcommand, listvariable."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "listbox", cnf, kw)
 
     def activate(self, index):
@@ -3105,12 +3131,14 @@ class Listbox(Widget, XView, YView):
 class Menu(Widget):
     """Menu widget which allows displaying menu bars, pull-down menus and pop-up menus."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct menu widget with the parent MASTER.
         Valid resource names: activebackground, activeborderwidth,
         activeforeground, background, bd, bg, borderwidth, cursor,
         disabledforeground, fg, font, foreground, postcommand, relief,
         selectcolor, takefocus, tearoff, tearoffcommand, title, type."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "menu", cnf, kw)
 
     def tk_popup(self, x, y, entry=""):
@@ -3121,52 +3149,76 @@ class Menu(Widget):
         """Activate entry at INDEX."""
         self.tk.call(self._w, "activate", index)
 
-    def add(self, itemType, cnf={}, **kw):
+    def add(self, itemType, cnf=None, **kw):
         """Internal function."""
+        if cnf is None:
+            cnf = {}
         self.tk.call((self._w, "add", itemType) + self._options(cnf, kw))
 
-    def add_cascade(self, cnf={}, **kw):
+    def add_cascade(self, cnf=None, **kw):
         """Add hierarchical menu item."""
+        if cnf is None:
+            cnf = {}
         self.add("cascade", cnf or kw)
 
-    def add_checkbutton(self, cnf={}, **kw):
+    def add_checkbutton(self, cnf=None, **kw):
         """Add checkbutton menu item."""
+        if cnf is None:
+            cnf = {}
         self.add("checkbutton", cnf or kw)
 
-    def add_command(self, cnf={}, **kw):
+    def add_command(self, cnf=None, **kw):
         """Add command menu item."""
+        if cnf is None:
+            cnf = {}
         self.add("command", cnf or kw)
 
-    def add_radiobutton(self, cnf={}, **kw):
+    def add_radiobutton(self, cnf=None, **kw):
         """Addd radio menu item."""
+        if cnf is None:
+            cnf = {}
         self.add("radiobutton", cnf or kw)
 
-    def add_separator(self, cnf={}, **kw):
+    def add_separator(self, cnf=None, **kw):
         """Add separator."""
+        if cnf is None:
+            cnf = {}
         self.add("separator", cnf or kw)
 
-    def insert(self, index, itemType, cnf={}, **kw):
+    def insert(self, index, itemType, cnf=None, **kw):
         """Internal function."""
+        if cnf is None:
+            cnf = {}
         self.tk.call((self._w, "insert", index, itemType) + self._options(cnf, kw))
 
-    def insert_cascade(self, index, cnf={}, **kw):
+    def insert_cascade(self, index, cnf=None, **kw):
         """Add hierarchical menu item at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.insert(index, "cascade", cnf or kw)
 
-    def insert_checkbutton(self, index, cnf={}, **kw):
+    def insert_checkbutton(self, index, cnf=None, **kw):
         """Add checkbutton menu item at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.insert(index, "checkbutton", cnf or kw)
 
-    def insert_command(self, index, cnf={}, **kw):
+    def insert_command(self, index, cnf=None, **kw):
         """Add command menu item at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.insert(index, "command", cnf or kw)
 
-    def insert_radiobutton(self, index, cnf={}, **kw):
+    def insert_radiobutton(self, index, cnf=None, **kw):
         """Addd radio menu item at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.insert(index, "radiobutton", cnf or kw)
 
-    def insert_separator(self, index, cnf={}, **kw):
+    def insert_separator(self, index, cnf=None, **kw):
         """Add separator at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.insert(index, "separator", cnf or kw)
 
     def delete(self, index1, index2=None):
@@ -3230,21 +3282,25 @@ class Menu(Widget):
 class Menubutton(Widget):
     """Menubutton widget, obsolete since Tk8.0."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "menubutton", cnf, kw)
 
 
 class Message(Widget):
     """Message widget to display multiline text. Obsolete since Label does it too."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "message", cnf, kw)
 
 
 class Radiobutton(Widget):
     """Radiobutton widget which shows only one of several buttons in on-state."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a radiobutton widget with the parent MASTER.
         Valid resource names: activebackground, activeforeground, anchor,
         background, bd, bg, bitmap, borderwidth, command, cursor,
@@ -3253,6 +3309,8 @@ class Radiobutton(Widget):
         indicatoron, justify, padx, pady, relief, selectcolor, selectimage,
         state, takefocus, text, textvariable, underline, value, variable,
         width, wraplength."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "radiobutton", cnf, kw)
 
     def deselect(self):
@@ -3275,7 +3333,7 @@ class Radiobutton(Widget):
 class Scale(Widget):
     """Scale widget which can display a numerical scale."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a scale widget with the parent MASTER.
         Valid resource names: activebackground, background, bigincrement, bd,
         bg, borderwidth, command, cursor, digits, fg, font, foreground, from,
@@ -3283,6 +3341,8 @@ class Scale(Widget):
         length, orient, relief, repeatdelay, repeatinterval, resolution,
         showvalue, sliderlength, sliderrelief, state, takefocus,
         tickinterval, to, troughcolor, variable, width."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "scale", cnf, kw)
 
     def get(self):
@@ -3312,7 +3372,7 @@ class Scale(Widget):
 class Scrollbar(Widget):
     """Scrollbar widget which displays a slider at a certain position."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a scrollbar widget with the parent MASTER.
         Valid resource names: activebackground, activerelief,
         background, bd, bg, borderwidth, command, cursor,
@@ -3320,6 +3380,8 @@ class Scrollbar(Widget):
         highlightcolor, highlightthickness, jump, orient,
         relief, repeatdelay, repeatinterval, takefocus,
         troughcolor, width."""
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "scrollbar", cnf, kw)
 
     def activate(self, index=None):
@@ -3360,7 +3422,7 @@ class Scrollbar(Widget):
 class Text(Widget, XView, YView):
     """Text widget which can display text in various forms."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a text widget with the parent MASTER.
         STANDARD OPTIONS
             background, borderwidth, cursor,
@@ -3378,6 +3440,8 @@ class Text(Widget, XView, YView):
             spacing1, spacing2, spacing3,
             state, tabs, undo, width, wrap,
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "text", cnf, kw)
 
     def bbox(self, index):
@@ -3401,7 +3465,7 @@ class Text(Widget, XView, YView):
         "lines", "xpixels" and "ypixels". There is an additional possible
         option "update", which if given then all subsequent options ensure
         that any possible out of date information is recalculated."""
-        args = ["-%s" % arg for arg in args if not arg.startswith("-")]
+        args = [f"-{arg}" for arg in args if not arg.startswith("-")]
         args += [index1, index2]
         res = self.tk.call(self._w, "count", *args) or None
         if res is not None and len(args) <= 3:
@@ -3450,7 +3514,7 @@ class Text(Widget, XView, YView):
             if not isinstance(command, str):
                 func_name = command = self._register(command)
             args += ["-command", command]
-            for key in kw:
+            for key in kw:  # noqa: PLC0206
                 if kw[key]:
                     args.append("-" + key)
             args.append(index1)
@@ -3529,8 +3593,10 @@ class Text(Widget, XView, YView):
         """Configure an embedded image at INDEX."""
         return self._configure(("image", "configure", index), cnf, kw)
 
-    def image_create(self, index, cnf={}, **kw):
+    def image_create(self, index, cnf=None, **kw):
         """Create an embedded image at INDEX."""
+        if cnf is None:
+            cnf = {}
         return self.tk.call(self._w, "image", "create", index, *self._options(cnf, kw))
 
     def image_names(self):
@@ -3571,11 +3637,13 @@ class Text(Widget, XView, YView):
         """Return the name of the previous mark before INDEX."""
         return self.tk.call(self._w, "mark", "previous", index) or None
 
-    def peer_create(self, newPathName, cnf={}, **kw):  # new in Tk 8.5
+    def peer_create(self, newPathName, cnf=None, **kw):  # new in Tk 8.5
         """Creates a peer text widget with the given newPathName, and any
         optional standard configuration options. By default the peer will
         have the same start and end line as the parent widget, but
         these can be overridden with the standard configuration options."""
+        if cnf is None:
+            cnf = {}
         self.tk.call(self._w, "peer", "create", newPathName, *self._options(cnf, kw))
 
     def peer_names(self):  # new in Tk 8.5
@@ -3733,8 +3801,10 @@ class Text(Widget, XView, YView):
 
     window_config = window_configure
 
-    def window_create(self, index, cnf={}, **kw):
+    def window_create(self, index, cnf=None, **kw):
         """Create a window at INDEX."""
+        if cnf is None:
+            cnf = {}
         self.tk.call((self._w, "window", "create", index) + self._options(cnf, kw))
 
     def window_names(self):
@@ -3805,14 +3875,16 @@ class Image:
 
     _last_id = 0
 
-    def __init__(self, imgtype, name=None, cnf={}, master=None, **kw):
+    def __init__(self, imgtype, name=None, cnf=None, master=None, **kw):
+        if cnf is None:
+            cnf = {}
         self.name = None
         if not master:
             master = _get_default_root("create image")
         self.tk = getattr(master, "tk", master)
         if not name:
             Image._last_id += 1
-            name = "pyimage%r" % (Image._last_id,)  # tk itself would use image<x>
+            name = f"pyimage{Image._last_id!r}"  # tk itself would use image<x>
         if kw and cnf:
             cnf = _cnfmerge((cnf, kw))
         elif kw:
@@ -3879,10 +3951,12 @@ class Image:
 class PhotoImage(Image):
     """Widget which can display images in PGM, PPM, GIF, PNG format."""
 
-    def __init__(self, name=None, cnf={}, master=None, **kw):
+    def __init__(self, name=None, cnf=None, master=None, **kw):
         """Create an image with NAME.
         Valid resource names: data, format, file, gamma, height, palette,
         width."""
+        if cnf is None:
+            cnf = {}
         Image.__init__(self, "photo", name, cnf, master, **kw)
 
     def blank(self):
@@ -3960,9 +4034,11 @@ class PhotoImage(Image):
 class BitmapImage(Image):
     """Widget which can display images in XBM format."""
 
-    def __init__(self, name=None, cnf={}, master=None, **kw):
+    def __init__(self, name=None, cnf=None, master=None, **kw):
         """Create a bitmap with NAME.
         Valid resource names: background, data, file, foreground, maskdata, maskfile."""
+        if cnf is None:
+            cnf = {}
         Image.__init__(self, "bitmap", name, cnf, master, **kw)
 
 
@@ -3979,7 +4055,7 @@ def image_types():
 class Spinbox(Widget, XView):
     """spinbox widget."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a spinbox widget with the parent MASTER.
         STANDARD OPTIONS
             activebackground, background, borderwidth,
@@ -4002,6 +4078,8 @@ class Spinbox(Widget, XView):
             validate, validatecommand values,
             width, wrap,
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "spinbox", cnf, kw)
 
     def bbox(self, index):
@@ -4136,7 +4214,7 @@ class Spinbox(Widget, XView):
 class LabelFrame(Widget):
     """labelframe widget."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a labelframe widget with the parent MASTER.
         STANDARD OPTIONS
             borderwidth, cursor, font, foreground,
@@ -4148,13 +4226,15 @@ class LabelFrame(Widget):
             height, labelanchor, labelwidget,
             visual, width
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "labelframe", cnf, kw)
 
 
 class PanedWindow(Widget):
     """panedwindow widget."""
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Construct a panedwindow widget with the parent MASTER.
         STANDARD OPTIONS
             background, borderwidth, cursor, height,
@@ -4164,6 +4244,8 @@ class PanedWindow(Widget):
             sashcursor, sashpad, sashrelief,
             sashwidth, showhandle,
         """
+        if cnf is None:
+            cnf = {}
         Widget.__init__(self, master, "panedwindow", cnf, kw)
 
     def add(self, child, **kw):
@@ -4323,14 +4405,16 @@ class PanedWindow(Widget):
 
 def _test():
     root = Tk()
-    text = "This is Tcl/Tk version %s" % TclVersion
+    text = f"This is Tcl/Tk version {TclVersion}"
     text += "\nThis should be a cedilla: \xe7"
     label = Label(root, text=text)
     label.pack()
     test = Button(
         root,
         text="Click me!",
-        command=lambda root=root: root.test.configure(text="[%s]" % root.test["text"]),
+        command=lambda root=root: root.test.configure(
+            text="[{}]".format(root.test["text"])
+        ),
     )
     test.pack()
     root.test = test

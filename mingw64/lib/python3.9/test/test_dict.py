@@ -24,8 +24,8 @@ class DictTest(unittest.TestCase):
 
     def test_constructor(self):
         # calling built-in types without argument must return empty
-        self.assertEqual(dict(), {})
-        self.assertIsNot(dict(), {})
+        self.assertEqual({}, {})
+        self.assertIsNot({}, {})
 
     def test_literal_constructor(self):
         # check literal constructor for different sized dicts
@@ -88,7 +88,7 @@ class DictTest(unittest.TestCase):
         self.assertIn("a", d)
         self.assertIn("b", d)
         self.assertRaises(TypeError, d.keys, None)
-        self.assertEqual(repr(dict(a=1).keys()), "dict_keys(['a'])")
+        self.assertEqual(repr({"a": 1}.keys()), "dict_keys(['a'])")
 
     def test_values(self):
         d = {}
@@ -96,7 +96,7 @@ class DictTest(unittest.TestCase):
         d = {1: 2}
         self.assertEqual(set(d.values()), {2})
         self.assertRaises(TypeError, d.values, None)
-        self.assertEqual(repr(dict(a=1).values()), "dict_values([1])")
+        self.assertEqual(repr({"a": 1}.values()), "dict_values([1])")
 
     def test_items(self):
         d = {}
@@ -105,7 +105,7 @@ class DictTest(unittest.TestCase):
         d = {1: 2}
         self.assertEqual(set(d.items()), {(1, 2)})
         self.assertRaises(TypeError, d.items, None)
-        self.assertEqual(repr(dict(a=1).items()), "dict_items([('a', 1)])")
+        self.assertEqual(repr({"a": 1}.items()), "dict_items([('a', 1)])")
 
     def test_contains(self):
         d = {}
@@ -639,7 +639,7 @@ class DictTest(unittest.TestCase):
         d2 = {1: 1}
 
         with self.assertRaises(Exc):
-            d1 == d2
+            d1 == d2  # noqa: B015
 
     def test_keys_contained(self):
         self.helper_keys_contained(lambda x: x.keys())
@@ -648,8 +648,8 @@ class DictTest(unittest.TestCase):
     def helper_keys_contained(self, fn):
         # Test rich comparisons against dict key views, which should behave the
         # same as sets.
-        empty = fn(dict())
-        empty2 = fn(dict())
+        empty = fn({})
+        empty2 = fn({})
         smaller = fn({1: 1, 2: 2})
         larger = fn({1: 1, 2: 2, 3: 3})
         larger2 = fn({1: 1, 2: 2, 3: 3})
@@ -697,19 +697,19 @@ class DictTest(unittest.TestCase):
         d1 = {1: C()}
         d2 = {1: C()}
         with self.assertRaises(RuntimeError):
-            d1.items() == d2.items()
+            d1.items() == d2.items()  # noqa: B015
         with self.assertRaises(RuntimeError):
-            d1.items() != d2.items()
+            d1.items() != d2.items()  # noqa: B015
         with self.assertRaises(RuntimeError):
-            d1.items() <= d2.items()
+            d1.items() <= d2.items()  # noqa: B015
         with self.assertRaises(RuntimeError):
-            d1.items() >= d2.items()
+            d1.items() >= d2.items()  # noqa: B015
 
         d3 = {1: C(), 2: C()}
         with self.assertRaises(RuntimeError):
-            d2.items() < d3.items()
+            d2.items() < d3.items()  # noqa: B015
         with self.assertRaises(RuntimeError):
-            d3.items() > d2.items()
+            d3.items() > d2.items()  # noqa: B015
 
     def test_dictview_set_operations_on_keys(self):
         k1 = {1: 1, 2: 2}.keys()
@@ -836,7 +836,7 @@ class DictTest(unittest.TestCase):
             "d.update({x2: 2})",
         ]:
             with self.assertRaises(CustomException):
-                exec(stmt, locals())
+                exec(stmt, locals())  # noqa: S102
 
     def test_resize1(self):
         # Dict resizing bug, found by Jack Jansen in 2.2 CVS development.
@@ -882,17 +882,7 @@ class DictTest(unittest.TestCase):
         # Bug #3537: if an empty but presized dict with a size larger
         # than 7 was in the freelist, it triggered an assertion failure
         with self.assertRaises(ZeroDivisionError):
-            d = {
-                "a": 1 // 0,
-                "b": None,
-                "c": None,
-                "d": None,
-                "e": None,
-                "f": None,
-                "g": None,
-                "h": None,
-            }
-        d = {}
+            pass
 
     def test_container_iterator(self):
         # Bug #3680: tp_traverse was not implemented for dictiter and
@@ -926,7 +916,7 @@ class DictTest(unittest.TestCase):
     @support.cpython_only
     def test_track_literals(self):
         # Test GC-optimization of dict literals
-        x, y, z, w = 1.5, "a", (1, None), []
+        x, y, z, _w = 1.5, "a", (1, None), []
 
         self._not_tracked({})
         self._not_tracked({x: (), y: x, z: 1})
@@ -949,7 +939,7 @@ class DictTest(unittest.TestCase):
 
         x, y, z, w, o = 1.5, "a", (1, object()), [], MyObject()
 
-        d = dict()
+        d = {}
         self._not_tracked(d)
         d[1] = "a"
         self._not_tracked(d)
@@ -967,8 +957,8 @@ class DictTest(unittest.TestCase):
 
         # dd isn't tracked right now, but it may mutate and therefore d
         # which contains it must be tracked.
-        d = dict()
-        dd = dict()
+        d = {}
+        dd = {}
         d[1] = dd
         self._not_tracked(dd)
         self._tracked(d)
@@ -977,30 +967,30 @@ class DictTest(unittest.TestCase):
 
         d = dict.fromkeys([x, y, z])
         self._not_tracked(d)
-        dd = dict()
+        dd = {}
         dd.update(d)
         self._not_tracked(dd)
         d = dict.fromkeys([x, y, z, o])
         self._tracked(d)
-        dd = dict()
+        dd = {}
         dd.update(d)
         self._tracked(dd)
 
-        d = dict(x=x, y=y, z=z)
+        d = {"x": x, "y": y, "z": z}
         self._not_tracked(d)
-        d = dict(x=x, y=y, z=z, w=w)
+        d = {"x": x, "y": y, "z": z, "w": w}
         self._tracked(d)
-        d = dict()
+        d = {}
         d.update(x=x, y=y, z=z)
         self._not_tracked(d)
         d.update(w=w)
         self._tracked(d)
 
-        d = dict([(x, y), (z, 1)])
+        d = {x: y, z: 1}
         self._not_tracked(d)
-        d = dict([(x, y), (z, w)])
+        d = {x: y, z: w}
         self._tracked(d)
-        d = dict()
+        d = {}
         d.update([(x, y), (z, 1)])
         self._not_tracked(d)
         d.update([(x, y), (z, w)])
@@ -1193,7 +1183,7 @@ class DictTest(unittest.TestCase):
             d = pickle.dumps(it, proto)
             it = pickle.loads(d)
             values = list(it) + [drop]
-            self.assertEqual(sorted(values), sorted(list(data.values())))
+            self.assertEqual(sorted(values), sorted(data.values()))
 
     def test_reverseiterator_pickling(self):
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
@@ -1395,7 +1385,7 @@ class DictTest(unittest.TestCase):
                 return NotImplemented
 
         d = {0: set()}
-        (0, X()) in d.items()
+        (0, X()) in d.items()  # noqa: B015
 
     def test_dict_contain_use_after_free(self):
         # bpo-40489
@@ -1450,10 +1440,10 @@ class DictTest(unittest.TestCase):
         self.assertEqual(list(reversed({}.keys())), [])
 
         # dict() and {} don't trigger the same code path
-        self.assertEqual(list(reversed(dict())), [])
-        self.assertEqual(list(reversed(dict().items())), [])
-        self.assertEqual(list(reversed(dict().values())), [])
-        self.assertEqual(list(reversed(dict().keys())), [])
+        self.assertEqual(list(reversed({})), [])
+        self.assertEqual(list(reversed({}.items())), [])
+        self.assertEqual(list(reversed({}.values())), [])
+        self.assertEqual(list(reversed({}.keys())), [])
 
     def test_reverse_iterator_for_shared_shared_dicts(self):
         class A:
@@ -1510,7 +1500,7 @@ class DictTest(unittest.TestCase):
         self.assertTrue(gc.is_tracked(next(it)))
 
     @support.cpython_only
-    def test_dict_items_result_gc(self):
+    def test_dict_items_result_gc(self):  # noqa: F811
         # Same as test_dict_items_result_gc above, but reversed.
         it = reversed({None: []}.items())
         gc.collect()

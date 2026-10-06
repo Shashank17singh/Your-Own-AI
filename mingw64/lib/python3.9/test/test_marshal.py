@@ -143,7 +143,7 @@ class CodeTestCase(unittest.TestCase):
 
 
 class ContainerTestCase(unittest.TestCase, HelperMixin):
-    d = {
+    d = {  # noqa: RUF012
         "astring": "foo@bar.baz.spam",
         "afloat": 7283.43,
         "anint": 2**20,
@@ -200,9 +200,9 @@ class BugsTestCase(unittest.TestCase):
         marshal.dumps([128] * 1000)
 
     def test_patch_873224(self):
-        self.assertRaises(Exception, marshal.loads, b"0")
-        self.assertRaises(Exception, marshal.loads, b"f")
-        self.assertRaises(Exception, marshal.loads, marshal.dumps(2**65)[:-1])
+        self.assertRaises(Exception, marshal.loads, b"0")  # noqa: B017
+        self.assertRaises(Exception, marshal.loads, b"f")  # noqa: B017
+        self.assertRaises(Exception, marshal.loads, marshal.dumps(2**65)[:-1])  # noqa: B017
 
     def test_version_argument(self):
         # Python 2.4.0 crashes for any call to marshal.dumps(x, y)
@@ -216,7 +216,7 @@ class BugsTestCase(unittest.TestCase):
             c = bytes([i])
             try:
                 marshal.loads(c)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
 
     def test_loads_recursion(self):
@@ -594,7 +594,7 @@ class CAPI_TestCase(unittest.TestCase, HelperMixin):
             data = marshal.dumps(obj, v)
             with open(support.TESTFN, "wb") as f:
                 f.write(data + b"xxxx")
-            r, p = _testcapi.pymarshal_read_last_object_from_file(support.TESTFN)
+            r, _p = _testcapi.pymarshal_read_last_object_from_file(support.TESTFN)
             support.unlink(support.TESTFN)
             self.assertEqual(r, obj)
 

@@ -36,7 +36,7 @@ class TestInversion(TestEmailBase):
         self.assertEqual(b.getvalue(), msg)
 
     # XXX: spaces are not preserved correctly here yet in the general case.
-    msg_params = {
+    msg_params = {  # noqa: RUF012
         "header_with_one_space_body": (
             dedent(b"""\
             From: abc@xyz.com
@@ -48,10 +48,10 @@ class TestInversion(TestEmailBase):
         ),
     }
 
-    payload_params = {
-        "plain_text": dict(payload="This is a test\n" * 20),
-        "base64_text": dict(payload=(("xy a" * 40 + "\n") * 5), cte="base64"),
-        "qp_text": dict(payload=(("xy a" * 40 + "\n") * 5), cte="quoted-printable"),
+    payload_params = {  # noqa: RUF012
+        "plain_text": {"payload": "This is a test\n" * 20},
+        "base64_text": {"payload": (("xy a" * 40 + "\n") * 5), "cte": "base64"},
+        "qp_text": {"payload": (("xy a" * 40 + "\n") * 5), "cte": "quoted-printable"},
     }
 
     def payload_as_body(self, payload, **kw):

@@ -58,7 +58,7 @@ class EmbeddingTestsMixin:
             exepath = os.path.join(basepath, "Programs")
         self.test_exe = exe = os.path.join(exepath, exename)
         if not os.path.exists(exe):
-            self.skipTest("%r doesn't exist" % exe)
+            self.skipTest(f"{exe!r} doesn't exist")
         # This is needed otherwise we get a fatal error:
         # "Py_Initialize: Unable to get the locale encoding
         # LookupError: no codec search functions registered: can't find encoding"
@@ -103,7 +103,7 @@ class EmbeddingTestsMixin:
         self.assertEqual(
             p.returncode,
             returncode,
-            "bad returncode %d, stderr is %r" % (p.returncode, err),
+            "bad returncode %d, stderr is %r" % (p.returncode, err),  # noqa: UP031
         )
         return out, err
 
@@ -219,34 +219,7 @@ class EmbeddingTests(EmbeddingTestsMixin, unittest.TestCase):
             print(err)
         expected_stream_encoding = "utf-8"
         expected_errors = "surrogateescape"
-        expected_output = "\n".join(
-            [
-                "--- Use defaults ---",
-                "Expected encoding: default",
-                "Expected errors: default",
-                "stdin: {in_encoding}:{errors}",
-                "stdout: {out_encoding}:{errors}",
-                "stderr: {out_encoding}:backslashreplace",
-                "--- Set errors only ---",
-                "Expected encoding: default",
-                "Expected errors: ignore",
-                "stdin: {in_encoding}:ignore",
-                "stdout: {out_encoding}:ignore",
-                "stderr: {out_encoding}:backslashreplace",
-                "--- Set encoding only ---",
-                "Expected encoding: iso8859-1",
-                "Expected errors: default",
-                "stdin: iso8859-1:{errors}",
-                "stdout: iso8859-1:{errors}",
-                "stderr: iso8859-1:backslashreplace",
-                "--- Set encoding and errors ---",
-                "Expected encoding: iso8859-1",
-                "Expected errors: replace",
-                "stdin: iso8859-1:replace",
-                "stdout: iso8859-1:replace",
-                "stderr: iso8859-1:backslashreplace",
-            ]
-        )
+        expected_output = "--- Use defaults ---\nExpected encoding: default\nExpected errors: default\nstdin: {in_encoding}:{errors}\nstdout: {out_encoding}:{errors}\nstderr: {out_encoding}:backslashreplace\n--- Set errors only ---\nExpected encoding: default\nExpected errors: ignore\nstdin: {in_encoding}:ignore\nstdout: {out_encoding}:ignore\nstderr: {out_encoding}:backslashreplace\n--- Set encoding only ---\nExpected encoding: iso8859-1\nExpected errors: default\nstdin: iso8859-1:{errors}\nstdout: iso8859-1:{errors}\nstderr: iso8859-1:backslashreplace\n--- Set encoding and errors ---\nExpected encoding: iso8859-1\nExpected errors: replace\nstdin: iso8859-1:replace\nstdout: iso8859-1:replace\nstderr: iso8859-1:backslashreplace"
         expected_output = expected_output.format(
             in_encoding=expected_stream_encoding,
             out_encoding=expected_stream_encoding,
@@ -333,7 +306,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
     # Marker to ignore a configuration parameter
     IGNORE_CONFIG = object()
 
-    PRE_CONFIG_COMPAT = {
+    PRE_CONFIG_COMPAT = {  # noqa: RUF012
         "_config_init": API_COMPAT,
         "allocator": PYMEM_ALLOCATOR_NOT_SET,
         "parse_argv": 0,
@@ -348,14 +321,14 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
                 "legacy_windows_fs_encoding": 0,
             }
         )
-    PRE_CONFIG_PYTHON = dict(
+    PRE_CONFIG_PYTHON = dict(  # noqa: RUF012
         PRE_CONFIG_COMPAT,
         _config_init=API_PYTHON,
         parse_argv=1,
         coerce_c_locale=GET_DEFAULT_CONFIG,
         utf8_mode=GET_DEFAULT_CONFIG,
     )
-    PRE_CONFIG_ISOLATED = dict(
+    PRE_CONFIG_ISOLATED = dict(  # noqa: RUF012
         PRE_CONFIG_COMPAT,
         _config_init=API_ISOLATED,
         configure_locale=0,
@@ -366,13 +339,13 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         coerce_c_locale=0,
     )
 
-    COPY_PRE_CONFIG = [
+    COPY_PRE_CONFIG = [  # noqa: RUF012
         "dev_mode",
         "isolated",
         "use_environment",
     ]
 
-    CONFIG_COMPAT = {
+    CONFIG_COMPAT = {  # noqa: RUF012
         "_config_init": API_COMPAT,
         "isolated": 0,
         "use_environment": 1,
@@ -437,13 +410,13 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
             }
         )
 
-    CONFIG_PYTHON = dict(
+    CONFIG_PYTHON = dict(  # noqa: RUF012
         CONFIG_COMPAT,
         _config_init=API_PYTHON,
         configure_c_stdio=1,
         parse_argv=1,
     )
-    CONFIG_ISOLATED = dict(
+    CONFIG_ISOLATED = dict(  # noqa: RUF012
         CONFIG_COMPAT,
         _config_init=API_ISOLATED,
         isolated=1,
@@ -460,15 +433,15 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         CONFIG_ISOLATED["legacy_windows_stdio"] = 0
 
     # global config
-    DEFAULT_GLOBAL_CONFIG = {
+    DEFAULT_GLOBAL_CONFIG = {  # noqa: RUF012
         "Py_HasFileSystemDefaultEncoding": 0,
         "Py_HashRandomizationFlag": 1,
         "_Py_HasFileSystemDefaultEncodeErrors": 0,
     }
-    COPY_GLOBAL_PRE_CONFIG = [
+    COPY_GLOBAL_PRE_CONFIG = [  # noqa: RUF012
         ("Py_UTF8Mode", "utf8_mode"),
     ]
-    COPY_GLOBAL_CONFIG = [
+    COPY_GLOBAL_CONFIG = [  # noqa: RUF012
         # Copy core config to global config for expected values
         # True means that the core config value is inverted (0 => 1 and 1 => 0)
         ("Py_BytesWarningFlag", "bytes_warning"),
@@ -531,11 +504,11 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         # Use -S to not import the site module: get the proper configuration
         # when test_embed is run from a venv (bpo-35313)
         args = [sys.executable, "-S", "-c", code]
-        proc = subprocess.run(
-            args, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        proc = subprocess.run(  # noqa: PLW1510
+            args, env=env, capture_output=True
         )
         if proc.returncode:
-            raise Exception(
+            raise Exception(  # noqa: TRY002
                 f"failed to get the default config: "
                 f"stdout={proc.stdout!r} stderr={proc.stderr!r}"
             )
@@ -565,7 +538,6 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
     def get_expected_config(
         self, expected_preconfig, expected, env, api, modify_path_cb=None
     ):
-        cls = self.__class__
         configs = self._get_expected_config()
 
         pre_config = configs["pre_config"]
@@ -657,14 +629,14 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         expected = dict(self.DEFAULT_GLOBAL_CONFIG)
         for item in self.COPY_GLOBAL_CONFIG:
             if len(item) == 3:
-                global_key, core_key, opposite = item
+                global_key, core_key, opposite = item  # noqa: RUF059
                 expected[global_key] = 0 if config[core_key] else 1
             else:
                 global_key, core_key = item
                 expected[global_key] = config[core_key]
         for item in self.COPY_GLOBAL_PRE_CONFIG:
             if len(item) == 3:
-                global_key, core_key, opposite = item
+                global_key, core_key, _opposite = item
                 expected[global_key] = 0 if pre_config[core_key] else 1
             else:
                 global_key, core_key = item
@@ -890,15 +862,15 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         )
 
     def test_init_env_dev_mode(self):
-        preconfig = dict(allocator=PYMEM_ALLOCATOR_DEBUG)
-        config = dict(dev_mode=1, faulthandler=1, warnoptions=["default"])
+        preconfig = {"allocator": PYMEM_ALLOCATOR_DEBUG}
+        config = {"dev_mode": 1, "faulthandler": 1, "warnoptions": ["default"]}
         self.check_all_configs(
             "test_init_env_dev_mode", config, preconfig, api=API_COMPAT
         )
 
     def test_init_env_dev_mode_alloc(self):
-        preconfig = dict(allocator=PYMEM_ALLOCATOR_MALLOC)
-        config = dict(dev_mode=1, faulthandler=1, warnoptions=["default"])
+        preconfig = {"allocator": PYMEM_ALLOCATOR_MALLOC}
+        config = {"dev_mode": 1, "faulthandler": 1, "warnoptions": ["default"]}
         self.check_all_configs(
             "test_init_env_dev_mode_alloc", config, preconfig, api=API_COMPAT
         )
@@ -1229,7 +1201,6 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
             self.fail(f"Unable to find home in {paths!r}")
 
         prefix = exec_prefix = home
-        ver = sys.version_info
         expected_paths = self.module_search_paths(prefix=home, exec_prefix=home)
 
         config = {
@@ -1314,7 +1285,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
 
             filename = os.path.join(tmpdir, "pyvenv.cfg")
             with open(filename, "w", encoding="utf8") as fp:
-                print("home = %s" % pyvenv_home, file=fp)
+                print(f"home = {pyvenv_home}", file=fp)
                 print("include-system-site-packages = false", file=fp)
 
             paths = self.module_search_paths()
@@ -1414,7 +1385,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
             "ignore:::PyConfig_BeforeRead",  # PyConfig.warnoptions
             "ignore:::PyConfig_AfterRead",
         ]  # PyWideStringList_Append()
-        preconfig = dict(allocator=PYMEM_ALLOCATOR_DEBUG)
+        preconfig = {"allocator": PYMEM_ALLOCATOR_DEBUG}
         config = {
             "dev_mode": 1,
             "faulthandler": 1,

@@ -32,7 +32,7 @@ class Number:
         raise support.TestFailed("Number.__cmp__() should not be called")
 
     def __repr__(self):
-        return "Number(%r)" % (self.x,)
+        return f"Number({self.x!r})"
 
 
 class Vector:
@@ -57,7 +57,7 @@ class Vector:
         raise support.TestFailed("Vector.__cmp__() should not be called")
 
     def __repr__(self):
-        return "Vector(%r)" % (self.data,)
+        return f"Vector({self.data!r})"
 
     def __lt__(self, other):
         return Vector([a < b for a, b in zip(self.data, self.__cast(other))])
@@ -230,7 +230,7 @@ class MiscTest(unittest.TestCase):
                 raise Exc
 
         def do(bad):
-            not bad
+            not bad  # noqa: B018
 
         for func in (do, operator.not_):
             self.assertRaises(Exc, func, Bad())
@@ -254,7 +254,7 @@ class MiscTest(unittest.TestCase):
         b.append(17)
         # Even recursive lists of different lengths are different,
         # but they cannot be ordered
-        self.assertTrue(not (a == b))
+        self.assertTrue(a != b)
         self.assertTrue(a != b)
         self.assertRaises(RecursionError, operator.lt, a, b)
         self.assertRaises(RecursionError, operator.le, a, b)
@@ -265,7 +265,7 @@ class MiscTest(unittest.TestCase):
         self.assertRaises(RecursionError, operator.ne, a, b)
         a.insert(0, 11)
         b.insert(0, 12)
-        self.assertTrue(not (a == b))
+        self.assertTrue(a != b)
         self.assertTrue(a != b)
         self.assertTrue(a < b)
 
@@ -274,22 +274,22 @@ class MiscTest(unittest.TestCase):
             pass
 
         tests = [
-            (lambda: 42 < None, r"'<' .* of 'int' and 'NoneType'"),
-            (lambda: None < 42, r"'<' .* of 'NoneType' and 'int'"),
-            (lambda: 42 > None, r"'>' .* of 'int' and 'NoneType'"),
-            (lambda: "foo" < None, r"'<' .* of 'str' and 'NoneType'"),
-            (lambda: "foo" >= 666, r"'>=' .* of 'str' and 'int'"),
-            (lambda: 42 <= None, r"'<=' .* of 'int' and 'NoneType'"),
-            (lambda: 42 >= None, r"'>=' .* of 'int' and 'NoneType'"),
+            (lambda: 42 < None, r"'<' .* of 'int' and 'NoneType'"),  # noqa: PLR0133
+            (lambda: None < 42, r"'<' .* of 'NoneType' and 'int'"),  # noqa: PLR0133
+            (lambda: 42 > None, r"'>' .* of 'int' and 'NoneType'"),  # noqa: PLR0133
+            (lambda: "foo" < None, r"'<' .* of 'str' and 'NoneType'"),  # noqa: PLR0133
+            (lambda: "foo" >= 666, r"'>=' .* of 'str' and 'int'"),  # noqa: PLR0133
+            (lambda: 42 <= None, r"'<=' .* of 'int' and 'NoneType'"),  # noqa: PLR0133
+            (lambda: 42 >= None, r"'>=' .* of 'int' and 'NoneType'"),  # noqa: PLR0133
             (lambda: 42 < [], r"'<' .* of 'int' and 'list'"),
             (lambda: () > [], r"'>' .* of 'tuple' and 'list'"),
-            (lambda: None >= None, r"'>=' .* of 'NoneType' and 'NoneType'"),
+            (lambda: None >= None, r"'>=' .* of 'NoneType' and 'NoneType'"),  # noqa: PLR0133
             (lambda: Spam() < 42, r"'<' .* of 'Spam' and 'int'"),
             (lambda: 42 < Spam(), r"'<' .* of 'int' and 'Spam'"),
             (lambda: Spam() <= Spam(), r"'<=' .* of 'Spam' and 'Spam'"),
         ]
         for i, test in enumerate(tests):
-            with self.subTest(test=i):
+            with self.subTest(test=i):  # noqa: SIM117
                 with self.assertRaisesRegex(TypeError, test[1]):
                     test[0]()
 
@@ -324,12 +324,12 @@ class ListTest(unittest.TestCase):
     def test_coverage(self):
         # exercise all comparisons for lists
         x = [42]
-        self.assertIs(x < x, False)
-        self.assertIs(x <= x, True)
-        self.assertIs(x == x, True)
-        self.assertIs(x != x, False)
-        self.assertIs(x > x, False)
-        self.assertIs(x >= x, True)
+        self.assertIs(x < x, False)  # noqa: PLR0124
+        self.assertIs(x <= x, True)  # noqa: PLR0124
+        self.assertIs(x == x, True)  # noqa: PLR0124
+        self.assertIs(x != x, False)  # noqa: PLR0124
+        self.assertIs(x > x, False)  # noqa: PLR0124
+        self.assertIs(x >= x, True)  # noqa: PLR0124
         y = [42, 42]
         self.assertIs(x < y, True)
         self.assertIs(x <= y, True)

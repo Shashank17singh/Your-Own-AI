@@ -19,7 +19,7 @@ def create_file(filename, data=b"foo"):
 
 
 class GenericTest:
-    common_attributes = [
+    common_attributes = [  # noqa: RUF012
         "commonprefix",
         "getsize",
         "getatime",
@@ -29,7 +29,7 @@ class GenericTest:
         "isdir",
         "isfile",
     ]
-    attributes = []
+    attributes = []  # noqa: RUF012
 
     def test_no_argument(self):
         for attr in self.common_attributes + self.attributes:
@@ -254,7 +254,7 @@ class GenericTest:
         try:
             self._test_samefile_on_link_func(os.link)
         except PermissionError as e:
-            self.skipTest("os.link(): %s" % e)
+            self.skipTest(f"os.link(): {e}")
 
     def test_samestat(self):
         test_fn1 = support.TESTFN
@@ -294,7 +294,7 @@ class GenericTest:
         try:
             self._test_samestat_on_link_func(os.link)
         except PermissionError as e:
-            self.skipTest("os.link(): %s" % e)
+            self.skipTest(f"os.link(): {e}")
 
     def test_sameopenfile(self):
         filename = support.TESTFN
@@ -441,23 +441,21 @@ class CommonTest(GenericTest):
             env["spam"] = nonascii
             env[nonascii] = "ham" + nonascii
             check(nonascii, nonascii)
-            check("$spam bar", "%s bar" % nonascii)
-            check("${spam}bar", "%sbar" % nonascii)
-            check("${%s}bar" % nonascii, "ham%sbar" % nonascii)
-            check("$bar%s bar" % nonascii, "$bar%s bar" % nonascii)
-            check("$spam}bar", "%s}bar" % nonascii)
+            check("$spam bar", f"{nonascii} bar")
+            check("${spam}bar", f"{nonascii}bar")
+            check(f"${{{nonascii}}}bar", f"ham{nonascii}bar")
+            check(f"$bar{nonascii} bar", f"$bar{nonascii} bar")
+            check("$spam}bar", f"{nonascii}}}bar")
 
             check(os.fsencode(nonascii), os.fsencode(nonascii))
-            check(b"$spam bar", os.fsencode("%s bar" % nonascii))
-            check(b"${spam}bar", os.fsencode("%sbar" % nonascii))
+            check(b"$spam bar", os.fsencode(f"{nonascii} bar"))
+            check(b"${spam}bar", os.fsencode(f"{nonascii}bar"))
+            check(os.fsencode(f"${{{nonascii}}}bar"), os.fsencode(f"ham{nonascii}bar"))
             check(
-                os.fsencode("${%s}bar" % nonascii), os.fsencode("ham%sbar" % nonascii)
+                os.fsencode(f"$bar{nonascii} bar"),
+                os.fsencode(f"$bar{nonascii} bar"),
             )
-            check(
-                os.fsencode("$bar%s bar" % nonascii),
-                os.fsencode("$bar%s bar" % nonascii),
-            )
-            check(b"$spam}bar", os.fsencode("%s}bar" % nonascii))
+            check(b"$spam}bar", os.fsencode(f"{nonascii}}}bar"))
 
     def test_abspath(self):
         self.assertIn("foo", self.pathmodule.abspath("foo"))

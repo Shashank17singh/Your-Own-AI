@@ -10,12 +10,12 @@ from distutils.core import Command
 class install_headers(Command):
     description = "install C/C++ header files"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("install-dir=", "d", "directory to install header files to"),
         ("force", "f", "force installation (overwrite existing files)"),
     ]
 
-    boolean_options = ["force"]
+    boolean_options = ["force"]  # noqa: RUF012
 
     def initialize_options(self):
         self.install_dir = None

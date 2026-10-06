@@ -50,7 +50,7 @@ class StandardTtkOptionsTests(StandardOptionsTests):
         self.assertEqual(widget["style"], "")
         errmsg = "Layout Foo not found"
         if hasattr(self, "default_orient"):
-            errmsg = "Layout %s.Foo not found" % self.default_orient.title()
+            errmsg = f"Layout {self.default_orient.title()}.Foo not found"
         self.checkInvalidParam(widget, "style", "Foo", errmsg=errmsg)
         widget2 = self.create(class_="Foo")
         self.assertEqual(widget2["class"], "Foo")
@@ -524,7 +524,7 @@ class ComboboxTest(EntryTest, unittest.TestCase):
         self.combo.bind("<<ComboboxSelected>>", lambda evt: success.append(True))
         self.combo.pack()
         self.combo.update()
-        height = self.combo.winfo_height()
+        self.combo.winfo_height()
         self._show_drop_down_listbox()
         self.combo.update()
         self.combo.event_generate("<Return>")
@@ -835,7 +835,7 @@ class ScaleTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_custom_event(self):
         failure = [1, 1, 1]  # will need to be empty
-        funcid = self.scale.bind("<<RangeChanged>>", lambda evt: failure.pop())
+        self.scale.bind("<<RangeChanged>>", lambda evt: failure.pop())
         self.scale["from"] = 10
         self.scale["from_"] = 10
         self.scale["to"] = 3
@@ -987,7 +987,7 @@ class NotebookTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(self.nb.tab(tb_idx), self.nb.tab("current"))
         for i in range(5, 100, 5):
             try:
-                if self.nb.tab("@%d, 5" % i, text=None) == "a":
+                if self.nb.tab("@%d, 5" % i, text=None) == "a":  # noqa: UP031
                     break
             except tkinter.TclError:
                 pass
@@ -1559,7 +1559,7 @@ class TreeviewTest(AbstractWidgetTest, unittest.TestCase):
         item = self.tv.insert("", "end", tags=[1, 2, value])
         self.assertEqual(
             self.tv.item(item, tags=None),
-            ("1", "2", value) if self.wantobjects else "1 2 %s" % value,
+            ("1", "2", value) if self.wantobjects else f"1 2 {value}",
         )
         self.tv.item(item, tags=[])
         self.assertFalse(self.tv.item(item, tags=None))
@@ -1567,13 +1567,13 @@ class TreeviewTest(AbstractWidgetTest, unittest.TestCase):
         self.assertEqual(
             self.tv.item(item, tags=None), ("1", "2") if self.wantobjects else "1 2"
         )
-        item = self.tv.insert("", "end", values=("a b c", "%s %s" % (value, value)))
+        item = self.tv.insert("", "end", values=("a b c", f"{value} {value}"))
         self.assertEqual(
             self.tv.item(item, values=None),
             (
-                ("a b c", "%s %s" % (value, value))
+                ("a b c", f"{value} {value}")
                 if self.wantobjects
-                else "{a b c} {%s %s}" % (value, value)
+                else f"{{a b c}} {{{value} {value}}}"
             ),
         )
         self.assertEqual(
@@ -1676,8 +1676,8 @@ class TreeviewTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_tag_bind(self):
         events = []
-        item1 = self.tv.insert("", "end", tags=["call"])
-        item2 = self.tv.insert("", "end", tags=["call"])
+        self.tv.insert("", "end", tags=["call"])
+        self.tv.insert("", "end", tags=["call"])
         self.tv.tag_bind("call", "<ButtonPress-1>", lambda evt: events.append(1))
         self.tv.tag_bind("call", "<ButtonRelease-1>", lambda evt: events.append(2))
         self.tv.pack()

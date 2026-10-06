@@ -178,7 +178,7 @@ SUPPORTS_SENDFILE = supports_file2file_sendfile()
 # when 32-bit maxdata must be greater than 0x1000000 for the xz test to succeed
 def _maxdataOK():
     if AIX and sys.maxsize == 2147483647:
-        hdrs = subprocess.getoutput("/usr/bin/dump -o %s" % sys.executable)
+        hdrs = subprocess.getoutput(f"/usr/bin/dump -o {sys.executable}")
         maxdata = hdrs.split("\n")[-1].split()[1]
         return int(maxdata, 16) >= 0x20000000
     else:
@@ -652,7 +652,7 @@ class TestCopyTree(BaseTest, unittest.TestCase):
         self.assertTrue(exists(join(dst_dir, "test_dir", "subdir", "test.txt")))
 
         dst_dir = join(self.mkdtemp(), "destination")
-        src_dir_entry = list(os.scandir(tmp_dir))[0]
+        src_dir_entry = next(iter(os.scandir(tmp_dir)))
         self.assertIsInstance(src_dir_entry, os.DirEntry)
         shutil.copytree(src_dir_entry, dst_dir, ignore=_ignore)
         self.assertTrue(exists(join(dst_dir, "test_dir", "subdir", "test.txt")))
@@ -735,14 +735,14 @@ class TestCopyTree(BaseTest, unittest.TestCase):
             try:
                 os.mkfifo(pipe)
             except PermissionError as e:
-                self.skipTest("os.mkfifo(): %s" % e)
+                self.skipTest(f"os.mkfifo(): {e}")
             try:
                 shutil.copytree(TESTFN, TESTFN2)
             except shutil.Error as e:
                 errors = e.args[0]
                 self.assertEqual(len(errors), 1)
-                src, dst, error_msg = errors[0]
-                self.assertEqual("`%s` is a named pipe" % pipe, error_msg)
+                _src, _dst, error_msg = errors[0]
+                self.assertEqual(f"`{pipe}` is a named pipe", error_msg)
             else:
                 self.fail("shutil.Error should have been raised")
         finally:
@@ -1228,7 +1228,7 @@ class TestCopy(BaseTest, unittest.TestCase):
             try:
                 os.link(src, dst)
             except PermissionError as e:
-                self.skipTest("os.link(): %s" % e)
+                self.skipTest(f"os.link(): {e}")
             self.assertRaises(shutil.SameFileError, shutil.copyfile, src, dst)
             with open(src, "r") as f:
                 self.assertEqual(f.read(), "cheddar")
@@ -1262,7 +1262,7 @@ class TestCopy(BaseTest, unittest.TestCase):
         try:
             os.mkfifo(TESTFN)
         except PermissionError as e:
-            self.skipTest("os.mkfifo(): %s" % e)
+            self.skipTest(f"os.mkfifo(): {e}")
         try:
             self.assertRaises(shutil.SpecialFileError, shutil.copyfile, TESTFN, TESTFN2)
             self.assertRaises(
@@ -1313,7 +1313,7 @@ class TestArchives(BaseTest, unittest.TestCase):
     @support.requires_zlib()
     def test_make_tarball(self):
         # creating something to tar
-        root_dir, base_dir = self._create_files("")
+        root_dir, _base_dir = self._create_files("")
 
         tmpdir2 = self.mkdtemp()
         # force shutil to create the directory
@@ -1536,7 +1536,7 @@ class TestArchives(BaseTest, unittest.TestCase):
     @support.requires_zlib()
     @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
     def test_tarfile_root_owner(self):
-        root_dir, base_dir = self._create_files()
+        root_dir, _base_dir = self._create_files()
         base_name = os.path.join(self.mkdtemp(), "archive")
         group = grp.getgrgid(0)[0]
         owner = pwd.getpwuid(0)[0]
@@ -1549,7 +1549,7 @@ class TestArchives(BaseTest, unittest.TestCase):
         self.assertTrue(os.path.isfile(archive_name))
 
         # now checks the rights
-        archive = tarfile.open(archive_name)
+        archive = tarfile.open(archive_name)  # noqa: SIM115
         try:
             for member in archive.getmembers():
                 self.assertEqual(member.uid, 0)
@@ -1567,7 +1567,7 @@ class TestArchives(BaseTest, unittest.TestCase):
         try:
             try:
                 make_archive("xxx", "xxx", root_dir=self.mkdtemp())
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             self.assertEqual(os.getcwd(), current_dir)
         finally:
@@ -1591,12 +1591,16 @@ class TestArchives(BaseTest, unittest.TestCase):
     def test_register_archive_format(self):
 
         self.assertRaises(TypeError, register_archive_format, "xxx", 1)
-        self.assertRaises(TypeError, register_archive_format, "xxx", lambda: x, 1)
+        self.assertRaises(TypeError, register_archive_format, "xxx", lambda: x, 1)  # noqa: F821
         self.assertRaises(
-            TypeError, register_archive_format, "xxx", lambda: x, [(1, 2), (1, 2, 3)]
+            TypeError,
+            register_archive_format,
+            "xxx",
+            lambda: x,
+            [(1, 2), (1, 2, 3)],  # noqa: F821
         )
 
-        register_archive_format("xxx", lambda: x, [(1, 2)], "xxx file")
+        register_archive_format("xxx", lambda: x, [(1, 2)], "xxx file")  # noqa: F821
         formats = [name for name, params in get_archive_formats()]
         self.assertIn("xxx", formats)
 
@@ -1765,7 +1769,7 @@ class TestWhich(BaseTest, unittest.TestCase):
         self.temp_dir = self.mkdtemp(prefix="Tmp")
         # Give the temp_file an ".exe" suffix for all.
         # It's needed on Windows and not harmful on other platforms.
-        self.temp_file = tempfile.NamedTemporaryFile(
+        self.temp_file = tempfile.NamedTemporaryFile(  # noqa: SIM115
             dir=self.temp_dir, prefix="Tmp", suffix=".Exe"
         )
         os.chmod(self.temp_file.name, stat.S_IXUSR)
@@ -1902,7 +1906,7 @@ class TestWhich(BaseTest, unittest.TestCase):
             self.assertEqual(rv, self.temp_file.name)
 
     def test_empty_path(self):
-        base_dir = os.path.dirname(self.dir)
+        os.path.dirname(self.dir)
         with support.change_cwd(path=self.dir), support.EnvironmentVarGuard() as env:
             env["PATH"] = self.env_path
             rv = shutil.which(self.file, path="")
@@ -1917,7 +1921,7 @@ class TestWhich(BaseTest, unittest.TestCase):
     @unittest.skipUnless(sys.platform == "win32", "test specific to Windows")
     def test_pathext(self):
         ext = ".xyz"
-        temp_filexyz = tempfile.NamedTemporaryFile(
+        temp_filexyz = tempfile.NamedTemporaryFile(  # noqa: SIM115
             dir=self.temp_dir, prefix="Tmp2", suffix=ext
         )
         os.chmod(temp_filexyz.name, stat.S_IXUSR)
@@ -1936,7 +1940,7 @@ class TestWhich(BaseTest, unittest.TestCase):
     @unittest.skipUnless(sys.platform == "win32", "test specific to Windows")
     def test_pathext_with_empty_str(self):
         ext = ".xyz"
-        temp_filexyz = tempfile.NamedTemporaryFile(
+        temp_filexyz = tempfile.NamedTemporaryFile(  # noqa: SIM115
             dir=self.temp_dir, prefix="Tmp2", suffix=ext
         )
         self.addCleanup(temp_filexyz.close)
@@ -2074,7 +2078,7 @@ class TestMove(BaseTest, unittest.TestCase):
                 self.assertTrue(
                     shutil._destinsrc(src, dst),
                     msg="_destinsrc() wrongly concluded that "
-                    "dst (%s) is not in src (%s)" % (dst, src),
+                    f"dst ({dst}) is not in src ({src})",
                 )
         finally:
             support.rmtree(TESTFN)
@@ -2088,7 +2092,7 @@ class TestMove(BaseTest, unittest.TestCase):
                 self.assertFalse(
                     shutil._destinsrc(src, dst),
                     msg="_destinsrc() wrongly concluded that "
-                    "dst (%s) is in src (%s)" % (dst, src),
+                    f"dst ({dst}) is in src ({src})",
                 )
         finally:
             support.rmtree(TESTFN)
@@ -2206,7 +2210,7 @@ class TestMove(BaseTest, unittest.TestCase):
 
             # Create a file and keep the directory immutable
             os.lchflags(TESTFN_SRC, stat.UF_OPAQUE)
-            os_helper.create_empty_file(os.path.join(TESTFN_SRC, "child"))
+            os_helper.create_empty_file(os.path.join(TESTFN_SRC, "child"))  # noqa: F821
             os.lchflags(TESTFN_SRC, stat.SF_IMMUTABLE)
 
             # Testing on a non-empty immutable directory
@@ -2216,10 +2220,10 @@ class TestMove(BaseTest, unittest.TestCase):
         finally:
             if os.path.exists(TESTFN_SRC):
                 os.lchflags(TESTFN_SRC, stat.UF_OPAQUE)
-                os_helper.rmtree(TESTFN_SRC)
+                os_helper.rmtree(TESTFN_SRC)  # noqa: F821
             if os.path.exists(TESTFN_DST):
                 os.lchflags(TESTFN_DST, stat.UF_OPAQUE)
-                os_helper.rmtree(TESTFN_DST)
+                os_helper.rmtree(TESTFN_DST)  # noqa: F821
 
 
 class TestCopyFile(unittest.TestCase):
@@ -2251,7 +2255,7 @@ class TestCopyFile(unittest.TestCase):
                 raise OSError('Cannot open "srcfile"')
             assert 0  # shouldn't reach here.
 
-        with support.swap_attr(shutil, "open", _open):
+        with support.swap_attr(shutil, "open", _open):  # noqa: SIM117
             with self.assertRaises(OSError):
                 shutil.copyfile("srcfile", "destfile")
 
@@ -2305,7 +2309,7 @@ class TestCopyFile(unittest.TestCase):
                 return destfile
             assert 0  # shouldn't reach here.
 
-        with support.swap_attr(shutil, "open", _open):
+        with support.swap_attr(shutil, "open", _open):  # noqa: SIM117
             with self.assertRaises(OSError):
                 shutil.copyfile("srcfile", "destfile")
         self.assertTrue(srcfile._entered)
@@ -2436,7 +2440,7 @@ class _ZeroCopyFileTest:
 
     def test_same_file(self):
         self.addCleanup(self.reset)
-        with self.get_files() as (src, dst), self.assertRaises(Exception):
+        with self.get_files() as (src, _dst), self.assertRaises(Exception):  # noqa: B017
             self.zerocopy_fun(src, src)
         # Make sure src file is not corrupted.
         self.assertEqual(read_file(TESTFN, binary=True), self.FILEDATA)
@@ -2522,7 +2526,7 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
 
         flag = []
         orig_sendfile = os.sendfile
-        with unittest.mock.patch("os.sendfile", create=True, side_effect=sendfile):
+        with unittest.mock.patch("os.sendfile", create=True, side_effect=sendfile):  # noqa: SIM117
             with self.get_files() as (src, dst):
                 with self.assertRaises(OSError) as cm:
                     shutil._fastcopy_sendfile(src, dst)
@@ -2533,7 +2537,7 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
         # Emulate a case where src file size cannot be determined.
         # Internally bufsize will be set to a small value and
         # sendfile() will be called repeatedly.
-        with unittest.mock.patch("os.fstat", side_effect=OSError) as m:
+        with unittest.mock.patch("os.fstat", side_effect=OSError) as m:  # noqa: SIM117
             with self.get_files() as (src, dst):
                 shutil._fastcopy_sendfile(src, dst)
                 assert m.called
@@ -2546,7 +2550,7 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
         # bigger while it is being copied.
         mock = unittest.mock.Mock()
         mock.st_size = 65536 + 1
-        with unittest.mock.patch("os.fstat", return_value=mock) as m:
+        with unittest.mock.patch("os.fstat", return_value=mock) as m:  # noqa: SIM117
             with self.get_files() as (src, dst):
                 shutil._fastcopy_sendfile(src, dst)
                 assert m.called
@@ -2559,7 +2563,7 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
         # performance.
         mock = unittest.mock.Mock()
         mock.st_size = self.FILESIZE + (100 * 1024 * 1024)
-        with unittest.mock.patch("os.fstat", return_value=mock) as m:
+        with unittest.mock.patch("os.fstat", return_value=mock) as m:  # noqa: SIM117
             with self.get_files() as (src, dst):
                 shutil._fastcopy_sendfile(src, dst)
                 assert m.called
@@ -2591,7 +2595,7 @@ class TestZeroCopySendfile(_ZeroCopyFileTest, unittest.TestCase):
             with unittest.mock.patch(
                 self.PATCHPOINT, side_effect=OSError(errno.ENOTSOCK, "yo")
             ) as m:
-                with self.get_files() as (src, dst):
+                with self.get_files() as (src, dst):  # noqa: SIM117
                     with self.assertRaises(_GiveupOnFastCopy):
                         shutil._fastcopy_sendfile(src, dst)
                 assert m.called

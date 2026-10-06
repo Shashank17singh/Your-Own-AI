@@ -12,7 +12,7 @@ from test import support
 class HackedSysModule:
     # The regression test will have real values in sys.argv, which
     # will completely confuse the test of the cgi module
-    argv = []
+    argv = []  # noqa: RUF012
     stdin = sys.stdin
 
 
@@ -47,10 +47,10 @@ def do_test(buf, method):
         env["CONTENT_TYPE"] = "application/x-www-form-urlencoded"
         env["CONTENT_LENGTH"] = str(len(buf))
     else:
-        raise ValueError("unknown method: %s" % method)
+        raise ValueError(f"unknown method: {method}")
     try:
         return cgi.parse(fp, env, strict_parsing=1)
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         return ComparableException(err)
 
 
@@ -200,9 +200,9 @@ Content-Length: 3
         for orig, expect in parse_strict_test_cases:
             # Test basic parsing
             d = do_test(orig, "GET")
-            self.assertEqual(d, expect, "Error parsing %s method GET" % repr(orig))
+            self.assertEqual(d, expect, f"Error parsing {orig!r} method GET")
             d = do_test(orig, "POST")
-            self.assertEqual(d, expect, "Error parsing %s method POST" % repr(orig))
+            self.assertEqual(d, expect, f"Error parsing {orig!r} method POST")
 
             env = {"QUERY_STRING": orig}
             fs = cgi.FieldStorage(environ=env)
@@ -214,7 +214,7 @@ Content-Length: 3
                 ##self.assertEqual(norm(expect.items()), norm(fs.items()))
                 self.assertEqual(fs.getvalue("nonexistent field", "default"), "default")
                 # test individual fields
-                for key in expect.keys():
+                for key in expect:
                     expect_val = expect[key]
                     self.assertIn(key, fs)
                     if len(expect_val) > 1:
@@ -238,7 +238,7 @@ Content-Length: 3
             env = {"QUERY_STRING": orig}
             fs = cgi.FieldStorage(separator=";", environ=env)
             if isinstance(expect, dict):
-                for key in expect.keys():
+                for key in expect:
                     expect_val = expect[key]
                     self.assertIn(key, fs)
                     if len(expect_val) > 1:
@@ -284,7 +284,7 @@ Content-Length: 3
                     setattr(self, name, a)
                 return a
 
-        f = TestReadlineFile(tempfile.TemporaryFile("wb+"))
+        f = TestReadlineFile(tempfile.TemporaryFile("wb+"))  # noqa: SIM115
         self.addCleanup(f.close)
         f.write(b"x" * 256 * 1024)
         f.seek(0)
@@ -465,7 +465,7 @@ Test
         with self.assertRaisesRegex(ValueError, "I/O operation on closed file"):
             fs.file.read()
 
-    _qs_result = {
+    _qs_result = {  # noqa: RUF012
         "key1": "value1",
         "key2": ["value2x", "value2y"],
         "key3": "value3",

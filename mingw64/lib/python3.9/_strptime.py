@@ -258,8 +258,8 @@ class TimeRE(dict):
         else:
             return ""
         regex = "|".join(re_escape(stuff) for stuff in to_convert)
-        regex = "(?P<%s>%s" % (directive, regex)
-        return "%s)" % regex
+        regex = f"(?P<{directive}>{regex}"
+        return f"{regex})"
 
     def pattern(self, format):
         """Return regex pattern for the format string.
@@ -278,13 +278,9 @@ class TimeRE(dict):
         format = whitespace_replacement.sub(r"\\s+", format)
         while "%" in format:
             directive_index = format.index("%") + 1
-            processed_format = "%s%s%s" % (
-                processed_format,
-                format[: directive_index - 1],
-                self[format[directive_index]],
-            )
+            processed_format = f"{processed_format}{format[: directive_index - 1]}{self[format[directive_index]]}"
             format = format[directive_index + 1 :]
-        return "%s%s" % (processed_format, format)
+        return f"{processed_format}{format}"
 
     def compile(self, format):
         """Return a compiled re object for the format string."""
@@ -346,7 +342,7 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
             msg = "strptime() argument {} must be str, not {}"
             raise TypeError(msg.format(index, type(arg)))
 
-    global _TimeRE_cache, _regex_cache
+    global _TimeRE_cache, _regex_cache  # noqa: PLW0602
     with _cache_lock:
         locale_time = _TimeRE_cache.locale_time
         if (
@@ -371,19 +367,17 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
                     bad_directive = "%"
                 del err
                 raise ValueError(
-                    "'%s' is a bad directive in format '%s'" % (bad_directive, format)
+                    f"'{bad_directive}' is a bad directive in format '{format}'"
                 ) from None
             # IndexError only occurs when the format string is "%"
             except IndexError:
-                raise ValueError("stray %% in format '%s'" % format) from None
+                raise ValueError(f"stray % in format '{format}'") from None
             _regex_cache[format] = format_regex
     found = format_regex.match(data_string)
     if not found:
-        raise ValueError(
-            "time data %r does not match format %r" % (data_string, format)
-        )
+        raise ValueError(f"time data {data_string!r} does not match format {format!r}")
     if len(data_string) != found.end():
-        raise ValueError("unconverted data remains: %s" % data_string[found.end() :])
+        raise ValueError(f"unconverted data remains: {data_string[found.end() :]}")
 
     iso_year = year = None
     month = day = 1
@@ -399,7 +393,7 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
     # values
     weekday = julian = None
     found_dict = found.groupdict()
-    for group_key in found_dict.keys():
+    for group_key in found_dict:
         # Directives not explicitly handled below:
         #   c, x, X
         #      handled by making out of other directives
@@ -438,7 +432,7 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
                 # 12 midnight == 12 AM == hour 0
                 if hour == 12:
                     hour = 0
-            elif ampm == locale_time.am_pm[1]:
+            elif ampm == locale_time.am_pm[1]:  # noqa: SIM102
                 # We're in PM so we need to add 12 to the hour unless
                 # we're looking at 12 noon.
                 # 12 noon == 12 PM == hour 12
@@ -559,7 +553,7 @@ def _strptime(data_string, format="%a %b %d %H:%M:%S %Y"):
     # out the Julian day of the year.
     if julian is None and weekday is not None:
         if week_of_year is not None:
-            week_starts_Mon = True if week_of_year_start == 0 else False
+            week_starts_Mon = week_of_year_start == 0
             julian = _calc_julian_from_U_or_W(
                 year, week_of_year, weekday, week_starts_Mon
             )

@@ -18,7 +18,7 @@ class RegressionTestResult(unittest.TextTestResult):
         super().__init__(stream=stream, descriptions=descriptions, verbosity=0)
         self.buffer = True
         self.__suite = ET.Element("testsuite")
-        self.__suite.set("start", datetime.utcnow().isoformat(" "))
+        self.__suite.set("start", datetime.utcnow().isoformat(" "))  # noqa: DTZ003
 
         self.__e = None
         self.__start_time = None
@@ -39,7 +39,7 @@ class RegressionTestResult(unittest.TextTestResult):
 
     def startTest(self, test):
         super().startTest(test)
-        self.__e = e = ET.SubElement(self.__suite, "testcase")
+        self.__e = ET.SubElement(self.__suite, "testcase")
         self.__start_time = time.perf_counter()
         if self.__verbose:
             self.stream.write(f"{self.getDescription(test)} ... ")
@@ -141,7 +141,7 @@ class RegressionTestResult(unittest.TextTestResult):
             self.stream.write(self.separator1)
             self.stream.write(f"{flavor}: {self.getDescription(test)}\n")
             self.stream.write(self.separator2)
-            self.stream.write("%s\n" % err)
+            self.stream.write(f"{err}\n")
 
     def get_xml_element(self):
         e = self.__suite

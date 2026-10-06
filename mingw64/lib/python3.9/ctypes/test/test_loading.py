@@ -61,10 +61,10 @@ class LoaderTest(unittest.TestCase):
             print(find_library("user32"))
 
         if os.name == "nt":
-            windll.kernel32.GetModuleHandleW
-            windll["kernel32"].GetModuleHandleW
-            windll.LoadLibrary("kernel32").GetModuleHandleW
-            WinDLL("kernel32").GetModuleHandleW
+            windll.kernel32.GetModuleHandleW  # noqa: B018
+            windll["kernel32"].GetModuleHandleW  # noqa: B018
+            windll.LoadLibrary("kernel32").GetModuleHandleW  # noqa: B018
+            WinDLL("kernel32").GetModuleHandleW  # noqa: B018
             # embedded null character
             self.assertRaises(ValueError, windll.LoadLibrary, "kernel32\0")
 
@@ -149,7 +149,7 @@ class LoaderTest(unittest.TestCase):
                     )
 
             def should_fail(command):
-                with self.subTest(command):
+                with self.subTest(command):  # noqa: SIM117
                     with self.assertRaises(subprocess.CalledProcessError):
                         subprocess.check_output(
                             [

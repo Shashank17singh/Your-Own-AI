@@ -258,7 +258,7 @@ class Profile:
 
     def trace_dispatch_call(self, frame, t):
         if self.cur and frame.f_back is not self.cur[-2]:
-            rpt, rit, ret, rfn, rframe, rcur = self.cur
+            _rpt, _rit, _ret, rfn, rframe, _rcur = self.cur
             if not isinstance(rframe, Profile.fake_frame):
                 assert rframe.f_back is frame.f_back, (
                     "Bad call",
@@ -332,7 +332,7 @@ class Profile:
 
         return 1
 
-    dispatch = {
+    dispatch = {  # noqa: RUF012
         "call": trace_dispatch_call,
         "exception": trace_dispatch_exception,
         "return": trace_dispatch_return,
@@ -426,7 +426,7 @@ class Profile:
         self.set_cmd(cmd)
         sys.setprofile(self.dispatcher)
         try:
-            exec(cmd, globals, locals)
+            exec(cmd, globals, locals)  # noqa: S102
         finally:
             sys.setprofile(None)
         return self
@@ -502,7 +502,7 @@ class Profile:
 
         def f1(n):
             for i in range(n):
-                x = 1
+                pass
 
         def f(m, f1=f1):
             for i in range(m):
@@ -541,7 +541,7 @@ class Profile:
             print("'CPU seconds' profiler reported =", reported_time)
             print("total # calls =", total_calls)
         if total_calls != m + 1:
-            raise ValueError("internal error: total calls = %d" % total_calls)
+            raise ValueError("internal error: total calls = %d" % total_calls)  # noqa: UP031
 
         # reported_time - elapsed_noprofile = overhead the profiler wasn't
         # able to measure.  Divide by twice the number of calls (since there

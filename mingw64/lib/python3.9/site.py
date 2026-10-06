@@ -159,7 +159,7 @@ def addpackage(sitedir, name, known_paths):
         reset = False
     fullname = os.path.join(sitedir, name)
     try:
-        f = io.TextIOWrapper(io.open_code(fullname))
+        f = io.TextIOWrapper(io.open_code(fullname))  # noqa: SIM115
     except OSError:
         return
     with f:
@@ -168,14 +168,14 @@ def addpackage(sitedir, name, known_paths):
                 continue
             try:
                 if line.startswith(("import ", "import\t")):
-                    exec(line)
+                    exec(line)  # noqa: S102
                     continue
                 line = line.rstrip()
                 dir, dircase = makepath(sitedir, line)
                 if not dircase in known_paths and os.path.exists(dir):
                     sys.path.append(dir)
                     known_paths.add(dircase)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 print(
                     f"Error processing line {n + 1:d} of {fullname}:\n",
                     file=sys.stderr,
@@ -229,11 +229,11 @@ def check_enableusersite():
     if sys.flags.no_user_site:
         return False
 
-    if hasattr(os, "getuid") and hasattr(os, "geteuid"):
+    if hasattr(os, "getuid") and hasattr(os, "geteuid"):  # noqa: SIM102
         # check process uid == effective uid
         if os.geteuid() != os.getuid():
             return None
-    if hasattr(os, "getgid") and hasattr(os, "getegid"):
+    if hasattr(os, "getgid") and hasattr(os, "getegid"):  # noqa: SIM102
         # check process gid == effective gid
         if os.getegid() != os.getgid():
             return None
@@ -264,7 +264,7 @@ def _getuserbase():
         return joinuser(base, "Python")
 
     if sys.platform == "darwin" and sys._framework:
-        return joinuser("~", "Library", sys._framework, "%d.%d" % sys.version_info[:2])
+        return joinuser("~", "Library", sys._framework, "%d.%d" % sys.version_info[:2])  # noqa: UP031
 
     return joinuser("~", ".local")
 
@@ -356,7 +356,7 @@ def getsitepackages(prefixes=None):
                 path = os.path.join(
                     prefix,
                     libdir,
-                    "python%d.%d" % sys.version_info[:2],
+                    "python%d.%d" % sys.version_info[:2],  # noqa: UP031
                     "site-packages",
                 )
                 sitepackages.append(path)
@@ -439,7 +439,7 @@ def enablerlcompleter():
 
         try:
             import readline
-            import rlcompleter
+            import rlcompleter  # noqa: F401
         except ImportError:
             return
 
@@ -542,19 +542,19 @@ def execsitecustomize():
     """Run custom site specific code, if available."""
     try:
         try:
-            import sitecustomize
+            import sitecustomize  # noqa: F401
         except ImportError as exc:
             if exc.name == "sitecustomize":
                 pass
             else:
                 raise
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         if sys.flags.verbose:
             sys.excepthook(*sys.exc_info())
         else:
             sys.stderr.write(
                 "Error in sitecustomize; set PYTHONVERBOSE for traceback:\n"
-                "%s: %s\n" % (err.__class__.__name__, err)
+                f"{err.__class__.__name__}: {err}\n"
             )
 
 
@@ -562,19 +562,19 @@ def execusercustomize():
     """Run custom user specific code, if available."""
     try:
         try:
-            import usercustomize
+            import usercustomize  # noqa: F401
         except ImportError as exc:
             if exc.name == "usercustomize":
                 pass
             else:
                 raise
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         if sys.flags.verbose:
             sys.excepthook(*sys.exc_info())
         else:
             sys.stderr.write(
                 "Error in usercustomize; set PYTHONVERBOSE for traceback:\n"
-                "%s: %s\n" % (err.__class__.__name__, err)
+                f"{err.__class__.__name__}: {err}\n"
             )
 
 
@@ -635,17 +635,19 @@ def _script():
         user_site = getusersitepackages()
         print("sys.path = [")
         for dir in sys.path:
-            print("    %r," % (dir,))
+            print(f"    {dir!r},")
         print("]")
         print(
-            "USER_BASE: %r (%s)"
-            % (user_base, "exists" if os.path.isdir(user_base) else "doesn't exist")
+            "USER_BASE: {!r} ({})".format(
+                user_base, "exists" if os.path.isdir(user_base) else "doesn't exist"
+            )
         )
         print(
-            "USER_SITE: %r (%s)"
-            % (user_site, "exists" if os.path.isdir(user_site) else "doesn't exist")
+            "USER_SITE: {!r} ({})".format(
+                user_site, "exists" if os.path.isdir(user_site) else "doesn't exist"
+            )
         )
-        print("ENABLE_USER_SITE: %r" % ENABLE_USER_SITE)
+        print(f"ENABLE_USER_SITE: {ENABLE_USER_SITE!r}")
         sys.exit(0)
 
     buffer = []

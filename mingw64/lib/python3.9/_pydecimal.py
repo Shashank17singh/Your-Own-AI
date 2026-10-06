@@ -113,53 +113,53 @@ NaN
 """
 
 __all__ = [
+    # C version: compile time choice that enables the coroutine local context
+    "HAVE_CONTEXTVAR",
+    # C version: compile time choice that enables the thread local context (deprecated, now always true)
+    "HAVE_THREADS",
+    "MAX_EMAX",
+    # Limits for the C version for compatibility
+    "MAX_PREC",
+    "MIN_EMIN",
+    "MIN_ETINY",
+    "ROUND_05UP",
+    "ROUND_CEILING",
+    # Constants for use in setting up contexts
+    "ROUND_DOWN",
+    "ROUND_FLOOR",
+    "ROUND_HALF_DOWN",
+    "ROUND_HALF_EVEN",
+    "ROUND_HALF_UP",
+    "ROUND_UP",
+    "BasicContext",
+    "Clamped",
+    "Context",
+    "ConversionSyntax",
     # Two major classes
     "Decimal",
-    "Context",
+    # Exceptions
+    "DecimalException",
     # Named tuple representation
     "DecimalTuple",
     # Contexts
     "DefaultContext",
-    "BasicContext",
-    "ExtendedContext",
-    # Exceptions
-    "DecimalException",
-    "Clamped",
-    "InvalidOperation",
     "DivisionByZero",
-    "Inexact",
-    "Rounded",
-    "Subnormal",
-    "Overflow",
-    "Underflow",
-    "FloatOperation",
     # Exceptional conditions that trigger InvalidOperation
     "DivisionImpossible",
-    "InvalidContext",
-    "ConversionSyntax",
     "DivisionUndefined",
-    # Constants for use in setting up contexts
-    "ROUND_DOWN",
-    "ROUND_HALF_UP",
-    "ROUND_HALF_EVEN",
-    "ROUND_CEILING",
-    "ROUND_FLOOR",
-    "ROUND_UP",
-    "ROUND_HALF_DOWN",
-    "ROUND_05UP",
-    # Functions for manipulating contexts
-    "setcontext",
+    "ExtendedContext",
+    "FloatOperation",
+    "Inexact",
+    "InvalidContext",
+    "InvalidOperation",
+    "Overflow",
+    "Rounded",
+    "Subnormal",
+    "Underflow",
     "getcontext",
     "localcontext",
-    # Limits for the C version for compatibility
-    "MAX_PREC",
-    "MAX_EMAX",
-    "MIN_EMIN",
-    "MIN_ETINY",
-    # C version: compile time choice that enables the thread local context (deprecated, now always true)
-    "HAVE_THREADS",
-    # C version: compile time choice that enables the coroutine local context
-    "HAVE_CONTEXTVAR",
+    # Functions for manipulating contexts
+    "setcontext",
 ]
 
 __xname__ = __name__  # sys.modules lookup (--without-threads)
@@ -615,7 +615,7 @@ class Decimal:
                 if context is None:
                     context = getcontext()
                 return context._raise_error(
-                    ConversionSyntax, "Invalid literal for Decimal: %r" % value
+                    ConversionSyntax, f"Invalid literal for Decimal: {value!r}"
                 )
 
             if m.group("sign") == "-":
@@ -740,7 +740,7 @@ class Decimal:
             self._is_special = value._is_special
             return self
 
-        raise TypeError("Cannot convert %r to Decimal" % value)
+        raise TypeError(f"Cannot convert {value!r} to Decimal")
 
     @classmethod
     def from_float(cls, f):
@@ -950,7 +950,7 @@ class Decimal:
     # that specified by IEEE 754.
 
     def __eq__(self, other, context=None):
-        self, other = _convert_for_comparison(self, other, equality_op=True)
+        self, other = _convert_for_comparison(self, other, equality_op=True)  # noqa: PLW0642
         if other is NotImplemented:
             return other
         if self._check_nans(other, context):
@@ -958,7 +958,7 @@ class Decimal:
         return self._cmp(other) == 0
 
     def __lt__(self, other, context=None):
-        self, other = _convert_for_comparison(self, other)
+        self, other = _convert_for_comparison(self, other)  # noqa: PLW0642
         if other is NotImplemented:
             return other
         ans = self._compare_check_nans(other, context)
@@ -967,7 +967,7 @@ class Decimal:
         return self._cmp(other) < 0
 
     def __le__(self, other, context=None):
-        self, other = _convert_for_comparison(self, other)
+        self, other = _convert_for_comparison(self, other)  # noqa: PLW0642
         if other is NotImplemented:
             return other
         ans = self._compare_check_nans(other, context)
@@ -976,7 +976,7 @@ class Decimal:
         return self._cmp(other) <= 0
 
     def __gt__(self, other, context=None):
-        self, other = _convert_for_comparison(self, other)
+        self, other = _convert_for_comparison(self, other)  # noqa: PLW0642
         if other is NotImplemented:
             return other
         ans = self._compare_check_nans(other, context)
@@ -985,7 +985,7 @@ class Decimal:
         return self._cmp(other) > 0
 
     def __ge__(self, other, context=None):
-        self, other = _convert_for_comparison(self, other)
+        self, other = _convert_for_comparison(self, other)  # noqa: PLW0642
         if other is NotImplemented:
             return other
         ans = self._compare_check_nans(other, context)
@@ -1097,7 +1097,7 @@ class Decimal:
     def __repr__(self):
         """Represents the number as an instance of Decimal."""
         # Invariant:  eval(repr(d)) == d
-        return "Decimal('%s')" % str(self)
+        return f"Decimal('{self!s}')"
 
     def __str__(self, eng=False, context=None):
         """Return string representation of the number in scientific notation.
@@ -1147,7 +1147,7 @@ class Decimal:
         else:
             if context is None:
                 context = getcontext()
-            exp = ["e", "E"][context.capitals] + "%+d" % (leftdigits - dotplace)
+            exp = ["e", "E"][context.capitals] + "%+d" % (leftdigits - dotplace)  # noqa: UP031
 
         return sign + intpart + fracpart + exp
 
@@ -1786,7 +1786,7 @@ class Decimal:
         if self._exp < exp_min:
             digits = len(self._int) + self._exp - exp_min
             if digits < 0:
-                self = _dec_from_triple(self._sign, "1", exp_min - 1)
+                self = _dec_from_triple(self._sign, "1", exp_min - 1)  # noqa: PLW0642
                 digits = 0
             rounding_method = self._pick_rounding_function[context.rounding]
             changed = rounding_method(self, digits)
@@ -1896,16 +1896,16 @@ class Decimal:
         else:
             return -self._round_down(prec)
 
-    _pick_rounding_function = dict(
-        ROUND_DOWN=_round_down,
-        ROUND_UP=_round_up,
-        ROUND_HALF_UP=_round_half_up,
-        ROUND_HALF_DOWN=_round_half_down,
-        ROUND_HALF_EVEN=_round_half_even,
-        ROUND_CEILING=_round_ceiling,
-        ROUND_FLOOR=_round_floor,
-        ROUND_05UP=_round_05up,
-    )
+    _pick_rounding_function = {  # noqa: RUF012
+        "ROUND_DOWN": _round_down,
+        "ROUND_UP": _round_up,
+        "ROUND_HALF_UP": _round_half_up,
+        "ROUND_HALF_DOWN": _round_half_down,
+        "ROUND_HALF_EVEN": _round_half_even,
+        "ROUND_CEILING": _round_ceiling,
+        "ROUND_FLOOR": _round_floor,
+        "ROUND_05UP": _round_05up,
+    }
 
     def __round__(self, n=None):
         """Round self to the nearest integer, or to a given precision.
@@ -2427,7 +2427,7 @@ class Decimal:
                         InvalidOperation, "x ** y with x negative and y not an integer"
                     )
             # negate self, without doing any unwanted rounding
-            self = self.copy_negate()
+            self = self.copy_negate()  # noqa: PLW0642
 
         # 0**(+ve or Inf)= 0; 0**(-ve or -Inf) = Infinity
         if not self:
@@ -2731,7 +2731,7 @@ class Decimal:
         # exp-1, replace self by 10**(exp-1) before rounding
         digits = len(self._int) + self._exp - exp
         if digits < 0:
-            self = _dec_from_triple(self._sign, "1", exp - 1)
+            self = _dec_from_triple(self._sign, "1", exp - 1)  # noqa: PLW0642
             digits = 0
         this_function = self._pick_rounding_function[rounding]
         changed = this_function(self, digits)
@@ -3866,22 +3866,22 @@ class Decimal:
 
         # if type is '%', adjust exponent of self accordingly
         if spec["type"] == "%":
-            self = _dec_from_triple(self._sign, self._int, self._exp + 2)
+            self = _dec_from_triple(self._sign, self._int, self._exp + 2)  # noqa: PLW0642
 
         # round if necessary, taking rounding mode from the context
         rounding = context.rounding
         precision = spec["precision"]
         if precision is not None:
             if spec["type"] in "eE":
-                self = self._round(precision + 1, rounding)
+                self = self._round(precision + 1, rounding)  # noqa: PLW0642
             elif spec["type"] in "fF%":
-                self = self._rescale(-precision, rounding)
+                self = self._rescale(-precision, rounding)  # noqa: PLW0642
             elif spec["type"] in "gG" and len(self._int) > precision:
-                self = self._round(precision, rounding)
+                self = self._round(precision, rounding)  # noqa: PLW0642
         # special case: zeros with a positive exponent can't be
         # represented in fixed point; rescale them to 0e0.
         if not self and self._exp > 0 and spec["type"] in "fF%":
-            self = self._rescale(0, rounding)
+            self = self._rescale(0, rounding)  # noqa: PLW0642
 
         # figure out placement of the decimal point
         leftdigits = self._exp + len(self._int)
@@ -4013,46 +4013,46 @@ class Context:
         if traps is None:
             self.traps = dc.traps.copy()
         elif not isinstance(traps, dict):
-            self.traps = dict((s, int(s in traps)) for s in _signals + traps)
+            self.traps = {s: int(s in traps) for s in _signals + traps}
         else:
             self.traps = traps
 
         if flags is None:
             self.flags = dict.fromkeys(_signals, 0)
         elif not isinstance(flags, dict):
-            self.flags = dict((s, int(s in flags)) for s in _signals + flags)
+            self.flags = {s: int(s in flags) for s in _signals + flags}
         else:
             self.flags = flags
 
     def _set_integer_check(self, name, value, vmin, vmax):
         if not isinstance(value, int):
-            raise TypeError("%s must be an integer" % name)
+            raise TypeError(f"{name} must be an integer")
         if vmin == "-inf":
             if value > vmax:
                 raise ValueError(
-                    "%s must be in [%s, %d]. got: %s" % (name, vmin, vmax, value)
+                    "%s must be in [%s, %d]. got: %s" % (name, vmin, vmax, value)  # noqa: UP031
                 )
         elif vmax == "inf":
             if value < vmin:
                 raise ValueError(
-                    "%s must be in [%d, %s]. got: %s" % (name, vmin, vmax, value)
+                    "%s must be in [%d, %s]. got: %s" % (name, vmin, vmax, value)  # noqa: UP031
                 )
         else:
             if value < vmin or value > vmax:
                 raise ValueError(
-                    "%s must be in [%d, %d]. got %s" % (name, vmin, vmax, value)
+                    "%s must be in [%d, %d]. got %s" % (name, vmin, vmax, value)  # noqa: UP031
                 )
         return object.__setattr__(self, name, value)
 
     def _set_signal_dict(self, name, d):
         if not isinstance(d, dict):
-            raise TypeError("%s must be a signal dict" % d)
+            raise TypeError(f"{d} must be a signal dict")
         for key in d:
             if not key in _signals:
-                raise KeyError("%s is not a valid signal dict" % d)
+                raise KeyError(f"{d} is not a valid signal dict")
         for key in _signals:
             if not key in d:
-                raise KeyError("%s is not a valid signal dict" % d)
+                raise KeyError(f"{d} is not a valid signal dict")
         return object.__setattr__(self, name, d)
 
     def __setattr__(self, name, value):
@@ -4068,19 +4068,17 @@ class Context:
             if not value in _rounding_modes:
                 # raise TypeError even for strings to have consistency
                 # among various implementations.
-                raise TypeError("%s: invalid rounding mode" % value)
+                raise TypeError(f"{value}: invalid rounding mode")
             return object.__setattr__(self, name, value)
         elif name == "flags" or name == "traps":
             return self._set_signal_dict(name, value)
         elif name == "_ignored_flags":
             return object.__setattr__(self, name, value)
         else:
-            raise AttributeError(
-                "'decimal.Context' object has no attribute '%s'" % name
-            )
+            raise AttributeError(f"'decimal.Context' object has no attribute '{name}'")
 
     def __delattr__(self, name):
-        raise AttributeError("%s cannot be deleted" % name)
+        raise AttributeError(f"{name} cannot be deleted")
 
     # Support for pickling, copy, and deepcopy
     def __reduce__(self):
@@ -4104,7 +4102,7 @@ class Context:
         """Show the current context."""
         s = []
         s.append(
-            "Context(prec=%(prec)d, rounding=%(rounding)s, "
+            "Context(prec=%(prec)d, rounding=%(rounding)s, "  # noqa: UP031
             "Emin=%(Emin)d, Emax=%(Emax)d, capitals=%(capitals)d, "
             "clamp=%(clamp)d" % vars(self)
         )
@@ -4301,7 +4299,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__add__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -4525,7 +4523,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__truediv__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -4548,7 +4546,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__floordiv__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -4569,7 +4567,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__divmod__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -5105,7 +5103,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__mul__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -5351,7 +5349,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__pow__(b, modulo, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -5455,7 +5453,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__mod__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -5646,7 +5644,7 @@ class Context:
         a = _convert_other(a, raiseit=True)
         r = a.__sub__(b, context=self)
         if r is NotImplemented:
-            raise TypeError("Unable to convert %s to Decimal" % b)
+            raise TypeError(f"Unable to convert {b} to Decimal")
         else:
             return r
 
@@ -5771,7 +5769,7 @@ class _WorkRep:
             self.exp = value[2]
 
     def __repr__(self):
-        return "(%r, %r, %r)" % (self.sign, self.int, self.exp)
+        return f"({self.sign!r}, {self.int!r}, {self.exp!r})"
 
 
 def _normalize(op1, op2, prec=0):
@@ -6153,19 +6151,21 @@ def _dpower(xc, xe, yc, ye, p):
 
 def _log10_lb(
     c,
-    correction={
-        "1": 100,
-        "2": 70,
-        "3": 53,
-        "4": 40,
-        "5": 31,
-        "6": 23,
-        "7": 16,
-        "8": 10,
-        "9": 5,
-    },
+    correction=None,
 ):
     """Compute a lower bound for 100*log10(c) for a positive integer c."""
+    if correction is None:
+        correction = {
+            "1": 100,
+            "2": 70,
+            "3": 53,
+            "4": 40,
+            "5": 31,
+            "6": 23,
+            "7": 16,
+            "8": 10,
+            "9": 5,
+        }
     if c <= 0:
         raise ValueError("The argument to _log10_lb should be nonnegative.")
     str_c = str(c)
@@ -6191,7 +6191,7 @@ def _convert_other(other, raiseit=False, allow_float=False):
         return Decimal.from_float(other)
 
     if raiseit:
-        raise TypeError("Unable to convert %s to Decimal" % other)
+        raise TypeError(f"Unable to convert {other} to Decimal")
     return NotImplemented
 
 
@@ -6406,7 +6406,7 @@ def _parse_format_specifier(format_spec, _localeconv=None):
 
     # if format type is 'g' or 'G' then a precision of 0 makes little
     # sense; convert it to 1.  Same if format type is unspecified.
-    if format_dict["precision"] == 0:
+    if format_dict["precision"] == 0:  # noqa: SIM102
         if format_dict["type"] is None or format_dict["type"] in "gGn":
             format_dict["precision"] = 1
 

@@ -25,7 +25,7 @@ class ScriptBindingTest(unittest.TestCase):
 
     def test_init(self):
         ew = EditorWindow(root=self.root)
-        sb = runscript.ScriptBinding(ew)
+        runscript.ScriptBinding(ew)
         ew._close()
 
 

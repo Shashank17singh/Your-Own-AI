@@ -23,17 +23,17 @@ except (IndexError, ValueError):
 # tuple of (major, minor)
 WIN_VER = sys.getwindowsversion()[:2]
 # Some tests should only run on 64-bit architectures where WOW64 will be.
-WIN64_MACHINE = True if machine() == "AMD64" else False
+WIN64_MACHINE = machine() == "AMD64"
 
 # Starting with Windows 7 and Windows Server 2008 R2, WOW64 no longer uses
 # registry reflection and formerly reflected keys are shared instead.
 # Windows 7 and Windows Server 2008 R2 are version 6.1. Due to this, some
 # tests are only valid up until 6.1
-HAS_REFLECTION = True if WIN_VER < (6, 1) else False
+HAS_REFLECTION = WIN_VER < (6, 1)
 
 # Use a per-process key to prevent concurrent test runs (buildbot!) from
 # stomping on each other.
-test_key_base = "Python Test Key [%d] - Delete Me" % (os.getpid(),)
+test_key_base = "Python Test Key [%d] - Delete Me" % (os.getpid(),)  # noqa: UP031
 test_key_name = "SOFTWARE\\" + test_key_base
 # On OS'es that support reflection we should test with a reflected key
 test_reflect_key_name = "SOFTWARE\\Classes\\" + test_key_base
@@ -88,10 +88,10 @@ class BaseWinregTests(unittest.TestCase):
             SetValueEx(sub_key, value_name, 0, value_type, value_data)
 
         # Check we wrote as many items as we thought.
-        nkeys, nvalues, since_mod = QueryInfoKey(key)
+        nkeys, nvalues, since_mod = QueryInfoKey(key)  # noqa: RUF059
         self.assertEqual(nkeys, 1, "Not the correct number of sub keys")
         self.assertEqual(nvalues, 1, "Not the correct number of values")
-        nkeys, nvalues, since_mod = QueryInfoKey(sub_key)
+        nkeys, nvalues, _since_mod = QueryInfoKey(sub_key)
         self.assertEqual(nkeys, 0, "Not the correct number of sub keys")
         self.assertEqual(nvalues, len(test_data), "Not the correct number of values")
         # Close this key this way...
@@ -171,7 +171,7 @@ class BaseWinregTests(unittest.TestCase):
         for value_name, value_data, value_type in test_data:
             DeleteValue(sub_key, value_name)
 
-        nkeys, nvalues, since_mod = QueryInfoKey(sub_key)
+        nkeys, nvalues, _since_mod = QueryInfoKey(sub_key)
         self.assertEqual(nkeys, 0, "subkey not empty before delete")
         self.assertEqual(nvalues, 0, "subkey not empty before delete")
         sub_key.Close()
@@ -280,7 +280,7 @@ class LocalWinregTests(BaseWinregTests):
                 HKEY_CURRENT_USER, test_key_name + "\\changing_value"
             ) as key:
                 for _ in range(1000):
-                    num_subkeys, num_values, t = QueryInfoKey(key)
+                    _num_subkeys, num_values, _t = QueryInfoKey(key)
                     for i in range(num_values):
                         name = EnumValue(key, i)
                         QueryValue(key, name[0])
@@ -298,10 +298,10 @@ class LocalWinregTests(BaseWinregTests):
         try:
             with CreateKey(HKEY_CURRENT_USER, test_key_name) as key:
                 SetValue(key, name, REG_SZ, "x")
-                num_subkeys, num_values, t = QueryInfoKey(key)
+                _num_subkeys, _num_values, _t = QueryInfoKey(key)
                 EnumKey(key, 0)
         finally:
-            DeleteKey(HKEY_CURRENT_USER, "\\".join((test_key_name, name)))
+            DeleteKey(HKEY_CURRENT_USER, f"{test_key_name}\\{name}")
             DeleteKey(HKEY_CURRENT_USER, test_key_name)
 
     def test_dynamic_key(self):
@@ -522,7 +522,7 @@ class Win64WinregTests(BaseWinregTests):
             DeleteKeyEx(HKEY_CURRENT_USER, test_reflect_key_name, KEY_WOW64_32KEY, 0)
 
     def test_exception_numbers(self):
-        with self.assertRaises(FileNotFoundError) as ctx:
+        with self.assertRaises(FileNotFoundError):
             QueryValue(HKEY_CLASSES_ROOT, "some_value_that_does_not_exist")
 
 

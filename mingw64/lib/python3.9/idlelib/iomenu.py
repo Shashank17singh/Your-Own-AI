@@ -150,7 +150,7 @@ class IOBinding:
         except UnicodeDecodeError:
             messagebox.showerror(
                 "Decoding Error",
-                "File %s\nFailed to Decode" % filename,
+                f"File {filename}\nFailed to Decode",
                 parent=self.text,
             )
             return False
@@ -222,14 +222,13 @@ class IOBinding:
 
     def save_as(self, event):
         filename = self.asksavefile()
-        if filename:
-            if self.writefile(filename):
-                self.set_filename(filename)
-                self.set_saved(1)
-                try:
-                    self.editwin.store_file_breaks()
-                except AttributeError:
-                    pass
+        if filename and self.writefile(filename):
+            self.set_filename(filename)
+            self.set_saved(1)
+            try:
+                self.editwin.store_file_breaks()
+            except AttributeError:
+                pass
         self.text.focus_set()
         self.updaterecentfileslist(filename)
         return "break"
@@ -288,9 +287,9 @@ class IOBinding:
         except SyntaxError as err:
             failed = str(err)
         except UnicodeEncodeError:
-            failed = "Invalid encoding '%s'" % enc
+            failed = f"Invalid encoding '{enc}'"
         messagebox.showerror(
-            "I/O Error", "%s.\nSaving as UTF-8" % failed, parent=self.text
+            "I/O Error", f"{failed}.\nSaving as UTF-8", parent=self.text
         )
         # Fallback: save as UTF-8, with BOM - ignoring the incorrect
         # declared encoding
@@ -334,12 +333,12 @@ class IOBinding:
             output = pipe.read().strip()
             status = pipe.close()
             if status:
-                output = "Printing failed (exit status 0x%x)\n" % status + output
+                output = f"Printing failed (exit status 0x{status:x})\n" + output
             if output:
-                output = "Printing command: %s\n" % repr(command) + output
+                output = f"Printing command: {command!r}\n" + output
                 messagebox.showerror("Print status", output, parent=self.text)
         else:  # no printing for this platform
-            message = "Printing is not enabled for this platform: %s" % platform
+            message = f"Printing is not enabled for this platform: {platform}"
             messagebox.showinfo("Print status", message, parent=self.text)
         if tempfilename:
             os.unlink(tempfilename)
@@ -400,7 +399,7 @@ def _io_binding(parent):  # htest #
     root = Toplevel(parent)
     root.title("Test IOBinding")
     x, y = map(int, parent.geometry().split("+")[1:])
-    root.geometry("+%d+%d" % (x, y + 175))
+    root.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
 
     class MyEditWin:
         def __init__(self, text):

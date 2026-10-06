@@ -40,7 +40,7 @@ class BufferSizeTest:
             f.write(b"\n")
             f.write(s)
             f.close()
-            f = open(support.TESTFN, "rb")
+            f = open(support.TESTFN, "rb")  # noqa: SIM115
             line = f.readline()
             self.assertEqual(line, s + b"\n")
             line = f.readline()

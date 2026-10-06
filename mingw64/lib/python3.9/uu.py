@@ -58,7 +58,7 @@ def encode(in_file, out_file, name=None, mode=None, *, backtick=False):
                     mode = os.stat(in_file).st_mode
                 except AttributeError:
                     pass
-            in_file = open(in_file, "rb")
+            in_file = open(in_file, "rb")  # noqa: SIM115
             opened_files.append(in_file)
         #
         # Open out_file if it is a pathname
@@ -66,7 +66,7 @@ def encode(in_file, out_file, name=None, mode=None, *, backtick=False):
         if out_file == "-":
             out_file = sys.stdout.buffer
         elif isinstance(out_file, str):
-            out_file = open(out_file, "wb")
+            out_file = open(out_file, "wb")  # noqa: SIM115
             opened_files.append(out_file)
         #
         # Set defaults for name and mode
@@ -85,7 +85,7 @@ def encode(in_file, out_file, name=None, mode=None, *, backtick=False):
         #
         # Write the data
         #
-        out_file.write(("begin %o %s\n" % ((mode & 0o777), name)).encode("ascii"))
+        out_file.write((f"begin {mode & 0o777:o} {name}\n").encode("ascii"))
         data = in_file.read(45)
         while len(data) > 0:
             out_file.write(binascii.b2a_uu(data, backtick=backtick))
@@ -108,7 +108,7 @@ def decode(in_file, out_file=None, mode=None, quiet=False):
     if in_file == "-":
         in_file = sys.stdin.buffer
     elif isinstance(in_file, str):
-        in_file = open(in_file, "rb")
+        in_file = open(in_file, "rb")  # noqa: SIM115
         opened_files.append(in_file)
 
     try:
@@ -132,7 +132,7 @@ def decode(in_file, out_file=None, mode=None, quiet=False):
             # If the filename isn't ASCII, what's up with that?!?
             out_file = hdrfields[2].rstrip(b" \t\r\n\f").decode("ascii")
             if os.path.exists(out_file):
-                raise Error("Cannot overwrite existing file: %s" % out_file)
+                raise Error(f"Cannot overwrite existing file: {out_file}")
         if mode is None:
             mode = int(hdrfields[1], 8)
         #
@@ -141,7 +141,7 @@ def decode(in_file, out_file=None, mode=None, quiet=False):
         if out_file == "-":
             out_file = sys.stdout.buffer
         elif isinstance(out_file, str):
-            fp = open(out_file, "wb")
+            fp = open(out_file, "wb")  # noqa: SIM115
             os.chmod(out_file, mode)
             out_file = fp
             opened_files.append(out_file)
@@ -157,7 +157,7 @@ def decode(in_file, out_file=None, mode=None, quiet=False):
                 nbytes = (((s[0] - 32) & 63) * 4 + 5) // 3
                 data = binascii.a2b_uu(s[:nbytes])
                 if not quiet:
-                    sys.stderr.write("Warning: %s\n" % v)
+                    sys.stderr.write(f"Warning: {v}\n")
             out_file.write(data)
             s = in_file.readline()
         if not s:
@@ -206,7 +206,7 @@ def test():
     if options.decode:
         if options.text:
             if isinstance(output, str):
-                output = open(output, "wb")
+                output = open(output, "wb")  # noqa: SIM115
             else:
                 print(sys.argv[0], ": cannot do -t to stdout")
                 sys.exit(1)
@@ -214,7 +214,7 @@ def test():
     else:
         if options.text:
             if isinstance(input, str):
-                input = open(input, "rb")
+                input = open(input, "rb")  # noqa: SIM115
             else:
                 print(sys.argv[0], ": cannot do -t from stdin")
                 sys.exit(1)

@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
 
     def test_int_struct(self):
         class X(Structure):
-            _fields_ = [("x", MyInt)]
+            _fields_ = [("x", MyInt)]  # noqa: RUF012
 
         self.assertEqual(X().x, MyInt())
 

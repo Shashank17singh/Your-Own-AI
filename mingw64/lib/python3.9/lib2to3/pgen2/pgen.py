@@ -13,7 +13,7 @@ class ParserGenerator:
     def __init__(self, filename, stream=None):
         close_stream = None
         if stream is None:
-            stream = open(filename)
+            stream = open(filename)  # noqa: SIM115
             close_stream = stream.close
         self.filename = filename
         self.stream = stream
@@ -119,12 +119,12 @@ class ParserGenerator:
         state = dfa[0]
         totalset = {}
         overlapcheck = {}
-        for label, next in state.arcs.items():
+        for label in state.arcs:
             if label in self.dfas:
                 if label in self.first:
                     fset = self.first[label]
                     if fset is None:
-                        raise ValueError("recursion for rule %r" % name)
+                        raise ValueError(f"recursion for rule {name!r}")
                 else:
                     self.calcfirst(label)
                     fset = self.first[label]
@@ -138,9 +138,8 @@ class ParserGenerator:
             for symbol in itsfirst:
                 if symbol in inverse:
                     raise ValueError(
-                        "rule %s is ambiguous; %s is in the"
-                        " first sets of %s as well as %s"
-                        % (name, symbol, label, inverse[symbol])
+                        f"rule {name} is ambiguous; {symbol} is in the"
+                        f" first sets of {label} as well as {inverse[symbol]}"
                     )
                 inverse[symbol] = label
         self.first[name] = totalset
@@ -160,9 +159,9 @@ class ParserGenerator:
             # self.dump_nfa(name, a, z)
             dfa = self.make_dfa(a, z)
             # self.dump_dfa(name, dfa)
-            oldlen = len(dfa)
+            len(dfa)
             self.simplify_dfa(dfa)
-            newlen = len(dfa)
+            len(dfa)
             dfas[name] = dfa
             # print name, oldlen, newlen
             if startsymbol is None:
@@ -220,16 +219,16 @@ class ParserGenerator:
                     j = len(todo)
                     todo.append(next)
                 if label is None:
-                    print("    -> %d" % j)
+                    print("    -> %d" % j)  # noqa: UP031
                 else:
-                    print("    %s -> %d" % (label, j))
+                    print("    %s -> %d" % (label, j))  # noqa: UP031
 
     def dump_dfa(self, name, dfa):
         print("Dump of DFA for", name)
         for i, state in enumerate(dfa):
             print("  State", i, state.isfinal and "(final)" or "")
             for label, next in sorted(state.arcs.items()):
-                print("    %s -> %d" % (label, dfa.index(next)))
+                print("    %s -> %d" % (label, dfa.index(next)))  # noqa: UP031
 
     def simplify_dfa(self, dfa):
         # This is not theoretically optimal, but works well enough.
@@ -336,7 +335,7 @@ class ParserGenerator:
         if args:
             try:
                 msg = msg % args
-            except:
+            except:  # noqa: E722
                 msg = " ".join([msg] + list(map(str, args)))
         raise SyntaxError(msg, (self.filename, self.end[0], self.end[1], self.line))
 

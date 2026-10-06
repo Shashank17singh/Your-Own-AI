@@ -44,7 +44,7 @@ def _dyn_option_menu(parent):  # htest #
     top = Toplevel(parent)
     top.title("Tets dynamic option menu")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("200x100+%d+%d" % (x + 250, y + 175))
+    top.geometry("200x100+%d+%d" % (x + 250, y + 175))  # noqa: UP031
     top.focus_set()
 
     var = StringVar(top)

@@ -418,7 +418,7 @@ class AsyncArguments(IsolatedAsyncioTestCase):
             pass
 
         mock = AsyncMock(addition, side_effect=Exception("err"))
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             await mock(5)
 
     async def test_add_side_effect_coroutine(self):
@@ -442,7 +442,7 @@ class AsyncArguments(IsolatedAsyncioTestCase):
         mock = AsyncMock(side_effect=vals)
         for item in vals:
             self.assertEqual(await mock(), item)
-        with self.assertRaises(StopAsyncIteration) as e:
+        with self.assertRaises(StopAsyncIteration):
             await mock()
 
     async def test_add_side_effect_exception_iterable(self):
@@ -452,7 +452,7 @@ class AsyncArguments(IsolatedAsyncioTestCase):
         vals = [1, SampleException("foo")]
         mock = AsyncMock(side_effect=vals)
         self.assertEqual(await mock(), 1)
-        with self.assertRaises(SampleException) as e:
+        with self.assertRaises(SampleException):
             await mock()
 
     async def test_return_value_AsyncMock(self):

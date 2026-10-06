@@ -62,7 +62,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         key = s.register(rd, selectors.EVENT_READ, "data")
         self.assertIsInstance(key, selectors.SelectorKey)
@@ -87,7 +87,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         s.register(rd, selectors.EVENT_READ)
         s.unregister(rd)
@@ -143,7 +143,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         key = s.register(rd, selectors.EVENT_READ)
 
@@ -193,7 +193,7 @@ class BaseSelectorTestCase(unittest.TestCase):
             m.return_value.modify = unittest.mock.Mock(side_effect=ZeroDivisionError)
             s = self.SELECTOR()
             self.addCleanup(s.close)
-            rd, wr = self.make_socketpair()
+            rd, _wr = self.make_socketpair()
             s.register(rd, selectors.EVENT_READ)
             self.assertEqual(len(s._map), 1)
             with self.assertRaises(ZeroDivisionError):
@@ -220,7 +220,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         key = s.register(rd, selectors.EVENT_READ, "data")
         self.assertEqual(key, s.get_key(rd))
@@ -232,7 +232,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         keys = s.get_map()
         self.assertFalse(keys)
@@ -387,7 +387,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         class InterruptSelect(Exception):
             pass
@@ -418,7 +418,7 @@ class BaseSelectorTestCase(unittest.TestCase):
         s = self.SELECTOR()
         self.addCleanup(s.close)
 
-        rd, wr = self.make_socketpair()
+        rd, _wr = self.make_socketpair()
 
         orig_alrm_handler = signal.signal(signal.SIGALRM, lambda *args: None)
         self.addCleanup(signal.signal, signal.SIGALRM, orig_alrm_handler)

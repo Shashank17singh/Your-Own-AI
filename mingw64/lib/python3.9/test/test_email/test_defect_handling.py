@@ -340,7 +340,7 @@ class TestDefectCapture(TestDefectsBase, TestEmailBase):
             self.captured.append(defect)
 
     def setUp(self):
-        self.policy = self.CapturePolicy(captured=list())
+        self.policy = self.CapturePolicy(captured=[])
 
     def get_defects(self, obj):
         return self.policy.captured

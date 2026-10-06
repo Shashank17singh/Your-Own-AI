@@ -24,7 +24,7 @@ valid_opts = [
 
 def exit_with_usage(code=1):
     print(
-        "Usage: {0} [{1}]".format(
+        "Usage: {} [{}]".format(
             sys.argv[0], "|".join("--" + opt for opt in valid_opts)
         ),
         file=sys.stderr,
@@ -76,9 +76,8 @@ for opt in opt_flags:
 
         # add the prefix/lib/pythonX.Y/config dir, but only if there is no
         # shared library in prefix/lib/.
-        if opt == "--ldflags":
-            if not getvar("Py_ENABLE_SHARED"):
-                libs.insert(0, "-L" + getvar("LIBPL"))
+        if opt == "--ldflags" and not getvar("Py_ENABLE_SHARED"):
+            libs.insert(0, "-L" + getvar("LIBPL"))
         print(" ".join(libs))
 
     elif opt == "--extension-suffix":

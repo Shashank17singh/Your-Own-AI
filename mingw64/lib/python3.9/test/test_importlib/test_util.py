@@ -32,10 +32,10 @@ class DecodeSourceBytesTests:
         self.assertEqual(self.util.decode_source(source_bytes), source)
 
     def test_universal_newlines(self):
-        source = "\r\n".join([self.source, self.source])
+        source = f"{self.source}\r\n{self.source}"
         source_bytes = source.encode("utf-8")
         self.assertEqual(
-            self.util.decode_source(source_bytes), "\n".join([self.source, self.source])
+            self.util.decode_source(source_bytes), f"{self.source}\n{self.source}"
         )
 
 
@@ -52,7 +52,7 @@ class ModuleFromSpecTests:
 
         spec = self.machinery.ModuleSpec("test", Loader())
         with self.assertRaises(ImportError):
-            module = self.util.module_from_spec(spec)
+            self.util.module_from_spec(spec)
 
     def test_create_module_returns_None(self):
         class Loader(self.abc.Loader):
@@ -140,7 +140,7 @@ class ModuleForLoaderTests:
         with warnings.catch_warnings():
             warnings.simplefilter("error", DeprecationWarning)
             with self.assertRaises(DeprecationWarning):
-                func = self.util.module_for_loader(lambda x: x)
+                self.util.module_for_loader(lambda x: x)
 
     def return_module(self, name):
         fxn = self.module_for_loader(lambda self, module: module)
@@ -475,7 +475,7 @@ class FindSpecTests:
 
     def test_success(self):
         name = "some_mod"
-        with util.uncache(name):
+        with util.uncache(name):  # noqa: SIM117
             with util.import_state(meta_path=[self.FakeMetaFinder]):
                 self.assertEqual((name, None, None), self.util.find_spec(name))
 
@@ -580,7 +580,7 @@ class PEP3147Tests:
 
     def test_cache_from_source_no_cache_tag(self):
         # No cache tag means NotImplementedError.
-        with support.swap_attr(sys.implementation, "cache_tag", None):
+        with support.swap_attr(sys.implementation, "cache_tag", None):  # noqa: SIM117
             with self.assertRaises(NotImplementedError):
                 self.util.cache_from_source("whatever.py")
 
@@ -720,7 +720,7 @@ class PEP3147Tests:
     def test_source_from_cache_no_cache_tag(self):
         # If sys.implementation.cache_tag is None, raise NotImplementedError.
         path = os.path.join("blah", "__pycache__", "whatever.pyc")
-        with support.swap_attr(sys.implementation, "cache_tag", None):
+        with support.swap_attr(sys.implementation, "cache_tag", None):  # noqa: SIM117
             with self.assertRaises(NotImplementedError):
                 self.util.source_from_cache(path)
 

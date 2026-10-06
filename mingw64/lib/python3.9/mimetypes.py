@@ -386,7 +386,7 @@ def init(files=None):
 
 def read_mime_types(file):
     try:
-        f = open(file, encoding="utf-8")
+        f = open(file, encoding="utf-8")  # noqa: SIM115
     except OSError:
         return None
     with f:
@@ -515,7 +515,7 @@ def _default_mime_types():
         ".tif": "image/tiff",
         ".ico": "image/vnd.microsoft.icon",
         ".ras": "image/x-cmu-raster",
-        ".bmp": "image/x-ms-bmp",
+        ".bmp": "image/x-ms-bmp",  # noqa: F601
         ".pnm": "image/x-portable-anymap",
         ".pbm": "image/x-portable-bitmap",
         ".pgm": "image/x-portable-graymap",

@@ -58,7 +58,7 @@ class LoaderAttributeTests:
         loader = LoaderMock()
         loader.module = module
         with util.uncache("blah"), util.import_state(meta_path=[loader]):
-            returned_module = self.__import__("blah")
+            self.__import__("blah")
         self.assertEqual(loader, module.__loader__)
 
 

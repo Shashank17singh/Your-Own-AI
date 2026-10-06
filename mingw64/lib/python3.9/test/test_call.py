@@ -391,7 +391,7 @@ class FastCallTests(unittest.TestCase):
     """Test calling using various callables from C"""
 
     # Test calls with positional arguments
-    CALLS_POSARGS = [
+    CALLS_POSARGS = [  # noqa: RUF012
         # (func, args: tuple, result)
         # Python function with 2 arguments
         (pyfunc, (1, 2), [1, 2]),
@@ -409,7 +409,7 @@ class FastCallTests(unittest.TestCase):
     ]
 
     # Test calls with positional and keyword arguments
-    CALLS_KWARGS = [
+    CALLS_KWARGS = [  # noqa: RUF012
         # (func, args: tuple, kwargs: dict, result)
         # Python function with 2 arguments
         (pyfunc, (1,), {"arg2": 2}, [1, 2]),
@@ -492,7 +492,7 @@ class FastCallTests(unittest.TestCase):
         )
 
     def check_result(self, result, expected):
-        if isinstance(expected, tuple) and expected[-1] is NULL_OR_EMPTY:
+        if isinstance(expected, tuple) and expected[-1] is NULL_OR_EMPTY:  # noqa: SIM102
             if result[-1] in ({}, None):
                 expected = (*expected[:-1], result[-1])
         self.assertEqual(result, expected)

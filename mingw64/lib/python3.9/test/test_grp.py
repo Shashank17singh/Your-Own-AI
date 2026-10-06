@@ -37,7 +37,7 @@ class GroupDatabaseTestCase(unittest.TestCase):
             self.check_value(e2)
             self.assertEqual(e2.gr_gid, e.gr_gid)
             name = e.gr_name
-            if name.startswith("+") or name.startswith("-"):
+            if name.startswith(("+", "-")):
                 # NIS-related entry
                 continue
             e2 = grp.getgrnam(name)

@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
             file.write("int xx;\n")
         with open(os.path.join(support.TESTFN, "file.py"), "w") as file:
             file.write("xx = 'unaltered'\n")
-        script = os.path.join(scriptsdir, "fixcid.py")
+        os.path.join(scriptsdir, "fixcid.py")
         output = self.run_script(args=(support.TESTFN,))
         self.assertMultiLineEqual(output, f"{c_filename}:\n1\n< int xx;\n> int yy;\n")
 

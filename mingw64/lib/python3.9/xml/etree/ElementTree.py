@@ -18,7 +18,7 @@ To create an element instance, use the Element constructor,
 or the SubElement factory function.
 You can also use the ElementTree class to wrap an element structure
 and convert it to and from XML.
-"""
+"""  # noqa: N999
 
 __all__ = [
     "PI",
@@ -107,17 +107,17 @@ class Element:
     depending on the parser.
     """
 
-    def __init__(self, tag, attrib={}, **extra):
+    def __init__(self, tag, attrib=None, **extra):
+        if attrib is None:
+            attrib = {}
         if not isinstance(attrib, dict):
-            raise TypeError(
-                "attrib must be dict, not %s" % (attrib.__class__.__name__,)
-            )
+            raise TypeError(f"attrib must be dict, not {attrib.__class__.__name__}")
         self.tag = tag
         self.attrib = {**attrib, **extra}
         self._children = []
 
     def __repr__(self):
-        return "<%s %r at %#x>" % (self.__class__.__name__, self.tag, id(self))
+        return f"<{self.__class__.__name__} {self.tag!r} at {id(self):#x}>"
 
     def makeelement(self, tag, attrib):
         """Create a new element with the same type.
@@ -195,7 +195,7 @@ class Element:
 
     def _assert_is_element(self, e):
         if not isinstance(e, _Element_Py):
-            raise TypeError("expected an Element, not %s" % type(e).__name__)
+            raise TypeError(f"expected an Element, not {type(e).__name__}")
 
     def remove(self, subelement):
         """Remove matching subelement.
@@ -320,7 +320,7 @@ class Element:
                 yield t
 
 
-def SubElement(parent, tag, attrib={}, **extra):
+def SubElement(parent, tag, attrib=None, **extra):
     """Subelement factory which creates an element instance, and appends it
     to an existing parent.
     The element tag, attribute names, and attribute values can be either
@@ -329,6 +329,8 @@ def SubElement(parent, tag, attrib={}, **extra):
     an optional directory containing element attributes, *extra* are
     additional attributes given as keyword arguments.
     """
+    if attrib is None:
+        attrib = {}
     attrib = {**attrib, **extra}
     element = parent.makeelement(tag, attrib)
     parent.append(element)
@@ -376,14 +378,14 @@ class QName:
 
     def __init__(self, text_or_uri, tag=None):
         if tag:
-            text_or_uri = "{%s}%s" % (text_or_uri, tag)
+            text_or_uri = f"{{{text_or_uri}}}{tag}"
         self.text = text_or_uri
 
     def __str__(self):
         return self.text
 
     def __repr__(self):
-        return "<%s %r>" % (self.__class__.__name__, self.text)
+        return f"<{self.__class__.__name__} {self.text!r}>"
 
     def __hash__(self):
         return hash(self.text)
@@ -448,7 +450,7 @@ class ElementTree:
         """
         close_source = False
         if not hasattr(source, "read"):
-            source = open(source, "rb")
+            source = open(source, "rb")  # noqa: SIM115
             close_source = True
         try:
             if parser is None:
@@ -487,7 +489,7 @@ class ElementTree:
             warnings.warn(
                 "This search is broken in 1.3 and earlier, and will be "
                 "fixed in a future version.  If you rely on the current "
-                "behaviour, change it to %r" % path,
+                f"behaviour, change it to {path!r}",
                 FutureWarning,
                 stacklevel=2,
             )
@@ -505,7 +507,7 @@ class ElementTree:
             warnings.warn(
                 "This search is broken in 1.3 and earlier, and will be "
                 "fixed in a future version.  If you rely on the current "
-                "behaviour, change it to %r" % path,
+                f"behaviour, change it to {path!r}",
                 FutureWarning,
                 stacklevel=2,
             )
@@ -523,7 +525,7 @@ class ElementTree:
             warnings.warn(
                 "This search is broken in 1.3 and earlier, and will be "
                 "fixed in a future version.  If you rely on the current "
-                "behaviour, change it to %r" % path,
+                f"behaviour, change it to {path!r}",
                 FutureWarning,
                 stacklevel=2,
             )
@@ -541,7 +543,7 @@ class ElementTree:
             warnings.warn(
                 "This search is broken in 1.3 and earlier, and will be "
                 "fixed in a future version.  If you rely on the current "
-                "behaviour, change it to %r" % path,
+                f"behaviour, change it to {path!r}",
                 FutureWarning,
                 stacklevel=2,
             )
@@ -576,7 +578,7 @@ class ElementTree:
         if not method:
             method = "xml"
         elif method not in _serialize:
-            raise ValueError("unknown method %r" % method)
+            raise ValueError(f"unknown method {method!r}")
         if not encoding:
             if method == "c14n":
                 encoding = "utf-8"
@@ -596,7 +598,7 @@ class ElementTree:
                     import locale
 
                     declared_encoding = locale.getpreferredencoding()
-                write("<?xml version='1.0' encoding='%s'?>\n" % (declared_encoding,))
+                write(f"<?xml version='1.0' encoding='{declared_encoding}'?>\n")
             if method == "text":
                 _serialize_text(write, self._root)
             else:
@@ -620,9 +622,9 @@ def _get_writer(file_or_filename, encoding):
         write = file_or_filename.write
     except AttributeError:
         if encoding == "unicode":
-            file = open(file_or_filename, "w")
+            file = open(file_or_filename, "w")  # noqa: SIM115
         else:
-            file = open(
+            file = open(  # noqa: SIM115
                 file_or_filename, "w", encoding=encoding, errors="xmlcharrefreplace"
             )
         with file:
@@ -667,11 +669,11 @@ def _namespaces(elem, default_namespace=None):
                 if prefix is None:
                     prefix = _namespace_map.get(uri)
                     if prefix is None:
-                        prefix = "ns%d" % len(namespaces)
+                        prefix = "ns%d" % len(namespaces)  # noqa: UP031
                     if prefix != "xml":
                         namespaces[uri] = prefix
                 if prefix:
-                    qnames[qname] = "%s:%s" % (prefix, tag)
+                    qnames[qname] = f"{prefix}:{tag}"
                 else:
                     qnames[qname] = tag  # default element
             else:
@@ -683,7 +685,7 @@ def _namespaces(elem, default_namespace=None):
         except TypeError:
             _raise_serialization_error(qname)
 
-    for elem in elem.iter():
+    for elem in elem.iter():  # noqa: B020, PLR1704
         tag = elem.tag
         if isinstance(tag, QName):
             if tag.text not in qnames:
@@ -710,9 +712,9 @@ def _serialize_xml(write, elem, qnames, namespaces, short_empty_elements, **kwar
     tag = elem.tag
     text = elem.text
     if tag is Comment:
-        write("<!--%s-->" % text)
+        write(f"<!--{text}-->")
     elif tag is ProcessingInstruction:
-        write("<?%s?>" % text)
+        write(f"<?{text}?>")
     else:
         tag = qnames[tag]
         if tag is None:
@@ -732,7 +734,7 @@ def _serialize_xml(write, elem, qnames, namespaces, short_empty_elements, **kwar
                     ):  # sort on prefix
                         if k:
                             k = ":" + k
-                        write(' xmlns%s="%s"' % (k, _escape_attrib(v)))
+                        write(f' xmlns{k}="{_escape_attrib(v)}"')
                 for k, v in items:
                     if isinstance(k, QName):
                         k = k.text
@@ -740,7 +742,7 @@ def _serialize_xml(write, elem, qnames, namespaces, short_empty_elements, **kwar
                         v = qnames[v.text]
                     else:
                         v = _escape_attrib(v)
-                    write(' %s="%s"' % (qnames[k], v))
+                    write(f' {qnames[k]}="{v}"')
             if text or len(elem) or not short_empty_elements:
                 write(">")
                 if text:
@@ -785,9 +787,9 @@ def _serialize_html(write, elem, qnames, namespaces, **kwargs):
     tag = elem.tag
     text = elem.text
     if tag is Comment:
-        write("<!--%s-->" % _escape_cdata(text))
+        write(f"<!--{_escape_cdata(text)}-->")
     elif tag is ProcessingInstruction:
-        write("<?%s?>" % _escape_cdata(text))
+        write(f"<?{_escape_cdata(text)}?>")
     else:
         tag = qnames[tag]
         if tag is None:
@@ -805,7 +807,7 @@ def _serialize_html(write, elem, qnames, namespaces, **kwargs):
                     ):  # sort on prefix
                         if k:
                             k = ":" + k
-                        write(' xmlns%s="%s"' % (k, _escape_attrib(v)))
+                        write(f' xmlns{k}="{_escape_attrib(v)}"')
                 for k, v in items:
                     if isinstance(k, QName):
                         k = k.text
@@ -813,7 +815,7 @@ def _serialize_html(write, elem, qnames, namespaces, **kwargs):
                         v = qnames[v.text]
                     else:
                         v = _escape_attrib_html(v)
-                    write(' %s="%s"' % (qnames[k], v))
+                    write(f' {qnames[k]}="{v}"')
             write(">")
             ltag = tag.lower()
             if text:
@@ -872,7 +874,7 @@ register_namespace._namespace_map = _namespace_map
 
 
 def _raise_serialization_error(text):
-    raise TypeError("cannot serialize %r (type %s)" % (text, type(text).__name__))
+    raise TypeError(f"cannot serialize {text!r} (type {type(text).__name__})")
 
 
 def _escape_cdata(text):
@@ -1095,7 +1097,7 @@ def iterparse(source, events=None, parser=None):
     del iterator, IterParseIterator
     close_source = False
     if not hasattr(source, "read"):
-        source = open(source, "rb")
+        source = open(source, "rb")  # noqa: SIM115
         close_source = True
     return it
 
@@ -1277,9 +1279,8 @@ class TreeBuilder:
         """
         self._flush()
         self._last = self._elem.pop()
-        assert self._last.tag == tag, "end tag mismatch (expected %s, got %s)" % (
-            self._last.tag,
-            tag,
+        assert self._last.tag == tag, (
+            f"end tag mismatch (expected {self._last.tag}, got {tag})"
         )
         self._tail = 1
         return self._last
@@ -1354,7 +1355,7 @@ class XMLParser:
         self._doctype = None
         self.entity = {}
         try:
-            self.version = "Expat %d.%d.%d" % expat.version_info
+            self.version = "Expat %d.%d.%d" % expat.version_info  # noqa: UP031
         except AttributeError:
             pass  # unknown
 
@@ -1425,7 +1426,7 @@ class XMLParser:
 
                 parser.ProcessingInstructionHandler = handler
             else:
-                raise ValueError("unknown event %r" % event_name)
+                raise ValueError(f"unknown event {event_name!r}")
 
     def _raiseerror(self, value):
         err = ParseError(value)
@@ -1474,7 +1475,7 @@ class XMLParser:
                 from xml.parsers import expat
 
                 err = expat.error(
-                    "undefined entity %s: line %d, column %d"
+                    "undefined entity %s: line %d, column %d"  # noqa: UP031
                     % (text, self.parser.ErrorLineNumber, self.parser.ErrorColumnNumber)
                 )
                 err.code = 11  # XML_ERROR_UNDEFINED_ENTITY

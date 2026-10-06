@@ -316,8 +316,7 @@ class CmpErr:
 
 def R(seqn):
     "Regular generator"
-    for i in seqn:
-        yield i
+    yield from seqn
 
 
 class G:
@@ -356,8 +355,7 @@ class Ig:
         self.i = 0
 
     def __iter__(self):
-        for val in self.seqn:
-            yield val
+        yield from self.seqn
 
 
 class X:
@@ -397,7 +395,7 @@ class E:
         return self
 
     def __next__(self):
-        3 // 0
+        3 // 0  # noqa: B018
 
 
 class S:
@@ -418,7 +416,7 @@ from itertools import chain
 
 def L(seqn):
     "Test multiple tiers of iterators"
-    return chain(map(lambda x: x, R(Ig(G(seqn)))))
+    return chain(x for x in R(Ig(G(seqn))))
 
 
 class SideEffectLT:

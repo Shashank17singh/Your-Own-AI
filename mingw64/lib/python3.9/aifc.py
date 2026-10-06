@@ -183,7 +183,7 @@ def _read_string(file):
     else:
         data = file.read(length)
     if length & 1 == 0:
-        dummy = file.read(1)
+        file.read(1)
     return data
 
 
@@ -247,7 +247,9 @@ def _write_float(f, x):
         lomant = 0
     else:
         fmant, expon = math.frexp(x)
-        if expon > 16384 or fmant >= 1 or fmant != fmant:  # Infinity or NaN
+        if (
+            expon > 16384 or fmant >= 1 or fmant != fmant
+        ):  # Infinity or NaN  # noqa: PLR0124
             expon = sign | 0x7FFF
             himant = 0
             lomant = 0
@@ -353,7 +355,7 @@ class Aifc_read:
                 self._comm_chunk_read = 1
             elif chunkname == b"SSND":
                 self._ssnd_chunk = chunk
-                dummy = chunk.read(8)
+                chunk.read(8)
                 self._ssnd_seek_needed = 0
             elif chunkname == b"FVER":
                 self._version = _read_ulong(chunk)
@@ -365,7 +367,7 @@ class Aifc_read:
 
     def __init__(self, f):
         if isinstance(f, str):
-            file_object = builtins.open(f, "rb")
+            file_object = builtins.open(f, "rb")  # noqa: SIM115
             try:
                 self.initfp(file_object)
             except:
@@ -451,7 +453,7 @@ class Aifc_read:
     def readframes(self, nframes):
         if self._ssnd_seek_needed:
             self._ssnd_chunk.seek(0)
-            dummy = self._ssnd_chunk.read(8)
+            self._ssnd_chunk.read(8)
             pos = self._soundpos * self._framesize
             if pos:
                 self._ssnd_chunk.seek(pos + 8)
@@ -546,7 +548,7 @@ class Aifc_read:
                     # a position 0 and name ''
                     self._markers.append((id, pos, name))
         except EOFError:
-            w = "Warning: MARK chunk contains only %s marker%s instead of %s" % (
+            w = "Warning: MARK chunk contains only {} marker{} instead of {}".format(
                 len(self._markers),
                 "" if len(self._markers) == 1 else "s",
                 nmarkers,
@@ -588,7 +590,7 @@ class Aifc_write:
 
     def __init__(self, f):
         if isinstance(f, str):
-            file_object = builtins.open(f, "wb")
+            file_object = builtins.open(f, "wb")  # noqa: SIM115
             try:
                 self.initfp(file_object)
             except:
@@ -926,7 +928,7 @@ class Aifc_write:
             self._file.seek(curpos, 0)
             return
         self._file.seek(self._form_length_pos, 0)
-        dummy = self._write_form_length(datalength)
+        self._write_form_length(datalength)
         self._file.seek(self._nframes_pos, 0)
         _write_ulong(self._file, self._nframeswritten)
         self._file.seek(self._ssnd_length_pos, 0)

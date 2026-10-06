@@ -96,8 +96,8 @@ _SCHEME_KEYS = (
 )
 
 _PY_VERSION = sys.version.split()[0]
-_PY_VERSION_SHORT = "%d.%d" % sys.version_info[:2]
-_PY_VERSION_SHORT_NO_DOT = "%d%d" % sys.version_info[:2]
+_PY_VERSION_SHORT = "%d.%d" % sys.version_info[:2]  # noqa: UP031
+_PY_VERSION_SHORT_NO_DOT = "%d%d" % sys.version_info[:2]  # noqa: UP031
 _PREFIX = os.path.normpath(sys.prefix)
 _BASE_PREFIX = os.path.normpath(sys.base_prefix)
 _EXEC_PREFIX = os.path.normpath(sys.exec_prefix)
@@ -176,7 +176,7 @@ def _subst_vars(s, local_vars):
         try:
             return s.format(**os.environ)
         except KeyError as var:
-            raise AttributeError("{%s}" % var) from None
+            raise AttributeError(f"{{{var}}}") from None
 
 
 def _extend_dict(target_dict, other_dict):
@@ -222,7 +222,7 @@ def _getuserbase():
         return joinuser(base, "Python")
 
     if sys.platform == "darwin" and sys._framework:
-        return joinuser("~", "Library", sys._framework, "%d.%d" % sys.version_info[:2])
+        return joinuser("~", "Library", sys._framework, "%d.%d" % sys.version_info[:2])  # noqa: UP031
 
     return joinuser("~", ".local")
 
@@ -353,9 +353,8 @@ def _parse_makefile(filename, vars=None):
     # need to be replaced with the value of the _b2h key.
     # This converts from MSYS*/Cygwin paths to Windows paths.
     for k, v in dict(done).items():
-        if isinstance(k, str):
-            if k.endswith("_b2h"):
-                done[k[:-4]] = v
+        if isinstance(k, str) and k.endswith("_b2h"):
+            done[k[:-4]] = v
 
     # save the results in the global dictionary
     vars.update(done)
@@ -367,11 +366,11 @@ def get_makefile_filename():
     if _PYTHON_BUILD:
         return os.path.join(_sys_home or _PROJECT_BASE, "Makefile")
     if hasattr(sys, "abiflags"):
-        config_dir_name = "config-%s%s" % (_PY_VERSION_SHORT, sys.abiflags)
+        config_dir_name = f"config-{_PY_VERSION_SHORT}{sys.abiflags}"
     else:
         config_dir_name = "config"
     if hasattr(sys.implementation, "_multiarch"):
-        config_dir_name += "-%s" % sys.implementation._multiarch
+        config_dir_name += f"-{sys.implementation._multiarch}"
     return os.path.join(get_path("stdlib"), config_dir_name, "Makefile")
 
 
@@ -396,9 +395,9 @@ def _generate_posix_vars():
     try:
         _parse_makefile(makefile, vars)
     except OSError as e:
-        msg = "invalid Python installation: unable to open %s" % makefile
+        msg = f"invalid Python installation: unable to open {makefile}"
         if hasattr(e, "strerror"):
-            msg = msg + " (%s)" % e.strerror
+            msg = msg + f" ({e.strerror})"
         raise OSError(msg)
     # load the installed pyconfig.h:
     config_h = get_config_h_filename()
@@ -406,9 +405,9 @@ def _generate_posix_vars():
         with open(config_h) as f:
             parse_config_h(f, vars)
     except OSError as e:
-        msg = "invalid Python installation: unable to open %s" % config_h
+        msg = f"invalid Python installation: unable to open {config_h}"
         if hasattr(e, "strerror"):
-            msg = msg + " (%s)" % e.strerror
+            msg = msg + f" ({e.strerror})"
         raise OSError(msg)
     # On AIX, there are wrong paths to the linker scripts in the Makefile
     # -- these paths are relative to the Python source, but when installed
@@ -435,7 +434,7 @@ def _generate_posix_vars():
         module.build_time_vars = vars
         sys.modules[name] = module
 
-    pybuilddir = "build/lib.%s-%s" % (get_platform(), _PY_VERSION_SHORT)
+    pybuilddir = f"build/lib.{get_platform()}-{_PY_VERSION_SHORT}"
     if hasattr(sys, "gettotalrefcount"):
         pybuilddir += "-pydebug"
     os.makedirs(pybuilddir, exist_ok=True)
@@ -463,7 +462,7 @@ def _generate_posix_vars():
         f.write("# system configuration generated and used by the sysconfig module\n")
         f.write("build_time_vars = ")
         pprint.pprint(vars, stream=f)
-        f.write("\n%s" % textwrap.dedent(replacement))
+        f.write(f"\n{textwrap.dedent(replacement)}")
 
     # Create file used for sys.path fixup -- see Modules/getpath.c
     with open("pybuilddir.txt", "w", encoding="utf8") as f:
@@ -555,7 +554,7 @@ def get_path_names():
     return _SCHEME_KEYS
 
 
-def get_paths(scheme=_get_default_scheme(), vars=None, expand=True):
+def get_paths(scheme=_get_default_scheme(), vars=None, expand=True):  # noqa: B008
     """Return a mapping containing an install scheme.
 
     ``scheme`` is the install scheme name. If not provided, it will
@@ -567,7 +566,7 @@ def get_paths(scheme=_get_default_scheme(), vars=None, expand=True):
         return _INSTALL_SCHEMES[scheme]
 
 
-def get_path(name, scheme=_get_default_scheme(), vars=None, expand=True):
+def get_path(name, scheme=_get_default_scheme(), vars=None, expand=True):  # noqa: B008
     """Return a path corresponding to the scheme.
 
     ``scheme`` is the install scheme name.
@@ -723,7 +722,7 @@ def get_platform():
         return os.environ["_PYTHON_HOST_PLATFORM"]
 
     # Try to distinguish various flavours of Unix
-    osname, host, release, version, machine = os.uname()
+    osname, _host, release, _version, machine = os.uname()
 
     # Convert the OS name to lowercase, remove '/' characters, and translate
     # spaces (for "Power Macintosh")
@@ -735,16 +734,16 @@ def get_platform():
         # At least on Linux/Intel, 'machine' is the processor --
         # i386, etc.
         # XXX what about Alpha, SPARC, etc?
-        return "%s-%s" % (osname, machine)
+        return f"{osname}-{machine}"
     elif osname[:5] == "sunos":
         if release[0] >= "5":  # SunOS 5 == Solaris 2
             osname = "solaris"
-            release = "%d.%s" % (int(release[0]) - 3, release[2:])
+            release = "%d.%s" % (int(release[0]) - 3, release[2:])  # noqa: UP031
             # We can't use "platform.architecture()[0]" because a
             # bootstrap problem. We use a dict to get an error
             # if some suspicious happens.
             bitness = {2147483647: "32bit", 9223372036854775807: "64bit"}
-            machine += ".%s" % bitness[sys.maxsize]
+            machine += f".{bitness[sys.maxsize]}"
         # fall through to standard osname-release-machine representation
     elif osname[:3] == "aix":
         from _aix_support import aix_platform
@@ -765,7 +764,7 @@ def get_platform():
             get_config_vars(), osname, release, machine
         )
 
-    return "%s-%s-%s" % (osname, release, machine)
+    return f"{osname}-{release}-{machine}"
 
 
 def get_python_version():
@@ -775,8 +774,8 @@ def get_python_version():
 def _print_dict(title, data):
     for index, (key, value) in enumerate(sorted(data.items())):
         if index == 0:
-            print("%s: " % (title))
-        print('\t%s = "%s"' % (key, value))
+            print(f"{title}: ")
+        print(f'\t{key} = "{value}"')
 
 
 def _main():
@@ -784,9 +783,9 @@ def _main():
     if "--generate-posix-vars" in sys.argv:
         _generate_posix_vars()
         return
-    print('Platform: "%s"' % get_platform())
-    print('Python version: "%s"' % get_python_version())
-    print('Current installation scheme: "%s"' % _get_default_scheme())
+    print(f'Platform: "{get_platform()}"')
+    print(f'Python version: "{get_python_version()}"')
+    print(f'Current installation scheme: "{_get_default_scheme()}"')
     print()
     _print_dict("Paths", get_paths())
     print()

@@ -12,7 +12,7 @@ from test.support import run_unittest
 
 class BuildTestCase(support.TempdirManager, support.LoggingSilencer, unittest.TestCase):
     def test_finalize_options(self):
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = build(dist)
         cmd.finalize_options()
 
@@ -26,7 +26,7 @@ class BuildTestCase(support.TempdirManager, support.LoggingSilencer, unittest.Te
         # build_platlib is 'build/lib.platform-x.x[-pydebug]'
         # examples:
         #   build/lib.macosx-10.3-i386-2.7
-        plat_spec = ".%s-%d.%d" % (cmd.plat_name, *sys.version_info[:2])
+        plat_spec = ".%s-%d.%d" % (cmd.plat_name, *sys.version_info[:2])  # noqa: UP031
         if hasattr(sys, "gettotalrefcount"):
             self.assertTrue(cmd.build_platlib.endswith("-pydebug"))
             plat_spec += "-pydebug"
@@ -41,7 +41,7 @@ class BuildTestCase(support.TempdirManager, support.LoggingSilencer, unittest.Te
         self.assertEqual(cmd.build_temp, wanted)
 
         # build_scripts is build/scripts-x.x
-        wanted = os.path.join(cmd.build_base, "scripts-%d.%d" % sys.version_info[:2])
+        wanted = os.path.join(cmd.build_base, "scripts-%d.%d" % sys.version_info[:2])  # noqa: UP031
         self.assertEqual(cmd.build_scripts, wanted)
 
         # executable is os.path.normpath(sys.executable)

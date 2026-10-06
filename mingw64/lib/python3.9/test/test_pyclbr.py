@@ -28,8 +28,8 @@ class PyclbrTest(TestCase):
         """succeed iff {l1} - {ignore} == {l2} - {ignore}"""
         missing = (set(l1) ^ set(l2)) - set(ignore)
         if missing:
-            print("l1=%r\nl2=%r\nignore=%r" % (l1, l2, ignore), file=sys.stderr)
-            self.fail("%r missing" % missing.pop())
+            print(f"l1={l1!r}\nl2={l2!r}\nignore={ignore!r}", file=sys.stderr)
+            self.fail(f"{missing.pop()!r} missing")
 
     def assertHasattr(self, obj, attr, ignore):
         """succeed iff hasattr(obj,attr) or attr in ignore."""
@@ -37,7 +37,7 @@ class PyclbrTest(TestCase):
             return
         if not hasattr(obj, attr):
             print("???", attr)
-        self.assertTrue(hasattr(obj, attr), "expected hasattr(%r, %r)" % (obj, attr))
+        self.assertTrue(hasattr(obj, attr), f"expected hasattr({obj!r}, {attr!r})")
 
     def assertHaskey(self, obj, key, ignore):
         """succeed iff key in obj or key in ignore."""
@@ -58,7 +58,7 @@ class PyclbrTest(TestCase):
         ignore are ignored.   If no module is provided, the appropriate
         module is loaded with __import__."""
 
-        ignore = set(ignore) | set(["object"])
+        ignore = set(ignore) | {"object"}
 
         if module is None:
             # Import it.
@@ -81,7 +81,7 @@ class PyclbrTest(TestCase):
 
             objname = obj.__name__
             if objname.startswith("__") and not objname.endswith("__"):
-                objname = "_%s%s" % (oclass.__name__, objname)
+                objname = f"_{oclass.__name__}{objname}"
             return objname == name
 
         # Make sure the toplevel functions and classes are the same.
@@ -106,15 +106,15 @@ class PyclbrTest(TestCase):
                 try:
                     self.assertListEq(real_bases, pyclbr_bases, ignore)
                 except:
-                    print("class=%s" % py_item, file=sys.stderr)
+                    print(f"class={py_item}", file=sys.stderr)
                     raise
 
                 actualMethods = []
-                for m in py_item.__dict__.keys():
+                for m in py_item.__dict__:
                     if ismethod(py_item, getattr(py_item, m), m):
                         actualMethods.append(m)
                 foundMethods = []
-                for m in value.methods.keys():
+                for m in value.methods:
                     if m[:2] == "__" and m[-2:] != "__":
                         foundMethods.append("_" + name + m)
                     else:
@@ -127,7 +127,7 @@ class PyclbrTest(TestCase):
                     self.assertEqualsOrIgnored(py_item.__name__, value.name, ignore)
                     # can't check file or lineno
                 except:
-                    print("class=%s" % py_item, file=sys.stderr)
+                    print(f"class={py_item}", file=sys.stderr)
                     raise
 
         # Now check for missing stuff.
@@ -140,7 +140,7 @@ class PyclbrTest(TestCase):
 
         for name in dir(module):
             item = getattr(module, name)
-            if isinstance(item, (type, FunctionType)):
+            if isinstance(item, (type, FunctionType)):  # noqa: SIM102
                 if defined_in(item, module):
                     self.assertHaskey(dict, name, ignore)
 
@@ -186,13 +186,13 @@ class PyclbrTest(TestCase):
         # Create descriptors, linked together, and expected dict.
         f0 = mb.Function(m, "f0", f, 1)
         f1 = mb._nest_function(f0, "f1", 2)
-        f2 = mb._nest_function(f1, "f2", 3)
-        c1 = mb._nest_class(f0, "c1", 5)
+        mb._nest_function(f1, "f2", 3)
+        mb._nest_class(f0, "c1", 5)
         C0 = mb.Class(m, "C0", None, f, 6)
-        F1 = mb._nest_function(C0, "F1", 8)
+        mb._nest_function(C0, "F1", 8)
         C1 = mb._nest_class(C0, "C1", 11)
         C2 = mb._nest_class(C1, "C2", 12)
-        F3 = mb._nest_function(C2, "F3", 14)
+        mb._nest_function(C2, "F3", 14)
         expected = {"f0": f0, "C0": C0}
 
         def compare(parent1, children1, parent2, children2):
@@ -209,7 +209,7 @@ class PyclbrTest(TestCase):
                 self.assertIs(ob.parent, parent1)
             for ob in children2.values():
                 self.assertIs(ob.parent, parent2)
-            for key in children1.keys():
+            for key in children1:
                 o1, o2 = children1[key], children2[key]
                 t1 = type(o1), o1.name, o1.file, o1.module, o1.lineno
                 t2 = type(o2), o2.name, o2.file, o2.module, o2.lineno
@@ -263,7 +263,7 @@ class ReadmoduleTests(TestCase):
     def test_module_has_no_spec(self):
         module_name = "doesnotexist"
         assert module_name not in pyclbr._modules
-        with test_importlib_util.uncache(module_name):
+        with test_importlib_util.uncache(module_name):  # noqa: SIM117
             with self.assertRaises(ModuleNotFoundError):
                 pyclbr.readmodule_ex(module_name)
 

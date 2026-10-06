@@ -224,7 +224,7 @@ class TestTimeit(unittest.TestCase):
         t = timeit.Timer("1/0")
         try:
             t.timeit()
-        except:
+        except:  # noqa: E722
             t.print_exc(s)
         self.assert_exc_string(s.getvalue(), "ZeroDivisionError")
 
@@ -352,9 +352,7 @@ class TestTimeit(unittest.TestCase):
         self.assertEqual(unit_usec, "100 loops, best of 5: 3e+03 usec per loop\n")
         # Test invalid unit input
         with captured_stderr() as error_stringio:
-            invalid = self.run_main(
-                seconds_per_increment=0.003, switches=["-u", "parsec"]
-            )
+            self.run_main(seconds_per_increment=0.003, switches=["-u", "parsec"])
         self.assertEqual(
             error_stringio.getvalue(),
             "Unrecognized unit. Please select nsec, usec, msec, or sec.\n",
@@ -362,12 +360,12 @@ class TestTimeit(unittest.TestCase):
 
     def test_main_exception(self):
         with captured_stderr() as error_stringio:
-            s = self.run_main(switches=["1/0"])
+            self.run_main(switches=["1/0"])
         self.assert_exc_string(error_stringio.getvalue(), "ZeroDivisionError")
 
     def test_main_exception_fixed_reps(self):
         with captured_stderr() as error_stringio:
-            s = self.run_main(switches=["-n1", "1/0"])
+            self.run_main(switches=["-n1", "1/0"])
         self.assert_exc_string(error_stringio.getvalue(), "ZeroDivisionError")
 
     def autorange(self, seconds_per_increment=1 / 1024, callback=None):

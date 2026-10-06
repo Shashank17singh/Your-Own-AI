@@ -45,8 +45,8 @@ class WindowList:
         for callback in self.callbacks:
             try:
                 callback()
-            except:
-                t, v, tb = sys.exc_info()
+            except:  # noqa: E722
+                t, v, _tb = sys.exc_info()
                 print("warning: callback failed in WindowList", t, ":", v)
 
 

@@ -149,7 +149,7 @@ def consts(t):
     for elt in t:
         r = repr(elt)
         if r.startswith("<code object"):
-            yield "<code object %s>" % elt.co_name
+            yield f"<code object {elt.co_name}>"
         else:
             yield r
 
@@ -168,7 +168,7 @@ def dump(co):
         "nlocals",
         "flags",
     ]:
-        print("%s: %s" % (attr, getattr(co, "co_" + attr)))
+        print("{}: {}".format(attr, getattr(co, "co_" + attr)))
     print("consts:", tuple(consts(co.co_consts)))
 
 
@@ -305,11 +305,11 @@ class CodeConstsTest(unittest.TestCase):
 
     def assertIsInterned(self, s):
         if not isinterned(s):
-            self.fail("String %r is not interned" % (s,))
+            self.fail(f"String {s!r} is not interned")
 
     def assertIsNotInterned(self, s):
         if isinterned(s):
-            self.fail("String %r is interned" % (s,))
+            self.fail(f"String {s!r} is interned")
 
     @cpython_only
     def test_interned_string(self):
@@ -327,7 +327,7 @@ class CodeConstsTest(unittest.TestCase):
     def test_interned_string_in_frozenset(self):
         co = compile('res = a in {"str_value"}', "?", "exec")
         v = self.find_const(co.co_consts, frozenset(("str_value",)))
-        self.assertIsInterned(tuple(v)[0])
+        self.assertIsInterned(next(iter(v)))
 
     @cpython_only
     def test_interned_string_default(self):
@@ -348,7 +348,7 @@ class CodeWeakRefTest(unittest.TestCase):
         # Create a code object in a clean environment so that we know we have
         # the only reference to it left.
         namespace = {}
-        exec("def f(): pass", globals(), namespace)
+        exec("def f(): pass", globals(), namespace)  # noqa: S102
         f = namespace["f"]
         del namespace
 
@@ -406,7 +406,7 @@ if check_impl_detail(cpython=True) and ctypes is not None:
             return eval("lambda:42")
 
         def test_get_non_code(self):
-            f = self.get_func()
+            self.get_func()
 
             self.assertRaises(
                 SystemError, SetExtra, 42, FREE_INDEX, ctypes.c_voidp(100)
@@ -473,7 +473,7 @@ if check_impl_detail(cpython=True) and ctypes is not None:
 
 
 def test_main(verbose=None):
-    from test import test_code
+    from test import test_code  # noqa: PLW0406
 
     run_doctest(test_code, verbose)
     tests = [CodeTest, CodeConstsTest, CodeWeakRefTest]

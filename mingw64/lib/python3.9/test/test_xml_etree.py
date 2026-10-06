@@ -159,10 +159,9 @@ class ElementTestCase:
             result = pickle.loads(temp)
         except pickle.PicklingError as pe:
             # pyET must be second, because pyET may be (equal to) ET.
-            human = dict([(ET, "cET"), (pyET, "pyET")])
+            human = {ET: "cET", pyET: "pyET"}
             raise support.TestFailed(
-                "Failed to round-trip %r from %r to %r"
-                % (obj, human.get(dumper, dumper), human.get(loader, loader))
+                f"Failed to round-trip {obj!r} from {human.get(dumper, dumper)!r} to {human.get(loader, loader)!r}"
             ) from pe
         finally:
             sys.modules[name] = save_m
@@ -193,31 +192,31 @@ class ElementTreeTest(unittest.TestCase):
             len(string)
             for char in string:
                 self.assertEqual(
-                    len(char), 1, msg="expected one-character string, got %r" % char
+                    len(char), 1, msg=f"expected one-character string, got {char!r}"
                 )
-            new_string = string + ""
-            new_string = string + " "
+            string + ""
+            string + " "
             string[:0]
 
         def check_mapping(mapping):
             len(mapping)
             keys = mapping.keys()
-            items = mapping.items()
+            mapping.items()
             for key in keys:
-                item = mapping[key]
+                mapping[key]
             mapping["key"] = "value"
             self.assertEqual(
                 mapping["key"],
                 "value",
-                msg="expected value string, got %r" % mapping["key"],
+                msg="expected value string, got {!r}".format(mapping["key"]),
             )
 
         def check_element(element):
             self.assertTrue(ET.iselement(element), msg="not an element")
             direlem = dir(element)
             for attr in "tag", "attrib", "text", "tail":
-                self.assertTrue(hasattr(element, attr), msg="no %s member" % attr)
-                self.assertIn(attr, direlem, msg="no %s visible by dir" % attr)
+                self.assertTrue(hasattr(element, attr), msg=f"no {attr} member")
+                self.assertIn(attr, direlem, msg=f"no {attr} visible by dir")
 
             check_string(element.tag)
             check_mapping(element.attrib)
@@ -240,7 +239,7 @@ class ElementTreeTest(unittest.TestCase):
         # Make sure all standard element methods exist.
 
         def check_method(method):
-            self.assertTrue(hasattr(method, "__call__"), msg="%s not callable" % method)
+            self.assertTrue(callable(method), msg=f"{method} not callable")
 
         check_method(element.append)
         check_method(element.extend)
@@ -476,7 +475,7 @@ class ElementTreeTest(unittest.TestCase):
         )
         elem[:] = [subelem]
         self.serialize_check(elem, '<tag><subtag key="value" /></tag>')
-        elem[:] = tuple([subelem])
+        elem[:] = (subelem,)
         self.serialize_check(elem, '<tag><subtag key="value" /></tag>')
 
     def test_parsefile(self):
@@ -1027,8 +1026,10 @@ class ElementTreeTest(unittest.TestCase):
             (b"<body><tag>\xc3\xb8</tag></body>", "UTF-8", None),
             (b"<body><tag>&#248;</tag></body>", "US-ASCII", None),
             (
-                b"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
-                b"<body><tag>\xf8</tag></body>",
+                (
+                    b"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+                    b"<body><tag>\xf8</tag></body>"
+                ),
                 "ISO-8859-1",
                 None,
             ),
@@ -1041,32 +1042,42 @@ class ElementTreeTest(unittest.TestCase):
             ("<body><tag>ø</tag></body>", "unicode", False),
             # ... xml_declaration = True
             (
-                b"<?xml version='1.0' encoding='us-ascii'?>\n"
-                b"<body><tag>&#248;</tag></body>",
+                (
+                    b"<?xml version='1.0' encoding='us-ascii'?>\n"
+                    b"<body><tag>&#248;</tag></body>"
+                ),
                 None,
                 True,
             ),
             (
-                b"<?xml version='1.0' encoding='UTF-8'?>\n"
-                b"<body><tag>\xc3\xb8</tag></body>",
+                (
+                    b"<?xml version='1.0' encoding='UTF-8'?>\n"
+                    b"<body><tag>\xc3\xb8</tag></body>"
+                ),
                 "UTF-8",
                 True,
             ),
             (
-                b"<?xml version='1.0' encoding='US-ASCII'?>\n"
-                b"<body><tag>&#248;</tag></body>",
+                (
+                    b"<?xml version='1.0' encoding='US-ASCII'?>\n"
+                    b"<body><tag>&#248;</tag></body>"
+                ),
                 "US-ASCII",
                 True,
             ),
             (
-                b"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
-                b"<body><tag>\xf8</tag></body>",
+                (
+                    b"<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+                    b"<body><tag>\xf8</tag></body>"
+                ),
                 "ISO-8859-1",
                 True,
             ),
             (
-                f"<?xml version='1.0' encoding='{preferredencoding}'?>\n"
-                "<body><tag>ø</tag></body>",
+                (
+                    f"<?xml version='1.0' encoding='{preferredencoding}'?>\n"
+                    "<body><tag>ø</tag></body>"
+                ),
                 "unicode",
                 True,
             ),
@@ -1116,7 +1127,7 @@ class ElementTreeTest(unittest.TestCase):
 
     def test_encoding(self):
         def check(encoding, body=""):
-            xml = "<?xml version='1.0' encoding='%s'?><xml>%s</xml>" % (encoding, body)
+            xml = f"<?xml version='1.0' encoding='{encoding}'?><xml>{body}</xml>"
             self.assertEqual(ET.XML(xml.encode(encoding)).text, body)
             self.assertEqual(ET.XML(xml).text, body)
 
@@ -1128,7 +1139,7 @@ class ElementTreeTest(unittest.TestCase):
         check("mac-roman", "\u02da")
 
         def xml(encoding):
-            return "<?xml version='1.0' encoding='%s'?><xml />" % encoding
+            return f"<?xml version='1.0' encoding='{encoding}'?><xml />"
 
         def bxml(encoding):
             return xml(encoding).encode(encoding)
@@ -1428,7 +1439,7 @@ class ElementTreeTest(unittest.TestCase):
     def test_doctype_public(self):
         # Test PUBLIC doctype.
 
-        elem = ET.XML(
+        ET.XML(
             "<!DOCTYPE html PUBLIC"
             ' "-//W3C//DTD XHTML 1.0 Transitional//EN"'
             ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
@@ -1550,12 +1561,10 @@ class ElementTreeTest(unittest.TestCase):
             "PARAM",
         ]:
             for elem in [element, element.lower()]:
-                expected = "<%s>" % elem
-                serialized = serialize(ET.XML("<%s />" % elem), method="html")
+                expected = f"<{elem}>"
+                serialized = serialize(ET.XML(f"<{elem} />"), method="html")
                 self.assertEqual(serialized, expected)
-                serialized = serialize(
-                    ET.XML("<%s></%s>" % (elem, elem)), method="html"
-                )
+                serialized = serialize(ET.XML(f"<{elem}></{elem}>"), method="html")
                 self.assertEqual(serialized, expected)
 
     def test_dump_attribute_order(self):
@@ -2362,23 +2371,23 @@ class BugsTest(unittest.TestCase):
 
     def test_bug_200709_default_namespace(self):
         e = ET.Element("{default}elem")
-        s = ET.SubElement(e, "{default}elem")
+        ET.SubElement(e, "{default}elem")
         self.assertEqual(
             serialize(e, default_namespace="default"),  # 1
             '<elem xmlns="default"><elem /></elem>',
         )
 
         e = ET.Element("{default}elem")
-        s = ET.SubElement(e, "{default}elem")
-        s = ET.SubElement(e, "{not-default}elem")
+        ET.SubElement(e, "{default}elem")
+        ET.SubElement(e, "{not-default}elem")
         self.assertEqual(
             serialize(e, default_namespace="default"),  # 2
             '<elem xmlns="default" xmlns:ns1="not-default"><elem /><ns1:elem /></elem>',
         )
 
         e = ET.Element("{default}elem")
-        s = ET.SubElement(e, "{default}elem")
-        s = ET.SubElement(e, "elem")  # unprefixed name
+        ET.SubElement(e, "{default}elem")
+        ET.SubElement(e, "elem")  # unprefixed name
         with self.assertRaises(ValueError) as cm:
             serialize(e, default_namespace="default")  # 3
         self.assertEqual(
@@ -2420,8 +2429,8 @@ class BugsTest(unittest.TestCase):
 
     def test_bug_200709_element_insert(self):
         a = ET.Element("a")
-        b = ET.SubElement(a, "b")
-        c = ET.SubElement(a, "c")
+        ET.SubElement(a, "b")
+        ET.SubElement(a, "c")
         d = ET.Element("d")
         a.insert(0, d)
         self.assertEqual(summarize_list(a), ["d", "b", "c"])
@@ -2461,7 +2470,7 @@ class BugsTest(unittest.TestCase):
     def test_issue3151(self):
         e = ET.XML('<prefix:localname xmlns:prefix="${stuff}"/>')
         self.assertEqual(e.tag, "{${stuff}}localname")
-        t = ET.ElementTree(e)
+        ET.ElementTree(e)
         self.assertEqual(ET.tostring(e), b'<ns0:localname xmlns:ns0="${stuff}" />')
 
     def test_issue6565(self):
@@ -2550,7 +2559,7 @@ class BugsTest(unittest.TestCase):
         with open(UTF8_BUG_XMLFILE, "rb") as fp:
             raw = fp.read()
         root = ET.fromstring(raw)
-        xmlattr = root.get("b")
+        root.get("b")
 
         # "Parse" manually the XML file to extract the value of the 'b'
         # attribute of the <a b='xxx' /> XML element
@@ -2867,7 +2876,7 @@ class BadElementTest(ElementTestCase, unittest.TestCase):
         class X(str):
             def __del__(self):
                 try:
-                    elem.text
+                    elem.text  # noqa: B018
                 except NameError:
                     pass
 
@@ -2886,7 +2895,7 @@ class BadElementTest(ElementTestCase, unittest.TestCase):
         class X(str):
             def __del__(self):
                 try:
-                    elem[0].tail
+                    elem[0].tail  # noqa: B018
                 except NameError:
                     pass
 
@@ -3056,7 +3065,9 @@ class ElementTreeTypeTest(unittest.TestCase):
 
     def test_Element_subclass_constructor(self):
         class MyElement(ET.Element):
-            def __init__(self, tag, attrib={}, **extra):
+            def __init__(self, tag, attrib=None, **extra):
+                if attrib is None:
+                    attrib = {}
                 super(MyElement, self).__init__(tag + "__", attrib, **extra)
 
         mye = MyElement("foo", {"a": 1, "b": 2}, c=3, d=4)
@@ -3344,11 +3355,11 @@ class ElementIterTest(unittest.TestCase):
         self.assertEqual(self._ilist(a), ["a", "b"])
 
         # one child and one grandchild
-        c = ET.SubElement(b, "c")
+        ET.SubElement(b, "c")
         self.assertEqual(self._ilist(a), ["a", "b", "c"])
 
         # two children, only first with grandchild
-        d = ET.SubElement(a, "d")
+        ET.SubElement(a, "d")
         self.assertEqual(self._ilist(a), ["a", "b", "c", "d"])
 
         # replace first child by second
@@ -3777,7 +3788,7 @@ class ElementSlicingTest(unittest.TestCase):
         """
         e = ET.Element("a")
         for i in range(numchildren):
-            ET.SubElement(e, "a%s" % i)
+            ET.SubElement(e, f"a{i}")
         return e
 
     def test_getslice_single_index(self):
@@ -3859,7 +3870,7 @@ class ElementSlicingTest(unittest.TestCase):
 
     def test_setslice_range(self):
         e = self._make_elem_with_children(4)
-        e[1:3] = [ET.Element("b%s" % i) for i in range(2)]
+        e[1:3] = [ET.Element(f"b{i}") for i in range(2)]
         self.assertEqual(self._subelem_tags(e), ["a0", "b0", "b1", "a3"])
 
         e = self._make_elem_with_children(4)
@@ -3867,19 +3878,19 @@ class ElementSlicingTest(unittest.TestCase):
         self.assertEqual(self._subelem_tags(e), ["a0", "b", "a3"])
 
         e = self._make_elem_with_children(4)
-        e[1:3] = [ET.Element("b%s" % i) for i in range(3)]
+        e[1:3] = [ET.Element(f"b{i}") for i in range(3)]
         self.assertEqual(self._subelem_tags(e), ["a0", "b0", "b1", "b2", "a3"])
 
     def test_setslice_steps(self):
         e = self._make_elem_with_children(6)
-        e[1:5:2] = [ET.Element("b%s" % i) for i in range(2)]
+        e[1:5:2] = [ET.Element(f"b{i}") for i in range(2)]
         self.assertEqual(self._subelem_tags(e), ["a0", "b0", "a2", "b1", "a4", "a5"])
 
         e = self._make_elem_with_children(6)
         with self.assertRaises(ValueError):
             e[1:5:2] = [ET.Element("b")]
         with self.assertRaises(ValueError):
-            e[1:5:2] = [ET.Element("b%s" % i) for i in range(3)]
+            e[1:5:2] = [ET.Element(f"b{i}") for i in range(3)]
         with self.assertRaises(ValueError):
             e[1:5:2] = []
         self.assertEqual(self._subelem_tags(e), ["a0", "a1", "a2", "a3", "a4", "a5"])
@@ -3892,14 +3903,14 @@ class ElementSlicingTest(unittest.TestCase):
 
     def test_setslice_negative_steps(self):
         e = self._make_elem_with_children(4)
-        e[2:0:-1] = [ET.Element("b%s" % i) for i in range(2)]
+        e[2:0:-1] = [ET.Element(f"b{i}") for i in range(2)]
         self.assertEqual(self._subelem_tags(e), ["a0", "b1", "b0", "a3"])
 
         e = self._make_elem_with_children(4)
         with self.assertRaises(ValueError):
             e[2:0:-1] = [ET.Element("b")]
         with self.assertRaises(ValueError):
-            e[2:0:-1] = [ET.Element("b%s" % i) for i in range(3)]
+            e[2:0:-1] = [ET.Element(f"b{i}") for i in range(3)]
         with self.assertRaises(ValueError):
             e[2:0:-1] = []
         self.assertEqual(self._subelem_tags(e), ["a0", "a1", "a2", "a3"])
@@ -3929,15 +3940,15 @@ class IOTest(unittest.TestCase):
             with self.subTest(enc):
                 self.assertEqual(
                     serialize(elem, encoding=enc),
-                    (
-                        "<?xml version='1.0' encoding='%s'?>\n<tag>abc</tag>" % enc
-                    ).encode(enc),
+                    (f"<?xml version='1.0' encoding='{enc}'?>\n<tag>abc</tag>").encode(
+                        enc
+                    ),
                 )
                 upper = enc.upper()
                 self.assertEqual(
                     serialize(elem, encoding=upper),
                     (
-                        "<?xml version='1.0' encoding='%s'?>\n<tag>abc</tag>" % upper
+                        f"<?xml version='1.0' encoding='{upper}'?>\n<tag>abc</tag>"
                     ).encode(enc),
                 )
 
@@ -3954,8 +3965,8 @@ class IOTest(unittest.TestCase):
             self.assertEqual(
                 serialize(elem, encoding=enc),
                 (
-                    "<?xml version='1.0' encoding='%s'?>\n"
-                    "<tag>&lt;&amp;\"'&gt;</tag>" % enc
+                    f"<?xml version='1.0' encoding='{enc}'?>\n"
+                    "<tag>&lt;&amp;\"'&gt;</tag>"
                 ).encode(enc),
             )
 
@@ -3972,8 +3983,8 @@ class IOTest(unittest.TestCase):
             self.assertEqual(
                 serialize(elem, encoding=enc),
                 (
-                    "<?xml version='1.0' encoding='%s'?>\n"
-                    '<tag key="&lt;&amp;&quot;\'&gt;" />' % enc
+                    f"<?xml version='1.0' encoding='{enc}'?>\n"
+                    '<tag key="&lt;&amp;&quot;\'&gt;" />'
                 ).encode(enc),
             )
 
@@ -3992,7 +4003,7 @@ class IOTest(unittest.TestCase):
             self.assertEqual(
                 serialize(elem, encoding=enc),
                 (
-                    "<?xml version='1.0' encoding='%s'?>\n<tag>åöö&lt;&gt;</tag>" % enc
+                    f"<?xml version='1.0' encoding='{enc}'?>\n<tag>åöö&lt;&gt;</tag>"
                 ).encode(enc),
             )
 
@@ -4011,8 +4022,8 @@ class IOTest(unittest.TestCase):
             self.assertEqual(
                 serialize(elem, encoding=enc),
                 (
-                    "<?xml version='1.0' encoding='%s'?>\n"
-                    '<tag key="åöö&lt;&gt;" />' % enc
+                    f"<?xml version='1.0' encoding='{enc}'?>\n"
+                    '<tag key="åöö&lt;&gt;" />'
                 ).encode(enc),
             )
 
@@ -4201,15 +4212,15 @@ class KeywordArgsTest(unittest.TestCase):
 
         self.assertEqual(ET.Element("a").attrib, {})
         elements = [
-            ET.Element("a", dict(href="#", id="foo")),
-            ET.Element("a", attrib=dict(href="#", id="foo")),
-            ET.Element("a", dict(href="#"), id="foo"),
+            ET.Element("a", {"href": "#", "id": "foo"}),
+            ET.Element("a", attrib={"href": "#", "id": "foo"}),
+            ET.Element("a", {"href": "#"}, id="foo"),
             ET.Element("a", href="#", id="foo"),
-            ET.Element("a", dict(href="#", id="foo"), href="#", id="foo"),
+            ET.Element("a", {"href": "#", "id": "foo"}, href="#", id="foo"),
         ]
         for e in elements:
             self.assertEqual(e.tag, "a")
-            self.assertEqual(e.attrib, dict(href="#", id="foo"))
+            self.assertEqual(e.attrib, {"href": "#", "id": "foo"})
 
         e2 = ET.SubElement(elements[0], "foobar", attrib={"key1": "value1"})
         self.assertEqual(e2.attrib["key1"], "value1")
@@ -4503,7 +4514,7 @@ class C14NTest(unittest.TestCase):
                     f = full_path(input_file + ".xml")
                     if input_file == "inC14N5":
                         # Hack: avoid setting up external entity resolution in the parser.
-                        with open(full_path("world.txt"), "rb") as entity_file:
+                        with open(full_path("world.txt"), "rb") as entity_file:  # noqa: SIM117
                             with open(f, "rb") as f:
                                 f = io.BytesIO(
                                     f.read().replace(b"&ent2;", entity_file.read())

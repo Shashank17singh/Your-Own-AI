@@ -148,7 +148,7 @@ class scheduler:
             with lock:
                 if not q:
                     break
-                time, priority, action, argument, kwargs = q[0]
+                time, _priority, action, argument, kwargs = q[0]
                 now = timefunc()
                 if time > now:
                     delay = True

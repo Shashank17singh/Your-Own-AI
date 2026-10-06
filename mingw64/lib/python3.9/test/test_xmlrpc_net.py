@@ -14,7 +14,7 @@ class PythonBuildersTest(unittest.TestCase):
         try:
             builders = server.getAllBuilders()
         except OSError as e:
-            self.skipTest("network error: %s" % e)
+            self.skipTest(f"network error: {e}")
         self.addCleanup(lambda: server("close")())
 
         # Perform a minimal sanity check on the result, just to be sure

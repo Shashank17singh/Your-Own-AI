@@ -24,7 +24,7 @@ class UnicodeNamesTest(unittest.TestCase):
         # Helper that put all \N escapes inside eval'd raw strings,
         # to make sure this script runs even if the compiler
         # chokes on \N escapes
-        res = eval(r'"\N{%s}"' % name)
+        res = eval(r'"\N{{{}}}"'.format())
         self.assertEqual(res, code)
         return res
 
@@ -66,7 +66,7 @@ class UnicodeNamesTest(unittest.TestCase):
 
     def test_ascii_letters(self):
         for char in "".join(map(chr, range(ord("a"), ord("z")))):
-            name = "LATIN SMALL LETTER %s" % char.upper()
+            name = f"LATIN SMALL LETTER {char.upper()}"
             code = unicodedata.lookup(name)
             self.assertEqual(unicodedata.name(code), name)
 
@@ -174,10 +174,7 @@ class UnicodeNamesTest(unittest.TestCase):
             hdr = testfile.readline()
             return unicodedata.unidata_version in hdr
 
-        url = (
-            "http://www.pythontest.net/unicode/%s/NamedSequences.txt"
-            % unicodedata.unidata_version
-        )
+        url = f"http://www.pythontest.net/unicode/{unicodedata.unidata_version}/NamedSequences.txt"
         try:
             testdata = support.open_urlresource(
                 url, encoding="utf-8", check=check_version

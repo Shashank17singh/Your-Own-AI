@@ -13,7 +13,7 @@ from test import support
 def get_tb():
     try:
         raise OSError()
-    except:
+    except:  # noqa: E722
         return sys.exc_info()[2]
 
 
@@ -28,7 +28,7 @@ class Context:
 class TestRaise(unittest.TestCase):
     def test_invalid_reraise(self):
         try:
-            raise
+            raise  # noqa: PLE0704
         except RuntimeError as e:
             self.assertIn("No active exception", str(e))
         else:
@@ -63,7 +63,7 @@ class TestRaise(unittest.TestCase):
         def reraise():
             try:
                 raise TypeError("foo")
-            except:
+            except:  # noqa: E722
                 try:
                     raise KeyError("caught")
                 finally:
@@ -73,12 +73,12 @@ class TestRaise(unittest.TestCase):
 
     def test_nested_reraise(self):
         def nested_reraise():
-            raise
+            raise  # noqa: PLE0704
 
         def reraise():
             try:
                 raise TypeError("foo")
-            except:
+            except:  # noqa: E722
                 nested_reraise()
 
         self.assertRaises(TypeError, reraise)
@@ -87,7 +87,7 @@ class TestRaise(unittest.TestCase):
         try:
             try:
                 raise TypeError("foo")
-            except:
+            except:  # noqa: E722
                 raise ValueError() from None
         except ValueError as e:
             self.assertIsInstance(e.__context__, TypeError)
@@ -162,13 +162,13 @@ class TestCause(unittest.TestCase):
             try:
                 try:
                     raise TypeError
-                except Exception:
+                except Exception:  # noqa: BLE001
                     raise ValueError from None
             except ValueError as exc:
                 self.assertIsNone(exc.__cause__)
                 self.assertTrue(exc.__suppress_context__)
                 exc.__suppress_context__ = False
-                raise exc
+                raise
         except ValueError as exc:
             e = exc
 
@@ -241,7 +241,7 @@ class TestTracebackType(unittest.TestCase):
     def test_attrs(self):
         try:
             self.raiser()
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             tb = exc.__traceback__
 
         self.assertIsInstance(tb.tb_next, types.TracebackType)
@@ -305,7 +305,7 @@ class TestContext(unittest.TestCase):
         try:
             try:
                 raise context
-            except:
+            except:  # noqa: E722
                 raise OSError()
         except OSError as e:
             self.assertEqual(e.__context__, context)
@@ -317,7 +317,7 @@ class TestContext(unittest.TestCase):
         try:
             try:
                 raise context
-            except:
+            except:  # noqa: E722
                 raise OSError()
         except OSError as e:
             self.assertNotEqual(e.__context__, context)
@@ -330,7 +330,7 @@ class TestContext(unittest.TestCase):
         try:
             try:
                 raise context
-            except:
+            except:  # noqa: E722
                 raise OSError
         except OSError as e:
             self.assertNotEqual(e.__context__, context)
@@ -341,8 +341,8 @@ class TestContext(unittest.TestCase):
     def test_c_exception_context(self):
         try:
             try:
-                1 / 0
-            except:
+                1 / 0  # noqa: B018
+            except:  # noqa: E722
                 raise OSError
         except OSError as e:
             self.assertIsInstance(e.__context__, ZeroDivisionError)
@@ -352,9 +352,9 @@ class TestContext(unittest.TestCase):
     def test_c_exception_raise(self):
         try:
             try:
-                1 / 0
-            except:
-                xyzzy
+                1 / 0  # noqa: B018
+            except:  # noqa: E722
+                xyzzy  # noqa: B018
         except NameError as e:
             self.assertIsInstance(e.__context__, ZeroDivisionError)
         else:
@@ -374,7 +374,7 @@ class TestContext(unittest.TestCase):
     def test_raise_finally(self):
         try:
             try:
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 raise OSError
         except OSError as e:
@@ -388,11 +388,11 @@ class TestContext(unittest.TestCase):
                 pass
 
             def __exit__(self, t, v, tb):
-                xyzzy
+                xyzzy  # noqa: B018, F821
 
         try:
             with ContextManager():
-                1 / 0
+                1 / 0  # noqa: B018
         except NameError as e:
             self.assertIsInstance(e.__context__, ZeroDivisionError)
         else:
@@ -402,9 +402,9 @@ class TestContext(unittest.TestCase):
         # Self-cycles (when re-raising a caught exception) are broken
         try:
             try:
-                1 / 0
-            except ZeroDivisionError as e:
-                raise e
+                1 / 0  # noqa: B018
+            except ZeroDivisionError:  # noqa: TRY203
+                raise
         except ZeroDivisionError as e:
             self.assertIsNone(e.__context__)
 
@@ -413,10 +413,10 @@ class TestContext(unittest.TestCase):
         # are broken too.
         try:
             try:
-                xyzzy
+                xyzzy  # noqa: B018
             except NameError as a:
                 try:
-                    1 / 0
+                    1 / 0  # noqa: B018
                 except ZeroDivisionError:
                     raise a
         except NameError as e:
@@ -436,10 +436,10 @@ class TestContext(unittest.TestCase):
             try:
                 try:
                     raise ValueError
-                except:
+                except:  # noqa: E722
                     del g
                     raise KeyError
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.assertIsInstance(e.__context__, ValueError)
 
         f()
@@ -452,21 +452,21 @@ class TestContext(unittest.TestCase):
         class C:
             def __del__(self):
                 try:
-                    1 / 0
-                except:
+                    1 / 0  # noqa: B018
+                except:  # noqa: TRY203
                     raise
 
         def f():
             x = C()
             try:
                 try:
-                    f.x
+                    f.x  # noqa: B018
                 except AttributeError:
                     # make x.__del__ trigger
                     del x
                     gc.collect()  # For PyPy or other GCs.
                     raise TypeError
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 self.assertNotEqual(e.__context__, None)
                 self.assertIsInstance(e.__context__, AttributeError)
 
@@ -487,7 +487,7 @@ class TestRemovedFunctionality(unittest.TestCase):
 
     def test_strings(self):
         try:
-            raise "foo"
+            raise "foo"  # noqa: B016
         except TypeError:
             pass
         else:

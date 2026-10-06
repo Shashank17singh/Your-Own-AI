@@ -37,7 +37,7 @@ class WeakSet:
     def __init__(self, data=None):
         self.data = set()
 
-        def _remove(item, selfref=ref(self)):
+        def _remove(item, selfref=ref(self)):  # noqa: B008
             self = selfref()
             if self is not None:
                 if self._iterating:

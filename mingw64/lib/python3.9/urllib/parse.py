@@ -254,7 +254,7 @@ class _NetlocResultMixinStr(_NetlocResultMixinBase, _ResultMixinStr):
     @property
     def _userinfo(self):
         netloc = self.netloc
-        userinfo, have_info, hostinfo = netloc.rpartition("@")
+        userinfo, have_info, _hostinfo = netloc.rpartition("@")
         if have_info:
             username, have_password, password = userinfo.partition(":")
             if not have_password:
@@ -284,7 +284,7 @@ class _NetlocResultMixinBytes(_NetlocResultMixinBase, _ResultMixinBytes):
     @property
     def _userinfo(self):
         netloc = self.netloc
-        userinfo, have_info, hostinfo = netloc.rpartition(b"@")
+        userinfo, have_info, _hostinfo = netloc.rpartition(b"@")
         if have_info:
             username, have_password, password = userinfo.partition(b":")
             if not have_password:
@@ -550,7 +550,7 @@ def urlunparse(components):
         *components
     )
     if params:
-        url = "%s;%s" % (url, params)
+        url = f"{url};{params}"
     return _coerce_result(urlunsplit((scheme, netloc, url, query, fragment)))
 
 
@@ -582,7 +582,7 @@ def urljoin(base, url, allow_fragments=True):
     if not url:
         return base
     base, url, _coerce_result = _coerce_args(base, url)
-    bscheme, bnetloc, bpath, bparams, bquery, bfragment = urlparse(
+    bscheme, bnetloc, bpath, bparams, bquery, _bfragment = urlparse(
         base, "", allow_fragments
     )
     scheme, netloc, path, params, query, fragment = urlparse(
@@ -655,7 +655,7 @@ _hextobyte = None
 def unquote_to_bytes(string):
     """unquote_to_bytes('abc%20def') -> b'abc def'."""
     if not string:
-        string.split
+        string.split  # noqa: B018
         return b""
     if isinstance(string, str):
         string = string.encode("utf-8")
@@ -694,7 +694,7 @@ def unquote(string, encoding="utf-8", errors="replace"):
     if isinstance(string, bytes):
         return unquote_to_bytes(string).decode(encoding, errors)
     if "%" not in string:
-        string.split
+        string.split  # noqa: B018
         return string
     if encoding is None:
         encoding = "utf-8"
@@ -800,7 +800,7 @@ def parse_qsl(
         nv = name_value.split("=", 1)
         if len(nv) != 2:
             if strict_parsing:
-                raise ValueError("bad query field: %r" % (name_value,))
+                raise ValueError(f"bad query field: {name_value!r}")
             if keep_blank_values:
                 nv.append("")
             else:
@@ -843,7 +843,7 @@ class Quoter(collections.defaultdict):
         self.safe = _ALWAYS_SAFE.union(safe)
 
     def __repr__(self):
-        return "<%s %r>" % (self.__class__.__name__, dict(self))
+        return f"<{self.__class__.__name__} {dict(self)!r}>"
 
     def __missing__(self, b):
         res = chr(b) if b in self.safe else f"%{b:02X}"
@@ -956,7 +956,7 @@ def urlencode(
             if len(query) and not isinstance(query[0], tuple):
                 raise TypeError
         except TypeError:
-            ty, va, tb = sys.exc_info()
+            _ty, _va, tb = sys.exc_info()
             raise TypeError(
                 "not a valid non-string sequence or mapping object"
             ).with_traceback(tb)
@@ -986,7 +986,7 @@ def urlencode(
                 l.append(k + "=" + v)
             else:
                 try:
-                    x = len(v)
+                    len(v)
                 except TypeError:
                     v = quote_via(str(v), safe, encoding, errors)
                     l.append(k + "=" + v)

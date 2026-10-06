@@ -58,8 +58,8 @@ class _ModuleLock:
     """
 
     def __init__(self, name):
-        self.lock = _thread.allocate_lock()
-        self.wakeup = _thread.allocate_lock()
+        self.lock = _thread.allocate_lock()  # noqa: F821
+        self.wakeup = _thread.allocate_lock()  # noqa: F821
         self.name = name
         self.owner = None
         self.count = 0
@@ -67,7 +67,7 @@ class _ModuleLock:
 
     def has_deadlock(self):
         # Deadlock avoidance for concurrent circular imports.
-        me = _thread.get_ident()
+        me = _thread.get_ident()  # noqa: F821
         tid = self.owner
         seen = set()
         while True:
@@ -92,7 +92,7 @@ class _ModuleLock:
         a _DeadlockError is raised.
         Otherwise, the lock is always acquired and True is returned.
         """
-        tid = _thread.get_ident()
+        tid = _thread.get_ident()  # noqa: F821
         _blocking_on[tid] = self
         try:
             while True:
@@ -102,7 +102,7 @@ class _ModuleLock:
                         self.count += 1
                         return True
                     if self.has_deadlock():
-                        raise _DeadlockError("deadlock detected by %r" % self)
+                        raise _DeadlockError(f"deadlock detected by {self!r}")
                     if self.wakeup.acquire(False):
                         self.waiters += 1
                 # Wait for a release() call
@@ -112,7 +112,7 @@ class _ModuleLock:
             del _blocking_on[tid]
 
     def release(self):
-        tid = _thread.get_ident()
+        tid = _thread.get_ident()  # noqa: F821
         with self.lock:
             if self.owner != tid:
                 raise RuntimeError("cannot release un-acquired lock")
@@ -179,7 +179,7 @@ def _get_module_lock(name):
             lock = None
 
         if lock is None:
-            if _thread is None:
+            if _thread is None:  # noqa: F821
                 lock = _DummyModuleLock(name)
             else:
                 lock = _ModuleLock(name)
@@ -195,7 +195,7 @@ def _get_module_lock(name):
                 finally:
                     _imp.release_lock()
 
-            _module_locks[name] = _weakref.ref(lock, cb)
+            _module_locks[name] = _weakref.ref(lock, cb)  # noqa: F821
     finally:
         _imp.release_lock()
 
@@ -291,7 +291,7 @@ def _module_repr(module):
         # deprecation warning here.
         try:
             return loader.module_repr(module)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
     try:
         spec = module.__spec__
@@ -392,7 +392,7 @@ class ModuleSpec:
 
     @property
     def cached(self):
-        if self._cached is None:
+        if self._cached is None:  # noqa: SIM102
             if self.origin is not None and self._set_fileattr:
                 if _bootstrap_external is None:
                     raise NotImplementedError
@@ -486,7 +486,7 @@ def _spec_from_module(module, loader=None, origin=None):
         submodule_search_locations = None
 
     spec = ModuleSpec(name, loader, origin=origin)
-    spec._set_fileattr = False if location is None else True
+    spec._set_fileattr = not location is None
     spec.cached = cached
     spec.submodule_search_locations = submodule_search_locations
     return spec
@@ -504,7 +504,7 @@ def _init_module_attrs(spec, module, *, override=False):
     # __loader__
     if override or getattr(module, "__loader__", None) is None:
         loader = spec.loader
-        if loader is None:
+        if loader is None:  # noqa: SIM102
             # A backward compatibility hack.
             if spec.submodule_search_locations is not None:
                 if _bootstrap_external is None:
@@ -541,7 +541,7 @@ def _init_module_attrs(spec, module, *, override=False):
     except AttributeError:
         pass
     # __path__
-    if override or getattr(module, "__path__", None) is None:
+    if override or getattr(module, "__path__", None) is None:  # noqa: SIM102
         if spec.submodule_search_locations is not None:
             try:
                 module.__path__ = spec.submodule_search_locations
@@ -555,7 +555,7 @@ def _init_module_attrs(spec, module, *, override=False):
             except AttributeError:
                 pass
 
-        if override or getattr(module, "__cached__", None) is None:
+        if override or getattr(module, "__cached__", None) is None:  # noqa: SIM102
             if spec.cached is not None:
                 try:
                     module.__cached__ = spec.cached
@@ -669,7 +669,7 @@ def _load_backward_compatible(spec):
 
 def _load_unlocked(spec):
     # A helper for direct use by the import system.
-    if spec.loader is not None:
+    if spec.loader is not None:  # noqa: SIM102
         # Not a namespace package.
         if not hasattr(spec.loader, "exec_module"):
             return _load_backward_compatible(spec)
@@ -844,7 +844,7 @@ class FrozenImporter:
         if not _imp.is_frozen(name):
             raise ImportError(f"{name!r} is not a frozen module", name=name)
         code = _call_with_frames_removed(_imp.get_frozen_object, name)
-        exec(code, module.__dict__)
+        exec(code, module.__dict__)  # noqa: S102
 
     @classmethod
     def load_module(cls, fullname):
@@ -915,7 +915,7 @@ def _find_spec(name, path, target=None):
         raise ImportError("sys.meta_path is None, Python is likely shutting down")
 
     if not meta_path:
-        _warnings.warn("sys.meta_path is empty", ImportWarning)
+        _warnings.warn("sys.meta_path is empty", ImportWarning)  # noqa: F821
 
     # We check sys.modules here for the reload case.  While a passed-in
     # target will usually indicate a reload there is no guarantee, whereas
@@ -999,7 +999,7 @@ def _find_and_load_unlocked(name, import_):
             setattr(parent_module, child, module)
         except AttributeError:
             msg = f"Cannot set an attribute on {parent!r} for child module {child!r}"
-            _warnings.warn(msg, ImportWarning)
+            _warnings.warn(msg, ImportWarning)  # noqa: F821
     return module
 
 
@@ -1084,7 +1084,7 @@ def _calc___package__(globals):
     spec = globals.get("__spec__")
     if package is not None:
         if spec is not None and package != spec.parent:
-            _warnings.warn(
+            _warnings.warn(  # noqa: F821
                 f"__package__ != __spec__.parent ({package!r} != {spec.parent!r})",
                 ImportWarning,
                 stacklevel=3,
@@ -1093,7 +1093,7 @@ def _calc___package__(globals):
     elif spec is not None:
         return spec.parent
     else:
-        _warnings.warn(
+        _warnings.warn(  # noqa: F821
             "can't resolve package from __spec__ or __package__, "
             "falling back on __name__ and __path__",
             ImportWarning,

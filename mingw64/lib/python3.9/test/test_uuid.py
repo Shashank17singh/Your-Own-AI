@@ -19,7 +19,7 @@ def importable(name):
     try:
         __import__(name)
         return True
-    except:
+    except:  # noqa: E722
         return False
 
 
@@ -379,9 +379,9 @@ class BaseTestUUID:
                         for ff in [[], [("fields", f)]]:
                             args = dict(hh + bb + bble + ii + ff)
                             if len(args) != 0:
-                                badtype(lambda: self.uuid.UUID(h, **args))
+                                badtype(lambda: self.uuid.UUID(h, **args))  # noqa: B023
                             if len(args) != 1:
-                                badtype(lambda: self.uuid.UUID(**args))
+                                badtype(lambda: self.uuid.UUID(**args))  # noqa: B023
 
         # Immutability.
         u = self.uuid.UUID(h)
@@ -404,11 +404,11 @@ class BaseTestUUID:
 
     def test_getnode(self):
         node1 = self.uuid.getnode()
-        self.assertTrue(0 < node1 < (1 << 48), "%012x" % node1)
+        self.assertTrue(0 < node1 < (1 << 48), f"{node1:012x}")
 
         # Test it again to ensure consistency.
         node2 = self.uuid.getnode()
-        self.assertEqual(node1, node2, "%012x != %012x" % (node1, node2))
+        self.assertEqual(node1, node2, f"{node1:012x} != {node2:012x}")
 
     def test_pickle_roundtrip(self):
         def check(actual, expected):
@@ -431,99 +431,145 @@ class BaseTestUUID:
 
         pickled_uuids = [
             # Python 2.7, protocol 0
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR(dS'int'\nL287307832597519156748809049798316161701L\nsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR(dS'int'\nL287307832597519156748809049798316161701L\nsb."
+            ),
             # Python 2.7, protocol 1
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR}U\x03intL287307832597519156748809049798316161701L\nsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR}U\x03intL287307832597519156748809049798316161701L\nsb."
+            ),
             # Python 2.7, protocol 2
-            b"\x80\x02cuuid\nUUID\n)\x81}U\x03int\x8a\x11\xa5z\xecz\nI\xdf}"
-            b"\xde\xa0Bf\xcey%\xd8\x00sb.",
+            (
+                b"\x80\x02cuuid\nUUID\n)\x81}U\x03int\x8a\x11\xa5z\xecz\nI\xdf}"
+                b"\xde\xa0Bf\xcey%\xd8\x00sb."
+            ),
             # Python 3.6, protocol 0
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR(dVint\nL287307832597519156748809049798316161701L\nsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR(dVint\nL287307832597519156748809049798316161701L\nsb."
+            ),
             # Python 3.6, protocol 1
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR}X\x03\x00\x00\x00intL287307832597519156748809049798316161701L"
-            b"\nsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR}X\x03\x00\x00\x00intL287307832597519156748809049798316161701L"
+                b"\nsb."
+            ),
             # Python 3.6, protocol 2
-            b"\x80\x02cuuid\nUUID\n)\x81}X\x03\x00\x00\x00int\x8a\x11\xa5z\xec"
-            b"z\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00sb.",
+            (
+                b"\x80\x02cuuid\nUUID\n)\x81}X\x03\x00\x00\x00int\x8a\x11\xa5z\xec"
+                b"z\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00sb."
+            ),
             # Python 3.6, protocol 3
-            b"\x80\x03cuuid\nUUID\n)\x81}X\x03\x00\x00\x00int\x8a\x11\xa5z\xec"
-            b"z\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00sb.",
+            (
+                b"\x80\x03cuuid\nUUID\n)\x81}X\x03\x00\x00\x00int\x8a\x11\xa5z\xec"
+                b"z\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00sb."
+            ),
             # Python 3.6, protocol 4
-            b"\x80\x04\x95+\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x8c\x04UUI"
-            b"D\x93)\x81}\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0Bf\xcey%"
-            b"\xd8\x00sb.",
+            (
+                b"\x80\x04\x95+\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x8c\x04UUI"
+                b"D\x93)\x81}\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0Bf\xcey%"
+                b"\xd8\x00sb."
+            ),
             # Python 3.7, protocol 0
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
-            b"cuuid\nSafeUUID\n(NtRsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
+                b"cuuid\nSafeUUID\n(NtRsb."
+            ),
             # Python 3.7, protocol 1
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
-            b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(NtRub.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
+                b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(NtRub."
+            ),
             # Python 3.7, protocol 2
-            b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nN\x85Rub.",
+            (
+                b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nN\x85Rub."
+            ),
             # Python 3.7, protocol 3
-            b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nN\x85Rub.",
+            (
+                b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nN\x85Rub."
+            ),
             # Python 3.7, protocol 4
-            b"\x80\x04\x95F\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
-            b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
-            b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93N\x85Rub"
-            b".",
+            (
+                b"\x80\x04\x95F\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
+                b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
+                b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93N\x85Rub"
+                b"."
+            ),
         ]
         pickled_uuids_safe = [
             # Python 3.7, protocol 0
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
-            b"cuuid\nSafeUUID\n(I0\ntRsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
+                b"cuuid\nSafeUUID\n(I0\ntRsb."
+            ),
             # Python 3.7, protocol 1
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
-            b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(K\x00tRub.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
+                b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(K\x00tRub."
+            ),
             # Python 3.7, protocol 2
-            b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nK\x00\x85Rub.",
+            (
+                b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nK\x00\x85Rub."
+            ),
             # Python 3.7, protocol 3
-            b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nK\x00\x85Rub.",
+            (
+                b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nK\x00\x85Rub."
+            ),
             # Python 3.7, protocol 4
-            b"\x80\x04\x95G\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
-            b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
-            b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93K\x00"
-            b"\x85Rub.",
+            (
+                b"\x80\x04\x95G\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
+                b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
+                b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93K\x00"
+                b"\x85Rub."
+            ),
         ]
         pickled_uuids_unsafe = [
             # Python 3.7, protocol 0
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
-            b"cuuid\nSafeUUID\n(I-1\ntRsb.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR(dVint\nL287307832597519156748809049798316161701L\nsVis_safe\n"
+                b"cuuid\nSafeUUID\n(I-1\ntRsb."
+            ),
             # Python 3.7, protocol 1
-            b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
-            b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
-            b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(J\xff\xff\xff\xfftR"
-            b"ub.",
+            (
+                b"ccopy_reg\n_reconstructor\n(cuuid\nUUID\nc__builtin__\nobject\nN"
+                b"tR}(X\x03\x00\x00\x00intL287307832597519156748809049798316161701"
+                b"L\nX\x07\x00\x00\x00is_safecuuid\nSafeUUID\n(J\xff\xff\xff\xfftR"
+                b"ub."
+            ),
             # Python 3.7, protocol 2
-            b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nJ\xff\xff\xff\xff\x85Rub.",
+            (
+                b"\x80\x02cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nJ\xff\xff\xff\xff\x85Rub."
+            ),
             # Python 3.7, protocol 3
-            b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
-            b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
-            b"id\nSafeUUID\nJ\xff\xff\xff\xff\x85Rub.",
+            (
+                b"\x80\x03cuuid\nUUID\n)\x81}(X\x03\x00\x00\x00int\x8a\x11\xa5z"
+                b"\xecz\nI\xdf}\xde\xa0Bf\xcey%\xd8\x00X\x07\x00\x00\x00is_safecuu"
+                b"id\nSafeUUID\nJ\xff\xff\xff\xff\x85Rub."
+            ),
             # Python 3.7, protocol 4
-            b"\x80\x04\x95J\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
-            b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
-            b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93J\xff"
-            b"\xff\xff\xff\x85Rub.",
+            (
+                b"\x80\x04\x95J\x00\x00\x00\x00\x00\x00\x00\x8c\x04uuid\x94\x8c"
+                b"\x04UUID\x93)\x81}(\x8c\x03int\x8a\x11\xa5z\xecz\nI\xdf}\xde\xa0"
+                b"Bf\xcey%\xd8\x00\x8c\x07is_safeh\x00\x8c\x08SafeUUID\x93J\xff"
+                b"\xff\xff\xff\x85Rub."
+            ),
         ]
 
         u = self.uuid.UUID("d82579ce6642a0de7ddf490a7aec7aa5")
@@ -560,7 +606,7 @@ class BaseTestUUID:
             _GETTERS=[too_large_getter],
         ):
             node = self.uuid.getnode()
-        self.assertTrue(0 < node < (1 << 48), "%012x" % node)
+        self.assertTrue(0 < node < (1 << 48), f"{node:012x}")
 
         # Confirm that uuid1 can use the generated node, i.e., the that
         # uuid.getnode fell back on uuid._random_getnode() rather than using
@@ -830,11 +876,13 @@ class BaseTestInternals:
                 # empty 5rd field
                 b"52:54:00:9d::67",
                 # only 5 fields instead of 6
-                b"52:54:00:9d:0e"
-                # invalid character 'x'
-                b"52:54:00:9d:0e:6x"
-                # dash separator
-                b"52-54-00-9d-0e-67",
+                (
+                    b"52:54:00:9d:0e"
+                    # invalid character 'x'
+                    b"52:54:00:9d:0e:6x"
+                    # dash separator
+                    b"52-54-00-9d-0e-67"
+                ),
             ):
                 if aix:
                     mac = mac.replace(b":", b".")
@@ -940,10 +988,10 @@ eth0      Link encap:Ethernet  HWaddr 12:34:56:78:90:ab
     def check_node(self, node, requires=None):
         if requires and node is None:
             self.skipTest("requires " + requires)
-        hex = "%012x" % node
+        hex = f"{node:012x}"
         if support.verbose >= 2:
             print(hex, end=" ")
-        self.assertTrue(0 < node < (1 << 48), "%s is not an RFC 4122 node ID" % hex)
+        self.assertTrue(0 < node < (1 << 48), f"{hex} is not an RFC 4122 node ID")
 
     @unittest.skipUnless(
         _uuid._ifconfig_getnode in _uuid._GETTERS,
@@ -990,11 +1038,11 @@ eth0      Link encap:Ethernet  HWaddr 12:34:56:78:90:ab
         # The multicast bit, i.e. the least significant bit of first octet,
         # must be set for randomly generated MAC addresses.  See RFC 4122,
         # $4.1.6.
-        self.assertTrue(node & (1 << 40), "%012x" % node)
+        self.assertTrue(node & (1 << 40), f"{node:012x}")
         self.check_node(node)
 
         node2 = self.uuid._random_getnode()
-        self.assertNotEqual(node2, node, "%012x" % node)
+        self.assertNotEqual(node2, node, f"{node:012x}")
 
 
 class TestInternalsWithoutExtModule(BaseTestInternals, unittest.TestCase):

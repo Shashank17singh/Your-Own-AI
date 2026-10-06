@@ -116,12 +116,12 @@ class C:
 
 
 def test_main():
-    from test import test_doctest2
+    from test import test_doctest2  # noqa: PLW0406
 
     EXPECTED = 19
-    f, t = support.run_doctest(test_doctest2)
+    _f, t = support.run_doctest(test_doctest2)
     if t != EXPECTED:
-        raise support.TestFailed("expected %d tests to run, not %d" % (EXPECTED, t))
+        raise support.TestFailed("expected %d tests to run, not %d" % (EXPECTED, t))  # noqa: UP031
 
 
 # Pollute the namespace with a bunch of imported functions and classes,

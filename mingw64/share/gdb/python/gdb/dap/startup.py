@@ -7,7 +7,7 @@ from enum import IntEnum, auto
 
 import gdb
 
-if sys.version_info[0] == 3 and sys.version_info[1] <= 6:
+if sys.version_info[0] == 3 and sys.version_info[1] <= 6:  # noqa: YTT201, YTT203
     DAPQueue = queue.Queue
 else:
     DAPQueue = queue.SimpleQueue
@@ -34,8 +34,8 @@ def start_thread(name, target, args=()):
     def thread_wrapper(*args):
         try:
             target(*args)
-        except Exception as err:
-            err_string = "%s, %s" % (err, type(err))
+        except Exception as err:  # noqa: BLE001
+            err_string = f"{err}, {type(err)}"
             thread_log("caught exception: " + err_string)
             log_stack()
         finally:
@@ -128,7 +128,7 @@ class LoggingParam(gdb.Parameter):
                 self.log_file.close()
                 self.log_file = None
             if self.value is not None:
-                self.log_file = open(self.value, "w")
+                self.log_file = open(self.value, "w")  # noqa: SIM115
         return ""
 
 

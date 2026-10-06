@@ -61,8 +61,8 @@ class NS:
 
     def __repr__(self):
         sorted_items = sorted(self.__dict__.items())
-        kwarg_str = ", ".join(["%s=%r" % tup for tup in sorted_items])
-        return "%s(%s)" % (type(self).__name__, kwarg_str)
+        kwarg_str = ", ".join(["{}={!r}".format(*tup) for tup in sorted_items])
+        return f"{type(self).__name__}({kwarg_str})"
 
     def __eq__(self, other):
         return vars(self) == vars(other)
@@ -166,7 +166,7 @@ class ParserTesterMetaclass(type):
         def many_groups(parser, argument_signatures):
             """Add each argument in its own group to the parser"""
             for i, sig in enumerate(argument_signatures):
-                group = parser.add_argument_group("foo:%i" % i)
+                group = parser.add_argument_group("foo:%i" % i)  # noqa: UP031
                 group.add_argument(*sig.args, **sig.kwargs)
 
         # --------------------------
@@ -248,9 +248,9 @@ ParserTestCase = ParserTesterMetaclass("ParserTestCase", bases, {})
 class TestOptionalsSingleDash(ParserTestCase):
     """Test an Optional with a single-dash option string"""
 
-    argument_signatures = [Sig("-x")]
-    failures = ["-x", "a", "--foo", "-x --foo", "-x -y"]
-    successes = [
+    argument_signatures = [Sig("-x")]  # noqa: RUF012
+    failures = ["-x", "a", "--foo", "-x --foo", "-x -y"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-x a", NS(x="a")),
         ("-xa", NS(x="a")),
@@ -262,12 +262,12 @@ class TestOptionalsSingleDash(ParserTestCase):
 class TestOptionalsSingleDashCombined(ParserTestCase):
     """Test an Optional with a single-dash option string"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", action="store_true"),
         Sig("-yyy", action="store_const", const=42),
         Sig("-z"),
     ]
-    failures = [
+    failures = [  # noqa: RUF012
         "a",
         "--foo",
         "-xa",
@@ -280,7 +280,7 @@ class TestOptionalsSingleDashCombined(ParserTestCase):
         "-yyyza",
         "-xyza",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("", NS(x=False, yyy=None, z=None)),
         ("-x", NS(x=True, yyy=None, z=None)),
         ("-za", NS(x=False, yyy=None, z="a")),
@@ -299,9 +299,9 @@ class TestOptionalsSingleDashCombined(ParserTestCase):
 class TestOptionalsSingleDashLong(ParserTestCase):
     """Test an Optional with a multi-character single-dash option string"""
 
-    argument_signatures = [Sig("-foo")]
-    failures = ["-foo", "a", "--foo", "-foo --foo", "-foo -y", "-fooa"]
-    successes = [
+    argument_signatures = [Sig("-foo")]  # noqa: RUF012
+    failures = ["-foo", "a", "--foo", "-foo --foo", "-foo -y", "-fooa"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None)),
         ("-foo a", NS(foo="a")),
         ("-foo -1", NS(foo="-1")),
@@ -313,9 +313,9 @@ class TestOptionalsSingleDashLong(ParserTestCase):
 class TestOptionalsSingleDashSubsetAmbiguous(ParserTestCase):
     """Test Optionals where option strings are subsets of each other"""
 
-    argument_signatures = [Sig("-f"), Sig("-foobar"), Sig("-foorab")]
-    failures = ["-f", "-foo", "-fo", "-foo b", "-foob", "-fooba", "-foora"]
-    successes = [
+    argument_signatures = [Sig("-f"), Sig("-foobar"), Sig("-foorab")]  # noqa: RUF012
+    failures = ["-f", "-foo", "-fo", "-foo b", "-foob", "-fooba", "-foora"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(f=None, foobar=None, foorab=None)),
         ("-f a", NS(f="a", foobar=None, foorab=None)),
         ("-fa", NS(f="a", foobar=None, foorab=None)),
@@ -329,9 +329,9 @@ class TestOptionalsSingleDashSubsetAmbiguous(ParserTestCase):
 class TestOptionalsSingleDashAmbiguous(ParserTestCase):
     """Test Optionals that partially match but are not subsets"""
 
-    argument_signatures = [Sig("-foobar"), Sig("-foorab")]
-    failures = ["-f", "-f a", "-fa", "-foa", "-foo", "-fo", "-foo b"]
-    successes = [
+    argument_signatures = [Sig("-foobar"), Sig("-foorab")]  # noqa: RUF012
+    failures = ["-f", "-f a", "-fa", "-foa", "-foo", "-fo", "-foo b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foobar=None, foorab=None)),
         ("-foob a", NS(foobar="a", foorab=None)),
         ("-foor a", NS(foobar=None, foorab="a")),
@@ -345,9 +345,9 @@ class TestOptionalsSingleDashAmbiguous(ParserTestCase):
 class TestOptionalsNumeric(ParserTestCase):
     """Test an Optional with a short opt string"""
 
-    argument_signatures = [Sig("-1", dest="one")]
-    failures = ["-1", "a", "-1 --foo", "-1 -y", "-1 -1", "-1 -2"]
-    successes = [
+    argument_signatures = [Sig("-1", dest="one")]  # noqa: RUF012
+    failures = ["-1", "a", "-1 --foo", "-1 -y", "-1 -1", "-1 -2"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(one=None)),
         ("-1 a", NS(one="a")),
         ("-1a", NS(one="a")),
@@ -358,9 +358,9 @@ class TestOptionalsNumeric(ParserTestCase):
 class TestOptionalsDoubleDash(ParserTestCase):
     """Test an Optional with a double-dash option string"""
 
-    argument_signatures = [Sig("--foo")]
-    failures = ["--foo", "-f", "-f a", "a", "--foo -x", "--foo --bar"]
-    successes = [
+    argument_signatures = [Sig("--foo")]  # noqa: RUF012
+    failures = ["--foo", "-f", "-f a", "a", "--foo -x", "--foo --bar"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None)),
         ("--foo a", NS(foo="a")),
         ("--foo=a", NS(foo="a")),
@@ -372,12 +372,12 @@ class TestOptionalsDoubleDash(ParserTestCase):
 class TestOptionalsDoubleDashPartialMatch(ParserTestCase):
     """Tests partial matching with a double-dash option string"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--badger", action="store_true"),
         Sig("--bat"),
     ]
-    failures = ["--bar", "--b", "--ba", "--b=2", "--ba=4", "--badge 5"]
-    successes = [
+    failures = ["--bar", "--b", "--ba", "--b=2", "--ba=4", "--badge 5"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(badger=False, bat=None)),
         ("--bat X", NS(badger=False, bat="X")),
         ("--bad", NS(badger=True, bat=None)),
@@ -390,12 +390,12 @@ class TestOptionalsDoubleDashPartialMatch(ParserTestCase):
 class TestOptionalsDoubleDashPrefixMatch(ParserTestCase):
     """Tests when one double-dash option string is a prefix of another"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--badger", action="store_true"),
         Sig("--ba"),
     ]
-    failures = ["--bar", "--b", "--ba", "--b=2", "--badge 5"]
-    successes = [
+    failures = ["--bar", "--b", "--ba", "--b=2", "--badge 5"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(badger=False, ba=None)),
         ("--ba X", NS(badger=False, ba="X")),
         ("--ba=X", NS(badger=False, ba="X")),
@@ -409,13 +409,13 @@ class TestOptionalsDoubleDashPrefixMatch(ParserTestCase):
 class TestOptionalsSingleDoubleDash(ParserTestCase):
     """Test an Optional with single- and double-dash option strings"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-f", action="store_true"),
         Sig("--bar"),
         Sig("-baz", action="store_const", const=42),
     ]
-    failures = ["--bar", "-fbar", "-fbaz", "-bazf", "-b B", "B"]
-    successes = [
+    failures = ["--bar", "-fbar", "-fbaz", "-bazf", "-b B", "B"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(f=False, bar=None, baz=None)),
         ("-f", NS(f=True, bar=None, baz=None)),
         ("--ba B", NS(f=False, bar="B", baz=None)),
@@ -429,12 +429,12 @@ class TestOptionalsAlternatePrefixChars(ParserTestCase):
     """Test an Optional with option strings with custom prefixes"""
 
     parser_signature = Sig(prefix_chars="+:/", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("+f", action="store_true"),
         Sig("::bar"),
         Sig("/baz", action="store_const", const=42),
     ]
-    failures = [
+    failures = [  # noqa: RUF012
         "--bar",
         "-fbar",
         "-b B",
@@ -448,7 +448,7 @@ class TestOptionalsAlternatePrefixChars(ParserTestCase):
         "::help",
         "/help",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("", NS(f=False, bar=None, baz=None)),
         ("+f", NS(f=True, bar=None, baz=None)),
         ("::ba B", NS(f=False, bar="B", baz=None)),
@@ -464,13 +464,13 @@ class TestOptionalsAlternatePrefixCharsAddedHelp(ParserTestCase):
     http://bugs.python.org/issue9444"""
 
     parser_signature = Sig(prefix_chars="+:/", add_help=True)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("+f", action="store_true"),
         Sig("::bar"),
         Sig("/baz", action="store_const", const=42),
     ]
-    failures = ["--bar", "-fbar", "-b B", "B", "-f", "--bar B", "-baz"]
-    successes = [
+    failures = ["--bar", "-fbar", "-b B", "B", "-f", "--bar B", "-baz"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(f=False, bar=None, baz=None)),
         ("+f", NS(f=True, bar=None, baz=None)),
         ("::ba B", NS(f=False, bar="B", baz=None)),
@@ -484,19 +484,19 @@ class TestOptionalsAlternatePrefixCharsMultipleShortArgs(ParserTestCase):
     """Verify that Optionals must be called with their defined prefixes"""
 
     parser_signature = Sig(prefix_chars="+-", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", action="store_true"),
         Sig("+y", action="store_true"),
         Sig("+z", action="store_true"),
     ]
-    failures = [
+    failures = [  # noqa: RUF012
         "-w",
         "-xyz",
         "+x",
         "-y",
         "+xyz",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("", NS(x=False, y=False, z=False)),
         ("-x", NS(x=True, y=False, z=False)),
         ("+y -x", NS(x=True, y=True, z=False)),
@@ -507,11 +507,11 @@ class TestOptionalsAlternatePrefixCharsMultipleShortArgs(ParserTestCase):
 class TestOptionalsShortLong(ParserTestCase):
     """Test a combination of single- and double-dash option strings"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-v", "--verbose", "-n", "--noisy", action="store_true"),
     ]
-    failures = ["--x --verbose", "-N", "a", "-v x"]
-    successes = [
+    failures = ["--x --verbose", "-N", "a", "-v x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(verbose=False)),
         ("-v", NS(verbose=True)),
         ("--verbose", NS(verbose=True)),
@@ -523,9 +523,9 @@ class TestOptionalsShortLong(ParserTestCase):
 class TestOptionalsDest(ParserTestCase):
     """Tests various means of setting destination"""
 
-    argument_signatures = [Sig("--foo-bar"), Sig("--baz", dest="zabbaz")]
-    failures = ["a"]
-    successes = [
+    argument_signatures = [Sig("--foo-bar"), Sig("--baz", dest="zabbaz")]  # noqa: RUF012
+    failures = ["a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--foo-bar f", NS(foo_bar="f", zabbaz=None)),
         ("--baz g", NS(foo_bar=None, zabbaz="g")),
         ("--foo-bar h --baz i", NS(foo_bar="h", zabbaz="i")),
@@ -536,9 +536,9 @@ class TestOptionalsDest(ParserTestCase):
 class TestOptionalsDefault(ParserTestCase):
     """Tests specifying a default for an Optional"""
 
-    argument_signatures = [Sig("-x"), Sig("-y", default=42)]
-    failures = ["a"]
-    successes = [
+    argument_signatures = [Sig("-x"), Sig("-y", default=42)]  # noqa: RUF012
+    failures = ["a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=42)),
         ("-xx", NS(x="x", y=42)),
         ("-yy", NS(x=None, y="y")),
@@ -548,9 +548,9 @@ class TestOptionalsDefault(ParserTestCase):
 class TestOptionalsNargsDefault(ParserTestCase):
     """Tests not specifying the number of args for an Optional"""
 
-    argument_signatures = [Sig("-x")]
-    failures = ["a", "-x"]
-    successes = [
+    argument_signatures = [Sig("-x")]  # noqa: RUF012
+    failures = ["a", "-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-x a", NS(x="a")),
     ]
@@ -559,9 +559,9 @@ class TestOptionalsNargsDefault(ParserTestCase):
 class TestOptionalsNargs1(ParserTestCase):
     """Tests specifying 1 arg for an Optional"""
 
-    argument_signatures = [Sig("-x", nargs=1)]
-    failures = ["a", "-x"]
-    successes = [
+    argument_signatures = [Sig("-x", nargs=1)]  # noqa: RUF012
+    failures = ["a", "-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-x a", NS(x=["a"])),
     ]
@@ -570,9 +570,9 @@ class TestOptionalsNargs1(ParserTestCase):
 class TestOptionalsNargs3(ParserTestCase):
     """Tests specifying 3 args for an Optional"""
 
-    argument_signatures = [Sig("-x", nargs=3)]
-    failures = ["a", "-x", "-x a", "-x a b", "a -x", "a -x b"]
-    successes = [
+    argument_signatures = [Sig("-x", nargs=3)]  # noqa: RUF012
+    failures = ["a", "-x", "-x a", "-x a b", "a -x", "a -x b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-x a b c", NS(x=["a", "b", "c"])),
     ]
@@ -581,14 +581,14 @@ class TestOptionalsNargs3(ParserTestCase):
 class TestOptionalsNargsOptional(ParserTestCase):
     """Tests specifying an Optional arg for an Optional"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", nargs="?"),
         Sig("-x", nargs="?", const=42),
         Sig("-y", nargs="?", default="spam"),
         Sig("-z", nargs="?", type=int, const="42", default="84"),
     ]
-    failures = ["2"]
-    successes = [
+    failures = ["2"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(w=None, x=None, y="spam", z=84)),
         ("-w", NS(w=None, x=None, y="spam", z=84)),
         ("-w 2", NS(w="2", x=None, y="spam", z=84)),
@@ -604,12 +604,12 @@ class TestOptionalsNargsOptional(ParserTestCase):
 class TestOptionalsNargsZeroOrMore(ParserTestCase):
     """Tests specifying args for an Optional that accepts zero or more"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", nargs="*"),
         Sig("-y", nargs="*", default="spam"),
     ]
-    failures = ["a"]
-    successes = [
+    failures = ["a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y="spam")),
         ("-x", NS(x=[], y="spam")),
         ("-x a", NS(x=["a"], y="spam")),
@@ -623,12 +623,12 @@ class TestOptionalsNargsZeroOrMore(ParserTestCase):
 class TestOptionalsNargsOneOrMore(ParserTestCase):
     """Tests specifying args for an Optional that accepts one or more"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", nargs="+"),
         Sig("-y", nargs="+", default="spam"),
     ]
-    failures = ["a", "-x", "-y", "a -x", "a -y b"]
-    successes = [
+    failures = ["a", "-x", "-y", "a -x", "a -y b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y="spam")),
         ("-x a", NS(x=["a"], y="spam")),
         ("-x a b", NS(x=["a", "b"], y="spam")),
@@ -640,12 +640,12 @@ class TestOptionalsNargsOneOrMore(ParserTestCase):
 class TestOptionalsChoices(ParserTestCase):
     """Tests specifying the choices for an Optional"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-f", choices="abc"),
         Sig("-g", type=int, choices=range(5)),
     ]
-    failures = ["a", "-f d", "-fad", "-ga", "-g 6"]
-    successes = [
+    failures = ["a", "-f d", "-fad", "-ga", "-g 6"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(f=None, g=None)),
         ("-f a", NS(f="a", g=None)),
         ("-f c", NS(f="c", g=None)),
@@ -658,11 +658,11 @@ class TestOptionalsChoices(ParserTestCase):
 class TestOptionalsRequired(ParserTestCase):
     """Tests an optional action that is required"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=int, required=True),
     ]
-    failures = ["a", ""]
-    successes = [
+    failures = ["a", ""]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("-x 1", NS(x=1)),
         ("-x42", NS(x=42)),
     ]
@@ -671,9 +671,9 @@ class TestOptionalsRequired(ParserTestCase):
 class TestOptionalsActionStore(ParserTestCase):
     """Tests the store action for an Optional"""
 
-    argument_signatures = [Sig("-x", action="store")]
-    failures = ["a", "a -x"]
-    successes = [
+    argument_signatures = [Sig("-x", action="store")]  # noqa: RUF012
+    failures = ["a", "a -x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-xfoo", NS(x="foo")),
     ]
@@ -682,9 +682,9 @@ class TestOptionalsActionStore(ParserTestCase):
 class TestOptionalsActionStoreConst(ParserTestCase):
     """Tests the store_const action for an Optional"""
 
-    argument_signatures = [Sig("-y", action="store_const", const=object)]
-    failures = ["a"]
-    successes = [
+    argument_signatures = [Sig("-y", action="store_const", const=object)]  # noqa: RUF012
+    failures = ["a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(y=None)),
         ("-y", NS(y=object)),
     ]
@@ -693,9 +693,9 @@ class TestOptionalsActionStoreConst(ParserTestCase):
 class TestOptionalsActionStoreFalse(ParserTestCase):
     """Tests the store_false action for an Optional"""
 
-    argument_signatures = [Sig("-z", action="store_false")]
-    failures = ["a", "-za", "-z a"]
-    successes = [
+    argument_signatures = [Sig("-z", action="store_false")]  # noqa: RUF012
+    failures = ["a", "-za", "-z a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(z=True)),
         ("-z", NS(z=False)),
     ]
@@ -704,9 +704,9 @@ class TestOptionalsActionStoreFalse(ParserTestCase):
 class TestOptionalsActionStoreTrue(ParserTestCase):
     """Tests the store_true action for an Optional"""
 
-    argument_signatures = [Sig("--apple", action="store_true")]
-    failures = ["a", "--apple=b", "--apple b"]
-    successes = [
+    argument_signatures = [Sig("--apple", action="store_true")]  # noqa: RUF012
+    failures = ["a", "--apple=b", "--apple b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(apple=False)),
         ("--apple", NS(apple=True)),
     ]
@@ -715,9 +715,9 @@ class TestOptionalsActionStoreTrue(ParserTestCase):
 class TestBooleanOptionalAction(ParserTestCase):
     """Tests BooleanOptionalAction"""
 
-    argument_signatures = [Sig("--foo", action=argparse.BooleanOptionalAction)]
-    failures = ["--foo bar", "--foo=bar"]
-    successes = [
+    argument_signatures = [Sig("--foo", action=argparse.BooleanOptionalAction)]  # noqa: RUF012
+    failures = ["--foo bar", "--foo=bar"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None)),
         ("--foo", NS(foo=True)),
         ("--no-foo", NS(foo=False)),
@@ -739,11 +739,11 @@ class TestBooleanOptionalAction(ParserTestCase):
 class TestBooleanOptionalActionRequired(ParserTestCase):
     """Tests BooleanOptionalAction required"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", required=True, action=argparse.BooleanOptionalAction)
     ]
-    failures = [""]
-    successes = [
+    failures = [""]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--foo", NS(foo=True)),
         ("--no-foo", NS(foo=False)),
     ]
@@ -752,9 +752,9 @@ class TestBooleanOptionalActionRequired(ParserTestCase):
 class TestOptionalsActionAppend(ParserTestCase):
     """Tests the append action for an Optional"""
 
-    argument_signatures = [Sig("--baz", action="append")]
-    failures = ["a", "--baz", "a --baz", "--baz a b"]
-    successes = [
+    argument_signatures = [Sig("--baz", action="append")]  # noqa: RUF012
+    failures = ["a", "--baz", "a --baz", "--baz a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(baz=None)),
         ("--baz a", NS(baz=["a"])),
         ("--baz a --baz b", NS(baz=["a", "b"])),
@@ -764,9 +764,9 @@ class TestOptionalsActionAppend(ParserTestCase):
 class TestOptionalsActionAppendWithDefault(ParserTestCase):
     """Tests the append action for an Optional"""
 
-    argument_signatures = [Sig("--baz", action="append", default=["X"])]
-    failures = ["a", "--baz", "a --baz", "--baz a b"]
-    successes = [
+    argument_signatures = [Sig("--baz", action="append", default=["X"])]  # noqa: RUF012
+    failures = ["a", "--baz", "a --baz", "--baz a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(baz=["X"])),
         ("--baz a", NS(baz=["X", "a"])),
         ("--baz a --baz b", NS(baz=["X", "a", "b"])),
@@ -776,12 +776,12 @@ class TestOptionalsActionAppendWithDefault(ParserTestCase):
 class TestOptionalsActionAppendConst(ParserTestCase):
     """Tests the append_const action for an Optional"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-b", action="append_const", const=Exception),
         Sig("-c", action="append", dest="b"),
     ]
-    failures = ["a", "-c", "a -c", "-bx", "-b x"]
-    successes = [
+    failures = ["a", "-c", "a -c", "-bx", "-b x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(b=None)),
         ("-b", NS(b=[Exception])),
         ("-b -cx -b -cyz", NS(b=[Exception, "x", Exception, "yz"])),
@@ -791,12 +791,12 @@ class TestOptionalsActionAppendConst(ParserTestCase):
 class TestOptionalsActionAppendConstWithDefault(ParserTestCase):
     """Tests the append_const action for an Optional"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-b", action="append_const", const=Exception, default=["X"]),
         Sig("-c", action="append", dest="b"),
     ]
-    failures = ["a", "-c", "a -c", "-bx", "-b x"]
-    successes = [
+    failures = ["a", "-c", "a -c", "-bx", "-b x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(b=["X"])),
         ("-b", NS(b=["X", Exception])),
         ("-b -cx -b -cyz", NS(b=["X", Exception, "x", Exception, "yz"])),
@@ -806,9 +806,9 @@ class TestOptionalsActionAppendConstWithDefault(ParserTestCase):
 class TestOptionalsActionCount(ParserTestCase):
     """Tests the count action for an Optional"""
 
-    argument_signatures = [Sig("-x", action="count")]
-    failures = ["a", "-x a", "-x b", "-x a -x b"]
-    successes = [
+    argument_signatures = [Sig("-x", action="count")]  # noqa: RUF012
+    failures = ["a", "-x a", "-x b", "-x a -x b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None)),
         ("-x", NS(x=1)),
     ]
@@ -817,13 +817,13 @@ class TestOptionalsActionCount(ParserTestCase):
 class TestOptionalsAllowLongAbbreviation(ParserTestCase):
     """Allow long options to be abbreviated unambiguously"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo"),
         Sig("--foobaz"),
         Sig("--fooble", action="store_true"),
     ]
-    failures = ["--foob 5", "--foob"]
-    successes = [
+    failures = ["--foob 5", "--foob"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None, foobaz=None, fooble=False)),
         ("--foo 7", NS(foo="7", foobaz=None, fooble=False)),
         ("--fooba a", NS(foo=None, foobaz="a", fooble=False)),
@@ -835,13 +835,13 @@ class TestOptionalsDisallowLongAbbreviation(ParserTestCase):
     """Do not allow abbreviations of long options at all"""
 
     parser_signature = Sig(allow_abbrev=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo"),
         Sig("--foodle", action="store_true"),
         Sig("--foonly"),
     ]
-    failures = ["-foon 3", "--foon 3", "--food", "--food --foo 2"]
-    successes = [
+    failures = ["-foon 3", "--foon 3", "--food", "--food --foo 2"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None, foodle=False, foonly=None)),
         ("--foo 3", NS(foo="3", foodle=False, foonly=None)),
         ("--foonly 7 --foodle --foo 2", NS(foo="2", foodle=True, foonly="7")),
@@ -852,13 +852,13 @@ class TestOptionalsDisallowLongAbbreviationPrefixChars(ParserTestCase):
     """Disallowing abbreviations works with alternative prefix characters"""
 
     parser_signature = Sig(prefix_chars="+", allow_abbrev=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("++foo"),
         Sig("++foodle", action="store_true"),
         Sig("++foonly"),
     ]
-    failures = ["+foon 3", "++foon 3", "++food", "++food ++foo 2"]
-    successes = [
+    failures = ["+foon 3", "++foon 3", "++food", "++food ++foo 2"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None, foodle=False, foonly=None)),
         ("++foo 3", NS(foo="3", foodle=False, foonly=None)),
         ("++foonly 7 ++foodle ++foo 2", NS(foo="2", foodle=True, foonly="7")),
@@ -869,12 +869,12 @@ class TestDisallowLongAbbreviationAllowsShortGrouping(ParserTestCase):
     """Do not allow abbreviations of long options at all"""
 
     parser_signature = Sig(allow_abbrev=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-r"),
         Sig("-c", action="count"),
     ]
-    failures = ["-r", "-c -r"]
-    successes = [
+    failures = ["-r", "-c -r"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(r=None, c=None)),
         ("-ra", NS(r="a", c=None)),
         ("-rcc", NS(r="cc", c=None)),
@@ -888,12 +888,12 @@ class TestDisallowLongAbbreviationAllowsShortGroupingPrefix(ParserTestCase):
     """Short option grouping works with custom prefix and allow_abbrev=False"""
 
     parser_signature = Sig(prefix_chars="+", allow_abbrev=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("+r"),
         Sig("+c", action="count"),
     ]
-    failures = ["+r", "+c +r"]
-    successes = [
+    failures = ["+r", "+c +r"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(r=None, c=None)),
         ("+ra", NS(r="a", c=None)),
         ("+rcc", NS(r="cc", c=None)),
@@ -911,9 +911,9 @@ class TestDisallowLongAbbreviationAllowsShortGroupingPrefix(ParserTestCase):
 class TestPositionalsNargsNone(ParserTestCase):
     """Test a Positional that doesn't specify nargs"""
 
-    argument_signatures = [Sig("foo")]
-    failures = ["", "-x", "a b"]
-    successes = [
+    argument_signatures = [Sig("foo")]  # noqa: RUF012
+    failures = ["", "-x", "a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo="a")),
     ]
 
@@ -921,9 +921,9 @@ class TestPositionalsNargsNone(ParserTestCase):
 class TestPositionalsNargs1(ParserTestCase):
     """Test a Positional that specifies an nargs of 1"""
 
-    argument_signatures = [Sig("foo", nargs=1)]
-    failures = ["", "-x", "a b"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=1)]  # noqa: RUF012
+    failures = ["", "-x", "a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=["a"])),
     ]
 
@@ -931,9 +931,9 @@ class TestPositionalsNargs1(ParserTestCase):
 class TestPositionalsNargs2(ParserTestCase):
     """Test a Positional that specifies an nargs of 2"""
 
-    argument_signatures = [Sig("foo", nargs=2)]
-    failures = ["", "a", "-x", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=2)]  # noqa: RUF012
+    failures = ["", "a", "-x", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo=["a", "b"])),
     ]
 
@@ -941,9 +941,9 @@ class TestPositionalsNargs2(ParserTestCase):
 class TestPositionalsNargsZeroOrMore(ParserTestCase):
     """Test a Positional that specifies unlimited nargs"""
 
-    argument_signatures = [Sig("foo", nargs="*")]
-    failures = ["-x"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="*")]  # noqa: RUF012
+    failures = ["-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=[])),
         ("a", NS(foo=["a"])),
         ("a b", NS(foo=["a", "b"])),
@@ -953,9 +953,9 @@ class TestPositionalsNargsZeroOrMore(ParserTestCase):
 class TestPositionalsNargsZeroOrMoreDefault(ParserTestCase):
     """Test a Positional that specifies unlimited nargs and a default"""
 
-    argument_signatures = [Sig("foo", nargs="*", default="bar")]
-    failures = ["-x"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="*", default="bar")]  # noqa: RUF012
+    failures = ["-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo="bar")),
         ("a", NS(foo=["a"])),
         ("a b", NS(foo=["a", "b"])),
@@ -965,9 +965,9 @@ class TestPositionalsNargsZeroOrMoreDefault(ParserTestCase):
 class TestPositionalsNargsOneOrMore(ParserTestCase):
     """Test a Positional that specifies one or more nargs"""
 
-    argument_signatures = [Sig("foo", nargs="+")]
-    failures = ["", "-x"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="+")]  # noqa: RUF012
+    failures = ["", "-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=["a"])),
         ("a b", NS(foo=["a", "b"])),
     ]
@@ -976,9 +976,9 @@ class TestPositionalsNargsOneOrMore(ParserTestCase):
 class TestPositionalsNargsOptional(ParserTestCase):
     """Tests an Optional Positional"""
 
-    argument_signatures = [Sig("foo", nargs="?")]
-    failures = ["-x", "a b"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?")]  # noqa: RUF012
+    failures = ["-x", "a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None)),
         ("a", NS(foo="a")),
     ]
@@ -987,9 +987,9 @@ class TestPositionalsNargsOptional(ParserTestCase):
 class TestPositionalsNargsOptionalDefault(ParserTestCase):
     """Tests an Optional Positional with a default value"""
 
-    argument_signatures = [Sig("foo", nargs="?", default=42)]
-    failures = ["-x", "a b"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?", default=42)]  # noqa: RUF012
+    failures = ["-x", "a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=42)),
         ("a", NS(foo="a")),
     ]
@@ -1000,11 +1000,11 @@ class TestPositionalsNargsOptionalConvertedDefault(ParserTestCase):
     that needs to be converted to the appropriate type.
     """
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo", nargs="?", type=int, default="42"),
     ]
-    failures = ["-x", "a b", "1 2"]
-    successes = [
+    failures = ["-x", "a b", "1 2"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=42)),
         ("1", NS(foo=1)),
     ]
@@ -1013,9 +1013,9 @@ class TestPositionalsNargsOptionalConvertedDefault(ParserTestCase):
 class TestPositionalsNargsNoneNone(ParserTestCase):
     """Test two Positionals that don't specify nargs"""
 
-    argument_signatures = [Sig("foo"), Sig("bar")]
-    failures = ["", "-x", "a", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo"), Sig("bar")]  # noqa: RUF012
+    failures = ["", "-x", "a", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo="a", bar="b")),
     ]
 
@@ -1023,9 +1023,9 @@ class TestPositionalsNargsNoneNone(ParserTestCase):
 class TestPositionalsNargsNone1(ParserTestCase):
     """Test a Positional with no nargs followed by one with 1"""
 
-    argument_signatures = [Sig("foo"), Sig("bar", nargs=1)]
-    failures = ["", "--foo", "a", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo"), Sig("bar", nargs=1)]  # noqa: RUF012
+    failures = ["", "--foo", "a", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo="a", bar=["b"])),
     ]
 
@@ -1033,9 +1033,9 @@ class TestPositionalsNargsNone1(ParserTestCase):
 class TestPositionalsNargs2None(ParserTestCase):
     """Test a Positional with 2 nargs followed by one with none"""
 
-    argument_signatures = [Sig("foo", nargs=2), Sig("bar")]
-    failures = ["", "--foo", "a", "a b", "a b c d"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=2), Sig("bar")]  # noqa: RUF012
+    failures = ["", "--foo", "a", "a b", "a b c d"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b c", NS(foo=["a", "b"], bar="c")),
     ]
 
@@ -1043,9 +1043,9 @@ class TestPositionalsNargs2None(ParserTestCase):
 class TestPositionalsNargsNoneZeroOrMore(ParserTestCase):
     """Test a Positional with no nargs followed by one with unlimited"""
 
-    argument_signatures = [Sig("foo"), Sig("bar", nargs="*")]
-    failures = ["", "--foo"]
-    successes = [
+    argument_signatures = [Sig("foo"), Sig("bar", nargs="*")]  # noqa: RUF012
+    failures = ["", "--foo"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo="a", bar=[])),
         ("a b", NS(foo="a", bar=["b"])),
         ("a b c", NS(foo="a", bar=["b", "c"])),
@@ -1055,9 +1055,9 @@ class TestPositionalsNargsNoneZeroOrMore(ParserTestCase):
 class TestPositionalsNargsNoneOneOrMore(ParserTestCase):
     """Test a Positional with no nargs followed by one with one or more"""
 
-    argument_signatures = [Sig("foo"), Sig("bar", nargs="+")]
-    failures = ["", "--foo", "a"]
-    successes = [
+    argument_signatures = [Sig("foo"), Sig("bar", nargs="+")]  # noqa: RUF012
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo="a", bar=["b"])),
         ("a b c", NS(foo="a", bar=["b", "c"])),
     ]
@@ -1066,9 +1066,9 @@ class TestPositionalsNargsNoneOneOrMore(ParserTestCase):
 class TestPositionalsNargsNoneOptional(ParserTestCase):
     """Test a Positional with no nargs followed by one with an Optional"""
 
-    argument_signatures = [Sig("foo"), Sig("bar", nargs="?")]
-    failures = ["", "--foo", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo"), Sig("bar", nargs="?")]  # noqa: RUF012
+    failures = ["", "--foo", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo="a", bar=None)),
         ("a b", NS(foo="a", bar="b")),
     ]
@@ -1077,9 +1077,9 @@ class TestPositionalsNargsNoneOptional(ParserTestCase):
 class TestPositionalsNargsZeroOrMoreNone(ParserTestCase):
     """Test a Positional with unlimited nargs followed by one with none"""
 
-    argument_signatures = [Sig("foo", nargs="*"), Sig("bar")]
-    failures = ["", "--foo"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="*"), Sig("bar")]  # noqa: RUF012
+    failures = ["", "--foo"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=[], bar="a")),
         ("a b", NS(foo=["a"], bar="b")),
         ("a b c", NS(foo=["a", "b"], bar="c")),
@@ -1089,9 +1089,9 @@ class TestPositionalsNargsZeroOrMoreNone(ParserTestCase):
 class TestPositionalsNargsOneOrMoreNone(ParserTestCase):
     """Test a Positional with one or more nargs followed by one with none"""
 
-    argument_signatures = [Sig("foo", nargs="+"), Sig("bar")]
-    failures = ["", "--foo", "a"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="+"), Sig("bar")]  # noqa: RUF012
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo=["a"], bar="b")),
         ("a b c", NS(foo=["a", "b"], bar="c")),
     ]
@@ -1100,9 +1100,9 @@ class TestPositionalsNargsOneOrMoreNone(ParserTestCase):
 class TestPositionalsNargsOptionalNone(ParserTestCase):
     """Test a Positional with an Optional nargs followed by one with none"""
 
-    argument_signatures = [Sig("foo", nargs="?", default=42), Sig("bar")]
-    failures = ["", "--foo", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?", default=42), Sig("bar")]  # noqa: RUF012
+    failures = ["", "--foo", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=42, bar="a")),
         ("a b", NS(foo="a", bar="b")),
     ]
@@ -1111,9 +1111,9 @@ class TestPositionalsNargsOptionalNone(ParserTestCase):
 class TestPositionalsNargs2ZeroOrMore(ParserTestCase):
     """Test a Positional with 2 nargs followed by one with unlimited"""
 
-    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="*")]
-    failures = ["", "--foo", "a"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="*")]  # noqa: RUF012
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo=["a", "b"], bar=[])),
         ("a b c", NS(foo=["a", "b"], bar=["c"])),
     ]
@@ -1122,9 +1122,9 @@ class TestPositionalsNargs2ZeroOrMore(ParserTestCase):
 class TestPositionalsNargs2OneOrMore(ParserTestCase):
     """Test a Positional with 2 nargs followed by one with one or more"""
 
-    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="+")]
-    failures = ["", "--foo", "a", "a b"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="+")]  # noqa: RUF012
+    failures = ["", "--foo", "a", "a b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b c", NS(foo=["a", "b"], bar=["c"])),
     ]
 
@@ -1132,9 +1132,9 @@ class TestPositionalsNargs2OneOrMore(ParserTestCase):
 class TestPositionalsNargs2Optional(ParserTestCase):
     """Test a Positional with 2 nargs followed by one optional"""
 
-    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="?")]
-    failures = ["", "--foo", "a", "a b c d"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs=2), Sig("bar", nargs="?")]  # noqa: RUF012
+    failures = ["", "--foo", "a", "a b c d"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo=["a", "b"], bar=None)),
         ("a b c", NS(foo=["a", "b"], bar="c")),
     ]
@@ -1143,12 +1143,12 @@ class TestPositionalsNargs2Optional(ParserTestCase):
 class TestPositionalsNargsZeroOrMore1(ParserTestCase):
     """Test a Positional with unlimited nargs followed by one with 1"""
 
-    argument_signatures = [Sig("foo", nargs="*"), Sig("bar", nargs=1)]
-    failures = [
+    argument_signatures = [Sig("foo", nargs="*"), Sig("bar", nargs=1)]  # noqa: RUF012
+    failures = [  # noqa: RUF012
         "",
         "--foo",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("a", NS(foo=[], bar=["a"])),
         ("a b", NS(foo=["a"], bar=["b"])),
         ("a b c", NS(foo=["a", "b"], bar=["c"])),
@@ -1158,9 +1158,9 @@ class TestPositionalsNargsZeroOrMore1(ParserTestCase):
 class TestPositionalsNargsOneOrMore1(ParserTestCase):
     """Test a Positional with one or more nargs followed by one with 1"""
 
-    argument_signatures = [Sig("foo", nargs="+"), Sig("bar", nargs=1)]
-    failures = ["", "--foo", "a"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="+"), Sig("bar", nargs=1)]  # noqa: RUF012
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo=["a"], bar=["b"])),
         ("a b c", NS(foo=["a", "b"], bar=["c"])),
     ]
@@ -1169,9 +1169,9 @@ class TestPositionalsNargsOneOrMore1(ParserTestCase):
 class TestPositionalsNargsOptional1(ParserTestCase):
     """Test a Positional with an Optional nargs followed by one with 1"""
 
-    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs=1)]
-    failures = ["", "--foo", "a b c"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs=1)]  # noqa: RUF012
+    failures = ["", "--foo", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=None, bar=["a"])),
         ("a b", NS(foo="a", bar=["b"])),
     ]
@@ -1180,13 +1180,13 @@ class TestPositionalsNargsOptional1(ParserTestCase):
 class TestPositionalsNargsNoneZeroOrMore1(ParserTestCase):
     """Test three Positionals: no nargs, unlimited nargs and 1 nargs"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo"),
         Sig("bar", nargs="*"),
         Sig("baz", nargs=1),
     ]
-    failures = ["", "--foo", "a"]
-    successes = [
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo="a", bar=[], baz=["b"])),
         ("a b c", NS(foo="a", bar=["b"], baz=["c"])),
     ]
@@ -1195,13 +1195,13 @@ class TestPositionalsNargsNoneZeroOrMore1(ParserTestCase):
 class TestPositionalsNargsNoneOneOrMore1(ParserTestCase):
     """Test three Positionals: no nargs, one or more nargs and 1 nargs"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo"),
         Sig("bar", nargs="+"),
         Sig("baz", nargs=1),
     ]
-    failures = ["", "--foo", "a", "b"]
-    successes = [
+    failures = ["", "--foo", "a", "b"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b c", NS(foo="a", bar=["b"], baz=["c"])),
         ("a b c d", NS(foo="a", bar=["b", "c"], baz=["d"])),
     ]
@@ -1210,13 +1210,13 @@ class TestPositionalsNargsNoneOneOrMore1(ParserTestCase):
 class TestPositionalsNargsNoneOptional1(ParserTestCase):
     """Test three Positionals: no nargs, optional narg and 1 nargs"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo"),
         Sig("bar", nargs="?", default=0.625),
         Sig("baz", nargs=1),
     ]
-    failures = ["", "--foo", "a"]
-    successes = [
+    failures = ["", "--foo", "a"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b", NS(foo="a", bar=0.625, baz=["b"])),
         ("a b c", NS(foo="a", bar="b", baz=["c"])),
     ]
@@ -1225,12 +1225,12 @@ class TestPositionalsNargsNoneOptional1(ParserTestCase):
 class TestPositionalsNargsOptionalOptional(ParserTestCase):
     """Test two optional nargs"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo", nargs="?"),
         Sig("bar", nargs="?", default=42),
     ]
-    failures = ["--foo", "a b c"]
-    successes = [
+    failures = ["--foo", "a b c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None, bar=42)),
         ("a", NS(foo="a", bar=42)),
         ("a b", NS(foo="a", bar="b")),
@@ -1240,9 +1240,9 @@ class TestPositionalsNargsOptionalOptional(ParserTestCase):
 class TestPositionalsNargsOptionalZeroOrMore(ParserTestCase):
     """Test an Optional narg followed by unlimited nargs"""
 
-    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs="*")]
-    failures = ["--foo"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs="*")]  # noqa: RUF012
+    failures = ["--foo"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=None, bar=[])),
         ("a", NS(foo="a", bar=[])),
         ("a b", NS(foo="a", bar=["b"])),
@@ -1253,9 +1253,9 @@ class TestPositionalsNargsOptionalZeroOrMore(ParserTestCase):
 class TestPositionalsNargsOptionalOneOrMore(ParserTestCase):
     """Test an Optional narg followed by one or more nargs"""
 
-    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs="+")]
-    failures = ["", "--foo"]
-    successes = [
+    argument_signatures = [Sig("foo", nargs="?"), Sig("bar", nargs="+")]  # noqa: RUF012
+    failures = ["", "--foo"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(foo=None, bar=["a"])),
         ("a b", NS(foo="a", bar=["b"])),
         ("a b c", NS(foo="a", bar=["b", "c"])),
@@ -1265,9 +1265,9 @@ class TestPositionalsNargsOptionalOneOrMore(ParserTestCase):
 class TestPositionalsChoicesString(ParserTestCase):
     """Test a set of single-character choices"""
 
-    argument_signatures = [Sig("spam", choices=set("abcdefg"))]
-    failures = ["", "--foo", "h", "42", "ef"]
-    successes = [
+    argument_signatures = [Sig("spam", choices=set("abcdefg"))]  # noqa: RUF012
+    failures = ["", "--foo", "h", "42", "ef"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a", NS(spam="a")),
         ("g", NS(spam="g")),
     ]
@@ -1276,9 +1276,9 @@ class TestPositionalsChoicesString(ParserTestCase):
 class TestPositionalsChoicesInt(ParserTestCase):
     """Test a set of integer choices"""
 
-    argument_signatures = [Sig("spam", type=int, choices=range(20))]
-    failures = ["", "--foo", "h", "42", "ef"]
-    successes = [
+    argument_signatures = [Sig("spam", type=int, choices=range(20))]  # noqa: RUF012
+    failures = ["", "--foo", "h", "42", "ef"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("4", NS(spam=4)),
         ("15", NS(spam=15)),
     ]
@@ -1287,12 +1287,12 @@ class TestPositionalsChoicesInt(ParserTestCase):
 class TestPositionalsActionAppend(ParserTestCase):
     """Test the 'append' action"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("spam", action="append"),
         Sig("spam", action="append", nargs=2),
     ]
-    failures = ["", "--foo", "a", "a b", "a b c d"]
-    successes = [
+    failures = ["", "--foo", "a", "a b", "a b c d"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a b c", NS(spam=["a", ["b", "c"]])),
     ]
 
@@ -1305,12 +1305,12 @@ class TestPositionalsActionAppend(ParserTestCase):
 class TestOptionalsNumericAndPositionals(ParserTestCase):
     """Tests negative number args when numeric options are present"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("x", nargs="?"),
         Sig("-4", dest="y", action="store_true"),
     ]
-    failures = ["-2", "-315"]
-    successes = [
+    failures = ["-2", "-315"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=False)),
         ("a", NS(x="a", y=False)),
         ("-4", NS(x=None, y=True)),
@@ -1321,12 +1321,12 @@ class TestOptionalsNumericAndPositionals(ParserTestCase):
 class TestOptionalsAlmostNumericAndPositionals(ParserTestCase):
     """Tests negative number args when almost numeric options are present"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("x", nargs="?"),
         Sig("-k4", dest="y", action="store_true"),
     ]
-    failures = ["-k3"]
-    successes = [
+    failures = ["-k3"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=False)),
         ("-2", NS(x="-2", y=False)),
         ("a", NS(x="a", y=False)),
@@ -1336,12 +1336,12 @@ class TestOptionalsAlmostNumericAndPositionals(ParserTestCase):
 
 
 class TestEmptyAndSpaceContainingArguments(ParserTestCase):
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("x", nargs="?"),
         Sig("-y", "--yyy", dest="y"),
     ]
-    failures = ["-y"]
-    successes = [
+    failures = ["-y"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ([""], NS(x="", y=None)),
         (["a badger"], NS(x="a badger", y=None)),
         (["-a badger"], NS(x="-a badger", y=None)),
@@ -1355,13 +1355,13 @@ class TestEmptyAndSpaceContainingArguments(ParserTestCase):
 
 class TestPrefixCharacterOnlyArguments(ParserTestCase):
     parser_signature = Sig(prefix_chars="-+")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-", dest="x", nargs="?", const="badger"),
         Sig("+", dest="y", type=int, default=42),
         Sig("-+-", dest="z", action="store_true"),
     ]
-    failures = ["-y", "+ -"]
-    successes = [
+    failures = ["-y", "+ -"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=42, z=False)),
         ("-", NS(x="badger", y=42, z=False)),
         ("- X", NS(x="X", y=42, z=False)),
@@ -1374,9 +1374,9 @@ class TestPrefixCharacterOnlyArguments(ParserTestCase):
 class TestNargsZeroOrMore(ParserTestCase):
     """Tests specifying args for an Optional that accepts zero or more"""
 
-    argument_signatures = [Sig("-x", nargs="*"), Sig("y", nargs="*")]
-    failures = []
-    successes = [
+    argument_signatures = [Sig("-x", nargs="*"), Sig("y", nargs="*")]  # noqa: RUF012
+    failures = []  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=[])),
         ("-x", NS(x=[], y=[])),
         ("-x a", NS(x=["a"], y=[])),
@@ -1390,9 +1390,9 @@ class TestNargsZeroOrMore(ParserTestCase):
 class TestNargsRemainder(ParserTestCase):
     """Tests specifying a positional with nargs=REMAINDER"""
 
-    argument_signatures = [Sig("x"), Sig("y", nargs="..."), Sig("-z")]
-    failures = ["", "-z", "-z Z"]
-    successes = [
+    argument_signatures = [Sig("x"), Sig("y", nargs="..."), Sig("-z")]  # noqa: RUF012
+    failures = ["", "-z", "-z Z"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("X", NS(x="X", y=[], z=None)),
         ("-z Z X", NS(x="X", y=[], z="Z")),
         ("X A B -z Z", NS(x="X", y=["A", "B", "-z", "Z"], z=None)),
@@ -1403,12 +1403,12 @@ class TestNargsRemainder(ParserTestCase):
 class TestOptionLike(ParserTestCase):
     """Tests options that may or may not be arguments"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=float),
         Sig("-3", type=float, dest="y"),
         Sig("z", nargs="*"),
     ]
-    failures = [
+    failures = [  # noqa: RUF012
         "-x",
         "-y2.5",
         "-xa",
@@ -1423,7 +1423,7 @@ class TestOptionLike(ParserTestCase):
         "-x -1 a",
         "-3 -1 a",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("", NS(x=None, y=None, z=[])),
         ("-x 2.5", NS(x=2.5, y=None, z=[])),
         ("-x 2.5 a", NS(x=2.5, y=None, z=["a"])),
@@ -1441,13 +1441,13 @@ class TestOptionLike(ParserTestCase):
 class TestDefaultSuppress(ParserTestCase):
     """Test actions with suppressed defaults"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo", nargs="?", default=argparse.SUPPRESS),
         Sig("bar", nargs="*", default=argparse.SUPPRESS),
         Sig("--baz", action="store_true", default=argparse.SUPPRESS),
     ]
-    failures = ["-x"]
-    successes = [
+    failures = ["-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS()),
         ("a", NS(foo="a")),
         ("a b", NS(foo="a", bar=["b"])),
@@ -1461,13 +1461,13 @@ class TestParserDefaultSuppress(ParserTestCase):
     """Test actions with a parser-level default of SUPPRESS"""
 
     parser_signature = Sig(argument_default=argparse.SUPPRESS)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("foo", nargs="?"),
         Sig("bar", nargs="*"),
         Sig("--baz", action="store_true"),
     ]
-    failures = ["-x"]
-    successes = [
+    failures = ["-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS()),
         ("a", NS(foo="a")),
         ("a b", NS(foo="a", bar=["b"])),
@@ -1481,14 +1481,14 @@ class TestParserDefault42(ParserTestCase):
     """Test actions with a parser-level default of 42"""
 
     parser_signature = Sig(argument_default=42)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--version", action="version", version="1.0"),
         Sig("foo", nargs="?"),
         Sig("bar", nargs="*"),
         Sig("--baz", action="store_true"),
     ]
-    failures = ["-x"]
-    successes = [
+    failures = ["-x"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("", NS(foo=42, bar=42, baz=42, version=42)),
         ("a", NS(foo="a", bar=42, baz=42, version=42)),
         ("a b", NS(foo="a", bar=["b"], baz=42, version=42)),
@@ -1513,13 +1513,13 @@ class TestArgumentsFromFile(TempDirMixin, ParserTestCase):
                 file.write(text)
 
     parser_signature = Sig(fromfile_prefix_chars="@")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-a"),
         Sig("x"),
         Sig("y", nargs="+"),
     ]
-    failures = ["", "-b", "X", "@invalid", "@missing"]
-    successes = [
+    failures = ["", "-b", "X", "@invalid", "@missing"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("X Y", NS(a=None, x="X", y=["Y"])),
         ("X -a A Y Z", NS(a="A", x="X", y=["Y", "Z"])),
         ("@hello X", NS(a=None, x="hello world!", y=["X"])),
@@ -1551,11 +1551,11 @@ class TestArgumentsFromFileConverter(TempDirMixin, ParserTestCase):
 
     parser_class = FromFileConverterArgumentParser
     parser_signature = Sig(fromfile_prefix_chars="@")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("y", nargs="+"),
     ]
-    failures = []
-    successes = [
+    failures = []  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("@hello X", NS(y=["hello", "world!", "X"])),
     ]
 
@@ -1601,7 +1601,7 @@ eq_stderr = StdStreamComparer("stderr")
 
 
 class RFile:
-    seen = {}
+    seen = {}  # noqa: RUF012
 
     def __init__(self, name):
         self.name = name
@@ -1627,12 +1627,12 @@ class TestFileTypeR(TempDirMixin, ParserTestCase):
                 file.write(file_name)
         self.create_readonly_file("readonly")
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=argparse.FileType()),
         Sig("spam", type=argparse.FileType("r")),
     ]
-    failures = ["-x", "", "non-existent-file.txt"]
-    successes = [
+    failures = ["-x", "", "non-existent-file.txt"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("foo", NS(x=None, spam=RFile("foo"))),
         ("-x foo bar", NS(x=RFile("foo"), spam=RFile("bar"))),
         ("bar -x foo", NS(x=RFile("foo"), spam=RFile("bar"))),
@@ -1646,17 +1646,17 @@ class TestFileTypeDefaults(TempDirMixin, ParserTestCase):
 
     def setUp(self):
         super().setUp()
-        file = open(os.path.join(self.temp_dir, "good"), "w")
+        file = open(os.path.join(self.temp_dir, "good"), "w")  # noqa: SIM115
         file.write("good")
         file.close()
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-c", type=argparse.FileType("r"), default="no-file.txt"),
     ]
     # should provoke no such file error
-    failures = [""]
+    failures = [""]  # noqa: RUF012
     # should not provoke error because default file is created
-    successes = [("-c good", NS(c=RFile("good")))]
+    successes = [("-c good", NS(c=RFile("good")))]  # noqa: RUF012
 
 
 class TestFileTypeRB(TempDirMixin, ParserTestCase):
@@ -1668,12 +1668,12 @@ class TestFileTypeRB(TempDirMixin, ParserTestCase):
             with open(os.path.join(self.temp_dir, file_name), "w") as file:
                 file.write(file_name)
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=argparse.FileType("rb")),
         Sig("spam", type=argparse.FileType("rb")),
     ]
-    failures = ["-x", ""]
-    successes = [
+    failures = ["-x", ""]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("foo", NS(x=None, spam=RFile("foo"))),
         ("-x foo bar", NS(x=RFile("foo"), spam=RFile("bar"))),
         ("bar -x foo", NS(x=RFile("foo"), spam=RFile("bar"))),
@@ -1682,7 +1682,7 @@ class TestFileTypeRB(TempDirMixin, ParserTestCase):
 
 
 class WFile:
-    seen = set()
+    seen = set()  # noqa: RUF012
 
     def __init__(self, name):
         self.name = name
@@ -1706,12 +1706,12 @@ class TestFileTypeW(TempDirMixin, ParserTestCase):
         super().setUp()
         self.create_readonly_file("readonly")
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=argparse.FileType("w")),
         Sig("spam", type=argparse.FileType("w")),
     ]
-    failures = ["-x", "", "readonly"]
-    successes = [
+    failures = ["-x", "", "readonly"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("foo", NS(x=None, spam=WFile("foo"))),
         ("-x foo bar", NS(x=WFile("foo"), spam=WFile("bar"))),
         ("bar -x foo", NS(x=WFile("foo"), spam=WFile("bar"))),
@@ -1720,12 +1720,12 @@ class TestFileTypeW(TempDirMixin, ParserTestCase):
 
 
 class TestFileTypeWB(TempDirMixin, ParserTestCase):
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=argparse.FileType("wb")),
         Sig("spam", type=argparse.FileType("wb")),
     ]
-    failures = ["-x", ""]
-    successes = [
+    failures = ["-x", ""]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("foo", NS(x=None, spam=WFile("foo"))),
         ("-x foo bar", NS(x=WFile("foo"), spam=WFile("bar"))),
         ("bar -x foo", NS(x=WFile("foo"), spam=WFile("bar"))),
@@ -1763,8 +1763,7 @@ class TestFileTypeMissingInitialization(TestCase):
             parser.add_argument("-x", type=argparse.FileType)
 
         self.assertEqual(
-            "%r is a FileType class object, instance of it must be passed"
-            % (argparse.FileType,),
+            f"{argparse.FileType!r} is a FileType class object, instance of it must be passed",
             str(cm.exception),
         )
 
@@ -1772,12 +1771,12 @@ class TestFileTypeMissingInitialization(TestCase):
 class TestTypeCallable(ParserTestCase):
     """Test some callables as option/argument types"""
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--eggs", type=complex),
         Sig("spam", type=float),
     ]
-    failures = ["a", "42j", "--eggs a", "--eggs 2i"]
-    successes = [
+    failures = ["a", "42j", "--eggs a", "--eggs 2i"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--eggs=42 42", NS(eggs=42, spam=42.0)),
         ("--eggs 2j -- -1.5", NS(eggs=2j, spam=-1.5)),
         ("1024.675", NS(eggs=None, spam=1024.675)),
@@ -1794,12 +1793,12 @@ class TestTypeUserDefined(ParserTestCase):
         def __eq__(self, other):
             return (type(self), self.value) == (type(other), other.value)
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=MyType),
         Sig("spam", type=MyType),
     ]
-    failures = []
-    successes = [
+    failures = []  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a -x b", NS(x=MyType("b"), spam=MyType("a"))),
         ("-xf g", NS(x=MyType("f"), spam=MyType("g"))),
     ]
@@ -1815,12 +1814,12 @@ class TestTypeClassicClass(ParserTestCase):
         def __eq__(self, other):
             return (type(self), self.value) == (type(other), other.value)
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=C),
         Sig("spam", type=C),
     ]
-    failures = []
-    successes = [
+    failures = []  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("a -x b", NS(x=C("b"), spam=C("a"))),
         ("-xf g", NS(x=C("f"), spam=C("g"))),
     ]
@@ -1832,7 +1831,7 @@ class TestTypeRegistration(TestCase):
     def test(self):
 
         def get_my_type(string):
-            return "my_type{%s}" % string
+            return f"my_type{{{string}}}"
 
         parser = argparse.ArgumentParser()
         parser.register("type", "my_type", get_my_type)
@@ -1857,8 +1856,8 @@ class TestActionUserDefined(ParserTestCase):
         def __call__(self, parser, namespace, value, option_string=None):
             try:
                 # check destination and option string
-                assert self.dest == "spam", "dest: %s" % self.dest
-                assert option_string == "-s", "flag: %s" % option_string
+                assert self.dest == "spam", f"dest: {self.dest}"
+                assert option_string == "-s", f"flag: {option_string}"
                 # when option is before argument, badger=2, and when
                 # option is after argument, badger=<whatever was set>
                 expected_ns = NS(spam=0.25)
@@ -1867,22 +1866,21 @@ class TestActionUserDefined(ParserTestCase):
                 elif value in [2.0]:
                     expected_ns.badger = 84
                 else:
-                    raise AssertionError("value: %s" % value)
-                assert expected_ns == namespace, "expected %s, got %s" % (
-                    expected_ns,
-                    namespace,
+                    raise AssertionError(f"value: {value}")
+                assert expected_ns == namespace, (
+                    f"expected {expected_ns}, got {namespace}"
                 )
             except AssertionError:
                 e = sys.exc_info()[1]
-                raise ArgumentParserError("opt_action failed: %s" % e)
+                raise ArgumentParserError(f"opt_action failed: {e}")
             namespace.spam = value
 
     class PositionalAction(argparse.Action):
         def __call__(self, parser, namespace, value, option_string=None):
             try:
-                assert option_string is None, "option_string: %s" % option_string
+                assert option_string is None, f"option_string: {option_string}"
                 # check destination
-                assert self.dest == "badger", "dest: %s" % self.dest
+                assert self.dest == "badger", f"dest: {self.dest}"
                 # when argument is before option, spam=0.25, and when
                 # option is after argument, spam=<whatever was set>
                 expected_ns = NS(badger=2)
@@ -1893,22 +1891,21 @@ class TestActionUserDefined(ParserTestCase):
                 elif value in [2]:
                     expected_ns.spam = 0.125
                 else:
-                    raise AssertionError("value: %s" % value)
-                assert expected_ns == namespace, "expected %s, got %s" % (
-                    expected_ns,
-                    namespace,
+                    raise AssertionError(f"value: {value}")
+                assert expected_ns == namespace, (
+                    f"expected {expected_ns}, got {namespace}"
                 )
             except AssertionError:
                 e = sys.exc_info()[1]
-                raise ArgumentParserError("arg_action failed: %s" % e)
+                raise ArgumentParserError(f"arg_action failed: {e}")
             namespace.badger = value
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-s", dest="spam", action=OptionalAction, type=float, default=0.25),
         Sig("badger", action=PositionalAction, type=int, nargs="?", default=2),
     ]
-    failures = []
-    successes = [
+    failures = []  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("-s0.125", NS(spam=0.125, badger=2)),
         ("42", NS(spam=0.25, badger=42)),
         ("-s 0.625 1", NS(spam=0.625, badger=1)),
@@ -1921,7 +1918,7 @@ class TestActionRegistration(TestCase):
 
     class MyAction(argparse.Action):
         def __call__(self, parser, namespace, values, option_string=None):
-            setattr(namespace, self.dest, "foo[%s]" % values)
+            setattr(namespace, self.dest, f"foo[{values}]")
 
     def test(self):
 
@@ -1934,11 +1931,11 @@ class TestActionRegistration(TestCase):
 
 
 class TestActionExtend(ParserTestCase):
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", action="extend", nargs="+", type=str),
     ]
     failures = ()
-    successes = [
+    successes = [  # noqa: RUF012
         ("--foo f1 --foo f2 f3 f4", NS(foo=["f1", "f2", "f3", "f4"])),
     ]
 
@@ -1981,7 +1978,7 @@ class TestAddSubparsers(TestCase):
         self.assertArgumentParserError(parser.add_subparsers)
 
         # add first sub-parser
-        parser1_kwargs = dict(description="1 description")
+        parser1_kwargs = {"description": "1 description"}
         if subparser_help:
             parser1_kwargs["help"] = "1 help"
         if aliases:
@@ -1991,7 +1988,7 @@ class TestAddSubparsers(TestCase):
         parser1.add_argument("x", choices="abc", help="x help")
 
         # add second sub-parser
-        parser2_kwargs = dict(description="2 description")
+        parser2_kwargs = {"description": "2 description"}
         if subparser_help:
             parser2_kwargs["help"] = "2 help"
         parser2 = subparsers.add_parser("2", **parser2_kwargs)
@@ -1999,7 +1996,7 @@ class TestAddSubparsers(TestCase):
         parser2.add_argument("z", type=complex, nargs="*", help="z help")
 
         # add third sub-parser
-        parser3_kwargs = dict(description="3 description")
+        parser3_kwargs = {"description": "3 description"}
         if subparser_help:
             parser3_kwargs["help"] = "3 help"
         parser3 = subparsers.add_parser("3", **parser3_kwargs)
@@ -2256,8 +2253,8 @@ class TestAddSubparsers(TestCase):
         subparsers = parser.add_subparsers(
             title="subcommands", description="command help", help="additional text"
         )
-        parser1 = subparsers.add_parser("1")
-        parser2 = subparsers.add_parser("2")
+        subparsers.add_parser("1")
+        subparsers.add_parser("2")
         self.assertEqual(
             parser.format_usage(), "usage: PROG [-h] [--foo] bar {1,2} ...\n"
         )
@@ -2701,14 +2698,14 @@ class TestMutuallyExclusiveSimple(MEMixin, TestCase):
         group.add_argument("--baz", nargs="?", const="Z", help="baz help")
         return parser
 
-    failures = ["--bar X --baz Y", "--bar X --baz"]
-    successes = [
+    failures = ["--bar X --baz Y", "--bar X --baz"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--bar X", NS(bar="X", baz=None)),
         ("--bar X --bar Z", NS(bar="Z", baz=None)),
         ("--baz Y", NS(bar=None, baz="Y")),
         ("--baz", NS(bar=None, baz="Z")),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(bar=None, baz=None)),
     ]
 
@@ -2737,14 +2734,14 @@ class TestMutuallyExclusiveLong(MEMixin, TestCase):
         group.add_argument("--pqrst", help="pqrst help")
         return parser
 
-    failures = ["--klmno X --pqrst Y"]
-    successes = [
+    failures = ["--klmno X --pqrst Y"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--klmno X", NS(abcde=None, fghij=None, klmno="X", pqrst=None)),
         ("--abcde Y --klmno X", NS(abcde="Y", fghij=None, klmno="X", pqrst=None)),
         ("--pqrst X", NS(abcde=None, fghij=None, klmno=None, pqrst="X")),
         ("--pqrst X --fghij Y", NS(abcde=None, fghij="Y", klmno=None, pqrst="X")),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(abcde=None, fghij=None, klmno=None, pqrst=None)),
     ]
 
@@ -2775,13 +2772,13 @@ class TestMutuallyExclusiveFirstSuppressed(MEMixin, TestCase):
         group.add_argument("-y", action="store_false", help="y help")
         return parser
 
-    failures = ["-x X -y"]
-    successes = [
+    failures = ["-x X -y"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("-x X", NS(x="X", y=True)),
         ("-x X -x Y", NS(x="Y", y=True)),
         ("-y", NS(x=None, y=False)),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(x=None, y=True)),
     ]
 
@@ -2809,18 +2806,18 @@ class TestMutuallyExclusiveManySuppressed(MEMixin, TestCase):
         add("--bladder", help=argparse.SUPPRESS)
         return parser
 
-    failures = [
+    failures = [  # noqa: RUF012
         "--spam --badger",
         "--badger --bladder B",
         "--bladder B --spam",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("--spam", NS(spam=True, badger=True, bladder=None)),
         ("--badger", NS(spam=False, badger=False, bladder=None)),
         ("--bladder B", NS(spam=False, badger=True, bladder="B")),
         ("--spam --spam", NS(spam=True, badger=True, bladder=None)),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(spam=False, badger=True, bladder=None)),
     ]
 
@@ -2843,20 +2840,20 @@ class TestMutuallyExclusiveOptionalAndPositional(MEMixin, TestCase):
         group.add_argument("badger", nargs="*", default="X", help="BADGER")
         return parser
 
-    failures = [
+    failures = [  # noqa: RUF012
         "--foo --spam S",
         "--spam S X",
         "X --foo",
         "X Y Z --spam S",
         "--foo X Y",
     ]
-    successes = [
+    successes = [  # noqa: RUF012
         ("--foo", NS(foo=True, spam=None, badger="X")),
         ("--spam S", NS(foo=False, spam="S", badger="X")),
         ("X", NS(foo=False, spam=None, badger=["X"])),
         ("X Y Z", NS(foo=False, spam=None, badger=["X", "Y", "Z"])),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(foo=False, spam=None, badger="X")),
     ]
 
@@ -2889,8 +2886,8 @@ class TestMutuallyExclusiveOptionalsMixed(MEMixin, TestCase):
         group.add_argument("-c", action="store_true", help="c help")
         return parser
 
-    failures = ["-a -b", "-b -c", "-a -c", "-a -b -c"]
-    successes = [
+    failures = ["-a -b", "-b -c", "-a -c", "-a -b -c"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("-a", NS(a=True, b=False, c=False, x=False, y=False)),
         ("-b", NS(a=False, b=True, c=False, x=False, y=False)),
         ("-c", NS(a=False, b=False, c=True, x=False, y=False)),
@@ -2898,7 +2895,7 @@ class TestMutuallyExclusiveOptionalsMixed(MEMixin, TestCase):
         ("-y -b", NS(a=False, b=True, c=False, x=False, y=True)),
         ("-x -y -c", NS(a=False, b=False, c=True, x=True, y=True)),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(a=False, b=False, c=False, x=False, y=False)),
         ("-x", NS(a=False, b=False, c=False, x=True, y=False)),
         ("-y", NS(a=False, b=False, c=False, x=False, y=True)),
@@ -2930,12 +2927,12 @@ class TestMutuallyExclusiveInGroup(MEMixin, TestCase):
         mutex_group.add_argument("--baz", help="baz help")
         return parser
 
-    failures = ["--bar X --baz Y", "--baz X --bar Y"]
-    successes = [
+    failures = ["--bar X --baz Y", "--baz X --bar Y"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("--bar X", NS(bar="X", baz=None)),
         ("--baz Y", NS(bar=None, baz="Y")),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("", NS(bar=None, baz=None)),
     ]
 
@@ -2969,15 +2966,15 @@ class TestMutuallyExclusiveOptionalsAndPositionalsMixed(MEMixin, TestCase):
         group.add_argument("-c", action="store_true", help="c help")
         return parser
 
-    failures = ["X A -b", "-b -c", "-c X A"]
-    successes = [
+    failures = ["X A -b", "-b -c", "-c X A"]  # noqa: RUF012
+    successes = [  # noqa: RUF012
         ("X A", NS(a="A", b=False, c=False, x="X", y=False)),
         ("X -b", NS(a=None, b=True, c=False, x="X", y=False)),
         ("X -c", NS(a=None, b=False, c=True, x="X", y=False)),
         ("X A -y", NS(a="A", b=False, c=False, x="X", y=True)),
         ("X -y -b", NS(a=None, b=True, c=False, x="X", y=True)),
     ]
-    successes_when_not_required = [
+    successes_when_not_required = [  # noqa: RUF012
         ("X", NS(a=None, b=False, c=False, x="X", y=False)),
         ("X -y", NS(a=None, b=False, c=False, x="X", y=True)),
     ]
@@ -3242,7 +3239,7 @@ class TestHelpFormattingMetaclass(type):
                     self.test_print,
                     self.test_print_file,
                 ]:
-                    test_name = "%s_%s" % (test_func.__name__, func_suffix)
+                    test_name = f"{test_func.__name__}_{func_suffix}"
 
                     def test_wrapper(self, test_func=test_func):
                         test_func(self)
@@ -3282,12 +3279,12 @@ class TestHelpFormattingMetaclass(type):
 
             def test_format(self, tester):
                 parser = self._get_parser(tester)
-                format = getattr(parser, "format_%s" % self.func_suffix)
+                format = getattr(parser, f"format_{self.func_suffix}")
                 self._test(tester, format())
 
             def test_print(self, tester):
                 parser = self._get_parser(tester)
-                print_ = getattr(parser, "print_%s" % self.func_suffix)
+                print_ = getattr(parser, f"print_{self.func_suffix}")
                 old_stream = getattr(sys, self.std_name)
                 setattr(sys, self.std_name, StdIOBuffer())
                 try:
@@ -3299,7 +3296,7 @@ class TestHelpFormattingMetaclass(type):
 
             def test_print_file(self, tester):
                 parser = self._get_parser(tester)
-                print_ = getattr(parser, "print_%s" % self.func_suffix)
+                print_ = getattr(parser, f"print_{self.func_suffix}")
                 sfile = StdIOBuffer()
                 print_(sfile)
                 parser_text = sfile.getvalue()
@@ -3318,14 +3315,14 @@ class TestHelpBiggerOptionals(HelpTestCase):
     """Make sure that argument help aligns when options are longer"""
 
     parser_signature = Sig(prog="PROG", description="DESCRIPTION", epilog="EPILOG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-v", "--version", action="version", version="0.1"),
         Sig("-x", action="store_true", help="X HELP"),
         Sig("--y", help="Y HELP"),
         Sig("foo", help="FOO HELP"),
         Sig("bar", help="BAR HELP"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-v] [-x] [--y Y] foo bar
         """
@@ -3416,14 +3413,14 @@ class TestHelpBiggerOptionalGroups(HelpTestCase):
     """Make sure that argument help aligns when options are longer"""
 
     parser_signature = Sig(prog="PROG", description="DESCRIPTION", epilog="EPILOG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-v", "--version", action="version", version="0.1"),
         Sig("-x", action="store_true", help="X HELP"),
         Sig("--y", help="Y HELP"),
         Sig("foo", help="FOO HELP"),
         Sig("bar", help="BAR HELP"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("GROUP TITLE", description="GROUP DESCRIPTION"),
             [Sig("baz", help="BAZ HELP"), Sig("-z", nargs="+", help="Z HELP")],
@@ -3466,13 +3463,13 @@ class TestHelpBiggerPositionals(HelpTestCase):
     """Make sure that help aligns when arguments are longer"""
 
     parser_signature = Sig(usage="USAGE", description="DESCRIPTION")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", action="store_true", help="X HELP"),
         Sig("--y", help="Y HELP"),
         Sig("ekiekiekifekang", help="EKI HELP"),
         Sig("bar", help="BAR HELP"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: USAGE
         """
@@ -3507,11 +3504,11 @@ class TestHelpReformatting(HelpTestCase):
         "that is so long that it should go onto multiple "
         "lines when wrapped",
     )
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", metavar="XX", help="oddly\n    formatted -x help"),
         Sig("y", metavar="yyy", help="normal y help"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig(
                 "title",
@@ -3562,11 +3559,11 @@ class TestHelpWrappingShortNames(HelpTestCase):
     """Make sure that text after short names starts on the first line"""
 
     parser_signature = Sig(prog="PROG", description="D\nD" * 30)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", metavar="XX", help="XHH HX" * 20),
         Sig("y", metavar="yyy", help="YH YH" * 20),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (Sig("ALPHAS"), [Sig("-a", action="store_true", help="AHHH HHA" * 10)]),
     ]
     usage = """\
@@ -3604,12 +3601,12 @@ class TestHelpWrappingLongNames(HelpTestCase):
     """Make sure that text after long names starts on the next line"""
 
     parser_signature = Sig(usage="USAGE", description="D D" * 30)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-v", "--version", action="version", version="V V" * 30),
         Sig("-x", metavar="X" * 25, help="XH XH" * 20),
         Sig("y", metavar="y" * 25, help="YH YH" * 20),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("ALPHAS"),
             [
@@ -3665,7 +3662,7 @@ class TestHelpUsage(HelpTestCase):
     """Test basic usage messages"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", nargs="+", help="w"),
         Sig("-x", nargs="*", help="x"),
         Sig("a", help="a"),
@@ -3680,7 +3677,7 @@ class TestHelpUsage(HelpTestCase):
         ),
         Sig("-f", "--foobar", "--barfoo", action=argparse.BooleanOptionalAction),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("group"),
             [
@@ -3729,8 +3726,8 @@ class TestHelpOnlyUserGroups(HelpTestCase):
     """Test basic usage messages"""
 
     parser_signature = Sig(prog="PROG", add_help=False)
-    argument_signatures = []
-    argument_group_signatures = [
+    argument_signatures = []  # noqa: RUF012
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("xxxx"),
             [
@@ -3769,13 +3766,13 @@ class TestHelpUsageLongProg(HelpTestCase):
     """Test usage messages where the prog is long"""
 
     parser_signature = Sig(prog="P" * 60)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", metavar="W"),
         Sig("-x", metavar="X"),
         Sig("a"),
         Sig("b"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
                [-h] [-w W] [-x X] a b
@@ -3801,7 +3798,7 @@ class TestHelpUsageLongProgOptionsWrap(HelpTestCase):
     """Test usage messages where the prog is long and the optionals wrap"""
 
     parser_signature = Sig(prog="P" * 60)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", metavar="W" * 25),
         Sig("-x", metavar="X" * 25),
         Sig("-y", metavar="Y" * 25),
@@ -3809,7 +3806,7 @@ class TestHelpUsageLongProgOptionsWrap(HelpTestCase):
         Sig("a"),
         Sig("b"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
                [-h] [-w WWWWWWWWWWWWWWWWWWWWWWWWW] \
@@ -3840,12 +3837,12 @@ class TestHelpUsageLongProgPositionalsWrap(HelpTestCase):
     """Test usage messages where the prog is long and the positionals wrap"""
 
     parser_signature = Sig(prog="P" * 60, add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("a" * 25),
         Sig("b" * 25),
         Sig("c" * 25),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
                aaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
@@ -3868,7 +3865,7 @@ class TestHelpUsageOptionalsWrap(HelpTestCase):
     """Test usage messages where the optionals wrap"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", metavar="W" * 25),
         Sig("-x", metavar="X" * 25),
         Sig("-y", metavar="Y" * 25),
@@ -3877,7 +3874,7 @@ class TestHelpUsageOptionalsWrap(HelpTestCase):
         Sig("b"),
         Sig("c"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-w WWWWWWWWWWWWWWWWWWWWWWWWW] \
 [-x XXXXXXXXXXXXXXXXXXXXXXXXX]
@@ -3909,7 +3906,7 @@ class TestHelpUsagePositionalsWrap(HelpTestCase):
     """Test usage messages where the positionals wrap"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x"),
         Sig("-y"),
         Sig("-z"),
@@ -3917,7 +3914,7 @@ class TestHelpUsagePositionalsWrap(HelpTestCase):
         Sig("b" * 25),
         Sig("c" * 25),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-x X] [-y Y] [-z Z]
                     aaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
@@ -3946,7 +3943,7 @@ class TestHelpUsageOptionalsPositionalsWrap(HelpTestCase):
     """Test usage messages where the optionals and positionals wrap"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", metavar="X" * 25),
         Sig("-y", metavar="Y" * 25),
         Sig("-z", metavar="Z" * 25),
@@ -3954,7 +3951,7 @@ class TestHelpUsageOptionalsPositionalsWrap(HelpTestCase):
         Sig("b" * 25),
         Sig("c" * 25),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-x XXXXXXXXXXXXXXXXXXXXXXXXX] \
 [-y YYYYYYYYYYYYYYYYYYYYYYYYY]
@@ -3985,12 +3982,12 @@ class TestHelpUsageOptionalsOnlyWrap(HelpTestCase):
     """Test usage messages where there are only optionals and they wrap"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", metavar="X" * 25),
         Sig("-y", metavar="Y" * 25),
         Sig("-z", metavar="Z" * 25),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-x XXXXXXXXXXXXXXXXXXXXXXXXX] \
 [-y YYYYYYYYYYYYYYYYYYYYYYYYY]
@@ -4014,12 +4011,12 @@ class TestHelpUsagePositionalsOnlyWrap(HelpTestCase):
     """Test usage messages where there are only positionals and they wrap"""
 
     parser_signature = Sig(prog="PROG", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("a" * 25),
         Sig("b" * 25),
         Sig("c" * 25),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG aaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbb
                     ccccccccccccccccccccccccc
@@ -4041,7 +4038,7 @@ class TestHelpVariableExpansion(HelpTestCase):
     """Test that variables are expanded properly in help messages"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-x", type=int, help="x %(prog)s %(default)s %(type)s %%"),
         Sig(
             "-y",
@@ -4061,7 +4058,7 @@ class TestHelpVariableExpansion(HelpTestCase):
         Sig("spam", help="spam %(prog)s %(default)s"),
         Sig("badger", default=0.5, help="badger %(prog)s %(default)s"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("group"),
             [
@@ -4101,8 +4098,8 @@ class TestHelpVariableExpansionUsageSupplied(HelpTestCase):
     """Test that variables are expanded properly when usage= is present"""
 
     parser_signature = Sig(prog="PROG", usage="%(prog)s FOO")
-    argument_signatures = []
-    argument_group_signatures = []
+    argument_signatures = []  # noqa: RUF012
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG FOO
         """
@@ -4121,8 +4118,8 @@ class TestHelpVariableExpansionNoArguments(HelpTestCase):
     """Test that variables are expanded properly with no arguments"""
 
     parser_signature = Sig(prog="PROG", add_help=False)
-    argument_signatures = []
-    argument_group_signatures = []
+    argument_signatures = []  # noqa: RUF012
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG
         """
@@ -4134,11 +4131,11 @@ class TestHelpSuppressUsage(HelpTestCase):
     """Test that items can be suppressed in usage messages"""
 
     parser_signature = Sig(prog="PROG", usage=argparse.SUPPRESS)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="foo help"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     help = """\
         positional arguments:
           spam        spam help
@@ -4155,11 +4152,11 @@ class TestHelpSuppressOptional(HelpTestCase):
     """Test that optional arguments can be suppressed in help messages"""
 
     parser_signature = Sig(prog="PROG", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help=argparse.SUPPRESS),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG spam
         """
@@ -4178,11 +4175,11 @@ class TestHelpSuppressOptionalGroup(HelpTestCase):
     """Test that optional groups can be suppressed in help messages"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="foo help"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (Sig("group"), [Sig("--bar", help=argparse.SUPPRESS)]),
     ]
     usage = """\
@@ -4207,11 +4204,11 @@ class TestHelpSuppressPositional(HelpTestCase):
     """Test that positional arguments can be suppressed in help messages"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="foo help"),
         Sig("spam", help=argparse.SUPPRESS),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [--foo FOO]
         """
@@ -4231,10 +4228,10 @@ class TestHelpRequiredOptional(HelpTestCase):
     """Test that required options don't look optional"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", required=True, help="foo help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] --foo FOO
         """
@@ -4254,11 +4251,11 @@ class TestHelpAlternatePrefixChars(HelpTestCase):
     """Test that options display with different prefix characters"""
 
     parser_signature = Sig(prog="PROG", prefix_chars="^;", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("^^foo", action="store_true", help="foo help"),
         Sig(";b", ";;bar", help="bar help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [^^foo] [;b BAR]
         """
@@ -4278,11 +4275,11 @@ class TestHelpNoHelpOptional(HelpTestCase):
     """Test that the --help argument can be suppressed help messages"""
 
     parser_signature = Sig(prog="PROG", add_help=False)
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="foo help"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [--foo FOO] spam
         """
@@ -4304,11 +4301,11 @@ class TestHelpNone(HelpTestCase):
     """Test that no errors occur if no help is specified"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo"),
         Sig("spam"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [--foo FOO] spam
         """
@@ -4331,13 +4328,13 @@ class TestHelpTupleMetavar(HelpTestCase):
     """Test specifying metavar as a tuple"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-w", help="w", nargs="+", metavar=("W1", "W2")),
         Sig("-x", help="x", nargs="*", metavar=("X1", "X2")),
         Sig("-y", help="y", nargs=3, metavar=("Y1", "Y2", "Y3")),
         Sig("-z", help="z", nargs="?", metavar=("Z1",)),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-w W1 [W2 ...]] [-x [X1 [X2 ...]]] [-y Y1 Y2 Y3] \
 [-z [Z1]]
@@ -4366,11 +4363,11 @@ class TestHelpRawText(HelpTestCase):
         description="Keep the formatting\n    exactly as it is written\n\nhere\n",
     )
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="    foo help should also\nappear as given here"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig(
                 "title",
@@ -4421,11 +4418,11 @@ class TestHelpRawDescription(HelpTestCase):
         description="Keep the formatting\n    exactly as it is written\n\nhere\n",
     )
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="  foo help should not\n    retain this odd formatting"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig(
                 "title",
@@ -4475,7 +4472,7 @@ class TestHelpArgumentDefaults(HelpTestCase):
         description="description",
     )
 
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("--foo", help="foo help - oh and by the way, %(default)s"),
         Sig("--bar", action="store_true", help="bar help"),
         Sig(
@@ -4488,7 +4485,7 @@ class TestHelpArgumentDefaults(HelpTestCase):
         Sig("spam", help="spam help"),
         Sig("badger", nargs="?", default="wooden", help="badger help"),
     ]
-    argument_group_signatures = [
+    argument_group_signatures = [  # noqa: RUF012
         (
             Sig("title", description="description"),
             [Sig("--baz", type=int, default=42, help="baz help")],
@@ -4529,8 +4526,8 @@ class TestHelpVersionAction(HelpTestCase):
     """Test the default help for the version action"""
 
     parser_signature = Sig(prog="PROG", description="description")
-    argument_signatures = [Sig("-V", "--version", action="version", version="3.6")]
-    argument_group_signatures = []
+    argument_signatures = [Sig("-V", "--version", action="version", version="3.6")]  # noqa: RUF012
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-V]
         """
@@ -4552,12 +4549,12 @@ class TestHelpVersionActionSuppress(HelpTestCase):
     """Test that the --version argument can be suppressed in help messages"""
 
     parser_signature = Sig(prog="PROG")
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("-v", "--version", action="version", version="1.0", help=argparse.SUPPRESS),
         Sig("--foo", help="foo help"),
         Sig("spam", help="spam help"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [--foo FOO] spam
         """
@@ -4579,9 +4576,9 @@ class TestHelpSubparsersOrdering(HelpTestCase):
     """Test ordering of subcommands in help matches the code"""
 
     parser_signature = Sig(prog="PROG", description="display some subcommands")
-    argument_signatures = [Sig("-v", "--version", action="version", version="0.1")]
+    argument_signatures = [Sig("-v", "--version", action="version", version="0.1")]  # noqa: RUF012
 
-    subparsers_signatures = [Sig(name=name) for name in ("a", "b", "c", "d", "e")]
+    subparsers_signatures = [Sig(name=name) for name in ("a", "b", "c", "d", "e")]  # noqa: RUF012
 
     usage = """\
         usage: PROG [-h] [-v] {a,b,c,d,e} ...
@@ -4611,7 +4608,7 @@ class TestHelpSubparsersWithHelpOrdering(HelpTestCase):
     """Test ordering of subcommands in help matches the code"""
 
     parser_signature = Sig(prog="PROG", description="display some subcommands")
-    argument_signatures = [Sig("-v", "--version", action="version", version="0.1")]
+    argument_signatures = [Sig("-v", "--version", action="version", version="0.1")]  # noqa: RUF012
 
     subcommand_data = (
         ("a", "a subcommand help"),
@@ -4621,7 +4618,7 @@ class TestHelpSubparsersWithHelpOrdering(HelpTestCase):
         ("e", "e subcommand help"),
     )
 
-    subparsers_signatures = [
+    subparsers_signatures = [  # noqa: RUF012
         Sig(name=name, help=help) for name, help in subcommand_data
     ]
 
@@ -4663,12 +4660,12 @@ class TestHelpMetavarTypeFormatter(HelpTestCase):
         description="description",
         formatter_class=argparse.MetavarTypeHelpFormatter,
     )
-    argument_signatures = [
+    argument_signatures = [  # noqa: RUF012
         Sig("a", type=int),
         Sig("-b", type=custom_type),
         Sig("-c", type=float, metavar="SOME FLOAT"),
     ]
-    argument_group_signatures = []
+    argument_group_signatures = []  # noqa: RUF012
     usage = """\
         usage: PROG [-h] [-b custom_type] [-c SOME FLOAT] int
         """
@@ -4749,7 +4746,7 @@ class TestInvalidArgumentConstructors(TestCase):
             "append_const",
             "count",
         ]:
-            for attrs in [dict(type=int), dict(nargs="+"), dict(choices="ab")]:
+            for attrs in [{"type": int}, {"nargs": "+"}, {"choices": "ab"}]:
                 self.assertTypeError("-x", action=action, **attrs)
 
     def test_no_argument_no_const_actions(self):
@@ -4794,10 +4791,9 @@ class TestInvalidArgumentConstructors(TestCase):
 
         class Action:
             def __init__(self, option_strings, dest, const, default, required=False):
-                if dest == "spam":
-                    if const is Success:
-                        if default is Success:
-                            raise Success()
+                if dest == "spam" and const is Success:  # noqa: SIM102
+                    if default is Success:
+                        raise Success()
 
             def __call__(self, *args, **kwargs):
                 pass
@@ -4978,7 +4974,7 @@ class TestOptionalsHelpVersionActions(TestCase):
         valid_suffixes = valid_prefixes + ["--bad-option", "foo bar baz"]
         for prefix in valid_prefixes:
             for suffix in valid_suffixes:
-                format = "%s %%s %s" % (prefix, suffix)
+                format = f"{prefix} %s {suffix}"
             self.assertPrintHelpExit(parser, format % "-h")
             self.assertPrintHelpExit(parser, format % "--help")
             self.assertRaises(AttributeError, getattr, parser, "format_version")
@@ -5027,8 +5023,8 @@ class TestStrings(TestCase):
         )
         string = (
             "Action(option_strings=[], dest='x', nargs='?', "
-            "const=None, default=2.5, type=%r, choices=[0.5, 1.5, 2.5], "
-            "help='H HH H', metavar='MV MV MV')" % float
+            f"const=None, default=2.5, type={float!r}, choices=[0.5, 1.5, 2.5], "
+            "help='H HH H', metavar='MV MV MV')"
         )
         self.assertStringEqual(argument, string)
 
@@ -5056,8 +5052,8 @@ class TestStrings(TestCase):
         parser = argparse.ArgumentParser(prog="PROG")
         string = (
             "ArgumentParser(prog='PROG', usage=None, description=None, "
-            "formatter_class=%r, conflict_handler='error', "
-            "add_help=True)" % argparse.HelpFormatter
+            f"formatter_class={argparse.HelpFormatter!r}, conflict_handler='error', "
+            "add_help=True)"
         )
         self.assertStringEqual(parser, string)
 
@@ -5435,7 +5431,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs=None, metavar="1")
 
     def test_nargs_None_metavar_length0(self):
-        self.do_test_exception(nargs=None, metavar=tuple())
+        self.do_test_exception(nargs=None, metavar=())
 
     def test_nargs_None_metavar_length1(self):
         self.do_test_no_exception(nargs=None, metavar=("1",))
@@ -5452,7 +5448,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs="?", metavar="1")
 
     def test_nargs_optional_metavar_length0(self):
-        self.do_test_exception(nargs="?", metavar=tuple())
+        self.do_test_exception(nargs="?", metavar=())
 
     def test_nargs_optional_metavar_length1(self):
         self.do_test_no_exception(nargs="?", metavar=("1",))
@@ -5469,7 +5465,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs="*", metavar="1")
 
     def test_nargs_zeroormore_metavar_length0(self):
-        self.do_test_exception(nargs="*", metavar=tuple())
+        self.do_test_exception(nargs="*", metavar=())
 
     def test_nargs_zeroormore_metavar_length1(self):
         self.do_test_no_exception(nargs="*", metavar=("1",))
@@ -5486,7 +5482,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs="+", metavar="1")
 
     def test_nargs_oneormore_metavar_length0(self):
-        self.do_test_exception(nargs="+", metavar=tuple())
+        self.do_test_exception(nargs="+", metavar=())
 
     def test_nargs_oneormore_metavar_length1(self):
         self.do_test_exception(nargs="+", metavar=("1",))
@@ -5503,7 +5499,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs="...", metavar="1")
 
     def test_nargs_remainder_metavar_length0(self):
-        self.do_test_no_exception(nargs="...", metavar=tuple())
+        self.do_test_no_exception(nargs="...", metavar=())
 
     def test_nargs_remainder_metavar_length1(self):
         self.do_test_no_exception(nargs="...", metavar=("1",))
@@ -5520,7 +5516,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs="A...", metavar="1")
 
     def test_nargs_parser_metavar_length0(self):
-        self.do_test_exception(nargs="A...", metavar=tuple())
+        self.do_test_exception(nargs="A...", metavar=())
 
     def test_nargs_parser_metavar_length1(self):
         self.do_test_no_exception(nargs="A...", metavar=("1",))
@@ -5537,7 +5533,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs=1, metavar="1")
 
     def test_nargs_1_metavar_length0(self):
-        self.do_test_exception(nargs=1, metavar=tuple())
+        self.do_test_exception(nargs=1, metavar=())
 
     def test_nargs_1_metavar_length1(self):
         self.do_test_no_exception(nargs=1, metavar=("1",))
@@ -5554,7 +5550,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs=2, metavar="1")
 
     def test_nargs_2_metavar_length0(self):
-        self.do_test_exception(nargs=2, metavar=tuple())
+        self.do_test_exception(nargs=2, metavar=())
 
     def test_nargs_2_metavar_length1(self):
         self.do_test_exception(nargs=2, metavar=("1",))
@@ -5571,7 +5567,7 @@ class TestAddArgumentMetavar(TestCase):
         self.do_test_no_exception(nargs=3, metavar="1")
 
     def test_nargs_3_metavar_length0(self):
-        self.do_test_exception(nargs=3, metavar=tuple())
+        self.do_test_exception(nargs=3, metavar=())
 
     def test_nargs_3_metavar_length1(self):
         self.do_test_exception(nargs=3, metavar=("1",))

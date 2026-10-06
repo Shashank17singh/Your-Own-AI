@@ -53,7 +53,7 @@ class TestAsyncCase(unittest.TestCase):
         class Test(unittest.IsolatedAsyncioTestCase):
             async def asyncSetUp(self):
                 events.append("asyncSetUp")
-                raise Exception()
+                raise Exception()  # noqa: TRY002
 
             async def test_func(self):
                 events.append("test")
@@ -78,7 +78,7 @@ class TestAsyncCase(unittest.TestCase):
 
             async def test_func(self):
                 events.append("test")
-                raise Exception()
+                raise Exception()  # noqa: TRY002
                 self.addAsyncCleanup(self.on_cleanup)
 
             async def asyncTearDown(self):
@@ -101,7 +101,7 @@ class TestAsyncCase(unittest.TestCase):
             async def test_func(self):
                 events.append("test")
                 self.addAsyncCleanup(self.on_cleanup)
-                raise Exception()
+                raise Exception()  # noqa: TRY002
 
             async def asyncTearDown(self):
                 events.append("asyncTearDown")
@@ -126,7 +126,7 @@ class TestAsyncCase(unittest.TestCase):
 
             async def asyncTearDown(self):
                 events.append("asyncTearDown")
-                raise Exception()
+                raise Exception()  # noqa: TRY002
 
             async def on_cleanup(self):
                 events.append("cleanup")
@@ -151,7 +151,7 @@ class TestAsyncCase(unittest.TestCase):
 
             async def on_cleanup(self):
                 events.append("cleanup")
-                raise Exception()
+                raise Exception()  # noqa: TRY002
 
         test = Test("test_func")
         test.run()
@@ -186,7 +186,7 @@ class TestAsyncCase(unittest.TestCase):
         class Test(unittest.IsolatedAsyncioTestCase):
             async def test_base(self):
                 events.append("test_base")
-                raise BaseException()
+                raise BaseException()  # noqa: TRY002
                 events.append("not it")
 
             async def test_no_err(self):

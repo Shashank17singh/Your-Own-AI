@@ -60,7 +60,7 @@ class OSSAudioDevTests(unittest.TestCase):
         # Make sure the read-only attributes work.
         self.assertFalse(dsp.closed)
         self.assertEqual(dsp.name, "/dev/dsp")
-        self.assertEqual(dsp.mode, "w", "bad dsp.mode: %r" % dsp.mode)
+        self.assertEqual(dsp.mode, "w", f"bad dsp.mode: {dsp.mode!r}")
 
         # And make sure they're really read-only.
         for attr in ("closed", "name", "mode"):
@@ -69,7 +69,7 @@ class OSSAudioDevTests(unittest.TestCase):
             except (TypeError, AttributeError):
                 pass
             else:
-                self.fail("dsp.%s not read-only" % attr)
+                self.fail(f"dsp.{attr} not read-only")
 
         # Compute expected running time of sound sample (in seconds).
         expected_time = float(len(data)) / (ssize / 8) / nchannels / rate
@@ -86,8 +86,7 @@ class OSSAudioDevTests(unittest.TestCase):
         percent_diff = (abs(elapsed_time - expected_time) / expected_time) * 100
         self.assertTrue(
             percent_diff <= 10.0,
-            "elapsed time (%s) > 10%% off of expected time (%s)"
-            % (elapsed_time, expected_time),
+            f"elapsed time ({elapsed_time}) > 10% off of expected time ({expected_time})",
         )
 
     def set_parameters(self, dsp):
@@ -120,14 +119,14 @@ class OSSAudioDevTests(unittest.TestCase):
         self.assertEqual(
             result,
             (fmt, channels, rate),
-            "setparameters%r: returned %r" % (config, result),
+            f"setparameters{config!r}: returned {result!r}",
         )
 
         result = dsp.setparameters(fmt, channels, rate, True)
         self.assertEqual(
             result,
             (fmt, channels, rate),
-            "setparameters%r: returned %r" % (config, result),
+            f"setparameters{config!r}: returned {result!r}",
         )
 
     def set_bad_parameters(self, dsp):

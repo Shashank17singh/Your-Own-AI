@@ -16,7 +16,7 @@ VXWORKS = sys.platform == "vxworks"
 
 
 class UTF8ModeTests(unittest.TestCase):
-    DEFAULT_ENV = {
+    DEFAULT_ENV = {  # noqa: RUF012
         "PYTHONUTF8": "",
         "PYTHONLEGACYWINDOWSFSENCODING": "",
         "PYTHONCOERCECLOCALE": "0",

@@ -2,45 +2,14 @@ import datetime
 import errno
 import itertools
 import re
-import sys
 
 import gdb
 
-if sys.version_info[0] > 2:
-    Iterator = object
-    imap = map
-    izip = zip
-    long = int
-    _utc_timezone = datetime.timezone.utc
-else:
-
-    class Iterator:
-        """Compatibility mixin for iterators
-        Instead of writing next() methods for iterators, write
-        __next__() methods and use this mixin to make them work in
-        Python 2 as well as Python 3.
-        Idea stolen from the "six" documentation:
-        <http://pythonhosted.org/six/#six.Iterator>
-        """
-
-        def next(self):
-            return self.__next__()
-
-    from itertools import imap, izip
-
-    class UTC(datetime.tzinfo):
-        """Concrete tzinfo class representing the UTC time zone."""
-
-        def utcoffset(self, dt):
-            return datetime.timedelta(0)
-
-        def tzname(self, dt):
-            return "UTC"
-
-        def dst(self, dt):
-            return datetime.timedelta(0)
-
-    _utc_timezone = UTC()
+Iterator = object
+imap = map
+izip = zip
+long = int
+_utc_timezone = datetime.timezone.utc
 _use_gdb_pp = True
 try:
     import gdb.printing
@@ -63,7 +32,7 @@ else:
 def find_type(orig, name):
     typ = orig.strip_typedefs()
     while True:
-        search = "%s::%s" % (typ.tag, name)
+        search = f"{typ.tag}::{name}"
         try:
             return gdb.lookup_type(search)
         except RuntimeError:
@@ -72,7 +41,7 @@ def find_type(orig, name):
         if len(fields) and fields[0].is_base_class:
             typ = fields[0].type
         else:
-            raise ValueError("Cannot find type %s::%s" % (str(orig), name))
+            raise ValueError(f"Cannot find type {orig!s}::{name}")
 
 
 _versioned_namespace = "__8::"
@@ -90,15 +59,15 @@ def lookup_templ_spec(templ, *args):
     )
     try:
         return gdb.lookup_type(t)
-    except gdb.error as e:
-        global _versioned_namespace
+    except gdb.error:
+        global _versioned_namespace  # noqa: PLW0602
         if _versioned_namespace not in templ:
             t = t.replace("::", "::" + _versioned_namespace, 1)
             try:
                 return gdb.lookup_type(t)
             except gdb.error:
                 pass
-        raise e
+        raise
 
 
 def lookup_node_type(nodename, containertype):
@@ -115,21 +84,20 @@ def lookup_node_type(nodename, containertype):
         nodename = "std::" + nodename
     try:
         valtype = find_type(containertype, "value_type")
-    except:
+    except:  # noqa: E722
         valtype = containertype.template_argument(0)
     valtype = valtype.strip_typedefs()
     try:
         return lookup_templ_spec(nodename, valtype)
     except gdb.error:
-        if is_member_of_namespace(nodename, "std"):
-            if is_member_of_namespace(
-                containertype, "std::__cxx1998", "std::__debug", "__gnu_debug"
-            ):
-                nodename = nodename.replace("::", "::__cxx1998::", 1)
-                try:
-                    return lookup_templ_spec(nodename, valtype)
-                except gdb.error:
-                    pass
+        if is_member_of_namespace(nodename, "std") and is_member_of_namespace(
+            containertype, "std::__cxx1998", "std::__debug", "__gnu_debug"
+        ):
+            nodename = nodename.replace("::", "::__cxx1998::", 1)
+            try:
+                return lookup_templ_spec(nodename, valtype)
+            except gdb.error:
+                pass
         return None
 
 
@@ -154,15 +122,15 @@ def is_specialization_of(x, template_name):
     The template should be the name of a class template as a string,
     without any 'std' qualification.
     """
-    global _versioned_namespace
+    global _versioned_namespace  # noqa: PLW0602
     if isinstance(x, gdb.Type):
         x = x.tag
-    template_name = "(%s)?%s" % (_versioned_namespace, template_name)
-    return re.match("^std::%s<.*>$" % template_name, x) is not None
+    template_name = f"({_versioned_namespace})?{template_name}"
+    return re.match(f"^std::{template_name}<.*>$", x) is not None
 
 
 def strip_versioned_namespace(typename):
-    global _versioned_namespace
+    global _versioned_namespace  # noqa: PLW0602
     return typename.replace(_versioned_namespace, "")
 
 
@@ -170,10 +138,7 @@ def strip_fundts_namespace(typ):
     """Remove "fundamentals_vN" inline namespace from qualified type name."""
     pattern = r"^std::experimental::fundamentals_v\d::"
     repl = "std::experimental::"
-    if sys.version_info[0] == 2:
-        return re.sub(pattern, repl, typ, 1)
-    else:  # Technically this needs Python 3.1 but nobody should be using 3.0
-        return re.sub(pattern, repl, typ, count=1)
+    return re.sub(pattern, repl, typ, count=1)
 
 
 def strip_inline_namespaces(type_str):
@@ -195,7 +160,7 @@ def get_template_arg_list(type_obj):
     while True:
         try:
             template_args.append(type_obj.template_argument(n))
-        except:
+        except:  # noqa: E722
             return template_args
         n += 1
 
@@ -254,33 +219,27 @@ class SharedPointerPrinter(printer_base):
             usecount = refcounts["_M_use_count"]
             weakcount = refcounts["_M_weak_count"]
             if usecount == 0:
-                state = "expired, weak count %d" % weakcount
+                state = "expired, weak count %d" % weakcount  # noqa: UP031
             else:
-                state = "use count %d, weak count %d" % (usecount, weakcount - 1)
-        return "%s<%s> (%s)" % (self._typename, targ, state)
+                state = "use count %d, weak count %d" % (usecount, weakcount - 1)  # noqa: UP031
+        return f"{self._typename}<{targ}> ({state})"
 
 
 def _tuple_impl_get(val):
     """Return the tuple element stored in a _Tuple_impl<N, T> base class."""
     bases = val.type.fields()
     if not bases[-1].is_base_class:
-        raise ValueError(
-            "Unsupported implementation for std::tuple: %s" % str(val.type)
-        )
+        raise ValueError(f"Unsupported implementation for std::tuple: {val.type!s}")
     head_base = val.cast(bases[-1].type)
     fields = head_base.type.fields()
     if len(fields) == 0:
-        raise ValueError(
-            "Unsupported implementation for std::tuple: %s" % str(val.type)
-        )
+        raise ValueError(f"Unsupported implementation for std::tuple: {val.type!s}")
     if fields[0].name == "_M_head_impl":
         return head_base["_M_head_impl"]
     elif fields[0].is_base_class:
         return head_base.cast(fields[0].type)
     else:
-        raise ValueError(
-            "Unsupported implementation for std::tuple: %s" % str(val.type)
-        )
+        raise ValueError(f"Unsupported implementation for std::tuple: {val.type!s}")
 
 
 def tuple_get(n, val):
@@ -305,9 +264,7 @@ def unique_ptr_get(val):
     elif is_specialization_of(impl_type, "tuple"):
         tuple_member = val["_M_t"]
     else:
-        raise ValueError(
-            "Unsupported implementation for unique_ptr: %s" % str(impl_type)
-        )
+        raise ValueError(f"Unsupported implementation for unique_ptr: {impl_type!s}")
     return tuple_get(0, tuple_member)
 
 
@@ -339,9 +296,9 @@ def get_value_from_list_node(node):
         elif member == "_M_storage":
             valtype = node.type.template_argument(0)
             return get_value_from_aligned_membuf(node["_M_storage"], valtype)
-    except:
+    except:  # noqa: E722, S110
         pass
-    raise ValueError("Unsupported implementation for %s" % str(node.type))
+    raise ValueError(f"Unsupported implementation for {node.type!s}")
 
 
 class StdListPrinter(printer_base):
@@ -365,7 +322,7 @@ class StdListPrinter(printer_base):
             count = self._count
             self._count = self._count + 1
             val = get_value_from_list_node(elt)
-            return ("[%d]" % count, val)
+            return ("[%d]" % count, val)  # noqa: UP031
 
     def __init__(self, typename, val):
         self._typename = strip_versioned_namespace(typename)
@@ -378,8 +335,8 @@ class StdListPrinter(printer_base):
     def to_string(self):
         headnode = self._val["_M_impl"]["_M_node"]
         if headnode["_M_next"] == headnode.address:
-            return "empty %s" % (self._typename)
-        return "%s" % (self._typename)
+            return f"empty {self._typename}"
+        return f"{self._typename}"
 
 
 class NodeIteratorPrinter(printer_base):
@@ -391,7 +348,7 @@ class NodeIteratorPrinter(printer_base):
 
     def to_string(self):
         if not self._val["_M_node"]:
-            return "non-dereferenceable iterator for std::%s" % (self._contname)
+            return f"non-dereferenceable iterator for std::{self._contname}"
         node = self._val["_M_node"].cast(self._nodetype.pointer()).dereference()
         return str(get_value_from_list_node(node))
 
@@ -431,7 +388,7 @@ class StdSlistPrinter(printer_base):
             self._base = elt["_M_next"]
             count = self._count
             self._count = self._count + 1
-            return ("[%d]" % count, elt["_M_data"])
+            return ("[%d]" % count, elt["_M_data"])  # noqa: UP031
 
     def __init__(self, typename, val):
         self._val = val
@@ -491,13 +448,13 @@ class StdVectorPrinter(printer_base):
                 if self._so >= self._isize:
                     self._item = self._item + 1
                     self._so = 0
-                return ("[%d]" % count, elt)
+                return ("[%d]" % count, elt)  # noqa: UP031
             else:
                 if self._item == self._finish:
                     raise StopIteration
                 elt = self._item.dereference()
                 self._item = self._item + 1
-                return ("[%d]" % count, elt)
+                return ("[%d]" % count, elt)  # noqa: UP031
 
     def __init__(self, typename, val):
         self._typename = strip_versioned_namespace(typename)
@@ -535,7 +492,7 @@ class StdVectorPrinter(printer_base):
 
     def to_string(self):
         length, capacity, suffix = self._bounds()
-        return "%s%s of length %d, capacity %d" % (
+        return "%s%s of length %d, capacity %d" % (  # noqa: UP031
             self._typename,
             suffix,
             length,
@@ -543,7 +500,7 @@ class StdVectorPrinter(printer_base):
         )
 
     def num_children(self):
-        length, capacity, suffix = self._bounds()
+        length, _capacity, _suffix = self._bounds()
         return length
 
     def display_hint(self):
@@ -628,9 +585,9 @@ class StdTuplePrinter(printer_base):
             self._count = self._count + 1
             fields = impl.type.fields()
             if len(fields) < 1 or fields[0].name != "_M_head_impl":
-                return ("[%d]" % (self._count - 1), impl)
+                return ("[%d]" % (self._count - 1), impl)  # noqa: UP031
             else:
-                return ("[%d]" % (self._count - 1), impl["_M_head_impl"])
+                return ("[%d]" % (self._count - 1), impl["_M_head_impl"])  # noqa: UP031
 
     def __init__(self, typename, val):
         self._typename = strip_versioned_namespace(typename)
@@ -641,8 +598,8 @@ class StdTuplePrinter(printer_base):
 
     def to_string(self):
         if len(self._val.type.fields()) == 0:
-            return "empty %s" % (self._typename)
-        return "%s containing" % (self._typename)
+            return f"empty {self._typename}"
+        return f"{self._typename} containing"
 
 
 class StdStackOrQueuePrinter(printer_base):
@@ -656,7 +613,7 @@ class StdStackOrQueuePrinter(printer_base):
         return self._visualizer.children()
 
     def to_string(self):
-        return "%s wrapping: %s" % (self._typename, self._visualizer.to_string())
+        return f"{self._typename} wrapping: {self._visualizer.to_string()}"
 
     def num_children(self):
         if hasattr(self._visualizer, "num_children"):
@@ -717,9 +674,9 @@ def get_value_from_Rb_tree_node(node):
         elif member == "_M_storage":
             valtype = node.type.template_argument(0)
             return get_value_from_aligned_membuf(node["_M_storage"], valtype)
-    except:
+    except:  # noqa: E722, S110
         pass
-    raise ValueError("Unsupported implementation for %s" % str(node.type))
+    raise ValueError(f"Unsupported implementation for {node.type!s}")
 
 
 class StdRbtreeIteratorPrinter(printer_base):
@@ -756,7 +713,7 @@ class StdDebugIteratorPrinter(printer_base):
 
 def num_elements(num):
     """Return either "1 element" or "N elements" depending on the argument."""
-    return "1 element" if num == 1 else "%d elements" % num
+    return "1 element" if num == 1 else "%d elements" % num  # noqa: UP031
 
 
 class StdMapPrinter(printer_base):
@@ -780,7 +737,7 @@ class StdMapPrinter(printer_base):
                 item = n["first"]
             else:
                 item = self._pair["second"]
-            result = ("[%d]" % self._count, item)
+            result = ("[%d]" % self._count, item)  # noqa: UP031
             self._count = self._count + 1
             return result
 
@@ -789,17 +746,14 @@ class StdMapPrinter(printer_base):
         self._val = val
 
     def to_string(self):
-        return "%s with %s" % (
-            self._typename,
-            num_elements(len(RbtreeIterator(self._val))),
-        )
+        return f"{self._typename} with {num_elements(len(RbtreeIterator(self._val)))}"
 
     def children(self):
         node = lookup_node_type("_Rb_tree_node", self._val.type).pointer()
         return self._iter(RbtreeIterator(self._val), node)
 
     def num_children(slf):
-        return len(RbtreeIterator(self._val))
+        return len(RbtreeIterator(self._val))  # noqa: F821
 
     def display_hint(self):
         return "map"
@@ -821,7 +775,7 @@ class StdSetPrinter(printer_base):
             item = next(self._rbiter)
             item = item.cast(self._type).dereference()
             item = get_value_from_Rb_tree_node(item)
-            result = ("[%d]" % self._count, item)
+            result = ("[%d]" % self._count, item)  # noqa: UP031
             self._count = self._count + 1
             return result
 
@@ -830,17 +784,14 @@ class StdSetPrinter(printer_base):
         self._val = val
 
     def to_string(self):
-        return "%s with %s" % (
-            self._typename,
-            num_elements(len(RbtreeIterator(self._val))),
-        )
+        return f"{self._typename} with {num_elements(len(RbtreeIterator(self._val)))}"
 
     def children(self):
         node = lookup_node_type("_Rb_tree_node", self._val.type).pointer()
         return self._iter(RbtreeIterator(self._val), node)
 
     def num_children(slf):
-        return len(RbtreeIterator(self._val))
+        return len(RbtreeIterator(self._val))  # noqa: F821
 
 
 class StdBitsetPrinter(printer_base):
@@ -851,12 +802,12 @@ class StdBitsetPrinter(printer_base):
         self._val = val
 
     def to_string(self):
-        return "%s" % (self._typename)
+        return f"{self._typename}"
 
     def children(self):
         try:
             words = self._val["_M_w"]
-        except:
+        except:  # noqa: E722
             return []
         wtype = words.type
         if wtype.code == gdb.TYPE_CODE_ARRAY:
@@ -872,7 +823,7 @@ class StdBitsetPrinter(printer_base):
             bit = 0
             while w != 0:
                 if (w & 1) != 0:
-                    result.append(("[%d]" % (byte * tsize * 8 + bit), 1))
+                    result.append(("[%d]" % (byte * tsize * 8 + bit), 1))  # noqa: UP031
                 bit = bit + 1
                 w = w >> 1
             byte = byte + 1
@@ -897,7 +848,7 @@ class StdDequePrinter(printer_base):
         def __next__(self):
             if self._p == self._last:
                 raise StopIteration
-            result = ("[%d]" % self._count, self._p.dereference())
+            result = ("[%d]" % self._count, self._p.dereference())  # noqa: UP031
             self._count = self._count + 1
             self._p = self._p + 1
             if self._p == self._end:
@@ -926,7 +877,7 @@ class StdDequePrinter(printer_base):
 
     def to_string(self):
         size = self._size()
-        return "%s with %s" % (self._typename, num_elements(size))
+        return f"{self._typename} with {num_elements(size)}"
 
     def children(self):
         start = self._val["_M_impl"]["_M_start"]
@@ -1019,17 +970,14 @@ class StdStringStreamPrinter(printer_base):
     def __init__(self, typename, val):
         self._val = val
         self._typename = typename
-        basetype = [f.type for f in val.type.fields() if f.is_base_class][0]
+        basetype = next(f.type for f in val.type.fields() if f.is_base_class)
         gdb.set_convenience_variable("__stream", val.cast(basetype).address)
         self._streambuf = gdb.parse_and_eval("$__stream->rdbuf()")
         self._was_redirected = self._streambuf != val["_M_stringbuf"].address
 
     def to_string(self):
         if self._was_redirected:
-            return "%s redirected to %s" % (
-                self._typename,
-                self._streambuf.dereference(),
-            )
+            return f"{self._typename} redirected to {self._streambuf.dereference()}"
         return self._val["_M_stringbuf"]
 
     def display_hint(self):
@@ -1107,11 +1055,11 @@ class Tr1UnorderedSetPrinter(printer_base):
 
     def to_string(self):
         count = self._hashtable()["_M_element_count"]
-        return "%s with %s" % (self._typename, num_elements(count))
+        return f"{self._typename} with {num_elements(count)}"
 
     @staticmethod
     def _format_count(i):
-        return "[%d]" % i
+        return "[%d]" % i  # noqa: UP031
 
     def children(self):
         counter = imap(self._format_count, itertools.count())
@@ -1137,13 +1085,12 @@ class Tr1UnorderedMapPrinter(printer_base):
 
     def to_string(self):
         count = self._hashtable()["_M_element_count"]
-        return "%s with %s" % (self._typename, num_elements(count))
+        return f"{self._typename} with {num_elements(count)}"
 
     @staticmethod
     def _flatten(list):
         for elt in list:
-            for i in elt:
-                yield i
+            yield from elt
 
     @staticmethod
     def _format_one(elt):
@@ -1151,7 +1098,7 @@ class Tr1UnorderedMapPrinter(printer_base):
 
     @staticmethod
     def _format_count(i):
-        return "[%d]" % i
+        return "[%d]" % i  # noqa: UP031
 
     def children(self):
         counter = imap(self._format_count, itertools.count())
@@ -1193,7 +1140,7 @@ class StdForwardListPrinter(printer_base):
             self._count = self._count + 1
             valptr = elt["_M_storage"].address
             valptr = valptr.cast(elt.type.template_argument(0).pointer())
-            return ("[%d]" % count, valptr.dereference())
+            return ("[%d]" % count, valptr.dereference())  # noqa: UP031
 
     def __init__(self, typename, val):
         self._val = val
@@ -1205,8 +1152,8 @@ class StdForwardListPrinter(printer_base):
 
     def to_string(self):
         if self._val["_M_impl"]["_M_head"]["_M_next"] == 0:
-            return "empty %s" % self._typename
-        return "%s" % self._typename
+            return f"empty {self._typename}"
+        return f"{self._typename}"
 
 
 class SingleObjContainerPrinter(printer_base):
@@ -1219,7 +1166,7 @@ class SingleObjContainerPrinter(printer_base):
 
     def _recognize(self, type):
         """Return type as a string after applying type printers."""
-        global _use_type_printing
+        global _use_type_printing  # noqa: PLW0602
         if not _use_type_printing:
             return str(type)
         return gdb.types.apply_type_recognizers(
@@ -1259,13 +1206,10 @@ def function_pointer_to_name(f):
     """Find the name of the function referred to by the gdb.Value f,
     which should contain a function pointer from the program."""
     f = f.dereference().address
-    if sys.version_info[0] == 2:
-        f = long(f)
-    else:
-        f = int(f)
+    f = int(f)
     try:
         return gdb.block_for_pc(f).function.name
-    except:
+    except:  # noqa: E722
         return None
 
 
@@ -1283,7 +1227,7 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
         if mgr != 0:
             func = function_pointer_to_name(mgr)
             if not func:
-                raise ValueError("Invalid function pointer in %s" % (self._typename))
+                raise ValueError(f"Invalid function pointer in {self._typename}")
             rx = (
                 rf"({typename}::_Manager_\w+<.*>)::_S_manage\("
                 rf"(enum )?{typename}::_Op, (const {typename}|{typename} const) ?\*, "
@@ -1291,7 +1235,7 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
             )
             m = re.match(rx, func)
             if not m:
-                raise ValueError("Unknown manager function in %s" % self._typename)
+                raise ValueError(f"Unknown manager function in {self._typename}")
             mgrname = m.group(1)
             if "std::string" in mgrname:
                 mgrtypes = []
@@ -1315,15 +1259,15 @@ class StdExpAnyPrinter(SingleObjContainerPrinter):
             elif "::_Manager_external" in mgrname:
                 valptr = self._val["_M_storage"]["_M_ptr"]
             else:
-                raise ValueError("Unknown manager function in %s" % self._typename)
+                raise ValueError(f"Unknown manager function in {self._typename}")
             contained_value = valptr.cast(self._contained_type.pointer()).dereference()
             visualizer = gdb.default_visualizer(contained_value)
         super().__init__(contained_value, visualizer)
 
     def to_string(self):
         if self._contained_type is None:
-            return "%s [no contained value]" % self._typename
-        desc = "%s containing " % self._typename
+            return f"{self._typename} [no contained value]"
+        desc = f"{self._typename} containing "
         if hasattr(self._visualizer, "children"):
             return desc + self._visualizer.to_string()
         valtype = self._recognize(self._contained_type)
@@ -1353,7 +1297,7 @@ class StdExpOptionalPrinter(SingleObjContainerPrinter):
             contained_value = payload["_M_payload"]
             try:
                 contained_value = contained_value["_M_value"]
-            except:
+            except:  # noqa: E722, S110
                 pass
         visualizer = gdb.default_visualizer(contained_value)
         if not engaged:
@@ -1362,9 +1306,9 @@ class StdExpOptionalPrinter(SingleObjContainerPrinter):
 
     def to_string(self):
         if self._contained_value is None:
-            return "%s [no contained value]" % self._typename
+            return f"{self._typename} [no contained value]"
         if hasattr(self._visualizer, "children"):
-            return "%s containing %s" % (self._typename, self._visualizer.to_string())
+            return f"{self._typename} containing {self._visualizer.to_string()}"
         return self._typename
 
 
@@ -1388,14 +1332,14 @@ class StdVariantPrinter(SingleObjContainerPrinter):
 
     def to_string(self):
         if self._contained_value is None:
-            return "%s [no contained value]" % self._typename
+            return f"{self._typename} [no contained value]"
         if hasattr(self._visualizer, "children"):
-            return "%s [index %d] containing %s" % (
+            return "%s [index %d] containing %s" % (  # noqa: UP031
                 self._typename,
                 self._index,
                 self._visualizer.to_string(),
             )
-        return "%s [index %d]" % (self._typename, self._index)
+        return "%s [index %d]" % (self._typename, self._index)  # noqa: UP031
 
 
 class StdNodeHandlePrinter(SingleObjContainerPrinter):
@@ -1433,10 +1377,10 @@ class StdNodeHandlePrinter(SingleObjContainerPrinter):
         if self._contained_value:
             desc += " with element"
             if hasattr(self._visualizer, "children"):
-                return "%s = %s" % (desc, self._visualizer.to_string())
+                return f"{desc} = {self._visualizer.to_string()}"
             return desc
         else:
-            return "empty %s" % desc
+            return f"empty {desc}"
 
 
 class StdExpStringViewPrinter(printer_base):
@@ -1477,12 +1421,12 @@ class StdExpPathPrinter(printer_base):
         return None
 
     def to_string(self):
-        path = "%s" % self._val["_M_pathname"]
+        path = "{}".format(self._val["_M_pathname"])
         if self._num_cmpts == 0:
             t = self._path_type()
             if t:
-                path = "%s [%s]" % (path, t)
-        return "experimental::filesystem::path %s" % path
+                path = f"{path} [{t}]"
+        return f"experimental::filesystem::path {path}"
 
     class _iterator(Iterator):
         def __init__(self, cmpts, pathtype):
@@ -1505,7 +1449,7 @@ class StdExpPathPrinter(printer_base):
             t = StdExpPathPrinter(self._pathtype, item)._path_type()
             if not t:
                 t = count
-            return ("[%s]" % t, path)
+            return (f"[{t}]", path)
 
     def children(self):
         return self._iterator(self._val["_M_cmpts"], self._typename)
@@ -1533,12 +1477,12 @@ class StdPathPrinter(printer_base):
         return None
 
     def to_string(self):
-        path = "%s" % self._val["_M_pathname"]
+        path = "{}".format(self._val["_M_pathname"])
         if self._type != 0:
             t = self._path_type()
             if t:
-                path = "%s [%s]" % (path, t)
-        return "filesystem::path %s" % path
+                path = f"{path} [{t}]"
+        return f"filesystem::path {path}"
 
     class _iterator(Iterator):
         def __init__(self, impl, pathtype):
@@ -1575,7 +1519,7 @@ class StdPathPrinter(printer_base):
             t = StdPathPrinter(self._pathtype, item)._path_type()
             if not t:
                 t = count
-            return ("[%s]" % t, path)
+            return (f"[{t}]", path)
 
     def children(self):
         return self._iterator(self._impl, self._typename)
@@ -1646,7 +1590,7 @@ class StdErrorCodePrinter(printer_base):
         self._typename = strip_versioned_namespace(typename)
         if StdErrorCodePrinter._system_is_posix is None:
             try:
-                import posix
+                import posix  # noqa: F401
 
                 StdErrorCodePrinter._system_is_posix = True
             except ImportError:
@@ -1676,11 +1620,10 @@ class StdErrorCodePrinter(printer_base):
             for ns in ["", _versioned_namespace]:
                 ns = f"std::{ns}experimental::net::v1"
                 sym = gdb.lookup_symbol(f"{ns}::{func}::__c")[0]
-                if sym is not None:
-                    if cat == sym.value().address:
-                        name = "net::" + func
-                        enum = cls._find_errc_enum(f"{ns}::{c}_errc")
-                        return (name, enum)
+                if sym is not None and cat == sym.value().address:
+                    name = "net::" + func
+                    enum = cls._find_errc_enum(f"{ns}::{c}_errc")
+                    return (name, enum)
         return (None, None)
 
     @classmethod
@@ -1708,7 +1651,7 @@ class StdErrorCodePrinter(printer_base):
         if name is None:
             try:
                 pass
-            except:
+            except:  # noqa: E722, S110
                 pass
         return (name, typ.tag, enum, is_errno)
 
@@ -1731,15 +1674,15 @@ class StdErrorCodePrinter(printer_base):
         if is_errno and value != 0:
             try:
                 strval = errno.errorcode[int(value)]
-            except:
+            except:  # noqa: E722, S110
                 pass
         elif enum is not None:
             strval = self._unqualified_name(str(value.cast(enum)))
         if name is not None:
-            name = '"%s"' % name
+            name = f'"{name}"'
         else:
             name = alt_name
-        return "%s = {%s: %s}" % (self._typename, name, strval)
+        return f"{self._typename} = {{{name}: {strval}}}"
 
 
 class StdRegexStatePrinter(printer_base):
@@ -1773,7 +1716,7 @@ class StdRegexStatePrinter(printer_base):
         s = f"opcode={opcode}, next={next_id}"
         if v is not None and self._val["_M_" + v] is not None:
             s = "{}, {}={}".format(s, v, self._val["_M_" + v])
-        return "{%s}" % (s)
+        return f"{{{s}}}"
 
 
 class StdSpanPrinter(printer_base):
@@ -1793,7 +1736,7 @@ class StdSpanPrinter(printer_base):
                 raise StopIteration
             count = self._count
             self._count = self._count + 1
-            return "[%d]" % count, (self._begin + count).dereference()
+            return "[%d]" % count, (self._begin + count).dereference()  # noqa: UP031
 
     def __init__(self, typename, val):
         self._typename = strip_versioned_namespace(typename)
@@ -1805,7 +1748,7 @@ class StdSpanPrinter(printer_base):
             self._size = val.type.template_argument(1)
 
     def to_string(self):
-        return "%s of length %d" % (self._typename, self._size)
+        return "%s of length %d" % (self._typename, self._size)  # noqa: UP031
 
     def children(self):
         return self._iterator(self._val["_M_ptr"], self._size)
@@ -1826,7 +1769,7 @@ class StdInitializerListPrinter(printer_base):
         self._size = val["_M_len"]
 
     def to_string(self):
-        return "%s of length %d" % (self._typename, self._size)
+        return "%s of length %d" % (self._typename, self._size)  # noqa: UP031
 
     def children(self):
         return StdSpanPrinter._iterator(self._val["_M_array"], self._size)
@@ -1845,7 +1788,7 @@ class StdAtomicPrinter(printer_base):
         self._value_type = self._val.type.template_argument(0)
         if self._value_type.tag is not None:
             typ = strip_versioned_namespace(self._value_type.tag)
-            if typ.startswith("std::shared_ptr<") or typ.startswith("std::weak_ptr<"):
+            if typ.startswith(("std::shared_ptr<", "std::weak_ptr<")):
                 impl = val["_M_impl"]
                 self._shptr_printer = SharedPointerPrinter(typename, impl)
                 self.children = self._shptr_children
@@ -1866,7 +1809,7 @@ class StdAtomicPrinter(printer_base):
             val = self._val["_M_base"]["_M_i"]
         else:
             val = self._val["_M_i"]
-        return "%s<%s> = { %s }" % (self._typename, str(self._value_type), val)
+        return f"{self._typename}<{self._value_type!s}> = {{ {val} }}"
 
 
 class StdFormatArgsPrinter(printer_base):
@@ -1887,10 +1830,10 @@ class StdFormatArgsPrinter(printer_base):
             typ = "std::basic_format_args"
         size = self._val["_M_packed_size"]
         if size == 1:
-            return "%s with 1 argument" % (typ)
+            return f"{typ} with 1 argument"
         if size == 0:
             size = self._val["_M_unpacked_size"]
-        return "%s with %d arguments" % (typ, size)
+        return "%s with %d arguments" % (typ, size)  # noqa: UP031
 
 
 class StdChronoDurationPrinter(printer_base):
@@ -1930,7 +1873,7 @@ class StdChronoDurationPrinter(printer_base):
     def to_string(self):
         r = self._val["__r"]
         if r.type.strip_typedefs().code == gdb.TYPE_CODE_FLT:
-            r = "%g" % r
+            r = f"{r:g}"
         return f"std::chrono::duration = {{ {r}{self._suffix()} }}"
 
 
@@ -1974,12 +1917,12 @@ class StdChronoTimePointPrinter(printer_base):
             try:
                 dt = datetime.datetime.fromtimestamp(secs, _utc_timezone)
                 time = f" [{dt:%Y-%m-%d %H:%M:%S}]"
-            except:
+            except:  # noqa: E722, S110
                 pass
-        s = "%d%s%s" % (r, suffix, time)
+        s = "%d%s%s" % (r, suffix, time)  # noqa: UP031
         if abbrev:
             return s
-        return "%s = { %s }" % (clock, s)
+        return f"{clock} = {{ {s} }}"
 
 
 class StdChronoZonedTimePrinter(printer_base):
@@ -2042,14 +1985,14 @@ class StdChronoCalendarPrinter(printer_base):
             return "{}".format(int(val["_M_d"]))
         if typ == "std::chrono::month":
             if m < 1 or m >= len(months):
-                return "%d is not a valid month" % m
+                return "%d is not a valid month" % m  # noqa: UP031
             return months[m]
         if typ == "std::chrono::year":
             return f"{y}y"
         if typ == "std::chrono::weekday":
             wd = val["_M_wd"]
             if wd < 0 or wd >= len(weekdays):
-                return "%d is not a valid weekday" % wd
+                return "%d is not a valid weekday" % wd  # noqa: UP031
             return f"{weekdays[wd]}"
         if typ == "std::chrono::weekday_indexed":
             return "{}[{}]".format(val["_M_wd"], int(val["_M_index"]))
@@ -2095,9 +2038,9 @@ class StdChronoTimeZonePrinter(printer_base):
         self._val = val
 
     def to_string(self):
-        str = "%s = %s" % (self._typename, self._val["_M_name"])
+        str = "{} = {}".format(self._typename, self._val["_M_name"])
         if self._typename.endswith("_link"):
-            str += " -> %s" % (self._val["_M_target"])
+            str += " -> {}".format(self._val["_M_target"])
         return str
 
 
@@ -2111,7 +2054,7 @@ class StdChronoLeapSecondPrinter(printer_base):
     def to_string(self):
         date = self._val["_M_s"]["__r"]
         neg = "+-"[date < 0]
-        return "%s %d (%c)" % (self._typename, abs(date), neg)
+        return "%s %d (%c)" % (self._typename, abs(date), neg)  # noqa: UP031
 
 
 class StdChronoTzdbPrinter(printer_base):
@@ -2122,7 +2065,7 @@ class StdChronoTzdbPrinter(printer_base):
         self._val = val
 
     def to_string(self):
-        return "%s %s" % (self._typename, self._val["version"])
+        return "{} {}".format(self._typename, self._val["version"])
 
 
 class StdChronoTimeZoneRulePrinter(printer_base):
@@ -2261,7 +2204,7 @@ class StdStacktracePrinter(printer_base):
         self._size = self._val["_M_impl"]["_M_size"]
 
     def to_string(self):
-        return "%s of length %d" % (self._typename, self._size)
+        return "%s of length %d" % (self._typename, self._size)  # noqa: UP031
 
     def children(self):
         return StdSpanPrinter._iterator(self._val["_M_impl"]["_M_frames"], self._size)
@@ -2280,7 +2223,7 @@ class RxPrinter:
     def invoke(self, value):
         if not self.enabled:
             return None
-        if value.type.code == gdb.TYPE_CODE_REF:
+        if value.type.code == gdb.TYPE_CODE_REF:  # noqa: SIM102
             if hasattr(gdb.Value, "referenced_value"):
                 value = value.referenced_value()
         return self._function(self.name, value)
@@ -2297,7 +2240,7 @@ class Printer:
 
     def add(self, name, function):
         if not self._compiled_rx.match(name):
-            raise ValueError('libstdc++ programming error: "%s" does not match' % name)
+            raise ValueError(f'libstdc++ programming error: "{name}" does not match')
         printer = RxPrinter(name, function)
         self._subprinters.append(printer)
         self._lookup[name] = printer
@@ -2305,9 +2248,7 @@ class Printer:
     def add_version(self, base, name, function):
         self.add(base + name, function)
         if "__cxx11" not in base:
-            vbase = re.sub(
-                "^(std|__gnu_cxx)::", r"\g<0>%s" % _versioned_namespace, base
-            )
+            vbase = re.sub("^(std|__gnu_cxx)::", rf"\g<0>{_versioned_namespace}", base)
             self.add(vbase + name, function)
 
     def add_container(self, base, name, function):
@@ -2329,7 +2270,7 @@ class Printer:
         if not match:
             return None
         basename = match.group(1)
-        if val.type.code == gdb.TYPE_CODE_REF:
+        if val.type.code == gdb.TYPE_CODE_REF:  # noqa: SIM102
             if hasattr(gdb.Value, "referenced_value"):
                 val = val.referenced_value()
         if basename in self._lookup:
@@ -2404,10 +2345,10 @@ class TemplateTypePrinter:
                 type_str = self._recognize_subtype(type_obj.target())
                 if str(type_obj.strip_typedefs()).endswith("[]"):
                     return type_str + "[]"  # array of unknown bound
-                return "%s[%d]" % (type_str, type_obj.range()[1] + 1)
+                return "%s[%d]" % (type_str, type_obj.range()[1] + 1)  # noqa: UP031
             if type_obj.code == gdb.TYPE_CODE_REF:
                 return self._recognize_subtype(type_obj.target()) + "&"
-            if hasattr(gdb, "TYPE_CODE_RVALUE_REF"):
+            if hasattr(gdb, "TYPE_CODE_RVALUE_REF"):  # noqa: SIM102
                 if type_obj.code == gdb.TYPE_CODE_RVALUE_REF:
                     return self._recognize_subtype(type_obj.target()) + "&&"
             type_str = gdb.types.apply_type_recognizers(
@@ -2441,7 +2382,7 @@ def add_one_template_type_printer(obj, name, defargs):
     gdb.types.register_type_printer(obj, printer)
     if "__cxx11" not in name:
         ns = "std::" + _versioned_namespace
-        defargs = dict((n, d.replace("std::", ns)) for (n, d) in defargs.items())
+        defargs = {n: d.replace("std::", ns) for (n, d) in defargs.items()}
         printer = TemplateTypePrinter(ns + name, defargs)
         gdb.types.register_type_printer(obj, printer)
         printer = TemplateTypePrinter("std::__debug::" + name, defargs)
@@ -2497,7 +2438,7 @@ class FilteringTypePrinter:
                     return None
                 try:
                     self._type_obj = gdb.lookup_type(self.name).strip_typedefs()
-                except:
+                except:  # noqa: E722, S110
                     pass
             if self._type_obj is None:
                 return None
@@ -2527,7 +2468,7 @@ def add_one_type_printer(obj, template, name, targ1=None):
 
 
 def register_type_printers(obj):
-    global _use_type_printing
+    global _use_type_printing  # noqa: PLW0602
     if not _use_type_printing:
         return
     for ch in (
@@ -2654,8 +2595,8 @@ def register_type_printers(obj):
 
 def register_libstdcxx_printers(obj):
     """Register libstdc++ pretty-printers with objfile Obj."""
-    global _use_gdb_pp
-    global libstdcxx_printer
+    global _use_gdb_pp  # noqa: PLW0602
+    global libstdcxx_printer  # noqa: PLW0602
     if _use_gdb_pp:
         gdb.printing.register_pretty_printer(obj, libstdcxx_printer)
     else:

@@ -58,7 +58,7 @@ class TestEPoll(unittest.TestCase):
             self.assertEqual(e.args[0], errno.EINPROGRESS)
         else:
             raise AssertionError("Connect should have raised EINPROGRESS")
-        server, addr = self.serverSocket.accept()
+        server, _addr = self.serverSocket.accept()
 
         self.connections.extend((client, server))
         return client, server
@@ -219,13 +219,13 @@ class TestEPoll(unittest.TestCase):
         self.assertRaises(ValueError, select.epoll().register, -1, select.EPOLLIN)
 
     def test_unregister_closed(self):
-        server, client = self._connected_pair()
+        server, _client = self._connected_pair()
         fd = server.fileno()
         ep = select.epoll(16)
         ep.register(server)
 
         now = time.monotonic()
-        events = ep.poll(1, 4)
+        ep.poll(1, 4)
         then = time.monotonic()
         self.assertFalse(then - now > 0.01)
 
@@ -236,7 +236,7 @@ class TestEPoll(unittest.TestCase):
         self.assertEqual(cm.exception.errno, errno.EBADF)
 
     def test_close(self):
-        open_file = open(__file__, "rb")
+        open_file = open(__file__, "rb")  # noqa: SIM115
         self.addCleanup(open_file.close)
         fd = open_file.fileno()
         epoll = select.epoll()

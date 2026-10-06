@@ -126,22 +126,22 @@ class BoolTest(unittest.TestCase):
                 self.assertEqual(int(a) ^ b, int(a) ^ int(b))
                 self.assertIsNot(int(a) ^ b, bool(int(a) ^ int(b)))
 
-        self.assertIs(1 == 1, True)
-        self.assertIs(1 == 0, False)
-        self.assertIs(0 < 1, True)
-        self.assertIs(1 < 0, False)
-        self.assertIs(0 <= 0, True)
-        self.assertIs(1 <= 0, False)
-        self.assertIs(1 > 0, True)
-        self.assertIs(1 > 1, False)
-        self.assertIs(1 >= 1, True)
-        self.assertIs(0 >= 1, False)
-        self.assertIs(0 != 1, True)
-        self.assertIs(0 != 0, False)
+        self.assertIs(1 == 1, True)  # noqa: PLR0133
+        self.assertIs(1 == 0, False)  # noqa: PLR0133
+        self.assertIs(0 < 1, True)  # noqa: PLR0133
+        self.assertIs(1 < 0, False)  # noqa: PLR0133
+        self.assertIs(0 <= 0, True)  # noqa: PLR0133
+        self.assertIs(1 <= 0, False)  # noqa: PLR0133
+        self.assertIs(1 > 0, True)  # noqa: PLR0133
+        self.assertIs(1 > 1, False)  # noqa: PLR0133
+        self.assertIs(1 >= 1, True)  # noqa: PLR0133
+        self.assertIs(0 >= 1, False)  # noqa: PLR0133
+        self.assertIs(0 != 1, True)  # noqa: PLR0133
+        self.assertIs(0 != 0, False)  # noqa: PLR0133
 
         x = [1]
-        self.assertIs(x is x, True)
-        self.assertIs(x is not x, False)
+        self.assertIs(x is x, True)  # noqa: PLR0124
+        self.assertIs(x is not x, False)  # noqa: PLR0124
 
         self.assertIs(1 in x, True)
         self.assertIs(0 in x, False)
@@ -149,8 +149,8 @@ class BoolTest(unittest.TestCase):
         self.assertIs(0 not in x, True)
 
         x = {1: 2}
-        self.assertIs(x is x, True)
-        self.assertIs(x is not x, False)
+        self.assertIs(x is x, True)  # noqa: PLR0124
+        self.assertIs(x is not x, False)  # noqa: PLR0124
 
         self.assertIs(1 in x, True)
         self.assertIs(0 in x, False)
@@ -175,10 +175,10 @@ class BoolTest(unittest.TestCase):
             bool(x=10)
 
     def test_format(self):
-        self.assertEqual("%d" % False, "0")
-        self.assertEqual("%d" % True, "1")
-        self.assertEqual("%x" % False, "0")
-        self.assertEqual("%x" % True, "1")
+        self.assertEqual("%d" % False, "0")  # noqa: UP031
+        self.assertEqual("%d" % True, "1")  # noqa: UP031
+        self.assertEqual(f"{False:x}", "0")
+        self.assertEqual(f"{True:x}", "1")
 
     def test_hasattr(self):
         self.assertIs(hasattr([], "append"), True)
@@ -310,7 +310,7 @@ class BoolTest(unittest.TestCase):
 
         class Bar:
             def __bool__(self):
-                return "Yes"
+                return "Yes"  # noqa: PLE0304
 
         check(Bar())
 
@@ -323,13 +323,13 @@ class BoolTest(unittest.TestCase):
         # __bool__() must return a bool not an int
         class Spam(int):
             def __bool__(self):
-                return 1
+                return 1  # noqa: PLE0304
 
         check(Spam())
 
         class Eggs:
             def __len__(self):
-                return -1
+                return -1  # noqa: PLE0303
 
         self.assertRaises(ValueError, bool, Eggs())
 
@@ -344,14 +344,14 @@ class BoolTest(unittest.TestCase):
 
             class A:
                 def __len__(self):
-                    return badval
+                    return badval  # noqa: B023
 
             try:
                 bool(A())
-            except Exception as e_bool:
+            except Exception as e_bool:  # noqa: BLE001
                 try:
                     len(A())
-                except Exception as e_len:
+                except Exception as e_len:  # noqa: BLE001
                     self.assertEqual(str(e_bool), str(e_len))
 
     def test_blocked(self):

@@ -68,26 +68,34 @@ class Test_HZ(multibytecodec_support.TestBase, unittest.TestCase):
     codectests = (
         # test '~\n' (3 lines)
         (
-            b"This sentence is in ASCII.\n"
-            b"The next sentence is in GB.~{<:Ky2;S{#,~}~\n"
-            b"~{NpJ)l6HK!#~}Bye.\n",
+            (
+                b"This sentence is in ASCII.\n"
+                b"The next sentence is in GB.~{<:Ky2;S{#,~}~\n"
+                b"~{NpJ)l6HK!#~}Bye.\n"
+            ),
             "strict",
-            "This sentence is in ASCII.\n"
-            "The next sentence is in GB."
-            "\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002"
-            "Bye.\n",
+            (
+                "This sentence is in ASCII.\n"
+                "The next sentence is in GB."
+                "\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002"
+                "Bye.\n"
+            ),
         ),
         # test '~\n' (4 lines)
         (
-            b"This sentence is in ASCII.\n"
-            b"The next sentence is in GB.~\n"
-            b"~{<:Ky2;S{#,NpJ)l6HK!#~}~\n"
-            b"Bye.\n",
+            (
+                b"This sentence is in ASCII.\n"
+                b"The next sentence is in GB.~\n"
+                b"~{<:Ky2;S{#,NpJ)l6HK!#~}~\n"
+                b"Bye.\n"
+            ),
             "strict",
-            "This sentence is in ASCII.\n"
-            "The next sentence is in GB."
-            "\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002"
-            "Bye.\n",
+            (
+                "This sentence is in ASCII.\n"
+                "The next sentence is in GB."
+                "\u5df1\u6240\u4e0d\u6b32\uff0c\u52ff\u65bd\u65bc\u4eba\u3002"
+                "Bye.\n"
+            ),
         ),
         # invalid bytes
         (b"ab~cd", "replace", "ab\ufffdcd"),

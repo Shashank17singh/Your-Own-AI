@@ -22,7 +22,7 @@ class GlobTests(unittest.TestCase):
 
     def mktemp(self, *parts):
         filename = self.norm(*parts)
-        base, file = os.path.split(filename)
+        base, _file = os.path.split(filename)
         if not os.path.exists(base):
             os.makedirs(base)
         create_empty_file(filename)

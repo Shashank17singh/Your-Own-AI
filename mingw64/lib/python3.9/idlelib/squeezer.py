@@ -153,14 +153,7 @@ class ExpandingButton(tk.Button):
         if self.is_dangerous:
             confirm = messagebox.askokcancel(
                 title="Expand huge output?",
-                message="\n\n".join(
-                    [
-                        "The squeezed output is very long: %d lines, %d chars.",
-                        "Expanding it could make IDLE slow or unresponsive.",
-                        "It is recommended to view or copy the output instead.",
-                        "Really expand?",
-                    ]
-                )
+                message="The squeezed output is very long: %d lines, %d chars.\n\nExpanding it could make IDLE slow or unresponsive.\n\nIt is recommended to view or copy the output instead.\n\nReally expand?"  # noqa: UP031
                 % (self.numoflines, len(self.s)),
                 default=messagebox.CANCEL,
                 parent=self.text,
@@ -194,7 +187,7 @@ class ExpandingButton(tk.Button):
     )
 
     def context_menu_event(self, event):
-        self.text.mark_set("insert", "@%d,%d" % (event.x, event.y))
+        self.text.mark_set("insert", "@%d,%d" % (event.x, event.y))  # noqa: UP031
         rmenu = tk.Menu(self.text, tearoff=0)
         for label, method_name in self.rmenu_specs:
             rmenu.add_command(label=label, command=getattr(self, method_name))
@@ -318,7 +311,7 @@ class Squeezer:
 
         # If the last char is a newline, remove it from the range.
         if len(s) > 0 and s[-1] == "\n":
-            end = self.text.index("%s-1c" % end)
+            end = self.text.index(f"{end}-1c")
             s = s[:-1]
 
         # Delete the text.

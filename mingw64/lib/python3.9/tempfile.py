@@ -235,7 +235,7 @@ def _get_default_tempdir():
             except OSError:
                 break  # no point trying more names in this directory
     raise FileNotFoundError(
-        _errno.ENOENT, "No usable temporary directory found in %s" % dirlist
+        _errno.ENOENT, f"No usable temporary directory found in {dirlist}"
     )
 
 
@@ -490,7 +490,7 @@ class _TemporaryFileWrapper:
         # (i.e. methods are cached, closed and friends are not)
         file = self.__dict__["file"]
         a = getattr(file, name)
-        if hasattr(a, "__call__"):
+        if callable(a):
             func = a
 
             @_functools.wraps(func)
@@ -531,8 +531,7 @@ class _TemporaryFileWrapper:
         # can't use 'yield from' here because iter(file) returns the file
         # object itself, which has a close method, and thus the file would get
         # closed when the generator is finalized, due to PEP380 semantics.
-        for line in self.file:
-            yield line
+        yield from self.file
 
 
 def NamedTemporaryFile(
@@ -574,7 +573,7 @@ def NamedTemporaryFile(
 
     fd, name = _mkstemp_inner(dir, prefix, suffix, flags, output_type)
     try:
-        file = open(
+        file = open(  # noqa: SIM115
             fd,
             mode,
             buffering=buffering,
@@ -734,7 +733,7 @@ class SpooledTemporaryFile:
         if self._rolled:
             return
         file = self._file
-        newfile = self._file = TemporaryFile(**self._TemporaryFileArgs)
+        newfile = self._file = TemporaryFile(**self._TemporaryFileArgs)  # noqa: SIM115
         del self._TemporaryFileArgs
 
         pos = file.tell()
@@ -891,7 +890,7 @@ class TemporaryDirectory:
             elif issubclass(exc_info[0], FileNotFoundError):
                 pass
             else:
-                raise
+                raise  # noqa: PLE0704
 
         _shutil.rmtree(name, onerror=onerror)
 

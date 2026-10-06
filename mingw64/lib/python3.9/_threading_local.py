@@ -183,7 +183,7 @@ class _localimpl:
             # as soon as the OS-level thread ends instead.
             local = wrlocal()
             if local is not None:
-                dct = local.dicts.pop(idt)
+                local.dicts.pop(idt)
 
         wrlocal = ref(self, local_deleted)
         wrthread = ref(thread, thread_deleted)
@@ -230,7 +230,7 @@ class local:
     def __setattr__(self, name, value):
         if name == "__dict__":
             raise AttributeError(
-                "%r object attribute '__dict__' is read-only" % self.__class__.__name__
+                f"{self.__class__.__name__!r} object attribute '__dict__' is read-only"
             )
         with _patch(self):
             return object.__setattr__(self, name, value)
@@ -238,7 +238,7 @@ class local:
     def __delattr__(self, name):
         if name == "__dict__":
             raise AttributeError(
-                "%r object attribute '__dict__' is read-only" % self.__class__.__name__
+                f"{self.__class__.__name__!r} object attribute '__dict__' is read-only"
             )
         with _patch(self):
             return object.__delattr__(self, name)

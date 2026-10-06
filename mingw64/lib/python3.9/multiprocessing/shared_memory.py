@@ -70,7 +70,7 @@ class SharedMemory:
     _buf = None
     _flags = os.O_RDWR
     _mode = 0o600
-    _prepend_leading_slash = True if _USE_POSIX else False
+    _prepend_leading_slash = bool(_USE_POSIX)
 
     def __init__(self, name=None, create=False, size=0):
         if not size >= 0:
@@ -191,7 +191,7 @@ class SharedMemory:
     def name(self):
         "Unique name that identifies the shared memory block."
         reported_name = self._name
-        if _USE_POSIX and self._prepend_leading_slash:
+        if _USE_POSIX and self._prepend_leading_slash:  # noqa: SIM102
             if self._name.startswith("/"):
                 reported_name = self._name[1:]
         return reported_name
@@ -249,7 +249,7 @@ class ShareableList:
     # - N * 8 bytes: `struct` format string for each element
     # - N bytes: index into _back_transforms_mapping for each element
     #            (for reconstructing the corresponding Python value)
-    _types_mapping = {
+    _types_mapping = {  # noqa: RUF012
         int: "q",
         float: "d",
         bool: "xxxxxxx?",
@@ -258,7 +258,7 @@ class ShareableList:
         None.__class__: "xxxxxx?x",
     }
     _alignment = 8
-    _back_transforms_mapping = {
+    _back_transforms_mapping = {  # noqa: RUF012
         0: lambda value: value,  # int, float, bool
         1: lambda value: value.rstrip(b"\x00").decode(_encoding),  # str
         2: lambda value: value.rstrip(b"\x00"),  # bytes

@@ -452,10 +452,10 @@ class IocpProactor:
             raise RuntimeError("IocpProactor is closed")
 
     def __repr__(self):
-        info = ["overlapped#=%s" % len(self._cache), "result#=%s" % len(self._results)]
+        info = [f"overlapped#={len(self._cache)}", f"result#={len(self._results)}"]
         if self._iocp is None:
             info.append("closed")
-        return "<%s %s>" % (self.__class__.__name__, " ".join(info))
+        return "<{} {}>".format(self.__class__.__name__, " ".join(info))
 
     def set_loop(self, loop):
         self._loop = loop
@@ -846,8 +846,7 @@ class IocpProactor:
                                 "unexpected event"
                             ),
                             "status": (
-                                "err=%s transferred=%s key=%#x address=%#x"
-                                % (err, transferred, key, address)
+                                f"err={err} transferred={transferred} key={key:#x} address={address:#x}"
                             ),
                         }
                     )

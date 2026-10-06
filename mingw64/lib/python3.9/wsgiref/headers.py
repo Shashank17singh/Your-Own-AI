@@ -16,9 +16,9 @@ def _formatparam(param, value=None, quote=1):
     if value is not None and len(value) > 0:
         if quote or tspecials.search(value):
             value = value.replace("\\", "\\\\").replace('"', r"\"")
-            return '%s="%s"' % (param, value)
+            return f'{param}="{value}"'
         else:
-            return "%s=%s" % (param, value)
+            return f"{param}={value}"
     else:
         return param
 
@@ -119,12 +119,12 @@ class Headers:
         return self._headers[:]
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self._headers)
+        return f"{self.__class__.__name__}({self._headers!r})"
 
     def __str__(self):
         """str() returns the formatted headers, complete with end line,
         suitable for direct HTTP transmission."""
-        return "\r\n".join(["%s: %s" % kv for kv in self._headers] + ["", ""])
+        return "\r\n".join(["{}: {}".format(*kv) for kv in self._headers] + ["", ""])
 
     def __bytes__(self):
         return str(self).encode("iso-8859-1")

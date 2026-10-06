@@ -195,7 +195,7 @@ class CFunctions(unittest.TestCase):
 # The following repeats the above tests with stdcall functions (where
 # they are available)
 try:
-    WinDLL
+    WinDLL  # noqa: B018
 except NameError:
 
     def stdcall_dll(*_):

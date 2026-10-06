@@ -111,7 +111,7 @@ def subhelper():
     TICKS += 2
     for i in range(2):  # 0
         try:
-            C().foo  # 1 x 2
+            C().foo  # 1 x 2  # noqa: B018
         except AttributeError:
             TICKS += 3  # 3 x 2
 

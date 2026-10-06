@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
         lpcell = POINTER("cell")
 
         class cell(Structure):
-            _fields_ = [("name", c_char_p), ("next", lpcell)]
+            _fields_ = [("name", c_char_p), ("next", lpcell)]  # noqa: RUF012
 
         SetPointerType(lpcell, cell)
 

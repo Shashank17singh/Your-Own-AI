@@ -23,7 +23,7 @@ class SimpleTestCase(unittest.TestCase):
 class StructureTestCase(unittest.TestCase):
     def test_cint_struct(self):
         class X(Structure):
-            _fields_ = [("a", c_int), ("b", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
 
         x = X()
         self.assertEqual(x._objects, None)
@@ -33,7 +33,7 @@ class StructureTestCase(unittest.TestCase):
 
     def test_ccharp_struct(self):
         class X(Structure):
-            _fields_ = [("a", c_char_p), ("b", c_char_p)]
+            _fields_ = [("a", c_char_p), ("b", c_char_p)]  # noqa: RUF012
 
         x = X()
         self.assertEqual(x._objects, None)
@@ -44,10 +44,10 @@ class StructureTestCase(unittest.TestCase):
 
     def test_struct_struct(self):
         class POINT(Structure):
-            _fields_ = [("x", c_int), ("y", c_int)]
+            _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
         class RECT(Structure):
-            _fields_ = [("ul", POINT), ("lr", POINT)]
+            _fields_ = [("ul", POINT), ("lr", POINT)]  # noqa: RUF012
 
         r = RECT()
         r.ul.x = 0
@@ -79,7 +79,7 @@ class ArrayTestCase(unittest.TestCase):
         self.assertEqual(ia._objects, None)
 
         class X(Structure):
-            _fields_ = [("x", c_int), ("a", INTARR)]
+            _fields_ = [("x", c_int), ("a", INTARR)]  # noqa: RUF012
 
         x = X()
         x.x = 1000
@@ -101,7 +101,7 @@ class DeletePointerTestCase(unittest.TestCase):
     @unittest.skip("test disabled")
     def test_X(self):
         class X(Structure):
-            _fields_ = [("p", POINTER(c_char_p))]
+            _fields_ = [("p", POINTER(c_char_p))]  # noqa: RUF012
 
         x = X()
         i = c_char_p("abc def")
@@ -136,10 +136,10 @@ class DeletePointerTestCase(unittest.TestCase):
 class PointerToStructure(unittest.TestCase):
     def test(self):
         class POINT(Structure):
-            _fields_ = [("x", c_int), ("y", c_int)]
+            _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
         class RECT(Structure):
-            _fields_ = [("a", POINTER(POINT)), ("b", POINTER(POINT))]
+            _fields_ = [("a", POINTER(POINT)), ("b", POINTER(POINT))]  # noqa: RUF012
 
         r = RECT()
         p1 = POINT(1, 2)

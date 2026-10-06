@@ -207,7 +207,7 @@ class StructTest(unittest.TestCase):
                 self.byteorder = format[:-1]
                 if not self.byteorder in byteorders:
                     raise ValueError(
-                        "unrecognized packing byteorder: %s" % self.byteorder
+                        f"unrecognized packing byteorder: {self.byteorder}"
                     )
                 self.bytesize = struct.calcsize(format)
                 self.bitsize = self.bytesize * 8
@@ -220,7 +220,7 @@ class StructTest(unittest.TestCase):
                     self.min_value = 0
                     self.max_value = 2**self.bitsize - 1
                 else:
-                    raise ValueError("unrecognized format code: %s" % self.code)
+                    raise ValueError(f"unrecognized format code: {self.code}")
 
             def test_one(
                 self,
@@ -236,7 +236,7 @@ class StructTest(unittest.TestCase):
                     if self.signed and x < 0:
                         expected += 1 << self.bitsize
                     self.assertGreaterEqual(expected, 0)
-                    expected = "%x" % expected
+                    expected = f"{expected:x}"
                     if len(expected) & 1:
                         expected = "0" + expected
                     expected = expected.encode("ascii")
@@ -347,7 +347,7 @@ class StructTest(unittest.TestCase):
                 ):
                     try:
                         struct.pack(format, obj)
-                    except:
+                    except:  # noqa: E722
                         self.fail(
                             "integer code pack failed on object with '__index__' method"
                         )
@@ -560,7 +560,7 @@ class StructTest(unittest.TestCase):
 
             if len(packed) != 1:
                 self.assertFalse(
-                    prefix, msg="encoded bool is not one byte: %r" % packed
+                    prefix, msg=f"encoded bool is not one byte: {packed!r}"
                 )
 
             try:
