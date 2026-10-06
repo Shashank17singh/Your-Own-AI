@@ -302,7 +302,7 @@ public:
       return;
     for (auto &[nid, nd] : G)
       for (auto &layer : nd.nbrs)
-        layer.erase(remove(layer.begin(), layer.end(), id), layer.end());
+        layer.erase(std::remove(layer.begin(), layer.end(), id), layer.end());
     if (entryPt == id) {
       entryPt = -1;
       for (auto &[nid, nd] : G)
