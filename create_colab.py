@@ -1,7 +1,8 @@
 """
-Script to generate a Jupyter Notebook for hosting Ollama on a Free Cloud GPU (Google Colab).
+Generates a Jupyter Notebook that sets up Ollama on a Google Colab instance.
+Configures cloudflared to expose the local Ollama API to the internet.
+Architecture note: The generated notebook uses threads to run Ollama and Cloudflare tunnel concurrently in the background of the active Colab cell.
 """
-
 import json
 
 notebook = {

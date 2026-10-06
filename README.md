@@ -207,8 +207,8 @@ Open your browser to **http://localhost:8080**.
 - Type any concept in the search box: `binary tree`, `sushi`, `basketball`, `calculus`
 - Choose your algorithm: **HNSW**, **KD-Tree**, or **Brute Force**
 - Choose distance metric: **Cosine**, **Euclidean**, or **Manhattan**
-- Click ** SEARCH** - results appear with distances, the matching point glows on the scatter plot
-- Click ** COMPARE ALL ALGOS** to run all 3 algorithms and compare their speed
+- Click **SEARCH** - results appear with distances, the matching point glows on the scatter plot
+- Click **COMPARE ALL ALGOS** to run all 3 algorithms and compare their speed
 
 The scatter plot shows all 20 vectors projected to 2D using PCA. The 4 semantic categories (CS, Math, Food, Sports) form distinct clusters - that's what "semantic similarity" looks like visually.
 
@@ -218,7 +218,7 @@ Uses Ollama to generate **real 768-dimensional embeddings** from any text.
 
 1. Type a title (e.g., `Operating Systems Notes`)
 2. Paste any text - lecture notes, textbook paragraphs, Wikipedia articles
-3. Click ** EMBED & INSERT**
+3. Click **EMBED & INSERT**
 4. Long documents are automatically split into overlapping 250-word chunks
 5. Each chunk gets its own embedding and is stored in a separate HNSW index
 
@@ -226,7 +226,7 @@ Uses Ollama to generate **real 768-dimensional embeddings** from any text.
 
 1. Make sure you've inserted some documents in Tab 2 first
 2. Type a question about your documents
-3. Click ** ASK AI**
+3. Click **ASK AI**
 
 What happens behind the scenes:
 
@@ -348,12 +348,4 @@ KD-Tree pruning relies on axis-aligned distance bounds. In high dimensions, almo
 
 ---
 
-## Deep Codebase Analysis
 
-| File                                                       | Purpose / Details                                      |
-| ---------------------------------------------------------- | ------------------------------------------------------ |
-| `CMakeLists.txt`                                           | Build configuration for compiling the C++ backend.     |
-| `Ollama_Cloud_GPU.ipynb`                                   | Colab notebook for running Ollama with GPU support.    |
-| `create_colab.py`                                          | Python script to generate the Colab environment.       |
-| `include\httplib.h`                                        | Single-header C++ HTTP server library (cpp-httplib).   |
-| `src\main.cpp`                                             | Core C++ backend: HNSW, KD-Tree, BruteForce, REST API. |
