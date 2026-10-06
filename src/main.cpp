@@ -1,3 +1,8 @@
+/**
+ * Backend API for Your-Own-AI.
+ * Implements a highly optimized in-memory vector database using HNSW, KD-Trees, and Brute Force approaches,
+ * wrapped in a C++ HTTP server (cpp-httplib) for seamless integration with Ollama embeddings.
+ */
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0A00
