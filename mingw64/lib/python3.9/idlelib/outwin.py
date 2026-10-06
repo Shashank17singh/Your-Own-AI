@@ -37,7 +37,7 @@ def file_line_helper(line):
         if match:
             filename, lineno = match.group(1, 2)
             try:
-                f = open(filename, "r")
+                f = open(filename, "r")  # noqa: SIM115
                 f.close()
                 break
             except OSError:
@@ -60,7 +60,7 @@ class OutputWindow(EditorWindow):
     """
 
     # Our own right-button menu
-    rmenu_specs = [
+    rmenu_specs = [  # noqa: RUF012
         ("Cut", "<<cut>>", "rmenu_check_cut"),
         ("Copy", "<<copy>>", "rmenu_check_copy"),
         ("Paste", "<<paste>>", "rmenu_check_paste"),
@@ -151,7 +151,7 @@ class OutputWindow(EditorWindow):
 
 # These classes are currently not used but might come in handy
 class OnDemandOutputWindow:
-    tagdefs = {
+    tagdefs = {  # noqa: RUF012
         # XXX Should use IdlePrefs.ColorPrefs
         "stdout": {"foreground": "blue"},
         "stderr": {"foreground": "#007700"},

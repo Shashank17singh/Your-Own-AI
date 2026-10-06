@@ -15,7 +15,7 @@ class TestRlcompleter(unittest.TestCase):
     def setUp(self):
         self.stdcompleter = rlcompleter.Completer()
         self.completer = rlcompleter.Completer(
-            dict(spam=int, egg=str, CompleteMe=CompleteMe)
+            {"spam": int, "egg": str, "CompleteMe": CompleteMe}
         )
 
         # forces stdcompleter to bind builtins namespace
@@ -59,7 +59,7 @@ class TestRlcompleter(unittest.TestCase):
         )
         self.assertEqual(self.stdcompleter.attr_matches("tuple.foospamegg"), [])
         expected = sorted(
-            {"None.%s%s" % (x, "(" if x != "__doc__" else "") for x in dir(None)}
+            {"None.{}{}".format(x, "(" if x != "__doc__" else "") for x in dir(None)}
         )
         self.assertEqual(self.stdcompleter.attr_matches("None."), expected)
         self.assertEqual(self.stdcompleter.attr_matches("None._"), expected)
@@ -111,7 +111,7 @@ class TestRlcompleter(unittest.TestCase):
                 return super().__getattribute__(name)
 
         f = Foo()
-        completer = rlcompleter.Completer(dict(f=f))
+        completer = rlcompleter.Completer({"f": f})
         self.assertEqual(completer.complete("f.b", 0), "f.bar")
         self.assertEqual(f.calls, 1)
 
@@ -126,7 +126,7 @@ class TestRlcompleter(unittest.TestCase):
                 return self._bar
 
         f = Foo()
-        completer = rlcompleter.Completer(dict(f=f))
+        completer = rlcompleter.Completer({"f": f})
         self.assertEqual(completer.complete("f.b", 0), "f.bar")
         self.assertFalse(f.property_called)
 
@@ -136,7 +136,7 @@ class TestRlcompleter(unittest.TestCase):
         class Foo:
             __slots__ = ("bar",)
 
-        completer = rlcompleter.Completer(dict(f=Foo()))
+        completer = rlcompleter.Completer({"f": Foo()})
         self.assertEqual(completer.complete("f.", 0), "f.bar")
 
     @unittest.mock.patch("rlcompleter._readline_available", False)

@@ -151,7 +151,7 @@ __test__ = {"doctests": doctests}
 def test_main(verbose=None):
     import sys
 
-    from test import support, test_setcomps
+    from test import support, test_setcomps  # noqa: PLW0406
 
     support.run_doctest(test_setcomps, verbose)
 

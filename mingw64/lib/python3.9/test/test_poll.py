@@ -11,7 +11,7 @@ import unittest
 from test.support import TESTFN, cpython_only, reap_threads, run_unittest
 
 try:
-    select.poll
+    select.poll  # noqa: B018
 except AttributeError:
     raise unittest.SkipTest("select.poll not defined")
 
@@ -132,7 +132,7 @@ class PollTests(unittest.TestCase):
             fdlist = pollster.poll(tout)
             if fdlist == []:
                 continue
-            fd, flags = fdlist[0]
+            _fd, flags = fdlist[0]
             if flags & select.POLLHUP:
                 line = p.readline()
                 if line != b"":
@@ -146,7 +146,7 @@ class PollTests(unittest.TestCase):
                 self.assertEqual(line, b"testing...\n")
                 continue
             else:
-                self.fail("Unexpected return value from select.poll: %s" % fdlist)
+                self.fail(f"Unexpected return value from select.poll: {fdlist}")
 
     def test_poll3(self):
         # test int overflow

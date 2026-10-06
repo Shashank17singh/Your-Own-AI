@@ -157,7 +157,7 @@ class AbstractWidgetTest(AbstractTkTest):
     def checkEnumParam(self, widget, name, *values, errmsg=None, **kwargs):
         self.checkParams(widget, name, *values, **kwargs)
         if errmsg is None:
-            errmsg2 = ' %s "{}": must be %s%s or %s' % (
+            errmsg2 = ' {} "{{}}": must be {}{} or {}'.format(
                 name,
                 ", ".join(values[:-1]),
                 "," if len(values) > 2 else "",
@@ -175,10 +175,9 @@ class AbstractWidgetTest(AbstractTkTest):
         for value in values:
             expected = _sentinel
             conv1 = conv
-            if isinstance(value, str):
-                if conv1 and conv1 is not str:
-                    expected = pixels_conv(value) * self.scaling
-                    conv1 = round
+            if isinstance(value, str) and conv1 and conv1 is not str:
+                expected = pixels_conv(value) * self.scaling
+                conv1 = round
             self.checkParam(
                 widget, name, value, expected=expected, conv=conv1, **kwargs
             )
@@ -219,10 +218,10 @@ class AbstractWidgetTest(AbstractTkTest):
         self.assertIsNotNone(bbox)
         self.assertIsInstance(bbox, tuple)
         if len(bbox) != 4:
-            self.fail("Invalid bounding box: %r" % (bbox,))
+            self.fail(f"Invalid bounding box: {bbox!r}")
         for item in bbox:
             if not isinstance(item, int):
-                self.fail("Invalid bounding box: %r" % (bbox,))
+                self.fail(f"Invalid bounding box: {bbox!r}")
                 break
 
     def test_keys(self):
@@ -243,10 +242,7 @@ class AbstractWidgetTest(AbstractTkTest):
             expected = set(self.OPTIONS)
             for k in sorted(keys - expected):
                 if not (k in aliases and aliases[k] in keys and aliases[k] in expected):
-                    print(
-                        '%s.OPTIONS doesn\'t contain "%s"'
-                        % (self.__class__.__name__, k)
-                    )
+                    print(f'{self.__class__.__name__}.OPTIONS doesn\'t contain "{k}"')
 
 
 class StandardOptionsTests:
@@ -587,7 +583,7 @@ def add_standard_options(*source_classes):
                         widget = self.create()
                         widget[option]
                         raise AssertionError(
-                            'Option "%s" is not tested in %s' % (option, cls.__name__)
+                            f'Option "{option}" is not tested in {cls.__name__}'
                         )
 
                     test.__name__ = methodname

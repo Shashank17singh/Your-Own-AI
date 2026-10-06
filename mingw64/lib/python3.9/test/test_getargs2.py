@@ -83,17 +83,17 @@ class IndexIntSubclass(int):
 
 class BadIndex:
     def __index__(self):
-        return 1.0
+        return 1.0  # noqa: PLE0305
 
 
 class BadIndex2:
     def __index__(self):
-        return True
+        return True  # noqa: PLE0305
 
 
 class BadIndex3(int):
     def __index__(self):
-        return True
+        return True  # noqa: PLE0305
 
 
 class Int:
@@ -1221,7 +1221,6 @@ class SkipitemTest(unittest.TestCase):
     def test_skipitem_with_suffix(self):
         parse = _testcapi.parse_tuple_and_keywords
         empty_tuple = ()
-        tuple_1 = (0,)
         dict_b = {"b": 1}
         keywords = ["a", "b"]
 

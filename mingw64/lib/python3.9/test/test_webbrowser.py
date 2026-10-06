@@ -20,7 +20,7 @@ class PopenMock(mock.MagicMock):
 
 
 class CommandTestMixin:
-    def _test(self, meth, *, args=[URL], kw={}, options, arguments):
+    def _test(self, meth, *, args=None, kw=None, options, arguments):
         """Given a web browser instance method name along with arguments and
         keywords for same (which defaults to the single argument URL), creates
         a browser instance from the class pointed to by self.browser, calls the
@@ -31,6 +31,10 @@ class CommandTestMixin:
         sequence order to whatever is left over after removing the options.
 
         """
+        if kw is None:
+            kw = {}
+        if args is None:
+            args = [URL]
         popen = PopenMock()
         support.patch(self, subprocess, "Popen", popen)
         browser = self.browser_class(name=CMD_NAME)
@@ -65,7 +69,7 @@ class ChromeCommandTest(CommandTestMixin, unittest.TestCase):
         self._test("open", options=[], arguments=[URL])
 
     def test_open_with_autoraise_false(self):
-        self._test("open", kw=dict(autoraise=False), options=[], arguments=[URL])
+        self._test("open", kw={"autoraise": False}, options=[], arguments=[URL])
 
     def test_open_new(self):
         self._test("open_new", options=["--new-window"], arguments=[URL])
@@ -81,7 +85,7 @@ class MozillaCommandTest(CommandTestMixin, unittest.TestCase):
         self._test("open", options=[], arguments=[URL])
 
     def test_open_with_autoraise_false(self):
-        self._test("open", kw=dict(autoraise=False), options=[], arguments=[URL])
+        self._test("open", kw={"autoraise": False}, options=[], arguments=[URL])
 
     def test_open_new(self):
         self._test("open_new", options=[], arguments=["-new-window", URL])
@@ -99,7 +103,7 @@ class NetscapeCommandTest(CommandTestMixin, unittest.TestCase):
     def test_open_with_autoraise_false(self):
         self._test(
             "open",
-            kw=dict(autoraise=False),
+            kw={"autoraise": False},
             options=["-noraise", "-remote"],
             arguments=[f"openURL({URL})"],
         )
@@ -128,7 +132,7 @@ class GaleonCommandTest(CommandTestMixin, unittest.TestCase):
     def test_open_with_autoraise_false(self):
         self._test(
             "open",
-            kw=dict(autoraise=False),
+            kw={"autoraise": False},
             options=["-noraise", "-n"],
             arguments=[URL],
         )
@@ -147,7 +151,7 @@ class OperaCommandTest(CommandTestMixin, unittest.TestCase):
         self._test("open", options=[], arguments=[URL])
 
     def test_open_with_autoraise_false(self):
-        self._test("open", kw=dict(autoraise=False), options=[], arguments=[URL])
+        self._test("open", kw={"autoraise": False}, options=[], arguments=[URL])
 
     def test_open_new(self):
         self._test("open_new", options=["--new-window"], arguments=[URL])

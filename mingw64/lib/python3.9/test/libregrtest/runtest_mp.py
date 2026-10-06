@@ -46,9 +46,7 @@ USE_PROCESS_GROUP = hasattr(os, "setsid") and hasattr(os, "killpg")
 def must_stop(result: TestResult, ns: Namespace) -> bool:
     if isinstance(result, Interrupted):
         return True
-    if ns.failfast and is_failed(result, ns):
-        return True
-    return False
+    return bool(ns.failfast and is_failed(result, ns))
 
 
 def parse_worker_args(worker_args) -> tuple[Namespace, str]:
@@ -169,7 +167,7 @@ class TestWorkerProcess(threading.Thread):
         if popen is not None:
             dt = time.monotonic() - self.start_time
             info.extend((f"pid={self._popen.pid}", f"time={format_duration(dt)}"))
-        return "<%s>" % " ".join(info)
+        return "<{}>".format(" ".join(info))
 
     def _kill(self) -> None:
         popen = self._popen
@@ -277,7 +275,7 @@ class TestWorkerProcess(threading.Thread):
 
         err_msg = None
         if retcode != 0:
-            err_msg = "Exit code %s" % retcode
+            err_msg = f"Exit code {retcode}"
         else:
             stdout, _, result = stdout.rpartition("\n")
             stdout = stdout.rstrip()
@@ -287,8 +285,8 @@ class TestWorkerProcess(threading.Thread):
                 try:
                     # deserialize run_tests_worker() output
                     result = json.loads(result, object_hook=decode_test_result)
-                except Exception as exc:
-                    err_msg = "Failed to parse worker JSON: %s" % exc
+                except Exception as exc:  # noqa: BLE001
+                    err_msg = f"Failed to parse worker JSON: {exc}"
 
         if err_msg is not None:
             return self.mp_result_error(ChildError(test_name), stdout, stderr, err_msg)
@@ -310,7 +308,7 @@ class TestWorkerProcess(threading.Thread):
                     break
             except ExitThread:
                 break
-            except BaseException:
+            except BaseException:  # noqa: BLE001
                 self.output.put((True, traceback.format_exc()))
                 break
 
@@ -362,7 +360,7 @@ def get_running(workers: list[TestWorkerProcess]) -> list[TestWorkerProcess]:
             continue
         dt = time.monotonic() - worker.start_time
         if dt >= PROGRESS_MIN_TIME:
-            text = "%s (%s)" % (current_test_name, format_duration(dt))
+            text = f"{current_test_name} ({format_duration(dt)})"
             running.append(text)
     return running
 
@@ -389,10 +387,7 @@ class MultiprocessTestRunner:
         ]
         msg = f"Run tests in parallel using {len(self.workers)} child processes"
         if self.ns.timeout:
-            msg += " (timeout: %s, worker timeout: %s)" % (
-                format_duration(self.ns.timeout),
-                format_duration(self.worker_timeout),
-            )
+            msg += f" (timeout: {format_duration(self.ns.timeout)}, worker timeout: {format_duration(self.worker_timeout)})"
         self.log(msg)
         for worker in self.workers:
             worker.start()
@@ -427,7 +422,7 @@ class MultiprocessTestRunner:
             # display progress
             running = get_running(self.workers)
             if running and not self.ns.pgo:
-                self.log("running: %s" % ", ".join(running))
+                self.log("running: {}".format(", ".join(running)))
 
     def display_result(self, mp_result: MultiprocessResult) -> None:
         result = mp_result.result
@@ -435,12 +430,12 @@ class MultiprocessTestRunner:
         text = str(result)
         if mp_result.error_msg is not None:
             # CHILD_ERROR
-            text += " (%s)" % mp_result.error_msg
+            text += f" ({mp_result.error_msg})"
         elif result.duration_sec >= PROGRESS_MIN_TIME and not self.ns.pgo:
-            text += " (%s)" % format_duration(result.duration_sec)
+            text += f" ({format_duration(result.duration_sec)})"
         running = get_running(self.workers)
         if running and not self.ns.pgo:
-            text += " -- running: %s" % ", ".join(running)
+            text += " -- running: {}".format(", ".join(running))
         self.regrtest.display_progress(self.test_index, text)
 
     def _process_result(self, item: QueueOutput) -> bool:
@@ -461,10 +456,7 @@ class MultiprocessTestRunner:
         if mp_result.stderr and not self.ns.pgo:
             print(mp_result.stderr, file=sys.stderr, flush=True)
 
-        if must_stop(mp_result.result, self.ns):
-            return True
-
-        return False
+        return bool(must_stop(mp_result.result, self.ns))
 
     def run_tests(self) -> None:
         self.start_workers()

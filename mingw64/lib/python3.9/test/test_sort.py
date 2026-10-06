@@ -64,7 +64,7 @@ class TestBase(unittest.TestCase):
                 return self.i < other.i
 
             def __repr__(self):
-                return "Complains(%d)" % self.i
+                return "Complains(%d)" % self.i  # noqa: UP031
 
         class Stable:
             def __init__(self, key, i):
@@ -75,7 +75,7 @@ class TestBase(unittest.TestCase):
                 return self.key < other.key
 
             def __repr__(self):
-                return "Stable(%d, %d)" % (self.key, self.index)
+                return "Stable(%d, %d)" % (self.key, self.index)  # noqa: UP031
 
         for n in sizes:
             x = list(range(n))
@@ -159,16 +159,16 @@ class TestBugs(unittest.TestCase):
         for i in range(20):
 
             def mutating_cmp(x, y):
-                L.append(3)
-                L.pop()
+                L.append(3)  # noqa: B023
+                L.pop()  # noqa: B023
                 return (x > y) - (x < y)
 
             L = [1, 2]
             self.assertRaises(ValueError, L.sort, key=cmp_to_key(mutating_cmp))
 
             def mutating_cmp(x, y):
-                L.append(3)
-                del L[:]
+                L.append(3)  # noqa: B023
+                del L[:]  # noqa: B023
                 return (x > y) - (x < y)
 
             self.assertRaises(ValueError, L.sort, key=cmp_to_key(mutating_cmp))
@@ -306,7 +306,7 @@ def check_against_PyObject_RichCompareBool(self, L):
     L_1 = L[:]
     L_2 = [(x,) for x in L]
     L_3 = [((x,),) for x in L]
-    for L in [L_1, L_2, L_3]:
+    for L in [L_1, L_2, L_3]:  # noqa: PLR1704
         optimized = sorted(L)
         reference = [y[1] for y in sorted([(0, x) for x in L])]
         for opt, ref in zip(optimized, reference):

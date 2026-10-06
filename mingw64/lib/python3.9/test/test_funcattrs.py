@@ -39,13 +39,13 @@ class FuncAttrsTest(unittest.TestCase):
         except exceptions:
             pass
         else:
-            self.fail("shouldn't be able to set %s to %r" % (name, value))
+            self.fail(f"shouldn't be able to set {name} to {value!r}")
         try:
             delattr(obj, name)
         except exceptions:
             pass
         else:
-            self.fail("shouldn't be able to del %s" % name)
+            self.fail(f"shouldn't be able to del {name}")
 
 
 class FunctionPropertiesTest(FuncAttrsTest):
@@ -106,14 +106,14 @@ class FunctionPropertiesTest(FuncAttrsTest):
         cell_obj = types.CellType()
         msg = "shouldn't be able to read an empty cell"
         with self.assertRaises(ValueError, msg=msg):
-            cell_obj.cell_contents
+            cell_obj.cell_contents  # noqa: B018
 
     def test_empty_cell(self):
         def f():
             print(a)
 
         try:
-            f.__closure__[0].cell_contents
+            f.__closure__[0].cell_contents  # noqa: B018
         except ValueError:
             pass
         else:
@@ -133,7 +133,7 @@ class FunctionPropertiesTest(FuncAttrsTest):
         self.assertEqual(a, 9)
         del c[0].cell_contents
         try:
-            c[0].cell_contents
+            c[0].cell_contents  # noqa: B018
         except ValueError:
             pass
         else:
@@ -154,7 +154,7 @@ class FunctionPropertiesTest(FuncAttrsTest):
         # __name__ must be available when in restricted mode. Exec will raise
         # AttributeError if __name__ is not available on f.
         s = """def f(): pass\nf.__name__"""
-        exec(s, {"__builtins__": {}})
+        exec(s, {"__builtins__": {}})  # noqa: S102
         # Test on methods, too
         self.assertEqual(self.fi.a.__name__, "a")
         self.cannot_set_attr(self.fi.a, "__name__", "a", AttributeError)
@@ -280,7 +280,7 @@ class InstancemethodAttrTest(FuncAttrsTest):
         self.assertEqual(self.fi.id(), id(self.fi))
         # Test usage
         try:
-            self.fi.id.unknown_attr
+            self.fi.id.unknown_attr  # noqa: B018
         except AttributeError:
             pass
         else:
@@ -311,7 +311,7 @@ class ArbitraryFunctionAttrTest(FuncAttrsTest):
     def test_unset_attr(self):
         for func in [self.b, self.fi.a]:
             try:
-                func.non_existent_attr
+                func.non_existent_attr  # noqa: B018
             except AttributeError:
                 pass
             else:

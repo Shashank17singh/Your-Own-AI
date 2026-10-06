@@ -85,11 +85,10 @@ class TestPgen2Caching(support.TestCase):
                 [
                     sys.executable,
                     "-c",
-                    """
+                    f"""
 from lib2to3.pgen2 import driver as pgen2_driver
-pgen2_driver.load_grammar(%r, save=True, force=True)
-                    """
-                    % (grammar_sub_copy,),
+pgen2_driver.load_grammar({grammar_sub_copy!r}, save=True, force=True)
+                    """,
                 ],
                 env=sub_env,
             )
@@ -623,7 +622,7 @@ class TestParserIdempotency(support.TestCase):
         for filepath in support.all_project_files():
             with open(filepath, "rb") as fp:
                 encoding = tokenize.detect_encoding(fp.readline)[0]
-            self.assertIsNotNone(encoding, "can't detect encoding for %s" % filepath)
+            self.assertIsNotNone(encoding, f"can't detect encoding for {filepath}")
             with open(filepath, "r", encoding=encoding) as fp:
                 source = fp.read()
             try:
@@ -632,11 +631,11 @@ class TestParserIdempotency(support.TestCase):
                 try:
                     tree = driver_no_print_statement.parse_string(source)
                 except ParseError as err:
-                    self.fail("ParseError on file %s (%s)" % (filepath, err))
+                    self.fail(f"ParseError on file {filepath} ({err})")
             new = str(tree)
             if new != source:
                 print(diff_texts(source, new, filepath))
-                self.fail("Idempotency failed: %s" % filepath)
+                self.fail(f"Idempotency failed: {filepath}")
 
     def test_extended_unpacking(self):
         driver.parse_string("a, *b, c = x\n")

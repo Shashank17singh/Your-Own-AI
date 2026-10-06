@@ -635,7 +635,7 @@ class LongTest(unittest.TestCase):
                     self.d = d
                     assert float(n) / float(d) == value
                 else:
-                    raise TypeError("can't deal with %r" % value)
+                    raise TypeError(f"can't deal with {value!r}")
 
             def _cmp__(self, other):
                 if not isinstance(other, Rat):
@@ -849,7 +849,7 @@ class LongTest(unittest.TestCase):
             "200 / mhuge",
         ]:
             result = eval(underflow, namespace)
-            self.assertEqual(result, 0.0, "expected underflow to 0 from %r" % underflow)
+            self.assertEqual(result, 0.0, f"expected underflow to 0 from {underflow!r}")
 
         for zero in ["huge / 0", "mhuge / 0"]:
             self.assertRaises(ZeroDivisionError, eval, zero, namespace)
@@ -1363,7 +1363,6 @@ class LongTest(unittest.TestCase):
             b"\x01\xff": -255,
             b"\x00\xff": -256,
             b"\xff\x00": 255,
-            b"\x00\x01": 256,
             b"\xff\x7f": 32767,
             b"\x00\x80": -32768,
             b"\xff\xff\x00": 65535,

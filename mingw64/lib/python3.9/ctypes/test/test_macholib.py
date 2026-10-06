@@ -40,7 +40,7 @@ def find_lib(name):
             return os.path.realpath(dyld_find(dylib))
         except ValueError:
             pass
-    raise ValueError("%s not found" % (name,))
+    raise ValueError(f"{name} not found")
 
 
 class MachOTest(unittest.TestCase):

@@ -75,8 +75,10 @@ class BaseProcess:
         raise NotImplementedError
 
     def __init__(
-        self, group=None, target=None, name=None, args=(), kwargs={}, *, daemon=None
+        self, group=None, target=None, name=None, args=(), kwargs=None, *, daemon=None
     ):
+        if kwargs is None:
+            kwargs = {}
         assert group is None, "group argument must be None for now"
         count = next(_process_counter)
         self._identity = _current_process._identity + (count,)
@@ -276,17 +278,17 @@ class BaseProcess:
             else:
                 status = "started"
 
-        info = [type(self).__name__, "name=%r" % self._name]
+        info = [type(self).__name__, f"name={self._name!r}"]
         if self._popen is not None:
-            info.append("pid=%s" % self._popen.pid)
-        info.append("parent=%s" % self._parent_pid)
+            info.append(f"pid={self._popen.pid}")
+        info.append(f"parent={self._parent_pid}")
         info.append(status)
         if exitcode is not None:
             exitcode = _exitcode_to_name.get(exitcode, exitcode)
-            info.append("exitcode=%s" % exitcode)
+            info.append(f"exitcode={exitcode}")
         if self.daemon:
             info.append("daemon")
-        return "<%s>" % " ".join(info)
+        return "<{}>".format(" ".join(info))
 
     ##
 
@@ -329,15 +331,15 @@ class BaseProcess:
             else:
                 sys.stderr.write(str(e.code) + "\n")
                 exitcode = 1
-        except:
+        except:  # noqa: E722
             exitcode = 1
             import traceback
 
-            sys.stderr.write("Process %s:\n" % self.name)
+            sys.stderr.write(f"Process {self.name}:\n")
             traceback.print_exc()
         finally:
             threading._shutdown()
-            util.info("process exiting with exitcode %d" % exitcode)
+            util.info("process exiting with exitcode %d" % exitcode)  # noqa: UP031
             util._flush_std_streams()
 
         return exitcode

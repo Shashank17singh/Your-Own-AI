@@ -15,7 +15,7 @@ if support.is_jython:
 
     def unify_callables(d):
         for n, v in d.items():
-            if hasattr(v, "__call__"):
+            if callable(v):
                 d[n] = True
         return d
 
@@ -31,8 +31,8 @@ class CodeopTests(unittest.TestCase):
                 saved_stdout = sys.stdout
                 sys.stdout = io.StringIO()
                 try:
-                    exec(code, d)
-                    exec(compile(str, "<input>", "single"), r)
+                    exec(code, d)  # noqa: S102
+                    exec(compile(str, "<input>", "single"), r)  # noqa: S102
                 finally:
                     sys.stdout = saved_stdout
             elif symbol == "eval":

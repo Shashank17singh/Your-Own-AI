@@ -12,7 +12,7 @@ if os.name != "posix":
 TESTFN2 = TESTFN + "2"
 
 # tr a-z A-Z is not portable, so make the ranges explicit
-s_command = "tr %s %s" % (string.ascii_lowercase, string.ascii_uppercase)
+s_command = f"tr {string.ascii_lowercase} {string.ascii_uppercase}"
 
 
 class SimplePipeTests(unittest.TestCase):

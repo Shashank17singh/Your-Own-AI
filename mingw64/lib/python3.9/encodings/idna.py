@@ -40,7 +40,7 @@ def nameprep(label):
             or stringprep.in_table_c8(c)
             or stringprep.in_table_c9(c)
         ):
-            raise UnicodeError("Invalid character %r" % c)
+            raise UnicodeError(f"Invalid character {c!r}")
 
     # Check bidi
     RandAL = [stringprep.in_table_d1(x) for x in label]

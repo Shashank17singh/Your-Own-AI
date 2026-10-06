@@ -129,10 +129,10 @@ class GeneralFloatCases(unittest.TestCase):
 
     def test_error_message(self):
         def check(s):
-            with self.assertRaises(ValueError, msg="float(%r)" % (s,)) as cm:
+            with self.assertRaises(ValueError, msg=f"float({s!r})") as cm:
                 float(s)
             self.assertEqual(
-                str(cm.exception), "could not convert string to float: %r" % (s,)
+                str(cm.exception), f"could not convert string to float: {s!r}"
             )
 
         check("\xbd")
@@ -158,7 +158,7 @@ class GeneralFloatCases(unittest.TestCase):
         # it still has to accept the normal python syntax
         import locale
 
-        if not locale.localeconv()["decimal_point"] == ",":
+        if locale.localeconv()["decimal_point"] != ",":
             self.skipTest('decimal_point is not ","')
 
         self.assertEqual(float("  3.14  "), 3.14)
@@ -297,24 +297,24 @@ class GeneralFloatCases(unittest.TestCase):
             self.assertIn(f, (f,))
             self.assertIn(f, {f})
             self.assertIn(f, {f: None})
-            self.assertEqual([f].count(f), 1, "[].count('%r') != 1" % f)
+            self.assertEqual([f].count(f), 1, f"[].count('{f!r}') != 1")
             self.assertIn(f, floats)
 
         for f in floats:
             # nonidentical containers, same type, same contents
-            self.assertTrue([f] == [f], "[%r] != [%r]" % (f, f))
-            self.assertTrue((f,) == (f,), "(%r,) != (%r,)" % (f, f))
-            self.assertTrue({f} == {f}, "{%r} != {%r}" % (f, f))
+            self.assertTrue([f] == [f], f"[{f!r}] != [{f!r}]")
+            self.assertTrue((f,) == (f,), f"({f!r},) != ({f!r},)")
+            self.assertTrue({f} == {f}, f"{{{f!r}}} != {{{f!r}}}")
             self.assertTrue(
-                {f: None} == {f: None}, "{%r : None} != {%r : None}" % (f, f)
+                {f: None} == {f: None}, f"{{{f!r} : None}} != {{{f!r} : None}}"
             )
 
             # identical containers
             l, t, s, d = [f], (f,), {f}, {f: None}
-            self.assertTrue(l == l, "[%r] not equal to itself" % f)
-            self.assertTrue(t == t, "(%r,) not equal to itself" % f)
-            self.assertTrue(s == s, "{%r} not equal to itself" % f)
-            self.assertTrue(d == d, "{%r : None} not equal to itself" % f)
+            self.assertTrue(l == l, f"[{f!r}] not equal to itself")  # noqa: PLR0124
+            self.assertTrue(t == t, f"({f!r},) not equal to itself")  # noqa: PLR0124
+            self.assertTrue(s == s, f"{{{f!r}}} not equal to itself")  # noqa: PLR0124
+            self.assertTrue(d == d, f"{{{f!r} : None}} not equal to itself")  # noqa: PLR0124
 
     def assertEqualAndEqualSign(self, a, b):
         # fail unless a == b and a and b have the same sign bit;
@@ -1116,7 +1116,7 @@ class HexFloatTestCase(unittest.TestCase):
                 return
         elif x == y and (x != 0.0 or copysign(1.0, x) == copysign(1.0, y)):
             return
-        self.fail("%r not identical to %r" % (x, y))
+        self.fail(f"{x!r} not identical to {y!r}")
 
     def test_ends(self):
         self.identical(self.MIN, ldexp(1.0, -1022))
@@ -1185,8 +1185,8 @@ class HexFloatTestCase(unittest.TestCase):
                 pass
             else:
                 self.fail(
-                    "Expected float.fromhex(%r) to raise ValueError; "
-                    "got %r instead" % (x, result)
+                    f"Expected float.fromhex({x!r}) to raise ValueError; "
+                    f"got {result!r} instead"
                 )
 
     def test_whitespace(self):

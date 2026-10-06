@@ -78,12 +78,7 @@ class Token:
         self.typeid, self.address, self.id = state
 
     def __repr__(self):
-        return "%s(typeid=%r, address=%r, id=%r)" % (
-            self.__class__.__name__,
-            self.typeid,
-            self.address,
-            self.id,
-        )
+        return f"{self.__class__.__name__}(typeid={self.typeid!r}, address={self.address!r}, id={self.id!r})"
 
 
 #
@@ -91,10 +86,12 @@ class Token:
 #
 
 
-def dispatch(c, id, methodname, args=(), kwds={}):
+def dispatch(c, id, methodname, args=(), kwds=None):
     """
     Send a message to manager using connection `c` and return response
     """
+    if kwds is None:
+        kwds = {}
     c.send((id, methodname, args, kwds))
     kind, result = c.recv()
     if kind == "#RETURN":
@@ -111,7 +108,7 @@ def convert_to_error(kind, result):
                 f"Result {result!r} (kind '{kind}') type is {type(result)}, not str"
             )
         if kind == "#UNSERIALIZABLE":
-            return RemoteError("Unserializable message: %s\n" % result)
+            return RemoteError(f"Unserializable message: {result}\n")
         else:
             return RemoteError(result)
     else:
@@ -157,7 +154,7 @@ class Server:
     Server class which runs in a process controlled by a manager object
     """
 
-    public = [
+    public = [  # noqa: RUF012
         "shutdown",
         "create",
         "accept_connection",
@@ -174,7 +171,7 @@ class Server:
             raise TypeError(f"Authkey {authkey!r} is type {type(authkey)!s}, not bytes")
         self.registry = registry
         self.authkey = process.AuthenticationString(authkey)
-        Listener, Client = listener_client[serializer]
+        Listener, _Client = listener_client[serializer]
 
         # do authentication later
         self.listener = Listener(address=address, backlog=16)
@@ -226,24 +223,24 @@ class Server:
             connection.deliver_challenge(c, self.authkey)
             connection.answer_challenge(c, self.authkey)
             request = c.recv()
-            ignore, funcname, args, kwds = request
-            assert funcname in self.public, "%r unrecognized" % funcname
+            _ignore, funcname, args, kwds = request
+            assert funcname in self.public, f"{funcname!r} unrecognized"
             func = getattr(self, funcname)
-        except Exception:
+        except Exception:  # noqa: BLE001
             msg = ("#TRACEBACK", format_exc())
         else:
             try:
                 result = func(c, *args, **kwds)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 msg = ("#TRACEBACK", format_exc())
             else:
                 msg = ("#RETURN", result)
         try:
             c.send(msg)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             try:
                 c.send(("#TRACEBACK", format_exc()))
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             util.info("Failure to send message: %r", msg)
             util.info(" ... request was %r", request)
@@ -278,15 +275,14 @@ class Server:
 
                 if methodname not in exposed:
                     raise AttributeError(
-                        "method %r of %r object is not in exposed=%r"
-                        % (methodname, type(obj), exposed)
+                        f"method {methodname!r} of {type(obj)!r} object is not in exposed={exposed!r}"
                     )
 
                 function = getattr(obj, methodname)
 
                 try:
                     res = function(*args, **kwds)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     msg = ("#ERROR", e)
                 else:
                     typeid = gettypeid and gettypeid.get(methodname, None)
@@ -305,7 +301,7 @@ class Server:
                         fallback_func = self.fallback_mapping[methodname]
                         result = fallback_func(self, conn, ident, obj, *args, **kwds)
                         msg = ("#RETURN", result)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         msg = ("#TRACEBACK", format_exc())
 
             except EOFError:
@@ -315,15 +311,15 @@ class Server:
                 )
                 sys.exit(0)
 
-            except Exception:
+            except Exception:  # noqa: BLE001
                 msg = ("#TRACEBACK", format_exc())
 
             try:
                 try:
                     send(msg)
-                except Exception:
+                except Exception:  # noqa: BLE001
                     send(("#UNSERIALIZABLE", format_exc()))
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 util.info(
                     "exception in thread serving %r", threading.current_thread().name
                 )
@@ -341,7 +337,7 @@ class Server:
     def fallback_repr(self, conn, ident, obj):
         return repr(obj)
 
-    fallback_mapping = {
+    fallback_mapping = {  # noqa: RUF012
         "__str__": fallback_str,
         "__repr__": fallback_repr,
         "#GETVALUE": fallback_getvalue,
@@ -362,12 +358,7 @@ class Server:
             for ident in keys:
                 if ident != "0":
                     result.append(
-                        "  %s:       refcount=%s\n    %s"
-                        % (
-                            ident,
-                            self.id_to_refcount[ident],
-                            str(self.id_to_obj[ident][0])[:75],
-                        )
+                        f"  {ident}:       refcount={self.id_to_refcount[ident]}\n    {str(self.id_to_obj[ident][0])[:75]}"
                     )
             return "\n".join(result)
 
@@ -385,7 +376,7 @@ class Server:
         try:
             util.debug("manager received shutdown message")
             c.send(("#RETURN", None))
-        except:
+        except:  # noqa: E722
             import traceback
 
             traceback.print_exc()
@@ -397,7 +388,7 @@ class Server:
         Create a new shared object and return its id
         """
         with self.mutex:
-            callable, exposed, method_to_typeid, proxytype = self.registry[typeid]
+            callable, exposed, method_to_typeid, _proxytype = self.registry[typeid]
 
             if callable is None:
                 if kwds or (len(args) != 1):
@@ -417,7 +408,7 @@ class Server:
                     )
                 exposed = list(exposed) + list(method_to_typeid)
 
-            ident = "%x" % id(obj)  # convert to string because xmlrpclib
+            ident = f"{id(obj):x}"  # convert to string because xmlrpclib
             # only has 32 bit signed integers
             util.debug("%r callable returned object with id %r", typeid, ident)
 
@@ -446,7 +437,7 @@ class Server:
         with self.mutex:
             try:
                 self.id_to_refcount[ident] += 1
-            except KeyError as ke:
+            except KeyError:
                 # If no external references exist but an internal (to the
                 # manager) still does and a new external reference is created
                 # from it, restore the manager's tracking of it from the
@@ -454,10 +445,10 @@ class Server:
                 if ident in self.id_to_local_proxy_obj:
                     self.id_to_refcount[ident] = 1
                     self.id_to_obj[ident] = self.id_to_local_proxy_obj[ident]
-                    obj, exposed, gettypeid = self.id_to_obj[ident]
+                    _obj, _exposed, _gettypeid = self.id_to_obj[ident]
                     util.debug("Server re-enabled tracking & INCREF %r", ident)
                 else:
-                    raise ke
+                    raise
 
     def decref(self, c, ident):
         if ident not in self.id_to_refcount and ident in self.id_to_local_proxy_obj:
@@ -516,7 +507,7 @@ class BaseManager:
     Base class for managers
     """
 
-    _registry = {}
+    _registry = {}  # noqa: RUF012
     _Server = Server
 
     def __init__(self, address=None, authkey=None, serializer="pickle", ctx=None):
@@ -547,7 +538,7 @@ class BaseManager:
         """
         Connect manager object to the server process
         """
-        Listener, Client = listener_client[self._serializer]
+        _Listener, Client = listener_client[self._serializer]
         conn = Client(self._address, authkey=self._authkey)
         dispatch(conn, None, "dummy")
         self._state.value = State.STARTED
@@ -707,7 +698,7 @@ class BaseManager:
                     dispatch(conn, None, "shutdown")
                 finally:
                     conn.close()
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
 
             process.join(timeout=1.0)
@@ -757,8 +748,8 @@ class BaseManager:
 
         if method_to_typeid:
             for key, value in list(method_to_typeid.items()):  # isinstance?
-                assert type(key) is str, "%r is not a string" % key
-                assert type(value) is str, "%r is not a string" % value
+                assert type(key) is str, f"{key!r} is not a string"
+                assert type(value) is str, f"{value!r} is not a string"
 
         cls._registry[typeid] = (callable, exposed, method_to_typeid, proxytype)
 
@@ -805,7 +796,7 @@ class BaseProxy:
     A base for proxies of shared objects
     """
 
-    _address_to_local = {}
+    _address_to_local = {}  # noqa: RUF012
     _mutex = util.ForkAwareThreadLock()
 
     def __init__(
@@ -866,10 +857,12 @@ class BaseProxy:
         dispatch(conn, None, "accept_connection", (name,))
         self._tls.connection = conn
 
-    def _callmethod(self, methodname, args=(), kwds={}):
+    def _callmethod(self, methodname, args=(), kwds=None):
         """
         Try to call a method of the referent and return a copy of the result
         """
+        if kwds is None:
+            kwds = {}
         try:
             conn = self._tls.connection
         except AttributeError:
@@ -944,7 +937,7 @@ class BaseProxy:
                 util.debug("DECREF %r", token.id)
                 conn = _Client(token.address, authkey=authkey)
                 dispatch(conn, None, "decref", (token.id,))
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 util.debug("... decref failed %s", e)
 
         else:
@@ -964,9 +957,9 @@ class BaseProxy:
         self._manager = None
         try:
             self._incref()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             # the proxy may just be for a manager which has shutdown
-            util.info("incref failed: %s" % e)
+            util.info(f"incref failed: {e}")
 
     def __reduce__(self):
         kwds = {}
@@ -983,11 +976,7 @@ class BaseProxy:
         return self._getvalue()
 
     def __repr__(self):
-        return "<%s object, typeid %r at %#x>" % (
-            type(self).__name__,
-            self._token.typeid,
-            id(self),
-        )
+        return f"<{type(self).__name__} object, typeid {self._token.typeid!r} at {id(self):#x}>"
 
     def __str__(self):
         """
@@ -995,7 +984,7 @@ class BaseProxy:
         """
         try:
             return self._callmethod("__repr__")
-        except Exception:
+        except Exception:  # noqa: BLE001
             return repr(self)[:-1] + "; '__str__()' failed>"
 
 
@@ -1025,10 +1014,12 @@ def RebuildProxy(func, token, serializer, kwds):
 #
 
 
-def MakeProxyType(name, exposed, _cache={}):
+def MakeProxyType(name, exposed, _cache=None):
     """
     Return a proxy type whose methods are given by `exposed`
     """
+    if _cache is None:
+        _cache = {}
     exposed = tuple(exposed)
     try:
         return _cache[(name, exposed)]
@@ -1038,10 +1029,9 @@ def MakeProxyType(name, exposed, _cache={}):
     dic = {}
 
     for meth in exposed:
-        exec(
-            """def %s(self, /, *args, **kwds):
-        return self._callmethod(%r, args, kwds)"""
-            % (meth, meth),
+        exec(  # noqa: S102
+            f"""def {meth}(self, /, *args, **kwds):
+        return self._callmethod({meth!r}, args, kwds)""",
             dic,
         )
 
@@ -1077,7 +1067,7 @@ def AutoProxy(
     if authkey is None:
         authkey = process.current_process().authkey
 
-    ProxyType = MakeProxyType("AutoProxy[%s]" % token.typeid, exposed)
+    ProxyType = MakeProxyType(f"AutoProxy[{token.typeid}]", exposed)
     proxy = ProxyType(
         token,
         serializer,
@@ -1104,9 +1094,9 @@ class Namespace:
         temp = []
         for name, value in items:
             if not name.startswith("_"):
-                temp.append("%s=%r" % (name, value))
+                temp.append(f"{name}={value!r}")
         temp.sort()
-        return "%s(%s)" % (self.__class__.__name__, ", ".join(temp))
+        return "{}({})".format(self.__class__.__name__, ", ".join(temp))
 
 
 class Value:
@@ -1121,7 +1111,7 @@ class Value:
         self._value = value
 
     def __repr__(self):
-        return "%s(%r, %r)" % (type(self).__name__, self._typecode, self._value)
+        return f"{type(self).__name__}({self._typecode!r}, {self._value!r})"
 
     value = property(get, set)
 
@@ -1423,7 +1413,9 @@ if HAS_SHMEM:
     class _SharedMemoryTracker:
         "Manages one or more shared memory segments."
 
-        def __init__(self, name, segment_names=[]):
+        def __init__(self, name, segment_names=None):
+            if segment_names is None:
+                segment_names = []
             self.shared_memory_context_name = name
             self.segment_names = segment_names
 
@@ -1547,9 +1539,9 @@ if HAS_SHMEM:
                 sms = shared_memory.SharedMemory(None, create=True, size=size)
                 try:
                     dispatch(conn, None, "track_segment", (sms.name,))
-                except BaseException as e:
+                except BaseException:
                     sms.unlink()
-                    raise e
+                    raise
             return sms
 
         def ShareableList(self, sequence):
@@ -1559,7 +1551,7 @@ if HAS_SHMEM:
                 sl = shared_memory.ShareableList(sequence)
                 try:
                     dispatch(conn, None, "track_segment", (sl.shm.name,))
-                except BaseException as e:
+                except BaseException:
                     sl.shm.unlink()
-                    raise e
+                    raise
             return sl

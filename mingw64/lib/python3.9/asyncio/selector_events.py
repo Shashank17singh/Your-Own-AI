@@ -288,7 +288,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
 
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             if self._debug:
                 context = {
                     "message": "Error on transport creation for incoming connection",
@@ -448,7 +448,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             return  # try again next time
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
         else:
             fut.set_result(data)
@@ -487,7 +487,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             return  # try again next time
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
         else:
             fut.set_result(nbytes)
@@ -536,7 +536,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             return
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
             return
 
@@ -582,7 +582,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             )
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
         else:
             fut.set_result(None)
@@ -605,7 +605,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             pass
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
         else:
             fut.set_result(None)
@@ -638,7 +638,7 @@ class BaseSelectorEventLoop(base_events.BaseEventLoop):
             )
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             fut.set_exception(exc)
         else:
             fut.set_result((conn, address))
@@ -886,7 +886,7 @@ class _SelectorSocketTransport(_SelectorTransport):
                 raise RuntimeError("get_buffer() returned an empty buffer")
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal error: protocol.get_buffer() call failed.")
             return
 
@@ -896,7 +896,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             return
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal read error on socket transport")
             return
 
@@ -908,7 +908,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             self._protocol.buffer_updated(nbytes)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(
                 exc, "Fatal error: protocol.buffer_updated() call failed."
             )
@@ -922,7 +922,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             return
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal read error on socket transport")
             return
 
@@ -934,7 +934,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             self._protocol.data_received(data)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal error: protocol.data_received() call failed.")
 
     def _read_ready__on_eof(self):
@@ -945,7 +945,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             keep_open = self._protocol.eof_received()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal error: protocol.eof_received() call failed.")
             return
 
@@ -984,7 +984,7 @@ class _SelectorSocketTransport(_SelectorTransport):
                 pass
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._fatal_error(exc, "Fatal write error on socket transport")
                 return
             else:
@@ -1009,7 +1009,7 @@ class _SelectorSocketTransport(_SelectorTransport):
             pass
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._loop._remove_writer(self._sock_fd)
             self._buffer.clear()
             self._fatal_error(exc, "Fatal write error on socket transport")
@@ -1084,7 +1084,7 @@ class _SelectorDatagramTransport(_SelectorTransport):
             self._protocol.error_received(exc)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._fatal_error(exc, "Fatal read error on datagram transport")
         else:
             self._protocol.datagram_received(data, addr)
@@ -1124,7 +1124,7 @@ class _SelectorDatagramTransport(_SelectorTransport):
                 return
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._fatal_error(exc, "Fatal write error on datagram transport")
                 return
 
@@ -1148,7 +1148,7 @@ class _SelectorDatagramTransport(_SelectorTransport):
                 return
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._fatal_error(exc, "Fatal write error on datagram transport")
                 return
 

@@ -106,10 +106,7 @@ def _remove_entries(table, *names):
 
 @in_gdb_thread
 def _set_breakpoints_callback(kind, specs, creator):
-    if kind in breakpoint_map:
-        saved_map = breakpoint_map[kind]
-    else:
-        saved_map = {}
+    saved_map = breakpoint_map.get(kind, {})
     breakpoint_map[kind] = {}
     result = []
     with suppress_new_breakpoint_event():
@@ -133,7 +130,7 @@ def _set_breakpoints_callback(kind, specs, creator):
                     )
                 breakpoint_map[kind][keyspec] = bp
                 result.append(_breakpoint_descriptor(bp))
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 log_stack(LogLevel.FULL)
                 if bp is not None:
                     bp.delete()
@@ -163,7 +160,7 @@ class _PrintBreakpoint(gdb.Breakpoint):
                 try:
                     val = gdb.parse_and_eval(item)
                     output += str(val)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     output += "<" + str(e) + ">"
         send_event(
             "output",
@@ -289,7 +286,7 @@ def _catch_exception(filterId, **args):
     for bp in gdb.breakpoints():
         if bp.number == num:
             return bp
-    raise Exception("Could not find catchpoint after creating")
+    raise Exception("Could not find catchpoint after creating")  # noqa: TRY002
 
 
 @in_gdb_thread

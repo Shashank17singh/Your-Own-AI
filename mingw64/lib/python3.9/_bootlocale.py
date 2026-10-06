@@ -16,7 +16,7 @@ if sys.platform.startswith("win"):
 
 else:
     try:
-        _locale.CODESET
+        _locale.CODESET  # noqa: B018
     except AttributeError:
         if hasattr(sys, "getandroidapilevel"):
             # On Android langinfo.h and CODESET are missing, and UTF-8 is

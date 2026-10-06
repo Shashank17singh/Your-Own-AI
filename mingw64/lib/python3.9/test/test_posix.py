@@ -43,7 +43,7 @@ requires_sched = unittest.skipUnless(_supports_sched(), "requires POSIX schedule
 class PosixTester(unittest.TestCase):
     def setUp(self):
         # create empty file
-        fp = open(support.TESTFN, "w+")
+        fp = open(support.TESTFN, "w+")  # noqa: SIM115
         fp.close()
         self.teardown_files = [support.TESTFN]
         self._warnings_manager = support.check_warnings()
@@ -158,7 +158,7 @@ class PosixTester(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(posix, "fstatvfs"), "test needs posix.fstatvfs()")
     def test_fstatvfs(self):
-        fp = open(support.TESTFN)
+        fp = open(support.TESTFN)  # noqa: SIM115
         try:
             self.assertTrue(posix.fstatvfs(fp.fileno()))
             self.assertTrue(posix.statvfs(fp.fileno()))
@@ -167,7 +167,7 @@ class PosixTester(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(posix, "ftruncate"), "test needs posix.ftruncate()")
     def test_ftruncate(self):
-        fp = open(support.TESTFN, "w+")
+        fp = open(support.TESTFN, "w+")  # noqa: SIM115
         try:
             # we need to have some data to truncate
             fp.write("test")
@@ -560,7 +560,7 @@ class PosixTester(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(posix, "dup"), "test needs posix.dup()")
     def test_dup(self):
-        fp = open(support.TESTFN)
+        fp = open(support.TESTFN)  # noqa: SIM115
         try:
             fd = posix.dup(fp.fileno())
             self.assertIsInstance(fd, int)
@@ -575,8 +575,8 @@ class PosixTester(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(posix, "dup2"), "test needs posix.dup2()")
     def test_dup2(self):
-        fp1 = open(support.TESTFN)
-        fp2 = open(support.TESTFN)
+        fp1 = open(support.TESTFN)  # noqa: SIM115
+        fp2 = open(support.TESTFN)  # noqa: SIM115
         try:
             posix.dup2(fp1.fileno(), fp2.fileno())
         finally:
@@ -627,7 +627,7 @@ class PosixTester(unittest.TestCase):
 
     @unittest.skipUnless(hasattr(posix, "fstat"), "test needs posix.fstat()")
     def test_fstat(self):
-        fp = open(support.TESTFN)
+        fp = open(support.TESTFN)  # noqa: SIM115
         try:
             self.assertTrue(posix.fstat(fp.fileno()))
             self.assertTrue(posix.stat(fp.fileno()))
@@ -676,7 +676,7 @@ class PosixTester(unittest.TestCase):
         try:
             posix.mkfifo(support.TESTFN, stat.S_IRUSR | stat.S_IWUSR)
         except PermissionError as e:
-            self.skipTest("posix.mkfifo(): %s" % e)
+            self.skipTest(f"posix.mkfifo(): {e}")
         self.assertTrue(stat.S_ISFIFO(posix.stat(support.TESTFN).st_mode))
 
     @unittest.skipUnless(
@@ -808,7 +808,7 @@ class PosixTester(unittest.TestCase):
         os.unlink(support.TESTFN)
 
         # re-create the file
-        test_file = open(support.TESTFN, "w")
+        test_file = open(support.TESTFN, "w")  # noqa: SIM115
         try:
             fd = test_file.fileno()
             self._test_all_chown_common(posix.fchown, fd, getattr(posix, "fstat", None))
@@ -946,7 +946,7 @@ class PosixTester(unittest.TestCase):
             new_st = os.stat(target_file)
             self.assertEqual(st.st_flags | stat.UF_IMMUTABLE, new_st.st_flags)
             try:
-                fd = open(target_file, "w+")
+                open(target_file, "w+")  # noqa: SIM115
             except OSError as e:
                 self.assertEqual(e.errno, errno.EPERM)
         finally:
@@ -1030,7 +1030,7 @@ class PosixTester(unittest.TestCase):
         try:
             os.mkdir(base_path)
             os.chdir(base_path)
-        except:
+        except:  # noqa: E722
             #  Just returning nothing instead of the SkipTest exception, because
             #  the test results in Error in that case.  Is that ok?
             #  raise unittest.SkipTest("cannot create directory for testing")
@@ -1039,7 +1039,7 @@ class PosixTester(unittest.TestCase):
             def _create_and_do_getcwd(dirname, current_path_length=0):
                 try:
                     os.mkdir(dirname)
-                except:
+                except:  # noqa: E722
                     raise unittest.SkipTest(
                         "mkdir cannot create directory sufficiently deep for getcwd test"
                     )
@@ -1078,7 +1078,7 @@ class PosixTester(unittest.TestCase):
             ret = idg.close()
 
         try:
-            idg_groups = set(int(g) for g in groups.split())
+            idg_groups = {int(g) for g in groups.split()}
         except ValueError:
             idg_groups = set()
         if ret is not None or not idg_groups:
@@ -1224,7 +1224,7 @@ class PosixTester(unittest.TestCase):
                 support.TESTFN, support.TESTFN + "link", src_dir_fd=f, dst_dir_fd=f
             )
         except PermissionError as e:
-            self.skipTest("posix.link(): %s" % e)
+            self.skipTest(f"posix.link(): {e}")
         else:
             # should have same inodes
             self.assertEqual(
@@ -1322,12 +1322,12 @@ class PosixTester(unittest.TestCase):
     )
     @unittest.skipUnless(hasattr(os, "waitid_result"), "test needs os.waitid_result")
     def test_cld_xxxx_constants(self):
-        os.CLD_EXITED
-        os.CLD_KILLED
-        os.CLD_DUMPED
-        os.CLD_TRAPPED
-        os.CLD_STOPPED
-        os.CLD_CONTINUED
+        os.CLD_EXITED  # noqa: B018
+        os.CLD_KILLED  # noqa: B018
+        os.CLD_DUMPED  # noqa: B018
+        os.CLD_TRAPPED  # noqa: B018
+        os.CLD_STOPPED  # noqa: B018
+        os.CLD_CONTINUED  # noqa: B018
 
     @unittest.skipUnless(
         os.symlink in os.supports_dir_fd, "test needs dir_fd support in os.symlink()"
@@ -1368,7 +1368,7 @@ class PosixTester(unittest.TestCase):
             try:
                 posix.mkfifo(support.TESTFN, stat.S_IRUSR | stat.S_IWUSR, dir_fd=f)
             except PermissionError as e:
-                self.skipTest("posix.mkfifo(): %s" % e)
+                self.skipTest(f"posix.mkfifo(): {e}")
             self.assertTrue(stat.S_ISFIFO(posix.stat(support.TESTFN).st_mode))
         finally:
             posix.close(f)
@@ -1486,10 +1486,10 @@ class PosixTester(unittest.TestCase):
 
     def test_rtld_constants(self):
         # check presence of major RTLD_* constants
-        posix.RTLD_LAZY
-        posix.RTLD_NOW
-        posix.RTLD_GLOBAL
-        posix.RTLD_LOCAL
+        posix.RTLD_LAZY  # noqa: B018
+        posix.RTLD_NOW  # noqa: B018
+        posix.RTLD_GLOBAL  # noqa: B018
+        posix.RTLD_LOCAL  # noqa: B018
 
     @unittest.skipUnless(
         hasattr(os, "SEEK_HOLE"), "test needs an OS that reports file holes"
@@ -1967,7 +1967,7 @@ class _PosixSpawnMixin:
 
         support.wait_process(pid, exitcode=0)
         with open(closefile) as f:
-            self.assertEqual(f.read(), "is closed %d" % errno.EBADF)
+            self.assertEqual(f.read(), "is closed %d" % errno.EBADF)  # noqa: UP031
 
     def test_dup2(self):
         dupfile = support.TESTFN
@@ -2013,16 +2013,15 @@ class TestPosixSpawnP(unittest.TestCase, _PosixSpawnMixin):
 
         spawn_args = (program, "-I", "-S", "-c", "pass")
         code = textwrap.dedent(
-            """
+            f"""
             import os
             from test import support
 
-            args = %a
+            args = {spawn_args!a}
             pid = os.posix_spawnp(args[0], args, os.environ)
 
             support.wait_process(pid, exitcode=0)
         """
-            % (spawn_args,)
         )
 
         # Use a subprocess to test os.posix_spawnp() with a modified PATH
@@ -2139,7 +2138,7 @@ class TestPosixWeaklinking(unittest.TestCase):
             # issue 41355: !HAVE_LINKAT code path ignores the follow_symlinks flag
             with support.temp_dir() as base_path:
                 link_path = os.path.join(base_path, "link")
-                target_path = os.path.join(base_path, "target")
+                os.path.join(base_path, "target")
                 source_path = os.path.join(base_path, "source")
 
                 with open(source_path, "w") as fp:

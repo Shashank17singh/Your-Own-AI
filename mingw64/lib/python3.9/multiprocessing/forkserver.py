@@ -114,7 +114,7 @@ class ForkServer:
             resource_tracker.ensure_running()
             if self._forkserver_pid is not None:
                 # forkserver was launched before, is it still running?
-                pid, status = os.waitpid(self._forkserver_pid, os.WNOHANG)
+                pid, _status = os.waitpid(self._forkserver_pid, os.WNOHANG)
                 if not pid:
                     # still alive
                     return
@@ -249,7 +249,7 @@ def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
                         else:
                             # This shouldn't happen really
                             warnings.warn(
-                                "forkserver: waitpid returned unexpected pid %d" % pid
+                                "forkserver: waitpid returned unexpected pid %d" % pid  # noqa: UP031
                             )
 
                 if listener in rfds:
@@ -273,7 +273,7 @@ def main(listener_fd, alive_r, preload, main_path=None, sys_path=None):
                                 code = _serve_one(
                                     child_r, fds, unused_fds, old_handlers
                                 )
-                            except Exception:
+                            except Exception:  # noqa: BLE001
                                 sys.excepthook(*sys.exc_info())
                                 sys.stderr.flush()
                             finally:

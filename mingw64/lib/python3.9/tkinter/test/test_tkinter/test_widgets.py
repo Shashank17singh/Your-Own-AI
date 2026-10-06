@@ -1234,7 +1234,7 @@ class ListboxTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_box(self):
         lb = self.create()
-        lb.insert(0, *("el%d" % i for i in range(8)))
+        lb.insert(0, *("el%d" % i for i in range(8)))  # noqa: UP031
         lb.pack()
         self.assertIsBoundingBox(lb.bbox(0))
         self.assertIsNone(lb.bbox(-1))
@@ -1246,7 +1246,7 @@ class ListboxTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_curselection(self):
         lb = self.create()
-        lb.insert(0, *("el%d" % i for i in range(8)))
+        lb.insert(0, *("el%d" % i for i in range(8)))  # noqa: UP031
         lb.selection_clear(0, tkinter.END)
         lb.selection_set(2, 4)
         lb.selection_set(6)
@@ -1255,7 +1255,7 @@ class ListboxTest(AbstractWidgetTest, unittest.TestCase):
 
     def test_get(self):
         lb = self.create()
-        lb.insert(0, *("el%d" % i for i in range(8)))
+        lb.insert(0, *("el%d" % i for i in range(8)))  # noqa: UP031
         self.assertEqual(lb.get(0), "el0")
         self.assertEqual(lb.get(3), "el3")
         self.assertEqual(lb.get("end"), "el7")
@@ -1526,7 +1526,7 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
         return p, b, c
 
     def test_paneconfigure(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.assertRaises(TypeError, p.paneconfigure)
         d = p.paneconfigure(b)
         self.assertIsInstance(d, dict)
@@ -1560,7 +1560,7 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
         self.check_paneconfigure_bad(p, b, "before", 'bad window path name "badValue"')
 
     def test_paneconfigure_height(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(
             p, b, "height", 10, 10, stringify=get_tk_patchlevel() < (8, 5, 11)
         )
@@ -1568,29 +1568,29 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
 
     @requires_tcl(8, 5)
     def test_paneconfigure_hide(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "hide", False, 0)
         self.check_paneconfigure_bad(
             p, b, "hide", 'expected boolean value but got "badValue"'
         )
 
     def test_paneconfigure_minsize(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "minsize", 10, 10)
         self.check_paneconfigure_bad(p, b, "minsize", 'bad screen distance "badValue"')
 
     def test_paneconfigure_padx(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "padx", 1.3, 1)
         self.check_paneconfigure_bad(p, b, "padx", 'bad screen distance "badValue"')
 
     def test_paneconfigure_pady(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "pady", 1.3, 1)
         self.check_paneconfigure_bad(p, b, "pady", 'bad screen distance "badValue"')
 
     def test_paneconfigure_sticky(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "sticky", "nsew", "nesw")
         self.check_paneconfigure_bad(
             p,
@@ -1603,7 +1603,7 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
 
     @requires_tcl(8, 5)
     def test_paneconfigure_stretch(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(p, b, "stretch", "alw", "always")
         self.check_paneconfigure_bad(
             p,
@@ -1613,7 +1613,7 @@ class PanedWindowTest(AbstractWidgetTest, unittest.TestCase):
         )
 
     def test_paneconfigure_width(self):
-        p, b, c = self.create2()
+        p, b, _c = self.create2()
         self.check_paneconfigure(
             p, b, "width", 10, 10, stringify=get_tk_patchlevel() < (8, 5, 11)
         )

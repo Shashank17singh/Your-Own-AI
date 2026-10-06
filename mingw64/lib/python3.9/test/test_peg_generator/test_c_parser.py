@@ -57,7 +57,7 @@ class TestCParser(TempdirManager, unittest.TestCase):
     def setUp(self):
         cmd = support.missing_compiler_executable()
         if cmd is not None:
-            self.skipTest("The %r command is not found" % cmd)
+            self.skipTest(f"The {cmd!r} command is not found")
         super().setUp()
         self.tmp_path = self.mkdtemp()
         change_cwd = support.change_cwd(self.tmp_path)

@@ -26,11 +26,11 @@ for typ in [
 
     class X(Structure):
         _pack_ = 1
-        _fields_ = [("pad", c_byte), ("value", typ)]
+        _fields_ = [("pad", c_byte), ("value", typ)]  # noqa: RUF012
 
     class Y(SwappedStructure):
         _pack_ = 1
-        _fields_ = [("pad", c_byte), ("value", typ)]
+        _fields_ = [("pad", c_byte), ("value", typ)]  # noqa: RUF012
 
     structures.append(X)
     byteswapped_structures.append(Y)

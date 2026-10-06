@@ -331,7 +331,7 @@ class RangeTest(unittest.TestCase):
         # User-defined class with an invalid __index__ method
         class IN:
             def __index__(self):
-                return "not a number"
+                return "not a number"  # noqa: PLE0305
 
         self.assertRaises(TypeError, range, IN())
 
@@ -707,13 +707,13 @@ class RangeTest(unittest.TestCase):
 
         # Order comparisons are not implemented for ranges.
         with self.assertRaises(TypeError):
-            range(0) < range(0)
+            range(0) < range(0)  # noqa: B015
         with self.assertRaises(TypeError):
-            range(0) > range(0)
+            range(0) > range(0)  # noqa: B015
         with self.assertRaises(TypeError):
-            range(0) <= range(0)
+            range(0) <= range(0)  # noqa: B015
         with self.assertRaises(TypeError):
-            range(0) >= range(0)
+            range(0) >= range(0)  # noqa: B015
 
     def test_attributes(self):
         # test the start, stop and step attributes of range objects

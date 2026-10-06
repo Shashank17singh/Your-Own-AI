@@ -29,10 +29,10 @@ class TestTopologicalSort(unittest.TestCase):
         try:
             ts.prepare()
         except graphlib.CycleError as e:
-            msg, seq = e.args
+            _msg, seq = e.args
             self.assertIn(" ".join(map(str, cycle)), " ".join(map(str, seq * 2)))
         else:
-            raise
+            raise  # noqa: PLE0704
 
     def test_simple_cases(self):
         self._test_graph(
@@ -190,9 +190,9 @@ class TestTopologicalSort(unittest.TestCase):
 
     def test_not_hashable_nodes(self):
         ts = graphlib.TopologicalSorter()
-        self.assertRaises(TypeError, ts.add, dict(), 1)
-        self.assertRaises(TypeError, ts.add, 1, dict())
-        self.assertRaises(TypeError, ts.add, dict(), dict())
+        self.assertRaises(TypeError, ts.add, {}, 1)
+        self.assertRaises(TypeError, ts.add, 1, {})
+        self.assertRaises(TypeError, ts.add, {}, {})
 
     def test_order_of_insertion_does_not_matter_between_groups(self):
         def get_groups(ts):

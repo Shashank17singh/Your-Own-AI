@@ -16,7 +16,7 @@ except ImportError:
     nt = None
 
 try:
-    ntpath._getfinalpathname
+    ntpath._getfinalpathname  # noqa: B018
 except AttributeError:
     HAVE_GETFINALPATHNAME = False
 else:
@@ -56,8 +56,7 @@ def tester(fn, wantResult):
     gotResult = eval(fn)
     if wantResult != gotResult and _norm(wantResult) != _norm(gotResult):
         raise TestFailed(
-            "%s should return: %s but returned: %s"
-            % (str(fn), str(wantResult), str(gotResult))
+            f"{fn!s} should return: {wantResult!s} but returned: {gotResult!s}"
         )
 
     # then with bytes
@@ -74,8 +73,7 @@ def tester(fn, wantResult):
         gotResult = eval(fn)
     if _norm(wantResult) != _norm(gotResult):
         raise TestFailed(
-            "%s should return: %s but returned: %s"
-            % (str(fn), str(wantResult), repr(gotResult))
+            f"{fn!s} should return: {wantResult!s} but returned: {gotResult!r}"
         )
 
 
@@ -245,7 +243,7 @@ class TestNtpath(NtpathTestCase):
                 "//machine/common/",
                 "//machine/common/x/y",
             ):
-                tester("ntpath.join(%r, %r)" % (x, y), y)
+                tester(f"ntpath.join({x!r}, {y!r})", y)
 
         tester(
             "ntpath.join('\\\\computer\\share\\', 'a', 'b')",
@@ -556,23 +554,23 @@ class TestNtpath(NtpathTestCase):
     @unittest.skipUnless(support.FS_NONASCII, "need support.FS_NONASCII")
     def test_expandvars_nonascii(self):
         def check(value, expected):
-            tester("ntpath.expandvars(%r)" % value, expected)
+            tester(f"ntpath.expandvars({value!r})", expected)
 
         with support.EnvironmentVarGuard() as env:
             env.clear()
             nonascii = support.FS_NONASCII
             env["spam"] = nonascii
             env[nonascii] = "ham" + nonascii
-            check("$spam bar", "%s bar" % nonascii)
-            check("$%s bar" % nonascii, "$%s bar" % nonascii)
-            check("${spam}bar", "%sbar" % nonascii)
-            check("${%s}bar" % nonascii, "ham%sbar" % nonascii)
-            check("$spam}bar", "%s}bar" % nonascii)
-            check("$%s}bar" % nonascii, "$%s}bar" % nonascii)
-            check("%spam% bar", "%s bar" % nonascii)
-            check(f"%{nonascii}% bar", "ham%s bar" % nonascii)
-            check("%spam%bar", "%sbar" % nonascii)
-            check(f"%{nonascii}%bar", "ham%sbar" % nonascii)
+            check("$spam bar", f"{nonascii} bar")
+            check(f"${nonascii} bar", f"${nonascii} bar")
+            check("${spam}bar", f"{nonascii}bar")
+            check(f"${{{nonascii}}}bar", f"ham{nonascii}bar")
+            check("$spam}bar", f"{nonascii}}}bar")
+            check(f"${nonascii}}}bar", f"${nonascii}}}bar")
+            check("%spam% bar", f"{nonascii} bar")
+            check(f"%{nonascii}% bar", f"ham{nonascii} bar")
+            check("%spam%bar", f"{nonascii}bar")
+            check(f"%{nonascii}%bar", f"ham{nonascii}bar")
 
     def test_expanduser(self):
         tester('ntpath.expanduser("test")', "test")
@@ -645,7 +643,7 @@ class TestNtpath(NtpathTestCase):
 
     def test_commonpath(self):
         def check(paths, expected):
-            tester(("ntpath.commonpath(%r)" % paths).replace("\\\\", "\\"), expected)
+            tester((f"ntpath.commonpath({paths!r})").replace("\\\\", "\\"), expected)
 
         def check_error(exc, paths):
             self.assertRaises(exc, ntpath.commonpath, paths)
@@ -749,7 +747,7 @@ class TestNtpath(NtpathTestCase):
             # (or any other volume root). The drive-relative
             # locations below cannot then refer to mount points
             #
-            drive, path = ntpath.splitdrive(sys.executable)
+            drive, _path = ntpath.splitdrive(sys.executable)
             with support.change_cwd(ntpath.dirname(sys.executable)):
                 self.assertFalse(ntpath.ismount(drive.lower()))
                 self.assertFalse(ntpath.ismount(drive.upper()))
@@ -797,7 +795,7 @@ class TestNtpath(NtpathTestCase):
 
 class NtCommonTest(test_genericpath.CommonTest, unittest.TestCase):
     pathmodule = ntpath
-    attributes = ["relpath"]
+    attributes = ["relpath"]  # noqa: RUF012
 
 
 class PathLikeTests(NtpathTestCase):

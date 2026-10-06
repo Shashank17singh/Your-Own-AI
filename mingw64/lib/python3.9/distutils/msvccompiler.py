@@ -92,7 +92,7 @@ def read_values(base, key):
     i = 0
     while True:
         try:
-            name, value, type = RegEnumValue(handle, i)
+            name, value, _type = RegEnumValue(handle, i)
         except RegError:
             break
         name = name.lower()
@@ -120,11 +120,11 @@ class MacroExpander:
         for base in HKEYS:
             d = read_values(base, path)
             if d:
-                self.macros["$(%s)" % macro] = d[key]
+                self.macros[f"$({macro})"] = d[key]
                 break
 
     def load_macros(self, version):
-        vsbase = r"Software\Microsoft\VisualStudio\%0.1f" % version
+        vsbase = rf"Software\Microsoft\VisualStudio\{version:0.1f}"
         self.set_macro("VCInstallDir", vsbase + r"\Setup\VC", "productdir")
         self.set_macro("VSInstallDir", vsbase + r"\Setup\VS", "productdir")
         net = r"Software\Microsoft\.NETFramework"
@@ -147,7 +147,7 @@ you can try compiling with MingW32, by passing "-c mingw32" to setup.py.""")
             except RegError:
                 continue
             key = RegEnumKey(h, 0)
-            d = read_values(base, r"%s\%s" % (p, key))
+            d = read_values(base, rf"{p}\{key}")
             self.macros["$(FrameworkVersion)"] = d["version"]
 
     def sub(self, s):
@@ -167,7 +167,7 @@ def get_build_version():
     if i == -1:
         return 6
     i = i + len(prefix)
-    s, rest = sys.version[i:].split(" ", 1)
+    s, _rest = sys.version[i:].split(" ", 1)
     majorVersion = int(s[:-2]) - 6
     if majorVersion >= 13:
         # v13 was skipped and should be v14
@@ -222,13 +222,13 @@ class MSVCCompiler(CCompiler):
     # as it really isn't necessary for this sort of single-compiler class.
     # Would be nice to have a consistent interface with UnixCCompiler,
     # though, so it's worth thinking about.
-    executables = {}
+    executables = {}  # noqa: RUF012
 
     # Private class data (need to distinguish C from C++ source for compiler)
-    _c_extensions = [".c"]
-    _cpp_extensions = [".cc", ".cpp", ".cxx"]
-    _rc_extensions = [".rc"]
-    _mc_extensions = [".mc"]
+    _c_extensions = [".c"]  # noqa: RUF012
+    _cpp_extensions = [".cc", ".cpp", ".cxx"]  # noqa: RUF012
+    _rc_extensions = [".rc"]  # noqa: RUF012
+    _mc_extensions = [".mc"]  # noqa: RUF012
 
     # Needed for the filename generation methods provided by the
     # base class, CCompiler.
@@ -251,7 +251,7 @@ class MSVCCompiler(CCompiler):
                 self.__macros = MacroExpander(self.__version)
             else:
                 self.__root = r"Software\Microsoft\Devstudio"
-            self.__product = "Visual Studio version %s" % self.__version
+            self.__product = f"Visual Studio version {self.__version}"
         else:
             # Win64. Assume this was built with the platform SDK
             self.__product = "Microsoft SDK compiler %s" % (self.__version + 6)
@@ -277,9 +277,9 @@ class MSVCCompiler(CCompiler):
 
             if len(self.__paths) == 0:
                 raise DistutilsPlatformError(
-                    "Python was built with %s, "
+                    f"Python was built with {self.__product}, "
                     "and extensions need to be built with the same "
-                    "version of the compiler, but it isn't installed." % self.__product
+                    "version of the compiler, but it isn't installed."
                 )
 
             self.cc = self.find_exe("cl.exe")
@@ -355,7 +355,7 @@ class MSVCCompiler(CCompiler):
                 # Better to raise an exception instead of silently continuing
                 # and later complain about sources and targets having
                 # different lengths
-                raise CompileError("Don't know how to compile %s" % src_name)
+                raise CompileError(f"Don't know how to compile {src_name}")
             if strip_dir:
                 base = os.path.basename(base)
             if ext in self._rc_extensions or ext in self._mc_extensions:
@@ -441,7 +441,7 @@ class MSVCCompiler(CCompiler):
                 continue
             else:
                 # how to handle this file?
-                raise CompileError("Don't know how to compile %s to %s" % (src, obj))
+                raise CompileError(f"Don't know how to compile {src} to {obj}")
 
             output_opt = "/Fo" + obj
             try:
@@ -536,7 +536,7 @@ class MSVCCompiler(CCompiler):
             # directory. Since they have different names for debug and release
             # builds, they can go into the same directory.
             if export_symbols is not None:
-                dll_name, dll_ext = os.path.splitext(os.path.basename(output_filename))
+                dll_name, _dll_ext = os.path.splitext(os.path.basename(output_filename))
                 implib_file = os.path.join(
                     os.path.dirname(objects[0]), self.library_filename(dll_name)
                 )
@@ -621,14 +621,11 @@ class MSVCCompiler(CCompiler):
 
         path = path + " dirs"
         if self.__version >= 7:
-            key = r"%s\%0.1f\VC\VC_OBJECTS_PLATFORM_INFO\Win32\Directories" % (
-                self.__root,
-                self.__version,
-            )
+            key = rf"{self.__root}\{self.__version:0.1f}\VC\VC_OBJECTS_PLATFORM_INFO\Win32\Directories"
         else:
             key = (
-                r"%s\6.0\Build System\Components\Platforms"
-                r"\Win32 (%s)\Directories" % (self.__root, platform)
+                rf"{self.__root}\6.0\Build System\Components\Platforms"
+                rf"\Win32 ({platform})\Directories"
             )
 
         for base in HKEYS:
@@ -642,7 +639,7 @@ class MSVCCompiler(CCompiler):
         # the GUI is run.
         if self.__version == 6:
             for base in HKEYS:
-                if read_values(base, r"%s\6.0" % self.__root) is not None:
+                if read_values(base, rf"{self.__root}\6.0") is not None:
                     self.warn(
                         "It seems you have Visual Studio 6 installed, "
                         "but the expected registry settings are not present.\n"

@@ -10,7 +10,7 @@ import unittest
 from test import support
 
 if sys.platform[:3] == "win":
-    raise unittest.SkipTest("Can't test signal on %s" % sys.platform)
+    raise unittest.SkipTest(f"Can't test signal on {sys.platform}")
 
 process_pid = os.getpid()
 signalled_all = thread.allocate_lock()

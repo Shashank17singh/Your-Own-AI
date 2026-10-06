@@ -44,18 +44,18 @@ class CfgParserTestCaseClass:
     interpolation = configparser._UNSET
 
     def newconfig(self, defaults=None):
-        arguments = dict(
-            defaults=defaults,
-            allow_no_value=self.allow_no_value,
-            delimiters=self.delimiters,
-            comment_prefixes=self.comment_prefixes,
-            inline_comment_prefixes=self.inline_comment_prefixes,
-            empty_lines_in_values=self.empty_lines_in_values,
-            dict_type=self.dict_type,
-            strict=self.strict,
-            default_section=self.default_section,
-            interpolation=self.interpolation,
-        )
+        arguments = {
+            "defaults": defaults,
+            "allow_no_value": self.allow_no_value,
+            "delimiters": self.delimiters,
+            "comment_prefixes": self.comment_prefixes,
+            "inline_comment_prefixes": self.inline_comment_prefixes,
+            "empty_lines_in_values": self.empty_lines_in_values,
+            "dict_type": self.dict_type,
+            "strict": self.strict,
+            "default_section": self.default_section,
+            "interpolation": self.interpolation,
+        }
         instance = self.config_class(**arguments)
         return instance
 
@@ -100,10 +100,10 @@ class BasicTestCase(CfgParserTestCaseClass):
         E.sort()
         eq(L, E)
         L = cf["Spacey Bar From The Beginning"].items()
-        L = sorted(list(L))
+        L = sorted(L)
         eq(L, F)
         L = cf.items()
-        L = sorted(list(L))
+        L = sorted(L)
         self.assertEqual(len(L), len(E))
         for name, section in L:
             eq(name, section.name)
@@ -616,9 +616,7 @@ boolean {self.delimiters[0]} NO
         except exc as e:
             return e
         else:
-            self.fail(
-                "expected exception type %s.%s" % (exc.__module__, exc.__qualname__)
-            )
+            self.fail(f"expected exception type {exc.__module__}.{exc.__qualname__}")
 
     def test_boolean(self):
         cf = self.fromstring(
@@ -640,9 +638,9 @@ boolean {self.delimiters[0]} NO
             f"E5{self.delimiters[0]}FALSE AND MORE"
         )
         for x in range(1, 5):
-            self.assertTrue(cf.getboolean("BOOLTEST", "t%d" % x))
-            self.assertFalse(cf.getboolean("BOOLTEST", "f%d" % x))
-            self.assertRaises(ValueError, cf.getboolean, "BOOLTEST", "e%d" % x)
+            self.assertTrue(cf.getboolean("BOOLTEST", "t%d" % x))  # noqa: UP031
+            self.assertFalse(cf.getboolean("BOOLTEST", "f%d" % x))  # noqa: UP031
+            self.assertRaises(ValueError, cf.getboolean, "BOOLTEST", "e%d" % x)  # noqa: UP031
 
     def test_weird_errors(self):
         cf = self.newconfig()
@@ -1412,8 +1410,8 @@ class ConfigParserTestCaseNoValue(ConfigParserTestCase):
 
 class ConfigParserTestCaseTrickyFile(CfgParserTestCaseClass, unittest.TestCase):
     config_class = configparser.ConfigParser
-    delimiters = {"="}
-    comment_prefixes = {"#"}
+    delimiters = {"="}  # noqa: RUF012
+    comment_prefixes = {"#"}  # noqa: RUF012
     allow_no_value = True
 
     def test_cfgparser_dot_3(self):
@@ -1740,7 +1738,7 @@ class CoverageOneHundredTestCase(unittest.TestCase):
     def test_safeconfigparser_deprecation(self):
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always", DeprecationWarning)
-            parser = configparser.SafeConfigParser()
+            configparser.SafeConfigParser()
         for warning in w:
             self.assertTrue(warning.category is DeprecationWarning)
 

@@ -108,14 +108,14 @@ def _tokenize(plural):
             continue
         value = mo.group(kind)
         if kind == "INVALID":
-            raise ValueError("invalid token in plural form: %s" % value)
+            raise ValueError(f"invalid token in plural form: {value}")
         yield value
     yield ""
 
 
 def _error(value):
     if value:
-        return ValueError("unexpected token in plural form: %s" % value)
+        return ValueError(f"unexpected token in plural form: {value}")
     else:
         return ValueError("unexpected end of plural form")
 
@@ -141,17 +141,17 @@ def _parse(tokens, priority=-1):
 
     if nexttok == "(":
         sub, nexttok = _parse(tokens)
-        result = "%s(%s)" % (result, sub)
+        result = f"{result}({sub})"
         if nexttok != ")":
             raise ValueError("unbalanced parenthesis in plural form")
     elif nexttok == "n":
-        result = "%s%s" % (result, nexttok)
+        result = f"{result}{nexttok}"
     else:
         try:
             value = int(nexttok, 10)
         except ValueError:
             raise _error(nexttok) from None
-        result = "%s%d" % (result, value)
+        result = "%s%d" % (result, value)  # noqa: UP031
     nexttok = next(tokens)
 
     j = 100
@@ -161,38 +161,38 @@ def _parse(tokens, priority=-1):
             break
         # Break chained comparisons
         if i in (3, 4) and j in (3, 4):  # '==', '!=', '<', '>', '<=', '>='
-            result = "(%s)" % result
+            result = f"({result})"
         # Replace some C operators by their Python equivalents
         op = _c2py_ops.get(nexttok, nexttok)
         right, nexttok = _parse(tokens, i + 1)
-        result = "%s %s %s" % (result, op, right)
+        result = f"{result} {op} {right}"
         j = i
     if j == priority == 4:  # '<', '>', '<=', '>='
-        result = "(%s)" % result
+        result = f"({result})"
 
     if nexttok == "?" and priority <= 0:
         if_true, nexttok = _parse(tokens, 0)
         if nexttok != ":":
             raise _error(nexttok)
         if_false, nexttok = _parse(tokens)
-        result = "%s if %s else %s" % (if_true, result, if_false)
+        result = f"{if_true} if {result} else {if_false}"
         if priority == 0:
-            result = "(%s)" % result
+            result = f"({result})"
 
     return result, nexttok
 
 
 def _as_int(n):
     try:
-        i = round(n)
+        round(n)
     except TypeError:
         raise TypeError(
-            "Plural value must be an integer, got %s" % (n.__class__.__name__,)
+            f"Plural value must be an integer, got {n.__class__.__name__}"
         ) from None
     import warnings
 
     warnings.warn(
-        "Plural value must be an integer, got %s" % (n.__class__.__name__,),
+        f"Plural value must be an integer, got {n.__class__.__name__}",
         DeprecationWarning,
         4,
     )
@@ -223,14 +223,13 @@ def c2py(plural):
                 depth -= 1
 
         ns = {"_as_int": _as_int}
-        exec(
-            """if True:
+        exec(  # noqa: S102
+            f"""if True:
             def func(n):
                 if not isinstance(n, int):
                     n = _as_int(n)
-                return int(%s)
-            """
-            % result,
+                return int({result})
+            """,
             ns,
         )
         return ns["func"]
@@ -444,7 +443,7 @@ class GNUTranslations(NullTranslations):
         else:
             raise OSError(0, "Bad magic number", filename)
 
-        major_version, minor_version = self._get_versions(version)
+        major_version, _minor_version = self._get_versions(version)
 
         if major_version not in self.VERSIONS:
             raise OSError(0, "Bad version number " + str(major_version), filename)
@@ -499,7 +498,7 @@ class GNUTranslations(NullTranslations):
             charset = self._charset or "ascii"
             if b"\x00" in msg:
                 # Plural forms
-                msgid1, msgid2 = msg.split(b"\x00")
+                msgid1, _msgid2 = msg.split(b"\x00")
                 tmsg = tmsg.split(b"\x00")
                 msgid1 = str(msgid1, charset)
                 for i, x in enumerate(tmsg):
@@ -622,7 +621,7 @@ def find(domain, localedir=None, languages=None, all=False):
     for lang in nelangs:
         if lang == "C":
             break
-        mofile = os.path.join(localedir, lang, "LC_MESSAGES", "%s.mo" % domain)
+        mofile = os.path.join(localedir, lang, "LC_MESSAGES", f"{domain}.mo")
         if os.path.exists(mofile):
             if all:
                 result.append(mofile)
@@ -708,7 +707,7 @@ def textdomain(domain=None):
 
 
 def bindtextdomain(domain, localedir=None):
-    global _localedirs
+    global _localedirs  # noqa: PLW0602
     if localedir is not None:
         _localedirs[domain] = localedir
     return _localedirs.get(domain, _default_localedir)
@@ -718,7 +717,7 @@ def bind_textdomain_codeset(domain, codeset=None):
     import warnings
 
     warnings.warn("bind_textdomain_codeset() is deprecated", DeprecationWarning, 2)
-    global _localecodesets
+    global _localecodesets  # noqa: PLW0602
     if codeset is not None:
         _localecodesets[domain] = codeset
     return _localecodesets.get(domain)

@@ -13,7 +13,7 @@ from distutils.util import change_root, convert_path
 class install_data(Command):
     description = "install data files"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         (
             "install-dir=",
             "d",
@@ -23,7 +23,7 @@ class install_data(Command):
         ("force", "f", "force installation (overwrite existing files)"),
     ]
 
-    boolean_options = ["force"]
+    boolean_options = ["force"]  # noqa: RUF012
 
     def initialize_options(self):
         self.install_dir = None
@@ -50,7 +50,7 @@ class install_data(Command):
                 if self.warn_dir:
                     self.warn(
                         "setup script did not provide a directory for "
-                        "'%s' -- installing right in '%s'" % (f, self.install_dir)
+                        f"'{f}' -- installing right in '{self.install_dir}'"
                     )
                 out, _ = self.copy_file(f, self.install_dir)
                 self.outfiles.append(out)

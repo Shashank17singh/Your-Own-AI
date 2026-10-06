@@ -83,10 +83,10 @@ def load_compressed_keys() -> dict[str, list[str]]:
 
 def update_test_data(fname: str = "zoneinfo_data.json") -> None:
     TEST_DATA_LOC.mkdir(exist_ok=True, parents=True)
-    json_kwargs: dict[str, typing.Any] = dict(
-        indent=2,
-        sort_keys=True,
-    )
+    json_kwargs: dict[str, typing.Any] = {
+        "indent": 2,
+        "sort_keys": True,
+    }
     compressed_keys = load_compressed_keys()
     metadata = get_zoneinfo_metadata()
     output = {

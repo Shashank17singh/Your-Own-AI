@@ -70,7 +70,7 @@ class OnSysPath(Fixtures):
 
 
 class DistInfoPkg(OnSysPath, SiteDir):
-    files = {
+    files = {  # noqa: RUF012
         "distinfo_pkg-1.0.0.dist-info": {
             "METADATA": """
                 Name: distinfo-pkg
@@ -104,7 +104,7 @@ class DistInfoPkgOffPath(SiteDir):
 
 
 class EggInfoPkg(OnSysPath, SiteDir):
-    files = {
+    files = {  # noqa: RUF012
         "egginfo_pkg.egg-info": {
             "PKG-INFO": """
                 Name: egginfo-pkg
@@ -141,7 +141,7 @@ class EggInfoPkg(OnSysPath, SiteDir):
 
 
 class EggInfoFile(OnSysPath, SiteDir):
-    files = {
+    files = {  # noqa: RUF012
         "egginfo_file.egg-info": """
             Metadata-Version: 1.0
             Name: egginfo_file
@@ -162,7 +162,7 @@ class EggInfoFile(OnSysPath, SiteDir):
 
 
 class LocalPackage:
-    files = {
+    files = {  # noqa: RUF012
         "setup.py": """
             import setuptools
             setuptools.setup(name="local-pkg", version="2.0.1")

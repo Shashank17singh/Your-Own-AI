@@ -47,16 +47,13 @@ def _is_sunder(name):
 
 def _is_private(cls_name, name):
     # do not use `re` as `re` imports `enum`
-    pattern = "_%s__" % (cls_name,)
-    if (
+    pattern = f"_{cls_name}__"
+    return bool(
         len(name) >= 5
         and name.startswith(pattern)
         and name[len(pattern)] != "_"
         and (name[-1] != "_" or name[-2] != "_")
-    ):
-        return True
-    else:
-        return False
+    )
 
 
 def _make_class_unpicklable(cls):
@@ -65,7 +62,7 @@ def _make_class_unpicklable(cls):
     """
 
     def _break_on_call_reduce(self, proto):
-        raise TypeError("%r cannot be pickled" % self)
+        raise TypeError(f"{self!r} cannot be pickled")
 
     cls.__reduce_ex__ = _break_on_call_reduce
     cls.__module__ = "<unknown>"
@@ -110,8 +107,7 @@ class _EnumDict(dict):
             import warnings
 
             warnings.warn(
-                "private variables, such as %r, will be normal attributes in 3.10"
-                % (key,),
+                f"private variables, such as {key!r}, will be normal attributes in 3.10",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -140,20 +136,20 @@ class _EnumDict(dict):
                 already = set(value) & set(self._member_names)
                 if already:
                     raise ValueError(
-                        "_ignore_ cannot specify already set names: %r" % (already,)
+                        f"_ignore_ cannot specify already set names: {already!r}"
                     )
         elif _is_dunder(key):
             if key == "__order__":
                 key = "_order_"
         elif key in self._member_names:
             # descriptor overwriting an enum?
-            raise TypeError("Attempted to reuse key: %r" % key)
+            raise TypeError(f"Attempted to reuse key: {key!r}")
         elif key in self._ignore:
             pass
         elif not _is_descriptor(value):
             if key in self:
                 # enum overwriting a descriptor?
-                raise TypeError("%r already defined as: %r" % (key, self[key]))
+                raise TypeError(f"{key!r} already defined as: {self[key]!r}")
             if isinstance(value, auto):
                 if value.value == _auto_null:
                     value.value = self._generate_next_value(
@@ -188,7 +184,7 @@ class EnumMeta(type):
         enum_dict = _EnumDict()
         enum_dict._cls_name = cls
         # inherit previous flags and _generate_next_value_ function
-        member_type, first_enum = metacls._get_mixins_(cls, bases)
+        _member_type, first_enum = metacls._get_mixins_(cls, bases)
         if first_enum is not None:
             enum_dict["_generate_next_value_"] = getattr(
                 first_enum,
@@ -228,7 +224,7 @@ class EnumMeta(type):
         invalid_names = set(enum_members) & {"mro", ""}
         if invalid_names:
             raise ValueError(
-                "Invalid enum member name: {0}".format(",".join(invalid_names))
+                "Invalid enum member name: {}".format(",".join(invalid_names))
             )
 
         # create a default docstring if one has not been provided
@@ -262,41 +258,40 @@ class EnumMeta(type):
         # sabotage -- it's on them to make sure it works correctly.  We use
         # __reduce_ex__ instead of any of the others as it is preferred by
         # pickle over __reduce__, and it handles all pickle protocols.
-        if "__reduce_ex__" not in classdict:
-            if member_type is not object:
-                methods = (
-                    "__getnewargs_ex__",
-                    "__getnewargs__",
-                    "__reduce_ex__",
-                    "__reduce__",
-                )
-                if not any(m in member_type.__dict__ for m in methods):
-                    if "__new__" in classdict:
-                        # too late, sabotage
-                        _make_class_unpicklable(enum_class)
-                    else:
-                        # final attempt to verify that pickling would work:
-                        # travel mro until __new__ is found, checking for
-                        # __reduce__ and friends along the way -- if any of them
-                        # are found before/when __new__ is found, pickling should
-                        # work
-                        sabotage = None
-                        for chain in bases:
-                            for base in chain.__mro__:
-                                if base is object:
-                                    continue
-                                elif any(m in base.__dict__ for m in methods):
-                                    # found one, we're good
-                                    sabotage = False
-                                    break
-                                elif "__new__" in base.__dict__:
-                                    # not good
-                                    sabotage = True
-                                    break
-                            if sabotage is not None:
+        if "__reduce_ex__" not in classdict and member_type is not object:
+            methods = (
+                "__getnewargs_ex__",
+                "__getnewargs__",
+                "__reduce_ex__",
+                "__reduce__",
+            )
+            if not any(m in member_type.__dict__ for m in methods):
+                if "__new__" in classdict:
+                    # too late, sabotage
+                    _make_class_unpicklable(enum_class)
+                else:
+                    # final attempt to verify that pickling would work:
+                    # travel mro until __new__ is found, checking for
+                    # __reduce__ and friends along the way -- if any of them
+                    # are found before/when __new__ is found, pickling should
+                    # work
+                    sabotage = None
+                    for chain in bases:
+                        for base in chain.__mro__:
+                            if base is object:
+                                continue
+                            elif any(m in base.__dict__ for m in methods):
+                                # found one, we're good
+                                sabotage = False
                                 break
-                        if sabotage:
-                            _make_class_unpicklable(enum_class)
+                            elif "__new__" in base.__dict__:
+                                # not good
+                                sabotage = True
+                                break
+                        if sabotage is not None:
+                            break
+                    if sabotage:
+                        _make_class_unpicklable(enum_class)
         # instantiate them, checking for duplicates as we go
         # we instantiate first instead of checking for duplicates first in case
         # a custom __new__ is doing something funky with the values -- such as
@@ -426,8 +421,7 @@ class EnumMeta(type):
     def __contains__(cls, member):
         if not isinstance(member, Enum):
             raise TypeError(
-                "unsupported operand type(s) for 'in': '%s' and '%s'"
-                % (type(member).__qualname__, cls.__class__.__qualname__)
+                f"unsupported operand type(s) for 'in': '{type(member).__qualname__}' and '{cls.__class__.__qualname__}'"
             )
         return isinstance(member, cls) and member._name_ in cls._member_map_
 
@@ -435,7 +429,7 @@ class EnumMeta(type):
         # nicer error message when someone tries to delete an attribute
         # (see issue19025).
         if attr in cls._member_map_:
-            raise AttributeError("%s: cannot delete Enum member." % cls.__name__)
+            raise AttributeError(f"{cls.__name__}: cannot delete Enum member.")
         super().__delattr__(attr)
 
     def __dir__(self):
@@ -485,7 +479,7 @@ class EnumMeta(type):
         return MappingProxyType(cls._member_map_)
 
     def __repr__(cls):
-        return "<enum %r>" % cls.__name__
+        return f"<enum {cls.__name__!r}>"
 
     def __reversed__(cls):
         """
@@ -599,7 +593,7 @@ class EnumMeta(type):
             for base in chain.__mro__:
                 if issubclass(base, Enum) and base._member_names_:
                     raise TypeError(
-                        "%s: cannot extend enumeration %r" % (class_name, base.__name__)
+                        f"{class_name}: cannot extend enumeration {base.__name__!r}"
                     )
 
     @staticmethod
@@ -632,9 +626,7 @@ class EnumMeta(type):
                     else:
                         candidate = candidate or base
             if len(data_types) > 1:
-                raise TypeError(
-                    "%r: too many data types: %r" % (class_name, data_types)
-                )
+                raise TypeError(f"{class_name!r}: too many data types: {data_types!r}")
             elif data_types:
                 return data_types.pop()
             else:
@@ -699,7 +691,7 @@ class EnumMeta(type):
         return __new__, save_new, use_args
 
 
-class Enum(metaclass=EnumMeta):
+class Enum(metaclass=EnumMeta):  # noqa: F811
     """
     Generic enumeration.
 
@@ -729,20 +721,19 @@ class Enum(metaclass=EnumMeta):
         try:
             exc = None
             result = cls._missing_(value)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             exc = e
             result = None
         try:
             if isinstance(result, cls):
                 return result
             else:
-                ve_exc = ValueError("%r is not a valid %s" % (value, cls.__qualname__))
+                ve_exc = ValueError(f"{value!r} is not a valid {cls.__qualname__}")
                 if result is None and exc is None:
                     raise ve_exc
                 elif exc is None:
                     exc = TypeError(
-                        "error in %s._missing_: returned %r instead of None or a valid member"
-                        % (cls.__name__, result)
+                        f"error in {cls.__name__}._missing_: returned {result!r} instead of None or a valid member"
                     )
                 exc.__context__ = ve_exc
                 raise exc
@@ -772,10 +763,10 @@ class Enum(metaclass=EnumMeta):
         return None
 
     def __repr__(self):
-        return "<%s.%s: %r>" % (self.__class__.__name__, self._name_, self._value_)
+        return f"<{self.__class__.__name__}.{self._name_}: {self._value_!r}>"
 
     def __str__(self):
-        return "%s.%s" % (self.__class__.__name__, self._name_)
+        return f"{self.__class__.__name__}.{self._name_}"
 
     def __dir__(self):
         """
@@ -860,8 +851,8 @@ class Flag(Enum):
             try:
                 high_bit = _high_bit(last_value)
                 break
-            except Exception:
-                raise TypeError("Invalid Flag value: %r" % last_value) from None
+            except Exception:  # noqa: BLE001
+                raise TypeError(f"Invalid Flag value: {last_value!r}") from None
         return 2 ** (high_bit + 1)
 
     @classmethod
@@ -887,7 +878,7 @@ class Flag(Enum):
             # verify all bits are accounted for
             _, extra_flags = _decompose(cls, value)
             if extra_flags:
-                raise ValueError("%r is not a valid %s" % (value, cls.__qualname__))
+                raise ValueError(f"{value!r} is not a valid {cls.__qualname__}")
             # construct a singleton enum pseudo-member
             pseudo_member = object.__new__(cls)
             pseudo_member._name_ = None
@@ -903,17 +894,16 @@ class Flag(Enum):
         """
         if not isinstance(other, self.__class__):
             raise TypeError(
-                "unsupported operand type(s) for 'in': '%s' and '%s'"
-                % (type(other).__qualname__, self.__class__.__qualname__)
+                f"unsupported operand type(s) for 'in': '{type(other).__qualname__}' and '{self.__class__.__qualname__}'"
             )
         return other._value_ & self._value_ == other._value_
 
     def __repr__(self):
         cls = self.__class__
         if self._name_ is not None:
-            return "<%s.%s: %r>" % (cls.__name__, self._name_, self._value_)
-        members, uncovered = _decompose(cls, self._value_)
-        return "<%s.%s: %r>" % (
+            return f"<{cls.__name__}.{self._name_}: {self._value_!r}>"
+        members, _uncovered = _decompose(cls, self._value_)
+        return "<{}.{}: {!r}>".format(
             cls.__name__,
             "|".join([str(m._name_ or m._value_) for m in members]),
             self._value_,
@@ -922,12 +912,12 @@ class Flag(Enum):
     def __str__(self):
         cls = self.__class__
         if self._name_ is not None:
-            return "%s.%s" % (cls.__name__, self._name_)
-        members, uncovered = _decompose(cls, self._value_)
+            return f"{cls.__name__}.{self._name_}"
+        members, _uncovered = _decompose(cls, self._value_)
         if len(members) == 1 and members[0]._name_ is None:
-            return "%s.%r" % (cls.__name__, members[0]._value_)
+            return f"{cls.__name__}.{members[0]._value_!r}"
         else:
-            return "%s.%s" % (
+            return "{}.{}".format(
                 cls.__name__,
                 "|".join([str(m._name_ or m._value_) for m in members]),
             )
@@ -951,7 +941,7 @@ class Flag(Enum):
         return self.__class__(self._value_ ^ other._value_)
 
     def __invert__(self):
-        members, uncovered = _decompose(self.__class__, self._value_)
+        members, _uncovered = _decompose(self.__class__, self._value_)
         inverted = self.__class__(0)
         for m in self.__class__:
             if m not in members and not (m._value_ & self._value_):
@@ -970,7 +960,7 @@ class IntFlag(int, Flag):
         Returns member (possibly creating it) if one can be found for value.
         """
         if not isinstance(value, int):
-            raise ValueError("%r is not a valid %s" % (value, cls.__qualname__))
+            raise ValueError(f"{value!r} is not a valid {cls.__qualname__}")  # noqa: TRY004
         new_member = cls._create_pseudo_member_(value)
         return new_member
 
@@ -998,7 +988,7 @@ class IntFlag(int, Flag):
                     extra_flags = 0
                 else:
                     extra_flags ^= flag_value
-            for value in reversed(need_to_create):
+            for value in reversed(need_to_create):  # noqa: PLR1704
                 # construct singleton pseudo-members
                 pseudo_member = int.__new__(cls, value)
                 pseudo_member._name_ = None
@@ -1050,11 +1040,9 @@ def unique(enumeration):
             duplicates.append((name, member.name))
     if duplicates:
         alias_details = ", ".join(
-            ["%s -> %s" % (alias, name) for (alias, name) in duplicates]
+            [f"{alias} -> {name}" for (alias, name) in duplicates]
         )
-        raise ValueError(
-            "duplicate values found in %r: %s" % (enumeration, alias_details)
-        )
+        raise ValueError(f"duplicate values found in {enumeration!r}: {alias_details}")
     return enumeration
 
 

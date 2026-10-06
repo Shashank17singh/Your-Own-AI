@@ -38,11 +38,11 @@ _real_select = select.select
 
 
 def receive(sock, n, timeout=test.support.SHORT_TIMEOUT):
-    r, w, x = _real_select([sock], [], [], timeout)
+    r, _w, _x = _real_select([sock], [], [], timeout)
     if sock in r:
         return sock.recv(n)
     else:
-        raise RuntimeError("timed out on %r" % (sock,))
+        raise RuntimeError(f"timed out on {sock!r}")
 
 
 if HAVE_UNIX_SOCKETS and HAVE_FORKING:
@@ -67,7 +67,7 @@ def simple_subprocess(testcase):
         os._exit(72)
     try:
         yield None
-    except:
+    except:  # noqa: TRY203
         raise
     finally:
         test.support.wait_process(pid, exitcode=72)
@@ -107,7 +107,7 @@ class SocketServerTest(unittest.TestCase):
         class MyServer(svrcls):
             def handle_error(self, request, client_address):
                 self.close_request(request)
-                raise
+                raise  # noqa: PLE0704
 
         class MyHandler(hdlrbase):
             def handle(self):
@@ -120,7 +120,7 @@ class SocketServerTest(unittest.TestCase):
             server = MyServer(addr, MyHandler)
         except PermissionError as e:
             # Issue 29184: cannot bind() a Unix socket on Android.
-            self.skipTest("Cannot create server (%s, %s): %s" % (svrcls, addr, e))
+            self.skipTest(f"Cannot create server ({svrcls}, {addr}): {e}")
         self.assertEqual(server.server_address, server.socket.getsockname())
         return server
 
@@ -137,7 +137,7 @@ class SocketServerTest(unittest.TestCase):
             print("CLASS =", svrcls)
 
         t = threading.Thread(
-            name="%s serving" % svrcls,
+            name=f"{svrcls} serving",
             target=server.serve_forever,
             # Short poll interval to make the test finish quickly.
             # Time between requests is short enough that we won't wake

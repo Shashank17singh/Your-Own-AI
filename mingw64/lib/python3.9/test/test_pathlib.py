@@ -169,7 +169,7 @@ class NTFlavourTest(_BaseFlavourTest, unittest.TestCase):
 class _BasePurePathTest:
     # Keys are canonical paths, values are list of tuples of arguments
     # supposed to produce equal paths.
-    equivalences = {
+    equivalences = {  # noqa: RUF012
         "a/b": [
             ("a", "b"),
             ("a/", "b"),
@@ -389,7 +389,7 @@ class _BasePurePathTest:
         assertLess(b, c)
         assertLess(c, d)
         with self.assertRaises(TypeError):
-            P() < {}
+            P() < {}  # noqa: B015
 
     def test_parts_common(self):
         # `parts` returns a tuple.
@@ -1322,13 +1322,13 @@ class PurePathTest(_BasePurePathTest, unittest.TestCase):
         p = pathlib.PurePosixPath("a")
         q = pathlib.PureWindowsPath("a")
         with self.assertRaises(TypeError):
-            p < q
+            p < q  # noqa: B015
         with self.assertRaises(TypeError):
-            p <= q
+            p <= q  # noqa: B015
         with self.assertRaises(TypeError):
-            p > q
+            p > q  # noqa: B015
         with self.assertRaises(TypeError):
-            p >= q
+            p >= q  # noqa: B015
 
 
 #
@@ -1431,7 +1431,7 @@ class _BasePathTest:
     def assertSame(self, path_a, path_b):
         self.assertTrue(
             os.path.samefile(str(path_a), str(path_b)),
-            "%r and %r don't point to the same file" % (path_a, path_b),
+            f"{path_a!r} and {path_b!r} don't point to the same file",
         )
 
     def assertFileNotFound(self, func, *args, **kwargs):
@@ -1866,7 +1866,7 @@ class _BasePathTest:
         try:
             name = pwd.getpwuid(uid).pw_name
         except KeyError:
-            self.skipTest("user %d doesn't have an entry in the system database" % uid)
+            self.skipTest("user %d doesn't have an entry in the system database" % uid)  # noqa: UP031
         self.assertEqual(name, p.owner())
 
     @unittest.skipUnless(grp, "the grp module is needed for this test")
@@ -1876,7 +1876,7 @@ class _BasePathTest:
         try:
             name = grp.getgrgid(gid).gr_name
         except KeyError:
-            self.skipTest("group %d doesn't have an entry in the system database" % gid)
+            self.skipTest("group %d doesn't have an entry in the system database" % gid)  # noqa: UP031
         self.assertEqual(name, p.group())
 
     def test_unlink(self):
@@ -1908,7 +1908,7 @@ class _BasePathTest:
         try:
             p.link_to(q)
         except PermissionError as e:
-            self.skipTest("os.link(): %s" % e)
+            self.skipTest(f"os.link(): {e}")
         self.assertEqual(q.stat().st_size, size)
         self.assertEqual(os.path.samefile(p, q), True)
         self.assertTrue(p.stat)
@@ -2108,7 +2108,7 @@ class _BasePathTest:
 
     def test_mkdir_concurrent_parent_creation(self):
         for pattern_num in range(32):
-            p = self.cls(BASE, "dirCPC%d" % pattern_num)
+            p = self.cls(BASE, "dirCPC%d" % pattern_num)  # noqa: UP031
             self.assertFalse(p.exists())
 
             def my_mkdir(path, mode=0o777):
@@ -2118,9 +2118,9 @@ class _BasePathTest:
                 # in all possible pattern combinations, assuming that this
                 # function is called at most 5 times (dirCPC/dir1/dir2,
                 # dirCPC/dir1, dirCPC, dirCPC/dir1, dirCPC/dir1/dir2).
-                if pattern.pop():
+                if pattern.pop():  # noqa: B023
                     os.mkdir(path, mode)  # From another process.
-                    concurrently_created.add(path)
+                    concurrently_created.add(path)  # noqa: B023
                 os.mkdir(path, mode)  # Our real call.
 
             pattern = [bool(pattern_num & (1 << n)) for n in range(5)]
@@ -2230,7 +2230,7 @@ class _BasePathTest:
         try:
             os.mkfifo(str(P))
         except PermissionError as e:
-            self.skipTest("os.mkfifo(): %s" % e)
+            self.skipTest(f"os.mkfifo(): {e}")
         self.assertTrue(P.is_fifo())
         self.assertFalse(P.is_socket())
         self.assertFalse(P.is_file())

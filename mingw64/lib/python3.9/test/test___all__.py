@@ -23,8 +23,8 @@ class AllTest(unittest.TestCase):
             quiet=True,
         ):
             try:
-                exec("import %s" % modname, names)
-            except:
+                exec(f"import {modname}", names)  # noqa: S102
+            except:  # noqa: E722
                 # Silent fail here seems the best route since some modules
                 # may not be available or not initialize properly in all
                 # environments.
@@ -39,8 +39,8 @@ class AllTest(unittest.TestCase):
             ),
         ):
             try:
-                exec("from %s import *" % modname, names)
-            except Exception as e:
+                exec(f"from {modname} import *", names)  # noqa: S102
+            except Exception as e:  # noqa: BLE001
                 # Include the module name in the exception string
                 self.fail(f"__all__ failure in {modname}: {e.__class__.__name__}: {e}")
             if "__builtins__" in names:
@@ -62,8 +62,7 @@ class AllTest(unittest.TestCase):
                 pkg_init = os.path.join(path, "__init__.py")
                 if os.path.exists(pkg_init):
                     yield pkg_init, modpath + fn
-                    for p, m in self.walk_modules(path, modpath + fn + "."):
-                        yield p, m
+                    yield from self.walk_modules(path, modpath + fn + ".")
                 continue
             if not fn.endswith(".py") or fn == "__init__.py":
                 continue
@@ -71,12 +70,10 @@ class AllTest(unittest.TestCase):
 
     def test_all(self):
         # Blacklisted modules and packages
-        blacklist = set(
-            [
-                # Will raise a SyntaxError when compiling the exec statement
-                "__future__",
-            ]
-        )
+        blacklist = {
+            # Will raise a SyntaxError when compiling the exec statement
+            "__future__",
+        }
 
         if not sys.platform.startswith("java"):
             # In case _socket fails to build, make this test fail more gracefully

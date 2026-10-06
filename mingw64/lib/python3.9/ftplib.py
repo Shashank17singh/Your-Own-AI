@@ -242,7 +242,7 @@ class FTP:
     def getline(self):
         line = self.file.readline(self.maxline + 1)
         if len(line) > self.maxline:
-            raise Error("got more than %d bytes" % self.maxline)
+            raise Error("got more than %d bytes" % self.maxline)  # noqa: UP031
         if self.debugging > 1:
             print("*get*", self.sanitize(line))
         if not line:
@@ -344,9 +344,9 @@ class FTP:
         port = sock.getsockname()[1]  # Get proper port
         host = self.sock.getsockname()[0]  # Get proper host
         if self.af == socket.AF_INET:
-            resp = self.sendport(host, port)
+            self.sendport(host, port)
         else:
-            resp = self.sendeprt(host, port)
+            self.sendeprt(host, port)
         if self.timeout is not _GLOBAL_DEFAULT_TIMEOUT:
             sock.settimeout(self.timeout)
         return sock
@@ -386,7 +386,7 @@ class FTP:
             )
             try:
                 if rest is not None:
-                    self.sendcmd("REST %s" % rest)
+                    self.sendcmd(f"REST {rest}")
                 resp = self.sendcmd(cmd)
                 # Some servers apparently send a 200 reply to
                 # a LIST or STOR command, before the 150 reply
@@ -404,14 +404,14 @@ class FTP:
         else:
             with self.makeport() as sock:
                 if rest is not None:
-                    self.sendcmd("REST %s" % rest)
+                    self.sendcmd(f"REST {rest}")
                 resp = self.sendcmd(cmd)
                 # See above.
                 if resp[0] == "2":
                     resp = self.getresp()
                 if resp[0] != "1":
                     raise error_reply(resp)
-                conn, sockaddr = sock.accept()
+                conn, _sockaddr = sock.accept()
                 if self.timeout is not _GLOBAL_DEFAULT_TIMEOUT:
                     conn.settimeout(self.timeout)
         if resp[:3] == "150":
@@ -489,7 +489,7 @@ class FTP:
         """
         if callback is None:
             callback = print_line
-        resp = self.sendcmd("TYPE A")
+        self.sendcmd("TYPE A")
         with (
             self.transfercmd(cmd) as conn,
             conn.makefile("r", encoding=self.encoding) as fp,
@@ -497,7 +497,7 @@ class FTP:
             while 1:
                 line = fp.readline(self.maxline + 1)
                 if len(line) > self.maxline:
-                    raise Error("got more than %d bytes" % self.maxline)
+                    raise Error("got more than %d bytes" % self.maxline)  # noqa: UP031
                 if self.debugging > 2:
                     print("*retr*", repr(line))
                 if not line:
@@ -558,7 +558,7 @@ class FTP:
             while 1:
                 buf = fp.readline(self.maxline + 1)
                 if len(buf) > self.maxline:
-                    raise Error("got more than %d bytes" % self.maxline)
+                    raise Error("got more than %d bytes" % self.maxline)  # noqa: UP031
                 if not buf:
                     break
                 if buf[-2:] != B_CRLF:
@@ -602,7 +602,7 @@ class FTP:
                 cmd = cmd + (" " + arg)
         self.retrlines(cmd, func)
 
-    def mlsd(self, path="", facts=[]):
+    def mlsd(self, path="", facts=None):
         """List a directory in a standardized format by using MLSD
         command (RFC-3659). If path is omitted the current directory
         is assumed. "facts" is a list of strings representing the type
@@ -614,10 +614,12 @@ class FTP:
         including a variable number of "facts" depending on the server
         and whether "facts" argument has been provided.
         """
+        if facts is None:
+            facts = []
         if facts:
             self.sendcmd("OPTS MLST " + ";".join(facts) + ";")
         if path:
-            cmd = "MLSD %s" % path
+            cmd = f"MLSD {path}"
         else:
             cmd = "MLSD"
         lines = []
@@ -799,7 +801,7 @@ else:
         def auth(self):
             """Set up secure control connection by using TLS/SSL."""
             if isinstance(self.sock, ssl.SSLSocket):
-                raise ValueError("Already using TLS")
+                raise ValueError("Already using TLS")  # noqa: TRY004
             if self.ssl_version >= ssl.PROTOCOL_TLS:
                 resp = self.voidcmd("AUTH TLS")
             else:
@@ -811,7 +813,7 @@ else:
         def ccc(self):
             """Switch back to a clear-text control connection."""
             if not isinstance(self.sock, ssl.SSLSocket):
-                raise ValueError("not using TLS")
+                raise ValueError("not using TLS")  # noqa: TRY004
             resp = self.voidcmd("CCC")
             self.sock = self.sock.unwrap()
             return resp
@@ -1021,7 +1023,7 @@ def test():
             cmd = "CWD"
             if file[2:]:
                 cmd = cmd + " " + file[2:]
-            resp = ftp.sendcmd(cmd)
+            ftp.sendcmd(cmd)
         elif file == "-p":
             ftp.set_pasv(not ftp.passiveserver)
         else:

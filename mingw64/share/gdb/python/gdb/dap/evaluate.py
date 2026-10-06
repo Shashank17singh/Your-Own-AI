@@ -25,7 +25,7 @@ def _evaluate(expr, frame_id, value_format):
 
 @in_gdb_thread
 def _eval_for_hover(expr, frame_id, value_format):
-    with gdb.with_parameter("may-write-registers", "off"):
+    with gdb.with_parameter("may-write-registers", "off"):  # noqa: SIM117
         with gdb.with_parameter("may-write-memory", "off"):
             with gdb.with_parameter("may-call-functions", "off"):
                 return _evaluate(expr, frame_id, value_format)

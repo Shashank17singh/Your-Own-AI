@@ -31,7 +31,7 @@ def getcaps():
     lineno = 0
     for mailcap in listmailcapfiles():
         try:
-            fp = open(mailcap, "r")
+            fp = open(mailcap, "r")  # noqa: SIM115
         except OSError:
             continue
         with fp:
@@ -168,7 +168,7 @@ def parsefield(line, i, n):
 # Part 3: using the database.
 
 
-def findmatch(caps, MIMEtype, key="view", filename="/dev/null", plist=[]):
+def findmatch(caps, MIMEtype, key="view", filename="/dev/null", plist=None):
     """Find a match for a mailcap entry.
 
     Return a tuple containing the command line, and the mailcap entry
@@ -177,6 +177,8 @@ def findmatch(caps, MIMEtype, key="view", filename="/dev/null", plist=[]):
     entry to use.
 
     """
+    if plist is None:
+        plist = []
     entries = lookup(caps, MIMEtype, key)
     # XXX This code should somehow check for the needsterminal flag.
     for e in entries:
@@ -203,8 +205,10 @@ def lookup(caps, MIMEtype, key=None):
     return entries
 
 
-def subst(field, MIMEtype, filename, plist=[]):
+def subst(field, MIMEtype, filename, plist=None):
     # XXX Actually, this is Unix-specific
+    if plist is None:
+        plist = []
     res = ""
     i, n = 0, len(field)
     while i < n:
@@ -265,7 +269,7 @@ def test():
             return
         MIMEtype = args[0]
         file = args[1]
-        command, e = findmatch(caps, MIMEtype, "view", file)
+        command, _e = findmatch(caps, MIMEtype, "view", file)
         if not command:
             print("No viewer found for", type)
         else:
@@ -292,7 +296,7 @@ def show(caps):
         for e in entries:
             keys = sorted(e)
             for k in keys:
-                print("  %-15s" % k, e[k])
+                print("  %-15s" % k, e[k])  # noqa: UP031
             print()
 
 

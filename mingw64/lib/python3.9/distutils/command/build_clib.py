@@ -29,7 +29,7 @@ def show_compilers():
 class build_clib(Command):
     description = "build C/C++ libraries used by Python extensions"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("build-clib=", "b", "directory to build C/C++ libraries to"),
         ("build-temp=", "t", "directory to put temporary build by-products"),
         ("debug", "g", "compile with debugging information"),
@@ -37,9 +37,9 @@ class build_clib(Command):
         ("compiler=", "c", "specify the compiler type"),
     ]
 
-    boolean_options = ["debug", "force"]
+    boolean_options = ["debug", "force"]  # noqa: RUF012
 
-    help_options = [
+    help_options = [  # noqa: RUF012
         ("help-compiler", None, "list available compilers", show_compilers),
     ]
 
@@ -136,8 +136,7 @@ class build_clib(Command):
 
             if "/" in name or (os.sep != "/" and os.sep in name):
                 raise DistutilsSetupError(
-                    "bad library name '%s': "
-                    "may not contain directory separators" % lib[0]
+                    f"bad library name '{lib[0]}': may not contain directory separators"
                 )
 
             if not isinstance(build_info, dict):
@@ -164,9 +163,9 @@ class build_clib(Command):
             sources = build_info.get("sources")
             if sources is None or not isinstance(sources, (list, tuple)):
                 raise DistutilsSetupError(
-                    "in 'libraries' option (library '%s'), "
+                    f"in 'libraries' option (library '{lib_name}'), "
                     "'sources' must be present and must be "
-                    "a list of source filenames" % lib_name
+                    "a list of source filenames"
                 )
 
             filenames.extend(sources)
@@ -177,9 +176,9 @@ class build_clib(Command):
             sources = build_info.get("sources")
             if sources is None or not isinstance(sources, (list, tuple)):
                 raise DistutilsSetupError(
-                    "in 'libraries' option (library '%s'), "
+                    f"in 'libraries' option (library '{lib_name}'), "
                     "'sources' must be present and must be "
-                    "a list of source filenames" % lib_name
+                    "a list of source filenames"
                 )
             sources = list(sources)
 

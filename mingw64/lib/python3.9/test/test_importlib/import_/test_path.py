@@ -137,7 +137,7 @@ class FinderTests:
     def test_finder_with_find_loader(self):
         class TestFinder:
             loader = None
-            portions = []
+            portions = []  # noqa: RUF012
 
             def find_loader(self, fullname):
                 return self.loader, self.portions

@@ -142,7 +142,7 @@ PYTHON2_EXCEPTIONS = (
 )
 
 try:
-    WindowsError
+    WindowsError  # noqa: B018
 except NameError:
     pass
 else:
@@ -162,9 +162,9 @@ for excname in MULTIPROCESSING_EXCEPTIONS:
     NAME_MAPPING[("multiprocessing", excname)] = ("multiprocessing.context", excname)
 
 # Same, but for 3.x to 2.x
-REVERSE_IMPORT_MAPPING = dict((v, k) for (k, v) in IMPORT_MAPPING.items())
+REVERSE_IMPORT_MAPPING = {v: k for (k, v) in IMPORT_MAPPING.items()}
 assert len(REVERSE_IMPORT_MAPPING) == len(IMPORT_MAPPING)
-REVERSE_NAME_MAPPING = dict((v, k) for (k, v) in NAME_MAPPING.items())
+REVERSE_NAME_MAPPING = {v: k for (k, v) in NAME_MAPPING.items()}
 assert len(REVERSE_NAME_MAPPING) == len(NAME_MAPPING)
 
 # Non-mutual mappings.

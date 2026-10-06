@@ -364,7 +364,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
 
     async def _sock_sendfile_native(self, sock, file, offset, count):
         try:
-            os.sendfile
+            os.sendfile  # noqa: B018
         except AttributeError:
             raise exceptions.SendfileNotAvailableError("os.sendfile() is not available")
         try:
@@ -448,7 +448,7 @@ class _UnixSelectorEventLoop(selector_events.BaseSelectorEventLoop):
                 fut.set_exception(exc)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._sock_sendfile_update_filepos(fileno, offset, total_sent)
             fut.set_exception(exc)
         else:
@@ -719,7 +719,7 @@ class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTran
                 n = 0
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._conn_lost += 1
                 self._fatal_error(exc, "Fatal write error on pipe transport")
                 return
@@ -741,7 +741,7 @@ class _UnixWritePipeTransport(transports._FlowControlMixin, transports.WriteTran
             pass
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self._buffer.clear()
             self._conn_lost += 1
             # Remove writer here, _fatal_error() doesn't it
@@ -851,7 +851,7 @@ class _UnixSubprocessTransport(base_subprocess.BaseSubprocessTransport):
             )
             if stdin_w is not None:
                 stdin.close()
-                self._proc.stdin = open(stdin_w.detach(), "wb", buffering=bufsize)
+                self._proc.stdin = open(stdin_w.detach(), "wb", buffering=bufsize)  # noqa: SIM115
                 stdin_w = None
         finally:
             if stdin_w is not None:
@@ -1073,7 +1073,7 @@ class BaseChildWatcher(AbstractChildWatcher):
             self._do_waitpid_all()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             # self._loop should always be available here
             # as '_sig_chld' is added as a signal handler
             # in 'attach_loop'
@@ -1397,7 +1397,7 @@ class MultiLoopChildWatcher(AbstractChildWatcher):
             self._do_waitpid_all()
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException:
+        except BaseException:  # noqa: BLE001
             logger.warning("Unknown exception in SIGCHLD handler", exc_info=True)
 
 

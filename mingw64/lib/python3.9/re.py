@@ -134,22 +134,22 @@ except ImportError:
 
 # public symbols
 __all__ = [
-    "ASCII",
-    "DOTALL",
-    "IGNORECASE",
-    "LOCALE",
-    "MULTILINE",
-    "UNICODE",
-    "VERBOSE",
-    "A",
-    "I",
-    "L",
-    "M",
+    "ASCII",  # noqa: F822
+    "DOTALL",  # noqa: F822
+    "IGNORECASE",  # noqa: F822
+    "LOCALE",  # noqa: F822
+    "MULTILINE",  # noqa: F822
+    "UNICODE",  # noqa: F822
+    "VERBOSE",  # noqa: F822
+    "A",  # noqa: F822
+    "I",  # noqa: F822
+    "L",  # noqa: F822
+    "M",  # noqa: F822
     "Match",
     "Pattern",
-    "S",
-    "U",
-    "X",
+    "S",  # noqa: F822
+    "U",  # noqa: F822
+    "X",  # noqa: F822
     "compile",
     "error",
     "escape",
@@ -297,7 +297,7 @@ def purge():
 
 def template(pattern, flags=0):
     "Compile a template pattern, returning a Pattern object"
-    return _compile(pattern, flags | T)
+    return _compile(pattern, flags | T)  # noqa: F821
 
 
 # SPECIAL_CHARS
@@ -345,7 +345,7 @@ def _compile(pattern, flags):
     if not sre_compile.isstring(pattern):
         raise TypeError("first argument must be string or compiled pattern")
     p = sre_compile.compile(pattern, flags)
-    if not (flags & DEBUG):
+    if not (flags & DEBUG):  # noqa: F821
         if len(_cache) >= _MAXCACHE:
             # Drop the oldest item
             try:

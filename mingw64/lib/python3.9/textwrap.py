@@ -63,7 +63,7 @@ class TextWrapper:
         Append to the last line of truncated text.
     """
 
-    unicode_whitespace_trans = {}
+    unicode_whitespace_trans = {}  # noqa: RUF012
     uspace = ord(" ")
     for x in _whitespace:
         unicode_whitespace_trans[ord(x)] = uspace
@@ -76,26 +76,25 @@ class TextWrapper:
     # (after stripping out empty strings).
     word_punct = r'[\w!"\'&.,?]'
     letter = r"[^\d\W]"
-    whitespace = r"[%s]" % re.escape(_whitespace)
+    whitespace = rf"[{re.escape(_whitespace)}]"
     nowhitespace = "[^" + whitespace[1:]
     wordsep_re = re.compile(
-        r"""
+        rf"""
         ( # any whitespace
-          %(ws)s+
+          {whitespace}+
         | # em-dash between words
-          (?<=%(wp)s) -{2,} (?=\w)
+          (?<={word_punct}) -{{2,}} (?=\w)
         | # word, possibly hyphenated
-          %(nws)s+? (?:
+          {nowhitespace}+? (?:
             # hyphenated word
-              -(?: (?<=%(lt)s{2}-) | (?<=%(lt)s-%(lt)s-))
-              (?= %(lt)s -? %(lt)s)
+              -(?: (?<={letter}{{2}}-) | (?<={letter}-{letter}-))
+              (?= {letter} -? {letter})
             | # end of word
-              (?=%(ws)s|\Z)
+              (?={whitespace}|\Z)
             | # em-dash
-              (?<=%(wp)s) (?=-{2,}\w)
+              (?<={word_punct}) (?=-{{2,}}\w)
             )
-        )"""
-        % {"wp": word_punct, "lt": letter, "ws": whitespace, "nws": nowhitespace},
+        )""",
         re.VERBOSE,
     )
     del word_punct, letter, nowhitespace
@@ -104,7 +103,7 @@ class TextWrapper:
     #   "Hello there -- you goof-ball, use the -b option!"
     # splits into
     #   Hello/ /there/ /--/ /you/ /goof-ball,/ /use/ /the/ /-b/ /option!/
-    wordsep_simple_re = re.compile(r"(%s+)" % whitespace)
+    wordsep_simple_re = re.compile(rf"({whitespace}+)")
     del whitespace
 
     # XXX this is not locale- or charset-aware -- string.lowercase
@@ -249,7 +248,7 @@ class TextWrapper:
         """
         lines = []
         if self.width <= 0:
-            raise ValueError("invalid width %r (must be > 0)" % self.width)
+            raise ValueError(f"invalid width {self.width!r} (must be > 0)")
         if self.max_lines is not None:
             if self.max_lines > 1:
                 indent = self.subsequent_indent
@@ -465,11 +464,10 @@ def dedent(text):
                     break
 
     # sanity check (testing/debugging only)
-    if 0 and margin:
+    if False:
         for line in text.split("\n"):
-            assert not line or line.startswith(margin), "line = %r, margin = %r" % (
-                line,
-                margin,
+            assert not line or line.startswith(margin), (
+                f"line = {line!r}, margin = {margin!r}"
             )
 
     if margin:

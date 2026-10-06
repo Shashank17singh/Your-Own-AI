@@ -384,12 +384,12 @@ class BaseTest:
         a = array.array(self.typecode, 2 * self.example)
         self.assertRaises(TypeError, a.tofile)
         support.unlink(support.TESTFN)
-        f = open(support.TESTFN, "wb")
+        f = open(support.TESTFN, "wb")  # noqa: SIM115
         try:
             a.tofile(f)
             f.close()
             b = array.array(self.typecode)
-            f = open(support.TESTFN, "rb")
+            f = open(support.TESTFN, "rb")  # noqa: SIM115
             self.assertRaises(TypeError, b.fromfile)
             b.fromfile(f, len(self.example))
             self.assertEqual(b, array.array(self.typecode, self.example))
@@ -406,7 +406,7 @@ class BaseTest:
         # Issue #5395: Check if fromfile raises a proper OSError
         # instead of EOFError.
         a = array.array(self.typecode)
-        f = open(support.TESTFN, "wb")
+        f = open(support.TESTFN, "wb")  # noqa: SIM115
         try:
             self.assertRaises(OSError, a.fromfile, f, len(self.example))
         finally:
@@ -415,12 +415,12 @@ class BaseTest:
 
     def test_filewrite(self):
         a = array.array(self.typecode, 2 * self.example)
-        f = open(support.TESTFN, "wb")
+        f = open(support.TESTFN, "wb")  # noqa: SIM115
         try:
             f.write(a)
             f.close()
             b = array.array(self.typecode)
-            f = open(support.TESTFN, "rb")
+            f = open(support.TESTFN, "rb")  # noqa: SIM115
             b.fromfile(f, len(self.example))
             self.assertEqual(b, array.array(self.typecode, self.example))
             self.assertNotEqual(a, b)
@@ -465,7 +465,7 @@ class BaseTest:
         self.assertEqual(a, eval(repr(a), {"array": array.array}))
 
         a = array.array(self.typecode)
-        self.assertEqual(repr(a), "array('%s')" % self.typecode)
+        self.assertEqual(repr(a), f"array('{self.typecode}')")
 
     def test_str(self):
         a = array.array(self.typecode, 2 * self.example)
@@ -476,12 +476,12 @@ class BaseTest:
         self.assertIs(a == 42, False)
         self.assertIs(a != 42, True)
 
-        self.assertIs(a == a, True)
-        self.assertIs(a != a, False)
-        self.assertIs(a < a, False)
-        self.assertIs(a <= a, True)
-        self.assertIs(a > a, False)
-        self.assertIs(a >= a, True)
+        self.assertIs(a == a, True)  # noqa: PLR0124
+        self.assertIs(a != a, False)  # noqa: PLR0124
+        self.assertIs(a < a, False)  # noqa: PLR0124
+        self.assertIs(a <= a, True)  # noqa: PLR0124
+        self.assertIs(a > a, False)  # noqa: PLR0124
+        self.assertIs(a >= a, True)  # noqa: PLR0124
 
         al = array.array(self.typecode, self.smallerexample)
         ab = array.array(self.typecode, self.biggerexample)
@@ -931,10 +931,10 @@ class BaseTest:
     @unittest.skipUnless(hasattr(sys, "getrefcount"), "test needs sys.getrefcount()")
     def test_bug_782369(self):
         for i in range(10):
-            b = array.array("B", range(64))
+            array.array("B", range(64))
         rc = sys.getrefcount(10)
         for i in range(10):
-            b = array.array("B", range(64))
+            array.array("B", range(64))
         self.assertEqual(rc, sys.getrefcount(10))
 
     def test_subclass_with_kwargs(self):
@@ -963,14 +963,14 @@ class BaseTest:
     def test_initialize_with_unicode(self):
         if self.typecode != "u":
             with self.assertRaises(TypeError) as cm:
-                a = array.array(self.typecode, "foo")
+                array.array(self.typecode, "foo")
             self.assertIn("cannot use a str", str(cm.exception))
             with self.assertRaises(TypeError) as cm:
-                a = array.array(self.typecode, array.array("u", "foo"))
+                array.array(self.typecode, array.array("u", "foo"))
             self.assertIn("cannot use a unicode array", str(cm.exception))
         else:
-            a = array.array(self.typecode, "foo")
-            a = array.array(self.typecode, array.array("u", "foo"))
+            array.array(self.typecode, "foo")
+            array.array(self.typecode, array.array("u", "foo"))
 
     @support.cpython_only
     def test_obsolete_write_lock(self):
@@ -1112,7 +1112,6 @@ class NumberTest(BaseTest):
         self.assertRaises(OverflowError, a.__setitem__, 0, upper + 1)
 
     def test_subclassing(self):
-        typecode = self.typecode
 
         class ExaggeratingArray(array.array):
             __slots__ = ["offset"]
@@ -1165,9 +1164,9 @@ class Intable:
 
 
 class SignedNumberTest(IntegerNumberTest):
-    example = [-1, 0, 1, 42, 0x7F]
-    smallerexample = [-1, 0, 1, 42, 0x7E]
-    biggerexample = [-1, 0, 1, 43, 0x7F]
+    example = [-1, 0, 1, 42, 0x7F]  # noqa: RUF012
+    smallerexample = [-1, 0, 1, 42, 0x7E]  # noqa: RUF012
+    biggerexample = [-1, 0, 1, 43, 0x7F]  # noqa: RUF012
     outside = 23
 
     def test_overflow(self):
@@ -1179,9 +1178,9 @@ class SignedNumberTest(IntegerNumberTest):
 
 
 class UnsignedNumberTest(IntegerNumberTest):
-    example = [0, 1, 17, 23, 42, 0xFF]
-    smallerexample = [0, 1, 17, 23, 42, 0xFE]
-    biggerexample = [0, 1, 17, 23, 43, 0xFF]
+    example = [0, 1, 17, 23, 42, 0xFF]  # noqa: RUF012
+    smallerexample = [0, 1, 17, 23, 42, 0xFE]  # noqa: RUF012
+    biggerexample = [0, 1, 17, 23, 43, 0xFF]  # noqa: RUF012
     outside = 0xAA
 
     def test_overflow(self):
@@ -1256,9 +1255,9 @@ class UnsignedLongLongTest(UnsignedNumberTest, unittest.TestCase):
 
 
 class FPTest(NumberTest):
-    example = [-42.0, 0, 42, 1e5, -1e10]
-    smallerexample = [-42.0, 0, 42, 1e5, -2e10]
-    biggerexample = [-42.0, 0, 42, 1e5, 1e10]
+    example = [-42.0, 0, 42, 1e5, -1e10]  # noqa: RUF012
+    smallerexample = [-42.0, 0, 42, 1e5, -2e10]  # noqa: RUF012
+    biggerexample = [-42.0, 0, 42, 1e5, 1e10]  # noqa: RUF012
     outside = 23
 
     def assertEntryEqual(self, entry1, entry2):

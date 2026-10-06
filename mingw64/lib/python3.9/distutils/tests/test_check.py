@@ -25,7 +25,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
         if cwd is not None:
             old_dir = os.getcwd()
             os.chdir(cwd)
-        pkg_info, dist = self.create_dist(**metadata)
+        _pkg_info, dist = self.create_dist(**metadata)
         cmd = check(dist)
         cmd.initialize_options()
         for name, value in options.items():
@@ -79,7 +79,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
 
     @unittest.skipUnless(HAS_DOCUTILS, "won't test without docutils")
     def test_check_document(self):
-        pkg_info, dist = self.create_dist()
+        _pkg_info, dist = self.create_dist()
         cmd = check(dist)
 
         # let's see if it detects broken rest
@@ -96,7 +96,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
     def test_check_restructuredtext(self):
         # let's see if it detects broken rest in long_description
         broken_rest = "title\n===\n\ntest"
-        pkg_info, dist = self.create_dist(long_description=broken_rest)
+        _pkg_info, dist = self.create_dist(long_description=broken_rest)
         cmd = check(dist)
         cmd.check_restructuredtext()
         self.assertEqual(cmd._warnings, 1)
@@ -151,7 +151,7 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
         )
 
         for rest_with_code in example_rst_docs:
-            pkg_info, dist = self.create_dist(long_description=rest_with_code)
+            _pkg_info, dist = self.create_dist(long_description=rest_with_code)
             cmd = check(dist)
             cmd.check_restructuredtext()
             msgs = cmd._check_rst_data(rest_with_code)
@@ -165,7 +165,6 @@ class CheckTestCase(support.LoggingSilencer, support.TempdirManager, unittest.Te
 
     def test_check_all(self):
 
-        metadata = {"url": "xxx", "author": "xxx"}
         self.assertRaises(
             DistutilsSetupError, self._run, {}, strict=1, restructuredtext=1
         )

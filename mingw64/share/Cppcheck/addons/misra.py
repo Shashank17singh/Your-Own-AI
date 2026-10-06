@@ -23,14 +23,14 @@ def grouped(iterable, n):
 
 INT_TYPES = ["bool", "char", "short", "int", "long", "long long"]
 STDINT_TYPES = [
-    "%s%d_t" % (n, v)
+    "%s%d_t" % (n, v)  # noqa: UP031
     for n, v in itertools.product(
         ["int", "uint", "int_least", "uint_least", "int_fast", "uint_fast"],
         [8, 16, 32, 64],
     )
 ]
 STDINT_H_DEFINES_MIN = [
-    "%s%d_MIN" % (n, v)
+    "%s%d_MIN" % (n, v)  # noqa: UP031
     for n, v in itertools.product(
         [
             "INT",
@@ -41,7 +41,7 @@ STDINT_H_DEFINES_MIN = [
     )
 ]
 STDINT_H_DEFINES_MAX = [
-    "%s%d_MAX" % (n, v)
+    "%s%d_MAX" % (n, v)  # noqa: UP031
     for n, v in itertools.product(
         [
             "INT",
@@ -55,10 +55,11 @@ STDINT_H_DEFINES_MAX = [
     )
 ]
 STDINT_H_DEFINES_C = [
-    "%s%d_C" % (n, v) for n, v in itertools.product(["INT", "UINT"], [8, 16, 32, 64])
+    "%s%d_C" % (n, v)
+    for n, v in itertools.product(["INT", "UINT"], [8, 16, 32, 64])  # noqa: UP031
 ]
 INTTYPES_H_DEFINES = [
-    "%s%d" % (n, v)
+    "%s%d" % (n, v)  # noqa: UP031
     for n, v in itertools.product(
         [
             "PRId",
@@ -1501,9 +1502,9 @@ def get_essential_type_from_value(value, is_signed):
             range_max = (1 << bits) - 1
         sign = "signed" if is_signed else "unsigned"
         if is_signed and value < 0 and value >= range_min:
-            return "%s %s" % (sign, t)
+            return f"{sign} {t}"
         if value >= 0 and value <= range_max:
-            return "%s %s" % (sign, t)
+            return f"{sign} {t}"
     return None
 
 
@@ -1513,7 +1514,7 @@ def getEssentialType(expr):
     if expr.str[0] == "'" and expr.str[-1] == "'":
         if len(expr.str) == 3 or (len(expr.str) == 4 and expr.str[1] == "\\"):
             return "char"
-        return "%s %s" % (expr.valueType.sign, expr.valueType.type)
+        return f"{expr.valueType.sign} {expr.valueType.type}"
     if expr.variable or isCast(expr):
         typeToken = expr.variable.typeStartToken if expr.variable else expr.next
         while typeToken and typeToken.isName:
@@ -1532,7 +1533,7 @@ def getEssentialType(expr):
             if expr.valueType.isIntegral():
                 if (expr.valueType.sign is None) and expr.valueType.type == "char":
                     return "char"
-                return "%s %s" % (expr.valueType.sign, expr.valueType.type)
+                return f"{expr.valueType.sign} {expr.valueType.type}"
     elif expr.isNumber:
         if expr.valueType.type == "bool":
             return "bool"
@@ -1540,7 +1541,7 @@ def getEssentialType(expr):
             return expr.valueType.type
         if expr.valueType.isIntegral():
             if expr.valueType.type != "int":
-                return "%s %s" % (expr.valueType.sign, expr.valueType.type)
+                return f"{expr.valueType.sign} {expr.valueType.type}"
             return get_essential_type_from_value(
                 expr.getKnownIntValue(), expr.valueType.sign == "signed"
             )
@@ -1622,9 +1623,7 @@ def get_function_pointer_type(tok):
 def isCast(expr):
     if not expr or expr.str != "(" or not expr.astOperand1 or expr.astOperand2:
         return False
-    if simpleMatch(expr, "( )"):
-        return False
-    return True
+    return not simpleMatch(expr, "( )")
 
 
 def is_constant_integer_expression(expr):
@@ -1636,9 +1635,9 @@ def is_constant_integer_expression(expr):
         return False
     if expr.astOperand1 and not is_constant_integer_expression(expr.astOperand1):
         return False
-    if expr.astOperand2 and not is_constant_integer_expression(expr.astOperand2):
-        return False
-    return True
+    return not (
+        expr.astOperand2 and not is_constant_integer_expression(expr.astOperand2)
+    )
 
 
 def isFunctionCall(expr, std="c99"):
@@ -1648,9 +1647,7 @@ def isFunctionCall(expr, std="c99"):
         return False
     if expr.astOperand1 != expr.previous:
         return False
-    if isKeyword(expr.astOperand1.str, std):
-        return False
-    return True
+    return not isKeyword(expr.astOperand1.str, std)
 
 
 def hasExternalLinkage(var):
@@ -1903,9 +1900,7 @@ def isConstantExpression(expr):
         return True
     if expr.astOperand1 and not isConstantExpression(expr.astOperand1):
         return False
-    if expr.astOperand2 and not isConstantExpression(expr.astOperand2):
-        return False
-    return True
+    return not (expr.astOperand2 and not isConstantExpression(expr.astOperand2))
 
 
 def isUnknownConstantExpression(expr):
@@ -1913,9 +1908,7 @@ def isUnknownConstantExpression(expr):
         return True
     if expr.astOperand1 and isUnknownConstantExpression(expr.astOperand1):
         return True
-    if expr.astOperand2 and isUnknownConstantExpression(expr.astOperand2):
-        return True
-    return False
+    return bool(expr.astOperand2 and isUnknownConstantExpression(expr.astOperand2))
 
 
 def isUnsignedInt(expr):
@@ -2045,7 +2038,7 @@ def isHexEscapeSequence(symbols):
     Reference: n1570 6.4.4.4"""
     if len(symbols) < 3 or symbols[:2] != "\\x":
         return False
-    return all([s in string.hexdigits for s in symbols[2:]])
+    return all(s in string.hexdigits for s in symbols[2:])
 
 
 def isOctalEscapeSequence(symbols):
@@ -2057,7 +2050,7 @@ def isOctalEscapeSequence(symbols):
     Reference: n1570 6.4.4.4"""
     if len(symbols) not in range(2, 5) or symbols[0] != "\\":
         return False
-    return all([s in string.octdigits for s in symbols[1:]])
+    return all(s in string.octdigits for s in symbols[1:])
 
 
 def isSimpleEscapeSequence(symbols):
@@ -2116,9 +2109,7 @@ def isNoReturnScope(tok):
         if prev.str in "])":
             prev = prev.link
         prev = prev.previous
-    if prev and prev.next.str in ["throw", "return"]:
-        return True
-    return False
+    return bool(prev and prev.next.str in ["throw", "return"])
 
 
 def getAssignedVariableToken(vartok):
@@ -2292,7 +2283,7 @@ def remove_file_prefix(file_path, prefix):
 class Rule:
     """Class to keep rule text and metadata"""
 
-    MISRA_SEVERITY_LEVELS = ["Required", "Mandatory", "Advisory"]
+    MISRA_SEVERITY_LEVELS = ["Required", "Mandatory", "Advisory"]  # noqa: RUF012
 
     def __init__(self, num1, num2):
         self.num1 = num1
@@ -2320,7 +2311,7 @@ class Rule:
         return "style"
 
     def __repr__(self):
-        return "%d.%d (%s)" % (self.num1, self.num2, self.misra_severity)
+        return "%d.%d (%s)" % (self.num1, self.num2, self.misra_severity)  # noqa: UP031
 
 
 class MisraSettings:
@@ -2548,7 +2539,7 @@ class MisraChecker:
                 "_Alignof",
             ):
                 self.reportError(token, 1, 4)
-            if token.str.endswith("_s") and isFunctionCall(token.next, cfg.standards.c):
+            if token.str.endswith("_s") and isFunctionCall(token.next, cfg.standards.c):  # noqa: SIM102
                 if token.str in (
                     "tmpfile_s",
                     "tmpnam_s",
@@ -2791,7 +2782,7 @@ class MisraChecker:
             long_vars.setdefault(var.nameToken.str[:num_sign_chars], []).append(
                 var.nameToken
             )
-        for name_prefix in long_vars:
+        for name_prefix in long_vars:  # noqa: PLC0206
             tokens = long_vars[name_prefix]
             if len(tokens) < 2:
                 continue
@@ -2950,7 +2941,7 @@ class MisraChecker:
                     token.variable.typeStartToken.str
                 ):
                     self.reportError(token, 6, 1)
-            elif data.standards.c in ("c99", "c11", "c17", "c18"):
+            elif data.standards.c in ("c99", "c11", "c17", "c18"):  # noqa: SIM102
                 if token.valueType.type == "bool":
                     continue
             isExplicitlySignedOrUnsigned = False
@@ -3004,7 +2995,7 @@ class MisraChecker:
 
     def misra_7_4(self, data):
         def reportErrorIfVariableIsNotConst(variable, stringLiteral):
-            if variable.valueType:
+            if variable.valueType:  # noqa: SIM102
                 if (variable.valueType.constness % 2) != 1:
                     self.reportError(stringLiteral, 7, 4)
 
@@ -3014,11 +3005,10 @@ class MisraChecker:
                 if variable:
                     reportErrorIfVariableIsNotConst(variable, token)
                 function = getFunctionUsingReturnValue(token)
-                if function:
-                    if not tokenFollowsSequence(
-                        function.tokenDef, ["const", "char", "*"]
-                    ):
-                        self.reportError(token, 7, 4)
+                if function and not tokenFollowsSequence(
+                    function.tokenDef, ["const", "char", "*"]
+                ):
+                    self.reportError(token, 7, 4)
             if (
                 isFunctionCall(token, data.standards.c)
                 and token.astOperand1
@@ -3184,7 +3174,7 @@ class MisraChecker:
                 self.insert_in_dict(
                     extern_var_without_def, var.nameToken.str, var.nameToken
                 )
-        for var in extern_var_with_def:
+        for var in extern_var_with_def:  # noqa: PLC0206
             if var not in extern_var_without_def:
                 for t in extern_var_with_def[var]:
                     self.reportError(t, 8, 4)
@@ -3243,9 +3233,8 @@ class MisraChecker:
                     tok.variable
                     and tok.variable.access == "Global"
                     and tok.variable.isStatic
-                ):
-                    if tok.variable not in variables_used_in_scope:
-                        variables_used_in_scope.append(tok.variable)
+                ) and tok.variable not in variables_used_in_scope:
+                    variables_used_in_scope.append(tok.variable)
                 tok = tok.next
             for var in variables_used_in_scope:
                 if var in variables:
@@ -3463,7 +3452,7 @@ class MisraChecker:
                     continue
                 if e2 == "char" and (e1 == "signed" or e1 == "unsigned"):
                     continue
-            if token.str == "-=" or token.str == "-":
+            if token.str == "-=" or token.str == "-":  # noqa: SIM102
                 if e1 == "char" and (e2 == "signed" or e2 == "unsigned"):
                     continue
             if (
@@ -3907,9 +3896,8 @@ class MisraChecker:
                     and vt1.pointer > 0
                     and vt2.pointer == 0
                     and token.astOperand2.values
-                ):
-                    if token.astOperand2.getValue(0):
-                        self.reportError(token, 11, 9)
+                ) and token.astOperand2.getValue(0):
+                    self.reportError(token, 11, 9)
 
     def misra_12_1_sizeof(self, rawTokens):
         state = 0
@@ -4124,7 +4112,7 @@ class MisraChecker:
                 expressions = getForLoopExpressions(token)
                 if not expressions:
                     continue
-                if expressions[0] and not expressions[0].isAssignmentOp:
+                if expressions[0] and not expressions[0].isAssignmentOp:  # noqa: SIM102
                     if expressions[0].str != "(" or not expressions[0].previous.isName:
                         self.reportError(token, 14, 2)
                 if countSideEffectsRecursive(expressions[1]) > 0:
@@ -4153,8 +4141,8 @@ class MisraChecker:
                         continue
                     tn = body_scope.bodyStart
                     while tn and tn != body_scope.bodyEnd:
-                        if tn.variable == loop_counter:
-                            if tn.next:
+                        if tn.variable == loop_counter:  # noqa: SIM102
+                            if tn.next:  # noqa: SIM102
                                 if countSideEffectsRecursive(tn.next) > 0:
                                     self.reportError(tn, 14, 2)
                         tn = tn.next
@@ -4531,7 +4519,7 @@ class MisraChecker:
                 if f is not None and f not in calls:
                     calls.append(f)
             function_calls[scope.function] = calls
-        for func in function_calls:
+        for func in function_calls:  # noqa: PLC0206
             for call in function_calls[func]:
                 if not find_recursive_call(func, call, function_calls):
                     continue
@@ -4549,7 +4537,7 @@ class MisraChecker:
             if w["message"].endswith("[-Wimplicit-function-declaration]"):
                 self.reportError(cppcheckdata.Location(w), 17, 3)
         for token in cfg.tokenlist:
-            if token.isName and token.function is None and token.valueType is None:
+            if token.isName and token.function is None and token.valueType is None:  # noqa: SIM102
                 if (
                     token.next
                     and token.next.str == "("
@@ -4637,7 +4625,7 @@ class MisraChecker:
                     continue
                 if tok.astParent.str == "." and tok.astParent.valueType:
                     continue
-                self.report_config_error(tok, "Variable '%s' is unknown" % tok.str)
+                self.report_config_error(tok, f"Variable '{tok.str}' is unknown")
 
     def misra_17_6(self, rawTokens):
         for token in rawTokens:
@@ -4769,12 +4757,14 @@ class MisraChecker:
                 self.reportError(directive, 20, 3)
             elif len(words) > 1:
                 filename = words[1]
-                if not (
-                    (filename.startswith('"') and filename.endswith('"'))
-                    or (filename.startswith("<") and filename.endswith(">"))
+                if (
+                    not (
+                        (filename.startswith('"') and filename.endswith('"'))
+                        or (filename.startswith("<") and filename.endswith(">"))
+                    )
+                    and "." in filename
                 ):
-                    if "." in filename:
-                        self.reportError(directive, 20, 3)
+                    self.reportError(directive, 20, 3)
 
     def misra_20_4(self, data):
         for directive in data.directives:
@@ -4872,11 +4862,11 @@ class MisraChecker:
                         r"[^_a-zA-Z0-9]defined[ ]*\([ ]*([_a-zA-Z0-9]+)[ ]*\)",
                         directive.str,
                     ):
-                        defined.append(name)
+                        defined.append(name)  # noqa: PERF402
                     for name in re.findall(
                         r"[^_a-zA-Z0-9]defined[ ]*([_a-zA-Z0-9]+)", directive.str
                     ):
-                        defined.append(name)
+                        defined.append(name)  # noqa: PERF402
                     break
             for s in cond.E.split(" "):
                 if (s[0] >= "A" and s[0] <= "Z") or (s[0] >= "a" and s[0] <= "z"):
@@ -4896,15 +4886,15 @@ class MisraChecker:
         for directive in cfg.directives:
             d = Define(directive)
             for arg in d.args:
-                res = re.search(r"[^#]#[ ]*%s[ ]*##" % arg, " " + d.expansionList)
+                res = re.search(rf"[^#]#[ ]*{arg}[ ]*##", " " + d.expansionList)
                 if res:
                     self.reportError(directive, 20, 11)
 
     def misra_20_12(self, cfg):
         def _is_hash_hash_op(expansion_list, arg):
-            return re.search(
-                r"##[ ]*%s[^a-zA-Z0-9_]" % arg, expansion_list
-            ) or re.search(r"[^a-zA-Z0-9_]%s[ ]*##" % arg, expansion_list)
+            return re.search(rf"##[ ]*{arg}[^a-zA-Z0-9_]", expansion_list) or re.search(
+                rf"[^a-zA-Z0-9_]{arg}[ ]*##", expansion_list
+            )
 
         def _is_other_op(expansion_list, arg):
             pos = expansion_list.find(arg)
@@ -4946,7 +4936,7 @@ class MisraChecker:
 
         for directive in cfg.directives:
             define = Define(directive)
-            expansion_list = "(%s)" % define.expansionList
+            expansion_list = f"({define.expansionList})"
             for arg in define.args:
                 if not _is_hash_hash_op(expansion_list, arg):
                     continue
@@ -5238,7 +5228,7 @@ class MisraChecker:
                 invalid = []
                 continue
             if token.varId and token.varId > 0 and simpleMatch(token.next, "="):
-                for name in assigned.keys():
+                for name in assigned:
                     while token.varId in assigned[name]:
                         assigned[name].remove(token.varId)
                 while token.varId in invalid:
@@ -5273,9 +5263,8 @@ class MisraChecker:
                             elif vartok.varId not in assigned[name]:
                                 assigned[name].append(vartok.varId)
                 continue
-            if token.astParent and token.varId:
-                if token.varId in invalid:
-                    self.reportError(token, 21, 20)
+            if token.astParent and token.varId and token.varId in invalid:
+                self.reportError(token, 21, 20)
 
     def misra_21_21(self, cfg):
         for token in cfg.tokenlist:
@@ -5375,11 +5364,11 @@ class MisraChecker:
                 token.str == "errno"
                 and token.astParent
                 and token.astParent.isComparisonOp
+            ) and (
+                last_function_call is None
+                or not is_errno_setting_function(last_function_call)
             ):
-                if last_function_call is None or not is_errno_setting_function(
-                    last_function_call
-                ):
-                    self.reportError(token, 22, 10)
+                self.reportError(token, 22, 10)
 
     def get_verify_expected(self):
         """Return the list of expected violations in the verify test"""
@@ -5444,7 +5433,7 @@ class MisraChecker:
         else:
             matched = False
             for each in ruleItemList:
-                if each is not None:
+                if each is not None:  # noqa: SIM102
                     if (each[0] == line_symbol[0]) and (each[1] == line_symbol[1]):
                         matched = True
             if not matched:
@@ -5485,7 +5474,7 @@ class MisraChecker:
                         ruleIsSuppressed = True
                     else:
                         for each in ruleItemList:
-                            if each is not None:
+                            if each is not None:  # noqa: SIM102
                                 if each[0] == linenr:
                                     ruleIsSuppressed = True
         return ruleIsSuppressed
@@ -5515,7 +5504,7 @@ class MisraChecker:
                     else:
                         item_str = str(item[0])
                     outlist.append(
-                        "%s: %s: %s (%d locations suppressed)"
+                        "%s: %s: %s (%d locations suppressed)"  # noqa: UP031
                         % (
                             float(ruleNum) / 100,
                             fname,
@@ -5524,7 +5513,7 @@ class MisraChecker:
                         )
                     )
         for line in sorted(outlist, reverse=True):
-            print("  %s" % line)
+            print(f"  {line}")
 
     def setFilePrefix(self, prefix):
         """
@@ -5561,7 +5550,7 @@ class MisraChecker:
         error_id = "config"
         if self.settings.verify:
             self.verify_actual.append(
-                "%s:%d %s" % (location.file, location.linenr, error_id)
+                "%s:%d %s" % (location.file, location.linenr, error_id)  # noqa: UP031
             )
         else:
             cppcheckdata.reportError(
@@ -5574,7 +5563,7 @@ class MisraChecker:
             return
         if self.settings.verify:
             self.verify_actual.append(
-                "%s:%d %d.%d" % (location.file, location.linenr, num1, num2)
+                "%s:%d %d.%d" % (location.file, location.linenr, num1, num2)  # noqa: UP031
             )
         elif self.isRuleSuppressed(location.file, location.linenr, ruleNum):
             self.suppressionStats.setdefault(ruleNum, 0)
@@ -5601,10 +5590,7 @@ class MisraChecker:
                         + ")"
                     )
             else:
-                errmsg = (
-                    "misra violation %s with no text in the supplied rule-texts-file"
-                    % (ruleNum)
-                )
+                errmsg = f"misra violation {ruleNum} with no text in the supplied rule-texts-file"
             if self.severity:
                 cppcheck_severity = self.severity
             this_violation = (
@@ -5636,7 +5622,7 @@ class MisraChecker:
         encodings = ["ascii", "utf-8", "windows-1250", "windows-1252"]
         for e in encodings:
             try:
-                file_stream = open(filename, "r", encoding=e)
+                file_stream = open(filename, "r", encoding=e)  # noqa: SIM115
                 file_stream.readlines()
                 file_stream.seek(0)
             except UnicodeDecodeError:
@@ -5651,9 +5637,9 @@ class MisraChecker:
             )
             print("Trying with default codec now and ignoring errors if possible ...")
             try:
-                file_stream = open(filename, "rt", errors="ignore")
+                file_stream = open(filename, "rt", errors="ignore")  # noqa: SIM115
             except TypeError:
-                file_stream = open(filename, "rt")
+                file_stream = open(filename, "rt")  # noqa: SIM115
         rule = None
         rule_line_number = 0
         for line in file_stream:
@@ -5736,7 +5722,7 @@ class MisraChecker:
                 1901,
             )  # misra-c2012-19.1 : misra c++2008 2-13-3
             if (not self.is_cpp) or rule_num in misra_cpp:
-                errmsg = "Misra C: %i.%i" % (rule_num // 100, rule_num % 100)
+                errmsg = "Misra C: %i.%i" % (rule_num // 100, rule_num % 100)  # noqa: UP031
                 cppcheckdata.log_checker(errmsg, "misra")
                 check_function(*args)
 
@@ -5748,7 +5734,7 @@ class MisraChecker:
                 for word in tok.str[2:].split(" "):
                     if rule_re.match(word) or word == "config":
                         verify_expected.append(
-                            "%s:%d %s" % (tok.file, tok.linenr, word)
+                            "%s:%d %s" % (tok.file, tok.linenr, word)  # noqa: UP031
                         )
 
         data = cppcheckdata.parsedump(dumpfile)
@@ -5781,7 +5767,7 @@ class MisraChecker:
         self.is_cpp = data.language == "cpp"
         for cfgNumber, cfg in enumerate(data.iterconfigurations()):
             if not self.settings.quiet:
-                self.printStatus("Checking %s, config %s..." % (dumpfile, cfg.name))
+                self.printStatus(f"Checking {dumpfile}, config {cfg.name}...")
             self.executeCheck(102, self.misra_1_2, cfg)
             if not path_premium_addon:
                 self.executeCheck(104, self.misra_1_4, cfg)
@@ -5959,7 +5945,7 @@ class MisraChecker:
 
         try:
             for filename in ctu_info_files:
-                for line in open(filename, "rt"):
+                for line in open(filename, "rt"):  # noqa: SIM115
                     s = self.read_ctu_info_line(line)
                     if s is None:
                         continue
@@ -6016,8 +6002,8 @@ class MisraChecker:
                     if summary_type == "MisraExternalIdentifiers":
                         for s in sorted(
                             summary_data,
-                            key=lambda d: (
-                                "%s %s %s" % (d["file"], d["line"], d["column"])
+                            key=lambda d: "{} {} {}".format(
+                                d["file"], d["line"], d["column"]
                             ),
                         ):
                             is_declaration = s["decl"]
@@ -6044,7 +6030,7 @@ class MisraChecker:
                             all_external_identifiers[name] = s
                     if summary_type == "MisraInternalIdentifiers":
                         for s in summary_data:
-                            if s["name"] in all_internal_identifiers:
+                            if s["name"] in all_internal_identifiers:  # noqa: SIM102
                                 if (
                                     not s["inlinefunc"]
                                     or s["file"]
@@ -6214,40 +6200,36 @@ def main():
     if settings.verify:
         sys.exit(exitCode)
     number_of_violations = len(checker.get_violations())
-    if number_of_violations > 0:
-        if settings.show_summary:
-            print(
-                "\nMISRA rules violations found:\n\t%s\n"
-                % (
-                    "\n\t".join(
-                        [
-                            "%s: %d" % (viol, len(checker.get_violations(viol)))
-                            for viol in checker.get_violation_types()
-                        ]
-                    )
+    if number_of_violations > 0 and settings.show_summary:
+        print(
+            "\nMISRA rules violations found:\n\t{}\n".format(
+                "\n\t".join(
+                    [
+                        "%s: %d" % (viol, len(checker.get_violations(viol)))  # noqa: UP031
+                        for viol in checker.get_violation_types()
+                    ]
                 )
             )
-            rules_violated = {}
-            for severity, ids in checker.get_violations():
-                for misra_id in ids:
-                    rules_violated[misra_id] = rules_violated.get(misra_id, 0) + 1
-            print("MISRA rules violated:")
-            convert = lambda text: int(text) if text.isdigit() else 0
-            misra_sort = lambda key: [
-                convert(c) for c in re.split(r"[\.-]([0-9]*)", key)
-            ]
-            for misra_id in sorted(rules_violated.keys(), key=misra_sort):
-                res = re.match(r"misra-c2012-([0-9]+)\\.([0-9]+)", misra_id)
-                if res is None:
-                    num = 0
-                else:
-                    num = int(res.group(1)) * 100 + int(res.group(2))
-                severity = "-"
-                if num in checker.ruleTexts:
-                    severity = checker.ruleTexts[num].cppcheck_severity
-                print(
-                    "\t%15s (%s): %d" % (misra_id, severity, rules_violated[misra_id])
-                )
+        )
+        rules_violated = {}
+        for severity, ids in checker.get_violations():
+            for misra_id in ids:
+                rules_violated[misra_id] = rules_violated.get(misra_id, 0) + 1
+        print("MISRA rules violated:")
+        convert = lambda text: int(text) if text.isdigit() else 0
+        misra_sort = lambda key: [convert(c) for c in re.split(r"[\.-]([0-9]*)", key)]
+        for misra_id in sorted(rules_violated.keys(), key=misra_sort):
+            res = re.match(r"misra-c2012-([0-9]+)\\.([0-9]+)", misra_id)
+            if res is None:
+                num = 0
+            else:
+                num = int(res.group(1)) * 100 + int(res.group(2))
+            severity = "-"
+            if num in checker.ruleTexts:
+                severity = checker.ruleTexts[num].cppcheck_severity
+            print(
+                "\t%15s (%s): %d" % (misra_id, severity, rules_violated[misra_id])  # noqa: UP031
+            )
     if args.show_suppressed_rules:
         checker.showSuppressedRules()
 

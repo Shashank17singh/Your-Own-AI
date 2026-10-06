@@ -301,7 +301,7 @@ def show_idlehelp(parent):
     if not isfile(filename):
         # Try copy_strip, present message.
         return
-    HelpWindow(parent, filename, "IDLE Help (%s)" % python_version())
+    HelpWindow(parent, filename, f"IDLE Help ({python_version()})")
 
 
 if __name__ == "__main__":

@@ -102,7 +102,7 @@ class DndHandler:
             return
         root = event.widget._root()
         try:
-            root.__dnd
+            root.__dnd  # noqa: B018
             return  # Don't start recursive dnd
         except AttributeError:
             root.__dnd = self
@@ -111,7 +111,7 @@ class DndHandler:
         self.target = None
         self.initial_button = button = event.num
         self.initial_widget = widget = event.widget
-        self.release_pattern = "<B%d-ButtonRelease-%d>" % (button, button)
+        self.release_pattern = "<B%d-ButtonRelease-%d>" % (button, button)  # noqa: UP031
         self.save_cursor = widget["cursor"] or ""
         widget.bind(self.release_pattern, self.on_release)
         widget.bind("<Motion>", self.on_motion)
@@ -253,7 +253,7 @@ class Tester:
 
     def dnd_motion(self, source, event):
         x, y = source.where(self.canvas, event)
-        x1, y1, x2, y2 = self.canvas.bbox(self.dndid)
+        x1, y1, _x2, _y2 = self.canvas.bbox(self.dndid)
         self.canvas.move(self.dndid, x - x1, y - y1)
 
     def dnd_leave(self, source, event):

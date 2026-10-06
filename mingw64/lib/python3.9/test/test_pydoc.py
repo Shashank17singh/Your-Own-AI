@@ -351,7 +351,7 @@ def run_pydoc(module_name, *args, **env):
     """
     args = args + (module_name,)
     # do not write bytecode files to avoid caching errors
-    rc, out, err = assert_python_ok("-B", pydoc.__file__, *args, **env)
+    _rc, out, _err = assert_python_ok("-B", pydoc.__file__, *args, **env)
     return out.strip()
 
 
@@ -484,7 +484,7 @@ class PydocDocTest(unittest.TestCase):
 
     def test_issue8225(self):
         # Test issue8225 to ensure no doc link appears for xml.etree
-        result, doc_loc = get_pydoc_text(xml.etree)
+        _result, doc_loc = get_pydoc_text(xml.etree)
         self.assertEqual(doc_loc, "", "MODULE DOCS incorrectly includes a link")
 
     def test_getpager_with_stdin_none(self):
@@ -691,14 +691,13 @@ class PydocDocTest(unittest.TestCase):
     def test_help_output_redirect(self):
         # issue 940286, if output is set in Helper, then all output from
         # Helper.help should be redirected
-        old_pattern = expected_text_pattern
         getpager_old = pydoc.getpager
         getpager_new = lambda: lambda x: x
         self.maxDiff = None
 
         buf = StringIO()
         helper = pydoc.Helper(output=buf)
-        unused, doc_loc = get_pydoc_text(pydoc_mod)
+        _unused, doc_loc = get_pydoc_text(pydoc_mod)
         module = "test.pydoc_mod"
         help_header = """
         Help on module test.pydoc_mod in test:
@@ -839,8 +838,8 @@ class PydocDocTest(unittest.TestCase):
         doc = re.sub("\b.", "", doc)
         self.assertEqual(
             doc,
-            """\
-Python Library Documentation: class B in module %s
+            f"""\
+Python Library Documentation: class B in module {__name__}
 
 class B(A)
  |  Method resolution order:
@@ -876,24 +875,23 @@ class B(A)
  |\x20\x20
  |  __weakref__
  |      list of weak references to the object (if defined)
-"""
-            % __name__,
+""",
         )
 
         doc = pydoc.render_doc(B, renderer=pydoc.HTMLDoc())
         self.assertEqual(
             doc,
-            """\
-Python Library Documentation: class B in module %s
+            f"""\
+Python Library Documentation: class B in module {__name__}
 
 <p>
-<table width="100%%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="B">class <strong>B</strong></a>(A)</font></td></tr>
 \x20\x20\x20\x20
 <tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%%"><dl><dt>Method resolution order:</dt>
+<td width="100%"><dl><dt>Method resolution order:</dt>
 <dd>B</dd>
 <dd>A</dd>
 <dd><a href="builtins.html#object">builtins.object</a></dd>
@@ -923,8 +921,7 @@ Data descriptors inherited from A:<br>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 </td></tr></table>\
-"""
-            % __name__,
+""",
         )
 
 
@@ -981,7 +978,7 @@ class PydocImportTest(PydocBaseTest):
         self.addCleanup(os.rmdir, self.unreadable_dir)
         # Note, on Windows the directory appears to be still
         #   readable so this is not really testing the issue there
-        with self.restrict_walk_packages(path=[TESTFN]):
+        with self.restrict_walk_packages(path=[TESTFN]):  # noqa: SIM117
             with captured_stdout() as out:
                 with captured_stderr() as err:
                     pydoc.apropos("SOMEKEY")
@@ -1097,7 +1094,7 @@ class TestDescriptions(unittest.TestCase):
 
         self.assertEqual(pydoc.describe(C), "class C")
         self.assertEqual(pydoc.describe(c), "C")
-        expected = "C in module %s object" % __name__
+        expected = f"C in module {__name__} object"
         self.assertIn(expected, pydoc.render_doc(c))
 
     def test_typing_pydoc(self):
@@ -1107,7 +1104,7 @@ class TestDescriptions(unittest.TestCase):
 
         T = typing.TypeVar("T")
 
-        class C(typing.Generic[T], typing.Mapping[int, str]): ...
+        class C(typing.Mapping[int, str], typing.Generic[T]): ...
 
         self.assertEqual(
             pydoc.render_doc(foo).splitlines()[-1],
@@ -1182,7 +1179,7 @@ class TestDescriptions(unittest.TestCase):
             _fields = None
 
         class NonHashableFields:
-            _fields = [[]]
+            _fields = [[]]  # noqa: RUF012
 
         # Make sure these doesn't fail
         pydoc.render_doc(NonIterableFields)
@@ -1375,7 +1372,7 @@ foo(...)
                 return 42
 
             def __set__(self, obj, cls):
-                1 / 0
+                1 / 0  # noqa: B018
 
         class X:
             attr = Descr()
@@ -1436,7 +1433,7 @@ class PydocServerTest(unittest.TestCase):
 
         # Minimal test that starts the server, then stops it.
         def my_url_handler(url, content_type):
-            text = "the URL sent was: (%s, %s)" % (url, content_type)
+            text = f"the URL sent was: ({url}, {content_type})"
             return text
 
         serverthread = pydoc._start_server(my_url_handler, hostname="0.0.0.0", port=0)
@@ -1596,7 +1593,6 @@ class PydocWithMetaClasses(unittest.TestCase):
         class Class2(Class1, metaclass=Meta3):
             pass
 
-        fail1 = fail2 = False
         output = StringIO()
         helper = pydoc.Helper(output=output)
         helper(Class1)

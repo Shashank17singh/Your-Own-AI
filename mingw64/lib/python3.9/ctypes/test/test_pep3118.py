@@ -84,12 +84,12 @@ class Test(unittest.TestCase):
 
 
 class Point(Structure):
-    _fields_ = [("x", c_long), ("y", c_long)]
+    _fields_ = [("x", c_long), ("y", c_long)]  # noqa: RUF012
 
 
 class PackedPoint(Structure):
     _pack_ = 2
-    _fields_ = [("x", c_long), ("y", c_long)]
+    _fields_ = [("x", c_long), ("y", c_long)]  # noqa: RUF012
 
 
 class Point2(Structure):
@@ -100,15 +100,15 @@ Point2._fields_ = [("x", c_long), ("y", c_long)]
 
 
 class EmptyStruct(Structure):
-    _fields_ = []
+    _fields_ = []  # noqa: RUF012
 
 
 class aUnion(Union):
-    _fields_ = [("a", c_int)]
+    _fields_ = [("a", c_int)]  # noqa: RUF012
 
 
 class StructWithArrays(Structure):
-    _fields_ = [("x", c_long * 3 * 2), ("y", Point * 4)]
+    _fields_ = [("x", c_long * 3 * 2), ("y", Point * 4)]  # noqa: RUF012
 
 
 class Incomplete(Structure):
@@ -227,11 +227,11 @@ native_types = [
 
 
 class BEPoint(BigEndianStructure):
-    _fields_ = [("x", c_long), ("y", c_long)]
+    _fields_ = [("x", c_long), ("y", c_long)]  # noqa: RUF012
 
 
 class LEPoint(LittleEndianStructure):
-    _fields_ = [("x", c_long), ("y", c_long)]
+    _fields_ = [("x", c_long), ("y", c_long)]  # noqa: RUF012
 
 
 ################################################################

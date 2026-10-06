@@ -201,8 +201,8 @@ class Random(_random.Random):
             super().setstate(internalstate)
         else:
             raise ValueError(
-                "state with version %s passed to "
-                "Random.setstate() of version %s" % (version, self.VERSION)
+                f"state with version {version} passed to "
+                f"Random.setstate() of version {self.VERSION}"
             )
 
     ## -------------------------------------------------------
@@ -324,7 +324,7 @@ class Random(_random.Random):
             return istart + self._randbelow(width)
         if step == 1:
             raise ValueError(
-                "empty range for randrange() (%d, %d, %d)" % (istart, istop, width)
+                "empty range for randrange() (%d, %d, %d)" % (istart, istop, width)  # noqa: UP031
             )
 
         # Non-unit step argument supplied.
@@ -883,7 +883,7 @@ def _test_generator(n, func, args):
     high = max(data)
 
     print(f"{t1 - t0:.3f} sec, {n} times {func.__name__}")
-    print("avg %g, stddev %g, min %g, max %g\n" % (xbar, sigma, low, high))
+    print(f"avg {xbar:g}, stddev {sigma:g}, min {low:g}, max {high:g}\n")
 
 
 def _test(N=2000):

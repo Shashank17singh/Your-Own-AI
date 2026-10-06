@@ -123,7 +123,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
         self.write_file(self.rc, PYPIRC_LONG_PASSWORD)
 
         # lets run it
-        pkg_dir, dist = self.create_dist(dist_files=dist_files)
+        _pkg_dir, dist = self.create_dist(dist_files=dist_files)
         cmd = upload(dist)
         cmd.show_response = 1
         cmd.ensure_finalized()
@@ -172,7 +172,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
 
         # other fields that ended with \r used to be modified, now are
         # preserved.
-        pkg_dir, dist = self.create_dist(
+        _pkg_dir, dist = self.create_dist(
             dist_files=dist_files, description="long description\r"
         )
         cmd = upload(dist)
@@ -196,7 +196,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
         dist_files = [("xxx", "2.6", path)]  # command, pyversion, filename
         self.write_file(self.rc, PYPIRC_LONG_PASSWORD)
 
-        pkg_dir, dist = self.create_dist(dist_files=dist_files)
+        _pkg_dir, dist = self.create_dist(dist_files=dist_files)
         tests = [
             (OSError("oserror"), "oserror", OSError),
             (
@@ -206,7 +206,7 @@ class uploadTestCase(BasePyPIRCCommandTestCase):
             ),
         ]
         for exception, expected, raised_exception in tests:
-            with self.subTest(exception=type(exception).__name__):
+            with self.subTest(exception=type(exception).__name__):  # noqa: SIM117
                 with mock.patch(
                     "distutils.command.upload.urlopen",
                     new=mock.Mock(side_effect=exception),

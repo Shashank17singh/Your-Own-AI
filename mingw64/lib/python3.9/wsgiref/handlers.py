@@ -34,8 +34,8 @@ _monthname = [
 
 
 def format_date_time(timestamp):
-    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(timestamp)
-    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+    year, month, day, hh, mm, ss, wd, _y, _z = time.gmtime(timestamp)
+    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (  # noqa: UP031
         _weekdayname[wd],
         day,
         _monthname[month],
@@ -63,9 +63,9 @@ _is_request = {
 def _needs_transcode(k):
     return (
         _is_request(k)
-        or k.startswith("HTTP_")
-        or k.startswith("SSL_")
-        or (k.startswith("REDIRECT_") and _needs_transcode(k[9:]))
+        or k.startswith(("HTTP_", "SSL_"))
+        or k.startswith("REDIRECT_")
+        and _needs_transcode(k[9:])
     )
 
 
@@ -111,7 +111,7 @@ class BaseHandler:
     headers_class = Headers  # must be a Headers-like class
     traceback_limit = None  # Print entire traceback to self.get_stderr()
     error_status = "500 Internal Server Error"
-    error_headers = [("Content-Type", "text/plain")]
+    error_headers = [("Content-Type", "text/plain")]  # noqa: RUF012
     error_body = b"A server error occurred.  Please contact the administrator."
     status = result = None
     headers_sent = False
@@ -126,7 +126,7 @@ class BaseHandler:
             self.finish_response()
         except (ConnectionAbortedError, BrokenPipeError, ConnectionResetError):
             return
-        except:
+        except:  # noqa: E722
             try:
                 self.handle_error()
             except:
@@ -226,22 +226,20 @@ class BaseHandler:
         if self.origin_server:
             if self.client_is_modern():
                 self._write(
-                    ("HTTP/%s %s\r\n" % (self.http_version, self.status)).encode(
-                        "iso-8859-1"
-                    )
+                    (f"HTTP/{self.http_version} {self.status}\r\n").encode("iso-8859-1")
                 )
                 if "Date" not in self.headers:
                     self._write(
-                        ("Date: %s\r\n" % format_date_time(time.time())).encode(
+                        (f"Date: {format_date_time(time.time())}\r\n").encode(
                             "iso-8859-1"
                         )
                     )
                 if self.server_software and "Server" not in self.headers:
                     self._write(
-                        ("Server: %s\r\n" % self.server_software).encode("iso-8859-1")
+                        (f"Server: {self.server_software}\r\n").encode("iso-8859-1")
                     )
         else:
-            self._write(("Status: %s\r\n" % self.status).encode("iso-8859-1"))
+            self._write((f"Status: {self.status}\r\n").encode("iso-8859-1"))
 
     def write(self, data):
         """'write()' callable as specified by PEP 3333"""
@@ -456,7 +454,7 @@ class CGIHandler(BaseCGIHandler):
     """
 
     wsgi_run_once = True
-    os_environ = {}
+    os_environ = {}  # noqa: RUF012
 
     def __init__(self):
         BaseCGIHandler.__init__(
@@ -478,7 +476,7 @@ class IISCGIHandler(BaseCGIHandler):
     """
 
     wsgi_run_once = True
-    os_environ = {}
+    os_environ = {}  # noqa: RUF012
 
     def __init__(self):
         environ = read_environ()

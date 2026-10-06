@@ -71,7 +71,7 @@ def get_host_platform():
 
     # Try to distinguish various flavours of Unix
 
-    osname, host, release, version, machine = os.uname()
+    osname, _host, release, _version, machine = os.uname()
 
     # Convert the OS name to lowercase, remove '/' characters, and translate
     # spaces (for "Power Macintosh")
@@ -83,16 +83,16 @@ def get_host_platform():
         # At least on Linux/Intel, 'machine' is the processor --
         # i386, etc.
         # XXX what about Alpha, SPARC, etc?
-        return "%s-%s" % (osname, machine)
+        return f"{osname}-{machine}"
     elif osname[:5] == "sunos":
         if release[0] >= "5":  # SunOS 5 == Solaris 2
             osname = "solaris"
-            release = "%d.%s" % (int(release[0]) - 3, release[2:])
+            release = "%d.%s" % (int(release[0]) - 3, release[2:])  # noqa: UP031
             # We can't use "platform.architecture()[0]" because a
             # bootstrap problem. We use a dict to get an error
             # if some suspicious happens.
             bitness = {2147483647: "32bit", 9223372036854775807: "64bit"}
-            machine += ".%s" % bitness[sys.maxsize]
+            machine += f".{bitness[sys.maxsize]}"
         # fall through to standard osname-release-machine representation
     elif osname[:3] == "aix":
         from _aix_support import aix_platform
@@ -112,7 +112,7 @@ def get_host_platform():
             distutils.sysconfig.get_config_vars(), osname, release, machine
         )
 
-    return "%s-%s-%s" % (osname, release, machine)
+    return f"{osname}-{release}-{machine}"
 
 
 def get_platform():
@@ -144,9 +144,9 @@ def convert_path(pathname):
     if not pathname:
         return pathname
     if pathname[0] == "/":
-        raise ValueError("path '%s' cannot be absolute" % pathname)
+        raise ValueError(f"path '{pathname}' cannot be absolute")
     if pathname[-1] == "/":
-        raise ValueError("path '%s' cannot end with '/'" % pathname)
+        raise ValueError(f"path '{pathname}' cannot end with '/'")
 
     paths = pathname.split("/")
     while "." in paths:
@@ -195,8 +195,8 @@ def change_root(new_root, pathname):
             path_r = path_r[1:]
         drive_used = ""
         if len(drive) == 2 and len(drive_r) == 2 and drive != drive_r:
-            raise DistutilsChangeRootError(
-                "root and pathname not on same drive (%s, %s)" % (drive_r, drive)
+            raise DistutilsChangeRootError(  # noqa: F821
+                f"root and pathname not on same drive ({drive_r}, {drive})"
             )
         elif len(drive_r) == 2:
             drive_used = drive_r + os.sep
@@ -205,7 +205,7 @@ def change_root(new_root, pathname):
         return os.path.join(drive_used + path_r, path)
 
     else:
-        raise DistutilsPlatformError("nothing known about platform '%s'" % os.name)
+        raise DistutilsPlatformError(f"nothing known about platform '{os.name}'")
 
 
 _environ_checked = 0
@@ -260,7 +260,7 @@ def subst_vars(s, local_vars):
     try:
         return re.sub(r"\$([a-zA-Z_][a-zA-Z_0-9]*)", _subst, s)
     except KeyError as var:
-        raise ValueError("invalid variable '$%s'" % var)
+        raise ValueError(f"invalid variable '${var}'")
 
 
 # subst_vars ()
@@ -279,7 +279,7 @@ _wordchars_re = _squote_re = _dquote_re = None
 
 def _init_regex():
     global _wordchars_re, _squote_re, _dquote_re
-    _wordchars_re = re.compile(r"[^\\\'\"%s ]*" % string.whitespace)
+    _wordchars_re = re.compile(rf"[^\\\'\"{string.whitespace} ]*")
     _squote_re = re.compile(r"'(?:[^'\\]|\\.)*'")
     _dquote_re = re.compile(r'"(?:[^"\\]|\\.)*"')
 
@@ -328,10 +328,10 @@ def split_quoted(s):
             elif s[end] == '"':  # slurp doubly-quoted string
                 m = _dquote_re.match(s, end)
             else:
-                raise RuntimeError("this can't happen (bad char '%c')" % s[end])
+                raise RuntimeError("this can't happen (bad char '%c')" % s[end])  # noqa: UP031
 
             if m is None:
-                raise ValueError("bad string (mismatched %s quotes?)" % s[end])
+                raise ValueError(f"bad string (mismatched {s[end]} quotes?)")
 
             beg, end = m.span()
             s = s[:beg] + s[beg + 1 : end - 1] + s[end:]
@@ -357,7 +357,7 @@ def execute(func, args, msg=None, verbose=0, dry_run=0):
     print.
     """
     if msg is None:
-        msg = "%s%r" % (func.__name__, args)
+        msg = f"{func.__name__}{args!r}"
         if msg[-2:] == ",)":  # correct for singleton tuple
             msg = msg[0:-2] + ")"
 
@@ -379,7 +379,7 @@ def strtobool(val):
     elif val in ("n", "no", "f", "false", "off", "0"):
         return 0
     else:
-        raise ValueError("invalid truth value %r" % (val,))
+        raise ValueError(f"invalid truth value {val!r}")
 
 
 def byte_compile(
@@ -458,7 +458,7 @@ def byte_compile(
             if script_fd is not None:
                 script = os.fdopen(script_fd, "w")
             else:
-                script = open(script_name, "w")
+                script = open(script_name, "w")  # noqa: SIM115
 
             with script:
                 script.write("""\
@@ -482,20 +482,19 @@ files = [
 
                 script.write(",\n".join(map(repr, py_files)) + "]\n")
                 script.write(
-                    """
-byte_compile(files, optimize=%r, force=%r,
-             prefix=%r, base_dir=%r,
-             verbose=%r, dry_run=0,
+                    f"""
+byte_compile(files, optimize={optimize!r}, force={force!r},
+             prefix={prefix!r}, base_dir={base_dir!r},
+             verbose={verbose!r}, dry_run=0,
              direct=1)
 """
-                    % (optimize, force, prefix, base_dir, verbose)
                 )
 
         cmd = [sys.executable]
         cmd.extend(subprocess._optim_args_from_interpreter_flags())
         cmd.append(script_name)
         spawn(cmd, dry_run=dry_run)
-        execute(os.remove, (script_name,), "removing %s" % script_name, dry_run=dry_run)
+        execute(os.remove, (script_name,), f"removing {script_name}", dry_run=dry_run)
 
     # "Direct" byte-compilation: use the py_compile module to compile
     # right here, right now.  Note that the script generated in indirect
@@ -522,8 +521,7 @@ byte_compile(files, optimize=%r, force=%r,
             if prefix:
                 if file[: len(prefix)] != prefix:
                     raise ValueError(
-                        "invalid prefix: filename %r doesn't start with %r"
-                        % (file, prefix)
+                        f"invalid prefix: filename {file!r} doesn't start with {prefix!r}"
                     )
                 dfile = dfile[len(prefix) :]
             if base_dir:

@@ -51,13 +51,13 @@ class NetworkedNNTPTestsMixin:
             self.assertEqual(str, type(line))
 
     def test_list(self):
-        resp, groups = self.server.list()
+        _resp, groups = self.server.list()
         if len(groups) > 0:
             self.assertEqual(GroupInfo, type(groups[0]))
             self.assertEqual(str, type(groups[0].group))
 
     def test_list_active(self):
-        resp, groups = self.server.list(self.GROUP_PAT)
+        _resp, groups = self.server.list(self.GROUP_PAT)
         if len(groups) > 0:
             self.assertEqual(GroupInfo, type(groups[0]))
             self.assertEqual(str, type(groups[0].group))
@@ -71,8 +71,8 @@ class NetworkedNNTPTestsMixin:
     def test_newgroups(self):
         # gmane gets a constant influx of new groups.  In order not to stress
         # the server too much, we choose a recent date in the past.
-        dt = datetime.date.today() - datetime.timedelta(days=7)
-        resp, groups = self.server.newgroups(dt)
+        dt = datetime.date.today() - datetime.timedelta(days=7)  # noqa: DTZ011
+        _resp, groups = self.server.newgroups(dt)
         if len(groups) > 0:
             self.assertIsInstance(groups[0], GroupInfo)
             self.assertIsInstance(groups[0].group, str)
@@ -97,7 +97,7 @@ class NetworkedNNTPTestsMixin:
     def test_descriptions(self):
         resp, descs = self.server.descriptions(self.GROUP_PAT)
         # 215 for LIST NEWSGROUPS, 282 for XGTITLE
-        self.assertTrue(resp.startswith("215 ") or resp.startswith("282 "), resp)
+        self.assertTrue(resp.startswith(("215 ", "282 ")), resp)
         self.assertIsInstance(descs, dict)
         desc = descs[self.GROUP_NAME]
         self.assertEqual(desc, self.server.description(self.GROUP_NAME))
@@ -114,7 +114,7 @@ class NetworkedNNTPTestsMixin:
         self.assertTrue(resp.startswith("211 "), resp)
 
     def test_date(self):
-        resp, date = self.server.date()
+        _resp, date = self.server.date()
         self.assertIsInstance(date, datetime.datetime)
         # Sanity check
         self.assertGreaterEqual(date.year, 1995)
@@ -132,8 +132,8 @@ class NetworkedNNTPTestsMixin:
             self.assertIsInstance(v, (str, type(None)))
 
     def test_xover(self):
-        resp, count, first, last, name = self.server.group(self.GROUP_NAME)
-        resp, lines = self.server.xover(last - 5, last)
+        resp, _count, _first, last, _name = self.server.group(self.GROUP_NAME)  # noqa: RUF059
+        _resp, lines = self.server.xover(last - 5, last)
         if len(lines) == 0:
             self.skipTest("no articles retrieved")
         # The 'last' article is not necessarily part of the output (cancelled?)
@@ -147,14 +147,14 @@ class NetworkedNNTPTestsMixin:
         "temporarily skipped until a permanent solution is found for issue #28971",
     )
     def test_over(self):
-        resp, count, first, last, name = self.server.group(self.GROUP_NAME)
+        resp, _count, _first, last, _name = self.server.group(self.GROUP_NAME)
         start = last - 10
         # The "start-" article range form
-        resp, lines = self.server.over((start, None))
+        resp, lines = self.server.over((start, None))  # noqa: RUF059
         art_num, art_dict = lines[0]
         self._check_art_dict(art_dict)
         # The "start-end" article range form
-        resp, lines = self.server.over((start, last))
+        _resp, lines = self.server.over((start, last))
         art_num, art_dict = lines[-1]
         # The 'last' article is not necessarily part of the output (cancelled?)
         self.assertGreaterEqual(art_num, start)
@@ -164,8 +164,8 @@ class NetworkedNNTPTestsMixin:
         # 503 Overview by message-ID unsupported
 
     def test_xhdr(self):
-        resp, count, first, last, name = self.server.group(self.GROUP_NAME)
-        resp, lines = self.server.xhdr("subject", last)
+        resp, _count, _first, last, _name = self.server.group(self.GROUP_NAME)  # noqa: RUF059
+        _resp, lines = self.server.xhdr("subject", last)
         for line in lines:
             self.assertEqual(str, type(line[1]))
 
@@ -180,7 +180,7 @@ class NetworkedNNTPTestsMixin:
 
     @unittest.skipIf(True, "FIXME: see bpo-32128")
     def test_article_head_body(self):
-        resp, count, first, last, name = self.server.group(self.GROUP_NAME)
+        resp, _count, first, last, _name = self.server.group(self.GROUP_NAME)
         # Try to find an available article
         for art_num in (last, first, last - 1):
             try:
@@ -219,7 +219,7 @@ class NetworkedNNTPTestsMixin:
         self.assertGreaterEqual(self.server.nntp_version, 2)
         _check_caps(self.server.getcapabilities())
         # This re-emits the command
-        resp, caps = self.server.capabilities()
+        _resp, caps = self.server.capabilities()
         _check_caps(caps)
 
     def test_zlogin(self):
@@ -798,7 +798,7 @@ class NNTPv1Handler:
             self.push_lit("281 Login Successful")
             self._logged_in = True
         else:
-            raise Exception(f"Unknown cred type {cred_type}")
+            raise Exception(f"Unknown cred type {cred_type}")  # noqa: TRY002
 
 
 class NNTPv2Handler(NNTPv1Handler):
@@ -822,7 +822,7 @@ class NNTPv2Handler(NNTPv1Handler):
             self.push_lit(fmt.format(""))
 
     def handle_MODE(self, _):
-        raise Exception("MODE READER sent despite READER has been advertised")
+        raise Exception("MODE READER sent despite READER has been advertised")  # noqa: TRY002
 
     def handle_OVER(self, message_spec=None):
         return self.handle_XOVER(message_spec)
@@ -884,7 +884,7 @@ class NNTPv1v2TestsMixin:
     def test_date(self):
         resp, date = self.server.date()
         self.assertEqual(resp, "111 20100914001155")
-        self.assertEqual(date, datetime.datetime(2010, 9, 14, 0, 11, 55))
+        self.assertEqual(date, datetime.datetime(2010, 9, 14, 0, 11, 55))  # noqa: DTZ001
 
     def test_quit(self):
         self.assertFalse(self.sio.closed)
@@ -906,13 +906,13 @@ class NNTPv1v2TestsMixin:
         )
 
     def test_list(self):
-        resp, groups = self.server.list()
+        resp, groups = self.server.list()  # noqa: RUF059
         self.assertEqual(len(groups), 6)
         g = groups[1]
         self.assertEqual(
             g, GroupInfo("comp.lang.python.announce", "0000001153", "0000000993", "m")
         )
-        resp, groups = self.server.list("*distutils*")
+        _resp, groups = self.server.list("*distutils*")
         self.assertEqual(len(groups), 2)
         g = groups[0]
         self.assertEqual(
@@ -990,7 +990,7 @@ class NNTPv1v2TestsMixin:
 
     def test_newnews(self):
         # NEWNEWS comp.lang.python [20]100913 082004
-        dt = datetime.datetime(2010, 9, 13, 8, 20, 4)
+        dt = datetime.datetime(2010, 9, 13, 8, 20, 4)  # noqa: DTZ001
         resp, ids = self.server.newnews("comp.lang.python", dt)
         expected = (
             f"230 list of newsarticles (NNTP v{self.nntp_version}) "
@@ -1005,7 +1005,7 @@ class NNTPv1v2TestsMixin:
             ],
         )
         # NEWNEWS fr.comp.lang.python [20]100913 082004
-        dt = datetime.datetime(2010, 9, 13, 8, 20, 4)
+        dt = datetime.datetime(2010, 9, 13, 8, 20, 4)  # noqa: DTZ001
         resp, ids = self.server.newnews("fr.comp.lang.python", dt)
         self.assertEqual(resp, "230 An empty list of newsarticles follows")
         self.assertEqual(ids, [])
@@ -1306,7 +1306,7 @@ class NNTPv1v2TestsMixin:
         self.assertEqual(cm.exception.response, "435 Article not wanted")
 
     def test_too_long_lines(self):
-        dt = datetime.datetime(2010, 1, 1, 9, 0, 0)
+        dt = datetime.datetime(2010, 1, 1, 9, 0, 0)  # noqa: DTZ001
         self.assertRaises(
             nntplib.NNTPDataError, self.server.newnews, "comp.lang.python", dt
         )
@@ -1525,10 +1525,12 @@ class MiscTests(unittest.TestCase):
         fmt = nntplib._DEFAULT_OVERVIEW_FMT + ["xref"]
         # First example from RFC 3977
         lines = [
-            '3000234\tI am just a test article\t"Demo User" '
-            "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
-            "<45223423@example.com>\t<45454@example.net>\t1234\t"
-            "17\tXref: news.example.com misc.test:3000363",
+            (
+                '3000234\tI am just a test article\t"Demo User" '
+                "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
+                "<45223423@example.com>\t<45454@example.net>\t1234\t"
+                "17\tXref: news.example.com misc.test:3000363"
+            ),
         ]
         overview = nntplib._parse_overview(lines, fmt)
         ((art_num, fields),) = overview
@@ -1549,10 +1551,12 @@ class MiscTests(unittest.TestCase):
         # Second example; here the "Xref" field is totally absent (including
         # the header name) and comes out as None
         lines = [
-            '3000234\tI am just a test article\t"Demo User" '
-            "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
-            "<45223423@example.com>\t<45454@example.net>\t1234\t"
-            "17\t\t",
+            (
+                '3000234\tI am just a test article\t"Demo User" '
+                "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
+                "<45223423@example.com>\t<45454@example.net>\t1234\t"
+                "17\t\t"
+            ),
         ]
         overview = nntplib._parse_overview(lines, fmt)
         ((art_num, fields),) = overview
@@ -1560,10 +1564,12 @@ class MiscTests(unittest.TestCase):
         # Third example; the "Xref" is an empty string, while "references"
         # is a single space.
         lines = [
-            '3000234\tI am just a test article\t"Demo User" '
-            "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
-            "<45223423@example.com>\t \t1234\t"
-            "17\tXref: \t",
+            (
+                '3000234\tI am just a test article\t"Demo User" '
+                "<nobody@example.com>\t6 Oct 1998 04:38:40 -0500\t"
+                "<45223423@example.com>\t \t1234\t"
+                "17\tXref: \t"
+            ),
         ]
         overview = nntplib._parse_overview(lines, fmt)
         ((art_num, fields),) = overview
@@ -1572,7 +1578,7 @@ class MiscTests(unittest.TestCase):
 
     def test_parse_datetime(self):
         def gives(a, b, *c):
-            self.assertEqual(nntplib._parse_datetime(a, b), datetime.datetime(*c))
+            self.assertEqual(nntplib._parse_datetime(a, b), datetime.datetime(*c))  # noqa: DTZ001
 
         # Output of DATE command
         gives("19990623135624", None, 1999, 6, 23, 13, 56, 24)
@@ -1585,7 +1591,7 @@ class MiscTests(unittest.TestCase):
         # Test non-legacy mode
         # 1) with a datetime
         def gives(y, M, d, h, m, s, date_str, time_str):
-            dt = datetime.datetime(y, M, d, h, m, s)
+            dt = datetime.datetime(y, M, d, h, m, s)  # noqa: DTZ001
             self.assertEqual(nntplib._unparse_datetime(dt), (date_str, time_str))
             self.assertEqual(nntplib._unparse_datetime(dt, False), (date_str, time_str))
 
@@ -1607,7 +1613,7 @@ class MiscTests(unittest.TestCase):
         # Test legacy mode (RFC 977)
         # 1) with a datetime
         def gives(y, M, d, h, m, s, date_str, time_str):
-            dt = datetime.datetime(y, M, d, h, m, s)
+            dt = datetime.datetime(y, M, d, h, m, s)  # noqa: DTZ001
             self.assertEqual(nntplib._unparse_datetime(dt, True), (date_str, time_str))
 
         gives(1999, 6, 23, 13, 56, 24, "990623", "135624")

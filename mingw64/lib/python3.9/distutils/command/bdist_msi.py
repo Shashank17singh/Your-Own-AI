@@ -30,7 +30,7 @@ class PyDialog(Dialog):
         default, cancel, bitmap=true)"""
         Dialog.__init__(self, *args)
         ruler = self.h - 36
-        bmwidth = 152 * ruler / 328
+        152 * ruler / 328
         # if kw.get("bitmap", True):
         #    self.bitmap("Bitmap", 0, 0, bmwidth, ruler, "PythonWin")
         self.line("BottomLine", 0, ruler, self.w, 0)
@@ -39,7 +39,7 @@ class PyDialog(Dialog):
         "Set the title text of the dialog at the top."
         # name, x, y, w, h, flags=Visible|Enabled|Transparent|NoPrefix,
         # text, in VerdanaBold10
-        self.text("Title", 15, 10, 320, 60, 0x30003, r"{\VerdanaBold10}%s" % title)
+        self.text("Title", 15, 10, 320, 60, 0x30003, rf"{{\VerdanaBold10}}{title}")
 
     def back(self, title, next, name="Back", active=1):
         """Add a back button with a given title, the tab-next button,
@@ -88,13 +88,15 @@ class PyDialog(Dialog):
 class bdist_msi(Command):
     description = "create a Microsoft Installer (.msi) binary distribution"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("bdist-dir=", None, "temporary directory for creating the distribution"),
         (
             "plat-name=",
             "p",
-            "platform name to embed in generated filenames "
-            "(default: %s)" % get_platform(),
+            (
+                "platform name to embed in generated filenames "
+                f"(default: {get_platform()})"
+            ),
         ),
         (
             "keep-temp",
@@ -118,26 +120,30 @@ class bdist_msi(Command):
         (
             "install-script=",
             None,
-            "basename of installation script to be run after "
-            "installation or before deinstallation",
+            (
+                "basename of installation script to be run after "
+                "installation or before deinstallation"
+            ),
         ),
         (
             "pre-install-script=",
             None,
-            "Fully qualified filename of a script to be run before "
-            "any files are installed.  This script need not be in the "
-            "distribution",
+            (
+                "Fully qualified filename of a script to be run before "
+                "any files are installed.  This script need not be in the "
+                "distribution"
+            ),
         ),
     ]
 
-    boolean_options = [
+    boolean_options = [  # noqa: RUF012
         "keep-temp",
         "no-target-compile",
         "no-target-optimize",
         "skip-build",
     ]
 
-    all_versions = [
+    all_versions = [  # noqa: RUF012
         "2.0",
         "2.1",
         "2.2",
@@ -202,8 +208,8 @@ class bdist_msi(Command):
                 and self.target_version != short_version
             ):
                 raise DistutilsOptionError(
-                    "target version can only be %s, or the '--skip-build'"
-                    " option must be specified" % (short_version,)
+                    f"target version can only be {short_version}, or the '--skip-build'"
+                    " option must be specified"
                 )
         else:
             self.versions = list(self.all_versions)
@@ -225,7 +231,7 @@ class bdist_msi(Command):
                     break
             else:
                 raise DistutilsOptionError(
-                    "install_script '%s' not found in scripts" % self.install_script
+                    f"install_script '{self.install_script}' not found in scripts"
                 )
         self.install_script_key = None
 
@@ -253,8 +259,8 @@ class bdist_msi(Command):
             target_version = self.target_version
             if not target_version:
                 assert self.skip_build, "Should have already checked this"
-                target_version = "%d.%d" % sys.version_info[:2]
-            plat_specifier = ".%s-%s" % (self.plat_name, target_version)
+                target_version = "%d.%d" % sys.version_info[:2]  # noqa: UP031
+            plat_specifier = f".{self.plat_name}-{target_version}"
             build = self.get_finalized_command("build")
             build.build_lib = os.path.join(build.build_base, "lib" + plat_specifier)
 
@@ -285,15 +291,15 @@ class bdist_msi(Command):
         version = metadata.get_version()
         # ProductVersion must be strictly numeric
         # XXX need to deal with prerelease versions
-        sversion = "%d.%d.%d" % StrictVersion(version).version
+        sversion = "%d.%d.%d" % StrictVersion(version).version  # noqa: UP031
         # Prefix ProductName with Python x.y, so that
         # it sorts together with the other Python packages
         # in Add-Remove-Programs (APR)
         fullname = self.distribution.get_fullname()
         if self.target_version:
-            product_name = "Python %s %s" % (self.target_version, fullname)
+            product_name = f"Python {self.target_version} {fullname}"
         else:
-            product_name = "Python %s" % (fullname)
+            product_name = f"Python {fullname}"
         self.db = msilib.init_database(
             installer_name, schema, product_name, msilib.gen_uuid(), sversion, author
         )
@@ -337,7 +343,7 @@ class bdist_msi(Command):
                 title = "Python from another location"
                 level = 2
             else:
-                title = "Python %s from registry" % version
+                title = f"Python {version} from registry"
                 level = 1
             f = Feature(db, name, title, desc, 1, level, directory=target)
             dir = Directory(db, cab, root, rootdir, target, default)
@@ -352,7 +358,7 @@ class bdist_msi(Command):
                 for file in os.listdir(dir.absolute):
                     afile = os.path.join(dir.absolute, file)
                     if os.path.isdir(afile):
-                        short = "%s|%s" % (dir.make_short(file), file)
+                        short = f"{dir.make_short(file)}|{file}"
                         default = file + version
                         newdir = Directory(db, cab, dir, file, default, short)
                         todo.append(newdir)
@@ -364,9 +370,9 @@ class bdist_msi(Command):
                             if file == self.install_script:
                                 if self.install_script_key:
                                     raise DistutilsOptionError(
-                                        "Multiple files with name %s" % file
+                                        f"Multiple files with name {file}"
                                     )
-                                self.install_script_key = "[#%s]" % key
+                                self.install_script_key = f"[#{key}]"
                         else:
                             key = seen[afile]
                             add_data(
@@ -398,7 +404,7 @@ class bdist_msi(Command):
 
         start = 402
         for ver in self.versions:
-            install_path = r"SOFTWARE\Python\PythonCore\%s\InstallPath" % ver
+            install_path = rf"SOFTWARE\Python\PythonCore\{ver}\InstallPath"
             machine_reg = "python.machine." + ver
             user_reg = "python.user." + ver
             machine_prop = "PYTHON.MACHINE." + ver
@@ -481,7 +487,7 @@ class bdist_msi(Command):
                 add_data(
                     self.db,
                     "InstallExecuteSequence",
-                    [(install_action, "&Python%s=3" % ver, start)],
+                    [(install_action, f"&Python{ver}=3", start)],
                 )
                 start += 1
         # XXX pre-install scripts are currently refused in finalize_options()
@@ -519,7 +525,6 @@ class bdist_msi(Command):
         # see "Dialog Style Bits"
         modal = 3  # visible | modal
         modeless = 1  # visible
-        track_disk_space = 32
 
         # UI customization properties
         add_data(
@@ -830,8 +835,7 @@ class bdist_msi(Command):
             300,
             20,
             3,
-            "Select the Python locations where %s should be installed."
-            % self.distribution.get_fullname(),
+            f"Select the Python locations where {self.distribution.get_fullname()} should be installed.",
         )
 
         seldlg.back("< Back", None, active=0)
@@ -842,8 +846,8 @@ class bdist_msi(Command):
             order += 1
             c.event(
                 "[TARGETDIR]",
-                "[TARGETDIR%s]" % version,
-                "FEATURE_SELECTED AND &Python%s=3" % version,
+                f"[TARGETDIR{version}]",
+                f"FEATURE_SELECTED AND &Python{version}=3",
                 ordering=order,
             )
         c.event("SpawnWaitDialog", "WaitForCostingDlg", ordering=order + 1)
@@ -866,8 +870,8 @@ class bdist_msi(Command):
         )
         c.event("[FEATURE_SELECTED]", "1")
         ver = self.other_version
-        install_other_cond = "FEATURE_SELECTED AND &Python%s=3" % ver
-        dont_install_other_cond = "FEATURE_SELECTED AND &Python%s<>3" % ver
+        install_other_cond = f"FEATURE_SELECTED AND &Python{ver}=3"
+        dont_install_other_cond = f"FEATURE_SELECTED AND &Python{ver}<>3"
 
         c = seldlg.text(
             "Other", 15, 200, 300, 15, 3, "Provide an alternate Python location"
@@ -1105,12 +1109,8 @@ class bdist_msi(Command):
     def get_installer_filename(self, fullname):
         # Factored out to allow overriding in subclasses
         if self.target_version:
-            base_name = "%s.%s-py%s.msi" % (
-                fullname,
-                self.plat_name,
-                self.target_version,
-            )
+            base_name = f"{fullname}.{self.plat_name}-py{self.target_version}.msi"
         else:
-            base_name = "%s.%s.msi" % (fullname, self.plat_name)
+            base_name = f"{fullname}.{self.plat_name}.msi"
         installer_name = os.path.join(self.dist_dir, base_name)
         return installer_name

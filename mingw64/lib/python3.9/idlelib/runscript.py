@@ -60,9 +60,9 @@ class ScriptBinding:
             try:
                 tabnanny.process_tokens(tokenize.generate_tokens(f.readline))
             except tokenize.TokenError as msg:
-                msgtxt, (lineno, start) = msg.args
+                msgtxt, (lineno, _start) = msg.args
                 self.editwin.gotoline(lineno)
-                self.errorbox("Tabnanny Tokenizing Error", "Token Error: %s" % msgtxt)
+                self.errorbox("Tabnanny Tokenizing Error", f"Token Error: {msgtxt}")
                 return False
             except tabnanny.NannyNag as nag:
                 # The error messages from tabnanny are too confusing...
@@ -94,9 +94,9 @@ class ScriptBinding:
             offset = getattr(value, "offset", "") or 0
             if offset == 0:
                 lineno += 1  # mark end of offending line
-            pos = "0.0 + %d lines + %d chars" % (lineno - 1, offset - 1)
+            pos = "0.0 + %d lines + %d chars" % (lineno - 1, offset - 1)  # noqa: UP031
             editwin.colorize_syntax_error(text, pos)
-            self.errorbox("SyntaxError", "%-20s" % msg)
+            self.errorbox("SyntaxError", "%-20s" % msg)  # noqa: UP031
             return False
         finally:
             shell.set_warning_stream(saved_stream)

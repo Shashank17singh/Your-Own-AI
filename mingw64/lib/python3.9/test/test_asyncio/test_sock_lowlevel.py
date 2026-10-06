@@ -452,7 +452,7 @@ class BaseSockTestsMixin:
                     sock = socket.socket(family=family, type=type, proto=proto)
                     sock.setblocking(False)
                     self.loop.run_until_complete(self.loop.sock_connect(sock, address))
-                except BaseException:
+                except BaseException:  # noqa: BLE001, S110
                     pass
                 else:
                     break

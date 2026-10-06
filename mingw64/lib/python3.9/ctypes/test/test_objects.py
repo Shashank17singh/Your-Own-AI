@@ -54,14 +54,14 @@ of 'x' ('_b_base_' is either None, or the root object owning the memory block):
 
 """
 
-import ctypes.test.test_objects
+import ctypes.test.test_objects  # noqa: PLW0406
 import doctest
 import unittest
 
 
 class TestCase(unittest.TestCase):
     def test(self):
-        failures, tests = doctest.testmod(ctypes.test.test_objects)
+        failures, _tests = doctest.testmod(ctypes.test.test_objects)
         self.assertFalse(failures, "doctests failed, see output above")
 
 

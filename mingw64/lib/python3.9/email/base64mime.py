@@ -67,7 +67,7 @@ def header_encode(header_bytes, charset="iso-8859-1"):
     if isinstance(header_bytes, str):
         header_bytes = header_bytes.encode(charset)
     encoded = b64encode(header_bytes).decode("ascii")
-    return "=?%s?b?%s?=" % (charset, encoded)
+    return f"=?{charset}?b?{encoded}?="
 
 
 def body_encode(s, maxlinelen=76, eol=NL):

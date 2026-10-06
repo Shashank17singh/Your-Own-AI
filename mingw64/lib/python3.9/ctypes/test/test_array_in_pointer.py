@@ -12,11 +12,11 @@ def dump(obj):
 
 
 class Value(Structure):
-    _fields_ = [("val", c_byte)]
+    _fields_ = [("val", c_byte)]  # noqa: RUF012
 
 
 class Container(Structure):
-    _fields_ = [("pvalues", POINTER(Value))]
+    _fields_ = [("pvalues", POINTER(Value))]  # noqa: RUF012
 
 
 class Test(unittest.TestCase):

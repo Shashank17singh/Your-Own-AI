@@ -12,7 +12,7 @@ class TestContentManager(TestEmailBase):
     policy = policy.default
     message = EmailMessage
 
-    get_key_params = {
+    get_key_params = {  # noqa: RUF012
         "full_type": (
             1,
             "text/plain",
@@ -48,7 +48,7 @@ class TestContentManager(TestEmailBase):
 
         cm = ContentManager()
         cm.add_get_handler(key, foo_getter)
-        for precedence, key in self.get_key_params.values():
+        for precedence, key in self.get_key_params.values():  # noqa: PLR1704
             if precedence > order:
                 cm.add_get_handler(key, bar_getter)
         m = self._make_message()
@@ -74,7 +74,7 @@ class TestContentManager(TestEmailBase):
 
     testobject_full_path = __name__ + "." + "TestContentManager.Thing"
 
-    set_key_params = {
+    set_key_params = {  # noqa: RUF012
         "type": (
             0,
             Thing,
@@ -148,7 +148,7 @@ class TestContentManager(TestEmailBase):
 
         cm = ContentManager()
         cm.add_set_handler(key, foo_setter)
-        for precedence, key in self.get_key_params.values():
+        for precedence, key in self.get_key_params.values():  # noqa: PLR1704
             if precedence > order:
                 cm.add_set_handler(key, bar_setter)
         m = self._make_message()
@@ -970,7 +970,7 @@ class TestRawDataManager(TestEmailBase):
             """),
         )
 
-    content_object_params = {
+    content_object_params = {  # noqa: RUF012
         "text_plain": ("content", ()),
         "text_html": ("content", ("html",)),
         "application_octet_stream": (b"content", ("application", "octet_stream")),

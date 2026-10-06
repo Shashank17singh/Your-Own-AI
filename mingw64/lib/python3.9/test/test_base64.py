@@ -538,7 +538,11 @@ class BaseXYTestCase(unittest.TestCase):
             eq(base64.a85decode(data.decode("ascii"), adobe=False), res, data)
             eq(base64.a85decode(b"<~" + data + b"~>", adobe=True), res, data)
             eq(base64.a85decode(data + b"~>", adobe=True), res, data)
-            eq(base64.a85decode("<~%s~>" % data.decode("ascii"), adobe=True), res, data)
+            eq(
+                base64.a85decode("<~{}~>".format(data.decode("ascii")), adobe=True),
+                res,
+                data,
+            )
 
         eq(base64.a85decode(b"yy", foldspaces=True, adobe=False), b" " * 8)
         eq(base64.a85decode(b"y+<Vd", foldspaces=True, adobe=False), b" " * 7)

@@ -63,7 +63,7 @@ class APITest:
         # issue15715
         mod = types.ModuleType(PKG_NAME)
         mod.__path__ = ["XXX"]
-        with util.import_state(meta_path=[self.bad_finder_loader]):
+        with util.import_state(meta_path=[self.bad_finder_loader]):  # noqa: SIM117
             with util.uncache(PKG_NAME):
                 sys.modules[PKG_NAME] = mod
                 self.__import__(PKG_NAME, fromlist=["not here"])
@@ -74,7 +74,7 @@ class APITest:
         # issue15316
         mod = types.ModuleType(PKG_NAME)
         mod.__path__ = ["XXX"]
-        with util.import_state(meta_path=[self.bad_finder_loader]):
+        with util.import_state(meta_path=[self.bad_finder_loader]):  # noqa: SIM117
             with util.uncache(PKG_NAME):
                 sys.modules[PKG_NAME] = mod
                 with self.assertRaises(ImportError):
@@ -87,7 +87,7 @@ class APITest:
         # issue31642
         mod = types.ModuleType(PKG_NAME)
         mod.__path__ = []
-        with util.import_state(meta_path=[self.bad_finder_loader]):
+        with util.import_state(meta_path=[self.bad_finder_loader]):  # noqa: SIM117
             with util.uncache(PKG_NAME, SUBMOD_NAME):
                 sys.modules[PKG_NAME] = mod
                 sys.modules[SUBMOD_NAME] = None

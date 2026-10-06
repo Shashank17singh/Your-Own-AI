@@ -30,9 +30,8 @@ from ..pgen2 import token
 
 def find_excepts(nodes):
     for i, n in enumerate(nodes):
-        if n.type == syms.except_clause:
-            if n.children[0].value == "except":
-                yield (n, nodes[i + 2])
+        if n.type == syms.except_clause and n.children[0].value == "except":
+            yield (n, nodes[i + 2])
 
 
 class FixExcept(fixer_base.BaseFix):
@@ -47,14 +46,13 @@ class FixExcept(fixer_base.BaseFix):
     """
 
     def transform(self, node, results):
-        syms = self.syms
 
         tail = [n.clone() for n in results["tail"]]
 
         try_cleanup = [ch.clone() for ch in results["cleanup"]]
         for except_clause, e_suite in find_excepts(try_cleanup):
             if len(except_clause.children) == 4:
-                E, comma, N = except_clause.children[1:4]
+                _E, comma, N = except_clause.children[1:4]
                 comma.replace(Name("as", prefix=" "))
 
                 if N.type != token.NAME:

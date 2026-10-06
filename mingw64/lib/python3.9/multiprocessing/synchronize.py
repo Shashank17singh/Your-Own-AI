@@ -62,7 +62,7 @@ class SemLock:
         else:
             raise FileExistsError("cannot find name for semaphore")
 
-        util.debug("created semlock with handle %s" % sl.handle)
+        util.debug(f"created semlock with handle {sl.handle}")
         self._make_methods()
 
         if sys.platform != "win32":
@@ -109,12 +109,12 @@ class SemLock:
 
     def __setstate__(self, state):
         self._semlock = _multiprocessing.SemLock._rebuild(*state)
-        util.debug("recreated blocker with handle %r" % state[0])
+        util.debug(f"recreated blocker with handle {state[0]!r}")
         self._make_methods()
 
     @staticmethod
     def _make_name():
-        return "%s-%s" % (
+        return "{}-{}".format(
             process.current_process()._config["semprefix"],
             next(SemLock._rand),
         )
@@ -135,9 +135,9 @@ class Semaphore(SemLock):
     def __repr__(self):
         try:
             value = self._semlock._get_value()
-        except Exception:
+        except Exception:  # noqa: BLE001
             value = "unknown"
-        return "<%s(value=%s)>" % (self.__class__.__name__, value)
+        return f"<{self.__class__.__name__}(value={value})>"
 
 
 #
@@ -152,13 +152,9 @@ class BoundedSemaphore(Semaphore):
     def __repr__(self):
         try:
             value = self._semlock._get_value()
-        except Exception:
+        except Exception:  # noqa: BLE001
             value = "unknown"
-        return "<%s(value=%s, maxvalue=%s)>" % (
-            self.__class__.__name__,
-            value,
-            self._semlock.maxvalue,
-        )
+        return f"<{self.__class__.__name__}(value={value}, maxvalue={self._semlock.maxvalue})>"
 
 
 #
@@ -182,9 +178,9 @@ class Lock(SemLock):
                 name = "SomeOtherThread"
             else:
                 name = "SomeOtherProcess"
-        except Exception:
+        except Exception:  # noqa: BLE001
             name = "unknown"
-        return "<%s(owner=%s)>" % (self.__class__.__name__, name)
+        return f"<{self.__class__.__name__}(owner={name})>"
 
 
 #
@@ -209,9 +205,9 @@ class RLock(SemLock):
                 name, count = "SomeOtherThread", "nonzero"
             else:
                 name, count = "SomeOtherProcess", "nonzero"
-        except Exception:
+        except Exception:  # noqa: BLE001
             name, count = "unknown", "unknown"
-        return "<%s(%s, %s)>" % (self.__class__.__name__, name, count)
+        return f"<{self.__class__.__name__}({name}, {count})>"
 
 
 #
@@ -258,9 +254,9 @@ class Condition:
                 self._sleeping_count._semlock._get_value()
                 - self._woken_count._semlock._get_value()
             )
-        except Exception:
+        except Exception:  # noqa: BLE001
             num_waiters = "unknown"
-        return "<%s(%s, %s)>" % (self.__class__.__name__, self._lock, num_waiters)
+        return f"<{self.__class__.__name__}({self._lock}, {num_waiters})>"
 
     def wait(self, timeout=None):
         assert self._lock._semlock._is_mine(), (

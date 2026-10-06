@@ -507,7 +507,7 @@ class _ValueFormatter:
             parts[:0] = [""]
         else:
             parts.pop(0)
-        for fws, part in zip(*[iter(parts)] * 2):
+        for fws, part in zip(*[iter(parts)] * 2):  # noqa: PLR1704
             self._append_chunk(fws, part)
 
     def _append_chunk(self, fws, string):

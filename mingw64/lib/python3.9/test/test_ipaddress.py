@@ -106,7 +106,7 @@ class CommonTestMixin_v4(CommonTestMixin):
             "1.2.3.040",
         ]
         for address in addresses:
-            with self.subTest(address=address):
+            with self.subTest(address=address):  # noqa: SIM117
                 with self.assertAddressError(msg):
                     self.factory(address)
 
@@ -260,7 +260,7 @@ class AddressTestCase_v4(BaseTestCase, CommonTestMixin_v4):
 
     def test_invalid_characters(self):
         def assertBadOctet(addr, octet):
-            msg = "Only decimal digits permitted in %r in %r" % (octet, addr)
+            msg = f"Only decimal digits permitted in {octet!r} in {addr!r}"
             with self.assertAddressError(re.escape(msg)):
                 ipaddress.IPv4Address(addr)
 
@@ -285,7 +285,7 @@ class AddressTestCase_v4(BaseTestCase, CommonTestMixin_v4):
 
     def test_octet_limit(self):
         def assertBadOctet(addr, octet):
-            msg = "Octet %d (> 255) not permitted in %r" % (octet, addr)
+            msg = "Octet %d (> 255) not permitted in %r" % (octet, addr)  # noqa: UP031
             with self.assertAddressError(re.escape(msg)):
                 ipaddress.IPv4Address(addr)
 
@@ -308,38 +308,46 @@ class AddressTestCase_v6(BaseTestCase, CommonTestMixin_v6):
         v6_pairs = [
             (
                 "b",
-                "000000000000000000000000000000000000000000000000000000"
-                "000000000000000000000000000000000000000000000000010000"
-                "00100000001100101010",
+                (
+                    "000000000000000000000000000000000000000000000000000000"
+                    "000000000000000000000000000000000000000000000000010000"
+                    "00100000001100101010"
+                ),
             ),
             ("n", "0000000000000000000000000102032a"),
             ("x", "0000000000000000000000000102032a"),
             ("X", "0000000000000000000000000102032A"),
             (
                 "_b",
-                "0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
-                "_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
-                "_0000_0000_0000_0000_0001_0000_0010_0000_0011_0010"
-                "_1010",
+                (
+                    "0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
+                    "_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
+                    "_0000_0000_0000_0000_0001_0000_0010_0000_0011_0010"
+                    "_1010"
+                ),
             ),
             ("_n", "0000_0000_0000_0000_0000_0000_0102_032a"),
             ("_x", "0000_0000_0000_0000_0000_0000_0102_032a"),
             ("_X", "0000_0000_0000_0000_0000_0000_0102_032A"),
             (
                 "#b",
-                "0b0000000000000000000000000000000000000000000000000000"
-                "000000000000000000000000000000000000000000000000000100"
-                "0000100000001100101010",
+                (
+                    "0b0000000000000000000000000000000000000000000000000000"
+                    "000000000000000000000000000000000000000000000000000100"
+                    "0000100000001100101010"
+                ),
             ),
             ("#n", "0x0000000000000000000000000102032a"),
             ("#x", "0x0000000000000000000000000102032a"),
             ("#X", "0X0000000000000000000000000102032A"),
             (
                 "#_b",
-                "0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
-                "_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
-                "_0000_0000_0000_0000_0000_0001_0000_0010_0000_0011"
-                "_0010_1010",
+                (
+                    "0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
+                    "_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000"
+                    "_0000_0000_0000_0000_0000_0001_0000_0010_0000_0011"
+                    "_0010_1010"
+                ),
             ),
             ("#_n", "0x0000_0000_0000_0000_0000_0000_0102_032a"),
             ("#_x", "0x0000_0000_0000_0000_0000_0000_0102_032a"),
@@ -507,7 +515,9 @@ class AddressTestCase_v6(BaseTestCase, CommonTestMixin_v6):
 
     def test_invalid_characters(self):
         def assertBadPart(addr, part):
-            msg = "Only hex digits permitted in %r in %r" % (part, addr.split("%")[0])
+            msg = "Only hex digits permitted in {!r} in {!r}".format(
+                part, addr.split("%")[0]
+            )
             with self.assertAddressError(re.escape(msg)):
                 ipaddress.IPv6Address(addr)
 
@@ -563,7 +573,7 @@ class NetmaskTestMixin_v4(CommonTestMixin_v4):
 
     def test_split_netmask(self):
         addr = "1.2.3.4/32/24"
-        with self.assertAddressError("Only one '/' permitted in %r" % addr):
+        with self.assertAddressError(f"Only one '/' permitted in {addr!r}"):
             self.factory(addr)
 
     def test_address_errors(self):
@@ -583,24 +593,24 @@ class NetmaskTestMixin_v4(CommonTestMixin_v4):
         self.assertEqual(str(self.factory("192.0.2.0/255.255.255.0")), "192.0.2.0/24")
         for i in range(33):
             # Generate and re-parse the CIDR format (trivial).
-            net_str = "0.0.0.0/%d" % i
+            net_str = "0.0.0.0/%d" % i  # noqa: UP031
             net = self.factory(net_str)
             self.assertEqual(str(net), net_str)
             # Generate and re-parse the expanded netmask.
-            self.assertEqual(str(self.factory("0.0.0.0/%s" % net.netmask)), net_str)
+            self.assertEqual(str(self.factory(f"0.0.0.0/{net.netmask}")), net_str)
             # Zero prefix is treated as decimal.
-            self.assertEqual(str(self.factory("0.0.0.0/0%d" % i)), net_str)
+            self.assertEqual(str(self.factory("0.0.0.0/0%d" % i)), net_str)  # noqa: UP031
             # Generate and re-parse the expanded hostmask.  The ambiguous
             # cases (/0 and /32) are treated as netmasks.
             if i in (32, 0):
-                net_str = "0.0.0.0/%d" % (32 - i)
-            self.assertEqual(str(self.factory("0.0.0.0/%s" % net.hostmask)), net_str)
+                net_str = "0.0.0.0/%d" % (32 - i)  # noqa: UP031
+            self.assertEqual(str(self.factory(f"0.0.0.0/{net.hostmask}")), net_str)
 
     def test_netmask_errors(self):
         def assertBadNetmask(addr, netmask):
-            msg = "%r is not a valid netmask" % netmask
+            msg = f"{netmask!r} is not a valid netmask"
             with self.assertNetmaskError(re.escape(msg)):
-                self.factory("%s/%s" % (addr, netmask))
+                self.factory(f"{addr}/{netmask}")
 
         assertBadNetmask("1.2.3.4", "")
         assertBadNetmask("1.2.3.4", "-1")
@@ -619,7 +629,7 @@ class NetmaskTestMixin_v4(CommonTestMixin_v4):
 
     def test_netmask_in_tuple_errors(self):
         def assertBadNetmask(addr, netmask):
-            msg = "%r is not a valid netmask" % netmask
+            msg = f"{netmask!r} is not a valid netmask"
             with self.assertNetmaskError(re.escape(msg)):
                 self.factory((addr, netmask))
 
@@ -717,11 +727,11 @@ class NetmaskTestMixin_v6(CommonTestMixin_v6):
 
     def test_split_netmask(self):
         addr = "cafe:cafe::/128/190"
-        with self.assertAddressError("Only one '/' permitted in %r" % addr):
+        with self.assertAddressError(f"Only one '/' permitted in {addr!r}"):
             self.factory(addr)
 
         scoped_addr = "cafe:cafe::%scope/128/190"
-        with self.assertAddressError("Only one '/' permitted in %r" % scoped_addr):
+        with self.assertAddressError(f"Only one '/' permitted in {scoped_addr!r}"):
             self.factory(scoped_addr)
 
     def test_address_errors(self):
@@ -749,26 +759,26 @@ class NetmaskTestMixin_v6(CommonTestMixin_v6):
         self.assertEqual(str(self.factory("2001:db8::/32")), "2001:db8::/32")
         for i in range(129):
             # Generate and re-parse the CIDR format (trivial).
-            net_str = "::/%d" % i
+            net_str = "::/%d" % i  # noqa: UP031
             self.assertEqual(str(self.factory(net_str)), net_str)
             # Zero prefix is treated as decimal.
-            self.assertEqual(str(self.factory("::/0%d" % i)), net_str)
+            self.assertEqual(str(self.factory("::/0%d" % i)), net_str)  # noqa: UP031
 
         self.assertEqual(
             str(self.factory("2001:db8::%scope/32")), "2001:db8::%scope/32"
         )
         for i in range(129):
             # Generate and re-parse the CIDR format (trivial).
-            net_str = "::/%d" % i
+            net_str = "::/%d" % i  # noqa: UP031
             self.assertEqual(str(self.factory(net_str)), net_str)
             # Zero prefix is treated as decimal.
-            self.assertEqual(str(self.factory("::/0%d" % i)), net_str)
+            self.assertEqual(str(self.factory("::/0%d" % i)), net_str)  # noqa: UP031
 
     def test_netmask_errors(self):
         def assertBadNetmask(addr, netmask):
-            msg = "%r is not a valid netmask" % netmask
+            msg = f"{netmask!r} is not a valid netmask"
             with self.assertNetmaskError(re.escape(msg)):
-                self.factory("%s/%s" % (addr, netmask))
+                self.factory(f"{addr}/{netmask}")
 
         assertBadNetmask("::1", "")
         assertBadNetmask("::1", "::1")
@@ -786,7 +796,7 @@ class NetmaskTestMixin_v6(CommonTestMixin_v6):
 
     def test_netmask_in_tuple_errors(self):
         def assertBadNetmask(addr, netmask):
-            msg = "%r is not a valid netmask" % netmask
+            msg = f"{netmask!r} is not a valid netmask"
             with self.assertNetmaskError(re.escape(msg)):
                 self.factory((addr, netmask))
 
@@ -886,11 +896,11 @@ class ComparisonTests(unittest.TestCase):
     v6net_scoped = ipaddress.IPv6Network("::1%scope")
     v6intf_scoped = ipaddress.IPv6Interface("::1%scope")
 
-    v4_addresses = [v4addr, v4intf]
+    v4_addresses = [v4addr, v4intf]  # noqa: RUF012
     v4_objects = v4_addresses + [v4net]
-    v6_addresses = [v6addr, v6intf]
+    v6_addresses = [v6addr, v6intf]  # noqa: RUF012
     v6_objects = v6_addresses + [v6net]
-    v6_scoped_addresses = [v6addr_scoped, v6intf_scoped]
+    v6_scoped_addresses = [v6addr_scoped, v6intf_scoped]  # noqa: RUF012
     v6_scoped_objects = v6_scoped_addresses + [v6net_scoped]
 
     objects = v4_objects + v6_objects
@@ -981,22 +991,22 @@ class ComparisonTests(unittest.TestCase):
             for rhs in self.objects_with_scoped:
                 if isinstance(lhs, type(rhs)) or isinstance(rhs, type(lhs)):
                     continue
-                self.assertRaises(TypeError, lambda: lhs < rhs)
-                self.assertRaises(TypeError, lambda: lhs > rhs)
-                self.assertRaises(TypeError, lambda: lhs <= rhs)
-                self.assertRaises(TypeError, lambda: lhs >= rhs)
+                self.assertRaises(TypeError, lambda: lhs < rhs)  # noqa: B023
+                self.assertRaises(TypeError, lambda: lhs > rhs)  # noqa: B023
+                self.assertRaises(TypeError, lambda: lhs <= rhs)  # noqa: B023
+                self.assertRaises(TypeError, lambda: lhs >= rhs)  # noqa: B023
 
     def test_foreign_type_ordering(self):
         other = object()
         for obj in self.objects_with_scoped:
             with self.assertRaises(TypeError):
-                obj < other
+                obj < other  # noqa: B015
             with self.assertRaises(TypeError):
-                obj > other
+                obj > other  # noqa: B015
             with self.assertRaises(TypeError):
-                obj <= other
+                obj <= other  # noqa: B015
             with self.assertRaises(TypeError):
-                obj >= other
+                obj >= other  # noqa: B015
             self.assertTrue(obj < LARGEST)
             self.assertFalse(obj > LARGEST)
             self.assertTrue(obj <= LARGEST)
@@ -1552,16 +1562,16 @@ class IpaddrUnitTest(unittest.TestCase):
         )
 
     def testGetSubnets(self):
-        self.assertEqual(list(self.ipv4_network.subnets())[0].prefixlen, 25)
+        self.assertEqual(next(iter(self.ipv4_network.subnets())).prefixlen, 25)
         self.assertEqual(
-            str(list(self.ipv4_network.subnets())[0].network_address), "1.2.3.0"
+            str(next(iter(self.ipv4_network.subnets())).network_address), "1.2.3.0"
         )
         self.assertEqual(
             str(list(self.ipv4_network.subnets())[1].network_address), "1.2.3.128"
         )
 
-        self.assertEqual(list(self.ipv6_network.subnets())[0].prefixlen, 65)
-        self.assertEqual(list(self.ipv6_scoped_network.subnets())[0].prefixlen, 65)
+        self.assertEqual(next(iter(self.ipv6_network.subnets())).prefixlen, 65)
+        self.assertEqual(next(iter(self.ipv6_scoped_network.subnets())).prefixlen, 65)
 
     def testGetSubnetForSingle32(self):
         ip = ipaddress.IPv4Network("1.2.3.4/32")
@@ -1653,19 +1663,19 @@ class IpaddrUnitTest(unittest.TestCase):
 
     def testGetNum_Addresses(self):
         self.assertEqual(self.ipv4_network.num_addresses, 256)
-        self.assertEqual(list(self.ipv4_network.subnets())[0].num_addresses, 128)
+        self.assertEqual(next(iter(self.ipv4_network.subnets())).num_addresses, 128)
         self.assertEqual(self.ipv4_network.supernet().num_addresses, 512)
 
         self.assertEqual(self.ipv6_network.num_addresses, 18446744073709551616)
         self.assertEqual(
-            list(self.ipv6_network.subnets())[0].num_addresses, 9223372036854775808
+            next(iter(self.ipv6_network.subnets())).num_addresses, 9223372036854775808
         )
         self.assertEqual(
             self.ipv6_network.supernet().num_addresses, 36893488147419103232
         )
         self.assertEqual(self.ipv6_scoped_network.num_addresses, 18446744073709551616)
         self.assertEqual(
-            list(self.ipv6_scoped_network.subnets())[0].num_addresses,
+            next(iter(self.ipv6_scoped_network.subnets())).num_addresses,
             9223372036854775808,
         )
         self.assertEqual(
@@ -1945,7 +1955,7 @@ class IpaddrUnitTest(unittest.TestCase):
         )
         # test a /24 is summarized properly
         self.assertEqual(
-            list(summarize(ip1, ip2))[0], ipaddress.ip_network("1.1.1.0/24")
+            next(iter(summarize(ip1, ip2))), ipaddress.ip_network("1.1.1.0/24")
         )
         # test an IPv4 range that isn't on a network byte boundary
         ip2 = ipaddress.ip_address("1.1.1.8")
@@ -1963,7 +1973,9 @@ class IpaddrUnitTest(unittest.TestCase):
         ip1 = ipaddress.ip_address("1::")
         ip2 = ipaddress.ip_address("1:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
         # test an IPv6 is summarized properly
-        self.assertEqual(list(summarize(ip1, ip2))[0], ipaddress.ip_network("1::/16"))
+        self.assertEqual(
+            next(iter(summarize(ip1, ip2))), ipaddress.ip_network("1::/16")
+        )
         # test an IPv6 range that isn't on a network byte boundary
         ip2 = ipaddress.ip_address("2::")
         self.assertEqual(
@@ -1974,7 +1986,9 @@ class IpaddrUnitTest(unittest.TestCase):
         ip1 = ipaddress.ip_address("1::%scope")
         ip2 = ipaddress.ip_address("1:ffff:ffff:ffff:ffff:ffff:ffff:ffff%scope")
         # test an IPv6 is summarized properly
-        self.assertEqual(list(summarize(ip1, ip2))[0], ipaddress.ip_network("1::/16"))
+        self.assertEqual(
+            next(iter(summarize(ip1, ip2))), ipaddress.ip_network("1::/16")
+        )
         # test an IPv6 range that isn't on a network byte boundary
         ip2 = ipaddress.ip_address("2::%scope")
         self.assertEqual(
@@ -2182,8 +2196,8 @@ class IpaddrUnitTest(unittest.TestCase):
 
         # Regression test for issue 19.
         ip1 = ipaddress.ip_network("10.1.2.128/25")
-        self.assertFalse(ip1 < ip1)
-        self.assertFalse(ip1 > ip1)
+        self.assertFalse(ip1 < ip1)  # noqa: PLR0124
+        self.assertFalse(ip1 > ip1)  # noqa: PLR0124
         ip2 = ipaddress.ip_network("10.1.3.0/24")
         self.assertTrue(ip1 < ip2)
         self.assertFalse(ip2 < ip1)
@@ -2241,9 +2255,9 @@ class IpaddrUnitTest(unittest.TestCase):
     def testEmbeddedIpv4(self):
         ipv4_string = "192.168.0.1"
         ipv4 = ipaddress.IPv4Interface(ipv4_string)
-        v4compat_ipv6 = ipaddress.IPv6Interface("::%s" % ipv4_string)
+        v4compat_ipv6 = ipaddress.IPv6Interface(f"::{ipv4_string}")
         self.assertEqual(int(v4compat_ipv6.ip), int(ipv4.ip))
-        v4mapped_ipv6 = ipaddress.IPv6Interface("::ffff:%s" % ipv4_string)
+        v4mapped_ipv6 = ipaddress.IPv6Interface(f"::ffff:{ipv4_string}")
         self.assertNotEqual(v4mapped_ipv6.ip, ipv4.ip)
         self.assertRaises(
             ipaddress.AddressValueError, ipaddress.IPv6Interface, "2001:1.1.1.1:1.1.1.1"
@@ -2481,7 +2495,7 @@ class IpaddrUnitTest(unittest.TestCase):
         addr5 = ipaddress.ip_network("2001:db8::0/32")
         addr6 = ipaddress.ip_network("10.1.1.5/32")
         self.assertEqual(
-            sorted(list(addr1.address_exclude(addr2))),
+            sorted(addr1.address_exclude(addr2)),
             [
                 ipaddress.ip_network("10.1.1.64/26"),
                 ipaddress.ip_network("10.1.1.128/25"),
@@ -2492,7 +2506,7 @@ class IpaddrUnitTest(unittest.TestCase):
         self.assertRaises(TypeError, list, addr1.address_exclude(addr5))
         self.assertEqual(list(addr1.address_exclude(addr1)), [])
         self.assertEqual(
-            sorted(list(addr1.address_exclude(addr6))),
+            sorted(addr1.address_exclude(addr6)),
             [
                 ipaddress.ip_network("10.1.1.0/30"),
                 ipaddress.ip_network("10.1.1.4/32"),

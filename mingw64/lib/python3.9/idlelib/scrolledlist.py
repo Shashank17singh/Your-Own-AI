@@ -51,7 +51,7 @@ class ScrolledList:
         return self.listbox.get(index)
 
     def click_event(self, event):
-        self.listbox.activate("@%d,%d" % (event.x, event.y))
+        self.listbox.activate("@%d,%d" % (event.x, event.y))  # noqa: UP031
         index = self.listbox.index("active")
         self.select(index)
         self.on_select(index)
@@ -69,7 +69,7 @@ class ScrolledList:
         if not self.menu:
             self.make_menu()
         menu = self.menu
-        self.listbox.activate("@%d,%d" % (event.x, event.y))
+        self.listbox.activate("@%d,%d" % (event.x, event.y))  # noqa: UP031
         index = self.listbox.index("active")
         self.select(index)
         menu.tk_popup(event.x_root, event.y_root)
@@ -128,7 +128,7 @@ class ScrolledList:
 def _scrolled_list(parent):  # htest #
     top = Toplevel(parent)
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x + 200, y + 175))
+    top.geometry("+%d+%d" % (x + 200, y + 175))  # noqa: UP031
 
     class MyScrolledList(ScrolledList):
         def fill_menu(self):
@@ -142,7 +142,7 @@ def _scrolled_list(parent):  # htest #
 
     scrolled_list = MyScrolledList(top)
     for i in range(30):
-        scrolled_list.append("Item %02d" % i)
+        scrolled_list.append("Item %02d" % i)  # noqa: UP031
 
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ class register(PyPIRCCommand):
         "strict",
     ]
 
-    sub_commands = [("check", lambda self: True)]
+    sub_commands = [("check", lambda self: True)]  # noqa: RUF012
 
     def initialize_options(self):
         PyPIRCCommand.initialize_options(self)
@@ -86,7 +86,7 @@ class register(PyPIRCCommand):
             self.has_config = True
         else:
             if self.repository not in ("pypi", self.DEFAULT_REPOSITORY):
-                raise ValueError("%s not found in .pypirc" % self.repository)
+                raise ValueError(f"{self.repository} not found in .pypirc")
             if self.repository == "pypi":
                 self.repository = self.DEFAULT_REPOSITORY
             self.has_config = False
@@ -173,7 +173,7 @@ Your selection [default 1]: """,
             auth.add_password(self.realm, host, username, password)
             # send the info to the server and report the result
             code, result = self.post_to_server(self.build_post_data("submit"), auth)
-            self.announce("Server response (%s): %s" % (code, result), log.INFO)
+            self.announce(f"Server response ({code}): {result}", log.INFO)
 
             # possibly save the login
             if code == 200:
@@ -190,7 +190,7 @@ Your selection [default 1]: """,
                         log.INFO,
                     )
                     self.announce(
-                        "(the login will be stored in %s)" % self._get_rc_file(),
+                        f"(the login will be stored in {self._get_rc_file()})",
                         log.INFO,
                     )
                     choice = "X"
@@ -264,7 +264,7 @@ Your selection [default 1]: """,
         """Post a query to the server, and return a string response."""
         if "name" in data:
             self.announce(
-                "Registering %s to %s" % (data["name"], self.repository), log.INFO
+                "Registering {} to {}".format(data["name"], self.repository), log.INFO
             )
         # Build up the MIME payload for the urllib2 POST data
         boundary = "--------------GHSKFJDLGDS7543FJKLFHRE75642756743254"
@@ -275,10 +275,10 @@ Your selection [default 1]: """,
             # handle multiple entries for the same name
             if type(value) not in (type([]), type(())):
                 value = [value]
-            for value in value:
+            for value in value:  # noqa: B020
                 value = str(value)
                 body.write(sep_boundary)
-                body.write('\nContent-Disposition: form-data; name="%s"' % key)
+                body.write(f'\nContent-Disposition: form-data; name="{key}"')
                 body.write("\n\n")
                 body.write(value)
                 if value and value[-1] == "\r":
@@ -289,8 +289,7 @@ Your selection [default 1]: """,
 
         # build the Request
         headers = {
-            "Content-type": "multipart/form-data; boundary=%s; charset=utf-8"
-            % boundary,
+            "Content-type": f"multipart/form-data; boundary={boundary}; charset=utf-8",
             "Content-length": str(len(body)),
         }
         req = urllib.request.Request(self.repository, body, headers)

@@ -53,10 +53,11 @@ del token
 
 class TokenInfo(collections.namedtuple("TokenInfo", "type string start end line")):
     def __repr__(self):
-        annotated_type = "%d (%s)" % (self.type, tok_name[self.type])
+        annotated_type = "%d (%s)" % (self.type, tok_name[self.type])  # noqa: UP031
         return (
-            "TokenInfo(type=%s, string=%r, start=%r, end=%r, line=%r)"
-            % self._replace(type=annotated_type)
+            "TokenInfo(type={}, string={!r}, start={!r}, end={!r}, line={!r})".format(
+                *self._replace(type=annotated_type)
+            )
         )
 
     @property
@@ -218,7 +219,7 @@ class Untokenizer:
             if len(t) == 2:
                 self.compat(t, it)
                 break
-            tok_type, token, start, end, line = t
+            tok_type, token, start, end, _line = t
             if tok_type == ENCODING:
                 self.encoding = token
                 continue
@@ -372,7 +373,7 @@ def detect_encoding(readline):
             return None
         encoding = _get_normal_name(match.group(1))
         try:
-            codec = lookup(encoding)
+            lookup(encoding)
         except LookupError:
             # This behaviour mimics the Python interpreter
             if filename is None:
@@ -421,9 +422,9 @@ def open(filename):
     """Open a file in read only mode using the encoding detected by
     detect_encoding().
     """
-    buffer = _builtin_open(filename, "rb")
+    buffer = _builtin_open(filename, "rb")  # noqa: SIM115
     try:
-        encoding, lines = detect_encoding(buffer.readline)
+        encoding, _lines = detect_encoding(buffer.readline)
         buffer.seek(0)
         text = TextIOWrapper(buffer, encoding, line_buffering=True)
         text.mode = "r"
@@ -592,7 +593,6 @@ def _tokenize(readline, encoding):
                         token = line[start:pos]
                         yield TokenInfo(STRING, token, spos, (lnum, pos), line)
                     else:
-                        strstart = (lnum, start)  # multiple lines
                         contstr = line[start:]
                         contline = line
                         break
@@ -613,7 +613,6 @@ def _tokenize(readline, encoding):
                     or token[:3] in single_quoted
                 ):
                     if token[-1] == "\n":  # continued string
-                        strstart = (lnum, start)
                         # Again, using the first 3 chars of the
                         #  token. This is looking for the matching end
                         #  regex for the correct type of quote
@@ -681,11 +680,11 @@ def main():
     def error(message, filename=None, location=None):
         if location:
             args = (filename,) + location + (message,)
-            perror("%s:%d:%d: error: %s" % args)
+            perror("%s:%d:%d: error: %s" % args)  # noqa: UP031
         elif filename:
-            perror("%s: error: %s" % (filename, message))
+            perror(f"{filename}: error: {message}")
         else:
-            perror("error: %s" % message)
+            perror(f"error: {message}")
         sys.exit(1)
 
     # Parse the arguments and options
@@ -720,8 +719,8 @@ def main():
             token_type = token.type
             if args.exact:
                 token_type = token.exact_type
-            token_range = "%d,%d-%d,%d:" % (token.start + token.end)
-            print("%-20s%-15s%-15r" % (token_range, tok_name[token_type], token.string))
+            token_range = "%d,%d-%d,%d:" % (token.start + token.end)  # noqa: UP031
+            print("%-20s%-15s%-15r" % (token_range, tok_name[token_type], token.string))  # noqa: UP031
     except IndentationError as err:
         line, column = err.args[1][1:3]
         error(err.args[0], filename, (line, column))
@@ -735,7 +734,7 @@ def main():
     except KeyboardInterrupt:
         print("interrupted\n")
     except Exception as err:
-        perror("unexpected error: %s" % err)
+        perror(f"unexpected error: {err}")
         raise
 
 

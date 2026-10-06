@@ -18,7 +18,7 @@ def show_compilers():
 class build(Command):
     description = "build everything needed to install"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("build-base=", "b", "base directory for build library"),
         ("build-purelib=", None, "build directory for platform-neutral distributions"),
         ("build-platlib=", None, "build directory for platform-specific distributions"),
@@ -33,7 +33,7 @@ class build(Command):
         (
             "plat-name=",
             "p",
-            "platform name to build for, if supported (default: %s)" % get_platform(),
+            f"platform name to build for, if supported (default: {get_platform()})",
         ),
         ("compiler=", "c", "specify the compiler type"),
         ("parallel=", "j", "number of parallel build jobs"),
@@ -42,9 +42,9 @@ class build(Command):
         ("executable=", "e", "specify final destination interpreter path (build.py)"),
     ]
 
-    boolean_options = ["debug", "force"]
+    boolean_options = ["debug", "force"]  # noqa: RUF012
 
-    help_options = [
+    help_options = [  # noqa: RUF012
         ("help-compiler", None, "list available compilers", show_compilers),
     ]
 
@@ -77,7 +77,7 @@ class build(Command):
                     "using './configure --help' on your platform)"
                 )
 
-        plat_specifier = ".%s-%d.%d" % (self.plat_name, *sys.version_info[:2])
+        plat_specifier = ".%s-%d.%d" % (self.plat_name, *sys.version_info[:2])  # noqa: UP031
 
         # Make it so Python 2.x and Python 2.x with --with-pydebug don't
         # share the same build directories. Doing so confuses the build
@@ -108,7 +108,8 @@ class build(Command):
             self.build_temp = os.path.join(self.build_base, "temp" + plat_specifier)
         if self.build_scripts is None:
             self.build_scripts = os.path.join(
-                self.build_base, "scripts-%d.%d" % sys.version_info[:2]
+                self.build_base,
+                "scripts-%d.%d" % sys.version_info[:2],  # noqa: UP031
             )
 
         if self.executable is None and sys.executable:
@@ -143,7 +144,7 @@ class build(Command):
     def has_scripts(self):
         return self.distribution.has_scripts()
 
-    sub_commands = [
+    sub_commands = [  # noqa: RUF012
         ("build_py", has_pure_modules),
         ("build_clib", has_c_libraries),
         ("build_ext", has_ext_modules),

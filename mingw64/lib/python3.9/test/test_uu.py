@@ -50,13 +50,13 @@ class FakeIO(io.TextIOWrapper):
 def encodedtextwrapped(mode, filename, backtick=False):
     if backtick:
         res = (
-            bytes("begin %03o %s\n" % (mode, filename), "ascii")
+            bytes(f"begin {mode:03o} {filename}\n", "ascii")
             + encodedtext.replace(b" ", b"`")
             + b"\n`\nend\n"
         )
     else:
         res = (
-            bytes("begin %03o %s\n" % (mode, filename), "ascii")
+            bytes(f"begin {mode:03o} {filename}\n", "ascii")
             + encodedtext
             + b"\n \nend\n"
         )

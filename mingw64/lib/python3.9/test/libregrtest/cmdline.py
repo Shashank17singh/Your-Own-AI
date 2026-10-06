@@ -498,7 +498,7 @@ def _parse_args(args, **kwargs):
     ns = Namespace()
     for k, v in kwargs.items():
         if not hasattr(ns, k):
-            raise TypeError("%r is an invalid keyword argument for this function" % k)
+            raise TypeError(f"{k!r} is an invalid keyword argument for this function")
         setattr(ns, k, v)
     if ns.use_resources is None:
         ns.use_resources = []
@@ -509,7 +509,7 @@ def _parse_args(args, **kwargs):
     ns.args = parser.parse_known_args(args=args, namespace=ns)[1]
     for arg in ns.args:
         if arg.startswith("-"):
-            parser.error("unrecognized arguments: %s" % arg)
+            parser.error(f"unrecognized arguments: {arg}")
             sys.exit(1)
 
     if ns.findleaks > 1:
@@ -535,13 +535,11 @@ def _parse_args(args, **kwargs):
 
     if ns.quiet:
         ns.verbose = 0
-    if ns.timeout is not None:
-        if ns.timeout <= 0:
-            ns.timeout = None
-    if ns.use_mp is not None:
-        if ns.use_mp <= 0:
-            # Use all cores + extras for tests that like to sleep
-            ns.use_mp = 2 + (os.cpu_count() or 1)
+    if ns.timeout is not None and ns.timeout <= 0:
+        ns.timeout = None
+    if ns.use_mp is not None and ns.use_mp <= 0:
+        # Use all cores + extras for tests that like to sleep
+        ns.use_mp = 2 + (os.cpu_count() or 1)
     if ns.use:
         for a in ns.use:
             for r in a:

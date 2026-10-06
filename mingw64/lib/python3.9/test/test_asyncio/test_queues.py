@@ -316,7 +316,7 @@ class QueueGetTests(_QueueTestBase):
 
         async def consumer(queue):
             try:
-                item = await asyncio.wait_for(queue.get(), 0.1)
+                await asyncio.wait_for(queue.get(), 0.1)
             except asyncio.TimeoutError:
                 pass
 
@@ -549,7 +549,7 @@ class QueuePutTests(_QueueTestBase):
             await asyncio.sleep(0)
             num = queue.qsize()
             for _ in range(num):
-                item = queue.get_nowait()
+                queue.get_nowait()
 
         t0 = putter(0)
         t1 = putter(1)

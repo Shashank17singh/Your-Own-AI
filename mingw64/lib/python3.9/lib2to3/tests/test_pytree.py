@@ -15,7 +15,7 @@ from lib2to3 import pytree
 from . import support
 
 try:
-    sorted
+    sorted  # noqa: B018
 except NameError:
 
     def sorted(lst):
@@ -82,7 +82,7 @@ class TestNodes(support.TestCase):
         l1 = pytree.Leaf(100, "foo")
         l2 = pytree.Leaf(100, "bar", context=(" ", (1, 0)))
         n1 = pytree.Node(1000, [l1, l2])
-        self.assertEqual(repr(n1), "Node(1000, [%s, %s])" % (repr(l1), repr(l2)))
+        self.assertEqual(repr(n1), f"Node(1000, [{l1!r}, {l2!r}])")
 
     def test_node_str(self):
         l1 = pytree.Leaf(100, "foo")
@@ -286,7 +286,7 @@ class TestNodes(support.TestCase):
 
         self.assertRaises(IndexError, n1.set_child, 4, l2)
         # I don't care what it raises, so long as it's an exception
-        self.assertRaises(Exception, n1.set_child, 0, list)
+        self.assertRaises(Exception, n1.set_child, 0, list)  # noqa: B017
 
     def test_node_insert_child(self):
         l1 = pytree.Leaf(100, "foo")
@@ -302,7 +302,7 @@ class TestNodes(support.TestCase):
         self.assertEqual(n1.children, [l2, l1, l3])
 
         # I don't care what it raises, so long as it's an exception
-        self.assertRaises(Exception, n1.insert_child, 0, list)
+        self.assertRaises(Exception, n1.insert_child, 0, list)  # noqa: B017
 
     def test_node_append_child(self):
         n1 = pytree.Node(1000, [])
@@ -318,7 +318,7 @@ class TestNodes(support.TestCase):
         self.assertEqual(n1.children, [l1, l2])
 
         # I don't care what it raises, so long as it's an exception
-        self.assertRaises(Exception, n1.append_child, list)
+        self.assertRaises(Exception, n1.append_child, list)  # noqa: B017
 
     def test_node_next_sibling(self):
         n1 = pytree.Node(1000, [])

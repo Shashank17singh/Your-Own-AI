@@ -33,12 +33,12 @@ class _FailedTest(case.TestCase):
 
 
 def _make_failed_import_test(name, suiteClass):
-    message = "Failed to import test module: %s\n%s" % (name, traceback.format_exc())
+    message = f"Failed to import test module: {name}\n{traceback.format_exc()}"
     return _make_failed_test(name, ImportError(message), suiteClass, message)
 
 
 def _make_failed_load_tests(name, exception, suiteClass):
-    message = "Failed to call load_tests:\n%s" % (traceback.format_exc(),)
+    message = f"Failed to call load_tests:\n{traceback.format_exc()}"
     return _make_failed_test(name, exception, suiteClass, message)
 
 
@@ -107,7 +107,7 @@ class TestLoader:
                 f"loadTestsFromModule() takes 1 positional argument but {complaint} were given"
             )
         if len(kws) != 0:
-            complaint = sorted(kws)[0]
+            complaint = min(kws)
             raise TypeError(
                 f"loadTestsFromModule() got an unexpected keyword argument '{complaint}'"
             )
@@ -121,7 +121,7 @@ class TestLoader:
         if load_tests is not None:
             try:
                 return load_tests(self, tests, pattern)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 error_case, error_message = _make_failed_load_tests(
                     module.__name__, e, self.suiteClass
                 )
@@ -170,7 +170,7 @@ class TestLoader:
                         part,
                         e,
                         self.suiteClass,
-                        "Failed to access attribute:\n%s" % (traceback.format_exc(),),
+                        f"Failed to access attribute:\n{traceback.format_exc()}",
                     )
                     self.errors.append(error_message)
                     return error_case
@@ -196,9 +196,9 @@ class TestLoader:
             elif isinstance(test, case.TestCase):
                 return self.suiteClass([test])
             else:
-                raise TypeError("calling %s returned %s, not a test" % (obj, test))
+                raise TypeError(f"calling {obj} returned {test}, not a test")
         else:
-            raise TypeError("don't know how to make test from: %s" % obj)
+            raise TypeError(f"don't know how to make test from: {obj}")
 
     def loadTestsFromNames(self, names, module=None):
         """Return a suite of all test cases found using the given sequence
@@ -216,10 +216,8 @@ class TestLoader:
             testFunc = getattr(testCaseClass, attrname)
             if not callable(testFunc):
                 return False
-            fullName = "%s.%s.%s" % (
-                testCaseClass.__module__,
-                testCaseClass.__qualname__,
-                attrname,
+            fullName = (
+                f"{testCaseClass.__module__}.{testCaseClass.__qualname__}.{attrname}"
             )
             return self.testNamePatterns is None or any(
                 fnmatchcase(fullName, pattern) for pattern in self.testNamePatterns
@@ -318,7 +316,7 @@ class TestLoader:
                     else:
                         sys.path.remove(top_level_dir)
         if is_not_importable:
-            raise ImportError("Start directory is not importable: %r" % start_dir)
+            raise ImportError(f"Start directory is not importable: {start_dir!r}")
         if not is_namespace:
             tests = list(self._find_tests(start_dir, pattern))
         return self.suiteClass(tests)
@@ -388,7 +386,7 @@ class TestLoader:
                 module = self._get_module_from_name(name)
             except case.SkipTest as e:
                 return _make_skipped_test(name, e, self.suiteClass), False
-            except:
+            except:  # noqa: E722
                 error_case, error_message = _make_failed_import_test(
                     name, self.suiteClass
                 )
@@ -420,7 +418,7 @@ class TestLoader:
                 package = self._get_module_from_name(name)
             except case.SkipTest as e:
                 return _make_skipped_test(name, e, self.suiteClass), False
-            except:
+            except:  # noqa: E722
                 error_case, error_message = _make_failed_import_test(
                     name, self.suiteClass
                 )

@@ -164,7 +164,7 @@ _LegalChars = string.ascii_letters + string.digits + "!#$%&'*+-.^_`|~:"
 _UnescapedChars = _LegalChars + " ()/<=>?@[]{}"
 
 _Translator = {
-    n: "\\%03o" % n for n in set(range(256)) - set(map(ord, _UnescapedChars))
+    n: f"\\{n:03o}" for n in set(range(256)) - set(map(ord, _UnescapedChars))
 }
 _Translator.update(
     {
@@ -173,7 +173,7 @@ _Translator.update(
     }
 )
 
-_is_legal_key = re.compile("[%s]+" % re.escape(_LegalChars)).fullmatch
+_is_legal_key = re.compile(f"[{re.escape(_LegalChars)}]+").fullmatch
 
 
 def _quote(str):
@@ -267,8 +267,8 @@ def _getdate(future=0, weekdayname=_weekdayname, monthname=_monthname):
     from time import gmtime, time
 
     now = time()
-    year, month, day, hh, mm, ss, wd, y, z = gmtime(now + future)
-    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+    year, month, day, hh, mm, ss, wd, _y, _z = gmtime(now + future)
+    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (  # noqa: UP031
         weekdayname[wd],
         day,
         monthname[month],
@@ -301,7 +301,7 @@ class Morsel(dict):
     # This dictionary provides a mapping from the lowercase
     # variant on the left to the appropriate traditional
     # formatting on the right.
-    _reserved = {
+    _reserved = {  # noqa: RUF012
         "expires": "expires",
         "path": "Path",
         "comment": "Comment",
@@ -313,7 +313,7 @@ class Morsel(dict):
         "samesite": "SameSite",
     }
 
-    _flags = {"secure", "httponly"}
+    _flags = {"secure", "httponly"}  # noqa: RUF012
 
     def __init__(self):
         # Set defaults
@@ -338,13 +338,13 @@ class Morsel(dict):
     def __setitem__(self, K, V):
         K = K.lower()
         if not K in self._reserved:
-            raise CookieError("Invalid attribute %r" % (K,))
+            raise CookieError(f"Invalid attribute {K!r}")
         dict.__setitem__(self, K, V)
 
     def setdefault(self, key, val=None):
         key = key.lower()
         if key not in self._reserved:
-            raise CookieError("Invalid attribute %r" % (key,))
+            raise CookieError(f"Invalid attribute {key!r}")
         return dict.setdefault(self, key, val)
 
     def __eq__(self, morsel):
@@ -370,7 +370,7 @@ class Morsel(dict):
         for key, val in dict(values).items():
             key = key.lower()
             if key not in self._reserved:
-                raise CookieError("Invalid attribute %r" % (key,))
+                raise CookieError(f"Invalid attribute {key!r}")
             data[key] = val
         dict.update(self, data)
 
@@ -379,9 +379,9 @@ class Morsel(dict):
 
     def set(self, key, val, coded_val):
         if key.lower() in self._reserved:
-            raise CookieError("Attempt to set a reserved key %r" % (key,))
+            raise CookieError(f"Attempt to set a reserved key {key!r}")
         if not _is_legal_key(key):
-            raise CookieError("Illegal key %r" % (key,))
+            raise CookieError(f"Illegal key {key!r}")
 
         # It's a good key, so save it.
         self._key = key
@@ -401,22 +401,22 @@ class Morsel(dict):
         self._coded_value = state["coded_value"]
 
     def output(self, attrs=None, header="Set-Cookie:"):
-        return "%s %s" % (header, self.OutputString(attrs))
+        return f"{header} {self.OutputString(attrs)}"
 
     __str__ = output
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.OutputString())
+        return f"<{self.__class__.__name__}: {self.OutputString()}>"
 
     def js_output(self, attrs=None):
         # Print javascript
         return """
         <script type="text/javascript">
         <!-- begin hiding
-        document.cookie = \"%s\";
+        document.cookie = \"{}\";
         // end hiding -->
         </script>
-        """ % (self.OutputString(attrs).replace('"', r"\""))
+        """.format(self.OutputString(attrs).replace('"', r"\""))
 
     def OutputString(self, attrs=None):
         # Build up our result
@@ -425,7 +425,7 @@ class Morsel(dict):
         append = result.append
 
         # First, the key=value pair
-        append("%s=%s" % (self.key, self.coded_value))
+        append(f"{self.key}={self.coded_value}")
 
         # Now add any defined attributes
         if attrs is None:
@@ -437,16 +437,16 @@ class Morsel(dict):
             if key not in attrs:
                 continue
             if key == "expires" and isinstance(value, int):
-                append("%s=%s" % (self._reserved[key], _getdate(value)))
+                append(f"{self._reserved[key]}={_getdate(value)}")
             elif key == "max-age" and isinstance(value, int):
-                append("%s=%d" % (self._reserved[key], value))
+                append("%s=%d" % (self._reserved[key], value))  # noqa: UP031
             elif key == "comment" and isinstance(value, str):
-                append("%s=%s" % (self._reserved[key], _quote(value)))
+                append(f"{self._reserved[key]}={_quote(value)}")
             elif key in self._flags:
                 if value:
                     append(str(self._reserved[key]))
             else:
-                append("%s=%s" % (self._reserved[key], value))
+                append(f"{self._reserved[key]}={value}")
 
         # Return the result
         return _semispacejoin(result)
@@ -549,8 +549,8 @@ class BaseCookie(dict):
         l = []
         items = sorted(self.items())
         for key, value in items:
-            l.append("%s=%s" % (key, repr(value.value)))
-        return "<%s: %s>" % (self.__class__.__name__, _spacejoin(l))
+            l.append(f"{key}={value.value!r}")
+        return f"<{self.__class__.__name__}: {_spacejoin(l)}>"
 
     def js_output(self, attrs=None):
         """Return a string suitable for JavaScript."""

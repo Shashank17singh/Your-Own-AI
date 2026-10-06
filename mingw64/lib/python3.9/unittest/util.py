@@ -22,7 +22,7 @@ assert _MIN_DIFF_LEN >= 0
 def _shorten(s, prefixlen, suffixlen):
     skip = len(s) - prefixlen - suffixlen
     if skip > _PLACEHOLDER_LEN:
-        s = "%s[%d chars]%s" % (s[:prefixlen], skip, s[len(s) - suffixlen :])
+        s = "%s[%d chars]%s" % (s[:prefixlen], skip, s[len(s) - suffixlen :])  # noqa: UP031
     return s
 
 
@@ -50,7 +50,7 @@ def _common_shorten_repr(*args):
 def safe_repr(obj, short=False):
     try:
         result = repr(obj)
-    except Exception:
+    except Exception:  # noqa: BLE001
         result = object.__repr__(obj)
     if not short or len(result) < _MAX_LENGTH:
         return result
@@ -58,7 +58,7 @@ def safe_repr(obj, short=False):
 
 
 def strclass(cls):
-    return "%s.%s" % (cls.__module__, cls.__qualname__)
+    return f"{cls.__module__}.{cls.__qualname__}"
 
 
 def sorted_list_difference(expected, actual):

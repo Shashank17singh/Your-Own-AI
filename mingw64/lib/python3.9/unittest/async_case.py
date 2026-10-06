@@ -66,7 +66,7 @@ class IsolatedAsyncioTestCase(TestCase):
                     fut.set_result(ret)
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except (BaseException, asyncio.CancelledError) as ex:
+            except (BaseException, asyncio.CancelledError) as ex:  # noqa: BLE001
                 if not fut.cancelled():
                     fut.set_exception(ex)
 

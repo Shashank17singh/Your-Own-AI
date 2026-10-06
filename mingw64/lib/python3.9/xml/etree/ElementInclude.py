@@ -1,4 +1,4 @@
-import copy
+import copy  # noqa: N999
 from urllib.parse import urljoin
 
 from . import ElementTree
@@ -34,7 +34,7 @@ def include(elem, loader=None, base_url=None, max_depth=DEFAULT_MAX_INCLUSION_DE
         max_depth = -1
     elif max_depth < 0:
         raise ValueError(
-            "expected non-negative depth or None for 'max_depth', got %r" % max_depth
+            f"expected non-negative depth or None for 'max_depth', got {max_depth!r}"
         )
     if hasattr(elem, "getroot"):
         elem = elem.getroot()
@@ -54,15 +54,15 @@ def _include(elem, loader, base_url, max_depth, _parent_hrefs):
             parse = e.get("parse", "xml")
             if parse == "xml":
                 if href in _parent_hrefs:
-                    raise FatalIncludeError("recursive include of %s" % href)
+                    raise FatalIncludeError(f"recursive include of {href}")
                 if max_depth == 0:
                     raise LimitedRecursiveIncludeError(
-                        "maximum xinclude depth reached when including file %s" % href
+                        f"maximum xinclude depth reached when including file {href}"
                     )
                 _parent_hrefs.add(href)
                 node = loader(href, parse)
                 if node is None:
-                    raise FatalIncludeError("cannot load %r as %r" % (href, parse))
+                    raise FatalIncludeError(f"cannot load {href!r} as {parse!r}")
                 node = copy.copy(
                     node
                 )  # FIXME: this makes little sense with recursive includes
@@ -74,7 +74,7 @@ def _include(elem, loader, base_url, max_depth, _parent_hrefs):
             elif parse == "text":
                 text = loader(href, parse, e.get("encoding"))
                 if text is None:
-                    raise FatalIncludeError("cannot load %r as %r" % (href, parse))
+                    raise FatalIncludeError(f"cannot load {href!r} as {parse!r}")
                 if e.tail:
                     text += e.tail
                 if i:
@@ -86,11 +86,11 @@ def _include(elem, loader, base_url, max_depth, _parent_hrefs):
                 continue
             else:
                 raise FatalIncludeError(
-                    "unknown parse type in xi:include tag (%r)" % parse
+                    f"unknown parse type in xi:include tag ({parse!r})"
                 )
         elif e.tag == XINCLUDE_FALLBACK:
             raise FatalIncludeError(
-                "xi:fallback tag must be child of xi:include (%r)" % e.tag
+                f"xi:fallback tag must be child of xi:include ({e.tag!r})"
             )
         else:
             _include(e, loader, base_url, max_depth, _parent_hrefs)

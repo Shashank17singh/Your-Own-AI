@@ -29,7 +29,7 @@ a_global = "global variable"
 class TestCase(unittest.TestCase):
     def assertAllRaise(self, exception_type, regex, error_strings):
         for str in error_strings:
-            with self.subTest(str=str):
+            with self.subTest(str=str):  # noqa: SIM117
                 with self.assertRaisesRegex(exception_type, regex):
                     eval(str)
 
@@ -81,7 +81,7 @@ f'{a * x()}'"""
         self.assertFalse(x.called)
 
         # Actually run the code.
-        exec(c)
+        exec(c)  # noqa: S102
 
         # Make sure x was called.
         self.assertTrue(x.called)
@@ -433,7 +433,7 @@ x = (
         expr = """x[0] = 'foo' f'{3}'"""
         t = ast.parse(expr)
         c = compile(t, "", "exec")
-        exec(c)
+        exec(c)  # noqa: S102
         self.assertEqual(x[0], "foo3")
 
     def test_compile_time_concat_errors(self):
@@ -613,7 +613,6 @@ x = (
             return "f'" + ("{x} " * n) + extra + "'"
 
         x = "X"
-        width = 1
 
         # Test around 256.
         for i in range(250, 260):
@@ -881,9 +880,9 @@ x = (
 
     def test_lambda(self):
         x = 5
-        self.assertEqual(f"{(lambda y: x * y)('8')!r}", "'88888'")
-        self.assertEqual(f"{(lambda y: x * y)('8')!r:10}", "'88888'   ")
-        self.assertEqual(f"{(lambda y: x * y)('8'):10}", "88888     ")
+        self.assertEqual(f"{(lambda y: x * y)('8')!r}", "'88888'")  # noqa: PLC3002
+        self.assertEqual(f"{(lambda y: x * y)('8')!r:10}", "'88888'   ")  # noqa: PLC3002
+        self.assertEqual(f"{(lambda y: x * y)('8'):10}", "88888     ")  # noqa: PLC3002
 
         # lambda doesn't work without parens, because the colon
         #  makes the parser think it's a format_spec
@@ -900,7 +899,7 @@ x = (
         # Not terribly useful, but make sure the yield turns
         #  a function into a generator
         def fn(y):
-            f"y:{yield y * 2}"
+            f"y:{yield y * 2}"  # noqa: B021
             f"{yield}"
 
         g = fn(4)
@@ -960,7 +959,6 @@ x = (
             return f"x={x * y:{width}}"
 
         self.assertEqual(f("foo", 10), "x=foofoo    ")
-        x = "bar"
         self.assertEqual(f(10, 10), "x=        20")
 
     def test_locals(self):
@@ -969,7 +967,7 @@ x = (
 
     def test_missing_variable(self):
         with self.assertRaises(NameError):
-            f"v:{value}"
+            f"v:{value}"  # noqa: F821
 
     def test_missing_format_spec(self):
         class O:
@@ -1072,16 +1070,16 @@ x = (
         #  case in the f-string parser to look for != as not ending an
         #  expression. Normally it would, while looking for !s or !r.
 
-        self.assertEqual(f"{3 != 4}", "True")
-        self.assertEqual(f"{3 != 4:}", "True")
-        self.assertEqual(f"{3 != 4!s}", "True")
-        self.assertEqual(f"{3 != 4!s:.3}", "Tru")
+        self.assertEqual(f"{3 != 4}", "True")  # noqa: PLR0133
+        self.assertEqual(f"{3 != 4:}", "True")  # noqa: PLR0133
+        self.assertEqual(f"{3 != 4!s}", "True")  # noqa: PLR0133
+        self.assertEqual(f"{3 != 4!s:.3}", "Tru")  # noqa: PLR0133
 
     def test_equal_equal(self):
         # Because an expression ending in = has special meaning,
         # there's a special test for ==. Make sure it works.
 
-        self.assertEqual(f"{0 == 1}", "False")
+        self.assertEqual(f"{0 == 1}", "False")  # noqa: PLR0133
 
     def test_conversions(self):
         self.assertEqual(f"{3.14:10.10}", "      3.14")
@@ -1344,10 +1342,10 @@ x = (
         # Since = is handled specially, make sure all existing uses of
         # it still work.
 
-        self.assertEqual(f"{0 == 1}", "False")
-        self.assertEqual(f"{0 != 1}", "True")
-        self.assertEqual(f"{0 <= 1}", "True")
-        self.assertEqual(f"{0 >= 1}", "False")
+        self.assertEqual(f"{0 == 1}", "False")  # noqa: PLR0133
+        self.assertEqual(f"{0 != 1}", "True")  # noqa: PLR0133
+        self.assertEqual(f"{0 <= 1}", "True")  # noqa: PLR0133
+        self.assertEqual(f"{0 >= 1}", "False")  # noqa: PLR0133
         self.assertEqual(f"{(x := '5')}", "5")
         self.assertEqual(x, "5")
         self.assertEqual(f"{(x := 5)}", "5")

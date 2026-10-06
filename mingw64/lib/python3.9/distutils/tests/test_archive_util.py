@@ -35,7 +35,7 @@ except ImportError:
     ZIP_SUPPORT = find_executable("zip")
 
 try:
-    import zlib
+    import zlib  # noqa: F401
 
     ZLIB_SUPPORT = True
 except ImportError:
@@ -129,7 +129,7 @@ class ArchiveUtilTestCase(
         self.assertEqual(self._tarinfo(tarball), self._created_files)
 
     def _tarinfo(self, path):
-        tar = tarfile.open(path)
+        tar = tarfile.open(path)  # noqa: SIM115
         try:
             names = tar.getnames()
             names.sort()
@@ -137,7 +137,7 @@ class ArchiveUtilTestCase(
         finally:
             tar.close()
 
-    _zip_created_files = [
+    _zip_created_files = [  # noqa: RUF012
         "dist/",
         "dist/file1",
         "dist/file2",
@@ -145,7 +145,7 @@ class ArchiveUtilTestCase(
         "dist/sub/file3",
         "dist/sub2/",
     ]
-    _created_files = [p.rstrip("/") for p in _zip_created_files]
+    _created_files = [p.rstrip("/") for p in _zip_created_files]  # noqa: RUF012
 
     def _create_files(self):
         # creating something to tar
@@ -315,7 +315,7 @@ class ArchiveUtilTestCase(
         try:
             try:
                 make_archive("xxx", "xxx", root_dir=self.mkdtemp())
-            except:
+            except:  # noqa: E722, S110
                 pass
             self.assertEqual(os.getcwd(), current_dir)
         finally:
@@ -406,7 +406,7 @@ class ArchiveUtilTestCase(
         self.assertTrue(os.path.exists(archive_name))
 
         # now checks the rights
-        archive = tarfile.open(archive_name)
+        archive = tarfile.open(archive_name)  # noqa: SIM115
         try:
             for member in archive.getmembers():
                 self.assertEqual(member.uid, 0)

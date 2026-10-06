@@ -15,7 +15,6 @@ class PEP3131Test(unittest.TestCase):
         self.assertEqual(T.x󠄀, 4)
 
     def test_non_bmp_normalized(self):
-        𝔘𝔫𝔦𝔠𝔬𝔡𝔢 = 1
         self.assertIn("Unicode", dir())
 
     def test_invalid(self):

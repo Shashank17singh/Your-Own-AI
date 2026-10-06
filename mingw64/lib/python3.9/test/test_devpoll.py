@@ -75,7 +75,7 @@ class DevPollTests(unittest.TestCase):
 
     def test_timeout_overflow(self):
         pollster = select.devpoll()
-        w, r = os.pipe()
+        w, _r = os.pipe()
         pollster.register(w)
 
         pollster.poll(-1)
@@ -91,7 +91,7 @@ class DevPollTests(unittest.TestCase):
         self.assertRaises(OverflowError, pollster.poll, 1 << 64)
 
     def test_close(self):
-        open_file = open(__file__, "rb")
+        open_file = open(__file__, "rb")  # noqa: SIM115
         self.addCleanup(open_file.close)
         fd = open_file.fileno()
         devpoll = select.devpoll()
@@ -121,7 +121,7 @@ class DevPollTests(unittest.TestCase):
 
     def test_events_mask_overflow(self):
         pollster = select.devpoll()
-        w, r = os.pipe()
+        w, _r = os.pipe()
         pollster.register(w)
         # Issue #17919
         self.assertRaises(ValueError, pollster.register, 0, -1)
@@ -134,7 +134,7 @@ class DevPollTests(unittest.TestCase):
         from _testcapi import USHRT_MAX
 
         pollster = select.devpoll()
-        w, r = os.pipe()
+        w, _r = os.pipe()
         pollster.register(w)
         # Issue #17919
         self.assertRaises(OverflowError, pollster.register, 0, USHRT_MAX + 1)

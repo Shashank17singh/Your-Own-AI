@@ -53,7 +53,7 @@ class Test_pygettext(unittest.TestCase):
     def extract_docstrings_from_str(self, module_content):
         """utility: return all msgids extracted from module_content"""
         filename = "test_docstrings.py"
-        with temp_cwd(None) as cwd:
+        with temp_cwd(None):
             with open(filename, "w") as fp:
                 fp.write(module_content)
             assert_python_ok(self.script, "-D", filename)
@@ -65,7 +65,7 @@ class Test_pygettext(unittest.TestCase):
         """Make sure the required fields are in the header, according to:
         http://www.gnu.org/software/gettext/manual/gettext.html#Header-Entry
         """
-        with temp_cwd(None) as cwd:
+        with temp_cwd(None):
             assert_python_ok(self.script)
             with open("messages.pot") as fp:
                 data = fp.read()
@@ -85,7 +85,7 @@ class Test_pygettext(unittest.TestCase):
         """Match the date format from xgettext for POT-Creation-Date"""
         from datetime import datetime
 
-        with temp_cwd(None) as cwd:
+        with temp_cwd(None):
             assert_python_ok(self.script)
             with open("messages.pot") as fp:
                 data = fp.read()
@@ -99,11 +99,10 @@ class Test_pygettext(unittest.TestCase):
             with self.subTest(doc):
                 msgids = self.extract_docstrings_from_str(
                     dedent(
-                        """\
+                        f"""\
                 def foo(bar):
-                    %s
+                    {doc}
                 """
-                        % doc
                     )
                 )
                 self.assertIn("doc", msgids)
@@ -131,11 +130,10 @@ class Test_pygettext(unittest.TestCase):
             with self.subTest(doc):
                 msgids = self.extract_docstrings_from_str(
                     dedent(
-                        """\
+                        f"""\
                 class C:
-                    %s
+                    {doc}
                 """
-                        % doc
                     )
                 )
                 self.assertIn("doc", msgids)

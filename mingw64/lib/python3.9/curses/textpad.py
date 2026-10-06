@@ -158,7 +158,7 @@ class Textbox:
                     self.win.move(y + 1, self._end_of_line(y + 1))
         elif ch == curses.ascii.SI:  # ^o
             self.win.insertln()
-        elif ch in (curses.ascii.DLE, curses.KEY_UP):  # ^p
+        elif ch in (curses.ascii.DLE, curses.KEY_UP):  # ^p  # noqa: SIM102
             if y > 0:
                 self.win.move(y - 1, x)
                 if x > self._end_of_line(y - 1):

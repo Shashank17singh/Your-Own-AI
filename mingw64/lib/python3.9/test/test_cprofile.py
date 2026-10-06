@@ -61,7 +61,7 @@ class CProfileTest(ProfileTest):
 
 class TestCommandLine(unittest.TestCase):
     def test_sort(self):
-        rc, out, err = assert_python_failure("-m", "cProfile", "-s", "demo")
+        rc, _out, err = assert_python_failure("-m", "cProfile", "-s", "demo")
         self.assertGreater(rc, 0)
         self.assertIn(b"option -s: invalid choice: 'demo'", err)
 

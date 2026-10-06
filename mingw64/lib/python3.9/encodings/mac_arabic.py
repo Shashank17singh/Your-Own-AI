@@ -479,35 +479,35 @@ encoding_map = {
     0x001E: 0x001E,  #  CONTROL CHARACTER
     0x001F: 0x001F,  #  CONTROL CHARACTER
     0x0020: 0x0020,  #  SPACE, left-right
-    0x0020: 0x00A0,  #  SPACE, right-left
+    0x0020: 0x00A0,  #  SPACE, right-left  # noqa: F601
     0x0021: 0x0021,  #  EXCLAMATION MARK, left-right
-    0x0021: 0x00A1,  #  EXCLAMATION MARK, right-left
+    0x0021: 0x00A1,  #  EXCLAMATION MARK, right-left  # noqa: F601
     0x0022: 0x0022,  #  QUOTATION MARK, left-right
-    0x0022: 0x00A2,  #  QUOTATION MARK, right-left
+    0x0022: 0x00A2,  #  QUOTATION MARK, right-left  # noqa: F601
     0x0023: 0x0023,  #  NUMBER SIGN, left-right
-    0x0023: 0x00A3,  #  NUMBER SIGN, right-left
+    0x0023: 0x00A3,  #  NUMBER SIGN, right-left  # noqa: F601
     0x0024: 0x0024,  #  DOLLAR SIGN, left-right
-    0x0024: 0x00A4,  #  DOLLAR SIGN, right-left
+    0x0024: 0x00A4,  #  DOLLAR SIGN, right-left  # noqa: F601
     0x0025: 0x0025,  #  PERCENT SIGN, left-right
     0x0026: 0x0026,  #  AMPERSAND, left-right
-    0x0026: 0x00A6,  #  AMPERSAND, right-left
+    0x0026: 0x00A6,  #  AMPERSAND, right-left  # noqa: F601
     0x0027: 0x0027,  #  APOSTROPHE, left-right
-    0x0027: 0x00A7,  #  APOSTROPHE, right-left
+    0x0027: 0x00A7,  #  APOSTROPHE, right-left  # noqa: F601
     0x0028: 0x0028,  #  LEFT PARENTHESIS, left-right
-    0x0028: 0x00A8,  #  LEFT PARENTHESIS, right-left
+    0x0028: 0x00A8,  #  LEFT PARENTHESIS, right-left  # noqa: F601
     0x0029: 0x0029,  #  RIGHT PARENTHESIS, left-right
-    0x0029: 0x00A9,  #  RIGHT PARENTHESIS, right-left
+    0x0029: 0x00A9,  #  RIGHT PARENTHESIS, right-left  # noqa: F601
     0x002A: 0x002A,  #  ASTERISK, left-right
-    0x002A: 0x00AA,  #  ASTERISK, right-left
+    0x002A: 0x00AA,  #  ASTERISK, right-left  # noqa: F601
     0x002B: 0x002B,  #  PLUS SIGN, left-right
-    0x002B: 0x00AB,  #  PLUS SIGN, right-left
+    0x002B: 0x00AB,  #  PLUS SIGN, right-left  # noqa: F601
     0x002C: 0x002C,  #  COMMA, left-right; in Arabic-script context, displayed as 0x066C ARABIC THOUSANDS SEPARATOR
     0x002D: 0x002D,  #  HYPHEN-MINUS, left-right
-    0x002D: 0x00AD,  #  HYPHEN-MINUS, right-left
+    0x002D: 0x00AD,  #  HYPHEN-MINUS, right-left  # noqa: F601
     0x002E: 0x002E,  #  FULL STOP, left-right; in Arabic-script context, displayed as 0x066B ARABIC DECIMAL SEPARATOR
-    0x002E: 0x00AE,  #  FULL STOP, right-left
+    0x002E: 0x00AE,  #  FULL STOP, right-left  # noqa: F601
     0x002F: 0x002F,  #  SOLIDUS, left-right
-    0x002F: 0x00AF,  #  SOLIDUS, right-left
+    0x002F: 0x00AF,  #  SOLIDUS, right-left  # noqa: F601
     0x0030: 0x0030,  #  DIGIT ZERO;  in Arabic-script context, displayed as 0x0660 ARABIC-INDIC DIGIT ZERO
     0x0031: 0x0031,  #  DIGIT ONE;   in Arabic-script context, displayed as 0x0661 ARABIC-INDIC DIGIT ONE
     0x0032: 0x0032,  #  DIGIT TWO;   in Arabic-script context, displayed as 0x0662 ARABIC-INDIC DIGIT TWO
@@ -519,14 +519,14 @@ encoding_map = {
     0x0038: 0x0038,  #  DIGIT EIGHT; in Arabic-script context, displayed as 0x0668 ARABIC-INDIC DIGIT EIGHT
     0x0039: 0x0039,  #  DIGIT NINE;  in Arabic-script context, displayed as 0x0669 ARABIC-INDIC DIGIT NINE
     0x003A: 0x003A,  #  COLON, left-right
-    0x003A: 0x00BA,  #  COLON, right-left
+    0x003A: 0x00BA,  #  COLON, right-left  # noqa: F601
     0x003B: 0x003B,  #  SEMICOLON, left-right
     0x003C: 0x003C,  #  LESS-THAN SIGN, left-right
-    0x003C: 0x00BC,  #  LESS-THAN SIGN, right-left
+    0x003C: 0x00BC,  #  LESS-THAN SIGN, right-left  # noqa: F601
     0x003D: 0x003D,  #  EQUALS SIGN, left-right
-    0x003D: 0x00BD,  #  EQUALS SIGN, right-left
+    0x003D: 0x00BD,  #  EQUALS SIGN, right-left  # noqa: F601
     0x003E: 0x003E,  #  GREATER-THAN SIGN, left-right
-    0x003E: 0x00BE,  #  GREATER-THAN SIGN, right-left
+    0x003E: 0x00BE,  #  GREATER-THAN SIGN, right-left  # noqa: F601
     0x003F: 0x003F,  #  QUESTION MARK, left-right
     0x0040: 0x0040,  #  COMMERCIAL AT
     0x0041: 0x0041,  #  LATIN CAPITAL LETTER A
@@ -556,15 +556,15 @@ encoding_map = {
     0x0059: 0x0059,  #  LATIN CAPITAL LETTER Y
     0x005A: 0x005A,  #  LATIN CAPITAL LETTER Z
     0x005B: 0x005B,  #  LEFT SQUARE BRACKET, left-right
-    0x005B: 0x00DB,  #  LEFT SQUARE BRACKET, right-left
+    0x005B: 0x00DB,  #  LEFT SQUARE BRACKET, right-left  # noqa: F601
     0x005C: 0x005C,  #  REVERSE SOLIDUS, left-right
-    0x005C: 0x00DC,  #  REVERSE SOLIDUS, right-left
+    0x005C: 0x00DC,  #  REVERSE SOLIDUS, right-left  # noqa: F601
     0x005D: 0x005D,  #  RIGHT SQUARE BRACKET, left-right
-    0x005D: 0x00DD,  #  RIGHT SQUARE BRACKET, right-left
+    0x005D: 0x00DD,  #  RIGHT SQUARE BRACKET, right-left  # noqa: F601
     0x005E: 0x005E,  #  CIRCUMFLEX ACCENT, left-right
-    0x005E: 0x00DE,  #  CIRCUMFLEX ACCENT, right-left
+    0x005E: 0x00DE,  #  CIRCUMFLEX ACCENT, right-left  # noqa: F601
     0x005F: 0x005F,  #  LOW LINE, left-right
-    0x005F: 0x00DF,  #  LOW LINE, right-left
+    0x005F: 0x00DF,  #  LOW LINE, right-left  # noqa: F601
     0x0060: 0x0060,  #  GRAVE ACCENT
     0x0061: 0x0061,  #  LATIN SMALL LETTER A
     0x0062: 0x0062,  #  LATIN SMALL LETTER B
@@ -593,11 +593,11 @@ encoding_map = {
     0x0079: 0x0079,  #  LATIN SMALL LETTER Y
     0x007A: 0x007A,  #  LATIN SMALL LETTER Z
     0x007B: 0x007B,  #  LEFT CURLY BRACKET, left-right
-    0x007B: 0x00FB,  #  LEFT CURLY BRACKET, right-left
+    0x007B: 0x00FB,  #  LEFT CURLY BRACKET, right-left  # noqa: F601
     0x007C: 0x007C,  #  VERTICAL LINE, left-right
-    0x007C: 0x00FC,  #  VERTICAL LINE, right-left
+    0x007C: 0x00FC,  #  VERTICAL LINE, right-left  # noqa: F601
     0x007D: 0x007D,  #  RIGHT CURLY BRACKET, left-right
-    0x007D: 0x00FD,  #  RIGHT CURLY BRACKET, right-left
+    0x007D: 0x00FD,  #  RIGHT CURLY BRACKET, right-left  # noqa: F601
     0x007E: 0x007E,  #  TILDE
     0x007F: 0x007F,  #  CONTROL CHARACTER
     0x00A0: 0x0081,  #  NO-BREAK SPACE, right-left

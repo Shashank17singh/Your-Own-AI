@@ -118,19 +118,19 @@ class TestImghdr(unittest.TestCase):
             imghdr.what("missing")
 
     def test_closed_file(self):
-        stream = open(self.testfile, "rb")
+        stream = open(self.testfile, "rb")  # noqa: SIM115
         stream.close()
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             imghdr.what(stream)
         stream = io.BytesIO(self.testdata)
         stream.close()
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             imghdr.what(stream)
 
     def test_unseekable(self):
         with open(TESTFN, "wb") as stream:
             stream.write(self.testdata)
-        with UnseekableIO(TESTFN, "rb") as stream:
+        with UnseekableIO(TESTFN, "rb") as stream:  # noqa: SIM117
             with self.assertRaises(io.UnsupportedOperation):
                 imghdr.what(stream)
 
@@ -138,7 +138,7 @@ class TestImghdr(unittest.TestCase):
         with open(TESTFN, "wb") as stream:
             stream.write(self.testdata)
             stream.seek(0)
-            with self.assertRaises(OSError) as cm:
+            with self.assertRaises(OSError):
                 imghdr.what(stream)
 
 

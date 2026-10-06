@@ -54,20 +54,20 @@ def _formatparam(param, value=None, quote=True):
             # Encode as per RFC 2231
             param += "*"
             value = utils.encode_rfc2231(value[2], value[0], value[1])
-            return "%s=%s" % (param, value)
+            return f"{param}={value}"
         else:
             try:
                 value.encode("ascii")
             except UnicodeEncodeError:
                 param += "*"
                 value = utils.encode_rfc2231(value, "utf-8", "")
-                return "%s=%s" % (param, value)
+                return f"{param}={value}"
         # BAW: Please check this.  I think that if quote is set it should
         # force quoting even if not necessary.
         if quote or tspecials.search(value):
-            return '%s="%s"' % (param, utils.quote(value))
+            return f'{param}="{utils.quote(value)}"'
         else:
-            return "%s=%s" % (param, value)
+            return f"{param}={value}"
     else:
         return param
 
@@ -254,7 +254,7 @@ class Message:
         # For backward compatibility, Use isinstance and this error message
         # instead of the more logical is_multipart test.
         if i is not None and not isinstance(self._payload, list):
-            raise TypeError("Expected list, got %s" % type(self._payload))
+            raise TypeError(f"Expected list, got {type(self._payload)}")
         payload = self._payload
         # cte might be a Header, so for now stringify it.
         cte = str(self.get("content-transfer-encoding", "")).lower()
@@ -858,7 +858,7 @@ class Message:
         foundp = False
         for pk, pv in params:
             if pk.lower() == "boundary":
-                newparams.append(("boundary", '"%s"' % boundary))
+                newparams.append(("boundary", f'"{boundary}"'))
                 foundp = True
             else:
                 newparams.append((pk, pv))
@@ -866,7 +866,7 @@ class Message:
             # The original Content-Type header had no boundary attribute.
             # Tack one on the end.  BAW: should we raise an exception
             # instead???
-            newparams.append(("boundary", '"%s"' % boundary))
+            newparams.append(("boundary", f'"{boundary}"'))
         # Replace the existing Content-Type header with the new value
         newheaders = []
         for h, v in self._headers:
@@ -876,7 +876,7 @@ class Message:
                     if v == "":
                         parts.append(k)
                     else:
-                        parts.append("%s=%s" % (k, v))
+                        parts.append(f"{k}={v}")
                 val = SEMISPACE.join(parts)
                 newheaders.append(self.policy.header_store_parse(h, val))
 
@@ -1028,7 +1028,7 @@ class MIMEPart(Message):
                     break
         return body
 
-    _body_types = {
+    _body_types = {  # noqa: RUF012
         ("text", "plain"),
         ("text", "html"),
         ("multipart", "related"),

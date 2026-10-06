@@ -29,7 +29,7 @@ class ConfigTestCase(
 
     def test_dump_file(self):
         this_file = os.path.splitext(__file__)[0] + ".py"
-        f = open(this_file)
+        f = open(this_file)  # noqa: SIM115
         try:
             numlines = len(f.readlines())
         finally:
@@ -42,8 +42,8 @@ class ConfigTestCase(
     def test_search_cpp(self):
         cmd = missing_compiler_executable(["preprocessor"])
         if cmd is not None:
-            self.skipTest("The %r command is not found" % cmd)
-        pkg_dir, dist = self.create_dist()
+            self.skipTest(f"The {cmd!r} command is not found")
+        _pkg_dir, dist = self.create_dist()
         cmd = config(dist)
         cmd._check_compiler()
         compiler = cmd.compiler
@@ -62,11 +62,11 @@ class ConfigTestCase(
     def test_finalize_options(self):
         # finalize_options does a bit of transformation
         # on options
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = config(dist)
-        cmd.include_dirs = "one%stwo" % os.pathsep
+        cmd.include_dirs = f"one{os.pathsep}two"
         cmd.libraries = "one"
-        cmd.library_dirs = "three%sfour" % os.pathsep
+        cmd.library_dirs = f"three{os.pathsep}four"
         cmd.ensure_finalized()
 
         self.assertEqual(cmd.include_dirs, ["one", "two"])
@@ -85,7 +85,7 @@ class ConfigTestCase(
         for f in (f1, f2):
             self.assertTrue(os.path.exists(f))
 
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = config(dist)
         cmd._clean(f1, f2)
 

@@ -113,7 +113,7 @@ class TestSysConfig(unittest.TestCase):
         # XXX make real tests here
         for scheme in _INSTALL_SCHEMES:
             for name in _INSTALL_SCHEMES[scheme]:
-                res = get_path(name, scheme)
+                get_path(name, scheme)
 
     def test_get_config_vars(self):
         cvars = get_config_vars()
@@ -250,13 +250,13 @@ class TestSysConfig(unittest.TestCase):
         for arch in ("ppc", "i386", "x86_64", "ppc64"):
             _osx_support._remove_original_values(get_config_vars())
             get_config_vars()["CFLAGS"] = (
-                "-arch %s -isysroot "
+                f"-arch {arch} -isysroot "
                 "/Developer/SDKs/MacOSX10.4u.sdk  "
                 "-fno-strict-aliasing -fno-common "
-                "-dynamic -DNDEBUG -g -O3" % arch
+                "-dynamic -DNDEBUG -g -O3"
             )
 
-            self.assertEqual(get_platform(), "macosx-10.4-%s" % arch)
+            self.assertEqual(get_platform(), f"macosx-10.4-{arch}")
 
         # linux debian sarge
         os.name = "posix"
@@ -456,8 +456,7 @@ class TestSysConfig(unittest.TestCase):
         if re.match("(i[3-6]86|x86_64)$", machine):
             if ctypes.sizeof(ctypes.c_char_p()) == 4:
                 self.assertTrue(
-                    suffix.endswith("i386-linux-gnu.so")
-                    or suffix.endswith("x86_64-linux-gnux32.so"),
+                    suffix.endswith(("i386-linux-gnu.so", "x86_64-linux-gnux32.so")),
                     suffix,
                 )
             else:  # 8 byte pointer size

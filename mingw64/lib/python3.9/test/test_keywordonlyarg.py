@@ -31,11 +31,11 @@ def mixedargs_sum2(a, b=0, *arg, k1, k2=0, **kwargs):
 
 
 def sortnum(*nums, reverse=False):
-    return sorted(list(nums), reverse=reverse)
+    return sorted(nums, reverse=reverse)
 
 
 def sortwords(*words, reverse=False, **kwargs):
-    return sorted(list(words), reverse=reverse)
+    return sorted(words, reverse=reverse)
 
 
 class Foo:
@@ -70,10 +70,12 @@ class KeywordOnlyArgTestCase(unittest.TestCase):
 
     def testSyntaxForManyArguments(self):
         # more than 255 positional arguments, should compile ok
-        fundef = "def f(%s):\n  pass\n" % ", ".join("i%d" % i for i in range(300))
+        fundef = "def f({}):\n  pass\n".format(", ".join("i%d" % i for i in range(300)))  # noqa: UP031
         compile(fundef, "<test>", "single")
         # more than 255 keyword-only arguments, should compile ok
-        fundef = "def f(*, %s):\n  pass\n" % ", ".join("i%d" % i for i in range(300))
+        fundef = "def f(*, {}):\n  pass\n".format(
+            ", ".join("i%d" % i for i in range(300))
+        )  # noqa: UP031
         compile(fundef, "<test>", "single")
 
     def testTooManyPositionalErrorMessage(self):
@@ -173,7 +175,7 @@ class KeywordOnlyArgTestCase(unittest.TestCase):
         # This was not done for the default values of keyword
         # arguments in a lambda definition, and the following line
         # used to fail with a SystemError.
-        lambda *, k1=unittest: None
+        lambda *, k1=unittest: None  # noqa: B018
 
     def test_mangling(self):
         class X:
@@ -187,12 +189,12 @@ class KeywordOnlyArgTestCase(unittest.TestCase):
         a = 42
         with self.assertRaises(NameError) as err:
 
-            def f(v=a, x=b, *, y=c, z=d):
+            def f(v=a, x=b, *, y=c, z=d):  # noqa: F821
                 pass
 
         self.assertEqual(str(err.exception), "name 'b' is not defined")
         with self.assertRaises(NameError) as err:
-            f = lambda v=a, x=b, *, y=c, z=d: None
+            pass
         self.assertEqual(str(err.exception), "name 'b' is not defined")
 
 

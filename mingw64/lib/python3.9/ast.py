@@ -161,7 +161,7 @@ def dump(node, annotate_fields=True, include_attributes=False, *, indent=None):
                 value, simple = _format(value, level)
                 allsimple = allsimple and simple
                 if keywords:
-                    args.append("%s=%s" % (name, value))
+                    args.append(f"{name}={value}")
                 else:
                     args.append(value)
             if include_attributes and node._attributes:
@@ -174,21 +174,23 @@ def dump(node, annotate_fields=True, include_attributes=False, *, indent=None):
                         continue
                     value, simple = _format(value, level)
                     allsimple = allsimple and simple
-                    args.append("%s=%s" % (name, value))
+                    args.append(f"{name}={value}")
             if allsimple and len(args) <= 3:
-                return "%s(%s)" % (node.__class__.__name__, ", ".join(args)), not args
-            return "%s(%s%s)" % (node.__class__.__name__, prefix, sep.join(args)), False
+                return "{}({})".format(
+                    node.__class__.__name__, ", ".join(args)
+                ), not args
+            return f"{node.__class__.__name__}({prefix}{sep.join(args)})", False
         elif isinstance(node, list):
             if not node:
                 return "[]", True
             return (
-                "[%s%s]" % (prefix, sep.join(_format(x, level)[0] for x in node)),
+                f"[{prefix}{sep.join(_format(x, level)[0] for x in node)}]",
                 False,
             )
         return repr(node), True
 
     if not isinstance(node, AST):
-        raise TypeError("expected AST, got %r" % node.__class__.__name__)
+        raise TypeError(f"expected AST, got {node.__class__.__name__!r}")
     if indent is not None and not isinstance(indent, str):
         indent = " " * indent
     return _format(node)[0]
@@ -301,7 +303,7 @@ def get_docstring(node, clean=True):
     that can be uniformly removed from the second line onwards is removed.
     """
     if not isinstance(node, (AsyncFunctionDef, FunctionDef, ClassDef, Module)):
-        raise TypeError("%r can't have docstrings" % node.__class__.__name__)
+        raise TypeError(f"{node.__class__.__name__!r} can't have docstrings")
     if not (node.body and isinstance(node.body[0], Expr)):
         return None
     node = node.body[0].value
@@ -1206,7 +1208,7 @@ class _Unparser(NodeVisitor):
 
     def _fstring_Constant(self, node, write):
         if not isinstance(node.value, str):
-            raise ValueError("Constants inside JoinedStr should be a string.")
+            raise ValueError("Constants inside JoinedStr should be a string.")  # noqa: TRY004
         value = node.value.replace("{", "{{").replace("}", "}}")
         write(value)
 
@@ -1355,8 +1357,8 @@ class _Unparser(NodeVisitor):
         with self.delimit("(", ")"):
             self.items_view(self.traverse, node.elts)
 
-    unop = {"Invert": "~", "Not": "not", "UAdd": "+", "USub": "-"}
-    unop_precedence = {
+    unop = {"Invert": "~", "Not": "not", "UAdd": "+", "USub": "-"}  # noqa: RUF012
+    unop_precedence = {  # noqa: RUF012
         "not": _Precedence.NOT,
         "~": _Precedence.FACTOR,
         "+": _Precedence.FACTOR,
@@ -1375,7 +1377,7 @@ class _Unparser(NodeVisitor):
             self.set_precedence(operator_precedence, node.operand)
             self.traverse(node.operand)
 
-    binop = {
+    binop = {  # noqa: RUF012
         "Add": "+",
         "Sub": "-",
         "Mult": "*",
@@ -1391,7 +1393,7 @@ class _Unparser(NodeVisitor):
         "Pow": "**",
     }
 
-    binop_precedence = {
+    binop_precedence = {  # noqa: RUF012
         "+": _Precedence.ARITH,
         "-": _Precedence.ARITH,
         "*": _Precedence.TERM,
@@ -1426,7 +1428,7 @@ class _Unparser(NodeVisitor):
             self.set_precedence(right_precedence, node.right)
             self.traverse(node.right)
 
-    cmpops = {
+    cmpops = {  # noqa: RUF012
         "Eq": "==",
         "NotEq": "!=",
         "Lt": "<",
@@ -1447,8 +1449,8 @@ class _Unparser(NodeVisitor):
                 self.write(" " + self.cmpops[o.__class__.__name__] + " ")
                 self.traverse(e)
 
-    boolops = {"And": "and", "Or": "or"}
-    boolop_precedence = {"and": _Precedence.AND, "or": _Precedence.OR}
+    boolops = {"And": "and", "Or": "or"}  # noqa: RUF012
+    boolop_precedence = {"and": _Precedence.AND, "or": _Precedence.OR}  # noqa: RUF012
 
     def visit_BoolOp(self, node):
         operator = self.boolops[node.op.__class__.__name__]

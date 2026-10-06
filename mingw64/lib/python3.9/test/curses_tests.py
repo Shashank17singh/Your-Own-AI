@@ -19,7 +19,7 @@ def test_textpad(stdscr, insert_mode=False):
     else:
         mode = "overwrite mode"
 
-    stdscr.addstr(uly - 3, ulx, "Use Ctrl-G to end editing (%s)." % mode)
+    stdscr.addstr(uly - 3, ulx, f"Use Ctrl-G to end editing ({mode}).")
     stdscr.addstr(uly - 2, ulx, "Be sure to try typing in the lower-right corner.")
     win = curses.newwin(nlines, ncols, uly, ulx)
     textpad.rectangle(stdscr, uly - 1, ulx - 1, uly + nlines, ulx + ncols)

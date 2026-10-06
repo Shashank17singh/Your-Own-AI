@@ -133,21 +133,19 @@ def pixels_conv(value):
 def tcl_obj_eq(actual, expected):
     if actual == expected:
         return True
-    if isinstance(actual, _tkinter.Tcl_Obj):
-        if isinstance(expected, str):
-            return str(actual) == expected
-    if isinstance(actual, tuple):
-        if isinstance(expected, tuple):
-            return len(actual) == len(expected) and all(
-                tcl_obj_eq(act, exp) for act, exp in zip(actual, expected)
-            )
+    if isinstance(actual, _tkinter.Tcl_Obj) and isinstance(expected, str):
+        return str(actual) == expected
+    if isinstance(actual, tuple) and isinstance(expected, tuple):
+        return len(actual) == len(expected) and all(
+            tcl_obj_eq(act, exp) for act, exp in zip(actual, expected)
+        )
     return False
 
 
 def widget_eq(actual, expected):
     if actual == expected:
         return True
-    if isinstance(actual, (str, tkinter.Widget)):
+    if isinstance(actual, (str, tkinter.Widget)):  # noqa: SIM102
         if isinstance(expected, (str, tkinter.Widget)):
             return str(actual) == str(expected)
     return False

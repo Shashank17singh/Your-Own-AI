@@ -161,7 +161,7 @@ class AifcMiscTest(unittest.TestCase):
 
             # Aifc_write.initfp() won't raise in normal case.  But some errors
             # (e.g. MemoryError, KeyboardInterrupt, etc..) can happen.
-            with mock.patch.object(aifc.Aifc_write, "initfp", side_effect=RuntimeError):
+            with mock.patch.object(aifc.Aifc_write, "initfp", side_effect=RuntimeError):  # noqa: SIM117
                 with self.assertRaises(RuntimeError):
                     self.fout = aifc.open(TESTFN, "wb")
 

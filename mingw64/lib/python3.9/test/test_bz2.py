@@ -36,7 +36,7 @@ def ext_decompress(data):
 class BaseTest(unittest.TestCase):
     "Base for other testcases."
 
-    TEXT_LINES = [
+    TEXT_LINES = [  # noqa: RUF012
         b"root:x:0:0:root:/root:/bin/bash\n",
         b"bin:x:1:1:bin:/bin:\n",
         b"daemon:x:2:2:daemon:/sbin:\n",
@@ -477,7 +477,7 @@ class BZ2FileTest(BaseTest):
 
     def testContextProtocol(self):
         f = None
-        with BZ2File(self.filename, "wb") as f:
+        with BZ2File(self.filename, "wb") as f:  # noqa: F811
             f.write(b"xxx")
         f = BZ2File(self.filename, "rb")
         f.close()
@@ -490,7 +490,7 @@ class BZ2FileTest(BaseTest):
             self.fail("__enter__ on a closed file didn't raise an exception")
         try:
             with BZ2File(self.filename, "wb") as f:
-                1 / 0
+                1 / 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
@@ -713,7 +713,7 @@ class BZ2DecompressorTest(BaseTest):
 
     def testEOFError(self):
         bz2d = BZ2Decompressor()
-        text = bz2d.decompress(self.DATA)
+        bz2d.decompress(self.DATA)
         self.assertRaises(EOFError, bz2d.decompress, b"anything")
         self.assertRaises(EOFError, bz2d.decompress, b"")
 
@@ -827,9 +827,9 @@ class BZ2DecompressorTest(BaseTest):
 
     def test_failure(self):
         bzd = BZ2Decompressor()
-        self.assertRaises(Exception, bzd.decompress, self.BAD_DATA * 30)
+        self.assertRaises(Exception, bzd.decompress, self.BAD_DATA * 30)  # noqa: B017
         # Previously, a second call could crash due to internal inconsistency
-        self.assertRaises(Exception, bzd.decompress, self.BAD_DATA * 30)
+        self.assertRaises(Exception, bzd.decompress, self.BAD_DATA * 30)  # noqa: B017
 
     @support.refcount_test
     def test_refleaks_in___init__(self):
@@ -944,10 +944,10 @@ class OpenTest(BaseTest):
     def test_x_mode(self):
         for mode in ("x", "xb", "xt"):
             unlink(self.filename)
-            with self.open(self.filename, mode) as f:
+            with self.open(self.filename, mode):
                 pass
-            with self.assertRaises(FileExistsError):
-                with self.open(self.filename, mode) as f:
+            with self.assertRaises(FileExistsError):  # noqa: SIM117
+                with self.open(self.filename, mode):
                     pass
 
     def test_fileobj(self):

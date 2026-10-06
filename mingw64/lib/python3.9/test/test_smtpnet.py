@@ -15,7 +15,7 @@ def check_ssl_verifiy(host, port):
     with socket.create_connection((host, port)) as sock:
         try:
             sock = context.wrap_socket(sock, server_hostname=host)
-        except Exception:
+        except Exception:  # noqa: BLE001
             return False
         else:
             sock.close()

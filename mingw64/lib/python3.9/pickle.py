@@ -392,9 +392,8 @@ def encode_long(x):
         return b""
     nbytes = (x.bit_length() >> 3) + 1
     result = x.to_bytes(nbytes, byteorder="little", signed=True)
-    if x < 0 and nbytes > 1:
-        if result[-1] == 0xFF and (result[-2] & 0x80) != 0:
-            result = result[:-1]
+    if x < 0 and nbytes > 1 and result[-1] == 0xFF and (result[-2] & 0x80) != 0:
+        result = result[:-1]
     return result
 
 
@@ -462,7 +461,7 @@ class _Pickler:
         if protocol < 0:
             protocol = HIGHEST_PROTOCOL
         elif not 0 <= protocol <= HIGHEST_PROTOCOL:
-            raise ValueError("pickle protocol must be <= %d" % HIGHEST_PROTOCOL)
+            raise ValueError("pickle protocol must be <= %d" % HIGHEST_PROTOCOL)  # noqa: UP031
         if buffer_callback is not None and protocol < 5:
             raise ValueError("buffer_callback needs protocol >= 5")
         self._buffer_callback = buffer_callback
@@ -496,7 +495,7 @@ class _Pickler:
         if not hasattr(self, "_file_write"):
             raise PicklingError(
                 "Pickler.__init__() was not called by "
-                "%s.__init__()" % (self.__class__.__name__,)
+                f"{self.__class__.__name__}.__init__()"
             )
         if self.proto >= 2:
             self.write(PROTO + pack("<B", self.proto))
@@ -600,7 +599,7 @@ class _Pickler:
                         rv = reduce()
                     else:
                         raise PicklingError(
-                            "Can't pickle %r object: %r" % (t.__name__, obj)
+                            f"Can't pickle {t.__name__!r} object: {obj!r}"
                         )
 
         # Check for string returned by reduce(), meaning "save as global"
@@ -610,17 +609,17 @@ class _Pickler:
 
         # Assert that reduce() returned a tuple
         if not isinstance(rv, tuple):
-            raise PicklingError("%s must return string or tuple" % reduce)
+            raise PicklingError(f"{reduce} must return string or tuple")
 
         # Assert that it returned an appropriately sized tuple
         l = len(rv)
         if not (2 <= l <= 6):
             raise PicklingError(
-                "Tuple returned by %s must have two to six elements" % reduce
+                f"Tuple returned by {reduce} must have two to six elements"
             )
 
         # Save the reduce() output and finally memoize the object
-        self.save_reduce(obj=obj, *rv)
+        self.save_reduce(obj=obj, *rv)  # noqa: B026
 
     def persistent_id(self, obj):
         # This exists so a subclass can override it
@@ -762,7 +761,7 @@ class _Pickler:
 
     # Methods below this point are dispatched through the dispatch table
 
-    dispatch = {}
+    dispatch = {}  # noqa: RUF012
 
     def save_none(self, obj):
         self.write(NONE)
@@ -1090,7 +1089,6 @@ class _Pickler:
 
     def save_global(self, obj, name=None):
         write = self.write
-        memo = self.memo
 
         if name is None:
             name = getattr(obj, "__qualname__", None)
@@ -1104,13 +1102,12 @@ class _Pickler:
             obj2, parent = _getattribute(module, name)
         except (ImportError, KeyError, AttributeError):
             raise PicklingError(
-                "Can't pickle %r: it's not found as %s.%s" % (obj, module_name, name)
+                f"Can't pickle {obj!r}: it's not found as {module_name}.{name}"
             ) from None
         else:
             if obj2 is not obj:
                 raise PicklingError(
-                    "Can't pickle %r: it's not the same object as %s.%s"
-                    % (obj, module_name, name)
+                    f"Can't pickle {obj!r}: it's not the same object as {module_name}.{name}"
                 )
 
         if self.proto >= 2:
@@ -1160,7 +1157,7 @@ class _Pickler:
                 )
             except UnicodeEncodeError:
                 raise PicklingError(
-                    "can't pickle global identifier '%s.%s' using "
+                    "can't pickle global identifier '%s.%s' using "  # noqa: UP031
                     "pickle protocol %i" % (module, name, self.proto)
                 ) from None
 
@@ -1242,7 +1239,7 @@ class _Unpickler:
         if not hasattr(self, "_file_read"):
             raise UnpicklingError(
                 "Unpickler.__init__() was not called by "
-                "%s.__init__()" % (self.__class__.__name__,)
+                f"{self.__class__.__name__}.__init__()"
             )
         self._unframer = _Unframer(self._file_read, self._file_readline)
         self.read = self._unframer.read
@@ -1274,12 +1271,12 @@ class _Unpickler:
     def persistent_load(self, pid):
         raise UnpicklingError("unsupported persistent id encountered")
 
-    dispatch = {}
+    dispatch = {}  # noqa: RUF012
 
     def load_proto(self):
         proto = self.read(1)[0]
         if not 0 <= proto <= HIGHEST_PROTOCOL:
-            raise ValueError("unsupported pickle protocol: %d" % proto)
+            raise ValueError("unsupported pickle protocol: %d" % proto)  # noqa: UP031
         self.proto = proto
 
     dispatch[PROTO[0]] = load_proto
@@ -1287,7 +1284,7 @@ class _Unpickler:
     def load_frame(self):
         (frame_size,) = unpack("<Q", self.read(8))
         if frame_size > sys.maxsize:
-            raise ValueError("frame size > sys.maxsize: %d" % frame_size)
+            raise ValueError("frame size > sys.maxsize: %d" % frame_size)  # noqa: UP031
         self._unframer.load_frame(frame_size)
 
     dispatch[FRAME[0]] = load_frame
@@ -1418,7 +1415,7 @@ class _Unpickler:
         (len,) = unpack("<I", self.read(4))
         if len > maxsize:
             raise UnpicklingError(
-                "BINBYTES exceeds system's maximum size of %d bytes" % maxsize
+                "BINBYTES exceeds system's maximum size of %d bytes" % maxsize  # noqa: UP031
             )
         self.append(self.read(len))
 
@@ -1433,7 +1430,7 @@ class _Unpickler:
         (len,) = unpack("<I", self.read(4))
         if len > maxsize:
             raise UnpicklingError(
-                "BINUNICODE exceeds system's maximum size of %d bytes" % maxsize
+                "BINUNICODE exceeds system's maximum size of %d bytes" % maxsize  # noqa: UP031
             )
         self.append(str(self.read(len), "utf-8", "surrogatepass"))
 
@@ -1443,7 +1440,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BINUNICODE8 exceeds system's maximum size of %d bytes" % maxsize
+                "BINUNICODE8 exceeds system's maximum size of %d bytes" % maxsize  # noqa: UP031
             )
         self.append(str(self.read(len), "utf-8", "surrogatepass"))
 
@@ -1453,7 +1450,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BINBYTES8 exceeds system's maximum size of %d bytes" % maxsize
+                "BINBYTES8 exceeds system's maximum size of %d bytes" % maxsize  # noqa: UP031
             )
         self.append(self.read(len))
 
@@ -1463,7 +1460,7 @@ class _Unpickler:
         (len,) = unpack("<Q", self.read(8))
         if len > maxsize:
             raise UnpicklingError(
-                "BYTEARRAY8 exceeds system's maximum size of %d bytes" % maxsize
+                "BYTEARRAY8 exceeds system's maximum size of %d bytes" % maxsize  # noqa: UP031
             )
         b = bytearray(len)
         self.readinto(b)
@@ -1583,7 +1580,7 @@ class _Unpickler:
                 value = klass(*args)
             except TypeError as err:
                 raise TypeError(
-                    "in constructor for %s: %s" % (klass.__name__, str(err)),
+                    f"in constructor for {klass.__name__}: {err!s}",
                     sys.exc_info()[2],
                 )
         else:
@@ -1669,7 +1666,7 @@ class _Unpickler:
             if code <= 0:  # note that 0 is forbidden
                 # Corrupt or hostile pickle.
                 raise UnpicklingError("EXT specifies code <= 0")
-            raise ValueError("unregistered extension code %d" % code)
+            raise ValueError("unregistered extension code %d" % code)  # noqa: UP031
         obj = self.find_class(*key)
         _extension_cache[code] = obj
         self.append(obj)

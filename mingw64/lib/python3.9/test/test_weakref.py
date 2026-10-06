@@ -49,7 +49,7 @@ class Object:
         self.arg = arg
 
     def __repr__(self):
-        return "<Object %r>" % self.arg
+        return f"<Object {self.arg!r}>"
 
     def __eq__(self, other):
         if isinstance(other, Object):
@@ -167,7 +167,7 @@ class ReferencesTestCase(TestBase):
 
         c = C()
         self.ref = weakref.ref(c, callback)
-        ref1 = weakref.ref(c, callback)
+        weakref.ref(c, callback)
         del c
 
     def test_constructor_kwargs(self):
@@ -183,7 +183,7 @@ class ReferencesTestCase(TestBase):
         gc_collect()  # For PyPy or other GCs.
 
         def check(proxy):
-            proxy.bar
+            proxy.bar  # noqa: B018
 
         self.assertRaises(ReferenceError, check, ref1)
         self.assertRaises(ReferenceError, check, ref2)
@@ -236,7 +236,7 @@ class ReferencesTestCase(TestBase):
     def test_proxy_reuse(self):
         o = C()
         proxy1 = weakref.proxy(o)
-        ref = weakref.ref(o)
+        weakref.ref(o)
         proxy2 = weakref.proxy(o)
         self.assertIs(
             proxy1, proxy2, "proxy object w/out callback should have been re-used"
@@ -442,7 +442,7 @@ class ReferencesTestCase(TestBase):
             # "blech" in p calls MyObj.__iter__ through the proxy,
             # without keeping a reference to the real object, so it
             # can be killed in the middle of the call
-            "blech" in p
+            "blech" in p  # noqa: B015
 
     def test_proxy_next(self):
         arr = [4, 5, 6]
@@ -620,7 +620,7 @@ class ReferencesTestCase(TestBase):
 
         c1 = C()
         c1.i = C()
-        wr = weakref.ref(c1.i, lambda ignore: gc.collect())
+        weakref.ref(c1.i, lambda ignore: gc.collect())
 
         c2 = C()
         c2.c1 = c1
@@ -643,7 +643,7 @@ class ReferencesTestCase(TestBase):
 
         class II:
             def acallback(self, ignore):
-                self.J
+                self.J  # noqa: B018
 
         I = II()
         I.J = J
@@ -695,7 +695,7 @@ class ReferencesTestCase(TestBase):
 
         class II:
             def acallback(self, ignore):
-                self.J
+                self.J  # noqa: B018
 
         I = II()
         I.J = J
@@ -715,9 +715,9 @@ class ReferencesTestCase(TestBase):
 
         class C:
             def cb(self, ignore):
-                self.me
-                self.c1
-                self.wr
+                self.me  # noqa: B018
+                self.c1  # noqa: B018
+                self.wr  # noqa: B018
 
         c1, c2 = C(), C()
 
@@ -740,9 +740,9 @@ class ReferencesTestCase(TestBase):
 
         class C:
             def cb(self, ignore):
-                self.me
-                self.c1
-                self.wr
+                self.me  # noqa: B018
+                self.c1  # noqa: B018
+                self.wr  # noqa: B018
 
         class D:
             pass
@@ -885,7 +885,7 @@ class ReferencesTestCase(TestBase):
                 global ref_from_del
                 ref_from_del = weakref.ref(self)
 
-        w = Target()
+        Target()
 
     def test_init(self):
         # Issue 3634
@@ -987,7 +987,7 @@ class ReferencesTestCase(TestBase):
                 wself = weakref.ref(self)
 
                 def cb(wparent):
-                    o = wself()
+                    wself()
 
                 self.wparent = weakref.ref(parent, cb)
 
@@ -1028,7 +1028,7 @@ class ReferencesTestCase(TestBase):
                 pass
 
         x = ObjectWithDel(1)
-        ref1 = weakref.ref(x, lambda ref: support.gc_collect())
+        weakref.ref(x, lambda ref: support.gc_collect())
         del x
         support.gc_collect()
 
@@ -1394,7 +1394,7 @@ class MappingTestCase(TestBase):
             self.assertEqual(
                 weakref.getweakrefcount(o),
                 1,
-                "wrong number of weak references to %r!" % o,
+                f"wrong number of weak references to {o!r}!",
             )
             self.assertIs(o.arg, dict[o], "wrong object returned by weak dict!")
         items1 = dict.items()
@@ -1486,7 +1486,7 @@ class MappingTestCase(TestBase):
 
         # key iterator, via iterkeys():
         keys = list(dict.keys())
-        for k in dict.keys():
+        for k in dict:
             keys.remove(k)
         self.assertFalse(keys, "iterkeys() did not touch all keys")
 
@@ -1630,7 +1630,7 @@ class MappingTestCase(TestBase):
     def test_make_weak_keyed_dict_from_weak_keyed_dict(self):
         o = Object(3)
         dict = weakref.WeakKeyDictionary({o: 364})
-        dict2 = weakref.WeakKeyDictionary(dict)
+        weakref.WeakKeyDictionary(dict)
         self.assertEqual(dict[o], 364)
 
     def make_weak_keyed_dict(self):
@@ -1648,7 +1648,7 @@ class MappingTestCase(TestBase):
     def test_make_weak_valued_dict_from_weak_valued_dict(self):
         o = Object(3)
         dict = weakref.WeakValueDictionary({364: o})
-        dict2 = weakref.WeakValueDictionary(dict)
+        weakref.WeakValueDictionary(dict)
         self.assertEqual(dict[364], o)
 
     def test_make_weak_valued_dict_misc(self):
@@ -1727,12 +1727,12 @@ class MappingTestCase(TestBase):
         weakdict = klass()
         weakdict.update(dict)
         self.assertEqual(len(weakdict), len(dict))
-        for k in weakdict.keys():
+        for k in weakdict:
             self.assertIn(k, dict, "mysterious new key appeared in weak dict")
             v = dict.get(k)
             self.assertIs(v, weakdict[k])
             self.assertIs(v, weakdict.get(k))
-        for k in dict.keys():
+        for k in dict:
             self.assertIn(k, weakdict, "original key disappeared in weak dict")
             v = dict[k]
             self.assertIs(v, weakdict[k])
@@ -1970,7 +1970,7 @@ class MappingTestCase(TestBase):
                     _ = copy.deepcopy(d)
                 else:
                     _ = d.copy()
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
                 exc.append(ex)
 
         def pop_and_collect(lst):
@@ -2050,7 +2050,7 @@ from test import mapping_tests
 class WeakValueDictionaryTestCase(mapping_tests.BasicTestMappingProtocol):
     """Check that WeakValueDictionary conforms to the mapping protocol"""
 
-    __ref = {"key1": Object(1), "key2": Object(2), "key3": Object(3)}
+    __ref = {"key1": Object(1), "key2": Object(2), "key3": Object(3)}  # noqa: RUF012
     type2test = weakref.WeakValueDictionary
 
     def _reference(self):
@@ -2060,7 +2060,7 @@ class WeakValueDictionaryTestCase(mapping_tests.BasicTestMappingProtocol):
 class WeakKeyDictionaryTestCase(mapping_tests.BasicTestMappingProtocol):
     """Check that WeakKeyDictionary conforms to the mapping protocol"""
 
-    __ref = {Object("key1"): 1, Object("key2"): 2, Object("key3"): 3}
+    __ref = {Object("key1"): 1, Object("key2"): 2, Object("key3"): 3}  # noqa: RUF012
     type2test = weakref.WeakKeyDictionary
 
     def _reference(self):
@@ -2207,9 +2207,9 @@ class FinalizeTestCase(unittest.TestCase):
         def error():
             # Create an atexit finalizer from inside a finalizer called
             # at exit.  This should be the next to be run.
-            g1 = weakref.finalize(cls, print, "g1")
+            weakref.finalize(cls, print, "g1")
             print("f3 error")
-            1 / 0
+            1 / 0  # noqa: B018
 
         # cls should stay alive till atexit callbacks run
         f1 = weakref.finalize(cls, print, "f1", _global_var)
@@ -2227,7 +2227,7 @@ class FinalizeTestCase(unittest.TestCase):
             "from test.test_weakref import FinalizeTestCase;"
             + "FinalizeTestCase.run_in_child()"
         )
-        rc, out, err = script_helper.assert_python_ok("-c", prog)
+        _rc, out, err = script_helper.assert_python_ok("-c", prog)
         out = out.decode("ascii").splitlines()
         self.assertEqual(out, ["f4 foobar", "f3 error", "g1", "f1 foobar"])
         self.assertTrue(b"ZeroDivisionError" in err)

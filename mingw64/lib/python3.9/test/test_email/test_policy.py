@@ -20,7 +20,7 @@ class PolicyAPITests(unittest.TestCase):
     longMessage = True
 
     # Base default values.
-    compat32_defaults = {
+    compat32_defaults = {  # noqa: RUF012
         "max_line_length": 78,
         "linesep": "\n",
         "cte_type": "8bit",
@@ -47,7 +47,7 @@ class PolicyAPITests(unittest.TestCase):
     # be for that policy.  The second argument to make defaults is the
     # difference between the base defaults and that for the particular policy.
     new_policy = email.policy.EmailPolicy()
-    policies = {
+    policies = {  # noqa: RUF012
         email.policy.compat32: make_defaults(compat32_defaults, {}),
         email.policy.default: make_defaults(policy_defaults, {}),
         email.policy.SMTP: make_defaults(policy_defaults, {"linesep": "\r\n"}),

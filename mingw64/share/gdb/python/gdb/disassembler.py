@@ -87,7 +87,7 @@ class maint_info_py_disassemblers_cmd(gdb.Command):
             print("No Python disassemblers registered.")
             return
         longest_arch_name = 0
-        for architecture in _disassemblers_dict:
+        for architecture in _disassemblers_dict:  # noqa: PLC0206
             if architecture is not None:
                 name = _disassemblers_dict[architecture].name
                 longest_arch_name = max(longest_arch_name, len(name))
@@ -98,7 +98,7 @@ class maint_info_py_disassemblers_cmd(gdb.Command):
         fmt_len = max(longest_arch_name, len("Architecture"))
         format_string = "{:" + str(fmt_len) + "s} {:s}"
         print(format_string.format("Architecture", "Disassember Name"))
-        for architecture in _disassemblers_dict:
+        for architecture in _disassemblers_dict:  # noqa: PLC0206
             if architecture is not None:
                 name = _disassemblers_dict[architecture].name
                 if architecture == curr_arch:

@@ -219,7 +219,7 @@ class PropertyTests(unittest.TestCase):
                 self._color = "cyan"
 
         with self.assertRaises(AttributeError):
-            Okay1.color
+            Okay1.color  # noqa: B018
         self.assertEqual(Okay1().color, "cyan")
 
         class Okay2(ClassWithAbstractVirtualProperty):
@@ -231,7 +231,7 @@ class PropertyTests(unittest.TestCase):
                 self._color = "magenta"
 
         with self.assertRaises(AttributeError):
-            Okay2.color
+            Okay2.color  # noqa: B018
         self.assertEqual(Okay2().color, "magenta")
 
 
@@ -265,7 +265,7 @@ class PropertySubclassTests(unittest.TestCase):
         except AttributeError:
             pass
         else:
-            raise Exception("AttributeError not raised")
+            raise Exception("AttributeError not raised")  # noqa: TRY002
 
     @unittest.skipIf(
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"

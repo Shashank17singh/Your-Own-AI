@@ -18,12 +18,12 @@ class BytecodeTestCase(unittest.TestCase):
     def assertInBytecode(self, x, opname, argval=_UNSPECIFIED):
         """Returns instr if opname is found, otherwise throws AssertionError"""
         for instr in dis.get_instructions(x):
-            if instr.opname == opname:
+            if instr.opname == opname:  # noqa: SIM102
                 if argval is _UNSPECIFIED or instr.argval == argval:
                     return instr
         disassembly = self.get_disassembly_as_string(x)
         if argval is _UNSPECIFIED:
-            msg = "%s not found in bytecode:\n%s" % (opname, disassembly)
+            msg = f"{opname} not found in bytecode:\n{disassembly}"
         else:
             msg = "(%s,%r) not found in bytecode:\n%s"
             msg = msg % (opname, argval, disassembly)
@@ -35,7 +35,7 @@ class BytecodeTestCase(unittest.TestCase):
             if instr.opname == opname:
                 disassembly = self.get_disassembly_as_string(x)
                 if argval is _UNSPECIFIED:
-                    msg = "%s occurs in bytecode:\n%s" % (opname, disassembly)
+                    msg = f"{opname} occurs in bytecode:\n{disassembly}"
                 elif instr.argval == argval:
                     msg = "(%s,%r) occurs in bytecode:\n%s"
                     msg = msg % (opname, argval, disassembly)

@@ -244,7 +244,7 @@ class ArrayTestCase(unittest.TestCase):
 
     def test_empty_element_struct(self):
         class EmptyStruct(Structure):
-            _fields_ = []
+            _fields_ = []  # noqa: RUF012
 
         obj = (EmptyStruct * 2)()  # bpo37188: Floating point exception
         self.assertEqual(sizeof(obj), 0)

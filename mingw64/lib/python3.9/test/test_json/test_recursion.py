@@ -38,7 +38,6 @@ class TestRecursion:
         else:
             self.fail("didn't raise ValueError on dict recursion")
         x = {}
-        y = {"a": x, "b": x}
         self.dumps(x)
 
     def test_defaultrecursion(self):

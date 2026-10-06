@@ -165,7 +165,7 @@ class AbstractFormatter:
         label = ""
         for c in format:
             if c == "1":
-                label = label + ("%d" % counter)
+                label = label + ("%d" % counter)  # noqa: UP031
             elif c in "aA":
                 if counter > 0:
                     label = label + self.format_letter(c, counter)
@@ -396,22 +396,22 @@ class AbstractWriter(NullWriter):
     """
 
     def new_alignment(self, align):
-        print("new_alignment(%r)" % (align,))
+        print(f"new_alignment({align!r})")
 
     def new_font(self, font):
-        print("new_font(%r)" % (font,))
+        print(f"new_font({font!r})")
 
     def new_margin(self, margin, level):
-        print("new_margin(%r, %d)" % (margin, level))
+        print("new_margin(%r, %d)" % (margin, level))  # noqa: UP031
 
     def new_spacing(self, spacing):
-        print("new_spacing(%r)" % (spacing,))
+        print(f"new_spacing({spacing!r})")
 
     def new_styles(self, styles):
-        print("new_styles(%r)" % (styles,))
+        print(f"new_styles({styles!r})")
 
     def send_paragraph(self, blankline):
-        print("send_paragraph(%r)" % (blankline,))
+        print(f"send_paragraph({blankline!r})")
 
     def send_line_break(self):
         print("send_line_break()")
@@ -420,13 +420,13 @@ class AbstractWriter(NullWriter):
         print("send_hor_rule()")
 
     def send_label_data(self, data):
-        print("send_label_data(%r)" % (data,))
+        print(f"send_label_data({data!r})")
 
     def send_flowing_data(self, data):
-        print("send_flowing_data(%r)" % (data,))
+        print(f"send_flowing_data({data!r})")
 
     def send_literal_data(self, data):
-        print("send_literal_data(%r)" % (data,))
+        print(f"send_literal_data({data!r})")
 
 
 class DumbWriter(NullWriter):
@@ -501,9 +501,9 @@ def test(file=None):
     w = DumbWriter()
     f = AbstractFormatter(w)
     if file is not None:
-        fp = open(file)
+        fp = open(file)  # noqa: SIM115
     elif sys.argv[1:]:
-        fp = open(sys.argv[1])
+        fp = open(sys.argv[1])  # noqa: SIM115
     else:
         fp = sys.stdin
     try:

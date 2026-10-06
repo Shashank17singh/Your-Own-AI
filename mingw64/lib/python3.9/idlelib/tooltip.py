@@ -55,7 +55,7 @@ class TooltipBase:
         x, y = self.get_position()
         root_x = self.anchor_widget.winfo_rootx() + x
         root_y = self.anchor_widget.winfo_rooty() + y
-        self.tipwindow.wm_geometry("+%d+%d" % (root_x, root_y))
+        self.tipwindow.wm_geometry("+%d+%d" % (root_x, root_y))  # noqa: UP031
 
     def get_position(self):
         """choose a screen position for the tooltip"""
@@ -179,7 +179,7 @@ def _tooltip(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test tooltip")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x, y + 150))
+    top.geometry("+%d+%d" % (x, y + 150))  # noqa: UP031
     label = Label(top, text="Place your mouse over buttons")
     label.pack()
     button1 = Button(top, text="Button 1 -- 1/2 second hover delay")

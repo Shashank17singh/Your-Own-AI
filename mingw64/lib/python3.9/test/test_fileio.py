@@ -164,17 +164,15 @@ class AutoFileTests:
     def testRepr(self):
         self.assertEqual(
             repr(self.f),
-            "<%s.FileIO name=%r mode=%r closefd=True>"
-            % (self.modulename, self.f.name, self.f.mode),
+            f"<{self.modulename}.FileIO name={self.f.name!r} mode={self.f.mode!r} closefd=True>",
         )
         del self.f.name
         self.assertEqual(
             repr(self.f),
-            "<%s.FileIO fd=%r mode=%r closefd=True>"
-            % (self.modulename, self.f.fileno(), self.f.mode),
+            f"<{self.modulename}.FileIO fd={self.f.fileno()!r} mode={self.f.mode!r} closefd=True>",
         )
         self.f.close()
-        self.assertEqual(repr(self.f), "<%s.FileIO [closed]>" % (self.modulename,))
+        self.assertEqual(repr(self.f), f"<{self.modulename}.FileIO [closed]>")
 
     def testReprNoCloseFD(self):
         fd = os.open(TESTFN, os.O_RDONLY)
@@ -182,8 +180,7 @@ class AutoFileTests:
             with self.FileIO(fd, "r", closefd=False) as f:
                 self.assertEqual(
                     repr(f),
-                    "<%s.FileIO name=%r mode=%r closefd=False>"
-                    % (self.modulename, f.name, f.mode),
+                    f"<{self.modulename}.FileIO name={f.name!r} mode={f.mode!r} closefd=False>",
                 )
         finally:
             os.close(fd)
@@ -428,7 +425,7 @@ class OtherFileTests:
                 pass
             else:
                 f.close()
-                self.fail("%r is an invalid file mode" % mode)
+                self.fail(f"{mode!r} is an invalid file mode")
 
     def testModeStrings(self):
         # test that the mode attribute is correct for various mode strings
@@ -466,7 +463,7 @@ class OtherFileTests:
         try:
             fn = TESTFN.encode("ascii")
         except UnicodeEncodeError:
-            self.skipTest("could not encode %r to ascii" % TESTFN)
+            self.skipTest(f"could not encode {TESTFN!r} to ascii")
         f = self.FileIO(fn, "w")
         try:
             f.write(b"abc")
@@ -484,7 +481,7 @@ class OtherFileTests:
         try:
             fn = TESTFN_UNICODE.encode("utf-8")
         except UnicodeEncodeError:
-            self.skipTest("could not encode %r to utf-8" % TESTFN_UNICODE)
+            self.skipTest(f"could not encode {TESTFN_UNICODE!r} to utf-8")
         f = self.FileIO(fn, "w")
         try:
             f.write(b"abc")
@@ -516,12 +513,12 @@ class OtherFileTests:
             if msg.args[0] != 0:
                 s = str(msg)
                 if TESTFN in s or bad_mode not in s:
-                    self.fail("bad error message for invalid mode: %s" % s)
+                    self.fail(f"bad error message for invalid mode: {s}")
             # if msg.args[0] == 0, we're probably on Windows where there may be
             # no obvious way to discover why open() failed.
         else:
             f.close()
-            self.fail("no error for invalid mode: %s" % bad_mode)
+            self.fail(f"no error for invalid mode: {bad_mode}")
 
     def testTruncate(self):
         f = self.FileIO(TESTFN, "w")
@@ -546,18 +543,18 @@ class OtherFileTests:
             f = self.FileIO(TESTFN, "r+")
             data = f.read(5)
             if data != bytes(range(5)):
-                self.fail("Read on file opened for update failed %r" % data)
+                self.fail(f"Read on file opened for update failed {data!r}")
             if f.tell() != 5:
-                self.fail("File pos after read wrong %d" % f.tell())
+                self.fail("File pos after read wrong %d" % f.tell())  # noqa: UP031
 
             f.truncate()
             if f.tell() != 5:
-                self.fail("File pos after ftruncate wrong %d" % f.tell())
+                self.fail("File pos after ftruncate wrong %d" % f.tell())  # noqa: UP031
 
             f.close()
             size = os.path.getsize(TESTFN)
             if size != 5:
-                self.fail("File size after ftruncate wrong %d" % size)
+                self.fail("File size after ftruncate wrong %d" % size)  # noqa: UP031
 
         try:
             bug801631()
@@ -566,20 +563,20 @@ class OtherFileTests:
 
     def testAppend(self):
         try:
-            f = open(TESTFN, "wb")
+            f = open(TESTFN, "wb")  # noqa: SIM115
             f.write(b"spam")
             f.close()
-            f = open(TESTFN, "ab")
+            f = open(TESTFN, "ab")  # noqa: SIM115
             f.write(b"eggs")
             f.close()
-            f = open(TESTFN, "rb")
+            f = open(TESTFN, "rb")  # noqa: SIM115
             d = f.read()
             f.close()
             self.assertEqual(d, b"spameggs")
         finally:
             try:
                 os.unlink(TESTFN)
-            except:
+            except:  # noqa: E722, S110
                 pass
 
     def testInvalidInit(self):

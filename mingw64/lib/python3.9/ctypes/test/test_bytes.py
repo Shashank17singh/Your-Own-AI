@@ -39,7 +39,7 @@ class BytesTest(unittest.TestCase):
 
     def test_struct(self):
         class X(Structure):
-            _fields_ = [("a", c_char * 3)]
+            _fields_ = [("a", c_char * 3)]  # noqa: RUF012
 
         x = X(b"abc")
         self.assertRaises(TypeError, X, "abc")
@@ -48,7 +48,7 @@ class BytesTest(unittest.TestCase):
 
     def test_struct_W(self):
         class X(Structure):
-            _fields_ = [("a", c_wchar * 3)]
+            _fields_ = [("a", c_wchar * 3)]  # noqa: RUF012
 
         x = X("abc")
         self.assertRaises(TypeError, X, b"abc")

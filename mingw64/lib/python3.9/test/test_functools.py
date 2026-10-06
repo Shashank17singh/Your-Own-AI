@@ -63,7 +63,9 @@ class TestPartial:
     def test_basic_examples(self):
         p = self.partial(capture, 1, 2, a=10, b=20)
         self.assertTrue(callable(p))
-        self.assertEqual(p(3, 4, b=30, c=40), ((1, 2, 3, 4), dict(a=10, b=30, c=40)))
+        self.assertEqual(
+            p(3, 4, b=30, c=40), ((1, 2, 3, 4), {"a": 10, "b": 30, "c": 40})
+        )
         p = self.partial(map, lambda x: x * 10)
         self.assertEqual(list(p([1, 2, 3, 4])), [10, 20, 30, 40])
 
@@ -72,7 +74,7 @@ class TestPartial:
         # attributes should be readable
         self.assertEqual(p.func, capture)
         self.assertEqual(p.args, (1, 2))
-        self.assertEqual(p.keywords, dict(a=10, b=20))
+        self.assertEqual(p.keywords, {"a": 10, "b": 20})
 
     def test_argument_checking(self):
         self.assertRaises(TypeError, self.partial)  # need at least a func arg
@@ -238,7 +240,7 @@ class TestPartial:
         f = self.partial(capture)
         f.__setstate__((f, (), {}, {}))
         try:
-            self.assertEqual(repr(f), "%s(...)" % (name,))
+            self.assertEqual(repr(f), f"{name}(...)")
         finally:
             f.__setstate__((capture, (), {}, {}))
 
@@ -247,11 +249,7 @@ class TestPartial:
         try:
             self.assertEqual(
                 repr(f),
-                "%s(%r, ...)"
-                % (
-                    name,
-                    capture,
-                ),
+                f"{name}({capture!r}, ...)",
             )
         finally:
             f.__setstate__((capture, (), {}, {}))
@@ -261,11 +259,7 @@ class TestPartial:
         try:
             self.assertEqual(
                 repr(f),
-                "%s(%r, a=...)"
-                % (
-                    name,
-                    capture,
-                ),
+                f"{name}({capture!r}, a=...)",
             )
         finally:
             f.__setstate__((capture, (), {}, {}))
@@ -300,14 +294,14 @@ class TestPartial:
 
     def test_setstate(self):
         f = self.partial(signature)
-        f.__setstate__((capture, (1,), dict(a=10), dict(attr=[])))
+        f.__setstate__((capture, (1,), {"a": 10}, {"attr": []}))
 
-        self.assertEqual(signature(f), (capture, (1,), dict(a=10), dict(attr=[])))
+        self.assertEqual(signature(f), (capture, (1,), {"a": 10}, {"attr": []}))
         self.assertEqual(f(2, b=20), ((1, 2), {"a": 10, "b": 20}))
 
-        f.__setstate__((capture, (1,), dict(a=10), None))
+        f.__setstate__((capture, (1,), {"a": 10}, None))
 
-        self.assertEqual(signature(f), (capture, (1,), dict(a=10), {}))
+        self.assertEqual(signature(f), (capture, (1,), {"a": 10}, {}))
         self.assertEqual(f(2, b=20), ((1, 2), {"a": 10, "b": 20}))
 
         f.__setstate__((capture, (1,), None, None))
@@ -336,7 +330,7 @@ class TestPartial:
         f = self.partial(signature)
         f.__setstate__((capture, MyTuple((1,)), MyDict(a=10), None))
         s = signature(f)
-        self.assertEqual(s, (capture, (1,), dict(a=10), {}))
+        self.assertEqual(s, (capture, (1,), {"a": 10}, {}))
         self.assertIs(type(s[1]), tuple)
         self.assertIs(type(s[2]), dict)
         r = f()
@@ -423,7 +417,7 @@ class TestPartialC(TestPartial, unittest.TestCase):
         p = self.partial(capture, 1, 2, a=10, b=20)
         self.assertRaises(AttributeError, setattr, p, "func", map)
         self.assertRaises(AttributeError, setattr, p, "args", (1, 2))
-        self.assertRaises(AttributeError, setattr, p, "keywords", dict(a=1, b=2))
+        self.assertRaises(AttributeError, setattr, p, "keywords", {"a": 1, "b": 2})
 
         p = self.partial(hex)
         try:
@@ -693,7 +687,7 @@ class TestUpdateWrapper(unittest.TestCase):
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
     )
     def test_default_update_doc(self):
-        wrapper, f = self._default_update()
+        wrapper, _f = self._default_update()
         self.assertEqual(wrapper.__doc__, "This is a test")
 
     def test_no_update(self):
@@ -718,7 +712,7 @@ class TestUpdateWrapper(unittest.TestCase):
             pass
 
         f.attr = "This is a different test"
-        f.dict_attr = dict(a=1, b=2, c=3)
+        f.dict_attr = {"a": 1, "b": 2, "c": 3}
 
         def wrapper():
             pass
@@ -820,7 +814,7 @@ class TestWraps(TestUpdateWrapper):
             pass
 
         f.attr = "This is a different test"
-        f.dict_attr = dict(a=1, b=2, c=3)
+        f.dict_attr = {"a": 1, "b": 2, "c": 3}
 
         def add_dict_attr(f):
             f.dict_attr = {}
@@ -969,9 +963,9 @@ class TestCmpToKey:
         self.assertEqual(key(obj=3), key(obj=3))
         self.assertGreater(key(obj=3), key(obj=1))
         with self.assertRaises((TypeError, AttributeError)):
-            key(3) > 1  # rhs is not a K object
+            key(3) > 1  # rhs is not a K object  # noqa: B015
         with self.assertRaises((TypeError, AttributeError)):
-            1 < key(3)  # lhs is not a K object
+            1 < key(3)  # lhs is not a K object  # noqa: B015
         with self.assertRaises(TypeError):
             key = self.cmp_to_key()  # too few args
         with self.assertRaises(TypeError):
@@ -988,7 +982,7 @@ class TestCmpToKey:
 
         key = self.cmp_to_key(cmp1)
         with self.assertRaises(ZeroDivisionError):
-            key(3) > key(1)
+            key(3) > key(1)  # noqa: B015
 
         class BadCmp:
             def __lt__(self, other):
@@ -998,7 +992,7 @@ class TestCmpToKey:
             return BadCmp()
 
         with self.assertRaises(ZeroDivisionError):
-            key(3) > key(1)
+            key(3) > key(1)  # noqa: B015
 
     def test_obj_field(self):
         def cmp1(x, y):
@@ -1220,45 +1214,45 @@ class TestTotalOrdering(unittest.TestCase):
                 return NotImplemented
 
         with self.subTest("LT < 1"), self.assertRaises(TypeError):
-            ImplementsLessThan(-1) < 1
+            ImplementsLessThan(-1) < 1  # noqa: B015
 
         with self.subTest("LT < LE"), self.assertRaises(TypeError):
-            ImplementsLessThan(0) < ImplementsLessThanEqualTo(0)
+            ImplementsLessThan(0) < ImplementsLessThanEqualTo(0)  # noqa: B015
 
         with self.subTest("LT < GT"), self.assertRaises(TypeError):
-            ImplementsLessThan(1) < ImplementsGreaterThan(1)
+            ImplementsLessThan(1) < ImplementsGreaterThan(1)  # noqa: B015
 
         with self.subTest("LE <= LT"), self.assertRaises(TypeError):
-            ImplementsLessThanEqualTo(2) <= ImplementsLessThan(2)
+            ImplementsLessThanEqualTo(2) <= ImplementsLessThan(2)  # noqa: B015
 
         with self.subTest("LE <= GE"), self.assertRaises(TypeError):
-            ImplementsLessThanEqualTo(3) <= ImplementsGreaterThanEqualTo(3)
+            ImplementsLessThanEqualTo(3) <= ImplementsGreaterThanEqualTo(3)  # noqa: B015
 
         with self.subTest("GT > GE"), self.assertRaises(TypeError):
-            ImplementsGreaterThan(4) > ImplementsGreaterThanEqualTo(4)
+            ImplementsGreaterThan(4) > ImplementsGreaterThanEqualTo(4)  # noqa: B015
 
         with self.subTest("GT > LT"), self.assertRaises(TypeError):
-            ImplementsGreaterThan(5) > ImplementsLessThan(5)
+            ImplementsGreaterThan(5) > ImplementsLessThan(5)  # noqa: B015
 
         with self.subTest("GE >= GT"), self.assertRaises(TypeError):
-            ImplementsGreaterThanEqualTo(6) >= ImplementsGreaterThan(6)
+            ImplementsGreaterThanEqualTo(6) >= ImplementsGreaterThan(6)  # noqa: B015
 
         with self.subTest("GE >= LE"), self.assertRaises(TypeError):
-            ImplementsGreaterThanEqualTo(7) >= ImplementsLessThanEqualTo(7)
+            ImplementsGreaterThanEqualTo(7) >= ImplementsLessThanEqualTo(7)  # noqa: B015
 
         with self.subTest("GE when equal"):
             a = ComparatorNotImplemented(8)
             b = ComparatorNotImplemented(8)
             self.assertEqual(a, b)
             with self.assertRaises(TypeError):
-                a >= b
+                a >= b  # noqa: B015
 
         with self.subTest("LE when equal"):
             a = ComparatorNotImplemented(9)
             b = ComparatorNotImplemented(9)
             self.assertEqual(a, b)
             with self.assertRaises(TypeError):
-                a <= b
+                a <= b  # noqa: B015
 
     def test_pickle(self):
         for proto in range(pickle.HIGHEST_PROTOCOL + 1):
@@ -1679,7 +1673,7 @@ class TestLRU:
         )
 
     def test_lru_cache_decoration(self):
-        def f(zomg: "zomg_annotation"):
+        def f(zomg: "zomg_annotation"):  # noqa: F821
             """f doc string"""
             return 42
 
@@ -1694,7 +1688,7 @@ class TestLRU:
             return 3 * x + y
 
         f = self.module.lru_cache(maxsize=n * m)(orig)
-        hits, misses, maxsize, currsize = f.cache_info()
+        hits, misses, maxsize, currsize = f.cache_info()  # noqa: RUF059
         self.assertEqual(currsize, 0)
 
         start = threading.Event()
@@ -1717,7 +1711,7 @@ class TestLRU:
             with support.start_threads(threads):
                 start.set()
 
-            hits, misses, maxsize, currsize = f.cache_info()
+            hits, misses, _maxsize, currsize = f.cache_info()
             if self.module is py_functools:
                 # XXX: Why can be not equal?
                 self.assertLessEqual(misses, n)
@@ -2024,7 +2018,7 @@ class TestSingleDispatch(unittest.TestCase):
 
         @g.register(int)
         def g_int(i):
-            return "int %s" % (i,)
+            return f"int {i}"
 
         self.assertEqual(g(""), "base")
         self.assertEqual(g(12), "int 12")
@@ -2675,7 +2669,7 @@ class TestSingleDispatch(unittest.TestCase):
             def _(arg):
                 return isinstance(arg, str)
 
-        a = A()
+        A()
 
         self.assertTrue(A.t(0))
         self.assertTrue(A.t(""))
@@ -2856,7 +2850,7 @@ class CachedCostItemWait:
 
 
 class CachedCostItemWithSlots:
-    __slots__ = "_cost"
+    __slots__ = "_cost"  # noqa: PLC0205
 
     def __init__(self):
         self._cost = 1
@@ -2904,7 +2898,7 @@ class TestCachedProperty(unittest.TestCase):
             TypeError,
             "No '__dict__' attribute on 'CachedCostItemWithSlots' instance to cache 'cost' property.",
         ):
-            item.cost
+            item.cost  # noqa: B018
 
     def test_immutable_dict(self):
         class MyMeta(type):
@@ -2919,7 +2913,7 @@ class TestCachedProperty(unittest.TestCase):
             TypeError,
             "The '__dict__' attribute on 'MyMeta' instance does not support item assignment for caching 'prop' property.",
         ):
-            MyClass.prop
+            MyClass.prop  # noqa: B018
 
     def test_reuse_different_names(self):
         """Disallow this case because decorated function a would not be cached."""
@@ -2976,7 +2970,7 @@ class TestCachedProperty(unittest.TestCase):
             TypeError,
             "Cannot use cached_property instance without calling __set_name__ on it.",
         ):
-            Foo().cp
+            Foo().cp  # noqa: B018
 
     def test_access_from_class(self):
         self.assertIsInstance(CachedCostItem.cost, py_functools.cached_property)

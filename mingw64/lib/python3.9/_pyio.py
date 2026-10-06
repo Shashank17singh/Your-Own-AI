@@ -33,7 +33,7 @@ DEFAULT_BUFFER_SIZE = 8 * 1024  # bytes
 # to inherit the C implementations.
 
 # Rebind for compatibility
-BlockingIOError = BlockingIOError
+BlockingIOError = BlockingIOError  # noqa: PLW0127
 
 # Does io.IOBase finalizer log the exception if the close() method fails?
 # The exception is ignored silently by default in release build.
@@ -175,18 +175,18 @@ def open(
     if not isinstance(file, int):
         file = os.fspath(file)
     if not isinstance(file, (str, bytes, int)):
-        raise TypeError("invalid file: %r" % file)
+        raise TypeError(f"invalid file: {file!r}")
     if not isinstance(mode, str):
-        raise TypeError("invalid mode: %r" % mode)
+        raise TypeError(f"invalid mode: {mode!r}")
     if not isinstance(buffering, int):
-        raise TypeError("invalid buffering: %r" % buffering)
+        raise TypeError(f"invalid buffering: {buffering!r}")
     if encoding is not None and not isinstance(encoding, str):
-        raise TypeError("invalid encoding: %r" % encoding)
+        raise TypeError(f"invalid encoding: {encoding!r}")
     if errors is not None and not isinstance(errors, str):
-        raise TypeError("invalid errors: %r" % errors)
+        raise TypeError(f"invalid errors: {errors!r}")
     modes = set(mode)
     if modes - set("axrwb+tU") or len(mode) > len(modes):
-        raise ValueError("invalid mode: %r" % mode)
+        raise ValueError(f"invalid mode: {mode!r}")
     creating = "x" in modes
     reading = "r" in modes
     writing = "w" in modes
@@ -260,7 +260,7 @@ def open(
         elif reading:
             buffer = BufferedReader(raw, buffering)
         else:
-            raise ValueError("unknown mode: %r" % mode)
+            raise ValueError(f"unknown mode: {mode!r}")
         result = buffer
         if binary:
             return result
@@ -369,9 +369,7 @@ class IOBase(metaclass=abc.ABCMeta):
 
     def _unsupported(self, name):
         """Internal: raise an OSError exception for unsupported operations."""
-        raise UnsupportedOperation(
-            "%s.%s() not supported" % (self.__class__.__name__, name)
-        )
+        raise UnsupportedOperation(f"{self.__class__.__name__}.{name}() not supported")
 
     ### Positioning ###
 
@@ -448,7 +446,7 @@ class IOBase(metaclass=abc.ABCMeta):
             # the end users, we suppress the traceback.
             try:
                 self.close()
-            except:
+            except:  # noqa: E722, S110
                 pass
 
     ### Inquiries ###
@@ -999,7 +997,7 @@ class BytesIO(BufferedIOBase):
             pos = pos_index()
         if whence == 0:
             if pos < 0:
-                raise ValueError("negative seek position %r" % (pos,))
+                raise ValueError(f"negative seek position {pos!r}")
             self._pos = pos
         elif whence == 1:
             self._pos = max(0, self._pos + pos)
@@ -1027,7 +1025,7 @@ class BytesIO(BufferedIOBase):
             else:
                 pos = pos_index()
             if pos < 0:
-                raise ValueError("negative truncate position %r" % (pos,))
+                raise ValueError(f"negative truncate position {pos!r}")
         del self._buffer[pos:]
         return pos
 
@@ -1530,9 +1528,9 @@ class FileIO(RawIOBase):
             fd = -1
 
         if not isinstance(mode, str):
-            raise TypeError("invalid mode: %s" % (mode,))
+            raise TypeError(f"invalid mode: {mode}")
         if not set(mode) <= set("xrwab+"):
-            raise ValueError("invalid mode: %s" % (mode,))
+            raise ValueError(f"invalid mode: {mode}")
         if sum(c in "rwax" for c in mode) != 1 or mode.count("+") > 1:
             raise ValueError(
                 "Must have exactly one of create/read/write/append "
@@ -1627,7 +1625,7 @@ class FileIO(RawIOBase):
             import warnings
 
             warnings.warn(
-                "unclosed file %r" % (self,), ResourceWarning, stacklevel=2, source=self
+                f"unclosed file {self!r}", ResourceWarning, stacklevel=2, source=self
             )
             self.close()
 
@@ -1635,25 +1633,20 @@ class FileIO(RawIOBase):
         raise TypeError(f"cannot pickle {self.__class__.__name__!r} object")
 
     def __repr__(self):
-        class_name = "%s.%s" % (self.__class__.__module__, self.__class__.__qualname__)
+        class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
         if self.closed:
-            return "<%s [closed]>" % class_name
+            return f"<{class_name} [closed]>"
         try:
             name = self.name
         except AttributeError:
-            return "<%s fd=%d mode=%r closefd=%r>" % (
+            return "<%s fd=%d mode=%r closefd=%r>" % (  # noqa: UP031
                 class_name,
                 self._fd,
                 self.mode,
                 self._closefd,
             )
         else:
-            return "<%s name=%r mode=%r closefd=%r>" % (
-                class_name,
-                name,
-                self.mode,
-                self._closefd,
-            )
+            return f"<{class_name} name={name!r} mode={self.mode!r} closefd={self._closefd!r}>"
 
     def _checkReadable(self):
         if not self._readable:
@@ -2054,7 +2047,7 @@ class TextIOWrapper(TextIOBase):
                     encoding = locale.getpreferredencoding(False)
 
         if not isinstance(encoding, str):
-            raise ValueError("invalid encoding: %r" % encoding)
+            raise ValueError(f"invalid encoding: {encoding!r}")  # noqa: TRY004
 
         if not codecs.lookup(encoding)._is_text_encoding:
             msg = (
@@ -2067,7 +2060,7 @@ class TextIOWrapper(TextIOBase):
             errors = "strict"
         else:
             if not isinstance(errors, str):
-                raise ValueError("invalid errors: %r" % errors)
+                raise ValueError(f"invalid errors: {errors!r}")
             if _CHECK_ERRORS:
                 codecs.lookup_error(errors)
 
@@ -2081,9 +2074,9 @@ class TextIOWrapper(TextIOBase):
 
     def _check_newline(self, newline):
         if newline is not None and not isinstance(newline, str):
-            raise TypeError("illegal newline type: %r" % (type(newline),))
+            raise TypeError(f"illegal newline type: {type(newline)!r}")
         if newline not in (None, "", "\n", "\r", "\r\n"):
-            raise ValueError("illegal newline value: %r" % (newline,))
+            raise ValueError(f"illegal newline value: {newline!r}")
 
     def _configure(
         self,
@@ -2190,13 +2183,13 @@ class TextIOWrapper(TextIOBase):
             else:
                 errors = "strict"
         elif not isinstance(errors, str):
-            raise TypeError("invalid errors: %r" % errors)
+            raise TypeError(f"invalid errors: {errors!r}")
 
         if encoding is None:
             encoding = self._encoding
         else:
             if not isinstance(encoding, str):
-                raise TypeError("invalid encoding: %r" % encoding)
+                raise TypeError(f"invalid encoding: {encoding!r}")
 
         if newline is Ellipsis:
             newline = self._readnl
@@ -2251,7 +2244,7 @@ class TextIOWrapper(TextIOBase):
         if self.closed:
             raise ValueError("write to closed file")
         if not isinstance(s, str):
-            raise TypeError("can't write %s to text stream" % s.__class__.__name__)
+            raise TypeError(f"can't write {s.__class__.__name__} to text stream")
         length = len(s)
         haslf = (self._writetranslate or self._line_buffering) and "\n" in s
         if haslf and self._writetranslate and self._writenl != "\n":
@@ -2521,9 +2514,9 @@ class TextIOWrapper(TextIOBase):
             _reset_encoder(position)
             return position
         if whence != 0:
-            raise ValueError("unsupported whence (%r)" % (whence,))
+            raise ValueError(f"unsupported whence ({whence!r})")
         if cookie < 0:
-            raise ValueError("negative seek position %r" % (cookie,))
+            raise ValueError(f"negative seek position {cookie!r}")
         self.flush()
 
         # The strategy of seek() is to go back to the safe start point

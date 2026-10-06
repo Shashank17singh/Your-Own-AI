@@ -162,7 +162,7 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
 
     def test_parse_makefile_base(self):
         self.makefile = TESTFN
-        fd = open(self.makefile, "w")
+        fd = open(self.makefile, "w")  # noqa: SIM115
         try:
             fd.write(r"CONFIG_ARGS=  '--arg1=optarg1' 'ENV=LIB'" "\n")
             fd.write("VAR=$OTHER\nOTHER=foo")
@@ -175,7 +175,7 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
 
     def test_parse_makefile_literal_dollar(self):
         self.makefile = TESTFN
-        fd = open(self.makefile, "w")
+        fd = open(self.makefile, "w")  # noqa: SIM115
         try:
             fd.write(r"CONFIG_ARGS=  '--arg1=optarg1' 'ENV=\$$LIB'" "\n")
             fd.write("VAR=$OTHER\nOTHER=foo")
@@ -274,7 +274,7 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
-        outs, errs = p.communicate()
+        outs, _errs = p.communicate()
         self.assertEqual(0, p.returncode, "Subprocess failed: " + outs)
 
 

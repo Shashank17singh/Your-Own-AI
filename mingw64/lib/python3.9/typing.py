@@ -35,48 +35,65 @@ from types import (
 
 # Please keep __all__ alphabetized within each category.
 __all__ = [
+    "IO",
+    "TYPE_CHECKING",
+    # ABCs (from collections.abc).
+    "AbstractSet",  # collections.abc.Set.
     # Super-special typing primitives.
     "Annotated",
     "Any",
-    "Callable",
-    "ClassVar",
-    "Final",
-    "ForwardRef",
-    "Generic",
-    "Literal",
-    "Optional",
-    "Protocol",
-    "Tuple",
-    "Type",
-    "TypeVar",
-    "Union",
-    # ABCs (from collections.abc).
-    "AbstractSet",  # collections.abc.Set.
+    # One-off things.
+    "AnyStr",
+    "AsyncContextManager",
+    "AsyncGenerator",
+    "AsyncIterable",
+    "AsyncIterator",
+    "Awaitable",
+    # Other concrete types.
+    "BinaryIO",
     "ByteString",
+    "Callable",
+    # Concrete collection types.
+    "ChainMap",
+    "ClassVar",
+    "Collection",
     "Container",
     "ContextManager",
+    "Coroutine",
+    "Counter",
+    "DefaultDict",
+    "Deque",
+    "Dict",
+    "Final",
+    "ForwardRef",
+    "FrozenSet",
+    "Generator",
+    "Generic",
     "Hashable",
     "ItemsView",
     "Iterable",
     "Iterator",
     "KeysView",
+    "List",
+    "Literal",
     "Mapping",
     "MappingView",
+    "Match",
     "MutableMapping",
     "MutableSequence",
     "MutableSet",
-    "Sequence",
-    "Sized",
-    "ValuesView",
-    "Awaitable",
-    "AsyncIterator",
-    "AsyncIterable",
-    "Coroutine",
-    "Collection",
-    "AsyncGenerator",
-    "AsyncContextManager",
+    "NamedTuple",  # Not really a type.
+    "NewType",
+    "NoReturn",
+    "Optional",
+    "OrderedDict",
+    "Pattern",
+    "Protocol",
     # Structural checks, a.k.a. protocols.
     "Reversible",
+    "Sequence",
+    "Set",
+    "Sized",
     "SupportsAbs",
     "SupportsBytes",
     "SupportsComplex",
@@ -84,40 +101,23 @@ __all__ = [
     "SupportsIndex",
     "SupportsInt",
     "SupportsRound",
-    # Concrete collection types.
-    "ChainMap",
-    "Counter",
-    "Deque",
-    "Dict",
-    "DefaultDict",
-    "List",
-    "OrderedDict",
-    "Set",
-    "FrozenSet",
-    "NamedTuple",  # Not really a type.
-    "TypedDict",  # Not really a type.
-    "Generator",
-    # Other concrete types.
-    "BinaryIO",
-    "IO",
-    "Match",
-    "Pattern",
+    "Text",
     "TextIO",
-    # One-off things.
-    "AnyStr",
+    "Tuple",
+    "Type",
+    "TypeVar",
+    "TypedDict",  # Not really a type.
+    "Union",
+    "ValuesView",
     "cast",
     "final",
     "get_args",
     "get_origin",
     "get_type_hints",
-    "NewType",
     "no_type_check",
     "no_type_check_decorator",
-    "NoReturn",
     "overload",
     "runtime_checkable",
-    "Text",
-    "TYPE_CHECKING",
 ]
 
 # The pseudo-submodules 're' and 'io' are part of the public
@@ -1183,18 +1183,17 @@ class _ProtocolMeta(ABCMeta):
             not getattr(cls, "_is_protocol", False) or _is_callable_members_only(cls)
         ) and issubclass(instance.__class__, cls):
             return True
-        if cls._is_protocol:
-            if all(
-                hasattr(instance, attr)
-                and
-                # All *methods* can be blocked by setting them to None.
-                (
-                    not callable(getattr(cls, attr, None))
-                    or getattr(instance, attr) is not None
-                )
-                for attr in _get_protocol_attrs(cls)
-            ):
-                return True
+        if cls._is_protocol and all(
+            hasattr(instance, attr)
+            and
+            # All *methods* can be blocked by setting them to None.
+            (
+                not callable(getattr(cls, attr, None))
+                or getattr(instance, attr) is not None
+            )
+            for attr in _get_protocol_attrs(cls)
+        ):
+            return True
         return super().__instancecheck__(instance)
 
 
@@ -1311,7 +1310,7 @@ class Protocol(Generic, metaclass=_ProtocolMeta):
                 and base._is_protocol
             ):
                 raise TypeError(
-                    "Protocols can only inherit from other protocols, got %r" % base
+                    f"Protocols can only inherit from other protocols, got {base!r}"
                 )
         cls.__init__ = _no_init
 
@@ -1430,7 +1429,7 @@ def runtime_checkable(cls):
     """
     if not issubclass(cls, Generic) or not cls._is_protocol:
         raise TypeError(
-            "@runtime_checkable can be only applied to protocol classes, got %r" % cls
+            f"@runtime_checkable can be only applied to protocol classes, got {cls!r}"
         )
     cls._is_runtime_protocol = True
     return cls
@@ -1520,7 +1519,7 @@ def get_type_hints(obj, globalns=None, localns=None, include_extras=False):
                 base_globals = sys.modules[base.__module__].__dict__
             else:
                 base_globals = globalns
-            ann = base.__dict__.get("__annotations__", {})
+            ann = base.__dict__.get("__annotations__", {})  # noqa: RUF063
             for name, value in ann.items():
                 if value is None:
                     value = type(None)
@@ -1788,7 +1787,7 @@ Mapping = _alias(collections.abc.Mapping, 2)
 MutableMapping = _alias(collections.abc.MutableMapping, 2)
 Sequence = _alias(collections.abc.Sequence, 1)
 MutableSequence = _alias(collections.abc.MutableSequence, 1)
-ByteString = _alias(collections.abc.ByteString, 0)  # Not generic
+ByteString = _alias(collections.abc.ByteString, 0)  # Not generic  # noqa: PYI057
 # Tuple accepts variable number of parameters.
 Tuple = _TupleType(tuple, -1, inst=False, name="Tuple")
 Tuple.__doc__ = """Tuple type; Tuple[X, Y] is the cross-product type of X and Y.
@@ -2058,7 +2057,7 @@ class _TypedDictMeta(type):
         optional_keys = set()
 
         for base in bases:
-            annotations.update(base.__dict__.get("__annotations__", {}))
+            annotations.update(base.__dict__.get("__annotations__", {}))  # noqa: RUF063
             required_keys.update(base.__dict__.get("__required_keys__", ()))
             optional_keys.update(base.__dict__.get("__optional_keys__", ()))
 
@@ -2257,7 +2256,7 @@ class IO(Generic[AnyStr]):
         pass
 
     @abstractmethod
-    def truncate(self, size: int = None) -> int:
+    def truncate(self, size: int | None = None) -> int:
         pass
 
     @abstractmethod
@@ -2333,7 +2332,7 @@ class TextIO(IO[str]):
 class io:
     """Wrapper namespace for IO generic classes."""
 
-    __all__ = ["IO", "TextIO", "BinaryIO"]
+    __all__ = ["IO", "TextIO", "BinaryIO"]  # noqa: RUF012
     IO = IO
     TextIO = TextIO
     BinaryIO = BinaryIO
@@ -2349,7 +2348,7 @@ Match = _alias(stdlib_re.Match, 1)
 class re:
     """Wrapper namespace for re type aliases."""
 
-    __all__ = ["Pattern", "Match"]
+    __all__ = ["Pattern", "Match"]  # noqa: RUF012
     Pattern = Pattern
     Match = Match
 

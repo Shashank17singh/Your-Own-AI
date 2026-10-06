@@ -27,12 +27,12 @@ class PyPIRCCommand(Command):
     repository = None
     realm = None
 
-    user_options = [
-        ("repository=", "r", "url of repository [default: %s]" % DEFAULT_REPOSITORY),
+    user_options = [  # noqa: RUF012
+        ("repository=", "r", f"url of repository [default: {DEFAULT_REPOSITORY}]"),
         ("show-response", None, "display full response text from server"),
     ]
 
-    boolean_options = ["show-response"]
+    boolean_options = ["show-response"]  # noqa: RUF012
 
     def _get_rc_file(self):
         """Returns rc file path."""
@@ -48,7 +48,7 @@ class PyPIRCCommand(Command):
         """Reads the .pypirc file."""
         rc = self._get_rc_file()
         if os.path.exists(rc):
-            self.announce("Using PyPI login from %s" % rc)
+            self.announce(f"Using PyPI login from {rc}")
             repository = self.repository or self.DEFAULT_REPOSITORY
 
             config = RawConfigParser()

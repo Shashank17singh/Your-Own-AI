@@ -28,7 +28,7 @@ def reportNamingError(
 
 
 def configError(error, fatal=True):
-    print("config error: %s" % error)
+    print(f"config error: {error}")
     if fatal:
         sys.exit(1)
 
@@ -40,8 +40,7 @@ def validateConfigREs(list_or_dict, json_key):
             re.compile(item)
         except re.error as err:
             configError(
-                "item '%s' of '%s' is not a valid regular expression: %s"
-                % (item, json_key, err),
+                f"item '{item}' of '{json_key}' is not a valid regular expression: {err}",
                 fatal=False,
             )
             have_error = True
@@ -56,7 +55,7 @@ def validateConfigREs(list_or_dict, json_key):
             or not isinstance(value[1], str)
         ):
             configError(
-                "item '%s' of '%s' must be an array [bool,string]" % (item, json_key),
+                f"item '{item}' of '{json_key}' must be an array [bool,string]",
                 fatal=False,
             )
             have_error = True
@@ -65,16 +64,16 @@ def validateConfigREs(list_or_dict, json_key):
 
 def loadConfig(configfile):
     if not os.path.exists(configfile):
-        configError("cannot find config file '%s'" % configfile)
+        configError(f"cannot find config file '{configfile}'")
     try:
         with open(configfile) as fh:
             data = json.load(fh)
     except json.JSONDecodeError as e:
         configError(
-            "error parsing config file as JSON at line %d: %s" % (e.lineno, e.msg)
+            "error parsing config file as JSON at line %d: %s" % (e.lineno, e.msg)  # noqa: UP031
         )
-    except Exception as e:
-        configError("error opening config file '%s': %s" % (configfile, e))
+    except Exception as e:  # noqa: BLE001
+        configError(f"error opening config file '{configfile}': {e}")
     if not isinstance(data, dict):
         configError("config file must contain a JSON object at the top level")
     have_error = False
@@ -106,8 +105,7 @@ def loadConfig(configfile):
             req_typename = " or ".join([tp.__name__ for tp in req_type])
             got_typename = type(value).__name__
             configError(
-                "%s must be %s (not %s), or not set"
-                % (json_key, req_typename, got_typename),
+                f"{json_key} must be {req_typename} (not {got_typename}), or not set",
                 fatal=False,
             )
             have_error = True
@@ -119,7 +117,7 @@ def loadConfig(configfile):
         setattr(config, key, value)
     for key, value in data.items():
         if key == "" or key[0] != "_":
-            configError("unknown config key '%s'" % key, fatal=False)
+            configError(f"unknown config key '{key}'", fatal=False)
             have_error = True
     if have_error:
         sys.exit(1)
@@ -160,7 +158,7 @@ def check_include_guard_name(conf, directive):
     elif use_case == "keep":
         pass  # keep filename case as-is
     else:
-        print("invalid config value for 'case': '%s'" % use_case, file=sys.stderr)
+        print(f"invalid config value for 'case': '{use_case}'", file=sys.stderr)
         sys.exit(1)
     barename = re.sub("[^A-Za-z0-9]", "_", filename).strip("_")
     expect_guard_name = (
@@ -169,10 +167,7 @@ def check_include_guard_name(conf, directive):
         + conf.include_guard.get("suffix", "")
     )
     if expect_guard_name != guard_name:
-        msg = "include guard naming violation; %s != %s" % (
-            guard_name,
-            expect_guard_name,
-        )
+        msg = f"include guard naming violation; {guard_name} != {expect_guard_name}"
         reportNamingError(directive, msg, "includeGuardName", column=guard_column)
     return guard_name, guard_column
 
@@ -211,7 +206,7 @@ def check_include_guards(conf, cfg, unguarded_include_files):
             if phase == 0 and conf.include_guard.get("required", 1):
                 report(
                     directive,
-                    "include guard not found before line %d" % max_linenr,
+                    "include guard not found before line %d" % max_linenr,  # noqa: UP031
                     "includeGuardMissing",
                 )
             phase = -1
@@ -250,7 +245,7 @@ def check_include_guards(conf, cfg, unguarded_include_files):
             if guard_name != parts[1]:
                 report(
                     directive,
-                    "include guard does not guard; %s != %s" % (guard_name, parts[1]),
+                    f"include guard does not guard; {guard_name} != {parts[1]}",
                     "includeGuardAwayFromDuty",
                     severity="warning",
                     column=guard_column,
@@ -264,7 +259,7 @@ def check_include_guards(conf, cfg, unguarded_include_files):
 def process(dumpfiles, configfile, cli, debugprint):
     conf = loadConfig(configfile)
     for afile in dumpfiles:
-        if not afile[-5:] == ".dump":
+        if afile[-5:] != ".dump":
             continue
         if not cli:
             print("Checking " + afile + "...")
@@ -370,7 +365,7 @@ def check_function_naming(conf, cfg, debugprint):
             retval = prev.str + retval
         if debugprint:
             print(f"\t:: {retval} {token.function.name}")
-        if retval and retval in conf.function_prefixes:
+        if retval and retval in conf.function_prefixes:  # noqa: SIM102
             if not token.function.name.startswith(conf.function_prefixes[retval]):
                 reportNamingError(
                     token,
@@ -409,7 +404,7 @@ def process_data(conf, data, cli, debugprint):
         ]
     for cfg in data.configurations:
         if not cli:
-            print("Checking config %s..." % cfg.name)
+            print(f"Checking config {cfg.name}...")
         if conf.variable:
             check_variable_naming(conf, cfg, debugprint)
         if conf.private_member:

@@ -120,7 +120,7 @@ def _modname(path):
     """Return a plausible module name for the patch."""
 
     base = os.path.basename(path)
-    filename, ext = os.path.splitext(base)
+    filename, _ext = os.path.splitext(base)
     return filename
 
 
@@ -136,7 +136,7 @@ def _fullmodname(path):
     longest = ""
     for dir in sys.path:
         dir = os.path.normcase(dir)
-        if comparepath.startswith(dir) and comparepath[len(dir)] == os.sep:
+        if comparepath.startswith(dir) and comparepath[len(dir)] == os.sep:  # noqa: SIM102
             if len(dir) > len(longest):
                 longest = dir
 
@@ -145,11 +145,11 @@ def _fullmodname(path):
     else:
         base = path
     # the drive letter is never part of the module name
-    drive, base = os.path.splitdrive(base)
+    _drive, base = os.path.splitdrive(base)
     base = base.replace(os.sep, ".")
     if os.altsep:
         base = base.replace(os.altsep, ".")
-    filename, ext = os.path.splitext(base)
+    filename, _ext = os.path.splitext(base)
     return filename.lstrip(".")
 
 
@@ -179,7 +179,7 @@ class CoverageResults:
                 self.update(self.__class__(counts, calledfuncs, callers))
             except (OSError, EOFError, ValueError) as err:
                 print(
-                    ("Skipping counts file %r: %s" % (self.infile, err)),
+                    (f"Skipping counts file {self.infile!r}: {err}"),
                     file=sys.stderr,
                 )
 
@@ -223,8 +223,7 @@ class CoverageResults:
             calls = self.calledfuncs
             for filename, modulename, funcname in sorted(calls):
                 print(
-                    "filename: %s, modulename: %s, funcname: %s"
-                    % (filename, modulename, funcname)
+                    f"filename: {filename}, modulename: {modulename}, funcname: {funcname}"
                 )
 
         if self.callers:
@@ -240,7 +239,7 @@ class CoverageResults:
                 if cfile != pfile and lastcfile != cfile:
                     print("  -->", cfile)
                     lastcfile = cfile
-                print("    %s.%s -> %s.%s" % (pmod, pfunc, cmod, cfunc))
+                print(f"    {pmod}.{pfunc} -> {cmod}.{cfunc}")
 
         # turn the counts data ("(filename, lineno) = count") into something
         # accessible on a per-file basis
@@ -289,7 +288,7 @@ class CoverageResults:
             print("lines   cov%   module   (path)")
             for m in sorted(sums):
                 n_lines, percent, modulename, filename = sums[m]
-                print("%5d   %3d%%   %s   (%s)" % sums[m])
+                print("%5d   %3d%%   %s   (%s)" % sums[m])  # noqa: UP031
 
         if self.outfile:
             # try and store counts and module info into self.outfile
@@ -297,17 +296,17 @@ class CoverageResults:
                 with open(self.outfile, "wb") as f:
                     pickle.dump((self.counts, self.calledfuncs, self.callers), f, 1)
             except OSError as err:
-                print("Can't save counts files because %s" % err, file=sys.stderr)
+                print(f"Can't save counts files because {err}", file=sys.stderr)
 
     def write_results_file(self, path, lines, lnotab, lines_hit, encoding=None):
         """Return a coverage results file in path."""
         # ``lnotab`` is a dict of executable lines, or a line number "table"
 
         try:
-            outfile = open(path, "w", encoding=encoding)
+            outfile = open(path, "w", encoding=encoding)  # noqa: SIM115
         except OSError as err:
             print(
-                ("trace: Could not open %r for writing: %s - skipping" % (path, err)),
+                (f"trace: Could not open {path!r} for writing: {err} - skipping"),
                 file=sys.stderr,
             )
             return 0, 0
@@ -319,7 +318,7 @@ class CoverageResults:
                 # do the blank/comment match to try to mark more lines
                 # (help the reader find stuff that hasn't been covered)
                 if lineno in lines_hit:
-                    outfile.write("%5d: " % lines_hit[lineno])
+                    outfile.write("%5d: " % lines_hit[lineno])  # noqa: UP031
                     n_hits += 1
                     n_lines += 1
                 elif lineno in lnotab and not PRAGMA_NOCOVER in line:
@@ -372,12 +371,11 @@ def _find_strings(filename, encoding=None):
     with open(filename, encoding=encoding) as f:
         tok = tokenize.generate_tokens(f.readline)
         for ttype, tstr, start, end, line in tok:
-            if ttype == token.STRING:
-                if prev_ttype == token.INDENT:
-                    sline, scol = start
-                    eline, ecol = end
-                    for i in range(sline, eline + 1):
-                        d[i] = 1
+            if ttype == token.STRING and prev_ttype == token.INDENT:
+                sline, _scol = start
+                eline, _ecol = end
+                for i in range(sline, eline + 1):
+                    d[i] = 1
             prev_ttype = ttype
     return d
 
@@ -389,9 +387,7 @@ def _find_executable_linenos(filename):
             prog = f.read()
             encoding = f.encoding
     except OSError as err:
-        print(
-            ("Not printing coverage data for %r: %s" % (filename, err)), file=sys.stderr
-        )
+        print((f"Not printing coverage data for {filename!r}: {err}"), file=sys.stderr)
         return {}
     code = compile(prog, filename, "exec")
     strs = _find_strings(filename, encoding)
@@ -473,7 +469,7 @@ class Trace:
             threading.settrace(self.globaltrace)
             sys.settrace(self.globaltrace)
         try:
-            exec(cmd, globals, locals)
+            exec(cmd, globals, locals)  # noqa: S102
         finally:
             if not self.donothing:
                 sys.settrace(None)
@@ -526,7 +522,7 @@ class Trace:
                         # the new module get called.
                         self._caller_cache[code] = clsname
         if clsname is not None:
-            funcname = "%s.%s" % (clsname, funcname)
+            funcname = f"{clsname}.{funcname}"
 
         return filename, modulename, funcname
 
@@ -568,8 +564,7 @@ class Trace:
                     if not ignore_it:
                         if self.trace:
                             print(
-                                " --- modulename: %s, funcname: %s"
-                                % (modulename, code.co_name)
+                                f" --- modulename: {modulename}, funcname: {code.co_name}"
                             )
                         return self.localtrace
             else:
@@ -587,7 +582,7 @@ class Trace:
                 print("%.2f" % (_time() - self.start_time), end=" ")
             bname = os.path.basename(filename)
             print(
-                "%s(%d): %s" % (bname, lineno, linecache.getline(filename, lineno)),
+                "%s(%d): %s" % (bname, lineno, linecache.getline(filename, lineno)),  # noqa: UP031
                 end="",
             )
         return self.localtrace
@@ -602,7 +597,7 @@ class Trace:
                 print("%.2f" % (_time() - self.start_time), end=" ")
             bname = os.path.basename(filename)
             print(
-                "%s(%d): %s" % (bname, lineno, linecache.getline(filename, lineno)),
+                "%s(%d): %s" % (bname, lineno, linecache.getline(filename, lineno)),  # noqa: UP031
                 end="",
             )
         return self.localtrace
@@ -795,7 +790,7 @@ def main():
             import runpy
 
             module_name = opts.progname
-            mod_name, mod_spec, code = runpy._get_module_details(module_name)
+            _mod_name, mod_spec, code = runpy._get_module_details(module_name)
             sys.argv = [code.co_filename, *opts.arguments]
             globs = {
                 "__name__": "__main__",
@@ -820,7 +815,7 @@ def main():
             }
         t.runctx(code, globs, globs)
     except OSError as err:
-        sys.exit("Cannot run file %r because: %s" % (sys.argv[0], err))
+        sys.exit(f"Cannot run file {sys.argv[0]!r} because: {err}")
     except SystemExit:
         pass
 

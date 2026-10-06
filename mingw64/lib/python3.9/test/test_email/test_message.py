@@ -52,7 +52,7 @@ class TestEmailMessageBase:
     # that should be returned by a call to 'iter_parts'.  Note that the first
     # item returned by 'walk' is the Message itself.
 
-    message_params = {
+    message_params = {  # noqa: RUF012
         "empty_message": ((None, None, 0), (), (), ""),
         "non_mime_plain": (
             (None, None, 0),
@@ -521,7 +521,7 @@ class TestEmailMessageBase:
         msg, args, kw = m.get_content("foo", content_manager=cm, bar=1, k=2)
         self.assertEqual(msg, m)
         self.assertEqual(args, ("foo",))
-        self.assertEqual(kw, dict(bar=1, k=2))
+        self.assertEqual(kw, {"bar": 1, "k": 2})
 
     def test_get_content_default_cm_comes_from_policy(self):
         p = policy.default.clone(content_manager=self._TestContentManager())
@@ -530,7 +530,7 @@ class TestEmailMessageBase:
         msg, args, kw = m.get_content("foo", bar=1, k=2)
         self.assertEqual(msg, m)
         self.assertEqual(args, ("foo",))
-        self.assertEqual(kw, dict(bar=1, k=2))
+        self.assertEqual(kw, {"bar": 1, "k": 2})
 
     def test_set_content_with_cm(self):
         m = self._str_msg("")
@@ -542,7 +542,7 @@ class TestEmailMessageBase:
         m.set_content("foo", content_manager=cm, bar=1, k=2)
         self.assertEqual(cm.msg, m)
         self.assertEqual(cm.args, ("foo",))
-        self.assertEqual(cm.kw, dict(bar=1, k=2))
+        self.assertEqual(cm.kw, {"bar": 1, "k": 2})
 
     def test_set_content_default_cm_comes_from_policy(self):
         cm = self._TestContentManager()
@@ -555,7 +555,7 @@ class TestEmailMessageBase:
         m.set_content("foo", bar=1, k=2)
         self.assertEqual(cm.msg, m)
         self.assertEqual(cm.args, ("foo",))
-        self.assertEqual(cm.kw, dict(bar=1, k=2))
+        self.assertEqual(cm.kw, {"bar": 1, "k": 2})
 
     # outcome is whether xxx_method should raise ValueError error when called
     # on multipart/subtype.  Blank outcome means it depends on xxx (add
@@ -592,7 +592,7 @@ class TestEmailMessageBase:
             ("From", "bar@foo.com"),
         ]
         if subtype != "no_content":
-            (("content-shadow", "Logrus"),)
+            (("content-shadow", "Logrus"),)  # noqa: B018
         msg_headers.append(("X-Random-Header", "Corwin"))
         if subtype == "text":
             payload = ""
@@ -653,7 +653,7 @@ class TestEmailMessageBase:
         m = self.message()
         if outcome in ("", "raises"):
             m["Content-Type"] = "multipart/" + subtype
-            with self.assertRaises(ValueError) as cm:
+            with self.assertRaises(ValueError):
                 getattr(m, "make_" + method)()
             return
         if subtype == "plain":
@@ -707,7 +707,7 @@ class TestEmailMessageBase:
 
     class _TestSetRaisingContentManager:
         def set_content(self, msg, content, *args, **kw):
-            raise Exception("test")
+            raise Exception("test")  # noqa: TRY002
 
     def test_default_content_manager_for_add_comes_from_policy(self):
         cm = self._TestSetRaisingContentManager()
@@ -727,7 +727,7 @@ class TestEmailMessageBase:
 
     def message_as_clear_content(self, body_parts, attachments, parts, msg):
         m = self._str_msg(msg)
-        expected_headers = [h for h in m.keys() if not h.lower().startswith("content-")]
+        expected_headers = [h for h in m if not h.lower().startswith("content-")]
         m.clear_content()
         self.assertEqual(list(m.keys()), expected_headers)
         self.assertIsNone(m.get_payload())

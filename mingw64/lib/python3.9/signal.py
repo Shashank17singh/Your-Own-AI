@@ -62,7 +62,7 @@ if "pthread_sigmask" in _globals:
     @_wraps(_signal.pthread_sigmask)
     def pthread_sigmask(how, mask):
         sigs_set = _signal.pthread_sigmask(how, mask)
-        return set(_int_to_enum(x, Signals) for x in sigs_set)
+        return {_int_to_enum(x, Signals) for x in sigs_set}
 
     pthread_sigmask.__doc__ = _signal.pthread_sigmask.__doc__
 

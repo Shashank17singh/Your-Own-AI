@@ -538,9 +538,7 @@ def _check_name(method):
         if name is None:
             name = self.name
         elif self.name != name:
-            raise ImportError(
-                "loader for %s cannot handle %s" % (self.name, name), name=name
-            )
+            raise ImportError(f"loader for {self.name} cannot handle {name}", name=name)
         return method(self, name, *args, **kwargs)
 
     try:
@@ -668,7 +666,7 @@ def _compile_bytecode(data, name=None, bytecode_path=None, source_path=None):
             _imp._fix_co_filename(code, source_path)
         return code
     else:
-        raise ImportError(
+        raise ImportError(  # noqa: TRY004
             f"Non-code object in {bytecode_path!r}",
             name=name,
             path=bytecode_path,
@@ -773,10 +771,9 @@ def spec_from_file_location(
                     spec.submodule_search_locations = []
     else:
         spec.submodule_search_locations = submodule_search_locations
-    if spec.submodule_search_locations == []:
-        if location:
-            dirname = _path_split(location)[0]
-            spec.submodule_search_locations.append(dirname)
+    if spec.submodule_search_locations == [] and location:
+        dirname = _path_split(location)[0]
+        spec.submodule_search_locations.append(dirname)
 
     return spec
 
@@ -807,7 +804,8 @@ class WindowsRegistryFinder:
         else:
             registry_key = cls.REGISTRY_KEY
         key = registry_key.format(
-            fullname=fullname, sys_version="%d.%d" % sys.version_info[:2]
+            fullname=fullname,
+            sys_version="%d.%d" % sys.version_info[:2],  # noqa: UP031
         )
         try:
             with cls._open_registry(key) as hkey:
@@ -1113,7 +1111,7 @@ class SourceFileLoader(FileLoader, SourceLoader):
 
     def set_data(self, path, data, *, _mode=0o666):
         """Write bytes data to a file."""
-        parent, filename = _path_split(path)
+        parent, _filename = _path_split(path)
         path_parts = []
         # Figure out what directories are missing.
         while parent and not _path_isdir(parent):
@@ -1239,7 +1237,7 @@ class _NamespacePath:
 
     def _find_parent_path_names(self):
         """Returns a tuple of (parent-module-name, parent-path-attr-name)"""
-        parent, dot, me = self._name.rpartition(".")
+        parent, dot, _me = self._name.rpartition(".")
         if dot == "":
             # This is a top-level module. sys.path contains the parent path.
             return "sys", "path"
@@ -1258,7 +1256,7 @@ class _NamespacePath:
             spec = self._path_finder(self._name, parent_path)
             # Note that no changes are made if a loader is returned, but we
             #  do remember the new parent path
-            if spec is not None and spec.loader is None:
+            if spec is not None and spec.loader is None:  # noqa: SIM102
                 if spec.submodule_search_locations:
                     self._path = spec.submodule_search_locations
             self._last_parent_path = parent_path  # Save the copy
@@ -1541,7 +1539,7 @@ class FileFinder:
             self._fill_cache()
             self._path_mtime = mtime
         # tail_module keeps the original casing, for __file__ and friends
-        if _relax_case():
+        if _relax_case():  # noqa: F821
             cache = self._relaxed_path_cache
             cache_module = tail_module.lower()
         else:
@@ -1567,11 +1565,8 @@ class FileFinder:
             except ValueError:
                 return None
             _bootstrap._verbose_message("trying {}", full_path, verbosity=2)
-            if cache_module + suffix in cache:
-                if _path_isfile(full_path):
-                    return self._get_spec(
-                        loader_class, fullname, full_path, None, target
-                    )
+            if cache_module + suffix in cache and _path_isfile(full_path):
+                return self._get_spec(loader_class, fullname, full_path, None, target)
         if is_namespace:
             _bootstrap._verbose_message("possible namespace for {}", base_path)
             spec = _bootstrap.ModuleSpec(fullname, None)
@@ -1654,7 +1649,7 @@ def _fix_up_module(ns, name, pathname, cpathname=None):
         ns["__loader__"] = loader
         ns["__file__"] = pathname
         ns["__cached__"] = cpathname
-    except Exception:
+    except Exception:  # noqa: BLE001, S110
         # Not important enough to report.
         pass
 

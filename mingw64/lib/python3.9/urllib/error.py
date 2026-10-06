@@ -22,7 +22,7 @@ class URLError(OSError):
             self.filename = filename
 
     def __str__(self):
-        return "<urlopen error %s>" % self.reason
+        return f"<urlopen error {self.reason}>"
 
 
 class HTTPError(URLError, urllib.response.addinfourl):
@@ -40,10 +40,10 @@ class HTTPError(URLError, urllib.response.addinfourl):
             self.__super_init(fp, hdrs, url, code)
 
     def __str__(self):
-        return "HTTP Error %s: %s" % (self.code, self.msg)
+        return f"HTTP Error {self.code}: {self.msg}"
 
     def __repr__(self):
-        return "<HTTPError %s: %r>" % (self.code, self.msg)
+        return f"<HTTPError {self.code}: {self.msg!r}>"
 
     @property
     def reason(self):

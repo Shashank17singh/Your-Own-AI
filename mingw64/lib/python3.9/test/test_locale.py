@@ -36,7 +36,7 @@ class BaseLocalizedTest(unittest.TestCase):
                 break
             else:
                 raise unittest.SkipTest(
-                    "Test locale not supported (tried %s)" % (", ".join(tlocs))
+                    "Test locale not supported (tried {})".format(", ".join(tlocs))
                 )
             cls.enUS_locale = tloc
         finally:
@@ -47,7 +47,7 @@ class BaseLocalizedTest(unittest.TestCase):
         self.addCleanup(locale.setlocale, self.locale_type, oldlocale)
         locale.setlocale(self.locale_type, self.enUS_locale)
         if verbose:
-            print("testing with %r..." % self.enUS_locale, end=" ", flush=True)
+            print(f"testing with {self.enUS_locale!r}...", end=" ", flush=True)
 
 
 class BaseCookedTest(unittest.TestCase):
@@ -65,7 +65,7 @@ class BaseCookedTest(unittest.TestCase):
 class CCookedTest(BaseCookedTest):
     # A cooked "C" locale
 
-    cooked_values = {
+    cooked_values = {  # noqa: RUF012
         "currency_symbol": "",
         "decimal_point": ".",
         "frac_digits": 127,
@@ -90,7 +90,7 @@ class CCookedTest(BaseCookedTest):
 class EnUSCookedTest(BaseCookedTest):
     # A cooked "en_US" locale
 
-    cooked_values = {
+    cooked_values = {  # noqa: RUF012
         "currency_symbol": "$",
         "decimal_point": ".",
         "frac_digits": 2,
@@ -116,7 +116,7 @@ class FrFRCookedTest(BaseCookedTest):
     # A cooked "fr_FR" locale with a space character as decimal separator
     # and a non-ASCII currency symbol.
 
-    cooked_values = {
+    cooked_values = {  # noqa: RUF012
         "currency_symbol": "\u20ac",
         "decimal_point": ",",
         "frac_digits": 2,
@@ -167,7 +167,7 @@ class EnUSNumberFormatting(BaseFormattingTest):
         self.sep = locale.localeconv()["thousands_sep"]
 
     def test_grouping(self):
-        self._test_format("%f", 1024, grouping=1, out="1%s024.000000" % self.sep)
+        self._test_format("%f", 1024, grouping=1, out=f"1{self.sep}024.000000")
         self._test_format("%f", 102, grouping=1, out="102.000000")
         self._test_format("%f", -42, grouping=1, out="-42.000000")
         self._test_format("%+f", -42, grouping=1, out="-42.000000")
@@ -176,23 +176,23 @@ class EnUSNumberFormatting(BaseFormattingTest):
         self._test_format("%20.f", -42, grouping=1, out="-42".rjust(20))
         if self.sep:
             self._test_format(
-                "%+10.f", -4200, grouping=1, out=("-4%s200" % self.sep).rjust(10)
+                "%+10.f", -4200, grouping=1, out=(f"-4{self.sep}200").rjust(10)
             )
             self._test_format(
-                "%-10.f", -4200, grouping=1, out=("-4%s200" % self.sep).ljust(10)
+                "%-10.f", -4200, grouping=1, out=(f"-4{self.sep}200").ljust(10)
             )
 
     def test_integer_grouping(self):
-        self._test_format("%d", 4200, grouping=True, out="4%s200" % self.sep)
-        self._test_format("%+d", 4200, grouping=True, out="+4%s200" % self.sep)
-        self._test_format("%+d", -4200, grouping=True, out="-4%s200" % self.sep)
+        self._test_format("%d", 4200, grouping=True, out=f"4{self.sep}200")
+        self._test_format("%+d", 4200, grouping=True, out=f"+4{self.sep}200")
+        self._test_format("%+d", -4200, grouping=True, out=f"-4{self.sep}200")
 
     def test_integer_grouping_and_padding(self):
         self._test_format(
-            "%10d", 4200, grouping=True, out=("4%s200" % self.sep).rjust(10)
+            "%10d", 4200, grouping=True, out=(f"4{self.sep}200").rjust(10)
         )
         self._test_format(
-            "%-10d", -4200, grouping=True, out=("-4%s200" % self.sep).ljust(10)
+            "%-10d", -4200, grouping=True, out=(f"-4{self.sep}200").ljust(10)
         )
 
     def test_simple(self):
@@ -216,13 +216,13 @@ class EnUSNumberFormatting(BaseFormattingTest):
             "One million is %i",
             1000000,
             grouping=1,
-            out="One million is 1%s000%s000" % (self.sep, self.sep),
+            out=f"One million is 1{self.sep}000{self.sep}000",
         )
         self._test_format_string(
             "One  million is %i",
             1000000,
             grouping=1,
-            out="One  million is 1%s000%s000" % (self.sep, self.sep),
+            out=f"One  million is 1{self.sep}000{self.sep}000",
         )
         # Dots in formatting string
         self._test_format_string(".%f.", 1000.0, out=".1000.000000.")
@@ -232,7 +232,7 @@ class EnUSNumberFormatting(BaseFormattingTest):
                 "-->  %10.2f",
                 4200,
                 grouping=1,
-                out="-->  " + ("4%s200.00" % self.sep).rjust(10),
+                out="-->  " + (f"4{self.sep}200.00").rjust(10),
             )
         # Asterisk formats
         self._test_format_string(
@@ -243,7 +243,7 @@ class EnUSNumberFormatting(BaseFormattingTest):
                 "%*.*f",
                 (10, 2, 1000),
                 grouping=1,
-                out=("1%s000.00" % self.sep).rjust(10),
+                out=(f"1{self.sep}000.00").rjust(10),
             )
         # Test more-in-one
         if self.sep:
@@ -251,7 +251,7 @@ class EnUSNumberFormatting(BaseFormattingTest):
                 "int %i float %.2f str %s",
                 (1000, 1000.0, "str"),
                 grouping=1,
-                out="int 1%s000 float 1%s000.00 str str" % (self.sep, self.sep),
+                out=f"int 1{self.sep}000 float 1{self.sep}000.00 str str",
             )
 
 
@@ -274,23 +274,24 @@ class TestLocaleFormatString(unittest.TestCase):
     """General tests on locale.format_string"""
 
     def test_percent_escape(self):
-        self.assertEqual(locale.format_string("%f%%", 1.0), "%f%%" % 1.0)
+        self.assertEqual(locale.format_string("%f%%", 1.0), f"{1.0:f}%")
         self.assertEqual(
-            locale.format_string("%d %f%%d", (1, 1.0)), "%d %f%%d" % (1, 1.0)
+            locale.format_string("%d %f%%d", (1, 1.0)),
+            "%d %f%%d" % (1, 1.0),  # noqa: UP031
         )
         self.assertEqual(
             locale.format_string("%(foo)s %%d", {"foo": "bar"}),
-            ("%(foo)s %%d" % {"foo": "bar"}),
+            ("{foo} %d".format(foo="bar")),
         )
 
     def test_mapping(self):
         self.assertEqual(
             locale.format_string("%(foo)s bing.", {"foo": "bar"}),
-            ("%(foo)s bing." % {"foo": "bar"}),
+            ("{foo} bing.".format(foo="bar")),
         )
         self.assertEqual(
             locale.format_string("%(foo)s", {"foo": "bar"}),
-            ("%(foo)s" % {"foo": "bar"}),
+            ("{foo}".format(foo="bar")),
         )
 
 
@@ -548,7 +549,7 @@ class TestMiscellaneous(unittest.TestCase):
             self.assertEqual(locale.getdefaultlocale(), (None, "UTF-8"))
 
         finally:
-            for k in orig_env:
+            for k in orig_env:  # noqa: PLC0206
                 os.environ[k] = orig_env[k]
 
             if "LC_CTYPE" not in orig_env:
@@ -591,7 +592,7 @@ class TestMiscellaneous(unittest.TestCase):
             self.skipTest("test needs Turkish locale")
         loc = locale.getlocale(locale.LC_CTYPE)
         if verbose:
-            print("testing with %a" % (loc,), end=" ", flush=True)
+            print(f"testing with {loc!a}", end=" ", flush=True)
         try:
             locale.setlocale(locale.LC_CTYPE, loc)
         except locale.Error as exc:

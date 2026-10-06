@@ -107,7 +107,7 @@ class HierarchyTest(unittest.TestCase):
         # PyErr_SetFromErrnoWithFilenameObject was called.
         # (it is therefore deliberate that it doesn't use assertRaises)
         try:
-            open(filename)
+            open(filename)  # noqa: SIM115
         except FileNotFoundError:
             pass
         else:
@@ -154,7 +154,7 @@ class AttributesTest(unittest.TestCase):
         for n in range(6):
             e = BlockingIOError(*args[:n])
             with self.assertRaises(AttributeError):
-                e.characters_written
+                e.characters_written  # noqa: B018
             with self.assertRaises(AttributeError):
                 del e.characters_written
         e = BlockingIOError("a", "b", 3)
@@ -163,7 +163,7 @@ class AttributesTest(unittest.TestCase):
         self.assertEqual(e.characters_written, 5)
         del e.characters_written
         with self.assertRaises(AttributeError):
-            e.characters_written
+            e.characters_written  # noqa: B018
 
 
 class ExplicitSubclassingTest(unittest.TestCase):

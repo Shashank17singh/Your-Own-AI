@@ -28,12 +28,12 @@ class TupleTest(seq_tests.CommonTest):
     def test_constructors(self):
         super().test_constructors()
         # calling built-in types without argument must return empty
-        self.assertEqual(tuple(), ())
+        self.assertEqual((), ())
         t0_3 = (0, 1, 2, 3)
         t0_3_bis = tuple(t0_3)
         self.assertTrue(t0_3 is t0_3_bis)
-        self.assertEqual(tuple([]), ())
-        self.assertEqual(tuple([0, 1, 2, 3]), (0, 1, 2, 3))
+        self.assertEqual((), ())
+        self.assertEqual((0, 1, 2, 3), (0, 1, 2, 3))
         self.assertEqual(tuple(""), ())
         self.assertEqual(tuple("spam"), ("s", "p", "a", "m"))
         self.assertEqual(tuple(x for x in range(10) if x % 2), (1, 3, 5, 7, 9))
@@ -70,10 +70,9 @@ class TupleTest(seq_tests.CommonTest):
     def test_tupleresizebug(self):
         # Check that a specific bug in _PyTuple_Resize() is squashed.
         def f():
-            for i in range(1000):
-                yield i
+            yield from range(1000)
 
-        self.assertEqual(list(tuple(f())), list(range(1000)))
+        self.assertEqual(list(f()), list(range(1000)))
 
     # We expect tuples whose base components have deterministic hashes to
     # have deterministic hashes too - and, indeed, the same hashes across
@@ -295,7 +294,7 @@ class TupleTest(seq_tests.CommonTest):
         tryone("new tuple test", T, (9, 1), (0, 0), (21, 5), (6, 1))
 
     def test_repr(self):
-        l0 = tuple()
+        l0 = ()
         l2 = (0, 1, 2)
         a0 = self.type2test(l0)
         a2 = self.type2test(l2)
@@ -347,15 +346,15 @@ class TupleTest(seq_tests.CommonTest):
         check(tp(set()))
         check(tp([1, x, y]))
         check(tp(obj for obj in [1, x, y]))
-        check(tp(set([1, x, y])))
-        check(tp(tuple([obj]) for obj in [1, x, y]))
+        check(tp({1, x, y}))
+        check(tp((obj,) for obj in [1, x, y]))
         check(tuple(tp([obj]) for obj in [1, x, y]))
 
         self._tracked(tp([z]))
         self._tracked(tp([[x, y]]))
         self._tracked(tp([{x: y}]))
         self._tracked(tp(obj for obj in [x, y, z]))
-        self._tracked(tp(tuple([obj]) for obj in [x, y, z]))
+        self._tracked(tp((obj,) for obj in [x, y, z]))
         self._tracked(tuple(tp([obj]) for obj in [x, y, z]))
 
     @support.cpython_only

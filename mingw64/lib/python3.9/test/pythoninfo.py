@@ -23,7 +23,7 @@ class PythonInfo:
 
     def add(self, key, value):
         if key in self.info:
-            raise ValueError("duplicate key: %r" % key)
+            raise ValueError(f"duplicate key: {key!r}")
 
         if value is None:
             return
@@ -109,7 +109,7 @@ def collect_sys(info_add):
 
     encoding = sys.getfilesystemencoding()
     if hasattr(sys, "getfilesystemencodeerrors"):
-        encoding = "%s/%s" % (encoding, sys.getfilesystemencodeerrors())
+        encoding = f"{encoding}/{sys.getfilesystemencodeerrors()}"
     info_add("sys.filesystem_encoding", encoding)
 
     for name in ("stdin", "stdout", "stderr"):
@@ -121,8 +121,8 @@ def collect_sys(info_add):
             continue
         errors = getattr(stream, "errors", None)
         if errors:
-            encoding = "%s/%s" % (encoding, errors)
-        info_add("sys.%s.encoding" % name, encoding)
+            encoding = f"{encoding}/{errors}"
+        info_add(f"sys.{name}.encoding", encoding)
 
     # Were we compiled --with-pydebug or with #define Py_DEBUG?
     Py_DEBUG = hasattr(sys, "gettotalrefcount")
@@ -143,7 +143,7 @@ def collect_platform(info_add):
     info_add("platform.python_implementation", platform.python_implementation())
     info_add("platform.platform", platform.platform(aliased=True))
 
-    libc_ver = ("%s %s" % platform.libc_ver()).strip()
+    libc_ver = ("{} {}".format(*platform.libc_ver())).strip()
     if libc_ver:
         info_add("platform.libc_ver", libc_ver)
 
@@ -169,7 +169,7 @@ def collect_urandom(info_add):
                 os.getrandom(1, os.GRND_NONBLOCK)
                 state = "ready (initialized)"
             except BlockingIOError as exc:
-                state = "not seeded yet (%s)" % exc
+                state = f"not seeded yet ({exc})"
             info_add("os.getrandom", state)
         except OSError as exc:
             # Python was compiled on a more recent Linux version
@@ -212,7 +212,7 @@ def collect_os(info_add):
         "getuid",
         "uname",
     ):
-        call_func(info_add, "os.%s" % func, os, func)
+        call_func(info_add, f"os.{func}", os, func)
 
     def format_groups(groups):
         return ", ".join(map(str, groups))
@@ -308,12 +308,12 @@ def collect_os(info_add):
             # Visual Studio: VS140COMNTOOLS
             or (uname.startswith("VS") and uname.endswith("COMNTOOLS"))
         ):
-            info_add("os.environ[%s]" % name, value)
+            info_add(f"os.environ[{name}]", value)
 
     if hasattr(os, "umask"):
         mask = os.umask(0)
         os.umask(mask)
-        info_add("os.umask", "0o%03o" % mask)
+        info_add("os.umask", f"0o{mask:03o}")
 
 
 def collect_pwd(info_add):
@@ -329,7 +329,7 @@ def collect_pwd(info_add):
     except KeyError:
         entry = None
 
-    info_add("pwd.getpwuid(%s)" % uid, entry if entry is not None else "<KeyError>")
+    info_add(f"pwd.getpwuid({uid})", entry if entry is not None else "<KeyError>")
 
     if entry is None:
         # there is nothing interesting to read if the current user identifier
@@ -350,7 +350,7 @@ def collect_readline(info_add):
 
     def format_attr(attr, value):
         if isinstance(value, int):
-            return "%#x" % value
+            return f"{value:#x}"
         else:
             return value
 
@@ -443,7 +443,7 @@ def collect_time(info_add):
                 # missing clock like time.thread_time()
                 pass
             else:
-                info_add("time.get_clock_info(%s)" % clock, clock_info)
+                info_add(f"time.get_clock_info({clock})", clock_info)
 
 
 def collect_datetime(info_add):
@@ -452,7 +452,7 @@ def collect_datetime(info_add):
     except ImportError:
         return
 
-    info_add("datetime.datetime.now", datetime.datetime.now())
+    info_add("datetime.datetime.now", datetime.datetime.now())  # noqa: DTZ005
 
 
 def collect_sysconfig(info_add):
@@ -487,7 +487,7 @@ def collect_sysconfig(info_add):
             # skip ANDROID_API_LEVEL=0
             continue
         value = normalize_text(value)
-        info_add("sysconfig[%s]" % name, value)
+        info_add(f"sysconfig[{name}]", value)
 
 
 def collect_ssl(info_add):
@@ -504,7 +504,7 @@ def collect_ssl(info_add):
 
     def format_attr(attr, value):
         if attr.startswith("OP_"):
-            return "%#8x" % value
+            return f"{value:#8x}"
         else:
             return value
 
@@ -541,7 +541,7 @@ def collect_ssl(info_add):
             value = os.environ[name]
         except KeyError:
             continue
-        info_add("ssl.environ[%s]" % name, value)
+        info_add(f"ssl.environ[{name}]", value)
 
 
 def collect_socket(info_add):
@@ -611,7 +611,7 @@ def collect_resource(info_add):
     for name in limits:
         key = getattr(resource, name)
         value = resource.getrlimit(key)
-        info_add("resource.%s" % name, value)
+        info_add(f"resource.{name}", value)
 
     call_func(info_add, "resource.pagesize", resource, "getpagesize")
 
@@ -700,7 +700,7 @@ def collect_get_config(info_add):
     for config_type in sorted(all_configs):
         config = all_configs[config_type]
         for key in sorted(config):
-            info_add("%s[%s]" % (config_type, key), repr(config[key]))
+            info_add(f"{config_type}[{key}]", repr(config[key]))
 
 
 def collect_subprocess(info_add):
@@ -800,9 +800,9 @@ def collect_info(info):
     ):
         try:
             collect_func(info_add)
-        except Exception:
+        except Exception:  # noqa: BLE001
             error = True
-            print("ERROR: %s() failed" % (collect_func.__name__), file=sys.stderr)
+            print(f"ERROR: {collect_func.__name__}() failed", file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
             print(file=sys.stderr)
             sys.stderr.flush()
@@ -820,7 +820,7 @@ def dump_info(info, file=None):
     infos = sorted(infos.items())
     for key, value in infos:
         value = value.replace("\n", " ")
-        print("%s: %s" % (key, value))
+        print(f"{key}: {value}")
     print()
 
 

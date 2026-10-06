@@ -1,3 +1,3 @@
 from . import source
 
-source.spam
+source.spam  # noqa: B018

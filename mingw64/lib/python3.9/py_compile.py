@@ -47,9 +47,9 @@ class PyCompileError(Exception):
         exc_type_name = exc_type.__name__
         if exc_type is SyntaxError:
             tbtext = "".join(traceback.format_exception_only(exc_type, exc_value))
-            errmsg = tbtext.replace('File "<string>"', 'File "%s"' % file)
+            errmsg = tbtext.replace('File "<string>"', f'File "{file}"')
         else:
-            errmsg = "Sorry: %s: %s" % (exc_type_name, exc_value)
+            errmsg = f"Sorry: {exc_type_name}: {exc_value}"
 
         Exception.__init__(self, msg or errmsg, exc_type_name, exc_value, file)
 
@@ -151,7 +151,7 @@ def compile(
     source_bytes = loader.get_data(file)
     try:
         code = loader.source_to_code(source_bytes, dfile or file, _optimize=optimize)
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         py_exc = PyCompileError(err.__class__, err, dfile or file)
         if quiet < 2:
             if doraise:
@@ -206,10 +206,10 @@ def main(args=None):
                 compile(filename, doraise=True)
             except PyCompileError as error:
                 rv = 1
-                sys.stderr.write("%s\n" % error.msg)
+                sys.stderr.write(f"{error.msg}\n")
             except OSError as error:
                 rv = 1
-                sys.stderr.write("%s\n" % error)
+                sys.stderr.write(f"{error}\n")
     else:
         for filename in args:
             try:
@@ -217,7 +217,7 @@ def main(args=None):
             except PyCompileError as error:
                 # return value to indicate at least one failure
                 rv = 1
-                sys.stderr.write("%s\n" % error.msg)
+                sys.stderr.write(f"{error.msg}\n")
     return rv
 
 

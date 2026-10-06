@@ -144,10 +144,10 @@ class IdleUserConfParser(IdleConfParser):
         if fname and fname[0] != "#":
             if not self.IsEmpty():
                 try:
-                    cfgFile = open(fname, "w")
+                    cfgFile = open(fname, "w")  # noqa: SIM115
                 except OSError:
                     os.unlink(fname)
-                    cfgFile = open(fname, "w")
+                    cfgFile = open(fname, "w")  # noqa: SIM115
                 with cfgFile:
                     self.write(cfgFile)
             elif os.path.exists(self.file):
@@ -197,7 +197,7 @@ class IdleConf:
         """
         cfgDir = ".idlerc"
         userDir = os.path.expanduser("~")
-        if userDir != "~":  # expanduser() found user home dir
+        if userDir != "~":  # expanduser() found user home dir  # noqa: SIM102
             if not os.path.exists(userDir):
                 if not idlelib.testing:
                     warn = (
@@ -259,14 +259,8 @@ class IdleConf:
         except ValueError:
             warning = (
                 "\n Warning: config.py - IdleConf.GetOption -\n"
-                " invalid %r value for configuration option %r\n"
-                " from section %r: %r"
-                % (
-                    type,
-                    option,
-                    section,
-                    self.userCfg[configType].Get(section, option, raw=raw),
-                )
+                f" invalid {type!r} value for configuration option {option!r}\n"
+                f" from section {section!r}: {self.userCfg[configType].Get(section, option, raw=raw)!r}"
             )
             _warn(warning, configType, section, option)
         try:
@@ -280,9 +274,9 @@ class IdleConf:
         if warn_on_default:
             warning = (
                 "\n Warning: config.py - IdleConf.GetOption -\n"
-                " problem retrieving configuration option %r\n"
-                " from section %r.\n"
-                " returning default value: %r" % (option, section, default)
+                f" problem retrieving configuration option {option!r}\n"
+                f" from section {section!r}.\n"
+                f" returning default value: {default!r}"
             )
             _warn(warning, configType, section, option)
         return default
@@ -375,7 +369,7 @@ class IdleConf:
             "console-foreground": "#000000",
             "console-background": "#ffffff",
         }
-        for element in theme:
+        for element in theme:  # noqa: PLC0206
             if not (
                 cfgParser.has_option(themeName, element)
                 or
@@ -385,10 +379,9 @@ class IdleConf:
                 # Print warning that will return a default color
                 warning = (
                     "\n Warning: config.IdleConf.GetThemeDict"
-                    " -\n problem retrieving theme element %r"
-                    "\n from theme %r.\n"
-                    " returning default color: %r"
-                    % (element, themeName, theme[element])
+                    f" -\n problem retrieving theme element {element!r}"
+                    f"\n from theme {themeName!r}.\n"
+                    f" returning default color: {theme[element]!r}"
                 )
                 _warn(warning, "highlight", themeName, element)
             theme[element] = cfgParser.Get(themeName, element, default=theme[element])
@@ -627,7 +620,7 @@ class IdleConf:
     # TODO make keyBindins a file or class attribute used for test above
     # and copied in function below.
 
-    former_extension_events = {  #  Those with user-configurable keys.
+    former_extension_events = {  #  Those with user-configurable keys.  # noqa: RUF012
         "<<force-open-completions>>",
         "<<expand-word>>",
         "<<force-open-calltip>>",
@@ -716,12 +709,11 @@ class IdleConf:
             ):
                 warning = (
                     "\n Warning: config.py - IdleConf.GetCoreKeys -\n"
-                    " key set %r is not defined, using default bindings."
-                    % (keySetName,)
+                    f" key set {keySetName!r} is not defined, using default bindings."
                 )
                 _warn(warning, "keys", keySetName)
             else:
-                for event in keyBindings:
+                for event in keyBindings:  # noqa: PLC0206
                     binding = self.GetKeyBinding(keySetName, event)
                     if binding:
                         keyBindings[event] = binding
@@ -729,10 +721,9 @@ class IdleConf:
                     elif event not in self.former_extension_events:
                         warning = (
                             "\n Warning: config.py - IdleConf.GetCoreKeys -\n"
-                            " problem retrieving key binding for event %r\n"
-                            " from key set %r.\n"
-                            " returning default value: %r"
-                            % (event, keySetName, keyBindings[event])
+                            f" problem retrieving key binding for event {event!r}\n"
+                            f" from key set {keySetName!r}.\n"
+                            f" returning default value: {keyBindings[event]!r}"
                         )
                         _warn(warning, "keys", keySetName, event)
         return keyBindings
@@ -873,7 +864,7 @@ class ConfigChanges(dict):
 
         Helper for save_all.
         """
-        if idleConf.defaultCfg[config_type].has_option(section, item):
+        if idleConf.defaultCfg[config_type].has_option(section, item):  # noqa: SIM102
             if idleConf.defaultCfg[config_type].Get(section, item) == value:
                 # The setting equals a default setting, remove it from user cfg.
                 return idleConf.userCfg[config_type].RemoveOption(section, item)

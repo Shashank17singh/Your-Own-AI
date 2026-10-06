@@ -27,7 +27,7 @@ class PrintExceptionTest(unittest.TestCase):
             try:
                 raise ex1
             except UnhashableException:
-                with captured_stderr() as output:
+                with captured_stderr() as output:  # noqa: SIM117
                     with mock.patch.object(run, "cleanup_traceback") as ct:
                         ct.side_effect = lambda t, e: t
                         run.print_exception()
@@ -43,10 +43,10 @@ class PrintExceptionTest(unittest.TestCase):
 
 class S(str):
     def __str__(self):
-        return "%s:str" % type(self).__name__
+        return f"{type(self).__name__}:str"
 
     def __unicode__(self):
-        return "%s:unicode" % type(self).__name__
+        return f"{type(self).__name__}:unicode"
 
     def __len__(self):
         return 3
@@ -55,10 +55,10 @@ class S(str):
         return iter("abc")
 
     def __getitem__(self, *args):
-        return "%s:item" % type(self).__name__
+        return f"{type(self).__name__}:item"
 
     def __getslice__(self, *args):
-        return "%s:slice" % type(self).__name__
+        return f"{type(self).__name__}:slice"
 
 
 class MockShell:
@@ -389,7 +389,7 @@ class ExecRuncodeTest(unittest.TestCase):
 
         sys.excepthook = lambda: None
         ex.runcode("1/0")
-        t, e, tb = ex.user_exc_info
+        t, e, _tb = ex.user_exc_info
         self.assertIs(t, TypeError)
         self.assertTrue(isinstance(e.__context__, ZeroDivisionError))
 

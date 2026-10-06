@@ -94,13 +94,13 @@ def formataddr(pair, charset="utf-8"):
             if isinstance(charset, str):
                 charset = Charset(charset)
             encoded_name = charset.header_encode(name)
-            return "%s <%s>" % (encoded_name, address)
+            return f"{encoded_name} <{address}>"
         else:
             quotes = ""
             if specialsre.search(name):
                 quotes = '"'
             name = escapesre.sub(r"\\\g<0>", name)
-            return "%s%s%s <%s>" % (quotes, name, quotes, address)
+            return f"{quotes}{name}{quotes} <{address}>"
     return address
 
 
@@ -112,7 +112,7 @@ def getaddresses(fieldvalues):
 
 
 def _format_timetuple_and_zone(timetuple, zone):
-    return "%s, %02d %s %04d %02d:%02d:%02d %s" % (
+    return "%s, %02d %s %04d %02d:%02d:%02d %s" % (  # noqa: UP031
         ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][timetuple[6]],
         timetuple[2],
         [
@@ -160,7 +160,7 @@ def formatdate(timeval=None, localtime=False, usegmt=False):
     if localtime or usegmt:
         dt = datetime.datetime.fromtimestamp(timeval, datetime.timezone.utc)
     else:
-        dt = datetime.datetime.utcfromtimestamp(timeval)
+        dt = datetime.datetime.utcfromtimestamp(timeval)  # noqa: DTZ004
     if localtime:
         dt = dt.astimezone()
         usegmt = False
@@ -205,14 +205,14 @@ def make_msgid(idstring=None, domain=None):
         idstring = "." + idstring
     if domain is None:
         domain = socket.getfqdn()
-    msgid = "<%d.%d.%d%s@%s>" % (timeval, pid, randint, idstring, domain)
+    msgid = "<%d.%d.%d%s@%s>" % (timeval, pid, randint, idstring, domain)  # noqa: UP031
     return msgid
 
 
 def parsedate_to_datetime(data):
     *dtuple, tz = _parsedate_tz(data)
     if tz is None:
-        return datetime.datetime(*dtuple[:6])
+        return datetime.datetime(*dtuple[:6])  # noqa: DTZ001
     return datetime.datetime(
         *dtuple[:6], tzinfo=datetime.timezone(datetime.timedelta(seconds=tz))
     )
@@ -263,7 +263,7 @@ def encode_rfc2231(s, charset=None, language=None):
         return s
     if language is None:
         language = ""
-    return "%s'%s'%s" % (charset, language, s)
+    return f"{charset}'{language}'{s}"
 
 
 rfc2231_continuation = re.compile(r"^(?P<name>\w+)\*((?P<num>[0-9]+)\*?)?$", re.ASCII)
@@ -289,7 +289,7 @@ def decode_params(params):
                 num = int(num)
             rfc2231_params.setdefault(name, []).append((num, value, encoded))
         else:
-            new_params.append((name, '"%s"' % quote(value)))
+            new_params.append((name, f'"{quote(value)}"'))
     if rfc2231_params:
         for name, continuations in rfc2231_params.items():
             value = []
@@ -312,9 +312,9 @@ def decode_params(params):
             value = quote(EMPTYSTRING.join(value))
             if extended:
                 charset, language, value = decode_rfc2231(value)
-                new_params.append((name, (charset, language, '"%s"' % value)))
+                new_params.append((name, (charset, language, f'"{value}"')))
             else:
-                new_params.append((name, '"%s"' % value))
+                new_params.append((name, f'"{value}"'))
     return new_params
 
 
@@ -324,7 +324,7 @@ def collapse_rfc2231_value(value, errors="replace", fallback_charset="us-ascii")
     # While value comes to us as a unicode string, we need it to be a bytes
     # object.  We do not want bytes() normal utf-8 decoder, we want a straight
     # interpretation of the string as character bytes.
-    charset, language, text = value
+    charset, _language, text = value
     if charset is None:
         # Issue 17369: if charset/lang is None, decode_rfc2231 couldn't parse
         # the value, so use the fallback_charset.
@@ -374,7 +374,7 @@ def localtime(dt=None, isdst=-1):
     except AttributeError:
         # Compute UTC offset and compare with the value implied by tm_isdst.
         # If the values match, use the zone name implied by tm_isdst.
-        delta = dt - datetime.datetime(*time.gmtime(seconds)[:6])
+        delta = dt - datetime.datetime(*time.gmtime(seconds)[:6])  # noqa: DTZ001
         dst = time.daylight and localtm.tm_isdst > 0
         gmtoff = -(time.altzone if dst else time.timezone)
         if delta == datetime.timedelta(seconds=gmtoff):

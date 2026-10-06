@@ -56,7 +56,7 @@ class crashingdummy:
         self.error_handled = False
 
     def handle_read_event(self):
-        raise Exception()
+        raise Exception()  # noqa: TRY002
 
     handle_write_event = handle_read_event
     handle_close = handle_read_event
@@ -70,14 +70,14 @@ class crashingdummy:
 def capture_server(evt, buf, serv):
     try:
         serv.listen()
-        conn, addr = serv.accept()
+        conn, _addr = serv.accept()
     except TimeoutError:
         pass
     else:
         n = 200
         start = time.monotonic()
         while n > 0 and time.monotonic() - start < 3.0:
-            r, w, e = select.select([conn], [], [], 0.1)
+            r, _w, _e = select.select([conn], [], [], 0.1)
             if r:
                 n -= 1
                 data = conn.recv(10)
@@ -227,9 +227,9 @@ class HelperFunctionTests(unittest.TestCase):
 
     def test_compact_traceback(self):
         try:
-            raise Exception("I don't like spam!")
-        except:
-            real_t, real_v, real_tb = sys.exc_info()
+            raise Exception("I don't like spam!")  # noqa: TRY002
+        except:  # noqa: E722
+            real_t, real_v, _real_tb = sys.exc_info()
             r = asyncore.compact_traceback()
         else:
             self.fail("Expected exception")
@@ -239,7 +239,7 @@ class HelperFunctionTests(unittest.TestCase):
         self.assertEqual(function, "test_compact_traceback")
         self.assertEqual(t, real_t)
         self.assertEqual(v, real_v)
-        self.assertEqual(info, "[%s|%s|%s]" % (f, function, line))
+        self.assertEqual(info, f"[{f}|{function}|{line}]")
 
 
 class DispatcherTests(unittest.TestCase):
@@ -256,7 +256,7 @@ class DispatcherTests(unittest.TestCase):
 
     def test_repr(self):
         d = asyncore.dispatcher()
-        self.assertEqual(repr(d), "<asyncore.dispatcher at %#x>" % id(d))
+        self.assertEqual(repr(d), f"<asyncore.dispatcher at {id(d):#x}>")
 
     def test_log(self):
         d = asyncore.dispatcher()
@@ -269,7 +269,7 @@ class DispatcherTests(unittest.TestCase):
             d.log(l2)
 
         lines = stderr.getvalue().splitlines()
-        self.assertEqual(lines, ["log: %s" % l1, "log: %s" % l2])
+        self.assertEqual(lines, [f"log: {l1}", f"log: {l2}"])
 
     def test_log_info(self):
         d = asyncore.dispatcher()
@@ -284,7 +284,7 @@ class DispatcherTests(unittest.TestCase):
             d.log_info(l3, "SPAM")
 
         lines = stdout.getvalue().splitlines()
-        expected = ["EGGS: %s" % l1, "info: %s" % l2, "SPAM: %s" % l3]
+        expected = [f"EGGS: {l1}", f"info: {l2}", f"SPAM: {l3}"]
         self.assertEqual(lines, expected)
 
     def test_unhandled(self):
@@ -419,7 +419,7 @@ class FileWrapperTest(unittest.TestCase):
             def handle_read(self):
                 data.append(self.recv(29))
 
-        s = FileDispatcher(fd)
+        FileDispatcher(fd)
         os.close(fd)
         asyncore.loop(timeout=0.01, use_poll=True, count=2)
         self.assertEqual(b"".join(data), self.d)
@@ -427,11 +427,10 @@ class FileWrapperTest(unittest.TestCase):
     def test_resource_warning(self):
         # Issue #11453
         fd = os.open(support.TESTFN, os.O_RDONLY)
-        f = asyncore.file_wrapper(fd)
+        asyncore.file_wrapper(fd)
 
         os.close(fd)
         with support.check_warnings(("", ResourceWarning)):
-            f = None
             support.gc_collect()
 
     def test_close_twice(self):
@@ -454,22 +453,22 @@ class BaseTestHandler(asyncore.dispatcher):
         self.flag = False
 
     def handle_accept(self):
-        raise Exception("handle_accept not supposed to be called")
+        raise Exception("handle_accept not supposed to be called")  # noqa: TRY002
 
     def handle_accepted(self):
-        raise Exception("handle_accepted not supposed to be called")
+        raise Exception("handle_accepted not supposed to be called")  # noqa: TRY002
 
     def handle_connect(self):
-        raise Exception("handle_connect not supposed to be called")
+        raise Exception("handle_connect not supposed to be called")  # noqa: TRY002
 
     def handle_expt(self):
-        raise Exception("handle_expt not supposed to be called")
+        raise Exception("handle_expt not supposed to be called")  # noqa: TRY002
 
     def handle_close(self):
-        raise Exception("handle_close not supposed to be called")
+        raise Exception("handle_close not supposed to be called")  # noqa: TRY002
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
 
 class BaseServer(asyncore.dispatcher):
@@ -493,7 +492,7 @@ class BaseServer(asyncore.dispatcher):
         self.handler(sock)
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
 
 class BaseClient(BaseTestHandler):
@@ -547,7 +546,7 @@ class BaseTestAPI:
                 self.flag = True
 
         server = TestListener(self.family, self.addr)
-        client = BaseClient(self.family, server.address)
+        BaseClient(self.family, server.address)
         self.loop_waiting_for_flag(server)
 
     def test_handle_accepted(self):
@@ -569,7 +568,7 @@ class BaseTestAPI:
                 self.flag = True
 
         server = TestListener(self.family, self.addr)
-        client = BaseClient(self.family, server.address)
+        BaseClient(self.family, server.address)
         self.loop_waiting_for_flag(server)
 
     def test_handle_read(self):
@@ -683,16 +682,16 @@ class BaseTestAPI:
 
         class TestClient(BaseClient):
             def handle_write(self):
-                1.0 / 0
+                1.0 / 0  # noqa: B018
 
             def handle_error(self):
                 self.flag = True
                 try:
-                    raise
+                    raise  # noqa: PLE0704
                 except ZeroDivisionError:
                     pass
                 else:
-                    raise Exception("exception not raised")
+                    raise Exception("exception not raised")  # noqa: TRY002
 
         server = BaseServer(self.family, self.addr)
         client = TestClient(self.family, server.address)

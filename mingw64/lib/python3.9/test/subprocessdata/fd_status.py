@@ -16,7 +16,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         try:
             _MAXFD = os.sysconf("SC_OPEN_MAX")
-        except:
+        except:  # noqa: E722
             _MAXFD = 256
         test_fds = range(_MAXFD)
     else:

@@ -252,7 +252,7 @@ class GCTests(unittest.TestCase):
         # Tricky: f -> d -> f, code should call d.clear() after the exec to
         # break the cycle.
         d = {}
-        exec("def f(): pass\n", d)
+        exec("def f(): pass\n", d)  # noqa: S102
         gc.collect()
         del d
         self.assertEqual(gc.collect(), 2)
@@ -260,7 +260,7 @@ class GCTests(unittest.TestCase):
     @refcount_test
     def test_frame(self):
         def f():
-            frame = sys._getframe()
+            sys._getframe()
 
         gc.collect()
         f()
@@ -332,7 +332,6 @@ class GCTests(unittest.TestCase):
     def test_get_count(self):
         gc.collect()
         a, b, c = gc.get_count()
-        x = []
         d, e, f = gc.get_count()
         self.assertEqual((b, c), (0, 0))
         self.assertEqual((e, f), (0, 0))
@@ -347,16 +346,15 @@ class GCTests(unittest.TestCase):
         gc.collect()
         # This object will "trickle" into generation N + 1 after
         # each call to collect(N)
-        x = []
         gc.collect(0)
         # x is now in gen 1
-        a, b, c = gc.get_count()
+        _a, b, c = gc.get_count()
         gc.collect(1)
         # x is now in gen 2
-        d, e, f = gc.get_count()
+        _d, e, f = gc.get_count()
         gc.collect(2)
         # x is now in gen 3
-        g, h, i = gc.get_count()
+        _g, h, i = gc.get_count()
         # We don't check a, d, g since their exact values depends on
         # internal implementation details of the interpreter.
         self.assertEqual((b, c), (1, 0))
@@ -413,8 +411,8 @@ class GCTests(unittest.TestCase):
 
         class C(list):
             # Appending to a list is atomic, which avoids the use of a lock.
-            inits = []
-            dels = []
+            inits = []  # noqa: RUF012
+            dels = []  # noqa: RUF012
 
             def __init__(self, alist):
                 self[:] = alist
@@ -651,7 +649,6 @@ class GCTests(unittest.TestCase):
 
         Cs = [C1055820(i) for i in range(2)]
         WRs = [weakref.ref(c, callback) for c in Cs]
-        c = None
 
         gc.collect()
         self.assertEqual(len(ouch), 0)
@@ -765,7 +762,7 @@ class GCTests(unittest.TestCase):
             l = [C()]
             l.append(l)
             """
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, out, _err = assert_python_ok("-c", code)
         self.assertEqual(out.strip(), b"__del__ called")
 
     def test_gc_ordinary_module_at_shutdown(self):
@@ -778,13 +775,13 @@ class GCTests(unittest.TestCase):
                 l = [C()]
                 l.append(l)
                 """
-            code = """if 1:
+            code = f"""if 1:
                 import sys
-                sys.path.insert(0, %r)
+                sys.path.insert(0, {script_dir!r})
                 import gctest
-                """ % (script_dir,)
+                """
             make_script(script_dir, "gctest", module)
-            rc, out, err = assert_python_ok("-c", code)
+            _rc, out, _err = assert_python_ok("-c", code)
             self.assertEqual(out.strip(), b"__del__ called")
 
     def test_global_del_SystemExit(self):
@@ -798,7 +795,7 @@ class GCTests(unittest.TestCase):
         self.addCleanup(unlink, TESTFN)
         with open(TESTFN, "w") as script:
             script.write(code)
-        rc, out, err = assert_python_ok(TESTFN)
+        _rc, out, _err = assert_python_ok(TESTFN)
         self.assertEqual(out.strip(), b"__del__ called")
 
     def test_get_stats(self):
@@ -870,7 +867,7 @@ class GCTests(unittest.TestCase):
 
         class Lazarus(A):
             resurrected = 0
-            resurrected_instances = []
+            resurrected_instances = []  # noqa: RUF012
 
             def __del__(self):
                 Lazarus.resurrected += 1
@@ -905,7 +902,7 @@ class GCTests(unittest.TestCase):
                 self.me = self
 
         class Lazarus:
-            resurrected_instances = []
+            resurrected_instances = []  # noqa: RUF012
 
             def __del__(self):
                 Lazarus.resurrected_instances.append(self)
@@ -1211,7 +1208,7 @@ class GCCallbackTests(unittest.TestCase):
         p = subprocess.Popen(
             [sys.executable, "-c", code], stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
-        stdout, stderr = p.communicate()
+        _stdout, stderr = p.communicate()
         p.stdout.close()
         p.stderr.close()
         # Verify that stderr has a useful error message:
@@ -1258,7 +1255,7 @@ class GCTogglingTests(unittest.TestCase):
             ouch[:] = [c2wr()]
 
         # The callback gets associated with a wr on an object in generation 2.
-        c0wr = weakref.ref(c0, callback)
+        weakref.ref(c0, callback)
 
         c0 = c1 = c2 = None
 

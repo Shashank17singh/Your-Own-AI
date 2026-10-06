@@ -133,7 +133,7 @@ class WindowsLoadTracker:
 
     def _read_lines(self):
         overlapped, _ = _winapi.ReadFile(self.pipe, BUFSIZE, True)
-        bytes_read, res = overlapped.GetOverlappedResult(False)
+        _bytes_read, res = overlapped.GetOverlappedResult(False)
         if res != 0:
             return ()
 
@@ -186,7 +186,7 @@ class WindowsLoadTracker:
             try:
                 processor_queue_length = self._parse_line(line)
             except ValueError:
-                print_warning("Failed to parse typeperf output: %a" % line)
+                print_warning(f"Failed to parse typeperf output: {line!a}")
                 continue
 
             # We use an exponentially weighted moving average, imitating the

@@ -14,14 +14,14 @@ from stat import ST_MODE
 class install_scripts(Command):
     description = "install scripts (Python or otherwise)"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("install-dir=", "d", "directory to install scripts to"),
         ("build-dir=", "b", "build directory (where to install from)"),
         ("force", "f", "force installation (overwrite existing files)"),
         ("skip-build", None, "skip the build steps"),
     ]
 
-    boolean_options = ["force", "skip-build"]
+    boolean_options = ["force", "skip-build"]  # noqa: RUF012
 
     def initialize_options(self):
         self.install_dir = None

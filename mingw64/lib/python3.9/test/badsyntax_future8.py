@@ -1,6 +1,6 @@
 """This is a test"""
 
-from __future__ import *
+from __future__ import *  # noqa: F407
 
 
 def f(x):

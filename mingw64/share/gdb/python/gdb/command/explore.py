@@ -6,7 +6,7 @@ import gdb
 class Explorer:
     """Internal class which invokes other explorers."""
 
-    type_code_to_explorer_map = {}
+    type_code_to_explorer_map = {}  # noqa: RUF012
     _SCALAR_TYPE_LIST = (
         gdb.TYPE_CODE_CHAR,
         gdb.TYPE_CODE_INT,
@@ -63,7 +63,7 @@ class Explorer:
             while explorer_class.explore_expr(expr, value, is_child):
                 pass
         else:
-            print("Explorer for type '%s' not yet available.\n" % str(value.type))
+            print(f"Explorer for type '{value.type!s}' not yet available.\n")
 
     @staticmethod
     def explore_type(name, datatype, is_child):
@@ -86,7 +86,7 @@ class Explorer:
             while explorer_class.explore_type(name, datatype, is_child):
                 pass
         else:
-            print("Explorer for type '%s' not yet available.\n" % str(datatype))
+            print(f"Explorer for type '{datatype!s}' not yet available.\n")
 
     @staticmethod
     def init_env():
@@ -168,8 +168,8 @@ class ScalarExplorer:
         See Explorer.explore_expr and Explorer.is_scalar_type for more
         information.
         """
-        print("'%s' is a scalar value of type '%s'." % (expr, value.type))
-        print("%s = %s" % (expr, str(value)))
+        print(f"'{expr}' is a scalar value of type '{value.type}'.")
+        print(f"{expr} = {value!s}")
         if is_child:
             Explorer.return_to_parent_value_prompt()
             Explorer.return_to_parent_value()
@@ -183,14 +183,14 @@ class ScalarExplorer:
         """
         if datatype.code == gdb.TYPE_CODE_ENUM:
             if is_child:
-                print("%s is of an enumerated type '%s'." % (name, str(datatype)))
+                print(f"{name} is of an enumerated type '{datatype!s}'.")
             else:
-                print("'%s' is an enumerated type." % name)
+                print(f"'{name}' is an enumerated type.")
         else:
             if is_child:
-                print("%s is of a scalar type '%s'." % (name, str(datatype)))
+                print(f"{name} is of a scalar type '{datatype!s}'.")
             else:
-                print("'%s' is a scalar type." % name)
+                print(f"'{name}' is a scalar type.")
         if is_child:
             Explorer.return_to_enclosing_type_prompt()
             Explorer.return_to_enclosing_type()
@@ -205,10 +205,7 @@ class PointerExplorer:
         """Function to explore pointer values.
         See Explorer.explore_expr for more information.
         """
-        print(
-            "'%s' is a pointer to a value of type '%s'"
-            % (expr, str(value.type.target()))
-        )
+        print(f"'{expr}' is a pointer to a value of type '{value.type.target()!s}'")
         option = input("Continue exploring it as a pointer to a single value [y/n]: ")
         if option == "y":
             deref_value = None
@@ -216,12 +213,12 @@ class PointerExplorer:
                 deref_value = value.dereference()
                 str(deref_value)
             except gdb.MemoryError:
-                print("'%s' a pointer pointing to an invalid memory location." % expr)
+                print(f"'{expr}' a pointer pointing to an invalid memory location.")
                 if is_child:
                     Explorer.return_to_parent_value_prompt()
                 return False
             Explorer.explore_expr(
-                "*%s" % Explorer.guard_expr(expr), deref_value, is_child
+                f"*{Explorer.guard_expr(expr)}", deref_value, is_child
             )
             return False
         option = input("Continue exploring it as a pointer to an array [y/n]: ")
@@ -232,17 +229,17 @@ class PointerExplorer:
                     index = int(
                         input(
                             "Enter the index of the element you "
-                            "want to explore in '%s': " % expr
+                            f"want to explore in '{expr}': "
                         )
                     )
                 except ValueError:
                     break
-                element_expr = "%s[%d]" % (Explorer.guard_expr(expr), index)
+                element_expr = "%s[%d]" % (Explorer.guard_expr(expr), index)  # noqa: UP031
                 element = value[index]
                 try:
                     str(element)
                 except gdb.MemoryError:
-                    print("Cannot read value at index %d." % index)
+                    print("Cannot read value at index %d." % index)  # noqa: UP031
                     continue
                 Explorer.explore_expr(element_expr, element, True)
             return False
@@ -256,8 +253,8 @@ class PointerExplorer:
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print("\n%s is a pointer to a value of type '%s'." % (name, str(target_type)))
-        Explorer.explore_type("the pointee type of %s" % name, target_type, is_child)
+        print(f"\n{name} is a pointer to a value of type '{target_type!s}'.")
+        Explorer.explore_type(f"the pointee type of {name}", target_type, is_child)
         return False
 
 
@@ -292,13 +289,12 @@ class ArrayExplorer:
         See Explorer.explore_expr for more information.
         """
         target_type = value.type.target()
-        print("'%s' is an array of '%s'." % (expr, str(target_type)))
+        print(f"'{expr}' is an array of '{target_type!s}'.")
         index = 0
         try:
             index = int(
                 input(
-                    "Enter the index of the element you want to "
-                    "explore in '%s': " % expr
+                    f"Enter the index of the element you want to explore in '{expr}': "
                 )
             )
         except ValueError:
@@ -310,11 +306,13 @@ class ArrayExplorer:
             element = value[index]
             str(element)
         except gdb.MemoryError:
-            print("Cannot read value at index %d." % index)
+            print("Cannot read value at index %d." % index)  # noqa: UP031
             input("Press enter to continue... ")
             return True
         Explorer.explore_expr(
-            "%s[%d]" % (Explorer.guard_expr(expr), index), element, True
+            "%s[%d]" % (Explorer.guard_expr(expr), index),
+            element,
+            True,  # noqa: UP031
         )
         return True
 
@@ -324,8 +322,8 @@ class ArrayExplorer:
         See Explorer.explore_type for more information.
         """
         target_type = datatype.target()
-        print("%s is an array of '%s'." % (name, str(target_type)))
-        Explorer.explore_type("the array element of %s" % name, target_type, is_child)
+        print(f"{name} is an array of '{target_type!s}'.")
+        Explorer.explore_type(f"the array element of {name}", target_type, is_child)
         return False
 
 
@@ -339,7 +337,7 @@ class CompoundExplorer:
         for pair in print_list:
             max_field_name_length = max(max_field_name_length, len(pair[0]))
         for pair in print_list:
-            print("  %*s = %s" % (max_field_name_length, pair[0], pair[1]))
+            print("  %*s = %s" % (max_field_name_length, pair[0], pair[1]))  # noqa: UP031
 
     @staticmethod
     def _get_real_field_count(fields):
@@ -363,15 +361,14 @@ class CompoundExplorer:
             type_desc = "union"
         if CompoundExplorer._get_real_field_count(fields) == 0:
             print(
-                "The value of '%s' is a %s of type '%s' with no fields."
-                % (expr, type_desc, str(value.type))
+                f"The value of '{expr}' is a {type_desc} of type '{value.type!s}' with no fields."
             )
             if is_child:
                 Explorer.return_to_parent_value_prompt()
             return False
         print(
-            "The value of '%s' is a %s of type '%s' with the following "
-            "fields:\n" % (expr, type_desc, str(value.type))
+            f"The value of '{expr}' is a {type_desc} of type '{value.type!s}' with the following "
+            "fields:\n"
         )
         has_explorable_fields = False
         choice_to_compound_field_map = {}
@@ -387,23 +384,22 @@ class CompoundExplorer:
                 field_value = value[field.name]
             literal_value = ""
             if type_code == gdb.TYPE_CODE_UNION:
-                literal_value = "<Enter %d to explore this field of type '%s'>" % (
+                literal_value = "<Enter %d to explore this field of type '%s'>" % (  # noqa: UP031
                     current_choice,
                     str(field.type),
                 )
                 has_explorable_fields = True
             else:
                 if Explorer.is_scalar_type(field.type):
-                    literal_value = "%s .. (Value of type '%s')" % (
-                        str(field_value),
-                        str(field.type),
+                    literal_value = (
+                        f"{field_value!s} .. (Value of type '{field.type!s}')"
                     )
                 else:
                     if field.is_base_class:
                         field_desc = "base class"
                     else:
                         field_desc = "field"
-                    literal_value = "<Enter %d to explore this %s of type '%s'>" % (
+                    literal_value = "<Enter %d to explore this %s of type '%s'>" % (  # noqa: UP031
                         current_choice,
                         field_desc,
                         str(field.type),
@@ -448,21 +444,18 @@ class CompoundExplorer:
         fields = datatype.fields()
         if CompoundExplorer._get_real_field_count(fields) == 0:
             if is_child:
-                print(
-                    "%s is a %s of type '%s' with no fields."
-                    % (name, type_desc, str(datatype))
-                )
+                print(f"{name} is a {type_desc} of type '{datatype!s}' with no fields.")
                 Explorer.return_to_enclosing_type_prompt()
             else:
-                print("'%s' is a %s with no fields." % (name, type_desc))
+                print(f"'{name}' is a {type_desc} with no fields.")
             return False
         if is_child:
             print(
-                "%s is a %s of type '%s' "
-                "with the following fields:\n" % (name, type_desc, str(datatype))
+                f"{name} is a {type_desc} of type '{datatype!s}' "
+                "with the following fields:\n"
             )
         else:
-            print("'%s' is a %s with the following fields:\n" % (name, type_desc))
+            print(f"'{name}' is a {type_desc} with the following fields:\n")
         current_choice = 0
         choice_to_compound_field_map = {}
         print_list = []
@@ -473,7 +466,7 @@ class CompoundExplorer:
                 field_desc = "base class"
             else:
                 field_desc = "field"
-            rhs = "<Enter %d to explore this %s of type '%s'>" % (
+            rhs = "<Enter %d to explore this %s of type '%s'>" % (  # noqa: UP031
                 current_choice,
                 field_desc,
                 str(field.type),
@@ -491,17 +484,9 @@ class CompoundExplorer:
             choice = input("Enter the field number of choice: ")
             if choice in choice_to_compound_field_map:
                 if is_child:
-                    new_name = "%s '%s' of %s" % (
-                        choice_to_compound_field_map[choice][2],
-                        choice_to_compound_field_map[choice][0],
-                        name,
-                    )
+                    new_name = f"{choice_to_compound_field_map[choice][2]} '{choice_to_compound_field_map[choice][0]}' of {name}"
                 else:
-                    new_name = "%s '%s' of '%s'" % (
-                        choice_to_compound_field_map[choice][2],
-                        choice_to_compound_field_map[choice][0],
-                        name,
-                    )
+                    new_name = f"{choice_to_compound_field_map[choice][2]} '{choice_to_compound_field_map[choice][0]}' of '{name}'"
                 Explorer.explore_type(
                     new_name, choice_to_compound_field_map[choice][1], True
                 )
@@ -525,9 +510,8 @@ class TypedefExplorer:
         """
         actual_type = value.type.strip_typedefs()
         print(
-            "The value of '%s' is of type '%s' "
-            "which is a typedef of type '%s'"
-            % (expr, str(value.type), str(actual_type))
+            f"The value of '{expr}' is of type '{value.type!s}' "
+            f"which is a typedef of type '{actual_type!s}'"
         )
         Explorer.explore_expr(expr, value.cast(actual_type), is_child)
         return False
@@ -539,11 +523,9 @@ class TypedefExplorer:
         """
         actual_type = datatype.strip_typedefs()
         if is_child:
-            print(
-                "The type of %s is a typedef of type '%s'." % (name, str(actual_type))
-            )
+            print(f"The type of {name} is a typedef of type '{actual_type!s}'.")
         else:
-            print("The type '%s' is a typedef of type '%s'." % (name, str(actual_type)))
+            print(f"The type '{name}' is a typedef of type '{actual_type!s}'.")
         Explorer.explore_type(name, actual_type, is_child)
         return False
 
@@ -564,7 +546,7 @@ class ExploreUtils:
             gdb.GdbError if adequate arguments are not passed.
         """
         if len(arg_str) < 1:
-            raise gdb.GdbError("ERROR: '%s' requires an argument." % name)
+            raise gdb.GdbError(f"ERROR: '{name}' requires an argument.")
             return False
         else:
             return True
@@ -580,7 +562,7 @@ class ExploreUtils:
             The deduced gdb.Type value if possible, None otherwise.
         """
         try:
-            return gdb.parse_and_eval("(%s *)0" % type_str).type.target()
+            return gdb.parse_and_eval(f"({type_str} *)0").type.target()
         except RuntimeError:
             try:
                 return gdb.lookup_type(type_str)
@@ -625,8 +607,8 @@ class ExploreCommand(gdb.Command):
             Explorer.explore_type(arg_str, datatype, False)
             return
         raise gdb.GdbError(
-            "'%s' neither evaluates to a value nor is a type "
-            "in the current context." % arg_str
+            f"'{arg_str}' neither evaluates to a value nor is a type "
+            "in the current context."
         )
 
 
@@ -646,7 +628,7 @@ class ExploreValueCommand(gdb.Command):
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is None:
             raise gdb.GdbError(
-                " '%s' does not evaluate to a value in the current context." % arg_str
+                f" '{arg_str}' does not evaluate to a value in the current context."
             )
             return
         Explorer.explore_expr(arg_str, value, False)
@@ -671,11 +653,11 @@ class ExploreTypeCommand(gdb.Command):
             return
         value = ExploreUtils.get_value_from_str(arg_str)
         if value is not None:
-            print("'%s' is of type '%s'." % (arg_str, str(value.type)))
+            print(f"'{arg_str}' is of type '{value.type!s}'.")
             Explorer.explore_type(str(value.type), value.type, False)
             return
         raise gdb.GdbError(
-            "'%s' is not a type or value in the current context." % arg_str
+            f"'{arg_str}' is not a type or value in the current context."
         )
 
 

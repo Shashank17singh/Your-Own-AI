@@ -41,7 +41,7 @@ class Command:
     # 'sub_commands' is usually defined at the *end* of a class, because
     # predicates can be unbound methods, so they must already have been
     # defined.  The canonical example is the "install" command.
-    sub_commands = []
+    sub_commands = []  # noqa: RUF012
 
     # -- Creation/initialization methods -------------------------------
 
@@ -132,7 +132,7 @@ class Command:
         This method must be implemented by all command classes.
         """
         raise RuntimeError(
-            "abstract method -- subclass %s must override" % self.__class__
+            f"abstract method -- subclass {self.__class__} must override"
         )
 
     def finalize_options(self):
@@ -147,14 +147,14 @@ class Command:
         This method must be implemented by all command classes.
         """
         raise RuntimeError(
-            "abstract method -- subclass %s must override" % self.__class__
+            f"abstract method -- subclass {self.__class__} must override"
         )
 
     def dump_options(self, header=None, indent=""):
         from distutils.fancy_getopt import longopt_xlate
 
         if header is None:
-            header = "command options for '%s':" % self.get_command_name()
+            header = f"command options for '{self.get_command_name()}':"
         self.announce(indent + header, level=log.INFO)
         indent = indent + "  "
         for option, _, _ in self.user_options:
@@ -162,7 +162,7 @@ class Command:
             if option[-1] == "=":
                 option = option[:-1]
             value = getattr(self, option)
-            self.announce(indent + "%s = %s" % (option, value), level=log.INFO)
+            self.announce(indent + f"{option} = {value}", level=log.INFO)
 
     def run(self):
         """A command's raison d'etre: carry out the action it exists to
@@ -175,7 +175,7 @@ class Command:
         This method must be implemented by all command classes.
         """
         raise RuntimeError(
-            "abstract method -- subclass %s must override" % self.__class__
+            f"abstract method -- subclass {self.__class__} must override"
         )
 
     def announce(self, msg, level=1):
@@ -213,9 +213,7 @@ class Command:
             setattr(self, option, default)
             return default
         elif not isinstance(val, str):
-            raise DistutilsOptionError(
-                "'%s' must be a %s (got `%s`)" % (option, what, val)
-            )
+            raise DistutilsOptionError(f"'{option}' must be a {what} (got `{val}`)")
         return val
 
     def ensure_string(self, option, default=None):
@@ -242,7 +240,7 @@ class Command:
                 ok = False
             if not ok:
                 raise DistutilsOptionError(
-                    "'%s' must be a list of strings (got %r)" % (option, val)
+                    f"'{option}' must be a list of strings (got {val!r})"
                 )
 
     def _ensure_tested_string(self, option, tester, what, error_fmt, default=None):
@@ -414,7 +412,7 @@ class Command:
         timestamp checks.
         """
         if skip_msg is None:
-            skip_msg = "skipping %s (inputs unchanged)" % outfile
+            skip_msg = f"skipping {outfile} (inputs unchanged)"
 
         # Allow 'infiles' to be a single string
         if isinstance(infiles, str):
@@ -423,7 +421,7 @@ class Command:
             raise TypeError("'infiles' must be a string, or a list or tuple of strings")
 
         if exec_msg is None:
-            exec_msg = "generating %s from %s" % (outfile, ", ".join(infiles))
+            exec_msg = "generating {} from {}".format(outfile, ", ".join(infiles))
 
         # If 'outfile' must be regenerated (either because it doesn't
         # exist, is out-of-date, or the 'force' flag is true) then

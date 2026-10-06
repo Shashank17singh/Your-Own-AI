@@ -39,7 +39,7 @@ class InstallScriptsTestCase(
 
         def write_script(name, text):
             expected.append(name)
-            f = open(os.path.join(source, name), "w")
+            f = open(os.path.join(source, name), "w")  # noqa: SIM115
             try:
                 f.write(text)
             finally:

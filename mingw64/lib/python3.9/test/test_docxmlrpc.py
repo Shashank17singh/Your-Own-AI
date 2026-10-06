@@ -80,7 +80,7 @@ class DocXMLRPCHTTPGETServer(unittest.TestCase):
         self.thread.start()
 
         PORT = self.serv.server_address[1]
-        self.client = http.client.HTTPConnection("localhost:%d" % PORT)
+        self.client = http.client.HTTPConnection("localhost:%d" % PORT)  # noqa: UP031
 
     def tearDown(self):
         self.client.close()

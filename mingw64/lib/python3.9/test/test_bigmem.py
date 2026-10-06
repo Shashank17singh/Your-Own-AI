@@ -366,11 +366,11 @@ class BaseStrTest:
         s = _(" a") * size + _(" ")
         l = s.split()
         self.assertEqual(len(l), size)
-        self.assertEqual(set(l), set([_("a")]))
+        self.assertEqual(set(l), {_("a")})
         del l
         l = s.split(_("a"))
         self.assertEqual(len(l), size + 1)
-        self.assertEqual(set(l), set([_(" ")]))
+        self.assertEqual(set(l), {_(" ")})
 
     @bigmemtest(size=_2G, memuse=2.1)
     def test_splitlines(self, size):
@@ -639,10 +639,10 @@ class StrTest(unittest.TestCase, BaseStrTest):
     @bigmemtest(size=_2G + 10, memuse=ascii_char_size * 2 + ucs4_char_size)
     def test_format(self, size):
         s = "-" * size
-        sf = "%s" % (s,)
+        sf = f"{s}"
         self.assertTrue(s == sf)
         del sf
-        sf = "..%s.." % (s,)
+        sf = f"..{s}.."
         self.assertEqual(len(sf), len(s) + 4)
         self.assertTrue(sf.startswith("..-"))
         self.assertTrue(sf.endswith("-.."))
@@ -650,7 +650,7 @@ class StrTest(unittest.TestCase, BaseStrTest):
 
         size //= 2
         edge = "-" * size
-        s = "".join([edge, "%s", edge])
+        s = f"{edge}%s{edge}"
         del edge
         s = s % "..."
         self.assertEqual(len(s), size * 2 + 3)

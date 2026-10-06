@@ -97,7 +97,7 @@ def _run_code(
         __package__=pkg_name,
         __spec__=mod_spec,
     )
-    exec(code, run_globals)
+    exec(code, run_globals)  # noqa: S102
     return run_globals
 
 
@@ -165,7 +165,7 @@ def _get_module_details(mod_name, error=ImportError):
             )
         raise error(msg.format(mod_name, type(ex).__name__, ex)) from ex
     if spec is None:
-        raise error("No module named %s" % mod_name)
+        raise error(f"No module named {mod_name}")
     if spec.submodule_search_locations is not None:
         if mod_name == "__main__" or mod_name.endswith(".__main__"):
             raise error("Cannot use package as __main__ module")
@@ -181,13 +181,13 @@ def _get_module_details(mod_name, error=ImportError):
             )
     loader = spec.loader
     if loader is None:
-        raise error("%r is a namespace package and cannot be executed" % mod_name)
+        raise error(f"{mod_name!r} is a namespace package and cannot be executed")
     try:
         code = loader.get_code(mod_name)
     except ImportError as e:
         raise error(format(e)) from e
     if code is None:
-        raise error("No code object available for %s" % mod_name)
+        raise error(f"No code object available for {mod_name}")
     return mod_name, spec, code
 
 
@@ -219,7 +219,7 @@ def _run_module_as_main(mod_name, alter_argv=True):
         else:  # i.e. directory or zipfile execution
             mod_name, mod_spec, code = _get_main_module_details(_Error)
     except _Error as exc:
-        msg = "%s: %s" % (sys.executable, exc)
+        msg = f"{sys.executable}: {exc}"
         sys.exit(msg)
     main_globals = sys.modules["__main__"].__dict__
     if alter_argv:
@@ -254,9 +254,7 @@ def _get_main_module_details(error=ImportError):
         return _get_module_details(main_name)
     except ImportError as exc:
         if main_name in str(exc):
-            raise error(
-                "can't find %r module in %r" % (main_name, sys.path[0])
-            ) from exc
+            raise error(f"can't find {main_name!r} module in {sys.path[0]!r}") from exc
         raise
     finally:
         sys.modules[main_name] = saved_main
@@ -290,7 +288,7 @@ def run_path(path_name, init_globals=None, run_name=None):
     importer = get_importer(path_name)
     # Trying to avoid importing imp so as to not consume the deprecation warning.
     is_NullImporter = False
-    if type(importer).__module__ == "imp":
+    if type(importer).__module__ == "imp":  # noqa: SIM102
         if type(importer).__name__ == "NullImporter":
             is_NullImporter = True
     if (importer is None) or is_NullImporter:
@@ -311,7 +309,7 @@ def run_path(path_name, init_globals=None, run_name=None):
             # have no choice and we have to remove it even while we read the
             # code. If we don't do this, a __loader__ attribute in the
             # existing __main__ module may prevent location of the new module.
-            mod_name, mod_spec, code = _get_main_module_details()
+            _mod_name, mod_spec, code = _get_main_module_details()
             with _TempModule(run_name) as temp_module, _ModifiedArgv0(path_name):
                 mod_globals = temp_module.module.__dict__
                 return _run_code(

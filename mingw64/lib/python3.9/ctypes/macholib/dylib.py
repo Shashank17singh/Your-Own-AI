@@ -45,13 +45,13 @@ def dylib_info(filename):
 
 def test_dylib_info():
     def d(location=None, name=None, shortname=None, version=None, suffix=None):
-        return dict(
-            location=location,
-            name=name,
-            shortname=shortname,
-            version=version,
-            suffix=suffix,
-        )
+        return {
+            "location": location,
+            "name": name,
+            "shortname": shortname,
+            "version": version,
+            "suffix": suffix,
+        }
 
     assert dylib_info("completely/invalid") is None
     assert dylib_info("completely/invalide_debug") is None

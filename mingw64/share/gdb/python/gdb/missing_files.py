@@ -3,37 +3,15 @@ MissingFileHandler base class, and support functions used by the
 missing_debug.py and missing_objfile.py modules.
 """
 
-import sys
-
 import gdb
 
-if sys.version_info >= (3, 7):
 
-    def isascii(ch):
-        return ch.isascii()
+def isascii(ch):
+    return ch.isascii()
 
-    def isalnum(ch):
-        return ch.isalnum()
 
-else:
-
-    def isdigit(c):
-        return 48 <= ord(c) <= 57
-
-    def islower(c):
-        return 97 <= ord(c) <= 122
-
-    def isupper(c):
-        return 65 <= ord(c) <= 90
-
-    def isalpha(c):
-        return isupper(c) or islower(c)
-
-    def isalnum(c):
-        return isalpha(c) or isdigit(c)
-
-    def isascii(c):
-        return 0 <= ord(c) <= 127
+def isalnum(ch):
+    return ch.isalnum()
 
 
 def _validate_name(name):
@@ -51,7 +29,7 @@ def _validate_name(name):
     """
     for ch in name:
         if not isascii(ch) or not (isalnum(ch) or ch in "_-"):
-            raise ValueError("invalid character '%s' in handler name: %s" % (ch, name))
+            raise ValueError(f"invalid character '{ch}' in handler name: {name}")
 
 
 class MissingFileHandler:
@@ -75,7 +53,7 @@ class MissingFileHandler:
             ValueError: name contains invalid characters.
         """
         if not isinstance(name, str):
-            raise TypeError("incorrect type for name: %s" % type(name))
+            raise TypeError(f"incorrect type for name: {type(name)}")
         _validate_name(name)
         self._name = name
         self._enabled = True
@@ -91,7 +69,7 @@ class MissingFileHandler:
     @enabled.setter
     def enabled(self, value):
         if not isinstance(value, bool):
-            raise TypeError("incorrect type for enabled attribute: %s" % type(value))
+            raise TypeError(f"incorrect type for enabled attribute: {type(value)}")
         self._enabled = value
 
 
@@ -123,23 +101,20 @@ def register_handler(handler_type, locus, handler, replace=False):
         raise ValueError("handler_type must be 'debug' or 'objfile'")
     if locus is None:
         if gdb.parameter("verbose"):
-            gdb.write("Registering global %s handler ...\n" % handler.name)
+            gdb.write(f"Registering global {handler.name} handler ...\n")
         locus = gdb
     elif isinstance(locus, gdb.Progspace):
         if gdb.parameter("verbose"):
-            gdb.write(
-                "Registering %s handler for %s ...\n" % (handler.name, locus.filename)
-            )
+            gdb.write(f"Registering {handler.name} handler for {locus.filename} ...\n")
     else:
         raise TypeError("locus should be gdb.Progspace or None")
     name = handler.name
     _validate_name(name)
-    handler.enabled
+    handler.enabled  # noqa: B018
     call_method = handler.__call__
     if not callable(call_method):
-        raise AttributeError(
-            "'%s' object's '__call__' attribute is not callable"
-            % type(handler).__name__
+        raise AttributeError(  # noqa: TRY004
+            f"'{type(handler).__name__}' object's '__call__' attribute is not callable"
         )
     i = 0
     for needle in locus.missing_file_handlers:
@@ -147,6 +122,6 @@ def register_handler(handler_type, locus, handler, replace=False):
             if replace:
                 del locus.missing_file_handlers[i]
             else:
-                raise RuntimeError("Handler %s already exists." % handler.name)
-        i += 1
+                raise RuntimeError(f"Handler {handler.name} already exists.")
+        i += 1  # noqa: SIM113
     locus.missing_file_handlers.insert(0, (handler_type, handler))

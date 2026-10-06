@@ -70,7 +70,7 @@ def _get_head_types(pat):
                 r.update(_get_head_types(x))
         return r
 
-    raise Exception("Oh no! I don't understand pattern %s" % (pat))
+    raise Exception(f"Oh no! I don't understand pattern {pat}")  # noqa: TRY002
 
 
 def _get_headnode_dict(fixer_list):
@@ -159,7 +159,7 @@ class FixerError(Exception):
 
 
 class RefactoringTool:
-    _default_options = {
+    _default_options = {  # noqa: RUF012
         "print_function": False,
         "exec_function": False,
         "write_unchanged_files": False,
@@ -239,7 +239,7 @@ class RefactoringTool:
             try:
                 fix_class = getattr(mod, class_name)
             except AttributeError:
-                raise FixerError("Can't find %s.%s" % (fix_name, class_name)) from None
+                raise FixerError(f"Can't find {fix_name}.{class_name}") from None
             fixer = fix_class(self.options, self.fixer_log)
             if (
                 fixer.explicit
@@ -255,7 +255,7 @@ class RefactoringTool:
             elif fixer.order == "post":
                 post_order_fixers.append(fixer)
             else:
-                raise FixerError("Illegal fixer order: %r" % fixer.order)
+                raise FixerError(f"Illegal fixer order: {fixer.order!r}")
 
         key_func = operator.attrgetter("run_order")
         pre_order_fixers.sort(key=key_func)
@@ -264,7 +264,7 @@ class RefactoringTool:
 
     def log_error(self, msg, *args, **kwds):
         """Called when an error occurs."""
-        raise
+        raise  # noqa: PLE0704
 
     def log_message(self, msg, *args):
         """Hook to log a message."""
@@ -314,7 +314,7 @@ class RefactoringTool:
         Do our best to decode a Python source file correctly.
         """
         try:
-            f = open(filename, "rb")
+            f = open(filename, "rb")  # noqa: SIM115
         except OSError as err:
             self.log_error("Can't open %s: %s", filename, err)
             return None, None
@@ -365,7 +365,7 @@ class RefactoringTool:
             self.driver.grammar = pygram.python_grammar_no_print_statement
         try:
             tree = self.driver.parse_string(data)
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             self.log_error("Can't parse %s: %s: %s", name, err.__class__.__name__, err)
             return
         finally:
@@ -523,7 +523,7 @@ class RefactoringTool:
         set.
         """
         try:
-            fp = open(filename, "w", encoding=encoding, newline="")
+            fp = open(filename, "w", encoding=encoding, newline="")  # noqa: SIM115
         except OSError as err:
             self.log_error("Can't create %s: %s", filename, err)
             return
@@ -557,7 +557,7 @@ class RefactoringTool:
         indent = None
         lineno = 0
         for line in input.splitlines(keepends=True):
-            lineno += 1
+            lineno += 1  # noqa: SIM113
             if line.lstrip().startswith(self.PS1):
                 if block is not None:
                     result.extend(
@@ -594,7 +594,7 @@ class RefactoringTool:
         """
         try:
             tree = self.parse_block(block, lineno, indent)
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             if self.logger.isEnabledFor(logging.DEBUG):
                 for line in block:
                     self.log_debug("Source: %s", line.rstrip("\n"))
@@ -678,7 +678,7 @@ class RefactoringTool:
             elif line == prefix.rstrip() + "\n":
                 yield "\n"
             else:
-                raise AssertionError("line=%r, prefix=%r" % (line, prefix))
+                raise AssertionError(f"line={line!r}, prefix={prefix!r}")
             prefix = prefix2
         while True:
             yield ""

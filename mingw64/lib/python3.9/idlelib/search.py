@@ -103,8 +103,8 @@ class SearchDialog(SearchDialogBase):
         if res:
             line, m = res
             i, j = m.span()
-            first = "%d.%d" % (line, i)
-            last = "%d.%d" % (line, j)
+            first = "%d.%d" % (line, i)  # noqa: UP031
+            last = "%d.%d" % (line, j)  # noqa: UP031
             try:
                 selfirst = text.index("sel.first")
                 sellast = text.index("sel.last")
@@ -144,7 +144,7 @@ def _search_dialog(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test SearchDialog")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x, y + 175))
+    top.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
 
     frame = Frame(top)
     frame.pack()

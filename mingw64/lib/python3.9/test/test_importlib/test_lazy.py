@@ -44,7 +44,7 @@ class TestingImporter(abc.MetaPathFinder, abc.Loader):
         return util.spec_from_loader(name, util.LazyLoader(self))
 
     def exec_module(self, module):
-        exec(self.source_code, module.__dict__)
+        exec(self.source_code, module.__dict__)  # noqa: S102
         self.loaded = module
 
 
@@ -75,7 +75,7 @@ class LazyLoaderTests(unittest.TestCase):
         # End-to-end test to verify the load is in fact lazy.
         importer = TestingImporter()
         assert importer.loaded is None
-        with test_util.uncache(importer.module_name):
+        with test_util.uncache(importer.module_name):  # noqa: SIM117
             with test_util.import_state(meta_path=[importer]):
                 module = importlib.import_module(importer.module_name)
         self.assertIsNone(importer.loaded)
@@ -127,14 +127,14 @@ class LazyLoaderTests(unittest.TestCase):
             sys.modules[TestingImporter.module_name] = fresh_module
             module = self.new_module()
             with self.assertRaisesRegex(ValueError, "substituted"):
-                module.__name__
+                module.__name__  # noqa: B018
 
     def test_module_already_in_sys(self):
         with test_util.uncache(TestingImporter.module_name):
             module = self.new_module()
             sys.modules[TestingImporter.module_name] = module
             # Force the load; just care that no exception is raised.
-            module.__name__
+            module.__name__  # noqa: B018
 
 
 if __name__ == "__main__":

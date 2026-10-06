@@ -111,12 +111,12 @@ class _ResourceSharer:
                 self._thread = None
                 self._address = None
                 self._listener = None
-                for key, (send, close) in self._cache.items():
+                for send, close in self._cache.values():
                     close()
                 self._cache.clear()
 
     def _afterfork(self):
-        for key, (send, close) in self._cache.items():
+        for send, close in self._cache.values():
             close()
         self._cache.clear()
         self._lock._at_fork_reinit()
@@ -153,7 +153,7 @@ class _ResourceSharer:
                         send(conn, destination_pid)
                     finally:
                         close()
-            except:
+            except:  # noqa: E722
                 if not util.is_exiting():
                     sys.excepthook(*sys.exc_info())
 

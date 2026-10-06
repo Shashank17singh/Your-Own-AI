@@ -53,7 +53,7 @@ class AsyncGenSyntaxTest(unittest.TestCase):
         """
 
         with self.assertRaisesRegex(SyntaxError, "yield from.*inside async"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_async_gen_syntax_02(self):
         code = """async def foo():
@@ -61,7 +61,7 @@ class AsyncGenSyntaxTest(unittest.TestCase):
         """
 
         with self.assertRaisesRegex(SyntaxError, "yield from.*inside async"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_async_gen_syntax_03(self):
         code = """async def foo():
@@ -71,7 +71,7 @@ class AsyncGenSyntaxTest(unittest.TestCase):
         """
 
         with self.assertRaisesRegex(SyntaxError, "return.*value.*async gen"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_async_gen_syntax_04(self):
         code = """async def foo():
@@ -80,7 +80,7 @@ class AsyncGenSyntaxTest(unittest.TestCase):
         """
 
         with self.assertRaisesRegex(SyntaxError, "return.*value.*async gen"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
     def test_async_gen_syntax_05(self):
         code = """async def foo():
@@ -90,7 +90,7 @@ class AsyncGenSyntaxTest(unittest.TestCase):
         """
 
         with self.assertRaisesRegex(SyntaxError, "return.*value.*async gen"):
-            exec(code, {}, {})
+            exec(code, {}, {})  # noqa: S102
 
 
 class AsyncGenTest(unittest.TestCase):
@@ -103,7 +103,7 @@ class AsyncGenTest(unittest.TestCase):
                 except StopIteration:
                     res.append("STOP")
                     break
-                except Exception as ex:
+                except Exception as ex:  # noqa: BLE001
                     res.append(str(type(ex)))
             return res
 
@@ -124,7 +124,7 @@ class AsyncGenTest(unittest.TestCase):
                                 break
                         except StopAsyncIteration:
                             raise
-                        except Exception as ex:
+                        except Exception as ex:  # noqa: BLE001
                             res.append(str(type(ex)))
                             break
                 except StopAsyncIteration:
@@ -192,7 +192,7 @@ class AsyncGenTest(unittest.TestCase):
         async def gen():
             await awaitable()
             yield 123
-            1 / 0
+            1 / 0  # noqa: B018
 
         g = gen()
         ai = g.__aiter__()
@@ -222,7 +222,7 @@ class AsyncGenTest(unittest.TestCase):
     def test_async_gen_exception_06(self):
         async def gen():
             yield 123
-            raise StopIteration
+            raise StopIteration  # noqa: PLR1708
 
         with self.assertRaisesRegex(RuntimeError, "async generator.*StopIteration"):
             to_list(gen())
@@ -231,7 +231,7 @@ class AsyncGenTest(unittest.TestCase):
         def sync_gen():
             try:
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 yield 2
                 yield 3
@@ -241,7 +241,7 @@ class AsyncGenTest(unittest.TestCase):
         async def async_gen():
             try:
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 yield 2
                 yield 3
@@ -256,7 +256,7 @@ class AsyncGenTest(unittest.TestCase):
                 yield 1
             finally:
                 yield 2
-                1 / 0
+                1 / 0  # noqa: B018
                 yield 3
 
             yield 100
@@ -268,7 +268,7 @@ class AsyncGenTest(unittest.TestCase):
             finally:
                 await awaitable()
                 yield 2
-                1 / 0
+                1 / 0  # noqa: B018
                 yield 3
 
             yield 100
@@ -279,7 +279,7 @@ class AsyncGenTest(unittest.TestCase):
         def sync_gen():
             try:
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 yield 2
                 yield 3
@@ -290,7 +290,7 @@ class AsyncGenTest(unittest.TestCase):
             try:
                 await awaitable()
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 yield 2
                 await awaitable()
@@ -393,7 +393,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             yield 1
             await asyncio.sleep(0.01)
             yield 2
-            1 / 0
+            1 / 0  # noqa: B018
             yield 3
 
         with self.assertRaises(ZeroDivisionError):
@@ -495,7 +495,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
         def foo():
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
 
         g = foo()
@@ -509,7 +509,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             nonlocal DONE
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
             DONE = 1
 
@@ -570,7 +570,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
         async def foo():
             try:
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 await asyncio.sleep(0.01)
                 yield 12
@@ -593,7 +593,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             nonlocal DONE
             try:
                 yield 1
-                1 / 0
+                1 / 0  # noqa: B018
             finally:
                 await asyncio.sleep(0.01)
                 await asyncio.sleep(0.01)
@@ -672,7 +672,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
         def foo():
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
 
         g = foo()
@@ -685,7 +685,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             nonlocal DONE
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
             DONE = 1
 
@@ -706,7 +706,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
         def foo():
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
             yield
 
@@ -721,7 +721,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             nonlocal DONE
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
             yield
             DONE += 1
@@ -742,7 +742,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
 
         async def target():
             await asyncio.sleep(0.01)
-            1 / 0
+            1 / 0  # noqa: B018
 
         async def foo():
             nonlocal DONE
@@ -812,7 +812,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
 
         async def sleep_n_crash(delay):
             await asyncio.sleep(delay)
-            1 / 0
+            1 / 0  # noqa: B018
 
         async def gen():
             nonlocal DONE
@@ -978,7 +978,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
         def foo():
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
 
         g = foo()
@@ -992,7 +992,7 @@ class AsyncGenAsyncioTest(unittest.TestCase):
             nonlocal DONE
             try:
                 yield
-            except:
+            except:  # noqa: E722, S110
                 pass
             DONE = 1
 

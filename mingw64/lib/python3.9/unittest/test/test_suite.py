@@ -25,12 +25,12 @@ def _mk_TestSuite(*names):
 
 
 class Test_TestSuite(unittest.TestCase, TestEquality):
-    eq_pairs = [
+    eq_pairs = [  # noqa: RUF012
         (unittest.TestSuite(), unittest.TestSuite()),
         (unittest.TestSuite(), unittest.TestSuite([])),
         (_mk_TestSuite("test_1"), _mk_TestSuite("test_1")),
     ]
-    ne_pairs = [
+    ne_pairs = [  # noqa: RUF012
         (unittest.TestSuite(), _mk_TestSuite("test_1")),
         (unittest.TestSuite([]), _mk_TestSuite("test_1")),
         (_mk_TestSuite("test_1", "test_2"), _mk_TestSuite("test_1", "test_3")),
@@ -143,7 +143,7 @@ class Test_TestSuite(unittest.TestCase, TestEquality):
 
         class LoggingCase(unittest.TestCase):
             def run(self, result):
-                events.append("run %s" % self._testMethodName)
+                events.append(f"run {self._testMethodName}")
 
             def test1(self):
                 pass
@@ -291,7 +291,7 @@ class Test_TestSuite(unittest.TestCase, TestEquality):
                 pass
 
             def testFail(self):
-                fail
+                fail  # noqa: B018, F821
 
         class Module:
             wasSetUp = False

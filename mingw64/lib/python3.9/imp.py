@@ -151,7 +151,7 @@ class _HackedGetData:
                 if "b" not in file.mode:
                     file.close()
             if self.file.closed:
-                self.file = file = open(self.path, "rb")
+                self.file = file = open(self.path, "rb")  # noqa: SIM115
 
             with file:
                 return file.read()
@@ -222,7 +222,7 @@ def load_module(name, file, filename, details):
     The module name must include the full package name, if any.
 
     """
-    suffix, mode, type_ = details
+    _suffix, mode, type_ = details
     if mode and (not mode.startswith(("r", "U")) or "+" in mode):
         raise ValueError(f"invalid file open mode {mode!r}")
     elif file is None and type_ in {PY_SOURCE, PY_COMPILED}:
@@ -264,7 +264,7 @@ def find_module(name, path=None):
         raise TypeError(f"'name' must be a str, not {type(name)}")
     elif not isinstance(path, (type(None), list)):
         # Backwards-compatibility
-        raise RuntimeError(f"'path' must be None or a list, not {type(path)}")
+        raise RuntimeError(f"'path' must be None or a list, not {type(path)}")  # noqa: TRY004
 
     if path is None:
         if is_builtin(name):
@@ -296,7 +296,7 @@ def find_module(name, path=None):
     if "b" not in mode:
         with open(file_path, "rb") as file:
             encoding = tokenize.detect_encoding(file.readline)[0]
-    file = open(file_path, mode, encoding=encoding)
+    file = open(file_path, mode, encoding=encoding)  # noqa: SIM115
     return file, file_path, (suffix, mode, type_)
 
 

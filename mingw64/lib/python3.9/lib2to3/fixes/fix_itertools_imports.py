@@ -9,7 +9,7 @@ class FixItertoolsImports(fixer_base.BaseFix):
     BM_compatible = True
     PATTERN = """
               import_from< 'from' 'itertools' 'import' imports=any >
-              """ % (locals())
+              """
 
     def transform(self, node, results):
         imports = results["imports"]
@@ -19,7 +19,6 @@ class FixItertoolsImports(fixer_base.BaseFix):
             children = imports.children
         for child in children[::2]:
             if child.type == token.NAME:
-                member = child.value
                 name_node = child
             elif child.type == token.STAR:
                 # Just leave the import as is.

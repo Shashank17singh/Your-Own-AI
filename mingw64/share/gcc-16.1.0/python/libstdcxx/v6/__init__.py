@@ -1,6 +1,6 @@
 def gdb_has_xmethods():
     try:
-        import gdb.xmethod
+        import gdb.xmethod  # noqa: F401
 
         return True
     except ImportError:

@@ -39,7 +39,7 @@ class ThreadRunningTests(BasicThreadTest):
     def newtask(self):
         with self.running_mutex:
             self.next_ident += 1
-            verbose_print("creating task %s" % self.next_ident)
+            verbose_print(f"creating task {self.next_ident}")
             thread.start_new_thread(self.task, (self.next_ident,))
             self.created += 1
             self.running += 1
@@ -47,9 +47,9 @@ class ThreadRunningTests(BasicThreadTest):
     def task(self, ident):
         with self.random_mutex:
             delay = random.random() / 10000.0
-        verbose_print("task %s will run for %sus" % (ident, round(delay * 1e6)))
+        verbose_print(f"task {ident} will run for {round(delay * 1e6)}us")
         time.sleep(delay)
-        verbose_print("task %s done" % ident)
+        verbose_print(f"task {ident} done")
         with self.running_mutex:
             self.running -= 1
             if self.created == NUMTASKS and self.running == 0:
@@ -84,10 +84,10 @@ class ThreadRunningTests(BasicThreadTest):
         for tss in (262144, 0x100000, 0):
             thread.stack_size(tss)
             self.assertEqual(thread.stack_size(), tss, fail_msg % tss)
-            verbose_print("successfully set stack_size(%d)" % tss)
+            verbose_print("successfully set stack_size(%d)" % tss)  # noqa: UP031
 
         for tss in (262144, 0x100000):
-            verbose_print("trying stack_size = (%d)" % tss)
+            verbose_print("trying stack_size = (%d)" % tss)  # noqa: UP031
             self.next_ident = 0
             self.created = 0
             with support.wait_threads_exit():
@@ -123,7 +123,7 @@ class ThreadRunningTests(BasicThreadTest):
             # interpreter's point of view is to wait for the function object to be
             # destroyed.
             done = []
-            wr = weakref.ref(task, lambda _: done.append(None))
+            weakref.ref(task, lambda _: done.append(None))
             del task
             while not done:
                 time.sleep(POLL_SLEEP)
@@ -196,11 +196,11 @@ class BarrierTest(BasicThreadTest):
             else:
                 with self.random_mutex:
                     delay = random.random() / 10000.0
-            verbose_print("task %s will run for %sus" % (ident, round(delay * 1e6)))
+            verbose_print(f"task {ident} will run for {round(delay * 1e6)}us")
             time.sleep(delay)
-            verbose_print("task %s entering %s" % (ident, i))
+            verbose_print(f"task {ident} entering {i}")
             self.bar.enter()
-            verbose_print("task %s leaving barrier" % ident)
+            verbose_print(f"task {ident} leaving barrier")
         with self.running_mutex:
             self.running -= 1
             # Must release mutex before releasing done, else the main thread can

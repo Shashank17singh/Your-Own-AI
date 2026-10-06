@@ -18,13 +18,13 @@ first_line_re = re.compile(b"^#!.*python[0-9.]*([ \t].*)?$")
 class build_scripts(Command):
     description = '"build" scripts (copy and fixup #! line)'
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("build-dir=", "d", 'directory to "build" (copy) to'),
         ("force", "f", "forcibly build everything (ignore file timestamps"),
         ("executable=", "e", "specify final destination interpreter path"),
     ]
 
-    boolean_options = ["force"]
+    boolean_options = ["force"]  # noqa: RUF012
 
     def initialize_options(self):
         self.build_dir = None
@@ -73,17 +73,17 @@ class build_scripts(Command):
             # that way, we'll get accurate feedback if we can read the
             # script.
             try:
-                f = open(script, "rb")
+                f = open(script, "rb")  # noqa: SIM115
             except OSError:
                 if not self.dry_run:
                     raise
                 f = None
             else:
-                encoding, lines = tokenize.detect_encoding(f.readline)
+                encoding, _lines = tokenize.detect_encoding(f.readline)
                 f.seek(0)
                 first_line = f.readline()
                 if not first_line:
-                    self.warn("%s is an empty file (skipping)" % script)
+                    self.warn(f"{script} is an empty file (skipping)")
                     continue
 
                 match = first_line_re.match(first_line)
@@ -100,8 +100,7 @@ class build_scripts(Command):
                     else:
                         executable = os.path.join(
                             sysconfig.get_config_var("BINDIR"),
-                            "python%s%s"
-                            % (
+                            "python{}{}".format(
                                 sysconfig.get_config_var("VERSION"),
                                 sysconfig.get_config_var("EXE"),
                             ),

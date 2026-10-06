@@ -1,4 +1,4 @@
-import gdb
+import gdb  # noqa: N999
 
 
 class _FrameDecoratorBase:
@@ -12,14 +12,12 @@ class _FrameDecoratorBase:
         """Internal utility to determine if the frame is special or
         limited."""
         sal = frame.find_sal()
-        if (
+        return bool(
             not sal.symtab
             or not sal.symtab.filename
             or frame.type() == gdb.DUMMY_FRAME
             or frame.type() == gdb.SIGTRAMP_FRAME
-        ):
-            return True
-        return False
+        )
 
     def elided(self):
         """Return any elided frames that this class might be
@@ -37,7 +35,7 @@ class _FrameDecoratorBase:
         address, GDB will attempt to determine the function name from
         its internal minimal symbols store (for example, for inferiors
         without debug-info)."""
-        if not isinstance(self._base, gdb.Frame):
+        if not isinstance(self._base, gdb.Frame):  # noqa: SIM102
             if hasattr(self._base, "function"):
                 return self._base.function()
         frame = self.inferior_frame()

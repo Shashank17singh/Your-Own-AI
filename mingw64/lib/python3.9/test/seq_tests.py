@@ -14,8 +14,7 @@ from test.support import ALWAYS_EQ, NEVER_EQ
 # This is used for checking the constructor (here and in test_deque.py)
 def iterfunc(seqn):
     "Regular generator"
-    for i in seqn:
-        yield i
+    yield from seqn
 
 
 class Sequence:
@@ -54,8 +53,7 @@ class IterGen:
         self.i = 0
 
     def __iter__(self):
-        for val in self.seqn:
-            yield val
+        yield from self.seqn
 
 
 class IterNextOnly:
@@ -95,7 +93,7 @@ class IterGenExc:
         return self
 
     def __next__(self):
-        3 // 0
+        3 // 0  # noqa: B018
 
 
 class IterFuncStop:
@@ -116,7 +114,7 @@ from itertools import chain
 
 def itermulti(seqn):
     "Test multiple tiers of iterators"
-    return chain(map(lambda x: x, iterfunc(IterGen(Sequence(seqn)))))
+    return chain(x for x in iterfunc(IterGen(Sequence(seqn))))
 
 
 class LyingTuple(tuple):
@@ -143,12 +141,12 @@ class CommonTest(unittest.TestCase):
         u1 = self.type2test(l1)
         u2 = self.type2test(l2)
 
-        uu = self.type2test(u)
-        uu0 = self.type2test(u0)
-        uu1 = self.type2test(u1)
-        uu2 = self.type2test(u2)
+        self.type2test(u)
+        self.type2test(u0)
+        self.type2test(u1)
+        self.type2test(u2)
 
-        v = self.type2test(tuple(u))
+        self.type2test(tuple(u))
 
         class OtherSeq:
             def __init__(self, initseq):

@@ -30,7 +30,7 @@ class LockTests(unittest.TestCase):
 
     def verify_lock_state(self, expected):
         self.assertEqual(
-            imp.lock_held(), expected, "expected imp.lock_held() to be %r" % expected
+            imp.lock_held(), expected, f"expected imp.lock_held() to be {expected!r}"
         )
 
     def testLock(self):
@@ -82,14 +82,14 @@ class ImportTests(unittest.TestCase):
 
     def test_issue1267(self):
         for mod, encoding, _ in self.test_strings:
-            fp, filename, info = imp.find_module("module_" + mod, self.test_path)
+            fp, filename, info = imp.find_module("module_" + mod, self.test_path)  # noqa: RUF059
             with fp:
                 self.assertNotEqual(fp, None)
                 self.assertEqual(fp.encoding, encoding)
                 self.assertEqual(fp.tell(), 0)
-                self.assertEqual(fp.readline(), "# test %s encoding\n" % encoding)
+                self.assertEqual(fp.readline(), f"# test {encoding} encoding\n")
 
-        fp, filename, info = imp.find_module("tokenize")
+        fp, _filename, _info = imp.find_module("tokenize")
         with fp:
             self.assertNotEqual(fp, None)
             self.assertEqual(fp.encoding, "utf-8")
@@ -104,7 +104,7 @@ class ImportTests(unittest.TestCase):
         try:
             with open(temp_mod_name + ".py", "w") as file:
                 file.write("# coding: cp1252\nu = 'test.test_imp'\n")
-            file, filename, info = imp.find_module(temp_mod_name)
+            file, _filename, _info = imp.find_module(temp_mod_name)
             file.close()
             self.assertEqual(file.encoding, "cp1252")
         finally:
@@ -148,7 +148,7 @@ class ImportTests(unittest.TestCase):
 
         if not special_char:
             self.skipTest(
-                "can't run this test with %s as filesystem encoding" % fs_encoding
+                f"can't run this test with {fs_encoding} as filesystem encoding"
             )
         decoded_char = special_char.decode(fs_encoding)
         temp_mod_name = "test_imp_helper_" + decoded_char
@@ -239,7 +239,7 @@ class ImportTests(unittest.TestCase):
     def test_issue16421_multiple_modules_in_one_dll(self):
         # Issue 16421: loading several modules from the same compiled file fails
         m = "_testimportmultiple"
-        fileobj, pathname, description = imp.find_module(m)
+        fileobj, pathname, _description = imp.find_module(m)
         fileobj.close()
         mod0 = imp.load_dynamic(m, pathname)
         mod1 = imp.load_dynamic("_testimportmultiple_foo", pathname)
@@ -311,7 +311,7 @@ class ImportTests(unittest.TestCase):
 
     def test_multiple_calls_to_get_data(self):
         # Issue #18755: make sure multiple calls to get_data() can succeed.
-        loader = imp._LoadSourceCompatibility("imp", imp.__file__, open(imp.__file__))
+        loader = imp._LoadSourceCompatibility("imp", imp.__file__, open(imp.__file__))  # noqa: SIM115
         loader.get_data(imp.__file__)  # File should be closed
         loader.get_data(imp.__file__)  # Will need to create a newly opened file
 
@@ -320,7 +320,7 @@ class ImportTests(unittest.TestCase):
         # sys.modules[name] attributes like __loader___
         modname = f"tmp{__name__}"
         mod = type(sys.modules[__name__])(modname)
-        with support.swap_item(sys.modules, modname, mod):
+        with support.swap_item(sys.modules, modname, mod):  # noqa: SIM117
             with self.assertRaisesRegex(ValueError, "embedded null"):
                 imp.load_source(modname, __file__ + "\0")
 

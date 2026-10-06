@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Optional, TypedDict
 
-OptionalIntType = Optional[int]
+OptionalIntType = Optional[int]  # noqa: UP045
 
 
 class Foo(TypedDict):

@@ -35,7 +35,7 @@ HAVE_SEND_HANDLE = sys.platform == "win32" or (
 class ForkingPickler(pickle.Pickler):
     """Pickler subclass used by multiprocessing."""
 
-    _extra_reducers = {}
+    _extra_reducers = {}  # noqa: RUF012
     _copyreg_dispatch_table = copyreg.dispatch_table
 
     def __init__(self, *args):
@@ -176,14 +176,14 @@ else:
         """Receive an array of fds over an AF_UNIX socket."""
         a = array.array("i")
         bytes_size = a.itemsize * size
-        msg, ancdata, flags, addr = sock.recvmsg(1, socket.CMSG_SPACE(bytes_size))
+        msg, ancdata, _flags, _addr = sock.recvmsg(1, socket.CMSG_SPACE(bytes_size))
         if not msg and not ancdata:
             raise EOFError
         try:
             if ACKNOWLEDGE:
                 sock.send(b"A")
             if len(ancdata) != 1:
-                raise RuntimeError("received %d items of ancdata" % len(ancdata))
+                raise RuntimeError("received %d items of ancdata" % len(ancdata))  # noqa: UP031
             cmsg_level, cmsg_type, cmsg_data = ancdata[0]
             if cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SCM_RIGHTS:
                 if len(cmsg_data) % a.itemsize != 0:

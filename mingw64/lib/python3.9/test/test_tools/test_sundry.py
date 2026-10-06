@@ -15,10 +15,10 @@ skip_if_missing()
 
 
 class TestSundryScripts(unittest.TestCase):
-    whitelist = ["reindent", "pdeps", "gprof2html", "md5sum"]
-    blacklist = ["make_ctype"]
-    windows_only = ["win_add2path"]
-    other = ["analyze_dxp", "2to3"]
+    whitelist = ["reindent", "pdeps", "gprof2html", "md5sum"]  # noqa: RUF012
+    blacklist = ["make_ctype"]  # noqa: RUF012
+    windows_only = ["win_add2path"]  # noqa: RUF012
+    other = ["analyze_dxp", "2to3"]  # noqa: RUF012
     skiplist = blacklist + whitelist + windows_only + other
 
     def test_sundry(self):

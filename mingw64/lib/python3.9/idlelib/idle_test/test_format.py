@@ -65,9 +65,9 @@ class FindTest(unittest.TestCase):
         text = self.text
         text.insert("1.0", inserttext)
         for line in range(1, stopline):
-            linelength = int(text.index("%d.end" % line).split(".")[1])
+            linelength = int(text.index("%d.end" % line).split(".")[1])  # noqa: UP031
             for col in (0, linelength // 2, linelength):
-                tempindex = "%d.%d" % (line, col)
+                tempindex = "%d.%d" % (line, col)  # noqa: UP031
                 self.assertEqual(ft.find_paragraph(text, tempindex), expected)
         text.delete("1.0", "end")
 

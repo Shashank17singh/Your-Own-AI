@@ -35,7 +35,7 @@ class CmdLineTest(unittest.TestCase):
         assert_python_failure("< .")
 
     def verify_valid_flag(self, cmd_line):
-        rc, out, err = assert_python_ok(*cmd_line)
+        _rc, out, err = assert_python_ok(*cmd_line)
         self.assertTrue(out == b"" or out.endswith(b"\n"))
         self.assertNotIn(b"Traceback", out)
         self.assertNotIn(b"Traceback", err)
@@ -48,7 +48,7 @@ class CmdLineTest(unittest.TestCase):
         self.verify_valid_flag("-S")
 
     def test_usage(self):
-        rc, out, err = assert_python_ok("-h")
+        _rc, out, _err = assert_python_ok("-h")
         lines = out.splitlines()
         self.assertIn(b"usage", lines[0])
         # The first line contains the program name,
@@ -56,9 +56,9 @@ class CmdLineTest(unittest.TestCase):
         b"".join(lines[1:]).decode("ascii")
 
     def test_version(self):
-        version = ("Python %d.%d" % sys.version_info[:2]).encode("ascii")
+        version = ("Python %d.%d" % sys.version_info[:2]).encode("ascii")  # noqa: UP031
         for switch in "-V", "--version", "-VV":
-            rc, out, err = assert_python_ok(switch)
+            _rc, out, err = assert_python_ok(switch)
             self.assertFalse(err.startswith(version))
             self.assertTrue(out.startswith(version))
 
@@ -66,9 +66,9 @@ class CmdLineTest(unittest.TestCase):
         # -v causes imports to write to stderr.  If the write to
         # stderr itself causes an import to happen (for the output
         # codec), a recursion loop can occur.
-        rc, out, err = assert_python_ok("-v")
+        rc, out, err = assert_python_ok("-v")  # noqa: RUF059
         self.assertNotIn(b"stack overflow", err)
-        rc, out, err = assert_python_ok("-vv")
+        _rc, _out, err = assert_python_ok("-vv")
         self.assertNotIn(b"stack overflow", err)
 
     @unittest.skipIf(
@@ -109,11 +109,11 @@ class CmdLineTest(unittest.TestCase):
 
         code = "import sys; print(sys._xoptions)"
         # normally the refcount is hidden
-        rc, out, err = run_python("-c", code)
+        rc, out, err = run_python("-c", code)  # noqa: RUF059
         self.assertEqual(out.rstrip(), b"{}")
         self.assertEqual(err, b"")
         # "-X showrefcount" shows the refcount, but only in debug builds
-        rc, out, err = run_python("-X", "showrefcount", "-c", code)
+        _rc, out, err = run_python("-X", "showrefcount", "-c", code)
         self.assertEqual(out.rstrip(), b"{'showrefcount': True}")
         if Py_DEBUG:
             self.assertRegex(err, rb"^\[\d+ refs, \d+ blocks\]")
@@ -155,10 +155,7 @@ class CmdLineTest(unittest.TestCase):
     @unittest.skipUnless(support.FS_NONASCII, "need support.FS_NONASCII")
     def test_non_ascii(self):
         # Test handling of non-ascii data
-        command = "assert(ord(%r) == %s)" % (
-            support.FS_NONASCII,
-            ord(support.FS_NONASCII),
-        )
+        command = f"assert(ord({support.FS_NONASCII!r}) == {ord(support.FS_NONASCII)})"
         assert_python_ok("-c", command)
 
     # On Windows, pass bytes to subprocess doesn't test how Python decodes the
@@ -183,7 +180,7 @@ class CmdLineTest(unittest.TestCase):
             stderr=subprocess.STDOUT,
             env=env,
         )
-        stdout, stderr = p.communicate()
+        stdout, _stderr = p.communicate()
         if p.returncode == 1:
             # _Py_char2wchar() decoded b'\xff' as '\udcff' (b'\xff' is not
             # decodable from ASCII) and run_command() failed on
@@ -199,10 +196,10 @@ class CmdLineTest(unittest.TestCase):
             # Examples: "US-ASCII" or "646" (ISO 646, on Solaris).
         else:
             raise AssertionError(
-                "Unknown exit code: %s, output=%a" % (p.returncode, stdout)
+                f"Unknown exit code: {p.returncode}, output={stdout!a}"
             )
         if not stdout.startswith(pattern):
-            raise AssertionError("%a doesn't start with %a" % (stdout, pattern))
+            raise AssertionError(f"{stdout!a} doesn't start with {pattern!a}")
 
     @unittest.skipIf(sys.platform == "win32", "Windows has a native unicode API")
     def test_invalid_utf8_arg(self):
@@ -213,21 +210,20 @@ class CmdLineTest(unittest.TestCase):
         #
         # Test with default config, in the C locale, in the Python UTF-8 Mode.
         code = "import sys, os; s=os.fsencode(sys.argv[1]); print(ascii(s))"
-        base_cmd = [sys.executable, "-c", code]
 
         def run_default(arg):
             cmd = [sys.executable, "-c", code, arg]
-            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True)  # noqa: PLW1510
 
         def run_c_locale(arg):
             cmd = [sys.executable, "-c", code, arg]
             env = dict(os.environ)
             env["LC_ALL"] = "C"
-            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True, env=env)
+            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True, env=env)  # noqa: PLW1510
 
         def run_utf8_mode(arg):
             cmd = [sys.executable, "-X", "utf8", "-c", code, arg]
-            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+            return subprocess.run(cmd, stdout=subprocess.PIPE, text=True)  # noqa: PLW1510
 
         valid_utf8 = "e:\xe9, euro:\u20ac, non-bmp:\U0010ffff".encode("utf-8")
         # invalid UTF-8 byte sequences with a valid UTF-8 sequence
@@ -266,7 +262,7 @@ class CmdLineTest(unittest.TestCase):
         p = subprocess.Popen(
             (sys.executable, "-c", code, text), stdout=subprocess.PIPE, env=env
         )
-        stdout, stderr = p.communicate()
+        stdout, _stderr = p.communicate()
         self.assertEqual(stdout, expected)
         self.assertEqual(p.returncode, 0)
 
@@ -279,24 +275,22 @@ class CmdLineTest(unittest.TestCase):
             print(err.isatty(), err.write_through, err.line_buffering)
         """)
         args = [sys.executable, "-c", code]
-        proc = subprocess.run(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True
-        )
+        proc = subprocess.run(args, capture_output=True, text=True, check=True)
         self.assertEqual(proc.stdout, "False False False\nFalse False True\n")
 
     def test_unbuffered_output(self):
         # Test expected operation of the '-u' switch
         for stream in ("stdout", "stderr"):
             # Binary is unbuffered
-            code = "import os, sys; sys.%s.buffer.write(b'x'); os._exit(0)" % stream
-            rc, out, err = assert_python_ok("-u", "-c", code)
+            code = f"import os, sys; sys.{stream}.buffer.write(b'x'); os._exit(0)"
+            rc, out, err = assert_python_ok("-u", "-c", code)  # noqa: RUF059
             data = err if stream == "stderr" else out
-            self.assertEqual(data, b"x", "binary %s not unbuffered" % stream)
+            self.assertEqual(data, b"x", f"binary {stream} not unbuffered")
             # Text is unbuffered
-            code = "import os, sys; sys.%s.write('x'); os._exit(0)" % stream
-            rc, out, err = assert_python_ok("-u", "-c", code)
+            code = f"import os, sys; sys.{stream}.write('x'); os._exit(0)"
+            _rc, out, err = assert_python_ok("-u", "-c", code)
             data = err if stream == "stderr" else out
-            self.assertEqual(data, b"x", "text %s not unbuffered" % stream)
+            self.assertEqual(data, b"x", f"text {stream} not unbuffered")
 
     def test_unbuffered_input(self):
         # sys.stdin still works with '-u'
@@ -318,7 +312,7 @@ class CmdLineTest(unittest.TestCase):
             path = ":".join(sys.path)
             path = path.encode("ascii", "backslashreplace")
             sys.stdout.buffer.write(path)"""
-        rc, out, err = assert_python_ok("-S", "-c", code, PYTHONPATH=path)
+        _rc, out, _err = assert_python_ok("-S", "-c", code, PYTHONPATH=path)
         self.assertIn(path1.encode("ascii"), out)
         self.assertIn(path2.encode("ascii"), out)
 
@@ -333,8 +327,8 @@ class CmdLineTest(unittest.TestCase):
             path = ":".join(sys.path)
             path = path.encode("ascii", "backslashreplace")
             sys.stdout.buffer.write(path)"""
-        rc1, out1, err1 = assert_python_ok("-c", code, PYTHONPATH="")
-        rc2, out2, err2 = assert_python_ok("-c", code, __isolated=False)
+        _rc1, out1, _err1 = assert_python_ok("-c", code, PYTHONPATH="")
+        _rc2, out2, _err2 = assert_python_ok("-c", code, __isolated=False)
         # regarding to Posix specification, outputs should be equal
         # for empty and unset PYTHONPATH
         self.assertEqual(out1, out2)
@@ -367,7 +361,7 @@ class CmdLineTest(unittest.TestCase):
             with subprocess.Popen(
                 (sys.executable, "-c", code), stdin=stdin, stdout=subprocess.PIPE
             ) as proc:
-                stdout, stderr = proc.communicate()
+                stdout, _stderr = proc.communicate()
         self.assertEqual(stdout.rstrip(), expected)
 
     def test_stdin_readline(self):
@@ -387,7 +381,7 @@ class CmdLineTest(unittest.TestCase):
             print(2)
             print(3, file=sys.stderr)
             print(4, file=sys.stderr)"""
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, out, err = assert_python_ok("-c", code)
 
         if sys.platform == "win32":
             self.assertEqual(b"1\r\n2\r\n", out)
@@ -399,7 +393,7 @@ class CmdLineTest(unittest.TestCase):
     def test_unmached_quote(self):
         # Issue #10206: python program starting with unmatched quote
         # spewed spaces to stdout
-        rc, out, err = assert_python_failure("-c", "'")
+        _rc, out, err = assert_python_failure("-c", "'")
         self.assertRegex(err.decode("ascii", "ignore"), "SyntaxError")
         self.assertEqual(b"", out)
 
@@ -422,7 +416,7 @@ class CmdLineTest(unittest.TestCase):
         # Issue #13444: if stdout has been explicitly closed, we should
         # not attempt to flush it at shutdown.
         code = "import sys; sys.stdout.close()"
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, _out, err = assert_python_ok("-c", code)
         self.assertEqual(b"", err)
 
     # Issue #7111: Python should work without standard streams
@@ -452,9 +446,9 @@ class CmdLineTest(unittest.TestCase):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            preexec_fn=preexec,
+            preexec_fn=preexec,  # noqa: PLW1509
         )
-        out, err = p.communicate()
+        _out, err = p.communicate()
         self.assertEqual(err, b"")
         self.assertEqual(p.returncode, 42)
 
@@ -503,10 +497,10 @@ class CmdLineTest(unittest.TestCase):
         rc, out, err = assert_python_ok("-c", code, PYTHONHASHSEED="random")
         self.assertIn(b"random is 1", out)
 
-        rc, out, err = assert_python_ok("-c", code, PYTHONHASHSEED="0")
+        rc, out, err = assert_python_ok("-c", code, PYTHONHASHSEED="0")  # noqa: RUF059
         self.assertIn(b"random is 0", out)
 
-        rc, out, err = assert_python_ok("-R", "-c", code, PYTHONHASHSEED="0")
+        rc, out, _err = assert_python_ok("-R", "-c", code, PYTHONHASHSEED="0")
         self.assertIn(b"random is 1", out)
 
     def test_del___main__(self):
@@ -527,11 +521,11 @@ class CmdLineTest(unittest.TestCase):
         self.assertEqual(b"", out)
         # Add "without='-E'" to prevent _assert_python to append -E
         # to env_vars and change the output of stderr
-        rc, out, err = assert_python_failure("-z", without="-E")
+        rc, out, err = assert_python_failure("-z", without="-E")  # noqa: RUF059
         self.assertIn(b"Unknown option: -z", err)
         self.assertEqual(err.splitlines().count(b"Unknown option: -z"), 1)
         self.assertEqual(b"", out)
-        rc, out, err = assert_python_failure("-a", "-z", without="-E")
+        _rc, out, err = assert_python_failure("-a", "-z", without="-E")
         self.assertIn(b"Unknown option: -a", err)
         # only the first unknown option is reported
         self.assertNotIn(b"Unknown option: -z", err)
@@ -545,7 +539,7 @@ class CmdLineTest(unittest.TestCase):
     def test_isolatedmode(self):
         self.verify_valid_flag("-I")
         self.verify_valid_flag("-IEs")
-        rc, out, err = assert_python_ok(
+        _rc, out, _err = assert_python_ok(
             "-I",
             "-c",
             "from sys import flags as f; "
@@ -575,12 +569,12 @@ class CmdLineTest(unittest.TestCase):
     def test_sys_flags_set(self):
         # Issue 31845: a startup refactoring broke reading flags from env vars
         for value, expected in (("", 0), ("1", 1), ("text", 1), ("2", 2)):
-            env_vars = dict(
-                PYTHONDEBUG=value,
-                PYTHONOPTIMIZE=value,
-                PYTHONDONTWRITEBYTECODE=value,
-                PYTHONVERBOSE=value,
-            )
+            env_vars = {
+                "PYTHONDEBUG": value,
+                "PYTHONOPTIMIZE": value,
+                "PYTHONDONTWRITEBYTECODE": value,
+                "PYTHONVERBOSE": value,
+            }
             dont_write_bytecode = int(bool(value))
             code = (
                 "import sys; "
@@ -630,7 +624,7 @@ class CmdLineTest(unittest.TestCase):
             args = (sys.executable, "-X", "dev", *args)
         else:
             args = (sys.executable, *args)
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -681,7 +675,7 @@ class CmdLineTest(unittest.TestCase):
 
         # Memory allocator debug hooks
         try:
-            import _testcapi
+            import _testcapi  # noqa: F401
         except ImportError:
             pass
         else:
@@ -696,7 +690,7 @@ class CmdLineTest(unittest.TestCase):
 
         # Faulthandler
         try:
-            import faulthandler
+            import faulthandler  # noqa: F401
         except ImportError:
             pass
         else:
@@ -720,7 +714,7 @@ class CmdLineTest(unittest.TestCase):
         env = dict(os.environ)
         env.pop("PYTHONDEVMODE", None)
         env["PYTHONWARNINGS"] = envvar
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -759,7 +753,7 @@ class CmdLineTest(unittest.TestCase):
         else:
             env.pop("PYTHONMALLOC", None)
         args = (sys.executable, "-c", code)
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             args,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -804,12 +798,12 @@ class CmdLineTest(unittest.TestCase):
         env.pop("PYTHONDEVMODE", None)
         args = (sys.executable, "-c", code)
 
-        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)
+        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)  # noqa: PLW1510
         self.assertEqual(proc.stdout.rstrip(), "False")
         self.assertEqual(proc.returncode, 0, proc)
 
         env["PYTHONDEVMODE"] = "1"
-        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)
+        proc = subprocess.run(args, stdout=subprocess.PIPE, text=True, env=env)  # noqa: PLW1510
         self.assertEqual(proc.stdout.rstrip(), "True")
         self.assertEqual(proc.returncode, 0, proc)
 
@@ -819,14 +813,14 @@ class CmdLineTest(unittest.TestCase):
         prefix, exe = os.path.split(sys.executable)
         executable = prefix + "\\.\\.\\.\\" + exe
 
-        proc = subprocess.run(args, stdout=subprocess.PIPE, executable=executable)
+        proc = subprocess.run(args, stdout=subprocess.PIPE, executable=executable)  # noqa: PLW1510
         self.assertEqual(proc.returncode, 0, proc)
         self.assertEqual(proc.stdout.strip(), b"0")
 
     def test_parsing_error(self):
         args = [sys.executable, "-I", "--unknown-option"]
-        proc = subprocess.run(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        proc = subprocess.run(  # noqa: PLW1510
+            args, capture_output=True, text=True
         )
         err_msg = "unknown option --unknown-option\nusage: "
         self.assertTrue(proc.stderr.startswith(err_msg), proc.stderr)

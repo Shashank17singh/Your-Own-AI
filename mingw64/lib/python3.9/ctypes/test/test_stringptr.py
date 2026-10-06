@@ -11,7 +11,7 @@ class StringPtrTestCase(unittest.TestCase):
     @support.refcount_test
     def test__POINTER_c_char(self):
         class X(Structure):
-            _fields_ = [("str", POINTER(c_char))]
+            _fields_ = [("str", POINTER(c_char))]  # noqa: RUF012
 
         x = X()
 
@@ -33,7 +33,7 @@ class StringPtrTestCase(unittest.TestCase):
 
     def test__c_char_p(self):
         class X(Structure):
-            _fields_ = [("str", c_char_p)]
+            _fields_ = [("str", c_char_p)]  # noqa: RUF012
 
         x = X()
 

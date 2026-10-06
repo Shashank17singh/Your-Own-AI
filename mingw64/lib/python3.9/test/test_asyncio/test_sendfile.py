@@ -105,7 +105,7 @@ class SendfileBase:
         super().tearDownClass()
 
     def setUp(self):
-        self.file = open(support.TESTFN, "rb")
+        self.file = open(support.TESTFN, "rb")  # noqa: SIM115
         self.addCleanup(self.file.close)
         self.loop = self.create_event_loop()
         self.set_event_loop(self.loop)
@@ -258,7 +258,7 @@ class SendfileMixin(SendfileBase):
         cli_sock.connect((socket_helper.HOST, port))
 
         cli_proto = MySendfileProto(loop=self.loop)
-        tr, pr = self.run_loop(
+        tr, _pr = self.run_loop(
             self.loop.create_connection(
                 lambda: cli_proto,
                 sock=cli_sock,
@@ -282,7 +282,7 @@ class SendfileMixin(SendfileBase):
 
     @unittest.skipIf(sys.platform == "win32", "UDP sockets are not supported")
     def test_sendfile_not_supported(self):
-        tr, pr = self.run_loop(
+        tr, _pr = self.run_loop(
             self.loop.create_datagram_endpoint(
                 asyncio.DatagramProtocol, family=socket.AF_INET
             )
@@ -473,7 +473,7 @@ class SendfileMixin(SendfileBase):
 
     @unittest.skipIf(not hasattr(os, "sendfile"), "Don't have native sendfile support")
     def test_sendfile_prevents_bare_write(self):
-        srv_proto, cli_proto = self.prepare_sendfile()
+        _srv_proto, cli_proto = self.prepare_sendfile()
         fut = self.loop.create_future()
 
         async def coro():

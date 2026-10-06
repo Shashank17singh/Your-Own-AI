@@ -91,7 +91,7 @@ def _find_module(name, path=None):
     else:  # Should never happen.
         return None, None, ("", "", _SEARCH_ERROR)
 
-    file = io.open_code(file_path)
+    file = io.open_code(file_path)  # noqa: SIM115
     suffix = os.path.splitext(file_path)[-1]
 
     return file, file_path, (suffix, "rb", kind)
@@ -112,11 +112,11 @@ class Module:
         self.starimports = {}
 
     def __repr__(self):
-        s = "Module(%r" % (self.__name__,)
+        s = f"Module({self.__name__!r}"
         if self.__file__ is not None:
-            s = s + ", %r" % (self.__file__,)
+            s = s + f", {self.__file__!r}"
         if self.__path__ is not None:
-            s = s + ", %r" % (self.__path__,)
+            s = s + f", {self.__path__!r}"
         s = s + ")"
         return s
 
@@ -162,7 +162,7 @@ class ModuleFinder:
             self.load_module("__main__", fp, pathname, stuff)
 
     def load_file(self, pathname):
-        dir, name = os.path.split(pathname)
+        _dir, name = os.path.split(pathname)
         name, ext = os.path.splitext(name)
         with io.open_code(pathname) as fp:
             stuff = (ext, "rb", _PY_SOURCE)
@@ -224,7 +224,7 @@ class ModuleFinder:
             head = name
             tail = ""
         if parent:
-            qname = "%s.%s" % (parent.__name__, head)
+            qname = f"{parent.__name__}.{head}"
         else:
             qname = head
         q = self.import_module(head, qname, parent)
@@ -249,7 +249,7 @@ class ModuleFinder:
             if i < 0:
                 i = len(tail)
             head, tail = tail[:i], tail[i + 1 :]
-            mname = "%s.%s" % (m.__name__, head)
+            mname = f"{m.__name__}.{head}"
             m = self.import_module(head, mname, m)
             if not m:
                 self.msgout(4, "raise ImportError: No module named", mname)
@@ -266,7 +266,7 @@ class ModuleFinder:
                     if all:
                         self.ensure_fromlist(m, all, 1)
             elif not hasattr(m, sub):
-                subname = "%s.%s" % (m.__name__, sub)
+                subname = f"{m.__name__}.{sub}"
                 submod = self.import_module(sub, subname, m)
                 if not submod:
                     raise ImportError("No module named " + subname)
@@ -333,7 +333,7 @@ class ModuleFinder:
         return m
 
     def load_module(self, fqname, fp, pathname, file_info):
-        suffix, mode, type = file_info
+        _suffix, _mode, type = file_info
         self.msgin(2, "load_module", fqname, fp and "fp", pathname)
         if type == _PKG_DIRECTORY:
             m = self.load_package(fqname, pathname)
@@ -421,7 +421,6 @@ class ModuleFinder:
                 continue
 
     def scan_code(self, co, m):
-        code = co.co_code
         scanner = self.scan_opcodes
         for what, args in scanner(co):
             if what == "store":
@@ -519,8 +518,8 @@ class ModuleFinder:
         paths, as well as modules that are missing, or seem to be missing.
         """
         print()
-        print("  %-25s %s" % ("Name", "File"))
-        print("  %-25s %s" % ("----", "----"))
+        print("  %-25s %s" % ("Name", "File"))  # noqa: UP031
+        print("  %-25s %s" % ("----", "----"))  # noqa: UP031
         # Print modules found
         keys = sorted(self.modules.keys())
         for key in keys:
@@ -529,7 +528,7 @@ class ModuleFinder:
                 print("P", end=" ")
             else:
                 print("m", end=" ")
-            print("%-25s" % key, m.__file__ or "")
+            print("%-25s" % key, m.__file__ or "")  # noqa: UP031
 
         # Print missing modules
         missing, maybe = self.any_missing_maybe()
@@ -613,16 +612,10 @@ class ModuleFinder:
             if new_filename != original_filename:
                 self.msgout(
                     2,
-                    "co_filename %r changed to %r"
-                    % (
-                        original_filename,
-                        new_filename,
-                    ),
+                    f"co_filename {original_filename!r} changed to {new_filename!r}",
                 )
             else:
-                self.msgout(
-                    2, "co_filename %r remains unchanged" % (original_filename,)
-                )
+                self.msgout(2, f"co_filename {original_filename!r} remains unchanged")
             self.processed_paths.append(original_filename)
 
         consts = list(co.co_consts)

@@ -642,7 +642,7 @@ class TestPegen(unittest.TestCase):
         """
         grammar: Grammar = parse_string(grammar_source, GrammarParser)
         out = io.StringIO()
-        genr = PythonParserGenerator(grammar, out)
+        PythonParserGenerator(grammar, out)
         rules = grammar.rules
         self.assertFalse(rules["start"].nullable)  # Not None!
         self.assertTrue(rules["sign"].nullable)
@@ -654,7 +654,7 @@ class TestPegen(unittest.TestCase):
         """
         grammar: Grammar = parse_string(grammar_source, GrammarParser)
         out = io.StringIO()
-        genr = PythonParserGenerator(grammar, out)
+        PythonParserGenerator(grammar, out)
         rules = grammar.rules
         self.assertFalse(rules["start"].nullable)  # Not None!
         self.assertTrue(rules["sign"].nullable)
@@ -676,8 +676,8 @@ class TestPegen(unittest.TestCase):
         self.assertTrue(rules["bar"].left_recursive)
         genr.generate("<string>")
         ns: dict[str, Any] = {}
-        exec(out.getvalue(), ns)
-        parser_class: Type[Parser] = ns["GeneratedParser"]
+        exec(out.getvalue(), ns)  # noqa: S102
+        parser_class: Type[Parser] = ns["GeneratedParser"]  # noqa: F821
         node = parse_string("D A C A E", parser_class)
         self.assertEqual(
             node,
@@ -768,7 +768,7 @@ class TestPegen(unittest.TestCase):
         genr = PythonParserGenerator(grammar, out)
         genr.generate("<string>")
         ns: dict[str, Any] = {}
-        exec(out.getvalue(), ns)
+        exec(out.getvalue(), ns)  # noqa: S102
         parser_class = ns["GeneratedParser"]
         with self.assertRaises(SyntaxError):
             parse_string("x - + =", parser_class)
@@ -896,7 +896,7 @@ class TestPegen(unittest.TestCase):
         foo: bar NAME
         """
         with self.assertRaises(GrammarError):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
     def test_bad_token_reference(self) -> None:
         grammar = """
@@ -904,14 +904,14 @@ class TestPegen(unittest.TestCase):
         foo: NAMEE
         """
         with self.assertRaises(GrammarError):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
     def test_missing_start(self) -> None:
         grammar = """
         foo: NAME
         """
         with self.assertRaises(GrammarError):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
     def test_invalid_rule_name(self) -> None:
         grammar = """
@@ -920,7 +920,7 @@ class TestPegen(unittest.TestCase):
         b: 'b'
         """
         with self.assertRaisesRegex(GrammarError, "cannot start with underscore: '_a'"):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
     def test_invalid_variable_name(self) -> None:
         grammar = """
@@ -929,7 +929,7 @@ class TestPegen(unittest.TestCase):
         b: 'b'
         """
         with self.assertRaisesRegex(GrammarError, "cannot start with underscore: '_x'"):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
     def test_invalid_variable_name_in_temporal_rule(self) -> None:
         grammar = """
@@ -938,7 +938,7 @@ class TestPegen(unittest.TestCase):
         b: 'b'
         """
         with self.assertRaisesRegex(GrammarError, "cannot start with underscore: '_x'"):
-            parser_class = make_parser(grammar)
+            make_parser(grammar)
 
 
 class TestGrammarVisitor:
@@ -1004,7 +1004,7 @@ class TestGrammarVisualizer(unittest.TestCase):
         """
         rules = parse_string(grammar, GrammarParser)
         printer = ASTGrammarPrinter()
-        lines: List[str] = []
+        lines: List[str] = []  # noqa: F821
         printer.print_grammar_ast(rules, printer=lines.append)
         output = "\n".join(lines)
         expected_output = textwrap.dedent("""\
@@ -1026,7 +1026,7 @@ class TestGrammarVisualizer(unittest.TestCase):
         """
         rules = parse_string(grammar, GrammarParser)
         printer = ASTGrammarPrinter()
-        lines: List[str] = []
+        lines: List[str] = []  # noqa: F821
         printer.print_grammar_ast(rules, printer=lines.append)
         output = "\n".join(lines)
         expected_output = textwrap.dedent("""\
@@ -1056,7 +1056,7 @@ class TestGrammarVisualizer(unittest.TestCase):
         """
         rules = parse_string(grammar, GrammarParser)
         printer = ASTGrammarPrinter()
-        lines: List[str] = []
+        lines: List[str] = []  # noqa: F821
         printer.print_grammar_ast(rules, printer=lines.append)
         output = "\n".join(lines)
         expected_output = textwrap.dedent("""\

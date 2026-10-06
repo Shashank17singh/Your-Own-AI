@@ -248,7 +248,7 @@ def compile_file(
         if mo:
             return success
 
-    if limit_sl_dest is not None and os.path.islink(fullname):
+    if limit_sl_dest is not None and os.path.islink(fullname):  # noqa: SIM102
         if Path(limit_sl_dest).resolve() not in Path(fullname).resolve().parents:
             return success
 
@@ -267,7 +267,7 @@ def compile_file(
                     cfile = importlib.util.cache_from_source(fullname)
                     opt_cfiles[opt_level] = cfile
 
-        head, tail = name[:-3], name[-3:]
+        _head, tail = name[:-3], name[-3:]
         if tail == ".py":
             if not force:
                 try:

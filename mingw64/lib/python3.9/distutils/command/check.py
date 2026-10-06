@@ -38,11 +38,15 @@ try:
         def system_message(self, level, message, *children, **kwargs):
             self.messages.append((level, message, children, kwargs))
             return nodes.system_message(
-                message, level=level, type=self.levels[level], *children, **kwargs
+                message,
+                level=level,
+                type=self.levels[level],
+                *children,
+                **kwargs,  # noqa: B026
             )
 
     HAS_DOCUTILS = True
-except Exception:
+except Exception:  # noqa: BLE001
     # Catch all exceptions because exceptions besides ImportError probably
     # indicate that docutils is not ported to Py3k.
     HAS_DOCUTILS = False
@@ -52,7 +56,7 @@ class check(Command):
     """This command checks the meta-data of the package."""
 
     description = "perform some checks on the package"
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("metadata", "m", "Verify meta-data"),
         (
             "restructuredtext",
@@ -62,7 +66,7 @@ class check(Command):
         ("strict", "s", "Will exit with an error if a check fails"),
     ]
 
-    boolean_options = ["metadata", "restructuredtext", "strict"]
+    boolean_options = ["metadata", "restructuredtext", "strict"]  # noqa: RUF012
 
     def initialize_options(self):
         """Sets default values for options."""
@@ -114,7 +118,7 @@ class check(Command):
                 missing.append(attr)
 
         if missing:
-            self.warn("missing required meta-data: %s" % ", ".join(missing))
+            self.warn("missing required meta-data: {}".format(", ".join(missing)))
         if metadata.author:
             if not metadata.author_email:
                 self.warn(
@@ -142,7 +146,7 @@ class check(Command):
             if line is None:
                 warning = warning[1]
             else:
-                warning = "%s (line %s)" % (warning[1], line)
+                warning = f"{warning[1]} (line {line})"
             self.warn(warning)
 
     def _check_rst_data(self, data):
@@ -170,7 +174,7 @@ class check(Command):
             parser.parse(data, document)
         except AttributeError as e:
             reporter.messages.append(
-                (-1, "Could not finish the parsing: %s." % e, "", {})
+                (-1, f"Could not finish the parsing: {e}.", "", {})
             )
 
         return reporter.messages

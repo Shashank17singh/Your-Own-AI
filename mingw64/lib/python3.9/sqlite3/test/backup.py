@@ -102,7 +102,7 @@ class BackupTests(unittest.TestCase):
         self.assertEqual(journal[0], 0)
 
     def test_non_callable_progress(self):
-        with self.assertRaises(TypeError) as cm:
+        with self.assertRaises(TypeError) as cm:  # noqa: SIM117
             with sqlite.connect(":memory:") as bck:
                 self.cx.backup(bck, pages=1, progress="bar")
         self.assertEqual(str(cm.exception), "progress argument must be a callable")
@@ -134,7 +134,7 @@ class BackupTests(unittest.TestCase):
         def progress(status, remaining, total):
             raise SystemError("nearly out of space")
 
-        with self.assertRaises(SystemError) as err:
+        with self.assertRaises(SystemError) as err:  # noqa: SIM117
             with sqlite.connect(":memory:") as bck:
                 self.cx.backup(bck, progress=progress)
         self.assertEqual(str(err.exception), "nearly out of space")
@@ -144,7 +144,7 @@ class BackupTests(unittest.TestCase):
             self.cx.backup(bck, name="main")
         with sqlite.connect(":memory:") as bck:
             self.cx.backup(bck, name="temp")
-        with self.assertRaises(sqlite.OperationalError) as cm:
+        with self.assertRaises(sqlite.OperationalError) as cm:  # noqa: SIM117
             with sqlite.connect(":memory:") as bck:
                 self.cx.backup(bck, name="non-existing")
         self.assertIn(

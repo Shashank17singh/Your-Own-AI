@@ -26,7 +26,7 @@ def uu_encode(input, errors="strict", filename="<data>", mode=0o666):
     filename = filename.replace("\r", "\\r")
 
     # Encode
-    write(("begin %o %s\n" % (mode & 0o777, filename)).encode("ascii"))
+    write((f"begin {mode & 0o777:o} {filename}\n").encode("ascii"))
     chunk = read(45)
     while chunk:
         write(binascii.b2a_uu(chunk))

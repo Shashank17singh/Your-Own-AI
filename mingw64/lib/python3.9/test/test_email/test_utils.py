@@ -14,7 +14,7 @@ class DateTimeTests(unittest.TestCase):
     offsetstring = " -0700"
     utcoffset = datetime.timedelta(hours=-7)
     tz = datetime.timezone(utcoffset)
-    naive_dt = datetime.datetime(*dateargs)
+    naive_dt = datetime.datetime(*dateargs)  # noqa: DTZ001
     aware_dt = datetime.datetime(*dateargs, tzinfo=tz)
 
     def test_naive_datetime(self):
@@ -66,14 +66,14 @@ class LocaltimeTests(unittest.TestCase):
 
     def test_localtime_daylight_true_dst_false(self):
         test.support.patch(self, time, "daylight", True)
-        t0 = datetime.datetime(2012, 3, 12, 1, 1)
+        t0 = datetime.datetime(2012, 3, 12, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0, isdst=-1)
         t2 = utils.localtime(t1)
         self.assertEqual(t1, t2)
 
     def test_localtime_daylight_false_dst_false(self):
         test.support.patch(self, time, "daylight", False)
-        t0 = datetime.datetime(2012, 3, 12, 1, 1)
+        t0 = datetime.datetime(2012, 3, 12, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0, isdst=-1)
         t2 = utils.localtime(t1)
         self.assertEqual(t1, t2)
@@ -81,7 +81,7 @@ class LocaltimeTests(unittest.TestCase):
     @test.support.run_with_tz("Europe/Minsk")
     def test_localtime_daylight_true_dst_true(self):
         test.support.patch(self, time, "daylight", True)
-        t0 = datetime.datetime(2012, 3, 12, 1, 1)
+        t0 = datetime.datetime(2012, 3, 12, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0, isdst=1)
         t2 = utils.localtime(t1)
         self.assertEqual(t1, t2)
@@ -89,7 +89,7 @@ class LocaltimeTests(unittest.TestCase):
     @test.support.run_with_tz("Europe/Minsk")
     def test_localtime_daylight_false_dst_true(self):
         test.support.patch(self, time, "daylight", False)
-        t0 = datetime.datetime(2012, 3, 12, 1, 1)
+        t0 = datetime.datetime(2012, 3, 12, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0, isdst=1)
         t2 = utils.localtime(t1)
         self.assertEqual(t1, t2)
@@ -114,14 +114,14 @@ class LocaltimeTests(unittest.TestCase):
 
     def test_localtime_epoch_notz_daylight_true(self):
         test.support.patch(self, time, "daylight", True)
-        t0 = datetime.datetime(1990, 1, 1)
+        t0 = datetime.datetime(1990, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0)
         t2 = utils.localtime(t0.replace(tzinfo=None))
         self.assertEqual(t1, t2)
 
     def test_localtime_epoch_notz_daylight_false(self):
         test.support.patch(self, time, "daylight", False)
-        t0 = datetime.datetime(1990, 1, 1)
+        t0 = datetime.datetime(1990, 1, 1)  # noqa: DTZ001
         t1 = utils.localtime(t0)
         t2 = utils.localtime(t0.replace(tzinfo=None))
         self.assertEqual(t1, t2)

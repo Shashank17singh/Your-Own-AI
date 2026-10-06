@@ -79,11 +79,11 @@ class BaseTestCase(unittest.TestCase):
     def test_index_returns_int_subclass(self):
         class BadInt:
             def __index__(self):
-                return True
+                return True  # noqa: PLE0305
 
         class BadInt2(int):
             def __index__(self):
-                return True
+                return True  # noqa: PLE0305
 
         bad_int = BadInt()
         with self.assertWarns(DeprecationWarning):
@@ -166,7 +166,7 @@ class SeqTestCase:
 
 
 class ListTestCase(SeqTestCase, unittest.TestCase):
-    seq = [0, 10, 20, 30, 40, 50]
+    seq = [0, 10, 20, 30, 40, 50]  # noqa: RUF012
 
     def test_setdelitem(self):
         self.o.ind = -2
@@ -260,7 +260,7 @@ class OverflowTestCase(unittest.TestCase):
 
     def test_getitem(self):
         class GetItem:
-            def __len__(self):
+            def __len__(self):  # noqa: PLE0303
                 assert False, "__len__ should not be invoked"
 
             def __getitem__(self, key):

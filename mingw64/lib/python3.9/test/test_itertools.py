@@ -35,8 +35,7 @@ def errfunc(*args):
 
 def gen3():
     "Non-restartable source sequence"
-    for i in (0, 1, 2):
-        yield i
+    yield from (0, 1, 2)
 
 
 def isEven(x):
@@ -54,8 +53,7 @@ def tupleize(*args):
 
 
 def irange(n):
-    for i in range(n):
-        yield i
+    yield from range(n)
 
 
 class StopNow:
@@ -192,8 +190,7 @@ class TestBasicOps(unittest.TestCase):
         def chain2(*iterables):
             "Pure python version in the docs"
             for it in iterables:
-                for element in it:
-                    yield element
+                yield from it
 
         for c in (chain, chain2):
             self.assertEqual(list(c("abc", "def")), list("abcdef"))
@@ -791,9 +788,9 @@ class TestBasicOps(unittest.TestCase):
                 # Test repr
                 r1 = repr(count(i, j))
                 if j == 1:
-                    r2 = "count(%r)" % i
+                    r2 = f"count({i!r})"
                 else:
-                    r2 = "count(%r, %r)" % (i, j)
+                    r2 = f"count({i!r}, {j!r})"
                 self.assertEqual(r1, r2)
                 for proto in range(pickle.HIGHEST_PROTOCOL + 1):
                     self.pickletest(proto, count(i, j))
@@ -938,7 +935,7 @@ class TestBasicOps(unittest.TestCase):
 
         # Check case where inner iterator is not used
         keys = [k for k, g in groupby(s, testR)]
-        expectedkeys = set([r[0] for r in s])
+        expectedkeys = {r[0] for r in s}
         self.assertEqual(set(keys), expectedkeys)
         self.assertEqual(len(keys), len(expectedkeys))
 
@@ -1072,7 +1069,7 @@ class TestBasicOps(unittest.TestCase):
         self.assertRaises(TypeError, zip, 3)
         self.assertRaises(TypeError, zip, range(3), 3)
         self.assertEqual(
-            [tuple(list(pair)) for pair in zip("abc", "def")], lzip("abc", "def")
+            [tuple(pair) for pair in zip("abc", "def")], lzip("abc", "def")
         )
         self.assertEqual([pair for pair in zip("abc", "def")], lzip("abc", "def"))
 
@@ -1132,7 +1129,7 @@ class TestBasicOps(unittest.TestCase):
             target = [
                 tuple((e is None and "X" or e) for e in t) for t in target
             ]  # Replace None fills with 'X'
-            self.assertEqual(list(zip_longest(*args, **dict(fillvalue="X"))), target)
+            self.assertEqual(list(zip_longest(*args, fillvalue="X")), target)
 
         self.assertEqual(
             take(3, zip_longest("abcdef", count())), list(zip("abcdef", range(3)))
@@ -1161,7 +1158,7 @@ class TestBasicOps(unittest.TestCase):
                 self.fail("Did not raise Type in:  " + stmt)
 
         self.assertEqual(
-            [tuple(list(pair)) for pair in zip_longest("abc", "def")],
+            [tuple(pair) for pair in zip_longest("abc", "def")],
             list(zip("abc", "def")),
         )
         self.assertEqual(
@@ -1253,7 +1250,7 @@ class TestBasicOps(unittest.TestCase):
             self.assertEqual(list(product(*args)), result)
             for r in range(4):
                 self.assertEqual(
-                    list(product(*(args * r))), list(product(*args, **dict(repeat=r)))
+                    list(product(*(args * r))), list(product(*args, repeat=r))
                 )
         self.assertEqual(len(list(product(*[range(7)] * 6))), 7**6)
         self.assertRaises(TypeError, product, range(6), None)
@@ -1295,7 +1292,7 @@ class TestBasicOps(unittest.TestCase):
             "",
             range(0),
             range(4),
-            dict(a=1, b=2, c=3),
+            {"a": 1, "b": 2, "c": 3},
             set("abcdefg"),
             range(11),
             tuple(range(13)),
@@ -1643,7 +1640,7 @@ class TestBasicOps(unittest.TestCase):
 
         # tee pass-through to copyable iterator
         a, b = tee("abc")
-        c, d = tee(a)
+        c, _d = tee(a)
         self.assertTrue(a is c)
 
         # test tee_new
@@ -1731,7 +1728,7 @@ class TestBasicOps(unittest.TestCase):
             any(forward)  # exhaust the iterator
             del backward
         except:
-            del forward, backward
+            del forward, backward  # noqa: F821
             raise
 
     def test_tee_reenter(self):
@@ -2017,7 +2014,7 @@ class TestPurePythonRoughEquivalents(unittest.TestCase):
                     nexti = next(it)
         except StopIteration:
             # Consume to *stop*.
-            for i, element in zip(range(i + 1, stop), iterable):
+            for i, element in zip(range(i + 1, stop), iterable):  # noqa: B020
                 pass
 
     def test_islice_recipe(self):
@@ -2070,7 +2067,7 @@ class TestGC(unittest.TestCase):
 
     def test_count(self):
         a = []
-        Int = type("Int", (int,), dict(x=a))
+        Int = type("Int", (int,), {"x": a})
         self.makecycle(count(Int(0), Int(1)), a)
 
     def test_cycle(self):
@@ -2112,7 +2109,7 @@ class TestGC(unittest.TestCase):
 
     def test_map(self):
         a = []
-        self.makecycle(map(lambda x: x, [a] * 2), a)
+        self.makecycle((x for x in [a] * 2), a)
 
     def test_islice(self):
         a = []
@@ -2141,8 +2138,7 @@ class TestGC(unittest.TestCase):
 
 def R(seqn):
     "Regular generator"
-    for i in seqn:
-        yield i
+    yield from seqn
 
 
 class G:
@@ -2181,8 +2177,7 @@ class Ig:
         self.i = 0
 
     def __iter__(self):
-        for val in self.seqn:
-            yield val
+        yield from self.seqn
 
 
 class X:
@@ -2222,7 +2217,7 @@ class E:
         return self
 
     def __next__(self):
-        3 // 0
+        3 // 0  # noqa: B018
 
 
 class S:
@@ -2240,14 +2235,14 @@ class S:
 
 def L(seqn):
     "Test multiple tiers of iterators"
-    return chain(map(lambda x: x, R(Ig(G(seqn)))))
+    return chain(x for x in R(Ig(G(seqn))))
 
 
 class TestVariousIteratorArgs(unittest.TestCase):
     def test_accumulate(self):
         s = [1, 2, 3, 4, 5]
         r = [1, 3, 6, 10, 15]
-        n = len(s)
+        len(s)
         for g in (G, I, Ig, L, R):
             self.assertEqual(list(accumulate(g(s))), r)
         self.assertEqual(list(accumulate(S(s))), [])
@@ -2266,7 +2261,7 @@ class TestVariousIteratorArgs(unittest.TestCase):
 
     def test_compress(self):
         for s in ("123", "", range(1000), ("do", 1.2), range(2000, 2200, 5)):
-            n = len(s)
+            len(s)
             for g in (G, I, Ig, S, L, R):
                 self.assertEqual(list(compress(g(s), repeat(1))), list(g(s)))
             self.assertRaises(TypeError, compress, X(s), repeat(1))
@@ -2424,7 +2419,9 @@ class RegressionTests(unittest.TestCase):
             # this builds a tuple t which is a copy of tuple1,
             # then calls f(t), then mutates t to be equal to tuple2
             # (needs len(tuple1) == len(tuple2)).
-            def g(value, first=[1]):
+            def g(value, first=None):
+                if first is None:
+                    first = [1]
                 if first:
                     del first[:]
                     f(next(z))
@@ -2530,7 +2527,7 @@ class SubclassWithKwargsTest(unittest.TestCase):
 
             class Subclass(cls):
                 def __init__(self, newarg=None, *args):
-                    cls.__init__(self, *args)
+                    cls.__init__(self, *args)  # noqa: B023
 
             try:
                 Subclass(newarg=1)

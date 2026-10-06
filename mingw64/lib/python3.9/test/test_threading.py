@@ -53,7 +53,7 @@ class TestThread(threading.Thread):
     def run(self):
         delay = random.random() / 10000.0
         if verbose:
-            print("task %s will run for %.1f usec" % (self.name, delay * 1e6))
+            print(f"task {self.name} will run for {delay * 1e6:.1f} usec")
 
         with self.sema:
             with self.mutex:
@@ -71,7 +71,7 @@ class TestThread(threading.Thread):
                 self.testcase.assertGreaterEqual(self.nrunning.get(), 0)
                 if verbose:
                     print(
-                        "%s is finished. %d tasks are running"
+                        "%s is finished. %d tasks are running"  # noqa: UP031
                         % (self.name, self.nrunning.get())
                     )
 
@@ -101,14 +101,14 @@ class ThreadTests(BaseTestCase):
         threads = []
 
         for i in range(NUMTASKS):
-            t = TestThread("<thread %d>" % i, self, sema, mutex, numrunning)
+            t = TestThread("<thread %d>" % i, self, sema, mutex, numrunning)  # noqa: UP031
             threads.append(t)
             self.assertIsNone(t.ident)
             self.assertRegex(repr(t), r"^<TestThread\(.*, initial\)>$")
             t.start()
 
         if hasattr(threading, "get_native_id"):
-            native_ids = set(t.native_id for t in threads) | {threading.get_native_id()}
+            native_ids = {t.native_id for t in threads} | {threading.get_native_id()}
             self.assertNotIn(None, native_ids)
             self.assertEqual(len(native_ids), NUMTASKS + 1)
 
@@ -301,7 +301,7 @@ class ThreadTests(BaseTestCase):
         # example.
         import_module("ctypes")
 
-        rc, out, err = assert_python_failure(
+        rc, _out, _err = assert_python_failure(
             "-c",
             """if 1:
             import ctypes, sys, time, _thread
@@ -362,7 +362,7 @@ class ThreadTests(BaseTestCase):
     def test_join_nondaemon_on_shutdown(self):
         # Issue 1722344
         # Raising SystemExit skipped threading._shutdown
-        rc, out, err = assert_python_ok(
+        _rc, out, err = assert_python_ok(
             "-c",
             """if 1:
                 import threading
@@ -396,7 +396,9 @@ class ThreadTests(BaseTestCase):
                 t.join()
                 l = enum()
                 self.assertNotIn(
-                    t, l, "#1703448 triggered after %d trials: %s" % (i, l)
+                    t,
+                    l,
+                    "#1703448 triggered after %d trials: %s" % (i, l),  # noqa: UP031
                 )
         finally:
             sys.setswitchinterval(old_interval)
@@ -422,7 +424,7 @@ class ThreadTests(BaseTestCase):
         del cyclic_object
         self.assertIsNone(
             weak_cyclic_object(),
-            msg=("%d references still around" % sys.getrefcount(weak_cyclic_object())),
+            msg=("%d references still around" % sys.getrefcount(weak_cyclic_object())),  # noqa: UP031
         )
 
         raising_cyclic_object = RunSelfFunction(should_raise=True)
@@ -432,7 +434,7 @@ class ThreadTests(BaseTestCase):
         self.assertIsNone(
             weak_raising_cyclic_object(),
             msg=(
-                "%d references still around"
+                "%d references still around"  # noqa: UP031
                 % sys.getrefcount(weak_raising_cyclic_object())
             ),
         )
@@ -666,7 +668,7 @@ class ThreadTests(BaseTestCase):
             threading.Thread(target=f).start()
             random_sleep()
         """
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, _out, err = assert_python_ok("-c", code)
         self.assertEqual(err, b"")
 
     def test_tstate_lock(self):
@@ -820,7 +822,7 @@ class ThreadTests(BaseTestCase):
     def test_locals_at_exit(self):
         # bpo-19466: thread locals must not be deleted before destructors
         # are called
-        rc, out, err = assert_python_ok(
+        _rc, out, _err = assert_python_ok(
             "-c",
             """if 1:
             import threading
@@ -865,7 +867,7 @@ class ThreadJoinOnShutdown(BaseTestCase):
             + script
         )
 
-        rc, out, err = assert_python_ok("-c", script)
+        _rc, out, _err = assert_python_ok("-c", script)
         data = out.decode().replace("\r", "")
         self.assertEqual(data, "end of main\nend of thread\n")
 
@@ -969,7 +971,7 @@ class ThreadJoinOnShutdown(BaseTestCase):
 
             main()
             """
-        rc, out, err = assert_python_ok("-c", script)
+        _rc, _out, err = assert_python_ok("-c", script)
         self.assertFalse(err)
 
     @unittest.skipUnless(hasattr(os, "fork"), "needs os.fork()")
@@ -1053,7 +1055,7 @@ class SubinterpThreadingTests(BaseTestCase):
 
             threading.Thread(target=f).start()
             random_sleep()
-        """
+        """  # noqa: UP031
             % (w,)
         )
         ret = test.support.run_in_subinterp(code)
@@ -1093,7 +1095,7 @@ class SubinterpThreadingTests(BaseTestCase):
 
             threading.Thread(target=f).start()
             random_sleep()
-        """
+        """  # noqa: UP031
             % (w,)
         )
         ret = test.support.run_in_subinterp(code)
@@ -1114,13 +1116,13 @@ class SubinterpThreadingTests(BaseTestCase):
                 time.sleep({test.support.SHORT_TIMEOUT})
             threading.Thread(target=f, daemon=True).start()
             """
-        script = r"""if 1:
+        script = rf"""if 1:
             import _testcapi
 
-            _testcapi.run_in_subinterp(%r)
-            """ % (subinterp_code,)
+            _testcapi.run_in_subinterp({subinterp_code!r})
+            """
         with test.support.SuppressCrashReport():
-            rc, out, err = assert_python_failure("-c", script)
+            _rc, _out, err = assert_python_failure("-c", script)
         self.assertIn(
             "Fatal Python error: Py_EndInterpreter: not the last thread",
             err.decode(),
@@ -1207,7 +1209,7 @@ class ThreadingExceptionTests(BaseTestCase):
             running = False
             t.join()
             """
-        rc, out, err = assert_python_ok("-c", script)
+        _rc, out, err = assert_python_ok("-c", script)
         self.assertEqual(out, b"")
         err = err.decode()
         self.assertIn("Exception in thread", err)
@@ -1236,7 +1238,7 @@ class ThreadingExceptionTests(BaseTestCase):
             running = False
             t.join()
             """
-        rc, out, err = assert_python_ok("-c", script)
+        _rc, out, err = assert_python_ok("-c", script)
         self.assertEqual(out, b"")
         err = err.decode()
         self.assertIn("Exception in thread", err)
@@ -1265,13 +1267,13 @@ class ThreadingExceptionTests(BaseTestCase):
             running = False
             t.join()
             """
-        rc, out, err = assert_python_ok("-c", script)
+        _rc, out, err = assert_python_ok("-c", script)
         self.assertEqual(out, b"")
         self.assertNotIn("Unhandled exception", err.decode())
 
     def test_bare_raise_in_brand_new_thread(self):
         def bare_raise():
-            raise
+            raise  # noqa: PLE0704
 
         class Issue27558(threading.Thread):
             exc = None
@@ -1279,7 +1281,7 @@ class ThreadingExceptionTests(BaseTestCase):
             def run(self):
                 try:
                     bare_raise()
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001
                     self.exc = exc
 
         thread = Issue27558()
@@ -1329,7 +1331,7 @@ class ExceptHookTests(BaseTestCase):
         with support.captured_output("stderr") as stderr:
             try:
                 raise ValueError("bug")
-            except Exception:
+            except Exception:  # noqa: BLE001
                 args = threading.ExceptHookArgs([*sys.exc_info(), None])
                 try:
                     threading.excepthook(args)
@@ -1510,7 +1512,7 @@ class InterruptMainTests(unittest.TestCase):
 
 class AtexitTests(unittest.TestCase):
     def test_atexit_output(self):
-        rc, out, err = assert_python_ok(
+        _rc, out, err = assert_python_ok(
             "-c",
             """if True:
             import threading
@@ -1526,7 +1528,7 @@ class AtexitTests(unittest.TestCase):
         self.assertEqual(out.strip(), b"parrot")
 
     def test_atexit_called_once(self):
-        rc, out, err = assert_python_ok(
+        _rc, _out, err = assert_python_ok(
             "-c",
             """if True:
             import threading
@@ -1546,7 +1548,7 @@ class AtexitTests(unittest.TestCase):
     def test_atexit_after_shutdown(self):
         # The only way to do this is by registering an atexit within
         # an atexit, which is intended to raise an exception.
-        rc, out, err = assert_python_ok(
+        _rc, _out, err = assert_python_ok(
             "-c",
             """if True:
             import threading

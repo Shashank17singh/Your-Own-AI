@@ -140,7 +140,7 @@ class Regrtest:
         elif isinstance(result, Interrupted):
             self.interrupted = True
         else:
-            raise ValueError("invalid test result: %r" % result)
+            raise ValueError(f"invalid test result: {result!r}")  # noqa: TRY004
 
         if rerun and not isinstance(result, (Failed, Interrupted)):
             self.bad.remove(test_name)
@@ -261,7 +261,7 @@ class Regrtest:
         # if testdir is set, then we are not running the python tests suite, so
         # don't add default tests to be executed or skipped (pass empty values)
         if self.ns.testdir:
-            alltests = findtests(self.ns.testdir, list(), set())
+            alltests = findtests(self.ns.testdir, [], set())
         else:
             alltests = findtests(self.ns.testdir, stdtests, nottests)
 
@@ -283,7 +283,7 @@ class Regrtest:
                 del self.selected[: self.selected.index(self.ns.start)]
             except ValueError:
                 print(
-                    "Couldn't find starting test (%s), using all tests" % self.ns.start,
+                    f"Couldn't find starting test ({self.ns.start}), using all tests",
                     file=sys.stderr,
                 )
 
@@ -303,7 +303,7 @@ class Regrtest:
                 continue
             if isinstance(test, unittest.TestSuite):
                 self._list_cases(test)
-            elif isinstance(test, unittest.TestCase):
+            elif isinstance(test, unittest.TestCase):  # noqa: SIM102
                 if support.match_test(test):
                     print(test.id())
 
@@ -376,7 +376,7 @@ class Regrtest:
             return
 
         print()
-        print("== Tests result: %s ==" % self.get_tests_result())
+        print(f"== Tests result: {self.get_tests_result()} ==")
 
         if self.interrupted:
             print("Test suite interrupted by signal SIGINT.")
@@ -403,7 +403,7 @@ class Regrtest:
             print()
             print("10 slowest tests:")
             for test_time, test in self.test_times[:10]:
-                print("- %s: %s" % (test, format_duration(test_time)))
+                print(f"- {test}: {format_duration(test_time)}")
 
         if self.bad:
             print()
@@ -426,7 +426,7 @@ class Regrtest:
 
         if self.rerun:
             print()
-            print("%s:" % count(len(self.rerun), "re-run test"))
+            print("{}:".format(count(len(self.rerun), "re-run test")))
             printlist(r.name for r in self.rerun)
 
         if self.run_no_tests:
@@ -444,7 +444,7 @@ class Regrtest:
 
         msg = "Run tests sequentially"
         if self.ns.timeout:
-            msg += " (timeout: %s)" % format_duration(self.ns.timeout)
+            msg += f" (timeout: {format_duration(self.ns.timeout)})"
         self.log(msg)
 
         previous_test = None
@@ -453,7 +453,7 @@ class Regrtest:
 
             text = test_name
             if previous_test:
-                text = "%s -- %s" % (text, previous_test)
+                text = f"{text} -- {previous_test}"
             self.display_progress(test_index, text)
 
             if self.tracer:
@@ -476,13 +476,13 @@ class Regrtest:
             previous_test = str(result)
             test_time = time.monotonic() - start_time
             if test_time >= PROGRESS_MIN_TIME:
-                previous_test = "%s in %s" % (previous_test, format_duration(test_time))
+                previous_test = f"{previous_test} in {format_duration(test_time)}"
             elif isinstance(result, Passed):
                 # be quiet: say nothing if the test passed shortly
                 previous_test = None
 
             # Unload the newly imported modules (best effort finalization)
-            for module in sys.modules.keys():
+            for module in sys.modules:
                 if module not in save_modules and module.startswith("test."):
                     support.unload(module)
 
@@ -504,14 +504,13 @@ class Regrtest:
     def display_header(self):
         # Print basic platform information
         print("==", platform.python_implementation(), *sys.version.split())
-        print("==", platform.platform(aliased=True), "%s-endian" % sys.byteorder)
+        print("==", platform.platform(aliased=True), f"{sys.byteorder}-endian")
         print("== cwd:", os.getcwd())
         cpu_count = os.cpu_count()
         if cpu_count:
             print("== CPU count:", cpu_count)
         print(
-            "== encodings: locale=%s, FS=%s"
-            % (locale.getpreferredencoding(False), sys.getfilesystemencoding())
+            f"== encodings: locale={locale.getpreferredencoding(False)}, FS={sys.getfilesystemencoding()}"
         )
 
     def get_tests_result(self):
@@ -539,7 +538,7 @@ class Regrtest:
 
         result = ", ".join(result)
         if self.first_result:
-            result = "%s then %s" % (self.first_result, result)
+            result = f"{self.first_result} then {result}"
         return result
 
     def run_tests(self):
@@ -550,7 +549,7 @@ class Regrtest:
             self.display_header()
 
         if self.ns.huntrleaks:
-            warmup, repetitions, _ = self.ns.huntrleaks
+            warmup, _repetitions, _ = self.ns.huntrleaks
             if warmup < 3:
                 msg = (
                     "WARNING: Running tests with --huntrleaks/-R and less than "
@@ -591,11 +590,11 @@ class Regrtest:
 
         print()
         duration = time.monotonic() - self.start_time
-        print("Total duration: %s" % format_duration(duration))
-        print("Tests result: %s" % self.get_tests_result())
+        print(f"Total duration: {format_duration(duration)}")
+        print(f"Tests result: {self.get_tests_result()}")
 
         if self.ns.runleaks:
-            os.system("leaks %d" % os.getpid())
+            os.system("leaks %d" % os.getpid())  # noqa: UP031
 
     def save_xml_result(self):
         if not self.ns.xmlpath and not self.testsuite_xml:
@@ -663,13 +662,13 @@ class Regrtest:
         import glob
 
         path = os.path.join(glob.escape(self.tmp_dir), "test_python_*")
-        print("Cleanup %s directory" % self.tmp_dir)
+        print(f"Cleanup {self.tmp_dir} directory")
         for name in glob.glob(path):
             if os.path.isdir(name):
-                print("Remove directory: %s" % name)
+                print(f"Remove directory: {name}")
                 support.rmtree(name)
             else:
-                print("Remove file: %s" % name)
+                print(f"Remove file: {name}")
                 support.unlink(name)
 
     def main(self, tests=None, **kwargs):

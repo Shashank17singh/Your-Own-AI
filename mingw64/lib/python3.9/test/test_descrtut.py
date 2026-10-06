@@ -487,7 +487,7 @@ def test_main(verbose=None):
     # into the doctest examples, and unless the full test.test_descrtut
     # business is used the name can change depending on how the test is
     # invoked.
-    from test import support, test_descrtut
+    from test import support, test_descrtut  # noqa: PLW0406
 
     support.run_doctest(test_descrtut, verbose)
 

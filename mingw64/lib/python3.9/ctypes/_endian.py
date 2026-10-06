@@ -19,7 +19,7 @@ def _other_endian(typ):
     # if typ is structure
     if issubclass(typ, Structure):
         return typ
-    raise TypeError("This type does not support other endian: %s" % typ)
+    raise TypeError(f"This type does not support other endian: {typ}")
 
 
 class _swapped_meta(type(Structure)):

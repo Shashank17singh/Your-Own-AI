@@ -3,7 +3,7 @@ from ctypes import *
 
 
 class X(Structure):
-    _fields_ = [("foo", c_int)]
+    _fields_ = [("foo", c_int)]  # noqa: RUF012
 
 
 class TestCase(unittest.TestCase):

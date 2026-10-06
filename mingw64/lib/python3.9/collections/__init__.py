@@ -118,7 +118,7 @@ class OrderedDict(dict):
         regular dictionaries.  Keyword argument order is preserved.
         """
         try:
-            self.__root
+            self.__root  # noqa: B018
         except AttributeError:
             self.__hardroot = _Link()
             self.__root = root = _proxy(self.__hardroot)
@@ -282,8 +282,8 @@ class OrderedDict(dict):
     def __repr__(self):
         "od.__repr__() <==> repr(od)"
         if not self:
-            return "%s()" % (self.__class__.__name__,)
-        return "%s(%r)" % (self.__class__.__name__, list(self.items()))
+            return f"{self.__class__.__name__}()"
+        return f"{self.__class__.__name__}({list(self.items())!r})"
 
     def __reduce__(self):
         "Return state information for pickling"
@@ -958,7 +958,7 @@ class ChainMap(_collections_abc.MutableMapping):
         return self.__missing__(key)  # support subclasses that define __missing__
 
     def get(self, key, default=None):
-        return self[key] if key in self else default
+        return self.get(key, default)
 
     def __len__(self):
         return len(set().union(*self.maps))  # reuses stored hash values if possible

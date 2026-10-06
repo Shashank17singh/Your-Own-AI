@@ -37,9 +37,9 @@ class TempFileGreedy(threading.Thread):
         startEvent.wait()
         for i in range(FILES_PER_THREAD):
             try:
-                f = tempfile.TemporaryFile("w+b")
+                f = tempfile.TemporaryFile("w+b")  # noqa: SIM115
                 f.close()
-            except:
+            except:  # noqa: E722
                 self.error_count += 1
                 print_exc(file=self.errors)
             else:
@@ -56,7 +56,7 @@ class ThreadedTempFileTest(unittest.TestCase):
             str(t.name) + str(t.errors.getvalue()) for t in threads if t.error_count
         ]
 
-        msg = "Errors: errors %d ok %d\n%s" % (len(errors), ok, "\n".join(errors))
+        msg = "Errors: errors %d ok %d\n%s" % (len(errors), ok, "\n".join(errors))  # noqa: UP031
         self.assertEqual(errors, [], msg)
         self.assertEqual(ok, NUM_THREADS * FILES_PER_THREAD)
 

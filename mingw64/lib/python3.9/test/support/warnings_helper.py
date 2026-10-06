@@ -66,7 +66,7 @@ class WarningsRecorder:
             return getattr(self._warnings[-1], attr)
         elif attr in warnings.WarningMessage._WARNING_DETAILS:
             return None
-        raise AttributeError("%r has no attribute %r" % (self, attr))
+        raise AttributeError(f"{self!r} has no attribute {attr!r}")
 
     @property
     def warnings(self):
@@ -176,9 +176,11 @@ def _filterwarnings(filters, quiet=False):
             # This filter caught nothing
             missing.append((msg, cat.__name__))
     if reraise:
-        raise AssertionError("unhandled warning %s" % reraise[0])
+        raise AssertionError(f"unhandled warning {reraise[0]}")
     if missing:
-        raise AssertionError("filter (%r, %s) did not catch any warning" % missing[0])
+        raise AssertionError(
+            "filter ({!r}, {}) did not catch any warning".format(*missing[0])
+        )
 
 
 @contextlib.contextmanager

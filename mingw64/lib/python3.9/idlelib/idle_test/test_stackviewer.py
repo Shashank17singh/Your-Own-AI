@@ -14,7 +14,7 @@ class StackBrowserTest(unittest.TestCase):
     def setUpClass(cls):
         svs = stackviewer.sys
         try:
-            abc
+            abc  # noqa: B018
         except NameError:
             svs.last_type, svs.last_value, svs.last_traceback = sys.exc_info()
 
@@ -34,7 +34,7 @@ class StackBrowserTest(unittest.TestCase):
         del cls.root
 
     def test_init(self):
-        sb = stackviewer.StackBrowser(self.root)
+        stackviewer.StackBrowser(self.root)
         isi = self.assertIsInstance
         isi(stackviewer.sc, ScrolledCanvas)
         isi(stackviewer.item, stackviewer.StackTreeItem)

@@ -70,7 +70,7 @@ class MemFunctionsTest(unittest.TestCase):
     def test_wstring_at(self):
         p = create_unicode_buffer("Hello, World")
         a = create_unicode_buffer(1000000)
-        result = memmove(a, p, len(p) * sizeof(c_wchar))
+        memmove(a, p, len(p) * sizeof(c_wchar))
         self.assertEqual(a.value, "Hello, World")
 
         self.assertEqual(wstring_at(a), "Hello, World")

@@ -43,7 +43,7 @@ class TestCase(unittest.TestCase):
         fun = lambda x: l.append(x)
         scheduler = sched.scheduler(time.time, time.sleep)
         for x in [0.5, 0.4, 0.3, 0.2, 0.1]:
-            z = scheduler.enter(x, 1, fun, (x,))
+            scheduler.enter(x, 1, fun, (x,))
         scheduler.run()
         self.assertEqual(l, [0.1, 0.2, 0.3, 0.4, 0.5])
 
@@ -52,7 +52,7 @@ class TestCase(unittest.TestCase):
         fun = lambda x: l.append(x)
         scheduler = sched.scheduler(time.time, time.sleep)
         for x in [0.05, 0.04, 0.03, 0.02, 0.01]:
-            z = scheduler.enterabs(x, 1, fun, (x,))
+            scheduler.enterabs(x, 1, fun, (x,))
         scheduler.run()
         self.assertEqual(l, [0.01, 0.02, 0.03, 0.04, 0.05])
 
@@ -69,7 +69,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(q.get(timeout=TIMEOUT), 1)
         self.assertTrue(q.empty())
         for x in [4, 5, 2]:
-            z = scheduler.enter(x - 1, 1, fun, (x,))
+            scheduler.enter(x - 1, 1, fun, (x,))
         timer.advance(2)
         self.assertEqual(q.get(timeout=TIMEOUT), 2)
         self.assertEqual(q.get(timeout=TIMEOUT), 3)
@@ -90,7 +90,7 @@ class TestCase(unittest.TestCase):
         fun = lambda x: l.append(x)
         scheduler = sched.scheduler(time.time, time.sleep)
         for priority in [1, 2, 3, 4, 5]:
-            z = scheduler.enterabs(0.01, priority, fun, (priority,))
+            scheduler.enterabs(0.01, priority, fun, (priority,))
         scheduler.run()
         self.assertEqual(l, [1, 2, 3, 4, 5])
 
@@ -100,9 +100,9 @@ class TestCase(unittest.TestCase):
         scheduler = sched.scheduler(time.time, time.sleep)
         now = time.time()
         event1 = scheduler.enterabs(now + 0.01, 1, fun, (0.01,))
-        event2 = scheduler.enterabs(now + 0.02, 1, fun, (0.02,))
-        event3 = scheduler.enterabs(now + 0.03, 1, fun, (0.03,))
-        event4 = scheduler.enterabs(now + 0.04, 1, fun, (0.04,))
+        scheduler.enterabs(now + 0.02, 1, fun, (0.02,))
+        scheduler.enterabs(now + 0.03, 1, fun, (0.03,))
+        scheduler.enterabs(now + 0.04, 1, fun, (0.04,))
         event5 = scheduler.enterabs(now + 0.05, 1, fun, (0.05,))
         scheduler.cancel(event1)
         scheduler.cancel(event5)
@@ -115,11 +115,11 @@ class TestCase(unittest.TestCase):
         timer = Timer()
         scheduler = sched.scheduler(timer.time, timer.sleep)
         now = timer.time()
-        event1 = scheduler.enterabs(now + 1, 1, fun, (1,))
+        scheduler.enterabs(now + 1, 1, fun, (1,))
         event2 = scheduler.enterabs(now + 2, 1, fun, (2,))
-        event4 = scheduler.enterabs(now + 4, 1, fun, (4,))
+        scheduler.enterabs(now + 4, 1, fun, (4,))
         event5 = scheduler.enterabs(now + 5, 1, fun, (5,))
-        event3 = scheduler.enterabs(now + 3, 1, fun, (3,))
+        scheduler.enterabs(now + 3, 1, fun, (3,))
         t = threading.Thread(target=scheduler.run)
         t.start()
         timer.advance(1)
@@ -146,7 +146,7 @@ class TestCase(unittest.TestCase):
         scheduler = sched.scheduler(time.time, time.sleep)
         self.assertTrue(scheduler.empty())
         for x in [0.05, 0.04, 0.03, 0.02, 0.01]:
-            z = scheduler.enterabs(x, 1, fun, (x,))
+            scheduler.enterabs(x, 1, fun, (x,))
         self.assertFalse(scheduler.empty())
         scheduler.run()
         self.assertTrue(scheduler.empty())

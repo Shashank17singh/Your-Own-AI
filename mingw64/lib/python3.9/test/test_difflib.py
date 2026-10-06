@@ -98,7 +98,7 @@ class TestSFbugs(unittest.TestCase):
     def test_matching_blocks_cache(self):
         # Issue #21635
         s = difflib.SequenceMatcher(None, "abxcd", "abcd")
-        first = s.get_matching_blocks()
+        s.get_matching_blocks()
         second = s.get_matching_blocks()
         self.assertEqual(second[0].size, 2)
         self.assertEqual(second[1].size, 2)
@@ -257,7 +257,7 @@ class TestSFpatches(unittest.TestCase):
                 k.make_table(f3.splitlines(True), t3.splitlines(True)),
             ]
         )
-        actual = full.replace("</body>", "\n%s\n</body>" % tables)
+        actual = full.replace("</body>", f"\n{tables}\n</body>")
 
         # temporarily uncomment next two lines to baseline this test
         # with open('test_difflib_expect.html','w') as fp:
@@ -331,14 +331,6 @@ class TestOutputFormat(unittest.TestCase):
 
     def test_range_format_unified(self):
         # Per the diff spec at http://www.unix.org/single_unix_specification/
-        spec = """\
-           Each <range> field shall be of the form:
-             %1d", <beginning line number>  if the range contains exactly one line,
-           and:
-            "%1d,%1d", <beginning line number>, <number of lines> otherwise.
-           If a range is empty, its beginning line number shall be the number of
-           the line just before the range, or 0 if the empty range starts the file.
-        """
         fmt = difflib._format_range_unified
         self.assertEqual(fmt(3, 3), "3,0")
         self.assertEqual(fmt(3, 4), "4")
@@ -348,21 +340,6 @@ class TestOutputFormat(unittest.TestCase):
 
     def test_range_format_context(self):
         # Per the diff spec at http://www.unix.org/single_unix_specification/
-        spec = """\
-           The range of lines in file1 shall be written in the following format
-           if the range contains two or more lines:
-               "*** %d,%d ****\n", <beginning line number>, <ending line number>
-           and the following format otherwise:
-               "*** %d ****\n", <ending line number>
-           The ending line number of an empty range shall be the number of the preceding line,
-           or 0 if the range is at the start of the file.
-
-           Next, the range of lines in file2 shall be written in the following format
-           if the range contains two or more lines:
-               "--- %d,%d ----\n", <beginning line number>, <ending line number>
-           and the following format otherwise:
-               "--- %d ----\n", <ending line number>
-        """
         fmt = difflib._format_range_context
         self.assertEqual(fmt(3, 3), "3")
         self.assertEqual(fmt(3, 4), "4")
@@ -378,7 +355,7 @@ class TestBytes(unittest.TestCase):
         diff = list(diff)  # trigger exceptions first
         for line in diff:
             self.assertIsInstance(
-                line, bytes, "all lines of diff should be bytes, but got: %r" % line
+                line, bytes, f"all lines of diff should be bytes, but got: {line!r}"
             )
 
     def test_byte_content(self):

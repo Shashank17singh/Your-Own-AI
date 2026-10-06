@@ -9,18 +9,18 @@ __version__ = "1.1.0"
 from _ctypes import (
     RTLD_GLOBAL,
     RTLD_LOCAL,
-    ArgumentError,
-    Array,
-    Structure,
-    Union,
-    _Pointer,
+    ArgumentError,  # noqa: F401
+    Array,  # noqa: F401
+    Structure,  # noqa: F401
+    Union,  # noqa: F401
+    _Pointer,  # noqa: F401
 )
 from _ctypes import CFuncPtr as _CFuncPtr
 from _ctypes import __version__ as _ctypes_version
 from struct import calcsize as _calcsize
 
 if __version__ != _ctypes_version:
-    raise Exception("Version number mismatch", __version__, _ctypes_version)
+    raise Exception("Version number mismatch", __version__, _ctypes_version)  # noqa: TRY002
 
 if _os.name == "nt":
     from _ctypes import FormatError
@@ -113,7 +113,7 @@ def CFUNCTYPE(restype, *argtypes, **kw):
     if kw.pop("use_last_error", False):
         flags |= _FUNCFLAG_USE_LASTERROR
     if kw:
-        raise ValueError("unexpected keyword argument(s) %s" % kw.keys())
+        raise ValueError(f"unexpected keyword argument(s) {kw.keys()}")
     try:
         return _c_functype_cache[(restype, argtypes, flags)]
     except KeyError:
@@ -141,7 +141,7 @@ if _os.name == "nt":
         if kw.pop("use_last_error", False):
             flags |= _FUNCFLAG_USE_LASTERROR
         if kw:
-            raise ValueError("unexpected keyword argument(s) %s" % kw.keys())
+            raise ValueError(f"unexpected keyword argument(s) {kw.keys()}")
         try:
             return _win_functype_cache[(restype, argtypes, flags)]
         except KeyError:
@@ -162,12 +162,12 @@ elif _os.name == "posix":
 
 from _ctypes import (
     _SimpleCData,
-    addressof,
-    alignment,
-    byref,
-    get_errno,
-    resize,
-    set_errno,
+    addressof,  # noqa: F401
+    alignment,  # noqa: F401
+    byref,  # noqa: F401
+    get_errno,  # noqa: F401
+    resize,  # noqa: F401
+    set_errno,  # noqa: F401
     sizeof,
 )
 
@@ -183,7 +183,7 @@ def _check_size(typ, typecode=None):
     actual, required = sizeof(typ), calcsize(typecode)
     if actual != required:
         raise SystemError(
-            "sizeof(%s) wrong: %d instead of %d" % (typ, actual, required)
+            "sizeof(%s) wrong: %d instead of %d" % (typ, actual, required)  # noqa: UP031
         )
 
 
@@ -194,7 +194,7 @@ class py_object(_SimpleCData):
         try:
             return super().__repr__()
         except ValueError:
-            return "%s(<NULL>)" % type(self).__name__
+            return f"{type(self).__name__}(<NULL>)"
 
 
 _check_size(py_object, "P")
@@ -315,7 +315,7 @@ class c_char_p(_SimpleCData):
     _type_ = "z"
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, c_void_p.from_buffer(self).value)
+        return f"{self.__class__.__name__}({c_void_p.from_buffer(self).value})"
 
 
 _check_size(c_char_p, "P")
@@ -333,14 +333,14 @@ class c_bool(_SimpleCData):
     _type_ = "?"
 
 
-from _ctypes import POINTER, _pointer_type_cache, pointer
+from _ctypes import POINTER, _pointer_type_cache, pointer  # noqa: F401
 
 
 class c_wchar_p(_SimpleCData):
     _type_ = "Z"
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, c_void_p.from_buffer(self).value)
+        return f"{self.__class__.__name__}({c_void_p.from_buffer(self).value})"
 
 
 class c_wchar(_SimpleCData):
@@ -389,7 +389,7 @@ def create_unicode_buffer(init, size=None):
 
 
 # XXX Deprecated
-def SetPointerType(pointer, cls):
+def SetPointerType(pointer, cls):  # noqa: F811
     if _pointer_type_cache.get(cls, None) is not None:
         raise RuntimeError("This type already exists in the cache")
     if id(pointer) not in _pointer_type_cache:
@@ -475,12 +475,7 @@ class CDLL:
             self._handle = handle
 
     def __repr__(self):
-        return "<%s '%s', handle %x at %#x>" % (
-            self.__class__.__name__,
-            self._name,
-            (self._handle & (_sys.maxsize * 2 + 1)),
-            id(self) & (_sys.maxsize * 2 + 1),
-        )
+        return f"<{self.__class__.__name__} '{self._name}', handle {self._handle & (_sys.maxsize * 2 + 1):x} at {id(self) & (_sys.maxsize * 2 + 1):#x}>"
 
     def __getattr__(self, name):
         if name.startswith("__") and name.endswith("__"):
@@ -567,12 +562,13 @@ pydll = LibraryLoader(PyDLL)
 
 if _os.name == "nt" and _sys.version.find("GCC") >= 0:
     pythonapi = PyDLL(
-        "libpython%d.%d%s.dll" % (_sys.version_info[:2] + (_sys.abiflags,)), None
+        "libpython%d.%d%s.dll" % (_sys.version_info[:2] + (_sys.abiflags,)),
+        None,  # noqa: UP031
     )
 elif _os.name == "nt":
     pythonapi = PyDLL("python dll", None, _sys.dllhandle)
 elif _sys.platform == "cygwin":
-    pythonapi = PyDLL("libpython%d.%d.dll" % _sys.version_info[:2])
+    pythonapi = PyDLL("libpython%d.%d.dll" % _sys.version_info[:2])  # noqa: UP031
 else:
     pythonapi = PyDLL(None)
 
@@ -582,7 +578,7 @@ if _os.name == "nt":
     oledll = LibraryLoader(OleDLL)
 
     GetLastError = windll.kernel32.GetLastError
-    from _ctypes import get_last_error, set_last_error
+    from _ctypes import get_last_error, set_last_error  # noqa: F401
 
     def WinError(code=None, descr=None):
         if code is None:
@@ -675,7 +671,7 @@ if _os.name == "nt":  # COM stuff
         return ccom.DllCanUnloadNow()
 
 
-from ctypes._endian import BigEndianStructure, LittleEndianStructure
+from ctypes._endian import BigEndianStructure, LittleEndianStructure  # noqa: F401
 
 # Fill in specifically-sized types
 c_int8 = c_byte

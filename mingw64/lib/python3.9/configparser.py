@@ -196,7 +196,7 @@ class NoSectionError(Error):
     """Raised when no section matches a requested option."""
 
     def __init__(self, section):
-        Error.__init__(self, "No section: %r" % (section,))
+        Error.__init__(self, f"No section: {section!r}")
         self.section = section
         self.args = (section,)
 
@@ -257,7 +257,7 @@ class NoOptionError(Error):
     """A requested option was not found."""
 
     def __init__(self, option, section):
-        Error.__init__(self, "No option %r in section: %r" % (option, section))
+        Error.__init__(self, f"No option {option!r} in section: {section!r}")
         self.option = option
         self.section = section
         self.args = (option, section)
@@ -322,7 +322,7 @@ class ParsingError(Error):
             raise ValueError("Required argument `source' not given.")
         elif filename:
             source = filename
-        Error.__init__(self, "Source contains parsing errors: %r" % source)
+        Error.__init__(self, f"Source contains parsing errors: {source!r}")
         self.source = source
         self.errors = []
         self.args = (source,)
@@ -351,7 +351,7 @@ class ParsingError(Error):
 
     def append(self, lineno, line):
         self.errors.append((lineno, line))
-        self.message += "\n\t[line %2d]: %s" % (lineno, line)
+        self.message += "\n\t[line %2d]: %s" % (lineno, line)  # noqa: UP031
 
 
 class MissingSectionHeaderError(ParsingError):
@@ -360,7 +360,7 @@ class MissingSectionHeaderError(ParsingError):
     def __init__(self, filename, lineno, line):
         Error.__init__(
             self,
-            "File contains no section headers.\nfile: %r, line: %d\n%r"
+            "File contains no section headers.\nfile: %r, line: %d\n%r"  # noqa: UP031
             % (filename, lineno, line),
         )
         self.source = filename
@@ -418,7 +418,7 @@ class BasicInterpolation(Interpolation):
         tmp_value = self._KEYCRE.sub("", tmp_value)  # valid syntax
         if "%" in tmp_value:
             raise ValueError(
-                "invalid interpolation syntax in %r at "
+                "invalid interpolation syntax in %r at "  # noqa: UP031
                 "position %d" % (value, tmp_value.find("%"))
             )
         return value
@@ -446,7 +446,7 @@ class BasicInterpolation(Interpolation):
                     raise InterpolationSyntaxError(
                         option,
                         section,
-                        "bad interpolation variable reference %r" % rest,
+                        f"bad interpolation variable reference {rest!r}",
                     )
                 var = parser.optionxform(m.group(1))
                 rest = rest[m.end() :]
@@ -466,7 +466,7 @@ class BasicInterpolation(Interpolation):
                 raise InterpolationSyntaxError(
                     option,
                     section,
-                    "'%%' must be followed by '%%' or '(', found: %r" % (rest,),
+                    f"'%' must be followed by '%' or '(', found: {rest!r}",
                 )
 
 
@@ -486,7 +486,7 @@ class ExtendedInterpolation(Interpolation):
         tmp_value = self._KEYCRE.sub("", tmp_value)  # valid syntax
         if "$" in tmp_value:
             raise ValueError(
-                "invalid interpolation syntax in %r at "
+                "invalid interpolation syntax in %r at "  # noqa: UP031
                 "position %d" % (value, tmp_value.find("$"))
             )
         return value
@@ -514,7 +514,7 @@ class ExtendedInterpolation(Interpolation):
                     raise InterpolationSyntaxError(
                         option,
                         section,
-                        "bad interpolation variable reference %r" % rest,
+                        f"bad interpolation variable reference {rest!r}",
                     )
                 path = m.group(1).split(":")
                 rest = rest[m.end() :]
@@ -530,7 +530,7 @@ class ExtendedInterpolation(Interpolation):
                         v = parser.get(sect, opt, raw=True)
                     else:
                         raise InterpolationSyntaxError(
-                            option, section, "More than one ':' found: %r" % (rest,)
+                            option, section, f"More than one ':' found: {rest!r}"
                         )
                 except (KeyError, NoSectionError, NoOptionError):
                     raise InterpolationMissingOptionError(
@@ -552,7 +552,7 @@ class ExtendedInterpolation(Interpolation):
                 raise InterpolationSyntaxError(
                     option,
                     section,
-                    "'$' must be followed by '$' or '{', found: %r" % (rest,),
+                    f"'$' must be followed by '$' or '{{', found: {rest!r}",
                 )
 
 
@@ -591,7 +591,7 @@ class LegacyInterpolation(Interpolation):
         if s is None:
             return match.group()
         else:
-            return "%%(%s)s" % parser.optionxform(s)
+            return f"%({parser.optionxform(s)})s"
 
 
 class RawConfigParser(MutableMapping):
@@ -632,7 +632,7 @@ class RawConfigParser(MutableMapping):
     # Compiled regular expression for matching leading whitespace in a line
     NONSPACECRE = re.compile(r"\S")
     # Possible boolean values in the configuration.
-    BOOLEAN_STATES = {
+    BOOLEAN_STATES = {  # noqa: RUF012
         "1": True,
         "yes": True,
         "true": True,
@@ -705,7 +705,7 @@ class RawConfigParser(MutableMapping):
         already exists. Raise ValueError if name is DEFAULT.
         """
         if section == self.default_section:
-            raise ValueError("Invalid section name: %r" % section)
+            raise ValueError(f"Invalid section name: {section!r}")
 
         if section in self._sections:
             raise DuplicateSectionError(section)
@@ -1147,7 +1147,7 @@ class RawConfigParser(MutableMapping):
                 else:
                     mo = self._optcre.match(value)
                     if mo:
-                        optname, vi, optval = mo.group("option", "vi", "value")
+                        optname, _vi, optval = mo.group("option", "vi", "value")
                         if not optname:
                             e = self._handle_error(e, fpname, lineno, line)
                         optname = self.optionxform(optname.rstrip())
@@ -1221,7 +1221,7 @@ class RawConfigParser(MutableMapping):
     def _convert_to_boolean(self, value):
         """Return a boolean value translating from other types if necessary."""
         if value.lower() not in self.BOOLEAN_STATES:
-            raise ValueError("Not a boolean: %s" % value)
+            raise ValueError(f"Not a boolean: {value}")
         return self.BOOLEAN_STATES[value.lower()]
 
     def _validate_value_types(self, *, section="", option="", value=""):
@@ -1241,9 +1241,8 @@ class RawConfigParser(MutableMapping):
             raise TypeError("section names must be strings")
         if not isinstance(option, str):
             raise TypeError("option keys must be strings")
-        if not self._allow_no_value or value:
-            if not isinstance(value, str):
-                raise TypeError("option values must be strings")
+        if (not self._allow_no_value or value) and not isinstance(value, str):
+            raise TypeError("option values must be strings")
 
     @property
     def converters(self):

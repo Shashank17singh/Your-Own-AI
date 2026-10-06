@@ -146,8 +146,8 @@ class DictSetTest(unittest.TestCase):
         self.assertFalse(d1.keys().isdisjoint(set(d2.keys())))
         self.assertTrue(d1.keys().isdisjoint({"x", "y", "z"}))
         self.assertTrue(d1.keys().isdisjoint(["x", "y", "z"]))
-        self.assertTrue(d1.keys().isdisjoint(set(["x", "y", "z"])))
-        self.assertTrue(d1.keys().isdisjoint(set(["x", "y"])))
+        self.assertTrue(d1.keys().isdisjoint({"x", "y", "z"}))
+        self.assertTrue(d1.keys().isdisjoint({"x", "y"}))
         self.assertTrue(d1.keys().isdisjoint(["x", "y"]))
         self.assertTrue(d1.keys().isdisjoint({}))
         self.assertTrue(d1.keys().isdisjoint(d3.keys()))
@@ -199,8 +199,8 @@ class DictSetTest(unittest.TestCase):
         self.assertFalse(d1.items().isdisjoint(set(d2.items())))
         self.assertTrue(d1.items().isdisjoint({"x", "y", "z"}))
         self.assertTrue(d1.items().isdisjoint(["x", "y", "z"]))
-        self.assertTrue(d1.items().isdisjoint(set(["x", "y", "z"])))
-        self.assertTrue(d1.items().isdisjoint(set(["x", "y"])))
+        self.assertTrue(d1.items().isdisjoint({"x", "y", "z"}))
+        self.assertTrue(d1.items().isdisjoint({"x", "y"}))
         self.assertTrue(d1.items().isdisjoint({}))
         self.assertTrue(d1.items().isdisjoint(d3.items()))
 
@@ -292,7 +292,7 @@ class DictSetTest(unittest.TestCase):
         self.assertRaises(Exc, d.items().__contains__, (k2, v1))
         self.assertRaises(Exc, d.items().__contains__, (k1, v2))
         with self.assertRaises(Exc):
-            v2 in d.values()
+            v2 in d.values()  # noqa: B015
 
     def test_pickle(self):
         d = {1: 10, "a": "ABC"}
@@ -308,7 +308,7 @@ class DictSetTest(unittest.TestCase):
             )
 
     def test_abc_registry(self):
-        d = dict(a=1)
+        d = {"a": 1}
 
         self.assertIsInstance(d.keys(), collections.abc.KeysView)
         self.assertIsInstance(d.keys(), collections.abc.MappingView)

@@ -41,7 +41,7 @@ def get_tests_modules(basepath=this_dir_path, gui=True, packages=None):
             for name in filenames:
                 try:
                     yield importlib.import_module(
-                        ".%s.%s" % (pkg_name, name[: -len(py_ext)]), "tkinter.test"
+                        f".{pkg_name}.{name[: -len(py_ext)]}", "tkinter.test"
                     )
                 except test.support.ResourceDenied:
                     if gui:
@@ -59,8 +59,7 @@ def get_tests(text=True, gui=True, packages=None):
         attrs.append("tests_gui")
     for module in get_tests_modules(gui=gui, packages=packages):
         for attr in attrs:
-            for test in getattr(module, attr, ()):
-                yield test
+            yield from getattr(module, attr, ())
 
 
 if __name__ == "__main__":

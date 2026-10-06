@@ -39,7 +39,7 @@ alist = [
         "ukey\u4000": "regular value",
         "datetime1": xmlrpclib.DateTime("20050210T11:41:23"),
         "datetime2": xmlrpclib.DateTime((2005, 2, 10, 11, 41, 23, 0, 1, -1)),
-        "datetime3": xmlrpclib.DateTime(datetime.datetime(2005, 2, 10, 11, 41, 23)),
+        "datetime3": xmlrpclib.DateTime(datetime.datetime(2005, 2, 10, 11, 41, 23)),  # noqa: DTZ001
     }
 ]
 
@@ -55,7 +55,7 @@ class XMLRPCTestCase(unittest.TestCase):
         # by the marshalling code.  This can't be done via test_dump_load()
         # since with use_builtin_types set to 1 the unmarshaller would create
         # datetime objects for the 'datetime[123]' keys as well
-        dt = datetime.datetime(2005, 2, 10, 11, 41, 23)
+        dt = datetime.datetime(2005, 2, 10, 11, 41, 23)  # noqa: DTZ001
         self.assertEqual(dt, xmlrpclib.DateTime("20050210T11:41:23"))
         s = xmlrpclib.dumps((dt,))
 
@@ -85,7 +85,7 @@ class XMLRPCTestCase(unittest.TestCase):
 
     def test_datetime_before_1900(self):
         # same as before but with a date before 1900
-        dt = datetime.datetime(1, 2, 10, 11, 41, 23)
+        dt = datetime.datetime(1, 2, 10, 11, 41, 23)  # noqa: DTZ001
         self.assertEqual(dt, xmlrpclib.DateTime("00010210T11:41:23"))
         s = xmlrpclib.dumps((dt,))
 
@@ -103,7 +103,7 @@ class XMLRPCTestCase(unittest.TestCase):
 
     def test_bug_1164912(self):
         d = xmlrpclib.DateTime()
-        (new_d,), dummy = xmlrpclib.loads(xmlrpclib.dumps((d,), methodresponse=True))
+        (new_d,), _dummy = xmlrpclib.loads(xmlrpclib.dumps((d,), methodresponse=True))
         self.assertIsInstance(new_d.value, str)
 
         # Check that the output of dumps() is still an 8-bit string
@@ -117,7 +117,7 @@ class XMLRPCTestCase(unittest.TestCase):
         t = T()
         t.x = 100
         t.y = "Hello"
-        (t2,), dummy = xmlrpclib.loads(xmlrpclib.dumps((t,)))
+        (t2,), _dummy = xmlrpclib.loads(xmlrpclib.dumps((t,)))
         self.assertEqual(t2, t.__dict__)
 
     def test_dump_big_long(self):
@@ -232,7 +232,7 @@ class XMLRPCTestCase(unittest.TestCase):
         self.assertRaises(ResponseError, xmlrpclib.loads, data)
 
     def check_loads(self, s, value, **kwargs):
-        dump = "<params><param><value>%s</value></param></params>" % s
+        dump = f"<params><param><value>{s}</value></param></params>"
         result, m = xmlrpclib.loads(dump, **kwargs)
         (newvalue,) = result
         self.assertEqual(newvalue, value)
@@ -264,7 +264,7 @@ class XMLRPCTestCase(unittest.TestCase):
         )
         check(
             "<dateTime.iso8601>20050210T11:41:23</dateTime.iso8601>",
-            datetime.datetime(2005, 2, 10, 11, 41, 23),
+            datetime.datetime(2005, 2, 10, 11, 41, 23),  # noqa: DTZ001
             use_builtin_types=True,
         )
         check(
@@ -305,7 +305,7 @@ class XMLRPCTestCase(unittest.TestCase):
 
     def test_ssl_presence(self):
         try:
-            import ssl
+            import ssl  # noqa: F401
         except ImportError:
             has_ssl = False
         else:
@@ -500,28 +500,28 @@ class DateTimeTestCase(unittest.TestCase):
         self.assertEqual(str(t), time.strftime("%Y%m%dT%H:%M:%S", d))
 
     def test_datetime_datetime(self):
-        d = datetime.datetime(2007, 1, 2, 3, 4, 5)
+        d = datetime.datetime(2007, 1, 2, 3, 4, 5)  # noqa: DTZ001
         t = xmlrpclib.DateTime(d)
         self.assertEqual(str(t), "20070102T03:04:05")
 
     def test_repr(self):
-        d = datetime.datetime(2007, 1, 2, 3, 4, 5)
+        d = datetime.datetime(2007, 1, 2, 3, 4, 5)  # noqa: DTZ001
         t = xmlrpclib.DateTime(d)
-        val = "<DateTime '20070102T03:04:05' at %#x>" % id(t)
+        val = f"<DateTime '20070102T03:04:05' at {id(t):#x}>"
         self.assertEqual(repr(t), val)
 
     def test_decode(self):
         d = " 20070908T07:11:13  "
         t1 = xmlrpclib.DateTime()
         t1.decode(d)
-        tref = xmlrpclib.DateTime(datetime.datetime(2007, 9, 8, 7, 11, 13))
+        tref = xmlrpclib.DateTime(datetime.datetime(2007, 9, 8, 7, 11, 13))  # noqa: DTZ001
         self.assertEqual(t1, tref)
 
         t2 = xmlrpclib._datetime(d)
         self.assertEqual(t2, tref)
 
     def test_comparison(self):
-        now = datetime.datetime.now()
+        now = datetime.datetime.now()  # noqa: DTZ005
         dtime = xmlrpclib.DateTime(now.timetuple())
 
         # datetime vs. DateTime
@@ -547,13 +547,13 @@ class DateTimeTestCase(unittest.TestCase):
         self.assertFalse(dtime == bytearray(dbytes))
         self.assertTrue(dtime != dtuple)
         with self.assertRaises(TypeError):
-            dtime < float(1970)
+            dtime < float(1970)  # noqa: B015
         with self.assertRaises(TypeError):
-            dtime > dbytes
+            dtime > dbytes  # noqa: B015
         with self.assertRaises(TypeError):
-            dtime <= bytearray(dbytes)
+            dtime <= bytearray(dbytes)  # noqa: B015
         with self.assertRaises(TypeError):
-            dtime >= dtuple
+            dtime >= dtuple  # noqa: B015
 
         self.assertTrue(dtime == ALWAYS_EQ)
         self.assertFalse(dtime != ALWAYS_EQ)
@@ -638,7 +638,7 @@ def http_server(evt, numrequests, requestHandler=None, encoding=None):
         # trying to connect to "localhost" using all address families, which
         # causes slowdown e.g. on vista which supports AF_INET6.  The server listens
         # on AF_INET only.
-        URL = "http://%s:%d" % (ADDR, PORT)
+        URL = "http://%s:%d" % (ADDR, PORT)  # noqa: UP031
         serv.server_activate()
         serv.register_introspection_functions()
         serv.register_multicall_functions()
@@ -696,7 +696,7 @@ def http_multi_server(evt, numrequests, requestHandler=None):
         requestHandler = xmlrpc.server.SimpleXMLRPCRequestHandler
 
     class MyRequestHandler(requestHandler):
-        rpc_paths = []
+        rpc_paths = []  # noqa: RUF012
 
     class BrokenDispatcher:
         def _marshaled_dispatch(self, data, dispatch_method=None, path=None):
@@ -714,7 +714,7 @@ def http_multi_server(evt, numrequests, requestHandler=None):
         # trying to connect to "localhost" using all address families, which
         # causes slowdown e.g. on vista which supports AF_INET6.  The server listens
         # on AF_INET only.
-        URL = "http://%s:%d" % (ADDR, PORT)
+        URL = "http://%s:%d" % (ADDR, PORT)  # noqa: UP031
         serv.server_activate()
         paths = [
             "/foo",
@@ -828,7 +828,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_nonascii(self):
         start_string = "P\N{LATIN SMALL LETTER Y WITH CIRCUMFLEX}t"
@@ -840,7 +840,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_client_encoding(self):
         start_string = "\u20ac"
@@ -853,7 +853,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_nonascii_methodname(self):
         try:
@@ -863,7 +863,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_404(self):
         # send POST with http.client, it should return 404 header and
@@ -876,20 +876,18 @@ class SimpleServerTestCase(BaseServerTestCase):
         self.assertEqual(response.reason, "Not Found")
 
     def test_introspection1(self):
-        expected_methods = set(
-            [
-                "pow",
-                "div",
-                "my_function",
-                "add",
-                "têšt",
-                "system.listMethods",
-                "system.methodHelp",
-                "system.methodSignature",
-                "system.multicall",
-                "Fixture",
-            ]
-        )
+        expected_methods = {
+            "pow",
+            "div",
+            "my_function",
+            "add",
+            "têšt",
+            "system.listMethods",
+            "system.methodHelp",
+            "system.methodSignature",
+            "system.multicall",
+            "Fixture",
+        }
         try:
             p = xmlrpclib.ServerProxy(URL)
             meth = p.system.listMethods()
@@ -898,7 +896,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_introspection2(self):
         try:
@@ -910,7 +908,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     @make_request_and_skipIf(
         sys.flags.optimize >= 2, "Docstrings are omitted with -O2 and above"
@@ -925,7 +923,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_introspection4(self):
         # the SimpleXMLRPCServer doesn't support signatures, but
@@ -938,7 +936,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_multicall(self):
         try:
@@ -955,7 +953,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_non_existing_multicall(self):
         try:
@@ -977,7 +975,7 @@ class SimpleServerTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_dotted_attribute(self):
         # Raises an AttributeError because private methods are not allowed.
@@ -992,12 +990,12 @@ class SimpleServerTestCase(BaseServerTestCase):
 
     def test_allow_dotted_names_true(self):
         # XXX also need allow_dotted_names_false test.
-        server = xmlrpclib.ServerProxy("http://%s:%d/RPC2" % (ADDR, PORT))
+        server = xmlrpclib.ServerProxy("http://%s:%d/RPC2" % (ADDR, PORT))  # noqa: UP031
         data = server.Fixture.getData()
         self.assertEqual(data, "42")
 
     def test_unicode_host(self):
-        server = xmlrpclib.ServerProxy("http://%s:%d/RPC2" % (ADDR, PORT))
+        server = xmlrpclib.ServerProxy("http://%s:%d/RPC2" % (ADDR, PORT))  # noqa: UP031
         self.assertEqual(server.add("a", "\xe9"), "a\xe9")
 
     def test_partial_post(self):
@@ -1043,7 +1041,7 @@ class SimpleServerEncodingTestCase(BaseServerTestCase):
             # ignore failures due to non-blocking socket unavailable errors.
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
 
 class MultiPathServerTestCase(BaseServerTestCase):
@@ -1105,7 +1103,7 @@ class BaseKeepaliveServerTestCase(BaseServerTestCase):
     class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
         parentClass = xmlrpc.server.SimpleXMLRPCRequestHandler
         protocol_version = "HTTP/1.1"
-        myRequests = []
+        myRequests = []  # noqa: RUF012
 
         def handle(self):
             self.myRequests.append([])
@@ -1276,7 +1274,7 @@ class HeadersServerTestCase(BaseServerTestCase):
             return super().do_POST()
 
     requestHandler = RequestHandler
-    standard_headers = [
+    standard_headers = [  # noqa: RUF012
         "Host",
         "Accept-Encoding",
         "Content-Type",
@@ -1401,7 +1399,7 @@ class FailingServerTestCase(unittest.TestCase):
             # ignore failures due to non-blocking socket 'unavailable' errors
             if not is_unavailable_exception(e):
                 # protocol error; provide additional information in test output
-                self.fail("%s\n%s" % (e, getattr(e, "headers", "")))
+                self.fail("{}\n{}".format(e, getattr(e, "headers", "")))
 
     def test_fail_no_info(self):
         # use the broken message class
@@ -1530,7 +1528,7 @@ class UseBuiltinTypesTestCase(unittest.TestCase):
         # dispatch of datetime argument as datetime.datetime instances.
         self.log = []
         expected_bytes = b"my dog has fleas"
-        expected_date = datetime.datetime(2008, 5, 26, 18, 25, 12)
+        expected_date = datetime.datetime(2008, 5, 26, 18, 25, 12)  # noqa: DTZ001
         marshaled = xmlrpclib.dumps((expected_bytes, expected_date), "foobar")
 
         def foobar(*args):

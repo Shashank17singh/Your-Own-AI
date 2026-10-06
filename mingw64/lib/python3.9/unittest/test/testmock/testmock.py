@@ -55,7 +55,7 @@ def something(a):
 
 class MockTest(unittest.TestCase):
     def test_all(self):
-        exec("from unittest.mock import *")
+        exec("from unittest.mock import *")  # noqa: S102
 
     def test_constructor(self):
         mock = Mock()
@@ -105,16 +105,16 @@ class MockTest(unittest.TestCase):
     def test_repr(self):
         mock = Mock(name="foo")
         self.assertIn("foo", repr(mock))
-        self.assertIn("'%s'" % id(mock), repr(mock))
+        self.assertIn(f"'{id(mock)}'", repr(mock))
         mocks = [(Mock(), "mock"), (Mock(name="bar"), "bar")]
         for mock, name in mocks:
-            self.assertIn("%s.bar" % name, repr(mock.bar))
-            self.assertIn("%s.foo()" % name, repr(mock.foo()))
-            self.assertIn("%s.foo().bing" % name, repr(mock.foo().bing))
-            self.assertIn("%s()" % name, repr(mock()))
-            self.assertIn("%s()()" % name, repr(mock()()))
+            self.assertIn(f"{name}.bar", repr(mock.bar))
+            self.assertIn(f"{name}.foo()", repr(mock.foo()))
+            self.assertIn(f"{name}.foo().bing", repr(mock.foo().bing))
+            self.assertIn(f"{name}()", repr(mock()))
+            self.assertIn(f"{name}()()", repr(mock()()))
             self.assertIn(
-                "%s()().foo.bar.baz().bing" % name, repr(mock()().foo.bar.baz().bing)
+                f"{name}()().foo.bar.baz().bing", repr(mock()().foo.bar.baz().bing)
             )
 
     def test_repr_with_spec(self):
@@ -222,8 +222,7 @@ class MockTest(unittest.TestCase):
         self.assertEqual(
             mock.method_calls,
             [],
-            "method_calls not initialised correctly: %r != %r"
-            % (mock.method_calls, []),
+            f"method_calls not initialised correctly: {mock.method_calls!r} != {[]!r}",
         )
         self.assertEqual(mock.mock_calls, [])
         self.assertEqual(
@@ -305,8 +304,8 @@ class MockTest(unittest.TestCase):
 
     def test_calls_equal_with_any(self):
         mm = mock.MagicMock()
-        self.assertTrue(mm == mm)
-        self.assertFalse(mm != mm)
+        self.assertTrue(mm == mm)  # noqa: PLR0124
+        self.assertFalse(mm != mm)  # noqa: PLR0124
         self.assertFalse(mm == mock.MagicMock())
         self.assertTrue(mm != mock.MagicMock())
         self.assertTrue(mm == mock.ANY)
@@ -484,7 +483,7 @@ class MockTest(unittest.TestCase):
         for spec in ["something"], ("something",):
             for arg in "spec", "spec_set":
                 mock = Mock(**{arg: spec})
-                mock.something
+                mock.something  # noqa: B018
                 self.assertRaisesRegex(
                     AttributeError,
                     "Mock object has no attribute 'something_else'",
@@ -502,9 +501,9 @@ class MockTest(unittest.TestCase):
                 pass
 
         def test_attributes(mock):
-            mock.x
-            mock.y
-            mock.__something__
+            mock.x  # noqa: B018
+            mock.y  # noqa: B018
+            mock.__something__  # noqa: B018
             self.assertRaisesRegex(
                 AttributeError, "Mock object has no attribute 'z'", getattr, mock, "z"
             )
@@ -810,9 +809,9 @@ class MockTest(unittest.TestCase):
     def test_dir(self):
         mock = Mock()
         attrs = set(dir(mock))
-        type_attrs = set([m for m in dir(Mock) if not m.startswith("_")])
+        type_attrs = {m for m in dir(Mock) if not m.startswith("_")}
         self.assertEqual(set(), type_attrs - attrs)
-        mock.a, mock.b
+        mock.a, mock.b  # noqa: B018
         self.assertIn("a", dir(mock))
         self.assertIn("b", dir(mock))
         mock.c = mock.d = None
@@ -928,20 +927,20 @@ class MockTest(unittest.TestCase):
         self.assertEqual(mock.foo.mock_calls, [("", (), {})])
         mock = MagicMock()
         mock().foo(1, 2, 3, a=4, b=5)
-        expected = [("", (), {}), ("().foo", (1, 2, 3), dict(a=4, b=5))]
+        expected = [("", (), {}), ("().foo", (1, 2, 3), {"a": 4, "b": 5})]
         self.assertEqual(mock.mock_calls, expected)
         self.assertEqual(
-            mock.return_value.foo.mock_calls, [("", (1, 2, 3), dict(a=4, b=5))]
+            mock.return_value.foo.mock_calls, [("", (1, 2, 3), {"a": 4, "b": 5})]
         )
         self.assertEqual(
-            mock.return_value.mock_calls, [("foo", (1, 2, 3), dict(a=4, b=5))]
+            mock.return_value.mock_calls, [("foo", (1, 2, 3), {"a": 4, "b": 5})]
         )
         mock = MagicMock()
         mock().foo.bar().baz()
         expected = [("", (), {}), ("().foo.bar", (), {}), ("().foo.bar().baz", (), {})]
         self.assertEqual(mock.mock_calls, expected)
         self.assertEqual(mock().mock_calls, call.foo.bar().baz().call_list())
-        for kwargs in dict(), dict(name="bar"):
+        for kwargs in {}, {"name": "bar"}:
             mock = MagicMock(**kwargs)
             int(mock.foo)
             expected = [("foo.__int__", (), {})]
@@ -1053,7 +1052,7 @@ class MockTest(unittest.TestCase):
                 self.assertIsInstance(attr, list)
                 self.assertEqual(attr, [])
 
-        for mock in mocks:
+        for mock in mocks:  # noqa: F402
             assert_attrs(mock)
             if callable(mock):
                 mock()
@@ -1073,8 +1072,8 @@ class MockTest(unittest.TestCase):
         mock(2, b=4)
         self.assertEqual(len(mock.call_args), 2)
         self.assertEqual(mock.call_args.args, (2,))
-        self.assertEqual(mock.call_args.kwargs, dict(b=4))
-        expected_list = [((1,), dict(a=3)), ((2,), dict(b=4))]
+        self.assertEqual(mock.call_args.kwargs, {"b": 4})
+        expected_list = [((1,), {"a": 3}), ((2,), {"b": 4})]
         for expected, call_args in zip(expected_list, mock.call_args_list):
             self.assertEqual(len(call_args), 2)
             self.assertEqual(expected[0], call_args[0])
@@ -1185,7 +1184,7 @@ class MockTest(unittest.TestCase):
         kalls2.extend(call.spam().baz(a=3).call_list())
         kalls2.extend(call.bam(set(), foo={}).fish([1]).call_list())
         mocks = []
-        for mock in Mock(), MagicMock():
+        for mock in Mock(), MagicMock():  # noqa: F402
             mock(1, 2)
             mock(a=3)
             mock(3, 4)
@@ -1490,13 +1489,13 @@ class MockTest(unittest.TestCase):
             klasses.append(lambda K=Klass: K(spec=Anything))
             klasses.append(lambda K=Klass: K(spec_set=Anything))
         for Klass in klasses:
-            for kwargs in dict(), dict(spec_set=True):
+            for kwargs in {}, {"spec_set": True}:
                 mock = Klass()
-                mock.one, mock.two, mock.three
+                mock.one, mock.two, mock.three  # noqa: B018
                 for One, Two in [(_One, _Two), (["one"], ["two"])]:
-                    for kwargs in dict(), dict(spec_set=True):
+                    for kwargs in {}, {"spec_set": True}:
                         mock.mock_add_spec(One, **kwargs)
-                        mock.one
+                        mock.one  # noqa: B018
                         self.assertRaises(AttributeError, getattr, mock, "two")
                         self.assertRaises(AttributeError, getattr, mock, "three")
                         if "spec_set" in kwargs:
@@ -1505,7 +1504,7 @@ class MockTest(unittest.TestCase):
                             )
                         mock.mock_add_spec(Two, **kwargs)
                         self.assertRaises(AttributeError, getattr, mock, "one")
-                        mock.two
+                        mock.two  # noqa: B018
                         self.assertRaises(AttributeError, getattr, mock, "three")
                         if "spec_set" in kwargs:
                             self.assertRaises(
@@ -1523,7 +1522,7 @@ class MockTest(unittest.TestCase):
             mock.__int__.return_value = 4
             mock.mock_add_spec(int)
             self.assertEqual(int(mock), 4)
-            self.assertRaises(TypeError, lambda: mock["foo"])
+            self.assertRaises(TypeError, lambda: mock["foo"])  # noqa: B023
 
     def test_adding_child_mock(self):
         for Klass in (
@@ -1626,7 +1625,7 @@ class MockTest(unittest.TestCase):
             mock_write.side_effect = OSError("Test 2 Error")
 
             def attempt():
-                tempfile.NamedTemporaryFile().write("asd")
+                tempfile.NamedTemporaryFile().write("asd")  # noqa: SIM115
 
             self.assertRaises(OSError, attempt)
 
@@ -1743,7 +1742,7 @@ class MockTest(unittest.TestCase):
             mocked.assert_has_calls([call(), call().meth(1, 2, 3, d=4)])
 
     def test_attribute_deletion(self):
-        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):
+        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):  # noqa: F402
             self.assertTrue(hasattr(mock, "m"))
             del mock.m
             self.assertFalse(hasattr(mock, "m"))
@@ -1752,7 +1751,7 @@ class MockTest(unittest.TestCase):
             self.assertRaises(AttributeError, getattr, mock, "f")
 
     def test_mock_does_not_raise_on_repeated_attribute_deletion(self):
-        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):
+        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):  # noqa: F402
             mock.foo = 3
             self.assertTrue(hasattr(mock, "foo"))
             self.assertEqual(mock.foo, 3)
@@ -1765,7 +1764,7 @@ class MockTest(unittest.TestCase):
             self.assertFalse(hasattr(mock, "foo"))
 
     def test_mock_raises_when_deleting_nonexistent_attribute(self):
-        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):
+        for mock in (Mock(), MagicMock(), NonCallableMagicMock(), NonCallableMock()):  # noqa: F402
             del mock.foo
             with self.assertRaises(AttributeError):
                 del mock.foo
@@ -1778,11 +1777,11 @@ class MockTest(unittest.TestCase):
         self.assertFalse(hasattr(mock, "child"))
 
     def test_class_assignable(self):
-        for mock in Mock(), MagicMock():
+        for mock in Mock(), MagicMock():  # noqa: F402
             self.assertNotIsInstance(mock, int)
             mock.__class__ = int
             self.assertIsInstance(mock, int)
-            mock.foo
+            mock.foo  # noqa: B018
 
     def test_name_attribute_of_call(self):
         self.assertIsNotNone(call.name)

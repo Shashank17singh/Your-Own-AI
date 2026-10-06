@@ -27,7 +27,7 @@ class ZzDummy:
     """Prepend or remove initial text from selected lines."""
 
     # Extend the format menu.
-    menudefs = [
+    menudefs = [  # noqa: RUF012
         (
             "format",
             [

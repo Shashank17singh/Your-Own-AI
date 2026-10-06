@@ -240,7 +240,7 @@ class PyCompileCLITestCase(unittest.TestCase):
         # subprocess.run() instead of spawn_python() and its friends to test
         # stdin support of the CLI.
         if args and args[0] == "-" and "input" in kwargs:
-            return subprocess.run(
+            return subprocess.run(  # noqa: PLW1510
                 [sys.executable, "-m", "py_compile", "-"],
                 input=kwargs["input"].encode(),
                 capture_output=True,

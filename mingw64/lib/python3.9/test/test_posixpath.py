@@ -423,16 +423,16 @@ class PosixPathTest(unittest.TestCase):
         try:
             os.mkdir(ABSTFN)
             for i in range(depth):
-                os.symlink("/".join(["%d" % i] * 10), ABSTFN + "/%d" % (i + 1))
+                os.symlink("/".join(["%d" % i] * 10), ABSTFN + "/%d" % (i + 1))  # noqa: UP031
             os.symlink(".", ABSTFN + "/0")
-            self.assertEqual(realpath(ABSTFN + "/%d" % depth), ABSTFN)
+            self.assertEqual(realpath(ABSTFN + "/%d" % depth), ABSTFN)  # noqa: UP031
 
             # Test using relative path as well.
             with support.change_cwd(ABSTFN):
-                self.assertEqual(realpath("%d" % depth), ABSTFN)
+                self.assertEqual(realpath("%d" % depth), ABSTFN)  # noqa: UP031
         finally:
             for i in range(depth + 1):
-                support.unlink(ABSTFN + "/%d" % i)
+                support.unlink(ABSTFN + "/%d" % i)  # noqa: UP031
             safe_rmdir(ABSTFN)
 
     @unittest.skipUnless(hasattr(os, "symlink"), "Missing symlink implementation")
@@ -630,7 +630,7 @@ class PosixPathTest(unittest.TestCase):
 
 class PosixCommonTest(test_genericpath.CommonTest, unittest.TestCase):
     pathmodule = posixpath
-    attributes = ["relpath", "samefile", "sameopenfile", "samestat"]
+    attributes = ["relpath", "samefile", "sameopenfile", "samestat"]  # noqa: RUF012
 
 
 class PathLikeTests(unittest.TestCase):

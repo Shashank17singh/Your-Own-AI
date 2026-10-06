@@ -55,7 +55,7 @@ def escape(s):
     )
 
 
-__version__ = "%d.%d" % sys.version_info[:2]
+__version__ = "%d.%d" % sys.version_info[:2]  # noqa: UP031
 MAXINT = 2**31 - 1
 MININT = -(2**31)
 PARSE_ERROR = -32700
@@ -89,11 +89,8 @@ class ProtocolError(Error):
         self.headers = headers
 
     def __repr__(self):
-        return "<%s for %s: %s %s>" % (
-            self.__class__.__name__,
-            self.url,
-            self.errcode,
-            self.errmsg,
+        return (
+            f"<{self.__class__.__name__} for {self.url}: {self.errcode} {self.errmsg}>"
         )
 
 
@@ -110,15 +107,11 @@ class Fault(Error):
         self.faultString = faultString
 
     def __repr__(self):
-        return "<%s %s: %r>" % (
-            self.__class__.__name__,
-            self.faultCode,
-            self.faultString,
-        )
+        return f"<{self.__class__.__name__} {self.faultCode}: {self.faultString!r}>"
 
 
 boolean = Boolean = bool
-_day0 = datetime(1, 1, 1)
+_day0 = datetime(1, 1, 1)  # noqa: DTZ001
 if _day0.strftime("%Y") == "0001":  # Mac OS X
 
     def _iso8601_format(value):
@@ -145,7 +138,7 @@ def _strftime(value):
         if value == 0:
             value = time.time()
         value = time.localtime(value)
-    return "%04d%02d%02dT%02d:%02d:%02d" % value[:6]
+    return "%04d%02d%02dT%02d:%02d:%02d" % value[:6]  # noqa: UP031
 
 
 class DateTime:
@@ -215,7 +208,7 @@ class DateTime:
         return self.value
 
     def __repr__(self):
-        return "<%s %r at %#x>" % (self.__class__.__name__, self.value, id(self))
+        return f"<{self.__class__.__name__} {self.value!r} at {id(self):#x}>"
 
     def decode(self, data):
         self.value = str(data).strip()
@@ -233,7 +226,7 @@ def _datetime(data):
 
 
 def _datetime_type(data):
-    return datetime.strptime(data, "%Y%m%dT%H:%M:%S")
+    return datetime.strptime(data, "%Y%m%dT%H:%M:%S")  # noqa: DTZ007
 
 
 class Binary:
@@ -245,7 +238,7 @@ class Binary:
         else:
             if not isinstance(data, (bytes, bytearray)):
                 raise TypeError(
-                    "expected bytes or bytearray, not %s" % data.__class__.__name__
+                    f"expected bytes or bytearray, not {data.__class__.__name__}"
                 )
             data = bytes(data)  # Make a copy of the bytes!
         self.data = data
@@ -315,7 +308,7 @@ class Marshaller:
         self.encoding = encoding
         self.allow_none = allow_none
 
-    dispatch = {}
+    dispatch = {}  # noqa: RUF012
 
     def dumps(self, values):
         out = []
@@ -343,10 +336,10 @@ class Marshaller:
             f = self.dispatch[type(value)]
         except KeyError:
             if not hasattr(value, "__dict__"):
-                raise TypeError("cannot marshal %s objects" % type(value))
+                raise TypeError(f"cannot marshal {type(value)} objects")
             for type_ in type(value).__mro__:
-                if type_ in self.dispatch.keys():
-                    raise TypeError("cannot marshal %s objects" % type(value))
+                if type_ in self.dispatch:
+                    raise TypeError(f"cannot marshal {type(value)} objects")
             f = self.dispatch["_arbitrary_instance"]
         f(self, value, write)
 
@@ -423,7 +416,7 @@ class Marshaller:
             write("<member>\n")
             if not isinstance(k, str):
                 raise TypeError("dictionary key must be string")
-            write("<name>%s</name>\n" % escape(k))
+            write(f"<name>{escape(k)}</name>\n")
             dump(v, write)
             write("</member>\n")
         write("</struct></value>\n")
@@ -491,7 +484,7 @@ class Unmarshaller:
             self._marks.append(len(self._stack))
         self._data = []
         if self._value and tag not in self.dispatch:
-            raise ResponseError("unknown tag %r" % tag)
+            raise ResponseError(f"unknown tag {tag!r}")
         self._value = tag == "value"
 
     def data(self, text):
@@ -521,7 +514,7 @@ class Unmarshaller:
                 return  # unknown tag ?
         return f(self, data)
 
-    dispatch = {}
+    dispatch = {}  # noqa: RUF012
 
     def end_nil(self, data):
         self.append(None)
@@ -641,7 +634,7 @@ class _MultiCallMethod:
         self.__name = name
 
     def __getattr__(self, name):
-        return _MultiCallMethod(self.__call_list, "%s.%s" % (self.__name, name))
+        return _MultiCallMethod(self.__call_list, f"{self.__name}.{name}")
 
     def __call__(self, *args):
         self.__call_list.append((self.__name, args))
@@ -681,7 +674,7 @@ class MultiCall:
         self.__call_list = []
 
     def __repr__(self):
-        return "<%s at %#x>" % (self.__class__.__name__, id(self))
+        return f"<{self.__class__.__name__} at {id(self):#x}>"
 
     def __getattr__(self, name):
         return _MultiCallMethod(self.__call_list, name)
@@ -756,7 +749,7 @@ def dumps(
         m = Marshaller(encoding, allow_none)
     data = m.dumps(params)
     if encoding != "utf-8":
-        xmlheader = "<?xml version='1.0' encoding='%s'?>\n" % str(encoding)
+        xmlheader = f"<?xml version='1.0' encoding='{encoding!s}'?>\n"
     else:
         xmlheader = "<?xml version='1.0'?>\n"  # utf-8 is default
     if methodname:
@@ -843,7 +836,7 @@ class _Method:
         self.__name = name
 
     def __getattr__(self, name):
-        return _Method(self.__send, "%s.%s" % (self.__name, name))
+        return _Method(self.__send, f"{self.__name}.{name}")
 
     def __call__(self, *args):
         return self.__send(self.__name, args)
@@ -852,7 +845,7 @@ class _Method:
 class Transport:
     """Handles an HTTP transaction to an XML-RPC server."""
 
-    user_agent = "Python-xmlrpc/%s" % __version__
+    user_agent = f"Python-xmlrpc/{__version__}"
     accept_gzip_encoding = True
     encode_threshold = None  # None = don't encode
 
@@ -918,12 +911,12 @@ class Transport:
     def make_connection(self, host):
         if self._connection and host == self._connection[0]:
             return self._connection[1]
-        chost, self._extra_headers, x509 = self.get_host_info(host)
+        chost, self._extra_headers, _x509 = self.get_host_info(host)
         self._connection = host, http.client.HTTPConnection(chost)
         return self._connection[1]
 
     def close(self):
-        host, connection = self._connection
+        _host, connection = self._connection
         if connection:
             self._connection = (None, None)
             connection.close()
@@ -1080,7 +1073,7 @@ class ServerProxy:
         return response
 
     def __repr__(self):
-        return "<%s for %s%s>" % (self.__class__.__name__, self.__host, self.__handler)
+        return f"<{self.__class__.__name__} for {self.__host}{self.__handler}>"
 
     def __getattr__(self, name):
         return _Method(self.__request, name)
@@ -1093,7 +1086,7 @@ class ServerProxy:
             return self.__close
         elif attr == "transport":
             return self.__transport
-        raise AttributeError("Attribute %r not found" % (attr,))
+        raise AttributeError(f"Attribute {attr!r} not found")
 
     def __enter__(self):
         return self

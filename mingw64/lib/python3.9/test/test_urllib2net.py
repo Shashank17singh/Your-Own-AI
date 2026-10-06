@@ -120,7 +120,7 @@ class OtherNetworkTests(unittest.TestCase):
 
     def test_file(self):
         TESTFN = support.TESTFN
-        f = open(TESTFN, "w")
+        f = open(TESTFN, "w")  # noqa: SIM115
         try:
             f.write("hi there\n")
             f.close()
@@ -235,10 +235,7 @@ class OtherNetworkTests(unittest.TestCase):
                     # urllib.error.URLError is a subclass of OSError
                     except OSError as err:
                         if expected_err:
-                            msg = (
-                                "Didn't get expected error(s) %s for %s %s, got %s: %s"
-                                % (expected_err, url, req, type(err), err)
-                            )
+                            msg = f"Didn't get expected error(s) {expected_err} for {url} {req}, got {type(err)}: {err}"
                             self.assertIsInstance(err, expected_err, msg)
                         else:
                             raise
@@ -250,9 +247,9 @@ class OtherNetworkTests(unittest.TestCase):
                                 support.ioerror_peer_reset,
                             ):
                                 buf = f.read()
-                                debug("read %d bytes" % len(buf))
+                                debug("read %d bytes" % len(buf))  # noqa: UP031
                         except TimeoutError:
-                            print("<timeout: %s>" % url, file=sys.stderr)
+                            print(f"<timeout: {url}>", file=sys.stderr)
                         f.close()
                 time.sleep(0.1)
 

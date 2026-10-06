@@ -326,7 +326,7 @@ class BaseFutureTests:
 
         def func_repr(func):
             filename, lineno = test_utils.get_function_source(func)
-            text = "%s() at %s:%s" % (func.__qualname__, filename, lineno)
+            text = f"{func.__qualname__}() at {filename}:{lineno}"
             return re.escape(text)
 
         f_one_callbacks = self._new_future(loop=self.loop)
@@ -334,7 +334,7 @@ class BaseFutureTests:
         fake_repr = func_repr(_fakefunc)
         self.assertRegex(
             repr(f_one_callbacks),
-            r"<" + self.cls.__name__ + r" pending cb=\[%s\]>" % fake_repr,
+            r"<" + self.cls.__name__ + rf" pending cb=\[{fake_repr}\]>",
         )
         f_one_callbacks.cancel()
         self.assertEqual(repr(f_one_callbacks), f"<{self.cls.__name__} cancelled>")
@@ -346,9 +346,7 @@ class BaseFutureTests:
         last_repr = func_repr(last_cb)
         self.assertRegex(
             repr(f_two_callbacks),
-            r"<"
-            + self.cls.__name__
-            + r" pending cb=\[%s, %s\]>" % (first_repr, last_repr),
+            r"<" + self.cls.__name__ + rf" pending cb=\[{first_repr}, {last_repr}\]>",
         )
 
         f_many_callbacks = self._new_future(loop=self.loop)
@@ -356,10 +354,10 @@ class BaseFutureTests:
         for i in range(8):
             f_many_callbacks.add_done_callback(_fakefunc)
         f_many_callbacks.add_done_callback(last_cb)
-        cb_regex = r"%s, <8 more>, %s" % (first_repr, last_repr)
+        cb_regex = rf"{first_repr}, <8 more>, {last_repr}"
         self.assertRegex(
             repr(f_many_callbacks),
-            r"<" + self.cls.__name__ + r" pending cb=\[%s\]>" % cb_regex,
+            r"<" + self.cls.__name__ + rf" pending cb=\[{cb_regex}\]>",
         )
         f_many_callbacks.cancel()
         self.assertEqual(repr(f_many_callbacks), f"<{self.cls.__name__} cancelled>")
@@ -397,7 +395,7 @@ class BaseFutureTests:
             yield from fut
 
         def test():
-            arg1, arg2 = coro()
+            _arg1, _arg2 = coro()
 
         with self.assertRaisesRegex(RuntimeError, "await wasn't used"):
             test()
@@ -530,7 +528,7 @@ class BaseFutureTests:
         def memory_error():
             try:
                 raise MemoryError()
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 return exc
 
         exc = memory_error()
@@ -541,13 +539,9 @@ class BaseFutureTests:
         test_utils.run_briefly(self.loop)
         support.gc_collect()
 
-        if sys.version_info >= (3, 4):
-            regex = f"^{self.cls.__name__} exception was never retrieved\n"
-            exc_info = (type(exc), exc, exc.__traceback__)
-            m_log.error.assert_called_once_with(mock.ANY, exc_info=exc_info)
-        else:
-            regex = r"^Future/Task exception was never retrieved\n"
-            m_log.error.assert_called_once_with(mock.ANY, exc_info=False)
+        regex = f"^{self.cls.__name__} exception was never retrieved\n"
+        exc_info = (type(exc), exc, exc.__traceback__)
+        m_log.error.assert_called_once_with(mock.ANY, exc_info=exc_info)
         message = m_log.error.call_args[0][0]
         self.assertRegex(message, re.compile(regex, re.DOTALL))
 

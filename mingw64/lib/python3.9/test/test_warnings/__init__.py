@@ -20,7 +20,7 @@ Py_DEBUG = hasattr(sys, "gettotalrefcount")
 @contextmanager
 def warnings_state(module):
     """Use a specific warnings implementation in warning_tests."""
-    global __warningregistry__
+    global __warningregistry__  # noqa: PLW0602
     for to_clear in (sys, warning_tests):
         try:
             to_clear.__warningregistry__.clear()
@@ -99,13 +99,13 @@ class FilterTests(BaseTest):
     """Testing the filtering functionality."""
 
     def test_error(self):
-        with original_warnings.catch_warnings(module=self.module) as w:
+        with original_warnings.catch_warnings(module=self.module):
             self.module.resetwarnings()
             self.module.filterwarnings("error", category=UserWarning)
             self.assertRaises(UserWarning, self.module.warn, "FilterTests.test_error")
 
     def test_error_after_default(self):
-        with original_warnings.catch_warnings(module=self.module) as w:
+        with original_warnings.catch_warnings(module=self.module):
             self.module.resetwarnings()
             message = "FilterTests.test_ignore_after_default"
 
@@ -236,7 +236,7 @@ class FilterTests(BaseTest):
             self.assertEqual(len(w), 2)
 
     def test_inheritance(self):
-        with original_warnings.catch_warnings(module=self.module) as w:
+        with original_warnings.catch_warnings(module=self.module):
             self.module.resetwarnings()
             self.module.filterwarnings("error", category=Warning)
             self.assertRaises(
@@ -361,7 +361,7 @@ class WarnTests(BaseTest):
         with original_warnings.catch_warnings(record=True, module=self.module) as w:
             self.module.simplefilter("once")
             for i in range(4):
-                text = "multi %d" % i  # Different text on each call.
+                text = "multi %d" % i  # Different text on each call.  # noqa: UP031
                 self.module.warn(text)
                 self.assertEqual(str(w[-1].message), text)
                 self.assertIs(w[-1].category, UserWarning)
@@ -374,7 +374,7 @@ class WarnTests(BaseTest):
                 self.assertEqual(str(w[-1].message), str(UserWarning(ob)))
 
     def test_filename(self):
-        with warnings_state(self.module):
+        with warnings_state(self.module):  # noqa: SIM117
             with original_warnings.catch_warnings(record=True, module=self.module) as w:
                 warning_tests.inner("spam1")
                 self.assertEqual(os.path.basename(w[-1].filename), "stacklevel.py")
@@ -382,7 +382,7 @@ class WarnTests(BaseTest):
                 self.assertEqual(os.path.basename(w[-1].filename), "stacklevel.py")
 
     def test_stacklevel(self):
-        with warnings_state(self.module):
+        with warnings_state(self.module):  # noqa: SIM117
             with original_warnings.catch_warnings(record=True, module=self.module) as w:
                 warning_tests.inner("spam3", stacklevel=1)
                 self.assertEqual(os.path.basename(w[-1].filename), "stacklevel.py")
@@ -399,10 +399,10 @@ class WarnTests(BaseTest):
 
     def test_stacklevel_import(self):
         support.unload("test.test_warnings.data.import_warning")
-        with warnings_state(self.module):
+        with warnings_state(self.module):  # noqa: SIM117
             with original_warnings.catch_warnings(record=True, module=self.module) as w:
                 self.module.simplefilter("always")
-                import test.test_warnings.data.import_warning
+                import test.test_warnings.data.import_warning  # noqa: F401
 
                 self.assertEqual(len(w), 1)
                 self.assertEqual(w[0].filename, __file__)
@@ -416,7 +416,7 @@ class WarnTests(BaseTest):
         )
         with original_warnings.catch_warnings(record=True) as w:
             self.module.simplefilter("always", category=UserWarning)
-            exec(codeobj)
+            exec(codeobj)  # noqa: S102
         self.assertEqual(w[0].filename, filename)
 
     def test_warn_explicit_non_ascii_filename(self):
@@ -451,7 +451,7 @@ class WarnTests(BaseTest):
             """Warning with a bad format string for __str__."""
 
             def __str__(self):
-                return "A bad formatted string %(err)" % {"err": "there is no %(err)s"}
+                return "A bad formatted string %(err)" % {"err": "there is no %(err)s"}  # noqa: F501
 
         with self.assertRaises(ValueError):
             self.module.warn(BadStrWarning())
@@ -545,11 +545,11 @@ class PyWCmdLineTests(WCmdLineTests, unittest.TestCase):
     module = py_warnings
 
     def test_improper_option(self):
-        rc, out, err = assert_python_ok("-Wxxx", "-c", "pass")
+        _rc, _out, err = assert_python_ok("-Wxxx", "-c", "pass")
         self.assertIn(b"Invalid -W option ignored: invalid action: 'xxx'", err)
 
     def test_warnings_bootstrap(self):
-        rc, out, err = assert_python_ok(
+        _rc, out, err = assert_python_ok(
             "-Wi",
             "-c",
             "import sys; sys.modules['warnings'].warn('foo', RuntimeWarning)",
@@ -564,7 +564,7 @@ class _WarningsTests(BaseTest, unittest.TestCase):
     module = c_warnings
 
     def test_filter(self):
-        with original_warnings.catch_warnings(module=self.module) as w:
+        with original_warnings.catch_warnings(module=self.module):
             self.module.filterwarnings("error", "", Warning, "", 0)
             self.assertRaises(UserWarning, self.module.warn, "convert to error")
             del self.module.filters
@@ -612,7 +612,6 @@ class _WarningsTests(BaseTest, unittest.TestCase):
                 self.assertIn("version", registry)
                 del w[:]
                 del self.module.defaultaction
-                __warningregistry__ = {}
                 registry = {}
                 self.module.warn_explicit(
                     message, UserWarning, "<test>", 43, registry=registry
@@ -622,7 +621,6 @@ class _WarningsTests(BaseTest, unittest.TestCase):
                 self.assertEqual(len(registry), 2)
                 del w[:]
                 self.module.defaultaction = "ignore"
-                __warningregistry__ = {}
                 registry = {}
                 self.module.warn_explicit(
                     message, UserWarning, "<test>", 44, registry=registry
@@ -672,7 +670,7 @@ class _WarningsTests(BaseTest, unittest.TestCase):
             with support.captured_output("stderr") as stream:
                 warning_tests.inner(text)
                 result = stream.getvalue()
-        self.assertEqual(result.count("\n"), 2, "Too many newlines in %r" % result)
+        self.assertEqual(result.count("\n"), 2, f"Too many newlines in {result!r}")
         first_line, second_line = result.split("\n", 1)
         expected_file = os.path.splitext(warning_tests.__file__)[0] + ".py"
         first_line_parts = first_line.rsplit(":", 3)
@@ -699,7 +697,7 @@ class _WarningsTests(BaseTest, unittest.TestCase):
             globals_dict["__file__"] = oldfile
 
     def test_stderr_none(self):
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, stderr = assert_python_ok(
             "-c",
             "import sys; sys.stderr = None; "
             "import warnings; warnings.simplefilter('always'); "
@@ -759,7 +757,7 @@ class _WarningsTests(BaseTest, unittest.TestCase):
         wmod = self.module
         with original_warnings.catch_warnings(module=wmod):
             wmod.filterwarnings("once")
-            with support.swap_attr(wmod, "onceregistry", None):
+            with support.swap_attr(wmod, "onceregistry", None):  # noqa: SIM117
                 with self.assertRaises(TypeError):
                     wmod.warn_explicit("foo", Warning, "bar", 1, registry=None)
 
@@ -1016,10 +1014,10 @@ class CatchWarningTests(BaseTest):
             pass
         with support.check_warnings(("foo", UserWarning)):
             wmod.warn("foo")
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(AssertionError):  # noqa: SIM117
             with support.check_warnings(("", RuntimeWarning)):
                 pass
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(AssertionError):  # noqa: SIM117
             with support.check_warnings(("foo", RuntimeWarning)):
                 wmod.warn("foo")
 
@@ -1034,7 +1032,7 @@ class PyCatchWarningTests(CatchWarningTests, unittest.TestCase):
 
 class EnvironmentVariableTests(BaseTest):
     def test_single_warning(self):
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, _stderr = assert_python_ok(
             "-c",
             "import sys; sys.stdout.write(str(sys.warnoptions))",
             PYTHONWARNINGS="ignore::DeprecationWarning",
@@ -1043,7 +1041,7 @@ class EnvironmentVariableTests(BaseTest):
         self.assertEqual(stdout, b"['ignore::DeprecationWarning']")
 
     def test_comma_separated_warnings(self):
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, _stderr = assert_python_ok(
             "-c",
             "import sys; sys.stdout.write(str(sys.warnoptions))",
             PYTHONWARNINGS="ignore::DeprecationWarning,ignore::UnicodeWarning",
@@ -1054,7 +1052,7 @@ class EnvironmentVariableTests(BaseTest):
         )
 
     def test_envvar_and_command_line(self):
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, _stderr = assert_python_ok(
             "-Wignore::UnicodeWarning",
             "-c",
             "import sys; sys.stdout.write(str(sys.warnoptions))",
@@ -1066,7 +1064,7 @@ class EnvironmentVariableTests(BaseTest):
         )
 
     def test_conflicting_envvar_and_command_line(self):
-        rc, stdout, stderr = assert_python_failure(
+        _rc, stdout, stderr = assert_python_failure(
             "-Werror::DeprecationWarning",
             "-c",
             "import sys, warnings; sys.stdout.write(str(sys.warnoptions)); "
@@ -1108,7 +1106,7 @@ class EnvironmentVariableTests(BaseTest):
         else:
             code = ""
         code += "import warnings; [print(f) for f in warnings.filters]"
-        rc, stdout, stderr = assert_python_ok("-c", code, __isolated=True)
+        _rc, stdout, _stderr = assert_python_ok("-c", code, __isolated=True)
         stdout_lines = [line.strip() for line in stdout.splitlines()]
         self.maxDiff = None
         self.assertEqual(stdout_lines, expected_output)
@@ -1118,7 +1116,7 @@ class EnvironmentVariableTests(BaseTest):
     )
     def test_nonascii(self):
         PYTHONWARNINGS = "ignore:DeprecationWarning" + support.FS_NONASCII
-        rc, stdout, stderr = assert_python_ok(
+        _rc, stdout, _stderr = assert_python_ok(
             "-c",
             "import sys; sys.stdout.write(str(sys.warnoptions))",
             PYTHONIOENCODING="utf-8",
@@ -1153,16 +1151,16 @@ class A:
         warn("test")
 a=A()
         """
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, _out, err = assert_python_ok("-c", code)
         self.assertEqual(err.decode().rstrip(), "<string>:7: UserWarning: test")
 
     def test_late_resource_warning(self):
         expected = b"sys:1: ResourceWarning: unclosed file "
-        code = "f = open(%a)" % __file__
-        rc, out, err = assert_python_ok("-Wd", "-c", code)
+        code = f"f = open({__file__!a})"
+        rc, out, err = assert_python_ok("-Wd", "-c", code)  # noqa: RUF059
         self.assertTrue(err.startswith(expected), ascii(err))
-        code = "import warnings; f = open(%a)" % __file__
-        rc, out, err = assert_python_ok("-Wd", "-c", code)
+        code = f"import warnings; f = open({__file__!a})"
+        _rc, _out, err = assert_python_ok("-Wd", "-c", code)
         self.assertTrue(err.startswith(expected), ascii(err))
 
 

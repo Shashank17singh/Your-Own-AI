@@ -127,7 +127,7 @@ class SMTPChannel(asynchat.async_chat):
     DATA = 1
 
     command_size_limit = 512
-    command_size_limits = collections.defaultdict(lambda x=command_size_limit: x)
+    command_size_limits = collections.defaultdict(lambda x=command_size_limit: x)  # noqa: RUF012
 
     @property
     def max_command_size_limit(self):
@@ -182,7 +182,7 @@ class SMTPChannel(asynchat.async_chat):
                 raise
             return
         print("Peer:", repr(self.peer), file=DEBUGSTREAM)
-        self.push("220 %s %s" % (self.fqdn, __version__))
+        self.push(f"220 {self.fqdn} {__version__}")
 
     def _set_post_data_state(self):
         """Reset state variables to their post-DATA state."""
@@ -467,7 +467,7 @@ class SMTPChannel(asynchat.async_chat):
                 return
             method = getattr(self, "smtp_" + command, None)
             if not method:
-                self.push('500 Error: command "%s" not recognized' % command)
+                self.push(f'500 Error: command "{command}" not recognized')
                 return
             method(arg)
             return
@@ -514,7 +514,7 @@ class SMTPChannel(asynchat.async_chat):
             return
         self._set_rset_state()
         self.seen_greeting = arg
-        self.push("250 %s" % self.fqdn)
+        self.push(f"250 {self.fqdn}")
 
     def smtp_EHLO(self, arg):
         if not arg:
@@ -527,9 +527,9 @@ class SMTPChannel(asynchat.async_chat):
         self._set_rset_state()
         self.seen_greeting = arg
         self.extended_smtp = True
-        self.push("250-%s" % self.fqdn)
+        self.push(f"250-{self.fqdn}")
         if self.data_size_limit:
-            self.push("250-SIZE %s" % self.data_size_limit)
+            self.push(f"250-SIZE {self.data_size_limit}")
             self.command_size_limits["MAIL"] += 26
         if not self._decode_data:
             self.push("250-8BITMIME")
@@ -617,13 +617,13 @@ class SMTPChannel(asynchat.async_chat):
 
     def smtp_VRFY(self, arg):
         if arg:
-            address, params = self._getaddr(arg)
+            address, _params = self._getaddr(arg)
             if address:
                 self.push(
                     "252 Cannot VRFY user, but will accept message and attempt delivery"
                 )
             else:
-                self.push("502 Could not VRFY %s" % arg)
+                self.push(f"502 Could not VRFY {arg}")
         else:
             self.push("501 Syntax: VRFY <address>")
 
@@ -777,19 +777,13 @@ class SMTPServer(asyncore.dispatcher):
             raise
         else:
             print(
-                "%s started at %s\n\tLocal addr: %s\n\tRemote addr:%s"
-                % (
-                    self.__class__.__name__,
-                    time.ctime(time.time()),
-                    localaddr,
-                    remoteaddr,
-                ),
+                f"{self.__class__.__name__} started at {time.ctime(time.time())}\n\tLocal addr: {localaddr}\n\tRemote addr:{remoteaddr}",
                 file=DEBUGSTREAM,
             )
 
     def handle_accepted(self, conn, addr):
-        print("Incoming connection from %s" % repr(addr), file=DEBUGSTREAM)
-        channel = self.channel_class(
+        print(f"Incoming connection from {addr!r}", file=DEBUGSTREAM)
+        self.channel_class(
             self,
             conn,
             addr,
@@ -856,9 +850,9 @@ class DebuggingServer(SMTPServer):
         print("---------- MESSAGE FOLLOWS ----------")
         if kwargs:
             if kwargs.get("mail_options"):
-                print("mail options: %s" % kwargs["mail_options"])
+                print("mail options: {}".format(kwargs["mail_options"]))
             if kwargs.get("rcpt_options"):
-                print("rcpt options: %s\n" % kwargs["rcpt_options"])
+                print("rcpt options: {}\n".format(kwargs["rcpt_options"]))
         self._print_message_content(peer, data)
         print("------------ END MESSAGE ------------")
 
@@ -877,7 +871,7 @@ class PureProxy(SMTPServer):
             if not line:
                 break
             i += 1
-        lines.insert(i, "X-Peer: %s" % peer[0])
+        lines.insert(i, f"X-Peer: {peer[0]}")
         data = NEWLINE.join(lines)
         refused = self._deliver(mailfrom, rcpttos, data)
         # TBD: what to do with refused addresses?
@@ -1040,7 +1034,7 @@ def parseargs():
             try:
                 int_size = int(arg)
                 options.size_limit = int_size
-            except:
+            except:  # noqa: E722
                 print("Invalid size: " + arg, file=sys.stderr)
                 sys.exit(1)
 
@@ -1055,25 +1049,25 @@ def parseargs():
         localspec = args[0]
         remotespec = args[1]
     else:
-        usage(1, "Invalid arguments: %s" % COMMASPACE.join(args))
+        usage(1, f"Invalid arguments: {COMMASPACE.join(args)}")
 
     # split into host/port pairs
     i = localspec.find(":")
     if i < 0:
-        usage(1, "Bad local spec: %s" % localspec)
+        usage(1, f"Bad local spec: {localspec}")
     options.localhost = localspec[:i]
     try:
         options.localport = int(localspec[i + 1 :])
     except ValueError:
-        usage(1, "Bad local port: %s" % localspec)
+        usage(1, f"Bad local port: {localspec}")
     i = remotespec.find(":")
     if i < 0:
-        usage(1, "Bad remote spec: %s" % remotespec)
+        usage(1, f"Bad remote spec: {remotespec}")
     options.remotehost = remotespec[:i]
     try:
         options.remoteport = int(remotespec[i + 1 :])
     except ValueError:
-        usage(1, "Bad remote port: %s" % remotespec)
+        usage(1, f"Bad remote port: {remotespec}")
     return options
 
 

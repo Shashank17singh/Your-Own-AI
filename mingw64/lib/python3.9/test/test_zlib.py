@@ -293,7 +293,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
         for i in range(0, len(data), 256):
             bufs.append(co.compress(data[i : i + 256]))
         bufs.append(co.flush())
-        combuf = b"".join(bufs)
+        b"".join(bufs)
 
         dco = zlib.decompressobj()
         y1 = dco.decompress(b"".join(bufs))
@@ -324,7 +324,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
             self.assertEqual(
                 b"",
                 dco.unconsumed_tail,  ########
-                "(A) uct should be b'': not %d long" % len(dco.unconsumed_tail),
+                "(A) uct should be b'': not %d long" % len(dco.unconsumed_tail),  # noqa: UP031
             )
             self.assertEqual(b"", dco.unused_data)
         if flush:
@@ -339,7 +339,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
         self.assertEqual(
             b"",
             dco.unconsumed_tail,  ########
-            "(B) uct should be b'': not %d long" % len(dco.unconsumed_tail),
+            "(B) uct should be b'': not %d long" % len(dco.unconsumed_tail),  # noqa: UP031
         )
         self.assertEqual(b"", dco.unused_data)
         self.assertEqual(data, b"".join(bufs))
@@ -368,7 +368,8 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
             # max_length = 1 + len(cb)//10
             chunk = dco.decompress(cb, dcx)
             self.assertFalse(
-                len(chunk) > dcx, "chunk too big (%d>%d)" % (len(chunk), dcx)
+                len(chunk) > dcx,
+                "chunk too big (%d>%d)" % (len(chunk), dcx),  # noqa: UP031
             )
             bufs.append(chunk)
             cb = dco.unconsumed_tail
@@ -394,7 +395,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
             chunk = dco.decompress(cb, max_length)
             self.assertFalse(
                 len(chunk) > max_length,
-                "chunk too big (%d>%d)" % (len(chunk), max_length),
+                "chunk too big (%d>%d)" % (len(chunk), max_length),  # noqa: UP031
             )
             bufs.append(chunk)
             cb = dco.unconsumed_tail
@@ -405,7 +406,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
                 chunk = dco.decompress(b"", max_length)
                 self.assertFalse(
                     len(chunk) > max_length,
-                    "chunk too big (%d>%d)" % (len(chunk), max_length),
+                    "chunk too big (%d>%d)" % (len(chunk), max_length),  # noqa: UP031
                 )
                 bufs.append(chunk)
         self.assertEqual(data, b"".join(bufs), "Wrong data retrieved")
@@ -470,7 +471,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
                 self.assertEqual(
                     zlib.decompress(b"".join([a, b, c, d])),
                     data,
-                    ("Decompress failed: flush mode=%i, level=%i") % (sync, level),
+                    ("Decompress failed: flush mode=%i, level=%i") % (sync, level),  # noqa: UP031
                 )
                 del obj
 
@@ -625,7 +626,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
         dco = zlib.decompressobj()
         dco.decompress(data, 1)
         del data
-        data = zlib.compress(input2)
+        zlib.compress(input2)
         self.assertEqual(dco.flush(), input1[1:])
 
     @bigmemtest(size=_4G, memuse=1)

@@ -87,10 +87,10 @@ class AudioWriteTests(AudioTests):
     def test_write_context_manager_calls_close(self):
         # Close checks for a minimum header and will raise an error
         # if it is not set, so this proves that close is called.
-        with self.assertRaises(self.module.Error):
+        with self.assertRaises(self.module.Error):  # noqa: SIM117
             with self.module.open(TESTFN, "wb"):
                 pass
-        with self.assertRaises(self.module.Error):
+        with self.assertRaises(self.module.Error):  # noqa: SIM117
             with open(TESTFN, "wb") as testfile:
                 with self.module.open(testfile):
                     pass
@@ -210,7 +210,7 @@ class AudioWriteTests(AudioTests):
             self.check_file(testfile, self.nframes, self.frames)
 
     def test_unseekable_write(self):
-        with UnseekableIO(TESTFN, "wb") as testfile:
+        with UnseekableIO(TESTFN, "wb") as testfile:  # noqa: SIM117
             with self.create_file(testfile) as f:
                 f.setnframes(self.nframes)
                 f.writeframes(self.frames)

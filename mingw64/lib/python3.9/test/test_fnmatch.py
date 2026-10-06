@@ -11,12 +11,12 @@ class FnmatchTestCase(unittest.TestCase):
         if should_match:
             self.assertTrue(
                 fn(filename, pattern),
-                "expected %r to match pattern %r" % (filename, pattern),
+                f"expected {filename!r} to match pattern {pattern!r}",
             )
         else:
             self.assertFalse(
                 fn(filename, pattern),
-                "expected %r not to match pattern %r" % (filename, pattern),
+                f"expected {filename!r} not to match pattern {pattern!r}",
             )
 
     def test_fnmatch(self):
@@ -140,7 +140,7 @@ class TranslateTestCase(unittest.TestCase):
         r1 = translate("**a**a**a*")
         r2 = translate("**b**b**b*")
         r3 = translate("*c*c*c*")
-        fatre = "|".join([r1, r2, r3])
+        fatre = f"{r1}|{r2}|{r3}"
         self.assertTrue(re.match(fatre, "abaccad"))
         self.assertTrue(re.match(fatre, "abxbcab"))
         self.assertTrue(re.match(fatre, "cbabcaxc"))

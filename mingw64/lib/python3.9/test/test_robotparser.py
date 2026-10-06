@@ -12,8 +12,8 @@ from test.support import socket_helper
 class BaseRobotTest:
     robots_txt = ""
     agent = "test_robotparser"
-    good = []
-    bad = []
+    good = []  # noqa: RUF012
+    bad = []  # noqa: RUF012
     site_maps = None
 
     def setUp(self):
@@ -50,8 +50,8 @@ Disallow: /cyberworld/map/ # This is an infinite virtual URL space
 Disallow: /tmp/ # these will soon disappear
 Disallow: /foo.html
     """
-    good = ["/", "/test.html"]
-    bad = ["/cyberworld/map/index.html", "/tmp/xxx", "/foo.html"]
+    good = ["/", "/test.html"]  # noqa: RUF012
+    bad = ["/cyberworld/map/index.html", "/tmp/xxx", "/foo.html"]  # noqa: RUF012
 
 
 class CrawlDelayAndCustomAgentTest(BaseRobotTest, unittest.TestCase):
@@ -67,8 +67,8 @@ Disallow: /cyberworld/map/ # This is an infinite virtual URL space
 User-agent: cybermapper
 Disallow:
     """
-    good = ["/", "/test.html", ("cybermapper", "/cyberworld/map/index.html")]
-    bad = ["/cyberworld/map/index.html"]
+    good = ["/", "/test.html", ("cybermapper", "/cyberworld/map/index.html")]  # noqa: RUF012
+    bad = ["/cyberworld/map/index.html"]  # noqa: RUF012
 
 
 class SitemapTest(BaseRobotTest, unittest.TestCase):
@@ -82,9 +82,9 @@ Request-rate: 3/15
 Disallow: /cyberworld/map/ # This is an infinite virtual URL space
 
     """
-    good = ["/", "/test.html"]
-    bad = ["/cyberworld/map/index.html"]
-    site_maps = [
+    good = ["/", "/test.html"]  # noqa: RUF012
+    bad = ["/cyberworld/map/index.html"]  # noqa: RUF012
+    site_maps = [  # noqa: RUF012
         "http://www.gstatic.com/s2/sitemaps/profiles-sitemap.xml",
         "http://www.google.com/hostednews/sitemap_index.xml",
     ]
@@ -96,8 +96,8 @@ class RejectAllRobotsTest(BaseRobotTest, unittest.TestCase):
 User-agent: *
 Disallow: /
     """
-    good = []
-    bad = ["/cyberworld/map/index.html", "/", "/tmp/"]
+    good = []  # noqa: RUF012
+    bad = ["/cyberworld/map/index.html", "/", "/tmp/"]  # noqa: RUF012
 
 
 class BaseRequestRateTest(BaseRobotTest):
@@ -127,7 +127,7 @@ class BaseRequestRateTest(BaseRobotTest):
 
 class EmptyFileTest(BaseRequestRateTest, unittest.TestCase):
     robots_txt = ""
-    good = ["/foo"]
+    good = ["/foo"]  # noqa: RUF012
 
 
 class CrawlDelayAndRequestRateTest(BaseRequestRateTest, unittest.TestCase):
@@ -143,8 +143,8 @@ Disallow: /%7ejoe/index.html
     agent = "figtree"
     request_rate = urllib.robotparser.RequestRate(9, 30)
     crawl_delay = 3
-    good = [("figtree", "/foo.html")]
-    bad = [
+    good = [("figtree", "/foo.html")]  # noqa: RUF012
+    bad = [  # noqa: RUF012
         "/tmp",
         "/tmp.html",
         "/tmp/a.html",
@@ -169,8 +169,8 @@ Disallow: /%7ejoe/index.html
 Crawl-delay: 3
 Request-rate: 9/banana
     """
-    good = ["/tmp"]
-    bad = [
+    good = ["/tmp"]  # noqa: RUF012
+    bad = [  # noqa: RUF012
         "/tmp/",
         "/tmp/a.html",
         "/a%3cd.html",
@@ -188,9 +188,9 @@ User-Agent: *
 Disallow: /.
 Crawl-delay: pears
     """
-    good = ["/foo.html"]
+    good = ["/foo.html"]  # noqa: RUF012
     # bug report says "/" should be denied, but that is not in the RFC
-    bad = []
+    bad = []  # noqa: RUF012
 
 
 class AnotherInvalidRequestRateTest(BaseRobotTest, unittest.TestCase):
@@ -202,8 +202,8 @@ Disallow: /folder1/
 Request-rate: whale/banana
     """
     agent = "Googlebot"
-    good = ["/folder1/myfile.html"]
-    bad = ["/folder1/anotherfile.html"]
+    good = ["/folder1/myfile.html"]  # noqa: RUF012
+    bad = ["/folder1/anotherfile.html"]  # noqa: RUF012
 
 
 class UserAgentOrderingTest(BaseRobotTest, unittest.TestCase):
@@ -218,7 +218,7 @@ User-agent: Googlebot-Mobile
 Allow: /
     """
     agent = "Googlebot"
-    bad = ["/something.jpg"]
+    bad = ["/something.jpg"]  # noqa: RUF012
 
 
 class UserAgentGoogleMobileTest(UserAgentOrderingTest):
@@ -234,8 +234,8 @@ Allow: /folder1/myfile.html
 Disallow: /folder1/
     """
     agent = "googlebot"
-    good = ["/folder1/myfile.html"]
-    bad = ["/folder1/anotherfile.html"]
+    good = ["/folder1/myfile.html"]  # noqa: RUF012
+    bad = ["/folder1/anotherfile.html"]  # noqa: RUF012
 
 
 class DisallowQueryStringTest(BaseRobotTest, unittest.TestCase):
@@ -244,8 +244,8 @@ class DisallowQueryStringTest(BaseRobotTest, unittest.TestCase):
 User-agent: *
 Disallow: /some/path?name=value
     """
-    good = ["/some/path"]
-    bad = ["/some/path?name=value"]
+    good = ["/some/path"]  # noqa: RUF012
+    bad = ["/some/path?name=value"]  # noqa: RUF012
 
 
 class UseFirstUserAgentWildcardTest(BaseRobotTest, unittest.TestCase):
@@ -257,8 +257,8 @@ Disallow: /some/path
 User-agent: *
 Disallow: /another/path
     """
-    good = ["/another/path"]
-    bad = ["/some/path"]
+    good = ["/another/path"]  # noqa: RUF012
+    bad = ["/some/path"]  # noqa: RUF012
 
 
 class EmptyQueryStringTest(BaseRobotTest, unittest.TestCase):
@@ -268,8 +268,8 @@ User-agent: *
 Allow: /some/path?
 Disallow: /another/path?
     """
-    good = ["/some/path?"]
-    bad = ["/another/path?"]
+    good = ["/some/path?"]  # noqa: RUF012
+    bad = ["/another/path?"]  # noqa: RUF012
 
 
 class DefaultEntryTest(BaseRequestRateTest, unittest.TestCase):
@@ -281,8 +281,8 @@ Disallow: /cyberworld/map/
     """
     request_rate = urllib.robotparser.RequestRate(3, 15)
     crawl_delay = 1
-    good = ["/", "/test.html"]
-    bad = ["/cyberworld/map/index.html"]
+    good = ["/", "/test.html"]  # noqa: RUF012
+    bad = ["/cyberworld/map/index.html"]  # noqa: RUF012
 
 
 class StringFormattingTest(BaseRobotTest, unittest.TestCase):

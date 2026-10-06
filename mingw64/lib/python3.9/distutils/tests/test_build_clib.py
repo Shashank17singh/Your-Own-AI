@@ -14,7 +14,7 @@ class BuildCLibTestCase(
     support.TempdirManager, support.LoggingSilencer, unittest.TestCase
 ):
     def test_check_library_dist(self):
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)
 
         # 'libraries' option must be a list
@@ -48,7 +48,7 @@ class BuildCLibTestCase(
         cmd.check_library_list(libs)
 
     def test_get_source_files(self):
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)
 
         # "in 'libraries' option 'sources' must be present and must be
@@ -73,7 +73,7 @@ class BuildCLibTestCase(
 
     def test_build_libraries(self):
 
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)
 
         class FakeCompiler:
@@ -88,14 +88,14 @@ class BuildCLibTestCase(
         lib = [("name", {"sources": "notvalid"})]
         self.assertRaises(DistutilsSetupError, cmd.build_libraries, lib)
 
-        lib = [("name", {"sources": list()})]
+        lib = [("name", {"sources": []})]
         cmd.build_libraries(lib)
 
-        lib = [("name", {"sources": tuple()})]
+        lib = [("name", {"sources": ()})]
         cmd.build_libraries(lib)
 
     def test_finalize_options(self):
-        pkg_dir, dist = self.create_dist()
+        _pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)
 
         cmd.include_dirs = "one-dir"
@@ -127,7 +127,7 @@ class BuildCLibTestCase(
         # all commands are present on the system.
         ccmd = missing_compiler_executable()
         if ccmd is not None:
-            self.skipTest("The %r command is not found" % ccmd)
+            self.skipTest(f"The {ccmd!r} command is not found")
 
         # this should work
         cmd.run()

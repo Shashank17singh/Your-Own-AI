@@ -196,7 +196,7 @@ def isgeneratorfunction(obj):
 
     Generator function objects provide the same attributes as functions.
     See help(isfunction) for a list of attributes."""
-    return _has_code_flag(obj, CO_GENERATOR)
+    return _has_code_flag(obj, CO_GENERATOR)  # noqa: F821
 
 
 def iscoroutinefunction(obj):
@@ -204,7 +204,7 @@ def iscoroutinefunction(obj):
 
     Coroutine functions are defined with "async def" syntax.
     """
-    return _has_code_flag(obj, CO_COROUTINE)
+    return _has_code_flag(obj, CO_COROUTINE)  # noqa: F821
 
 
 def isasyncgenfunction(obj):
@@ -213,7 +213,7 @@ def isasyncgenfunction(obj):
     Asynchronous generator functions are defined with "async def"
     syntax and have "yield" expressions in their body.
     """
-    return _has_code_flag(obj, CO_ASYNC_GENERATOR)
+    return _has_code_flag(obj, CO_ASYNC_GENERATOR)  # noqa: F821
 
 
 def isasyncgen(object):
@@ -249,7 +249,7 @@ def isawaitable(object):
     return (
         isinstance(object, types.CoroutineType)
         or isinstance(object, types.GeneratorType)
-        and bool(object.gi_code.co_flags & CO_ITERABLE_COROUTINE)
+        and bool(object.gi_code.co_flags & CO_ITERABLE_COROUTINE)  # noqa: F821
         or isinstance(object, collections.abc.Awaitable)
     )
 
@@ -458,9 +458,9 @@ def classify_class_attrs(cls):
         if name not in processed:
             try:
                 if name == "__dict__":
-                    raise Exception("__dict__ is special, don't want the proxy")
+                    raise Exception("__dict__ is special, don't want the proxy")  # noqa: TRY002
                 get_obj = getattr(cls, name)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             else:
                 homecls = getattr(get_obj, "__objclass__", homecls)
@@ -1081,7 +1081,7 @@ def getsource(object):
     The argument may be a module, class, method, function, traceback, frame,
     or code object.  The source code is returned as a single string.  An
     OSError is raised if the source code cannot be retrieved."""
-    lines, lnum = getsourcelines(object)
+    lines, _lnum = getsourcelines(object)
     return "".join(lines)
 
 
@@ -1144,15 +1144,14 @@ def getargs(co):
     nkwargs = co.co_kwonlyargcount
     args = list(names[:nargs])
     kwonlyargs = list(names[nargs : nargs + nkwargs])
-    step = 0
 
     nargs += nkwargs
     varargs = None
-    if co.co_flags & CO_VARARGS:
+    if co.co_flags & CO_VARARGS:  # noqa: F821
         varargs = co.co_varnames[nargs]
         nargs = nargs + 1
     varkw = None
-    if co.co_flags & CO_VARKEYWORDS:
+    if co.co_flags & CO_VARKEYWORDS:  # noqa: F821
         varkw = co.co_varnames[nargs]
     return Arguments(args + kwonlyargs, varargs, varkw)
 
@@ -1186,7 +1185,7 @@ def getargspec(func):
         DeprecationWarning,
         stacklevel=2,
     )
-    args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, ann = getfullargspec(
+    args, varargs, varkw, defaults, kwonlyargs, _kwonlydefaults, ann = getfullargspec(
         func
     )
     if kwonlyargs or ann:
@@ -1340,8 +1339,8 @@ def formatargspec(
     varkw=None,
     defaults=None,
     kwonlyargs=(),
-    kwonlydefaults={},
-    annotations={},
+    kwonlydefaults=None,
+    annotations=None,
     formatarg=str,
     formatvarargs=lambda name: "*" + name,
     formatvarkw=lambda name: "**" + name,
@@ -1363,6 +1362,10 @@ def formatargspec(
 
     from warnings import warn
 
+    if annotations is None:
+        annotations = {}
+    if kwonlydefaults is None:
+        kwonlydefaults = {}
     warn(
         "`formatargspec` is deprecated since Python 3.5. Use `signature` and "
         "the `Signature` object directly",
@@ -1445,7 +1448,7 @@ def _missing_arguments(f_name, argnames, pos, values):
         del names[-2:]
         s = ", ".join(names) + tail
     raise TypeError(
-        "%s() missing %i required %s argument%s: %s"
+        "%s() missing %i required %s argument%s: %s"  # noqa: UP031
         % (
             f_name,
             missing,
@@ -1461,10 +1464,10 @@ def _too_many(f_name, args, kwonly, varargs, defcount, given, values):
     kwonly_given = len([arg for arg in kwonly if arg in values])
     if varargs:
         plural = atleast != 1
-        sig = "at least %d" % (atleast,)
+        sig = "at least %d" % (atleast,)  # noqa: UP031
     elif defcount:
         plural = True
-        sig = "from %d to %d" % (atleast, len(args))
+        sig = "from %d to %d" % (atleast, len(args))  # noqa: UP031
     else:
         plural = len(args) != 1
         sig = str(len(args))
@@ -1477,7 +1480,7 @@ def _too_many(f_name, args, kwonly, varargs, defcount, given, values):
             "s" if kwonly_given != 1 else "",
         )
     raise TypeError(
-        "%s() takes %s positional argument%s but %d%s %s given"
+        "%s() takes %s positional argument%s but %d%s %s given"  # noqa: UP031
         % (
             f_name,
             sig,
@@ -1496,7 +1499,7 @@ def getcallargs(func, /, *positional, **named):
     names of the * and ** arguments, if any), and values the respective bound
     values from 'positional' and 'named'."""
     spec = getfullargspec(func)
-    args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, ann = spec
+    args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, _ann = spec
     f_name = func.__name__
     arg2value = {}
 
@@ -1518,13 +1521,11 @@ def getcallargs(func, /, *positional, **named):
     for kw, value in named.items():
         if kw not in possible_kwargs:
             if not varkw:
-                raise TypeError(
-                    "%s() got an unexpected keyword argument %r" % (f_name, kw)
-                )
+                raise TypeError(f"{f_name}() got an unexpected keyword argument {kw!r}")
             arg2value[varkw][kw] = value
             continue
         if kw in arg2value:
-            raise TypeError("%s() got multiple values for argument %r" % (f_name, kw))
+            raise TypeError(f"{f_name}() got multiple values for argument {kw!r}")
         arg2value[kw] = value
     if num_pos > num_args and not varargs:
         _too_many(f_name, args, kwonlyargs, varargs, num_defaults, num_pos, arg2value)
@@ -1627,7 +1628,7 @@ def getframeinfo(frame, context=1):
     if context > 0:
         start = lineno - 1 - context // 2
         try:
-            lines, lnum = findsource(frame)
+            lines, _lnum = findsource(frame)
         except OSError:
             lines = index = None
         else:
@@ -1765,12 +1766,15 @@ def getattr_static(obj, attr, default=_sentinel):
 
     klass_result = _check_class(klass, attr)
 
-    if instance_result is not _sentinel and klass_result is not _sentinel:
-        if (
+    if (
+        instance_result is not _sentinel
+        and klass_result is not _sentinel
+        and (
             _check_class(type(klass_result), "__get__") is not _sentinel
             and _check_class(type(klass_result), "__set__") is not _sentinel
-        ):
-            return klass_result
+        )
+    ):
+        return klass_result
 
     if instance_result is not _sentinel:
         return instance_result
@@ -2165,7 +2169,7 @@ def _signature_fromstr(cls, obj, s, skip_bound_arg=True):
         module = None
 
     if not isinstance(module, ast.Module):
-        raise ValueError(f"{obj!r} builtin has invalid signature")
+        raise ValueError(f"{obj!r} builtin has invalid signature")  # noqa: TRY004
 
     f = module.body[0]
 
@@ -2209,14 +2213,14 @@ def _signature_fromstr(cls, obj, s, skip_bound_arg=True):
                 a.append(n.attr)
                 n = n.value
             if not isinstance(n, ast.Name):
-                raise RuntimeError()
+                raise RuntimeError()  # noqa: TRY004
             a.append(n.id)
             value = ".".join(reversed(a))
             return wrap_value(value)
 
         def visit_Name(self, node):
             if not isinstance(node.ctx, ast.Load):
-                raise ValueError()
+                raise ValueError()  # noqa: TRY004
             return wrap_value(node.id)
 
     def p(name_node, default_node, default=empty):
@@ -2356,7 +2360,7 @@ def _signature_from_function(cls, func, skip_bound_arg=True):
             posonly_left -= 1
 
     # *args
-    if func_code.co_flags & CO_VARARGS:
+    if func_code.co_flags & CO_VARARGS:  # noqa: F821
         name = arg_names[pos_count + keyword_only_count]
         annotation = annotations.get(name, _empty)
         parameters.append(Parameter(name, annotation=annotation, kind=_VAR_POSITIONAL))
@@ -2372,9 +2376,9 @@ def _signature_from_function(cls, func, skip_bound_arg=True):
             Parameter(name, annotation=annotation, kind=_KEYWORD_ONLY, default=default)
         )
     # **kwargs
-    if func_code.co_flags & CO_VARKEYWORDS:
+    if func_code.co_flags & CO_VARKEYWORDS:  # noqa: F821
         index = pos_count + keyword_only_count
-        if func_code.co_flags & CO_VARARGS:
+        if func_code.co_flags & CO_VARARGS:  # noqa: F821
             index += 1
 
         name = arg_names[index]
@@ -2452,7 +2456,7 @@ def _signature_from_callable(
             wrapped_sig = _get_signature_of(partialmethod.func)
 
             sig = _signature_get_partial(wrapped_sig, partialmethod, (None,))
-            first_wrapped_param = tuple(wrapped_sig.parameters.values())[0]
+            first_wrapped_param = next(iter(wrapped_sig.parameters.values()))
             if first_wrapped_param.kind is Parameter.VAR_POSITIONAL:
                 # First argument of the wrapped callable is `*args`, as in
                 # `partialmethod(lambda *args)`.
@@ -2561,7 +2565,7 @@ def _signature_from_callable(
     if isinstance(obj, types.BuiltinFunctionType):
         # Raise a nicer error message for builtins
         msg = f"no signature found for builtin function {obj!r}"
-        raise ValueError(msg)
+        raise ValueError(msg)  # noqa: TRY004
 
     raise ValueError(f"callable {obj!r} is not supported by signature")
 
@@ -2641,7 +2645,7 @@ class Parameter:
             self._kind = _ParameterKind(kind)
         except ValueError:
             raise ValueError(f"value {kind!r} is not a valid Parameter.kind")
-        if default is not _empty:
+        if default is not _empty:  # noqa: SIM102
             if self._kind in (_VAR_POSITIONAL, _VAR_KEYWORD):
                 msg = "{} parameters cannot have default values"
                 msg = msg.format(self._kind.description)
@@ -3290,7 +3294,7 @@ def _main():
     mod_name, has_attrs, attrs = target.partition(":")
     try:
         obj = module = importlib.import_module(mod_name)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         msg = f"Failed to import {mod_name} ({type(exc).__name__}: {exc})"
         print(msg, file=sys.stderr)
         sys.exit(2)
@@ -3316,7 +3320,7 @@ def _main():
         else:
             try:
                 __, lineno = findsource(obj)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             else:
                 print(f"Line: {lineno}")

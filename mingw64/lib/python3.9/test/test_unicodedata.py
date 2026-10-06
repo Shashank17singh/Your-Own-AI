@@ -308,9 +308,9 @@ class UnicodeMiscTest(UnicodeDatabaseTest):
         for i in range(0x10000):
             lines = (chr(i) + "A").splitlines()
             if i in (0x0A, 0x0B, 0x0C, 0x0D, 0x85, 0x1C, 0x1D, 0x1E, 0x2028, 0x2029):
-                self.assertEqual(len(lines), 2, r"\u%.4x should be a linebreak" % i)
+                self.assertEqual(len(lines), 2, rf"\u{i:04x} should be a linebreak")
             else:
-                self.assertEqual(len(lines), 1, r"\u%.4x should not be a linebreak" % i)
+                self.assertEqual(len(lines), 1, rf"\u{i:04x} should not be a linebreak")
 
 
 class NormalizationTest(unittest.TestCase):

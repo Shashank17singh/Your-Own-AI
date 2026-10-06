@@ -45,7 +45,7 @@ class TestMockingMagicMethods(unittest.TestCase):
 
     def test_repr(self):
         mock = Mock()
-        self.assertEqual(repr(mock), "<Mock id='%s'>" % id(mock))
+        self.assertEqual(repr(mock), f"<Mock id='{id(mock)}'>")
         mock.__repr__ = lambda s: "foo"
         self.assertEqual(repr(mock), "foo")
 
@@ -184,10 +184,10 @@ class TestMockingMagicMethods(unittest.TestCase):
 
     def test_equality(self):
         for mock in Mock(), MagicMock():
-            self.assertEqual(mock == mock, True)
-            self.assertIsInstance(mock == mock, bool)
-            self.assertEqual(mock != mock, False)
-            self.assertIsInstance(mock != mock, bool)
+            self.assertEqual(mock == mock, True)  # noqa: PLR0124
+            self.assertIsInstance(mock == mock, bool)  # noqa: PLR0124
+            self.assertEqual(mock != mock, False)  # noqa: PLR0124
+            self.assertIsInstance(mock != mock, bool)  # noqa: PLR0124
             self.assertEqual(mock == object(), False)
             self.assertEqual(mock != object(), True)
 
@@ -242,8 +242,8 @@ class TestMockingMagicMethods(unittest.TestCase):
         self.assertIsInstance(mock != object(), bool)
         self.assertEqual(mock == object(), False)
         self.assertEqual(mock != object(), True)
-        self.assertEqual(mock == mock, True)
-        self.assertEqual(mock != mock, False)
+        self.assertEqual(mock == mock, True)  # noqa: PLR0124
+        self.assertEqual(mock != mock, False)  # noqa: PLR0124
 
     def test_asyncmock_defaults(self):
         mock = AsyncMock()

@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
         class B(A, x=3):
             pass
 
-        self.assertEqual(B.kwargs, dict(x=3))
+        self.assertEqual(B.kwargs, {"x": 3})
 
     def test_init_subclass_error(self):
         class A:
@@ -135,7 +135,7 @@ class Test(unittest.TestCase):
     def test_set_name_error(self):
         class Descriptor:
             def __set_name__(self, owner, name):
-                1 / 0
+                1 / 0  # noqa: B018
 
         with self.assertRaises(RuntimeError) as cm:
 
@@ -231,8 +231,8 @@ class Test(unittest.TestCase):
                 pass
 
         with self.assertRaises(TypeError):
-            types.new_class("MyClass", (object,), dict(metaclass=MyMeta, otherarg=1))
-        types.prepare_class("MyClass", (object,), dict(metaclass=MyMeta, otherarg=1))
+            types.new_class("MyClass", (object,), {"metaclass": MyMeta, "otherarg": 1})
+        types.prepare_class("MyClass", (object,), {"metaclass": MyMeta, "otherarg": 1})
 
         class MyMeta(type):
             def __init__(self, name, bases, namespace, otherarg):

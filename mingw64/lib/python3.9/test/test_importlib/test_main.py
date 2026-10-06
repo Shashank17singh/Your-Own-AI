@@ -235,7 +235,7 @@ class TestEntryPoints(unittest.TestCase):
         """
         json should not expect to be able to dump an EntryPoint
         """
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             json.dumps(self.ep)
 
     def test_module(self):

@@ -32,7 +32,7 @@ class _InterruptHandler:
         if self.called:
             self.default_handler(signum, frame)
         self.called = True
-        for result in _results.keys():
+        for result in _results:
             result.stop()
 
 
@@ -71,6 +71,6 @@ def removeHandler(method=None):
                 signal.signal(signal.SIGINT, initial)
 
         return inner
-    global _interrupt_handler
+    global _interrupt_handler  # noqa: PLW0602
     if _interrupt_handler is not None:
         signal.signal(signal.SIGINT, _interrupt_handler.original_handler)

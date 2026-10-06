@@ -16,7 +16,7 @@ class TestScriptHelper(unittest.TestCase):
 
     def test_assert_python_failure(self):
         # I didn't import the sys module so this child will fail.
-        rc, out, err = script_helper.assert_python_failure("-c", "sys.exit(0)")
+        rc, _out, _err = script_helper.assert_python_failure("-c", "sys.exit(0)")
         self.assertNotEqual(0, rc, "return code should not be 0")
 
     def test_assert_python_ok_raises(self):
@@ -59,7 +59,7 @@ class TestScriptHelper(unittest.TestCase):
         """Ensure that -I is not passed when the environment is required."""
         with mock.patch.object(
             script_helper, "interpreter_requires_environment", return_value=True
-        ) as mock_ire_func:
+        ):
             mock_popen.side_effect = RuntimeError("bail out of unittest")
             try:
                 script_helper._assert_python(True, "-c", "None")

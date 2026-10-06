@@ -94,32 +94,29 @@ MAPPING["urllib2"].append(MAPPING["urllib"][1])
 
 
 def build_pattern():
-    bare = set()
     for old_module, changes in MAPPING.items():
         for change in changes:
-            new_module, members = change
+            _new_module, members = change
             members = alternates(members)
-            yield """import_name< 'import' (module=%r
-                                  | dotted_as_names< any* module=%r any* >) >
-                  """ % (old_module, old_module)
-            yield """import_from< 'from' mod_member=%r 'import'
-                       ( member=%s | import_as_name< member=%s 'as' any > |
-                         import_as_names< members=any*  >) >
-                  """ % (old_module, members, members)
-            yield (
-                """import_from< 'from' module_star=%r 'import' star='*' >
+            yield f"""import_name< 'import' (module={old_module!r}
+                                  | dotted_as_names< any* module={old_module!r} any* >) >
                   """
-                % old_module
+            yield f"""import_from< 'from' mod_member={old_module!r} 'import'
+                       ( member={members} | import_as_name< member={members} 'as' any > |
+                         import_as_names< members=any*  >) >
+                  """
+            yield (
+                f"""import_from< 'from' module_star={old_module!r} 'import' star='*' >
+                  """
             )
             yield (
-                """import_name< 'import'
-                                  dotted_as_name< module_as=%r 'as' any > >
+                f"""import_name< 'import'
+                                  dotted_as_name< module_as={old_module!r} 'as' any > >
                   """
-                % old_module
             )
             # bare_with_attr has a special significance for FixImports.match().
-            yield """power< bare_with_attr=%r trailer< '.' member=%s > any* >
-                  """ % (old_module, members)
+            yield f"""power< bare_with_attr={old_module!r} trailer< '.' member={members} > any* >
+                  """
 
 
 class FixUrllib(FixImports):
@@ -175,11 +172,10 @@ class FixUrllib(FixImports):
             for member in members:
                 # we only care about the actual members
                 if member.type == syms.import_as_name:
-                    as_name = member.children[2].value
+                    member.children[2].value  # noqa: B018
                     member_name = member.children[0].value
                 else:
                     member_name = member.value
-                    as_name = None
                 if member_name != ",":
                     for change in MAPPING[mod_member.value]:
                         if member_name in change[1]:

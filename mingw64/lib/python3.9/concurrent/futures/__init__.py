@@ -13,7 +13,7 @@ from concurrent.futures._base import (
     CancelledError,
     Executor,
     Future,
-    InvalidStateError,
+    InvalidStateError,  # noqa: F401
     TimeoutError,
     as_completed,
     wait,

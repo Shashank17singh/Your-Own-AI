@@ -22,7 +22,7 @@ class DelegatorTest(unittest.TestCase):
         self.assertEqual(mydel._Delegator__cache, {"bit_length"})
 
         # Add attribute 'numerator'.
-        mydel.numerator
+        mydel.numerator  # noqa: B018
         self.assertEqual(mydel._Delegator__cache, {"bit_length", "numerator"})
 
         # Delete 'numerator'.

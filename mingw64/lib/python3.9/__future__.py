@@ -60,7 +60,7 @@ all_feature_names = [
     "annotations",
 ]
 
-__all__ = ["all_feature_names"] + all_feature_names
+__all__ = ["all_feature_names"] + all_feature_names  # noqa: PLE0605
 
 # The CO_xxx symbols are defined here under the same names defined in
 # code.h and used by compile.h, so that an editor search will find them here.

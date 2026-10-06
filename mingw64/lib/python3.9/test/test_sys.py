@@ -159,7 +159,7 @@ class SysModuleTest(unittest.TestCase):
             self.assertEqual(out, b"")
             self.assertTrue(
                 err.startswith(expected),
-                "%s doesn't start with %s" % (ascii(err), ascii(expected)),
+                f"{err!a} doesn't start with {expected!a}",
             )
 
         # test that stderr buffer is flushed before the exit message is written
@@ -332,7 +332,7 @@ class SysModuleTest(unittest.TestCase):
 
         # This is how platform.py calls it. Make sure tuple
         #  still has 5 elements
-        maj, min, buildno, plat, csd = sys.getwindowsversion()
+        _maj, _min, _buildno, _plat, _csd = sys.getwindowsversion()
 
     def test_call_tracing(self):
         self.assertRaises(TypeError, sys.call_tracing, type, 2)
@@ -428,7 +428,7 @@ class SysModuleTest(unittest.TestCase):
         self.assertEqual(sourceline, "g456()")
 
         # And the next record must be for g456().
-        filename, lineno, funcname, sourceline = stack[i + 1]
+        _filename, _lineno, funcname, sourceline = stack[i + 1]
         self.assertEqual(funcname, "g456")
         self.assertIn(sourceline, ["leave_g.wait()", "entered_g.set()"])
 
@@ -666,7 +666,7 @@ class SysModuleTest(unittest.TestCase):
 
         env["PYTHONIOENCODING"] = ""
         p = subprocess.Popen(
-            [sys.executable, "-c", "print(%a)" % test.support.FS_NONASCII],
+            [sys.executable, "-c", f"print({test.support.FS_NONASCII!a})"],
             stdout=subprocess.PIPE,
             env=env,
         )
@@ -722,17 +722,7 @@ class SysModuleTest(unittest.TestCase):
         env = os.environ.copy()
         env["LC_ALL"] = locale
         env["PYTHONCOERCECLOCALE"] = "0"
-        code = "\n".join(
-            (
-                "import sys",
-                "def dump(name):",
-                "    std = getattr(sys, name)",
-                '    print("%s: %s" % (name, std.errors))',
-                'dump("stdin")',
-                'dump("stdout")',
-                'dump("stderr")',
-            )
-        )
+        code = 'import sys\ndef dump(name):\n    std = getattr(sys, name)\n    print("%s: %s" % (name, std.errors))\ndump("stdin")\ndump("stdout")\ndump("stderr")'
         args = [sys.executable, "-X", "utf8=0", "-c", code]
         if isolated:
             args.append("-I")
@@ -747,7 +737,7 @@ class SysModuleTest(unittest.TestCase):
             env=env,
             universal_newlines=True,
         )
-        stdout, stderr = p.communicate()
+        stdout, _stderr = p.communicate()
         return stdout
 
     def check_locale_surrogateescape(self, locale):
@@ -828,7 +818,7 @@ class SysModuleTest(unittest.TestCase):
         from test.support.script_helper import assert_python_ok
 
         args = ["-c", "import sys; sys._debugmallocstats()"]
-        ret, out, err = assert_python_ok(*args)
+        _ret, _out, err = assert_python_ok(*args)
         self.assertIn(b"free PyDictObjects", err)
 
         # The function has no parameter
@@ -895,7 +885,7 @@ class SysModuleTest(unittest.TestCase):
             # AtExit destructor will be called at Python exit
             ref = AtExit()
         """
-        rc, stdout, stderr = assert_python_ok("-c", code)
+        _rc, stdout, _stderr = assert_python_ok("-c", code)
         self.assertEqual(stdout.rstrip(), b"True")
 
     def test_issue20602(self):
@@ -908,7 +898,7 @@ class SysModuleTest(unittest.TestCase):
                     print(sys.float_info)
             a = A()
             """
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, out, _err = assert_python_ok("-c", code)
         out = out.splitlines()
         self.assertIn(b"sys.flags", out[0])
         self.assertIn(b"sys.float_info", out[1])
@@ -986,7 +976,7 @@ class SysModuleTest(unittest.TestCase):
             "sys._enablelegacywindowsfsencoding()",
             "print(sys.getfilesystemencoding(), sys.getfilesystemencodeerrors())",
         )
-        rc, out, err = assert_python_ok("-c", "; ".join(code))
+        _rc, out, _err = assert_python_ok("-c", "; ".join(code))
         out = out.decode("ascii", "replace").rstrip()
         self.assertEqual(out, "mbcs replace")
 
@@ -1016,7 +1006,7 @@ class UnraisableHookTest(unittest.TestCase):
             with self.subTest(err_msg=err_msg):
                 obj = "an object"
 
-                with test.support.captured_output("stderr") as stderr:
+                with test.support.captured_output("stderr") as stderr:  # noqa: SIM117
                     with test.support.swap_attr(
                         sys, "unraisablehook", sys.__unraisablehook__
                     ):
@@ -1040,7 +1030,7 @@ class UnraisableHookTest(unittest.TestCase):
 
         class BrokenStrException(Exception):
             def __str__(self):
-                raise Exception("str() is broken")
+                raise Exception("str() is broken")  # noqa: TRY002
 
         class BrokenExceptionDel:
             def __del__(self):
@@ -1075,7 +1065,7 @@ class UnraisableHookTest(unittest.TestCase):
 
     def test_original_unraisablehook_wrong_type(self):
         exc = ValueError(42)
-        with test.support.swap_attr(sys, "unraisablehook", sys.__unraisablehook__):
+        with test.support.swap_attr(sys, "unraisablehook", sys.__unraisablehook__):  # noqa: SIM117
             with self.assertRaises(TypeError):
                 sys.unraisablehook(exc)
 
@@ -1109,9 +1099,9 @@ class UnraisableHookTest(unittest.TestCase):
 
     def test_custom_unraisablehook_fail(self):
         def hook_func(*args):
-            raise Exception("hook_func failed")
+            raise Exception("hook_func failed")  # noqa: TRY002
 
-        with test.support.captured_output("stderr") as stderr:
+        with test.support.captured_output("stderr") as stderr:  # noqa: SIM117
             with test.support.swap_attr(sys, "unraisablehook", hook_func):
                 self.write_unraisable_exc(ValueError(42), "custom hook fail", None)
 
@@ -1405,7 +1395,7 @@ class SizeofTest(unittest.TestCase):
         for sample in samples:
             minused = len(sample)
             if minused == 0:
-                tmp = 1
+                pass
             # the computation of minused is actually a bit more complicated
             # but this suffices for the sizeof test
             minused = minused * 2
@@ -1469,7 +1459,7 @@ class SizeofTest(unittest.TestCase):
         ]
         asciifields = "nnbP"
         compactfields = asciifields + "nPn"
-        unicodefields = compactfields + "P"
+        compactfields + "P"
         for s in samples:
             maxchar = ord(max(s))
             if maxchar < 128:
@@ -1600,7 +1590,7 @@ class SizeofTest(unittest.TestCase):
             sys.stderr = MyStderr()
             1/0
         """)
-        rc, out, err = assert_python_failure("-c", code)
+        _rc, out, err = assert_python_failure("-c", code)
         self.assertEqual(out, b"")
         self.assertEqual(err, b"")
 

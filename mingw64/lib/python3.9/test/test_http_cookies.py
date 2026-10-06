@@ -44,14 +44,7 @@ class CookieTests(unittest.TestCase):
                 "data": "a=b; c=[; d=r; f=h",
                 "dict": {"a": "b", "c": "[", "d": "r", "f": "h"},
                 "repr": "<SimpleCookie: a='b' c='[' d='r' f='h'>",
-                "output": "\n".join(
-                    (
-                        "Set-Cookie: a=b",
-                        "Set-Cookie: c=[",
-                        "Set-Cookie: d=r",
-                        "Set-Cookie: f=h",
-                    )
-                ),
+                "output": "Set-Cookie: a=b\nSet-Cookie: c=[\nSet-Cookie: d=r\nSet-Cookie: f=h",
             },
         ]
 
@@ -140,11 +133,11 @@ class CookieTests(unittest.TestCase):
                 C["Customer"]["samesite"] = val
                 self.assertEqual(
                     C.output(),
-                    'Set-Cookie: Customer="WILE_E_COYOTE"; SameSite=%s' % val,
+                    f'Set-Cookie: Customer="WILE_E_COYOTE"; SameSite={val}',
                 )
 
                 C = cookies.SimpleCookie()
-                C.load('Customer="WILL_E_COYOTE"; SameSite=%s' % val)
+                C.load(f'Customer="WILL_E_COYOTE"; SameSite={val}')
                 self.assertEqual(C["Customer"]["samesite"], val)
 
     def test_secure_httponly_false_if_not_present(self):
@@ -233,7 +226,7 @@ class CookieTests(unittest.TestCase):
 
     def test_pickle(self):
         rawdata = 'Customer="WILE_E_COYOTE"; Path=/acme; Version=1'
-        expected_output = "Set-Cookie: %s" % rawdata
+        expected_output = f"Set-Cookie: {rawdata}"
 
         C = cookies.SimpleCookie()
         C.load(rawdata)
@@ -278,46 +271,42 @@ class MorselTests(unittest.TestCase):
         for i in M._reserved:
             # Test that all valid keys are reported as reserved and set them
             self.assertTrue(M.isReservedKey(i))
-            M[i] = "%s_value" % i
+            M[i] = f"{i}_value"
         for i in M._reserved:
             # Test that valid key values come out fine
-            self.assertEqual(M[i], "%s_value" % i)
+            self.assertEqual(M[i], f"{i}_value")
         for i in ["the", "holy", "hand", "grenade"]:
             # Test that invalid keys raise CookieError
-            self.assertRaises(cookies.CookieError, M.__setitem__, i, "%s_value" % i)
+            self.assertRaises(cookies.CookieError, M.__setitem__, i, f"{i}_value")
 
     def test_setter(self):
         M = cookies.Morsel()
         # tests the .set method to set keys and their values
         for i in M._reserved:
             # Makes sure that all reserved keys can't be set this way
-            self.assertRaises(
-                cookies.CookieError, M.set, i, "%s_value" % i, "%s_value" % i
-            )
+            self.assertRaises(cookies.CookieError, M.set, i, f"{i}_value", f"{i}_value")
         for i in ["thou", "cast", "_the-", "!holy!", "^hand|", "+*grenade~"]:
             # Try typical use case. Setting decent values.
             # Check output and js_output.
             M["path"] = "/foo"  # Try a reserved key as well
-            M.set(i, "%s_val" % i, "%s_coded_val" % i)
+            M.set(i, f"{i}_val", f"{i}_coded_val")
             self.assertEqual(M.key, i)
-            self.assertEqual(M.value, "%s_val" % i)
-            self.assertEqual(M.coded_value, "%s_coded_val" % i)
+            self.assertEqual(M.value, f"{i}_val")
+            self.assertEqual(M.coded_value, f"{i}_coded_val")
             self.assertEqual(
-                M.output(), "Set-Cookie: %s=%s; Path=/foo" % (i, "%s_coded_val" % i)
+                M.output(), "Set-Cookie: {}={}; Path=/foo".format(i, f"{i}_coded_val")
             )
             expected_js_output = """
         <script type="text/javascript">
         <!-- begin hiding
-        document.cookie = "%s=%s; Path=/foo";
+        document.cookie = "{}={}; Path=/foo";
         // end hiding -->
         </script>
-        """ % (i, "%s_coded_val" % i)
+        """.format(i, f"{i}_coded_val")
             self.assertEqual(M.js_output(), expected_js_output)
         for i in ["foo bar", "foo@bar"]:
             # Try some illegal characters
-            self.assertRaises(
-                cookies.CookieError, M.set, i, "%s_value" % i, "%s_value" % i
-            )
+            self.assertRaises(cookies.CookieError, M.set, i, f"{i}_value", f"{i}_value")
 
     def test_set_properties(self):
         morsel = cookies.Morsel()

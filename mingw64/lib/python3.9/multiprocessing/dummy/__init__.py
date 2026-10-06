@@ -49,7 +49,9 @@ from .connection import Pipe
 
 
 class DummyProcess(threading.Thread):
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
+    def __init__(self, group=None, target=None, name=None, args=(), kwargs=None):
+        if kwargs is None:
+            kwargs = {}
         threading.Thread.__init__(self, group, target, name, args, kwargs)
         self._pid = None
         self._children = weakref.WeakKeyDictionary()
@@ -100,13 +102,13 @@ class Namespace:
         temp = []
         for name, value in items:
             if not name.startswith("_"):
-                temp.append("%s=%r" % (name, value))
+                temp.append(f"{name}={value!r}")
         temp.sort()
-        return "%s(%s)" % (self.__class__.__name__, ", ".join(temp))
+        return "{}({})".format(self.__class__.__name__, ", ".join(temp))
 
 
-dict = dict
-list = list
+dict = dict  # noqa: PLW0127
+list = list  # noqa: PLW0127
 
 
 def Array(typecode, sequence, lock=True):
@@ -127,7 +129,7 @@ class Value:
         self._value = value
 
     def __repr__(self):
-        return "<%s(%r, %r)>" % (type(self).__name__, self._typecode, self._value)
+        return f"<{type(self).__name__}({self._typecode!r}, {self._value!r})>"
 
 
 def Manager():

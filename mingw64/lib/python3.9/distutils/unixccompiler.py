@@ -49,7 +49,7 @@ class UnixCCompiler(CCompiler):
     # are pretty generic; they will probably have to be set by an outsider
     # (eg. using information discovered by the sysconfig about building
     # Python extensions).
-    executables = {
+    executables = {  # noqa: RUF012
         "preprocessor": None,
         "compiler": ["cc"],
         "compiler_so": ["cc"],
@@ -69,7 +69,7 @@ class UnixCCompiler(CCompiler):
     # reasonable common default here, but it's not necessarily used on all
     # Unices!
 
-    src_extensions = [".c", ".C", ".cc", ".cxx", ".cpp", ".m"]
+    src_extensions = [".c", ".C", ".cc", ".cxx", ".cpp", ".m"]  # noqa: RUF012
     obj_extension = ".o"
     static_lib_extension = ".a"
     shared_lib_extension = ".so"
@@ -90,7 +90,7 @@ class UnixCCompiler(CCompiler):
         extra_postargs=None,
     ):
         fixed_args = self._fix_compile_args(None, macros, include_dirs)
-        ignore, macros, include_dirs = fixed_args
+        _ignore, macros, include_dirs = fixed_args
         pp_opts = gen_preprocess_options(macros, include_dirs)
         pp_args = self.preprocessor + pp_opts
         if output_file:

@@ -202,7 +202,7 @@ class BaseSubprocessTransport(transports.SubprocessTransport):
             self._pending_calls = None
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             if waiter is not None and not waiter.cancelled():
                 waiter.set_exception(exc)
         else:

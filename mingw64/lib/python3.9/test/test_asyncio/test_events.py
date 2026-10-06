@@ -511,8 +511,10 @@ class EventLoopTestsMixin:
             self._basetest_create_connection(conn_fut, check_sockname)
 
     def check_ssl_extra_info(
-        self, client, check_sockname=True, peername=None, peercert={}
+        self, client, check_sockname=True, peername=None, peercert=None
     ):
+        if peercert is None:
+            peercert = {}
         if check_sockname:
             self.assertIsNotNone(client.get_extra_info("sockname"))
         if peername:
@@ -675,7 +677,7 @@ class EventLoopTestsMixin:
                 csock.sendall(message)
                 response = csock.recv(99)
                 csock.close()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 print("Failure in client thread in test_connect_accepted_socket", exc)
 
         thread = threading.Thread(target=client, daemon=True)
@@ -896,7 +898,7 @@ class EventLoopTestsMixin:
         f_c = self.loop.create_connection(
             MyBaseProto, host, port, ssl=test_utils.dummy_ssl_context()
         )
-        client, pr = self.loop.run_until_complete(f_c)
+        client, _pr = self.loop.run_until_complete(f_c)
 
         client.write(b"xxx")
         self.loop.run_until_complete(proto.connected)
@@ -932,7 +934,7 @@ class EventLoopTestsMixin:
             MyBaseProto, path, ssl=test_utils.dummy_ssl_context(), server_hostname=""
         )
 
-        client, pr = self.loop.run_until_complete(f_c)
+        client, _pr = self.loop.run_until_complete(f_c)
 
         client.write(b"xxx")
         self.loop.run_until_complete(proto.connected)
@@ -1029,7 +1031,7 @@ class EventLoopTestsMixin:
 
         # incorrect server_hostname
         f_c = self.loop.create_connection(MyProto, host, port, ssl=sslcontext_client)
-        with mock.patch.object(self.loop, "call_exception_handler"):
+        with mock.patch.object(self.loop, "call_exception_handler"):  # noqa: SIM117
             with test_utils.disable_logger():
                 with self.assertRaisesRegex(
                     ssl.CertificateError,
@@ -1061,7 +1063,7 @@ class EventLoopTestsMixin:
         f_c = self.loop.create_unix_connection(
             MyProto, path, ssl=sslcontext_client, server_hostname="localhost"
         )
-        client, pr = self.loop.run_until_complete(f_c)
+        client, _pr = self.loop.run_until_complete(f_c)
         self.loop.run_until_complete(proto.connected)
 
         # close connection
@@ -1088,7 +1090,7 @@ class EventLoopTestsMixin:
         f_c = self.loop.create_connection(
             MyProto, host, port, ssl=sslcontext_client, server_hostname="localhost"
         )
-        client, pr = self.loop.run_until_complete(f_c)
+        client, _pr = self.loop.run_until_complete(f_c)
         self.loop.run_until_complete(proto.connected)
 
         # extra info is available
@@ -1185,7 +1187,7 @@ class EventLoopTestsMixin:
         f = self.loop.create_server(MyProto, "0.0.0.0", 0)
         server = self.loop.run_until_complete(f)
         sock = server.sockets[0]
-        host, port = sock.getsockname()
+        _host, port = sock.getsockname()
 
         client = socket.socket()
         client.connect(("127.0.0.1", port))
@@ -1266,7 +1268,7 @@ class EventLoopTestsMixin:
                 sock = socket.socket(family=family, type=type, proto=proto)
                 sock.setblocking(False)
                 sock.bind(address)
-            except:
+            except:  # noqa: E722, S110
                 pass
             else:
                 break
@@ -1299,7 +1301,7 @@ class EventLoopTestsMixin:
         proto = MyReadPipeProto(loop=self.loop)
 
         rpipe, wpipe = os.pipe()
-        pipeobj = open(rpipe, "rb", 1024)
+        pipeobj = open(rpipe, "rb", 1024)  # noqa: SIM115
 
         async def connect():
             t, p = await self.loop.connect_read_pipe(lambda: proto, pipeobj)
@@ -1333,8 +1335,8 @@ class EventLoopTestsMixin:
         write_proto = MyWritePipeProto(loop=loop)
 
         rpipe, wpipe = os.pipe()
-        rpipeobj = open(rpipe, "rb", 1024)
-        wpipeobj = open(wpipe, "w", 1024)
+        rpipeobj = open(rpipe, "rb", 1024)  # noqa: SIM115
+        wpipeobj = open(wpipe, "w", 1024)  # noqa: SIM115
 
         async def connect():
             read_transport, _ = await loop.connect_read_pipe(
@@ -1365,7 +1367,7 @@ class EventLoopTestsMixin:
         proto = MyReadPipeProto(loop=self.loop)
 
         master, slave = os.openpty()
-        master_read_obj = open(master, "rb", 0)
+        master_read_obj = open(master, "rb", 0)  # noqa: SIM115
 
         async def connect():
             t, p = await self.loop.connect_read_pipe(lambda: proto, master_read_obj)
@@ -1395,7 +1397,7 @@ class EventLoopTestsMixin:
     @unittest.skipUnless(sys.platform != "win32", "Don't support pipes for Windows")
     def test_write_pipe(self):
         rpipe, wpipe = os.pipe()
-        pipeobj = open(wpipe, "wb", 1024)
+        pipeobj = open(wpipe, "wb", 1024)  # noqa: SIM115
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, pipeobj)
@@ -1435,7 +1437,7 @@ class EventLoopTestsMixin:
     def test_write_pipe_disconnect_on_close(self):
         rsock, wsock = socket.socketpair()
         rsock.setblocking(False)
-        pipeobj = open(wsock.detach(), "wb", 1024)
+        pipeobj = open(wsock.detach(), "wb", 1024)  # noqa: SIM115
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, pipeobj)
@@ -1459,7 +1461,7 @@ class EventLoopTestsMixin:
     @support.requires_mac_ver(10, 6)
     def test_write_pty(self):
         master, slave = os.openpty()
-        slave_write_obj = open(slave, "wb", 0)
+        slave_write_obj = open(slave, "wb", 0)  # noqa: SIM115
 
         proto = MyWritePipeProto(loop=self.loop)
         connect = self.loop.connect_write_pipe(lambda: proto, slave_write_obj)
@@ -1508,7 +1510,7 @@ class EventLoopTestsMixin:
         write_slave = os.dup(read_slave)
         tty.setraw(read_slave)
 
-        slave_read_obj = open(read_slave, "rb", 0)
+        slave_read_obj = open(read_slave, "rb", 0)  # noqa: SIM115
         read_proto = MyReadPipeProto(loop=self.loop)
         read_connect = self.loop.connect_read_pipe(lambda: read_proto, slave_read_obj)
         read_transport, p = self.loop.run_until_complete(read_connect)
@@ -1517,7 +1519,7 @@ class EventLoopTestsMixin:
         self.assertEqual(["INITIAL", "CONNECTED"], read_proto.state)
         self.assertEqual(0, read_proto.nbytes)
 
-        slave_write_obj = open(write_slave, "wb", 0)
+        slave_write_obj = open(write_slave, "wb", 0)  # noqa: SIM115
         write_proto = MyWritePipeProto(loop=self.loop)
         write_connect = self.loop.connect_write_pipe(
             lambda: write_proto, slave_write_obj
@@ -1621,7 +1623,6 @@ class EventLoopTestsMixin:
         self.loop._run_once = _run_once
 
         async def wait():
-            loop = self.loop
             await asyncio.sleep(1e-2)
             await asyncio.sleep(1e-4)
             await asyncio.sleep(1e-6)
@@ -2157,7 +2158,7 @@ class HandleTests(test_utils.TestCase):
         # simple function
         h = asyncio.Handle(noop, (1, 2), self.loop)
         filename, lineno = test_utils.get_function_source(noop)
-        self.assertEqual(repr(h), "<Handle noop(1, 2) at %s:%s>" % (filename, lineno))
+        self.assertEqual(repr(h), f"<Handle noop(1, 2) at {filename}:{lineno}>")
 
         # cancelled handle
         h.cancel()
@@ -2167,34 +2168,30 @@ class HandleTests(test_utils.TestCase):
         with self.assertWarns(DeprecationWarning):
             cb = asyncio.coroutine(noop)
         h = asyncio.Handle(cb, (), self.loop)
-        self.assertEqual(repr(h), "<Handle noop() at %s:%s>" % (filename, lineno))
+        self.assertEqual(repr(h), f"<Handle noop() at {filename}:{lineno}>")
 
         # partial function
         cb = functools.partial(noop, 1, 2)
         h = asyncio.Handle(cb, (3,), self.loop)
-        regex = r"^<Handle noop\(1, 2\)\(3\) at %s:%s>$" % (re.escape(filename), lineno)
+        regex = rf"^<Handle noop\(1, 2\)\(3\) at {re.escape(filename)}:{lineno}>$"
         self.assertRegex(repr(h), regex)
 
         # partial function with keyword args
         cb = functools.partial(noop, x=1)
         h = asyncio.Handle(cb, (2, 3), self.loop)
-        regex = r"^<Handle noop\(x=1\)\(2, 3\) at %s:%s>$" % (
-            re.escape(filename),
-            lineno,
-        )
+        regex = rf"^<Handle noop\(x=1\)\(2, 3\) at {re.escape(filename)}:{lineno}>$"
         self.assertRegex(repr(h), regex)
 
         # partial method
-        if sys.version_info >= (3, 4):
-            method = HandleTests.test_handle_repr
-            cb = functools.partialmethod(method)
-            filename, lineno = test_utils.get_function_source(method)
-            h = asyncio.Handle(cb, (), self.loop)
+        method = HandleTests.test_handle_repr
+        cb = functools.partialmethod(method)
+        filename, lineno = test_utils.get_function_source(method)
+        h = asyncio.Handle(cb, (), self.loop)
 
-            cb_regex = r"<function HandleTests.test_handle_repr .*>"
-            cb_regex = r"functools.partialmethod\(%s, , \)\(\)" % cb_regex
-            regex = r"^<Handle %s at %s:%s>$" % (cb_regex, re.escape(filename), lineno)
-            self.assertRegex(repr(h), regex)
+        cb_regex = r"<function HandleTests.test_handle_repr .*>"
+        cb_regex = rf"functools.partialmethod\({cb_regex}, , \)\(\)"
+        regex = rf"^<Handle {cb_regex} at {re.escape(filename)}:{lineno}>$"
+        self.assertRegex(repr(h), regex)
 
     def test_handle_repr_debug(self):
         self.loop.get_debug.return_value = True
@@ -2206,24 +2203,21 @@ class HandleTests(test_utils.TestCase):
         filename, lineno = test_utils.get_function_source(noop)
         self.assertEqual(
             repr(h),
-            "<Handle noop(1, 2) at %s:%s created at %s:%s>"
-            % (filename, lineno, create_filename, create_lineno),
+            f"<Handle noop(1, 2) at {filename}:{lineno} created at {create_filename}:{create_lineno}>",
         )
 
         # cancelled handle
         h.cancel()
         self.assertEqual(
             repr(h),
-            "<Handle cancelled noop(1, 2) at %s:%s created at %s:%s>"
-            % (filename, lineno, create_filename, create_lineno),
+            f"<Handle cancelled noop(1, 2) at {filename}:{lineno} created at {create_filename}:{create_lineno}>",
         )
 
         # double cancellation won't overwrite _repr
         h.cancel()
         self.assertEqual(
             repr(h),
-            "<Handle cancelled noop(1, 2) at %s:%s created at %s:%s>"
-            % (filename, lineno, create_filename, create_lineno),
+            f"<Handle cancelled noop(1, 2) at {filename}:{lineno} created at {create_filename}:{create_lineno}>",
         )
 
     def test_handle_source_traceback(self):
@@ -2334,7 +2328,7 @@ class TimerTests(unittest.TestCase):
         # simple function
         h = asyncio.TimerHandle(123, noop, (), self.loop)
         src = test_utils.get_function_source(noop)
-        self.assertEqual(repr(h), "<TimerHandle when=123 noop() at %s:%s>" % src)
+        self.assertEqual(repr(h), "<TimerHandle when=123 noop() at {}:{}>".format(*src))
 
         # cancelled handle
         h.cancel()
@@ -2351,8 +2345,7 @@ class TimerTests(unittest.TestCase):
         self.assertEqual(
             repr(h),
             "<TimerHandle when=123 noop() "
-            "at %s:%s created at %s:%s>"
-            % (filename, lineno, create_filename, create_lineno),
+            f"at {filename}:{lineno} created at {create_filename}:{create_lineno}>",
         )
 
         # cancelled handle
@@ -2360,8 +2353,7 @@ class TimerTests(unittest.TestCase):
         self.assertEqual(
             repr(h),
             "<TimerHandle cancelled when=123 noop() "
-            "at %s:%s created at %s:%s>"
-            % (filename, lineno, create_filename, create_lineno),
+            f"at {filename}:{lineno} created at {create_filename}:{create_lineno}>",
         )
 
     def test_timer_comparison(self):
@@ -2405,13 +2397,13 @@ class TimerTests(unittest.TestCase):
         self.assertIs(NotImplemented, h1.__ne__(h3))
 
         with self.assertRaises(TypeError):
-            h1 < ()
+            h1 < ()  # noqa: B015
         with self.assertRaises(TypeError):
-            h1 > ()
+            h1 > ()  # noqa: B015
         with self.assertRaises(TypeError):
-            h1 <= ()
+            h1 <= ()  # noqa: B015
         with self.assertRaises(TypeError):
-            h1 >= ()
+            h1 >= ()  # noqa: B015
         self.assertFalse(h1 == ())
         self.assertTrue(h1 != ())
 

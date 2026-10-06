@@ -134,7 +134,7 @@ class SimpleIMAPHandler(socketserver.StreamRequestHandler):
 
     def _send(self, message):
         if verbose:
-            print("SENT: %r" % message.strip())
+            print(f"SENT: {message.strip()!r}")
         self.wfile.write(message)
 
     def _send_line(self, message):
@@ -144,7 +144,7 @@ class SimpleIMAPHandler(socketserver.StreamRequestHandler):
         self._send_line(message.encode("ASCII"))
 
     def _send_tagged(self, tag, code, message):
-        self._send_textline(" ".join((tag, code, message)))
+        self._send_textline(f"{tag} {code} {message}")
 
     def handle(self):
         # Send a welcome message.
@@ -168,7 +168,7 @@ class SimpleIMAPHandler(socketserver.StreamRequestHandler):
                     break
 
             if verbose:
-                print("GOT: %r" % line.strip())
+                print(f"GOT: {line.strip()!r}")
             if self.continuation:
                 try:
                     self.continuation.send(line)
@@ -233,7 +233,7 @@ class NewIMAPTestsMixin:
                 """
                 self.close_request(request)
                 self.server_close()
-                raise
+                raise  # noqa: PLE0704
 
         self.addCleanup(self._cleanup)
         self.server = self.server_class((socket_helper.HOST, 0), imap_handler)
@@ -304,7 +304,7 @@ class NewIMAPTestsMixin:
 
     def test_enable_UTF8_raises_error_if_not_supported(self):
         client, _ = self._setup(SimpleIMAPHandler)
-        typ, data = client.login("user", "pass")
+        typ, _data = client.login("user", "pass")
         self.assertEqual(typ, "OK")
         with self.assertRaisesRegex(imaplib.IMAP4.error, "does not support ENABLE"):
             client.enable("UTF8=ACCEPT")
@@ -335,11 +335,9 @@ class NewIMAPTestsMixin:
         self.assertEqual(code, "OK")
         self.assertEqual(client._encoding, "utf-8")
         msg_string = "Subject: üñí©öðé"
-        typ, data = client.append(None, None, None, msg_string.encode("utf-8"))
+        typ, _data = client.append(None, None, None, msg_string.encode("utf-8"))
         self.assertEqual(typ, "OK")
-        self.assertEqual(
-            server.response, ("UTF8 (%s)\r\n" % msg_string).encode("utf-8")
-        )
+        self.assertEqual(server.response, (f"UTF8 ({msg_string})\r\n").encode())
 
     def test_search_disallows_charset_in_utf8_mode(self):
         class UTF8Server(SimpleIMAPHandler):
@@ -505,7 +503,7 @@ class NewIMAPTestsMixin:
         _, server = self._setup(TimeoutHandler)
         addr = server.server_address[1]
         with self.assertRaises(socket.timeout):
-            client = self.imap_class("localhost", addr, timeout=0.001)
+            self.imap_class("localhost", addr, timeout=0.001)
 
     def test_with_statement(self):
         _, server = self._setup(SimpleIMAPHandler, connect=False)
@@ -606,7 +604,7 @@ class NewIMAPSSLTests(NewIMAPTestsMixin, unittest.TestCase):
     # to CPython stdlib
     @cpython_only
     def test_certfile_arg_warn(self):
-        with support.check_warnings(("", DeprecationWarning)):
+        with support.check_warnings(("", DeprecationWarning)):  # noqa: SIM117
             with mock.patch.object(self.imap_class, "open"):
                 with mock.patch.object(self.imap_class, "_connect"):
                     self.imap_class("localhost", 143, certfile=CERTFILE)
@@ -622,7 +620,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
             def handle_error(self, request, client_address):
                 self.close_request(request)
                 self.server_close()
-                raise
+                raise  # noqa: PLE0704
 
         if verbose:
             print("creating server")
@@ -636,7 +634,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
             print("HDLR =", server.RequestHandlerClass)
 
         t = threading.Thread(
-            name="%s serving" % self.server_class,
+            name=f"{self.server_class} serving",
             target=server.serve_forever,
             # Short poll interval to make the test finish quickly.
             # Time between requests is short enough that we won't wake
@@ -702,18 +700,18 @@ class ThreadedNetworkedTests(unittest.TestCase):
 
             def cmd_SELECT(self, tag, args):
                 flag_msg = " \\".join(self.flags)
-                self._send_line(("* FLAGS (%s)" % flag_msg).encode("ascii"))
+                self._send_line((f"* FLAGS ({flag_msg})").encode("ascii"))
                 self._send_line(b"* 2 EXISTS")
                 self._send_line(b"* 0 RECENT")
-                msg = "* OK [PERMANENTFLAGS %s \\*)] Flags permitted." % flag_msg
+                msg = f"* OK [PERMANENTFLAGS {flag_msg} \\*)] Flags permitted."
                 self._send_line(msg.encode("ascii"))
                 self._send_tagged(tag, "OK", "[READ-WRITE] SELECT completed.")
 
             def cmd_STORE(self, tag, args):
                 new_flags = args[2].strip("(").strip(")").split()
                 self.flags.extend(new_flags)
-                flags_msg = "(FLAGS (%s))" % " \\".join(self.flags)
-                msg = "* %s FETCH %s" % (args[0], flags_msg)
+                flags_msg = "(FLAGS ({}))".format(" \\".join(self.flags))
+                msg = f"* {args[0]} FETCH {flags_msg}"
                 self._send_line(msg.encode("ascii"))
                 self._send_tagged(tag, "OK", "STORE completed.")
 
@@ -722,10 +720,10 @@ class ThreadedNetworkedTests(unittest.TestCase):
             self.assertEqual(code, "OK")
             self.assertEqual(server.response, b"ZmFrZQ==\r\n")
             client.select("test")
-            typ, [data] = client.store(b"1", "+FLAGS", "[test]")
+            typ, [data] = client.store(b"1", "+FLAGS", "[test]")  # noqa: RUF059
             self.assertIn(b"[test]", data)
             client.select("test")
-            typ, [data] = client.response("PERMANENTFLAGS")
+            _typ, [data] = client.response("PERMANENTFLAGS")
             self.assertIn(b"[test]", data)
 
     @reap_threads
@@ -767,7 +765,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
 
     @reap_threads
     def test_enable_raises_error_if_not_AUTH(self):
-        with self.reaped_pair(self.UTF8Server) as (server, client):
+        with self.reaped_pair(self.UTF8Server) as (_server, client):
             self.assertFalse(client.utf8_enabled)
             self.assertRaises(imaplib.IMAP4.error, client.enable, "foo")
             self.assertFalse(client.utf8_enabled)
@@ -779,7 +777,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
         class NoEnableServer(self.UTF8Server):
             capabilities = "AUTH"
 
-        with self.reaped_pair(NoEnableServer) as (server, client):
+        with self.reaped_pair(NoEnableServer) as (_server, client):
             self.assertRaises(imaplib.IMAP4.error, client.enable, "foo")
 
     @reap_threads
@@ -787,9 +785,9 @@ class ThreadedNetworkedTests(unittest.TestCase):
         class NonUTF8Server(SimpleIMAPHandler):
             pass
 
-        with self.assertRaises(imaplib.IMAP4.error):
-            with self.reaped_pair(NonUTF8Server) as (server, client):
-                typ, data = client.login("user", "pass")
+        with self.assertRaises(imaplib.IMAP4.error):  # noqa: SIM117
+            with self.reaped_pair(NonUTF8Server) as (_server, client):
+                typ, _data = client.login("user", "pass")
                 self.assertEqual(typ, "OK")
                 client.enable("UTF8=ACCEPT")
 
@@ -811,18 +809,16 @@ class ThreadedNetworkedTests(unittest.TestCase):
             self.assertEqual(code, "OK")
             self.assertEqual(client._encoding, "utf-8")
             msg_string = "Subject: üñí©öðé"
-            typ, data = client.append(None, None, None, msg_string.encode("utf-8"))
+            typ, _data = client.append(None, None, None, msg_string.encode("utf-8"))
             self.assertEqual(typ, "OK")
-            self.assertEqual(
-                server.response, ("UTF8 (%s)\r\n" % msg_string).encode("utf-8")
-            )
+            self.assertEqual(server.response, (f"UTF8 ({msg_string})\r\n").encode())
 
     # XXX also need a test that makes sure that the Literal and Untagged_status
     # regexes uses unicode in UTF8 mode instead of the default ASCII.
 
     @reap_threads
     def test_search_disallows_charset_in_utf8_mode(self):
-        with self.reaped_pair(self.UTF8Server) as (server, client):
+        with self.reaped_pair(self.UTF8Server) as (_server, client):
             typ, _ = client.authenticate("MYAUTH", lambda x: b"fake")
             self.assertEqual(typ, "OK")
             typ, _ = client.enable("UTF8=ACCEPT")
@@ -839,7 +835,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
                     tag, "NO", f"unrecognized authentication type {args[0]}"
                 )
 
-        with self.reaped_pair(MyServer) as (server, client):
+        with self.reaped_pair(MyServer) as (_server, client):  # noqa: SIM117
             with self.assertRaises(imaplib.IMAP4.error):
                 client.authenticate("METHOD", lambda: 1)
 
@@ -852,9 +848,9 @@ class ThreadedNetworkedTests(unittest.TestCase):
                 self.response = yield
                 self._send_tagged(tag, "NO", "[AUTHENTICATIONFAILED] invalid")
 
-        with self.reaped_pair(MyServer) as (server, client):
+        with self.reaped_pair(MyServer) as (_server, client):  # noqa: SIM117
             with self.assertRaises(imaplib.IMAP4.error):
-                code, data = client.authenticate("MYAUTH", lambda x: b"fake")
+                _code, _data = client.authenticate("MYAUTH", lambda x: b"fake")
 
     @reap_threads
     def test_valid_authentication(self):
@@ -866,12 +862,12 @@ class ThreadedNetworkedTests(unittest.TestCase):
                 self._send_tagged(tag, "OK", "FAKEAUTH successful")
 
         with self.reaped_pair(MyServer) as (server, client):
-            code, data = client.authenticate("MYAUTH", lambda x: b"fake")
+            code, data = client.authenticate("MYAUTH", lambda x: b"fake")  # noqa: RUF059
             self.assertEqual(code, "OK")
             self.assertEqual(server.response, b"ZmFrZQ==\r\n")  # b64 encoded 'fake'
 
         with self.reaped_pair(MyServer) as (server, client):
-            code, data = client.authenticate("MYAUTH", lambda x: "fake")
+            code, _data = client.authenticate("MYAUTH", lambda x: "fake")
             self.assertEqual(code, "OK")
             self.assertEqual(server.response, b"ZmFrZQ==\r\n")  # b64 encoded 'fake'
 
@@ -892,14 +888,14 @@ class ThreadedNetworkedTests(unittest.TestCase):
                 else:
                     self._send_tagged(tag, "NO", "No access")
 
-        with self.reaped_pair(AuthHandler) as (server, client):
+        with self.reaped_pair(AuthHandler) as (server, client):  # noqa: RUF059
             self.assertTrue("AUTH=CRAM-MD5" in client.capabilities)
-            ret, data = client.login_cram_md5("tim", "tanstaaftanstaaf")
+            ret, data = client.login_cram_md5("tim", "tanstaaftanstaaf")  # noqa: RUF059
             self.assertEqual(ret, "OK")
 
-        with self.reaped_pair(AuthHandler) as (server, client):
+        with self.reaped_pair(AuthHandler) as (_server, client):
             self.assertTrue("AUTH=CRAM-MD5" in client.capabilities)
-            ret, data = client.login_cram_md5("tim", b"tanstaaftanstaaf")
+            ret, _data = client.login_cram_md5("tim", b"tanstaaftanstaaf")
             self.assertEqual(ret, "OK")
 
     @reap_threads
@@ -915,9 +911,9 @@ class ThreadedNetworkedTests(unittest.TestCase):
                 else:
                     self._send_tagged(tag, "OK", "MYAUTH successful")
 
-        with self.reaped_pair(MyServer) as (server, client):
+        with self.reaped_pair(MyServer) as (_server, client):  # noqa: SIM117
             with self.assertRaises(imaplib.IMAP4.error):
-                code, data = client.authenticate("MYAUTH", lambda x: None)
+                _code, _data = client.authenticate("MYAUTH", lambda x: None)
 
     def test_linetoolong(self):
         class TooLongHandler(SimpleIMAPHandler):
@@ -933,7 +929,7 @@ class ThreadedNetworkedTests(unittest.TestCase):
     @reap_threads
     def test_simple_with_statement(self):
         # simplest call
-        with self.reaped_server(SimpleIMAPHandler) as server:
+        with self.reaped_server(SimpleIMAPHandler) as server:  # noqa: SIM117
             with self.imap_class(*server.server_address):
                 pass
 

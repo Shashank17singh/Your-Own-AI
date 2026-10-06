@@ -29,112 +29,112 @@ import warnings
 from .testresult import get_test_runner
 
 __all__ = [
+    "ALWAYS_EQ",
+    "INTERNET_TIMEOUT",
+    "LARGEST",
+    "LONG_TIMEOUT",
+    "LOOPBACK_TIMEOUT",
+    "NEVER_EQ",
+    "PGO",
     # globals
     "PIPE_MAX_SIZE",
-    "verbose",
-    "max_memuse",
-    "use_resources",
-    "failfast",
-    # exceptions
-    "Error",
-    "TestFailed",
-    "TestDidNotRun",
-    "ResourceDenied",
-    # imports
-    "import_module",
-    "import_fresh_module",
-    "CleanImport",
-    # modules
-    "unload",
-    "forget",
-    # io
-    "record_original_stdout",
-    "get_original_stdout",
-    "captured_stdout",
-    "captured_stdin",
-    "captured_stderr",
+    "SAVEDCWD",
+    "SHORT_TIMEOUT",
+    "SMALLEST",
     # filesystem
     "TESTFN",
-    "SAVEDCWD",
-    "unlink",
-    "rmtree",
-    "temp_cwd",
-    "findfile",
-    "create_empty_file",
-    "can_symlink",
-    "fs_is_case_insensitive",
-    # unittest
-    "is_resource_enabled",
-    "requires",
-    "requires_freebsd_version",
-    "requires_linux_version",
-    "requires_mac_ver",
-    "check_syntax_error",
-    "check_syntax_warning",
-    "TransientResource",
-    "time_out",
-    "socket_peer_reset",
-    "ioerror_peer_reset",
     "BasicTestRunner",
-    "run_unittest",
-    "run_doctest",
-    "skip_unless_symlink",
-    "requires_gzip",
-    "requires_bz2",
-    "requires_lzma",
-    "bigmemtest",
-    "bigaddrspacetest",
-    "cpython_only",
-    "get_attribute",
-    "requires_IEEE_754",
-    "skip_unless_xattr",
-    "requires_zlib",
+    "CleanImport",
+    "EnvironmentVarGuard",
+    # exceptions
+    "Error",
+    "Matcher",
+    "ResourceDenied",
+    "SuppressCrashReport",
+    "TestDidNotRun",
+    "TestFailed",
+    "TransientResource",
     "anticipate_failure",
-    "load_package_tests",
-    "detect_api_mismatch",
+    "bigaddrspacetest",
+    "bigmemtest",
+    "can_symlink",
+    "captured_stderr",
+    "captured_stdin",
+    "captured_stdout",
     "check__all__",
-    "skip_if_buggy_ucrt_strfptime",
-    "ignore_warnings",
-    # sys
-    "is_jython",
-    "is_android",
     "check_impl_detail",
-    "unix_shell",
-    "setswitchinterval",
-    # network
-    "open_urlresource",
-    # processes
-    "temp_umask",
-    "reap_children",
-    # threads
-    "threading_setup",
-    "threading_cleanup",
-    "reap_threads",
-    "start_threads",
-    # miscellaneous
-    "check_warnings",
     "check_no_resource_warning",
     "check_no_warnings",
-    "EnvironmentVarGuard",
-    "run_with_locale",
-    "swap_item",
-    "swap_attr",
-    "Matcher",
-    "set_memlimit",
-    "SuppressCrashReport",
-    "sortdict",
-    "run_with_tz",
-    "PGO",
-    "missing_compiler_executable",
+    "check_syntax_error",
+    "check_syntax_warning",
+    # miscellaneous
+    "check_warnings",
+    "cpython_only",
+    "create_empty_file",
+    "detect_api_mismatch",
+    "failfast",
     "fd_count",
-    "ALWAYS_EQ",
-    "NEVER_EQ",
-    "LARGEST",
-    "SMALLEST",
-    "LOOPBACK_TIMEOUT",
-    "INTERNET_TIMEOUT",
-    "SHORT_TIMEOUT",
-    "LONG_TIMEOUT",
+    "findfile",
+    "forget",
+    "fs_is_case_insensitive",
+    "get_attribute",
+    "get_original_stdout",
+    "ignore_warnings",
+    "import_fresh_module",
+    # imports
+    "import_module",
+    "ioerror_peer_reset",
+    "is_android",
+    # sys
+    "is_jython",
+    # unittest
+    "is_resource_enabled",
+    "load_package_tests",
+    "max_memuse",
+    "missing_compiler_executable",
+    # network
+    "open_urlresource",
+    "reap_children",
+    "reap_threads",
+    # io
+    "record_original_stdout",
+    "requires",
+    "requires_IEEE_754",
+    "requires_bz2",
+    "requires_freebsd_version",
+    "requires_gzip",
+    "requires_linux_version",
+    "requires_lzma",
+    "requires_mac_ver",
+    "requires_zlib",
+    "rmtree",
+    "run_doctest",
+    "run_unittest",
+    "run_with_locale",
+    "run_with_tz",
+    "set_memlimit",
+    "setswitchinterval",
+    "skip_if_buggy_ucrt_strfptime",
+    "skip_unless_symlink",
+    "skip_unless_xattr",
+    "socket_peer_reset",
+    "sortdict",
+    "start_threads",
+    "swap_attr",
+    "swap_item",
+    "temp_cwd",
+    # processes
+    "temp_umask",
+    "threading_cleanup",
+    # threads
+    "threading_setup",
+    "time_out",
+    "unix_shell",
+    "unlink",
+    # modules
+    "unload",
+    "use_resources",
+    "verbose",
 ]
 
 
@@ -379,7 +379,7 @@ def get_attribute(obj, name):
     try:
         attribute = getattr(obj, name)
     except AttributeError:
-        raise unittest.SkipTest("object %r has no attribute %r" % (obj, name))
+        raise unittest.SkipTest(f"object {obj!r} has no attribute {name!r}")
     else:
         return attribute
 
@@ -419,8 +419,8 @@ def _force_run(path, func, *args):
         return func(*args)
     except OSError as err:
         if verbose >= 2:
-            print("%s: %s" % (err.__class__.__name__, err))
-            print("re-run %s%r" % (func.__name__, args))
+            print(f"{err.__class__.__name__}: {err}")
+            print(f"re-run {func.__name__}{args!r}")
         os.chmod(path, stat.S_IRWXU)
         return func(*args)
 
@@ -477,8 +477,7 @@ if sys.platform.startswith("win"):
                     mode = os.lstat(fullname).st_mode
                 except OSError as exc:
                     print(
-                        "support.rmtree(): os.lstat(%r) failed with %s"
-                        % (fullname, exc),
+                        f"support.rmtree(): os.lstat({fullname!r}) failed with {exc}",
                         file=sys.__stderr__,
                     )
                     mode = 0
@@ -659,7 +658,7 @@ def _is_gui_available():
             root.withdraw()
             root.update()
             root.destroy()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             err_string = str(e)
             if len(err_string) > 50:
                 err_string = err_string[:50] + " [...]"
@@ -684,7 +683,7 @@ def requires(resource, msg=None):
     """Raise ResourceDenied if the specified resource is not available."""
     if not is_resource_enabled(resource):
         if msg is None:
-            msg = "Use of the %r resource not enabled" % resource
+            msg = f"Use of the {resource!r} resource not enabled"
         raise ResourceDenied(msg)
     if resource == "gui" and not _is_gui_available():
         raise ResourceDenied(_is_gui_available.reason)
@@ -758,8 +757,7 @@ def requires_mac_ver(*min_version):
                     if version < min_version:
                         min_version_txt = ".".join(map(str, min_version))
                         raise unittest.SkipTest(
-                            "Mac OS X %s or higher required, not %s"
-                            % (min_version_txt, version_txt)
+                            f"Mac OS X {min_version_txt} or higher required, not {version_txt}"
                         )
             return func(*args, **kw)
 
@@ -934,9 +932,8 @@ if os.name == "nt":
             pass
         else:
             print(
-                "WARNING: The filename %r CAN be encoded by the filesystem encoding (%s). "
+                f"WARNING: The filename {TESTFN_UNENCODABLE!r} CAN be encoded by the filesystem encoding ({TESTFN_ENCODING}). "
                 "Unicode filename tests may not be effective"
-                % (TESTFN_UNENCODABLE, TESTFN_ENCODING)
             )
             TESTFN_UNENCODABLE = None
 # Mac OS X denies unencodable filenames (invalid utf-8)
@@ -971,9 +968,11 @@ for name in (
     b"\xff",
     # undecodable from iso8859-3, iso8859-6, iso8859-7, cp424, iso8859-8, cp856
     # and cp857
-    b"\xae\xd5"
-    # undecodable from UTF-8 (UNIX and Mac OS X)
-    b"\xed\xb2\x80",
+    (
+        b"\xae\xd5"
+        # undecodable from UTF-8 (UNIX and Mac OS X)
+        b"\xed\xb2\x80"
+    ),
     b"\xed\xb4\x80",
     # undecodable from shift_jis, cp869, cp874, cp932, cp1250, cp1251, cp1252,
     # cp1253, cp1254, cp1255, cp1257, cp1258
@@ -1093,7 +1092,7 @@ def temp_cwd(name="tempcwd", quiet=False):
     only a warning is raised and the original CWD is used.
 
     """
-    with temp_dir(path=name, quiet=quiet) as temp_path:
+    with temp_dir(path=name, quiet=quiet) as temp_path:  # noqa: SIM117
         with change_cwd(temp_path, quiet=quiet) as cwd_dir:
             yield cwd_dir
 
@@ -1169,9 +1168,9 @@ def create_empty_file(filename):
 def sortdict(dict):
     "Like repr(dict), but in sorted order."
     items = sorted(dict.items())
-    reprpairs = ["%r: %r" % pair for pair in items]
+    reprpairs = ["{!r}: {!r}".format(*pair) for pair in items]
     withcommas = ", ".join(reprpairs)
-    return "{%s}" % withcommas
+    return f"{{{withcommas}}}"
 
 
 def make_bad_fd():
@@ -1179,7 +1178,7 @@ def make_bad_fd():
     Create an invalid file descriptor by opening and closing a file and return
     its fd.
     """
-    file = open(TESTFN, "wb")
+    file = open(TESTFN, "wb")  # noqa: SIM115
     try:
         return file.fileno()
     finally:
@@ -1241,7 +1240,7 @@ def open_urlresource(url, *args, **kw):
     fn = os.path.join(TEST_DATA_DIR, filename)
 
     def check_valid_file(fn):
-        f = open(fn, *args, **kw)
+        f = open(fn, *args, **kw)  # noqa: SIM115
         if check is None:
             return f
         elif check(f):
@@ -1259,7 +1258,7 @@ def open_urlresource(url, *args, **kw):
     requires("urlfetch")
 
     if verbose:
-        print("\tfetching %s ..." % url, file=get_original_stdout())
+        print(f"\tfetching {url} ...", file=get_original_stdout())
     opener = urllib.request.build_opener()
     if gzip:
         opener.addheaders.append(("Accept-Encoding", "gzip"))
@@ -1278,7 +1277,7 @@ def open_urlresource(url, *args, **kw):
     f = check_valid_file(fn)
     if f is not None:
         return f
-    raise TestFailed("invalid resource %r" % fn)
+    raise TestFailed(f"invalid resource {fn!r}")
 
 
 class WarningsRecorder:
@@ -1295,7 +1294,7 @@ class WarningsRecorder:
             return getattr(self._warnings[-1], attr)
         elif attr in warnings.WarningMessage._WARNING_DETAILS:
             return None
-        raise AttributeError("%r has no attribute %r" % (self, attr))
+        raise AttributeError(f"{self!r} has no attribute {attr!r}")
 
     @property
     def warnings(self):
@@ -1339,9 +1338,11 @@ def _filterwarnings(filters, quiet=False):
             # This filter caught nothing
             missing.append((msg, cat.__name__))
     if reraise:
-        raise AssertionError("unhandled warning %s" % reraise[0])
+        raise AssertionError(f"unhandled warning {reraise[0]}")
     if missing:
-        raise AssertionError("filter (%r, %s) did not catch any warning" % missing[0])
+        raise AssertionError(
+            "filter ({!r}, {}) did not catch any warning".format(*missing[0])
+        )
 
 
 @contextlib.contextmanager
@@ -1489,7 +1490,7 @@ class EnvironmentVarGuard(collections.abc.MutableMapping):
                     del self._environ[k]
             else:
                 self._environ[k] = v
-        os.environ = self._environ
+        os.environ = self._environ  # noqa: B003
 
 
 class DirsOnSysPath:
@@ -1670,7 +1671,7 @@ def check_sizeof(test, o, size):
         or ((type(o) != type) and (type(o).__flags__ & _TPFLAGS_HAVE_GC))
     ):
         size += _testinternalcapi.SIZEOF_PYGC_HEAD
-    msg = "wrong size for %s: got %d, expected %d" % (type(o), result, size)
+    msg = "wrong size for %s: got %d, expected %d" % (type(o), result, size)  # noqa: UP031
     test.assertEqual(result, size, msg)
 
 
@@ -1690,7 +1691,7 @@ def run_with_locale(catstr, *locales):
             except AttributeError:
                 # if the test author gives us an invalid category string
                 raise
-            except:
+            except:  # noqa: E722
                 # cannot retrieve original locale, so do nothing
                 locale = orig_locale = None
             else:
@@ -1698,7 +1699,7 @@ def run_with_locale(catstr, *locales):
                     try:
                         locale.setlocale(category, loc)
                         break
-                    except:
+                    except:  # noqa: E722, S110
                         pass
 
             # now run the function, resetting the locale on exceptions
@@ -1776,12 +1777,12 @@ def set_memlimit(limit):
     }
     m = re.match(r"(\d+(\.\d+)?) (K|M|G|T)b?$", limit, re.IGNORECASE | re.VERBOSE)
     if m is None:
-        raise ValueError("Invalid memory limit %r" % (limit,))
+        raise ValueError(f"Invalid memory limit {limit!r}")
     memlimit = int(float(m.group(1)) * sizes[m.group(3).lower()])
     real_max_memuse = memlimit
     memlimit = min(memlimit, MAX_Py_ssize_t)
     if memlimit < _2G - 1:
-        raise ValueError("Memory limit %r too low to be useful" % (limit,))
+        raise ValueError(f"Memory limit {limit!r} too low to be useful")
     max_memuse = memlimit
 
 
@@ -1796,7 +1797,7 @@ class _MemoryWatchdog:
 
     def start(self):
         try:
-            f = open(self.procfile, "r")
+            f = open(self.procfile, "r")  # noqa: SIM115
         except OSError as e:
             warnings.warn(f"/proc not available for stats: {e}", RuntimeWarning)
             sys.stderr.flush()
@@ -1934,7 +1935,7 @@ def _parse_guards(guards):
     # Returns a tuple ({platform_name: run_me}, default_value)
     if not guards:
         return ({"cpython": True}, False)
-    is_true = list(guards.values())[0]
+    is_true = next(iter(guards.values()))
     assert list(guards.values()) == [is_true] * len(guards)  # all True or all False
     return (guards, not is_true)
 
@@ -2171,9 +2172,9 @@ def run_doctest(module, verbosity=None, optionflags=0):
 
     f, t = doctest.testmod(module, verbose=verbosity, optionflags=optionflags)
     if f:
-        raise TestFailed("%d of %d doctests failed" % (f, t))
+        raise TestFailed("%d of %d doctests failed" % (f, t))  # noqa: UP031
     if verbose:
-        print("doctest (%s) ... %d tests with zero failures" % (module.__name__, t))
+        print("doctest (%s) ... %d tests with zero failures" % (module.__name__, t))  # noqa: UP031
     return f, t
 
 
@@ -2347,7 +2348,7 @@ def reap_children():
     while True:
         try:
             # Read the exit status of any child process which already completed
-            pid, status = os.waitpid(-1, os.WNOHANG)
+            pid, _status = os.waitpid(-1, os.WNOHANG)
         except OSError:
             break
 
@@ -2372,7 +2373,7 @@ def start_threads(threads, unlock=None):
         except:
             if verbose:
                 print(
-                    "Can't start %d threads, only %d threads started"
+                    "Can't start %d threads, only %d threads started"  # noqa: UP031
                     % (len(threads), len(started))
                 )
             raise
@@ -2381,7 +2382,7 @@ def start_threads(threads, unlock=None):
         try:
             if unlock:
                 unlock()
-            endtime = starttime = time.monotonic()
+            endtime = time.monotonic()
             for timeout in range(1, 16):
                 endtime += 60
                 for t in started:
@@ -2391,14 +2392,14 @@ def start_threads(threads, unlock=None):
                     break
                 if verbose:
                     print(
-                        "Unable to join %d threads during a period of "
+                        "Unable to join %d threads during a period of "  # noqa: UP031
                         "%d minutes" % (len(started), timeout)
                     )
         finally:
             started = [t for t in started if t.is_alive()]
             if started:
                 faulthandler.dump_traceback(sys.stdout)
-                raise AssertionError("Unable to join %d threads" % len(started))
+                raise AssertionError("Unable to join %d threads" % len(started))  # noqa: UP031
 
 
 @contextlib.contextmanager
@@ -2489,7 +2490,7 @@ class Matcher:
         this scheme to (for example) do regular expression matching, etc.
         """
         result = True
-        for k in kwargs:
+        for k in kwargs:  # noqa: PLC0206
             v = kwargs[k]
             dv = d.get(k)
             if not self.match_value(k, dv, v):
@@ -2723,9 +2724,9 @@ def detect_api_mismatch(ref_api, other_api, *, ignore=()):
     missing_items = set(dir(ref_api)) - set(dir(other_api))
     if ignore:
         missing_items -= set(ignore)
-    missing_items = set(
+    missing_items = {
         m for m in missing_items if not m.startswith("_") or m.endswith("__")
-    )
+    }
     return missing_items
 
 
@@ -2998,7 +2999,7 @@ def check_free_after_iterating(test, iter, cls, args=()):
     test.assertTrue(done)
 
 
-def missing_compiler_executable(cmd_names=[]):
+def missing_compiler_executable(cmd_names=None):
     """Check if the compiler components used to build the interpreter exist.
 
     Check for the existence of the compiler executables whose names are listed
@@ -3009,6 +3010,8 @@ def missing_compiler_executable(cmd_names=[]):
     """
     from distutils import ccompiler, errors, spawn, sysconfig
 
+    if cmd_names is None:
+        cmd_names = []
     compiler = ccompiler.new_compiler()
     sysconfig.customize_compiler(compiler)
     if compiler.compiler_type == "msvc":
@@ -3022,7 +3025,7 @@ def missing_compiler_executable(cmd_names=[]):
             continue
         cmd = getattr(compiler, name)
         if cmd_names:
-            assert cmd is not None, "the '%s' executable is not configured" % name
+            assert cmd is not None, f"the '{name}' executable is not configured"
         elif not cmd:
             continue
         if spawn.find_executable(cmd[0]) is None:
@@ -3090,7 +3093,7 @@ def fd_count():
         try:
             import msvcrt
 
-            msvcrt.CrtSetReportMode
+            msvcrt.CrtSetReportMode  # noqa: B018
         except (AttributeError, ImportError):
             # no msvcrt or a release build
             pass

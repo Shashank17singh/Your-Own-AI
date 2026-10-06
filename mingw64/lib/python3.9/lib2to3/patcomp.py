@@ -29,7 +29,7 @@ def tokenize_wrapper(input):
     skip = {token.NEWLINE, token.INDENT, token.DEDENT}
     tokens = tokenize.generate_tokens(io.StringIO(input).readline)
     for quintuple in tokens:
-        type, value, start, end, line_text = quintuple
+        type, _value, _start, _end, _line_text = quintuple
         if type not in skip:
             yield quintuple
 
@@ -144,7 +144,7 @@ class PatternCompiler:
             value = node.value
             if value.isupper():
                 if value not in TOKEN_MAP:
-                    raise PatternSyntaxError("Invalid token: %r" % value)
+                    raise PatternSyntaxError(f"Invalid token: {value!r}")
                 if nodes[1:]:
                     raise PatternSyntaxError("Can't have details for token")
                 return pytree.LeafPattern(TOKEN_MAP[value])
@@ -154,7 +154,7 @@ class PatternCompiler:
                 elif not value.startswith("_"):
                     type = getattr(self.pysyms, value, None)
                     if type is None:
-                        raise PatternSyntaxError("Invalid symbol: %r" % value)
+                        raise PatternSyntaxError(f"Invalid symbol: {value!r}")
                 if nodes[1:]:  # Details present
                     content = [self.compile_node(nodes[1].children[1])]
                 else:

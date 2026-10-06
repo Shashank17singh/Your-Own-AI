@@ -970,7 +970,7 @@ class HighPage(Frame):
         """
         target = self.highlight_target.get()
         prev_color = self.style.lookup(self.frame_color_set["style"], "background")
-        rgbTuplet, color_string = colorchooser.askcolor(
+        _rgbTuplet, color_string = colorchooser.askcolor(
             parent=self, title="Pick new color for : " + target, initialcolor=prev_color
         )
         if color_string and (color_string != prev_color):
@@ -1598,7 +1598,7 @@ class KeysPage(Frame):
         for bind_name in bind_names:
             key = " ".join(keyset[bind_name])
             bind_name = bind_name[2:-2]  # Trim off the angle brackets.
-            if keyset_name in changes["keys"]:
+            if keyset_name in changes["keys"]:  # noqa: SIM102
                 # Handle any unsaved changes to this key set.
                 if bind_name in changes["keys"][keyset_name]:
                     key = changes["keys"][keyset_name][bind_name]
@@ -1807,7 +1807,7 @@ class WinPage(Frame):
                 values=list(range(1, 11)),
                 width=3,
             )
-        cursor_blink_title = Label(frame_cursor, text="Cursor Blink")
+        Label(frame_cursor, text="Cursor Blink")
         self.cursor_blink_bool = Checkbutton(
             frame_cursor, text="Cursor blink", variable=self.cursor_blink
         )
@@ -2208,7 +2208,7 @@ class ExtPage(Frame):
         newsel = self.extension_list.curselection()
         if newsel:
             newsel = self.extension_list.get(newsel)
-        if newsel is None or newsel != self.current_extension:
+        if newsel is None or newsel != self.current_extension:  # noqa: SIM102
             if self.current_extension:
                 self.details_frame.config(text="")
                 self.config_frame[self.current_extension].grid_forget()
@@ -2608,7 +2608,7 @@ class VerticalScrolledFrame(Frame):
         def _configure_interior(event):
             # Update the scrollbars to match the size of the inner frame.
             size = (interior.winfo_reqwidth(), interior.winfo_reqheight())
-            canvas.config(scrollregion="0 0 %s %s" % size)
+            canvas.config(scrollregion="0 0 {} {}".format(*size))
 
         interior.bind("<Configure>", _configure_interior)
 

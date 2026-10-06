@@ -58,7 +58,7 @@ class TextFileTestCase(support.TempdirManager, unittest.TestCase):
 
         tmpdir = self.mkdtemp()
         filename = os.path.join(tmpdir, "test.txt")
-        out_file = open(filename, "w")
+        out_file = open(filename, "w")  # noqa: SIM115
         try:
             out_file.write(TEST_DATA)
         finally:

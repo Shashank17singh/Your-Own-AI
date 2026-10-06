@@ -46,13 +46,13 @@ class StringArrayTestCase(unittest.TestCase):
 
     def test_param_1(self):
         BUF = c_char * 4
-        buf = BUF()
+        BUF()
 
     ##        print c_char_p.from_param(buf)
 
     def test_param_2(self):
         BUF = c_char * 4
-        buf = BUF()
+        BUF()
 
     ##        print BUF.from_param(c_char_p("python"))
     ##        print BUF.from_param(BUF(*"pyth"))
@@ -214,7 +214,7 @@ def run_test(rep, msg, func, arg):
         func(arg)
         func(arg)
     stop = clock()
-    print("%20s: %.2f us" % (msg, ((stop - start) * 1e6 / 5 / rep)))
+    print("%20s: %.2f us" % (msg, ((stop - start) * 1e6 / 5 / rep)))  # noqa: UP031
 
 
 def check_perf():

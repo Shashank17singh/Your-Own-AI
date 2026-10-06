@@ -18,7 +18,7 @@ if os.name == "nt":
         if i == -1:
             return 6
         i = i + len(prefix)
-        s, rest = sys.version[i:].split(" ", 1)
+        s, _rest = sys.version[i:].split(" ", 1)
         majorVersion = int(s[:-2]) - 6
         if majorVersion >= 13:
             majorVersion += 1
@@ -46,7 +46,7 @@ if os.name == "nt":
         if version <= 6:
             clibname = "msvcrt"
         elif version <= 13:
-            clibname = "msvcr%d" % (version * 10)
+            clibname = "msvcr%d" % (version * 10)  # noqa: UP031
         else:
             # CRT is no longer directly loadable. See issue23606 for the
             # discussion about alternative approaches.
@@ -83,11 +83,11 @@ elif os.name == "posix" and sys.platform == "darwin":
 
     def find_library(name):
         possible = [
-            "lib%s.dylib" % name,
-            "%s.dylib" % name,
-            "%s.framework/%s" % (name, name),
+            f"lib{name}.dylib",
+            f"{name}.dylib",
+            f"{name}.framework/{name}",
         ]
-        for name in possible:
+        for name in possible:  # noqa: PLR1704
             try:
                 return _dyld_find(name)
             except ValueError:
@@ -119,7 +119,7 @@ elif os.name == "posix":
         # library name it prints out. The GCC command will fail because we
         # haven't supplied a proper program with main(), but that does not
         # matter.
-        expr = os.fsencode(r"[^\(\)\s]*lib%s\.[^\(\)\s]*" % re.escape(name))
+        expr = os.fsencode(rf"[^\(\)\s]*lib{re.escape(name)}\.[^\(\)\s]*")
 
         c_compiler = shutil.which("gcc")
         if not c_compiler:
@@ -128,7 +128,7 @@ elif os.name == "posix":
             # No C compiler available, give up
             return None
 
-        temp = tempfile.NamedTemporaryFile()
+        temp = tempfile.NamedTemporaryFile()  # noqa: SIM115
         try:
             args = [c_compiler, "-Wl,-t", "-o", temp.name, "-l" + name]
 
@@ -224,7 +224,7 @@ elif os.name == "posix":
 
         def find_library(name):
             ename = re.escape(name)
-            expr = r":-l%s\.\S+ => \S*/(lib%s\.\S+)" % (ename, ename)
+            expr = rf":-l{ename}\.\S+ => \S*/(lib{ename}\.\S+)"
             expr = os.fsencode(expr)
 
             try:
@@ -276,7 +276,7 @@ elif os.name == "posix":
                 return None
 
             for dir in paths.split(":"):
-                libfile = os.path.join(dir, "lib%s.so" % name)
+                libfile = os.path.join(dir, f"lib{name}.so")
                 if os.path.exists(libfile):
                     return libfile
 
@@ -322,13 +322,13 @@ elif os.name == "posix":
 
         def _findLib_ld(name):
             # See issue #9998 for why this is needed
-            expr = r"[^\(\)\s]*lib%s\.[^\(\)\s]*" % re.escape(name)
+            expr = rf"[^\(\)\s]*lib{re.escape(name)}\.[^\(\)\s]*"
             cmd = ["ld", "-t"]
             libpath = os.environ.get("LD_LIBRARY_PATH")
             if libpath:
                 for d in libpath.split(":"):
                     cmd.extend(["-L", d])
-            cmd.extend(["-o", os.devnull, "-l%s" % name])
+            cmd.extend(["-o", os.devnull, f"-l{name}"])
             result = None
             try:
                 p = subprocess.Popen(
@@ -346,7 +346,7 @@ elif os.name == "posix":
                     if not _is_elf(file):
                         continue
                     return os.fsdecode(file)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass  # result will be None
             return result
 

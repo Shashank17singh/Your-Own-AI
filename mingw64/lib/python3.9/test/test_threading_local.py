@@ -142,7 +142,7 @@ class BaseLocalTest:
                 # This is expected -- we haven't set obj.x in this thread yet!
                 self._failed = ""  # passed
             else:
-                self._failed = "Incorrectly got value %r from class %r\n" % (foo, c)
+                self._failed = f"Incorrectly got value {foo!r} from class {c!r}\n"
                 sys.stderr.write(self._failed)
 
         t1 = threading.Thread(target=f1)

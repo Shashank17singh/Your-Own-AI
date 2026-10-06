@@ -206,9 +206,9 @@ class GetoptTests(unittest.TestCase):
         run_doctest(m, verbose)
 
     def test_issue4629(self):
-        longopts, shortopts = getopt.getopt(["--help="], "", ["help="])
+        longopts, shortopts = getopt.getopt(["--help="], "", ["help="])  # noqa: RUF059
         self.assertEqual(longopts, [("--help", "")])
-        longopts, shortopts = getopt.getopt(["--help=x"], "", ["help="])
+        longopts, _shortopts = getopt.getopt(["--help=x"], "", ["help="])
         self.assertEqual(longopts, [("--help", "x")])
         self.assertRaises(getopt.GetoptError, getopt.getopt, ["--help="], "", ["help"])
 

@@ -3159,10 +3159,10 @@ def test_no_trailing_whitespace_stripping():
 
 def test_main():
     # Check the doctest cases in doctest itself:
-    ret = support.run_doctest(doctest, verbosity=True)
+    support.run_doctest(doctest, verbosity=True)
 
     # Check the doctest cases defined here:
-    from test import test_doctest
+    from test import test_doctest  # noqa: PLW0406
 
     support.run_doctest(test_doctest, verbosity=True)
 

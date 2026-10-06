@@ -109,7 +109,7 @@ def test_au(h, f):
     else:
         return None
     filetype = "au"
-    hdr_size = func(h[4:8])
+    func(h[4:8])
     data_size = func(h[8:12])
     encoding = func(h[12:16])
     rate = func(h[16:20])
@@ -172,7 +172,7 @@ def test_wav(h, f):
         return None
     f.seek(0)
     try:
-        w = wave.open(f, "r")
+        w = wave.open(f, "r")  # noqa: SIM115
     except (EOFError, wave.Error):
         return None
     return (

@@ -114,10 +114,10 @@ class BaseTest(unittest.TestCase):
         self.root_hdlr.setFormatter(self.root_formatter)
         if self.logger1.hasHandlers():
             hlist = self.logger1.handlers + self.root_logger.handlers
-            raise AssertionError("Unexpected handlers: %s" % hlist)
+            raise AssertionError(f"Unexpected handlers: {hlist}")
         if self.logger2.hasHandlers():
             hlist = self.logger2.handlers + self.root_logger.handlers
-            raise AssertionError("Unexpected handlers: %s" % hlist)
+            raise AssertionError(f"Unexpected handlers: {hlist}")
         self.root_logger.addHandler(self.root_hdlr)
         self.assertTrue(self.logger1.hasHandlers())
         self.assertTrue(self.logger2.hasHandlers())
@@ -177,7 +177,7 @@ class BaseTest(unittest.TestCase):
         """Generate a message consisting solely of an auto-incrementing
         integer."""
         self.message_num += 1
-        return "%d" % self.message_num
+        return "%d" % self.message_num  # noqa: UP031
 
 
 class BuiltinLevelsTest(BaseTest):
@@ -267,7 +267,7 @@ class BuiltinLevelsTest(BaseTest):
         INF_ERR.setLevel(logging.ERROR)
         INF_UNDEF = logging.getLogger("INF.UNDEF")
         INF_ERR_UNDEF = logging.getLogger("INF.ERR.UNDEF")
-        UNDEF = logging.getLogger("UNDEF")
+        logging.getLogger("UNDEF")
 
         # These should log.
         INF_UNDEF.log(logging.CRITICAL, m())
@@ -681,8 +681,8 @@ class HandlerTest(BaseTest):
                         h.handle(r)
                     except Exception:
                         print(
-                            "Deleted at %s, "
-                            "opened at %s" % (self.deletion_time, self.handle_time)
+                            f"Deleted at {self.deletion_time}, "
+                            f"opened at {self.handle_time}"
                         )
                         raise
             finally:
@@ -702,7 +702,7 @@ class HandlerTest(BaseTest):
         class _OurHandler(logging.Handler):
             def __init__(self):
                 super().__init__()
-                self.sub_handler = logging.StreamHandler(stream=open("/dev/null", "wt"))
+                self.sub_handler = logging.StreamHandler(stream=open("/dev/null", "wt"))  # noqa: SIM115
 
             def emit(self, record):
                 self.sub_handler.acquire()
@@ -997,7 +997,7 @@ class TestHTTPServer(ControlMixin, HTTPServer):
                 sock = self.sslctx.wrap_socket(sock, server_side=True)
         except OSError as e:
             # socket errors are silenced by the caller, print them here
-            sys.stderr.write("Got an error:\n%s\n" % e)
+            sys.stderr.write(f"Got an error:\n{e}\n")
             raise
         return sock, addr
 
@@ -1114,7 +1114,7 @@ class SMTPHandlerTest(BaseTest):
         server.stop()
         self.assertTrue(self.handled.is_set())
         self.assertEqual(len(self.messages), 1)
-        peer, mailfrom, rcpttos, data = self.messages[0]
+        _peer, mailfrom, rcpttos, data = self.messages[0]
         self.assertEqual(mailfrom, "me")
         self.assertEqual(rcpttos, ["you"])
         self.assertIn("\nSubject: Log\n", data)
@@ -1234,7 +1234,7 @@ class ExceptionFormatter(logging.Formatter):
     """A special exception formatter."""
 
     def formatException(self, ei):
-        return "Got a [%s]" % ei[0].__name__
+        return f"Got a [{ei[0].__name__}]"
 
 
 class ConfigFileTest(BaseTest):
@@ -1558,21 +1558,21 @@ class ConfigFileTest(BaseTest):
 
     def test_config2_failure(self):
         # A simple config file which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config2)
+        self.assertRaises(Exception, self.apply_config, self.config2)  # noqa: B017
 
     def test_config3_failure(self):
         # A simple config file which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config3)
+        self.assertRaises(Exception, self.apply_config, self.config3)  # noqa: B017
 
     def test_config4_ok(self):
         # A config file specifying a custom formatter class.
         with support.captured_stdout() as output:
             self.apply_config(self.config4)
-            logger = logging.getLogger()
+            logging.getLogger()
             try:
                 raise RuntimeError()
             except RuntimeError:
-                logging.exception("just testing")
+                logging.exception("just testing")  # noqa: LOG015
             sys.stdout.seek(0)
             self.assertEqual(
                 output.getvalue(), "ERROR:root:just testing\nGot a [RuntimeError]\n"
@@ -1719,17 +1719,17 @@ class ConfigFileTest(BaseTest):
             os.close(fd)
             logging.config.fileConfig(
                 fn,
-                defaults=dict(
-                    version=1,
-                    disable_existing_loggers=False,
-                    formatters={
+                defaults={
+                    "version": 1,
+                    "disable_existing_loggers": False,
+                    "formatters": {
                         "generic": {
                             "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
                             "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
                             "class": "logging.Formatter",
                         },
                     },
-                ),
+                },
             )
         finally:
             os.unlink(fn)
@@ -2050,7 +2050,7 @@ class HTTPHandlerTest(BaseTest):
             try:
                 rlen = int(request.headers["Content-Length"])
                 self.post_data = request.rfile.read(rlen)
-            except:
+            except:  # noqa: E722
                 self.post_data = None
         request.send_response(200)
         request.end_headers()
@@ -2083,7 +2083,7 @@ class HTTPHandlerTest(BaseTest):
             )
             server.start()
             server.ready.wait()
-            host = "localhost:%d" % server.server_port
+            host = "localhost:%d" % server.server_port  # noqa: UP031
             secure_client = secure and sslctx
             self.h_hdlr = logging.handlers.HTTPHandler(
                 host,
@@ -2141,7 +2141,7 @@ class MemoryTest(BaseTest):
                 dead.append(repr_)
         if dead:
             self.fail(
-                "%d objects should have survived "
+                "%d objects should have survived "  # noqa: UP031
                 "but have been destroyed: %s" % (len(dead), ", ".join(dead))
             )
 
@@ -2191,7 +2191,7 @@ class EncodingTest(BaseTest):
                 log.removeHandler(handler)
                 handler.close()
             # check we wrote exactly those bytes, ignoring trailing \n etc
-            f = open(fn, encoding="utf-8")
+            f = open(fn, encoding="utf-8")  # noqa: SIM115
             try:
                 self.assertEqual(f.read().rstrip(), data)
             finally:
@@ -2285,7 +2285,7 @@ class ConfigDictTest(BaseTest):
     expected_log_pat = r"^(\w+) \+\+ (\w+)$"
 
     # config0 is a standard configuration.
-    config0 = {
+    config0 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2307,7 +2307,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config1 adds a little to the standard configuration.
-    config1 = {
+    config1 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2334,7 +2334,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config1a moves the handler to the root. Used with config8a
-    config1a = {
+    config1a = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2361,7 +2361,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config2 has a subtle configuration error that should be reported
-    config2 = {
+    config2 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2388,7 +2388,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config1 but with a misspelt level on a handler
-    config2a = {
+    config2a = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2415,7 +2415,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config1 but with a misspelt level on a logger
-    config2b = {
+    config2b = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2442,7 +2442,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config3 has a less subtle configuration error
-    config3 = {
+    config3 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2469,7 +2469,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config4 specifies a custom formatter class to be loaded
-    config4 = {
+    config4 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2492,7 +2492,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config4 but using an actual callable rather than a string
-    config4a = {
+    config4a = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2526,7 +2526,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config5 specifies a custom handler class to be loaded
-    config5 = {
+    config5 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2554,7 +2554,7 @@ class ConfigDictTest(BaseTest):
 
     # config6 specifies a custom handler class to be loaded
     # but has bad arguments
-    config6 = {
+    config6 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2583,7 +2583,7 @@ class ConfigDictTest(BaseTest):
 
     # config 7 does not define compiler.parser but defines compiler.lexer
     # so compiler.parser should be disabled after applying it
-    config7 = {
+    config7 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2612,7 +2612,7 @@ class ConfigDictTest(BaseTest):
     # config8 defines both compiler and compiler.lexer
     # so compiler.parser should not be disabled (since
     # compiler is defined)
-    config8 = {
+    config8 = {  # noqa: RUF012
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -2641,7 +2641,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # config8a disables existing loggers
-    config8a = {
+    config8a = {  # noqa: RUF012
         "version": 1,
         "disable_existing_loggers": True,
         "formatters": {
@@ -2669,7 +2669,7 @@ class ConfigDictTest(BaseTest):
         },
     }
 
-    config9 = {
+    config9 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2695,7 +2695,7 @@ class ConfigDictTest(BaseTest):
         },
     }
 
-    config9a = {
+    config9a = {  # noqa: RUF012
         "version": 1,
         "incremental": True,
         "handlers": {
@@ -2710,7 +2710,7 @@ class ConfigDictTest(BaseTest):
         },
     }
 
-    config9b = {
+    config9b = {  # noqa: RUF012
         "version": 1,
         "incremental": True,
         "handlers": {
@@ -2726,7 +2726,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config1 but with a filter added
-    config10 = {
+    config10 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2760,7 +2760,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config1 but using cfg:// references
-    config11 = {
+    config11 = {  # noqa: RUF012
         "version": 1,
         "true_formatters": {
             "form1": {
@@ -2791,7 +2791,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config11 but missing the version key
-    config12 = {
+    config12 = {  # noqa: RUF012
         "true_formatters": {
             "form1": {
                 "format": "%(levelname)s ++ %(message)s",
@@ -2821,7 +2821,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config11 but using an unsupported version
-    config13 = {
+    config13 = {  # noqa: RUF012
         "version": 2,
         "true_formatters": {
             "form1": {
@@ -2852,7 +2852,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # As config0, but with properties
-    config14 = {
+    config14 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2877,7 +2877,7 @@ class ConfigDictTest(BaseTest):
         },
     }
 
-    out_of_order = {
+    out_of_order = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "mySimpleFormatter": {
@@ -2909,7 +2909,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # Configuration with custom logging.Formatter subclass as '()' key and 'validate' set to False
-    custom_formatter_class_validate = {
+    custom_formatter_class_validate = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2936,7 +2936,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # Configuration with custom logging.Formatter subclass as 'class' key and 'validate' set to False
-    custom_formatter_class_validate2 = {
+    custom_formatter_class_validate2 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2963,7 +2963,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # Configuration with custom class that is not inherited from logging.Formatter
-    custom_formatter_class_validate3 = {
+    custom_formatter_class_validate3 = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -2990,7 +2990,7 @@ class ConfigDictTest(BaseTest):
     }
 
     # Configuration with custom function and 'validate' set to False
-    custom_formatter_with_function = {
+    custom_formatter_with_function = {  # noqa: RUF012
         "version": 1,
         "formatters": {
             "form1": {
@@ -3057,19 +3057,19 @@ class ConfigDictTest(BaseTest):
 
     def test_config2_failure(self):
         # A simple config which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config2)
+        self.assertRaises(Exception, self.apply_config, self.config2)  # noqa: B017
 
     def test_config2a_failure(self):
         # A simple config which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config2a)
+        self.assertRaises(Exception, self.apply_config, self.config2a)  # noqa: B017
 
     def test_config2b_failure(self):
         # A simple config which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config2b)
+        self.assertRaises(Exception, self.apply_config, self.config2b)  # noqa: B017
 
     def test_config3_failure(self):
         # A simple config which overrides the default settings.
-        self.assertRaises(Exception, self.apply_config, self.config3)
+        self.assertRaises(Exception, self.apply_config, self.config3)  # noqa: B017
 
     def test_config4_ok(self):
         # A config specifying a custom formatter class.
@@ -3079,7 +3079,7 @@ class ConfigDictTest(BaseTest):
             try:
                 raise RuntimeError()
             except RuntimeError:
-                logging.exception("just testing")
+                logging.exception("just testing")  # noqa: LOG015
             sys.stdout.seek(0)
             self.assertEqual(
                 output.getvalue(), "ERROR:root:just testing\nGot a [RuntimeError]\n"
@@ -3095,7 +3095,7 @@ class ConfigDictTest(BaseTest):
             try:
                 raise RuntimeError()
             except RuntimeError:
-                logging.exception("just testing")
+                logging.exception("just testing")  # noqa: LOG015
             sys.stdout.seek(0)
             self.assertEqual(
                 output.getvalue(), "ERROR:root:just testing\nGot a [RuntimeError]\n"
@@ -3107,7 +3107,7 @@ class ConfigDictTest(BaseTest):
         self.test_config1_ok(config=self.config5)
 
     def test_config6_failure(self):
-        self.assertRaises(Exception, self.apply_config, self.config6)
+        self.assertRaises(Exception, self.apply_config, self.config6)  # noqa: B017
 
     def test_config7_ok(self):
         with support.captured_stdout() as output:
@@ -3279,10 +3279,10 @@ class ConfigDictTest(BaseTest):
         self.test_config1_ok(self.config11)
 
     def test_config12_failure(self):
-        self.assertRaises(Exception, self.apply_config, self.config12)
+        self.assertRaises(Exception, self.apply_config, self.config12)  # noqa: B017
 
     def test_config13_failure(self):
-        self.assertRaises(Exception, self.apply_config, self.config13)
+        self.assertRaises(Exception, self.apply_config, self.config13)  # noqa: B017
 
     def test_config14_ok(self):
         with support.captured_stdout() as output:
@@ -3290,7 +3290,7 @@ class ConfigDictTest(BaseTest):
             h = logging._handlers["hand1"]
             self.assertEqual(h.foo, "bar")
             self.assertEqual(h.terminator, "!\n")
-            logging.warning("Exclamation")
+            logging.warning("Exclamation")  # noqa: LOG015
             self.assertTrue(output.getvalue().endswith("Exclamation!\n"))
 
     def test_config15_ok(self):
@@ -3547,7 +3547,7 @@ class ConfigDictTest(BaseTest):
         }
         with support.captured_stderr() as stderr:
             self.apply_config(config)
-            logging.info("some log")
+            logging.info("some log")  # noqa: LOG015
         self.assertEqual(stderr.getvalue(), "some log my_type\n")
 
 
@@ -3564,7 +3564,7 @@ class ManagerTest(BaseTest):
         man.setLoggerClass(MyLogger)
         logger = man.getLogger("test")
         logger.warning("should appear in logged")
-        logging.warning("should not appear in logged")
+        logging.warning("should not appear in logged")  # noqa: LOG015
 
         self.assertEqual(logged, ["should appear in logged"])
 
@@ -3579,7 +3579,7 @@ class ChildLoggerTest(BaseTest):
     def test_child_loggers(self):
         r = logging.getLogger()
         l1 = logging.getLogger("abc")
-        l2 = logging.getLogger("def.ghi")
+        logging.getLogger("def.ghi")
         c1 = r.getChild("xyz")
         c2 = r.getChild("uvw.xyz")
         self.assertIs(c1, logging.getLogger("xyz"))
@@ -3605,7 +3605,7 @@ class LogRecordFactoryTest(BaseTest):
             def filter(self, record):
                 t = type(record)
                 if t is not self.cls:
-                    msg = "Unexpected LogRecord type %s, expected %s" % (t, self.cls)
+                    msg = f"Unexpected LogRecord type {t}, expected {self.cls}"
                     raise TypeError(msg)
                 return True
 
@@ -3721,7 +3721,7 @@ class QueueHandlerTest(BaseTest):
         listener = logging.handlers.QueueListener(self.queue, self.root_hdlr)
         listener.start()
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             exc = e
             self.que_logger.exception(self.next_message(), exc_info=exc)
@@ -3763,7 +3763,7 @@ if hasattr(logging.handlers, "QueueListener"):
             QueueListener. Starts the listener, logs five messages, and stops
             the listener.
             """
-            logger = logging.getLogger("test_logger_with_id_%s" % ident)
+            logger = logging.getLogger(f"test_logger_with_id_{ident}")
             logger.setLevel(logging.DEBUG)
             handler = logging.handlers.QueueHandler(log_queue)
             logger.addHandler(handler)
@@ -3784,7 +3784,7 @@ if hasattr(logging.handlers, "QueueListener"):
         def test_handle_called_with_queue_queue(self, mock_handle):
             for i in range(self.repeat):
                 log_queue = queue.Queue()
-                self.setup_and_log(log_queue, "%s_%s" % (self.id(), i))
+                self.setup_and_log(log_queue, f"{self.id()}_{i}")
             self.assertEqual(
                 mock_handle.call_count,
                 5 * self.repeat,
@@ -3798,7 +3798,7 @@ if hasattr(logging.handlers, "QueueListener"):
             support.skip_if_broken_multiprocessing_synchronize()
             for i in range(self.repeat):
                 log_queue = multiprocessing.Queue()
-                self.setup_and_log(log_queue, "%s_%s" % (self.id(), i))
+                self.setup_and_log(log_queue, f"{self.id()}_{i}")
                 log_queue.close()
                 log_queue.join_thread()
             self.assertEqual(
@@ -3827,7 +3827,7 @@ if hasattr(logging.handlers, "QueueListener"):
             support.skip_if_broken_multiprocessing_synchronize()
             for i in range(self.repeat):
                 queue = multiprocessing.Queue()
-                self.setup_and_log(queue, "%s_%s" % (self.id(), i))
+                self.setup_and_log(queue, f"{self.id()}_{i}")
                 # time.sleep(1)
                 items = list(self.get_all_from_queue(queue))
                 queue.close()
@@ -4175,10 +4175,10 @@ class FormatterTest(unittest.TestCase):
 
 class TestBufferingFormatter(logging.BufferingFormatter):
     def formatHeader(self, records):
-        return "[(%d)" % len(records)
+        return "[(%d)" % len(records)  # noqa: UP031
 
     def formatFooter(self, records):
-        return "(%d)]" % len(records)
+        return "(%d)]" % len(records)  # noqa: UP031
 
 
 class BufferingFormatterTest(unittest.TestCase):
@@ -4208,8 +4208,8 @@ class ExceptionTest(BaseTest):
         r.addHandler(h)
         try:
             raise RuntimeError("deliberate mistake")
-        except:
-            logging.exception("failed", stack_info=True)
+        except:  # noqa: E722
+            logging.exception("failed", stack_info=True)  # noqa: LOG015
         r.removeHandler(h)
         h.close()
         r = h.records[0]
@@ -4426,7 +4426,7 @@ class ModuleLevelMiscTest(BaseTest):
 
         self.assertEqual(len(recording.records), 1)
         record = recording.records[0]
-        self.assertEqual(record.getMessage(), "test me: %r" % recording)
+        self.assertEqual(record.getMessage(), f"test me: {recording!r}")
 
         expected_level = (
             level if level is not None else getattr(logging, method.upper())
@@ -4510,7 +4510,7 @@ class ModuleLevelMiscTest(BaseTest):
                         logging.exception("exception in __del__")
 
             a = A()"""
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, _out, err = assert_python_ok("-c", code)
         err = err.decode()
         self.assertIn("exception in __del__", err)
         self.assertIn("ValueError: some error", err)
@@ -4525,7 +4525,7 @@ class ModuleLevelMiscTest(BaseTest):
                 rec()
 
             rec()"""
-        rc, out, err = assert_python_failure("-c", code)
+        rc, _out, err = assert_python_failure("-c", code)
         err = err.decode()
         self.assertNotIn("Cannot recover from stack overflow.", err)
         self.assertEqual(rc, 1)
@@ -4543,7 +4543,7 @@ class LogRecordTest(BaseTest):
         r = logging.getLogger()
         r.addHandler(h)
         d = {"less": "more"}
-        logging.warning("less is %(less)s", d)
+        logging.warning("less is %(less)s", d)  # noqa: LOG015
         self.assertIs(h.records[0].args, d)
         self.assertEqual(h.records[0].message, "less is more")
         r.removeHandler(h)
@@ -4634,14 +4634,14 @@ class BasicConfigTest(unittest.TestCase):
     def test_strformatstyle(self):
         with support.captured_stdout() as output:
             logging.basicConfig(stream=sys.stdout, style="{")
-            logging.error("Log an error")
+            logging.error("Log an error")  # noqa: LOG015
             sys.stdout.seek(0)
             self.assertEqual(output.getvalue().strip(), "ERROR:root:Log an error")
 
     def test_stringtemplatestyle(self):
         with support.captured_stdout() as output:
             logging.basicConfig(stream=sys.stdout, style="$")
-            logging.error("Log an error")
+            logging.error("Log an error")  # noqa: LOG015
             sys.stdout.seek(0)
             self.assertEqual(output.getvalue().strip(), "ERROR:root:Log an error")
 
@@ -4754,14 +4754,14 @@ class BasicConfigTest(unittest.TestCase):
         old_handlers = [logging.StreamHandler(old_string_io)]
         new_handlers = [logging.StreamHandler(new_string_io)]
         logging.basicConfig(level=logging.WARNING, handlers=old_handlers)
-        logging.warning("warn")
-        logging.info("info")
-        logging.debug("debug")
+        logging.warning("warn")  # noqa: LOG015
+        logging.info("info")  # noqa: LOG015
+        logging.debug("debug")  # noqa: LOG015
         self.assertEqual(len(logging.root.handlers), 1)
         logging.basicConfig(level=logging.INFO, handlers=new_handlers, force=True)
-        logging.warning("warn")
-        logging.info("info")
-        logging.debug("debug")
+        logging.warning("warn")  # noqa: LOG015
+        logging.info("info")  # noqa: LOG015
+        logging.debug("debug")  # noqa: LOG015
         self.assertEqual(len(logging.root.handlers), 1)
         self.assertEqual(old_string_io.getvalue().strip(), "WARNING:root:warn")
         self.assertEqual(
@@ -4783,7 +4783,7 @@ class BasicConfigTest(unittest.TestCase):
             handler = logging.root.handlers[0]
             self.assertIsInstance(handler, logging.FileHandler)
             self.assertEqual(handler.encoding, encoding)
-            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")
+            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")  # noqa: LOG015
         finally:
             handler.close()
             with open("test.log", encoding="utf-8") as f:
@@ -4806,7 +4806,7 @@ class BasicConfigTest(unittest.TestCase):
             handler = logging.root.handlers[0]
             self.assertIsInstance(handler, logging.FileHandler)
             self.assertEqual(handler.encoding, encoding)
-            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")
+            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")  # noqa: LOG015
         finally:
             handler.close()
             with open("test.log", encoding="utf-8") as f:
@@ -4829,7 +4829,7 @@ class BasicConfigTest(unittest.TestCase):
             self.assertIsInstance(handler, logging.FileHandler)
             self.assertEqual(handler.encoding, encoding)
             self.assertEqual(handler.errors, "backslashreplace")
-            logging.debug("😂: ☃️: The Øresund Bridge joins Copenhagen to Malmö")
+            logging.debug("😂: ☃️: The Øresund Bridge joins Copenhagen to Malmö")  # noqa: LOG015
         finally:
             handler.close()
             with open("test.log", encoding="utf-8") as f:
@@ -4866,7 +4866,7 @@ class BasicConfigTest(unittest.TestCase):
                 message.append(str(v))
 
             handler.handleError = dummy_handle_error
-            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")
+            logging.debug("The Øresund Bridge joins Copenhagen to Malmö")  # noqa: LOG015
             self.assertTrue(message)
             self.assertIn(
                 "'ascii' codec can't encode character '\\xd8' in position 4:",
@@ -4945,7 +4945,7 @@ class LoggerAdapterTest(unittest.TestCase):
         msg = "testing exception: %r"
         exc = None
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             exc = e
             self.adapter.exception(msg, self.recording)
@@ -4959,7 +4959,7 @@ class LoggerAdapterTest(unittest.TestCase):
 
     def test_exception_excinfo(self):
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             exc = e
 
@@ -5032,7 +5032,7 @@ class LoggerTest(BaseTest):
     def setUp(self):
         super().setUp()
         self.recording = RecordingHandler()
-        self.logger = logging.Logger(name="blah")
+        self.logger = logging.getLogger(name="blah")
         self.logger.addHandler(self.recording)
         self.addCleanup(self.logger.removeHandler, self.recording)
         self.addCleanup(self.recording.close)
@@ -5045,7 +5045,7 @@ class LoggerTest(BaseTest):
         msg = "testing exception: %r"
         exc = None
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError as e:
             exc = e
             self.logger.exception(msg, self.recording)
@@ -5137,7 +5137,7 @@ class LoggerTest(BaseTest):
     def test_make_record_with_extra_no_overwrite(self):
         name = "my record"
         level = 13
-        fn = lno = msg = args = exc_info = func = sinfo = None
+        fn = lno = msg = args = exc_info = sinfo = None
         extra = {"valid_key": "some value"}
         result = self.logger.makeRecord(
             name, level, fn, lno, msg, args, exc_info, extra=extra, sinfo=sinfo
@@ -5275,7 +5275,7 @@ class BaseFileTest(BaseTest):
     def assertLogFile(self, filename):
         "Assert a log file is there and register it for deletion"
         self.assertTrue(
-            os.path.exists(filename), msg="Log file %r does not exist" % filename
+            os.path.exists(filename), msg=f"Log file {filename!r} does not exist"
         )
         self.rmfiles.append(filename)
 
@@ -5415,7 +5415,7 @@ class TimedRotatingFileHandlerTest(BaseFileTest):
         # bit, and stop as soon as we see a rotated file. In theory this
         # could of course still fail, but the chances are lower.
         found = False
-        now = datetime.datetime.now()
+        now = datetime.datetime.now()  # noqa: DTZ005
         GO_BACK = 5 * 60  # seconds
         for secs in range(GO_BACK):
             prev = now - datetime.timedelta(seconds=secs)
@@ -5424,15 +5424,18 @@ class TimedRotatingFileHandlerTest(BaseFileTest):
             if found:
                 self.rmfiles.append(fn)
                 break
-        msg = "No rotated files found, went back %d seconds" % GO_BACK
+        msg = "No rotated files found, went back %d seconds" % GO_BACK  # noqa: UP031
         if not found:
             # print additional diagnostics
             dn, fn = os.path.split(self.fn)
             files = [f for f in os.listdir(dn) if f.startswith(fn)]
-            print("Test time: %s" % now.strftime("%Y-%m-%d %H-%M-%S"), file=sys.stderr)
-            print("The only matching files are: %s" % files, file=sys.stderr)
+            print(
+                "Test time: {}".format(now.strftime("%Y-%m-%d %H-%M-%S")),
+                file=sys.stderr,
+            )
+            print(f"The only matching files are: {files}", file=sys.stderr)
             for f in files:
-                print("Contents of %s:" % f)
+                print(f"Contents of {f}:")
                 path = os.path.join(dn, f)
                 with open(path, "r") as tf:
                     print(tf.read())
@@ -5488,7 +5491,7 @@ class TimedRotatingFileHandlerTest(BaseFileTest):
         for day in range(7):
             rh = logging.handlers.TimedRotatingFileHandler(
                 self.fn,
-                when="W%d" % day,
+                when="W%d" % day,  # noqa: UP031
                 interval=1,
                 backupCount=0,
                 utc=True,
@@ -5509,16 +5512,16 @@ class TimedRotatingFileHandlerTest(BaseFileTest):
                 expected += today
                 actual = rh.computeRollover(today)
                 if actual != expected:
-                    print("failed in timezone: %d" % time.timezone)
-                    print("local vars: %s" % locals())
+                    print("failed in timezone: %d" % time.timezone)  # noqa: UP031
+                    print(f"local vars: {locals()}")
                 self.assertEqual(actual, expected)
                 if day == wday:
                     # goes into following week
                     expected += 7 * 24 * 60 * 60
                 actual = rh.computeRollover(today + 13 * 60 * 60)
                 if actual != expected:
-                    print("failed in timezone: %d" % time.timezone)
-                    print("local vars: %s" % locals())
+                    print("failed in timezone: %d" % time.timezone)  # noqa: UP031
+                    print(f"local vars: {locals()}")
                 self.assertEqual(actual, expected)
             finally:
                 rh.close()
@@ -5544,7 +5547,7 @@ for when, exp in (
         )
         currentTime = 0.0
         actual = rh.computeRollover(currentTime)
-        if exp != actual:
+        if exp != actual:  # noqa: SIM102
             # Failures occur on some systems for MIDNIGHT and W0.
             # Print detailed calculation for MIDNIGHT so we can try to see
             # what's going on
@@ -5562,15 +5565,15 @@ for when, exp in (
                         (currentHour * 60 + currentMinute) * 60 + currentSecond
                     )
                     result = currentTime + r
-                    print("t: %s (%s)" % (t, rh.utc), file=sys.stderr)
-                    print("currentHour: %s" % currentHour, file=sys.stderr)
-                    print("currentMinute: %s" % currentMinute, file=sys.stderr)
-                    print("currentSecond: %s" % currentSecond, file=sys.stderr)
-                    print("r: %s" % r, file=sys.stderr)
-                    print("result: %s" % result, file=sys.stderr)
-                except Exception:
+                    print(f"t: {t} ({rh.utc})", file=sys.stderr)
+                    print(f"currentHour: {currentHour}", file=sys.stderr)
+                    print(f"currentMinute: {currentMinute}", file=sys.stderr)
+                    print(f"currentSecond: {currentSecond}", file=sys.stderr)
+                    print(f"r: {r}", file=sys.stderr)
+                    print(f"result: {result}", file=sys.stderr)
+                except Exception:  # noqa: BLE001
                     print(
-                        "exception in diagnostic code: %s" % sys.exc_info()[1],
+                        f"exception in diagnostic code: {sys.exc_info()[1]}",
                         file=sys.stderr,
                     )
         self.assertEqual(exp, actual)
@@ -5578,7 +5581,7 @@ for when, exp in (
 
     setattr(
         TimedRotatingFileHandlerTest,
-        "test_compute_rollover_%s" % when,
+        f"test_compute_rollover_{when}",
         test_compute_rollover,
     )
 
@@ -5618,7 +5621,7 @@ class NTEventLogHandlerTest(BaseTest):
                 continue
             found = True
             break
-        msg = "Record not found in event log, went back %d records" % GO_BACK
+        msg = "Record not found in event log, went back %d records" % GO_BACK  # noqa: UP031
         self.assertTrue(found, msg=msg)
 
 

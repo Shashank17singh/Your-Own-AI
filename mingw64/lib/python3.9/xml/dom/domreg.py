@@ -59,7 +59,9 @@ def getDOMImplementation(name=None, features=()):
     for creator in well_known_implementations:
         try:
             dom = getDOMImplementation(name=creator)
-        except Exception:  # typically ImportError, or AttributeError
+        except (
+            Exception
+        ):  # typically ImportError, or AttributeError  # noqa: BLE001, S112
             continue
         if _good_enough(dom, features):
             return dom
@@ -74,7 +76,7 @@ def _parse_feature_string(s):
     while i < length:
         feature = parts[i]
         if feature[0] in "0123456789":
-            raise ValueError("bad feature name: %r" % (feature,))
+            raise ValueError(f"bad feature name: {feature!r}")
         i = i + 1
         version = None
         if i < length:

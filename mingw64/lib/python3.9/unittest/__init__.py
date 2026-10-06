@@ -71,15 +71,15 @@ from .case import (
 from .loader import (
     TestLoader,
     defaultTestLoader,
-    findTestCases,
-    getTestCaseNames,
-    makeSuite,
+    findTestCases,  # noqa: F401
+    getTestCaseNames,  # noqa: F401
+    makeSuite,  # noqa: F401
 )
-from .main import TestProgram, main
+from .main import TestProgram, main  # noqa: F401
 from .result import TestResult
 from .runner import TextTestResult, TextTestRunner
 from .signals import installHandler, registerResult, removeHandler, removeResult
-from .suite import BaseTestSuite, TestSuite
+from .suite import BaseTestSuite, TestSuite  # noqa: F401
 
 _TextTestResult = TextTestResult
 

@@ -59,7 +59,7 @@ class GetoptError(Exception):
 error = GetoptError  # backward compatibility
 
 
-def getopt(args, shortopts, longopts=[]):
+def getopt(args, shortopts, longopts=None):
     """getopt(args, options[, long_options]) -> opts, args
 
     Parses command line options and parameter list.  args is the
@@ -86,6 +86,8 @@ def getopt(args, shortopts, longopts=[]):
 
     """
 
+    if longopts is None:
+        longopts = []
     opts = []
     if type(longopts) == str:
         longopts = [longopts]
@@ -103,7 +105,7 @@ def getopt(args, shortopts, longopts=[]):
     return opts, args
 
 
-def gnu_getopt(args, shortopts, longopts=[]):
+def gnu_getopt(args, shortopts, longopts=None):
     """getopt(args, options[, long_options]) -> opts, args
 
     This function works like getopt(), except that GNU style scanning
@@ -118,6 +120,8 @@ def gnu_getopt(args, shortopts, longopts=[]):
 
     """
 
+    if longopts is None:
+        longopts = []
     opts = []
     prog_args = []
     if isinstance(longopts, str):

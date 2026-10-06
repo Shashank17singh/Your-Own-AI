@@ -45,13 +45,13 @@ def framework_info(filename):
 
 def test_framework_info():
     def d(location=None, name=None, shortname=None, version=None, suffix=None):
-        return dict(
-            location=location,
-            name=name,
-            shortname=shortname,
-            version=version,
-            suffix=suffix,
-        )
+        return {
+            "location": location,
+            "name": name,
+            "shortname": shortname,
+            "version": version,
+            "suffix": suffix,
+        }
 
     assert framework_info("completely/invalid") is None
     assert framework_info("completely/invalid/_debug") is None

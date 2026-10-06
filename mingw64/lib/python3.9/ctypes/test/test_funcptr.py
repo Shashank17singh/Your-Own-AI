@@ -2,7 +2,7 @@ import unittest
 from ctypes import *
 
 try:
-    WINFUNCTYPE
+    WINFUNCTYPE  # noqa: B018
 except NameError:
     # fake to enable this test on Linux
     WINFUNCTYPE = CFUNCTYPE
@@ -56,7 +56,7 @@ class CFuncPtrTestCase(unittest.TestCase):
         LPCTSTR = c_char_p
 
         class WNDCLASS(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("style", c_uint),
                 ("lpfnWndProc", WNDPROC),
                 ("cbClsExtra", c_int),

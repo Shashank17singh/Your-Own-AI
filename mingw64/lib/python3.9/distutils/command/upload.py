@@ -72,9 +72,9 @@ class upload(PyPIRCCommand):
 
     def upload_file(self, command, pyversion, filename):
         # Makes sure the repository URL is compliant
-        schema, netloc, url, params, query, fragments = urlparse(self.repository)
+        schema, _netloc, _url, params, query, fragments = urlparse(self.repository)
         if params or query or fragments:
-            raise AssertionError("Incompatible url %s" % self.repository)
+            raise AssertionError(f"Incompatible url {self.repository}")
 
         if schema not in ("http", "https"):
             raise AssertionError("unsupported schema " + schema)
@@ -88,7 +88,7 @@ class upload(PyPIRCCommand):
 
         # Fill in the data - send all the meta-data in case we need to
         # register a new release
-        f = open(filename, "rb")
+        f = open(filename, "rb")  # noqa: SIM115
         try:
             content = f.read()
         finally:
@@ -152,13 +152,13 @@ class upload(PyPIRCCommand):
         end_boundary = sep_boundary + b"--\r\n"
         body = io.BytesIO()
         for key, value in data.items():
-            title = '\r\nContent-Disposition: form-data; name="%s"' % key
+            title = f'\r\nContent-Disposition: form-data; name="{key}"'
             # handle multiple entries for the same name
             if not isinstance(value, list):
                 value = [value]
-            for value in value:
+            for value in value:  # noqa: B020
                 if type(value) is tuple:
-                    title += '; filename="%s"' % value[0]
+                    title += f'; filename="{value[0]}"'
                     value = value[1]
                 else:
                     value = str(value).encode("utf-8")
@@ -169,12 +169,12 @@ class upload(PyPIRCCommand):
         body.write(end_boundary)
         body = body.getvalue()
 
-        msg = "Submitting %s to %s" % (filename, self.repository)
+        msg = f"Submitting {filename} to {self.repository}"
         self.announce(msg, log.INFO)
 
         # build the Request
         headers = {
-            "Content-type": "multipart/form-data; boundary=%s" % boundary,
+            "Content-type": f"multipart/form-data; boundary={boundary}",
             "Content-length": str(len(body)),
             "Authorization": auth,
         }
@@ -193,12 +193,12 @@ class upload(PyPIRCCommand):
             raise
 
         if status == 200:
-            self.announce("Server response (%s): %s" % (status, reason), log.INFO)
+            self.announce(f"Server response ({status}): {reason}", log.INFO)
             if self.show_response:
                 text = self._read_pypi_response(result)
                 msg = "\n".join(("-" * 75, text, "-" * 75))
                 self.announce(msg, log.INFO)
         else:
-            msg = "Upload failed (%s): %s" % (status, reason)
+            msg = f"Upload failed ({status}): {reason}"
             self.announce(msg, log.ERROR)
             raise DistutilsError(msg)

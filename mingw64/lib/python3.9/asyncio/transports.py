@@ -281,7 +281,7 @@ class _FlowControlMixin(Transport):
                 self._protocol.pause_writing()
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._loop.call_exception_handler(
                     {
                         "message": "protocol.pause_writing() failed",
@@ -298,7 +298,7 @@ class _FlowControlMixin(Transport):
                 self._protocol.resume_writing()
             except (SystemExit, KeyboardInterrupt):
                 raise
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 self._loop.call_exception_handler(
                     {
                         "message": "protocol.resume_writing() failed",

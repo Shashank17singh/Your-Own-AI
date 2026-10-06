@@ -78,7 +78,7 @@ class LockTests(test_utils.TestCase):
             def test(lock):
                 yield from asyncio.sleep(0.01)
                 self.assertFalse(lock.locked())
-                with self.assertRaisesRegex(TypeError, "object is not iterable"):
+                with self.assertRaisesRegex(TypeError, "object is not iterable"):  # noqa: SIM117
                     with (yield from lock):
                         pass
                 self.assertFalse(lock.locked())
@@ -260,7 +260,7 @@ class LockTests(test_utils.TestCase):
 
         # Create a second waiter, wake up the first, and cancel it.
         # Without the fix, the second was not woken up.
-        tc = self.loop.create_task(lock.acquire())
+        self.loop.create_task(lock.acquire())
         lock.release()
         tb.cancel()
         test_utils.run_briefly(self.loop)
@@ -955,7 +955,7 @@ class SemaphoreTests(test_utils.TestCase):
             sem = asyncio.Semaphore(value=0, loop=self.loop)
 
         t1 = self.loop.create_task(sem.acquire())
-        t2 = self.loop.create_task(sem.acquire())
+        self.loop.create_task(sem.acquire())
 
         test_utils.run_briefly(self.loop)
 

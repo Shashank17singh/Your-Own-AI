@@ -74,7 +74,7 @@ class StructSeqTest(unittest.TestCase):
         self.assertTrue(t1 <= t2)
         self.assertTrue(not (t1 > t2))
         self.assertTrue(t1 >= t2)
-        self.assertTrue(not (t1 != t2))
+        self.assertTrue(t1 == t2)
 
     def test_fields(self):
         t = time.gmtime()
@@ -110,7 +110,7 @@ class StructSeqTest(unittest.TestCase):
 
     def test_reduce(self):
         t = time.gmtime()
-        x = t.__reduce__()
+        t.__reduce__()
 
     def test_extended_getslice(self):
         # Test extended slicing by comparing with list slicing.

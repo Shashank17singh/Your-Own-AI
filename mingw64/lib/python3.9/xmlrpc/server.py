@@ -103,7 +103,7 @@ def resolve_dotted_attribute(obj, attr, allow_dotted_names=True):
         attrs = [attr]
     for i in attrs:
         if i.startswith("_"):
-            raise AttributeError('attempt to access private attribute "%s"' % i)
+            raise AttributeError(f'attempt to access private attribute "{i}"')
         else:
             obj = getattr(obj, i)
     return obj
@@ -217,16 +217,16 @@ class SimpleXMLRPCDispatcher:
             )
         except Fault as fault:
             response = dumps(fault, allow_none=self.allow_none, encoding=self.encoding)
-        except:
-            exc_type, exc_value, exc_tb = sys.exc_info()
+        except:  # noqa: E722
+            exc_type, exc_value, _exc_tb = sys.exc_info()
             try:
                 response = dumps(
-                    Fault(1, "%s:%s" % (exc_type, exc_value)),
+                    Fault(1, f"{exc_type}:{exc_value}"),
                     encoding=self.encoding,
                     allow_none=self.allow_none,
                 )
             finally:
-                exc_type = exc_value = exc_tb = None
+                exc_type = exc_value = None
         return response.encode(self.encoding, "xmlcharrefreplace")
 
     def system_listMethods(self):
@@ -286,14 +286,14 @@ class SimpleXMLRPCDispatcher:
                 results.append(
                     {"faultCode": fault.faultCode, "faultString": fault.faultString}
                 )
-            except:
-                exc_type, exc_value, exc_tb = sys.exc_info()
+            except:  # noqa: E722
+                exc_type, exc_value, _exc_tb = sys.exc_info()
                 try:
                     results.append(
-                        {"faultCode": 1, "faultString": "%s:%s" % (exc_type, exc_value)}
+                        {"faultCode": 1, "faultString": f"{exc_type}:{exc_value}"}
                     )
                 finally:
-                    exc_type = exc_value = exc_tb = None
+                    exc_type = exc_value = None
         return results
 
     def _dispatch(self, method, params):
@@ -319,7 +319,7 @@ class SimpleXMLRPCDispatcher:
         else:
             if func is not None:
                 return func(*params)
-            raise Exception('method "%s" is not supported' % method)
+            raise Exception(f'method "{method}" is not supported')  # noqa: TRY002
         if self.instance is not None:
             if hasattr(self.instance, "_dispatch"):
                 return self.instance._dispatch(method, params)
@@ -332,7 +332,7 @@ class SimpleXMLRPCDispatcher:
             else:
                 if func is not None:
                     return func(*params)
-        raise Exception('method "%s" is not supported' % method)
+        raise Exception(f'method "{method}" is not supported')  # noqa: TRY002
 
 
 class SimpleXMLRPCRequestHandler(BaseHTTPRequestHandler):
@@ -396,7 +396,9 @@ class SimpleXMLRPCRequestHandler(BaseHTTPRequestHandler):
             response = self.server._marshaled_dispatch(
                 data, getattr(self, "_dispatch", None), self.path
             )
-        except Exception as e:  # This should only happen if the module is buggy
+        except (
+            Exception
+        ) as e:  # This should only happen if the module is buggy  # noqa: BLE001
             self.send_response(500)
             if (
                 hasattr(self.server, "_send_traceback_header")
@@ -411,7 +413,7 @@ class SimpleXMLRPCRequestHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(200)
             self.send_header("Content-type", "text/xml")
-            if self.encode_threshold is not None:
+            if self.encode_threshold is not None:  # noqa: SIM102
                 if len(response) > self.encode_threshold:
                     q = self.accept_encodings().get("gzip", 0)
                     if q:
@@ -432,11 +434,11 @@ class SimpleXMLRPCRequestHandler(BaseHTTPRequestHandler):
             try:
                 return gzip_decode(data)
             except NotImplementedError:
-                self.send_response(501, "encoding %r not supported" % encoding)
+                self.send_response(501, f"encoding {encoding!r} not supported")
             except ValueError:
                 self.send_response(400, "error decoding gzip content")
         else:
-            self.send_response(501, "encoding %r not supported" % encoding)
+            self.send_response(501, f"encoding {encoding!r} not supported")
         self.send_header("Content-length", "0")
         self.end_headers()
 
@@ -526,11 +528,11 @@ class MultiPathXMLRPCServer(SimpleXMLRPCServer):
             response = self.dispatchers[path]._marshaled_dispatch(
                 data, dispatch_method, path
             )
-        except:
+        except:  # noqa: E722
             exc_type, exc_value = sys.exc_info()[:2]
             try:
                 response = dumps(
-                    Fault(1, "%s:%s" % (exc_type, exc_value)),
+                    Fault(1, f"{exc_type}:{exc_value}"),
                     encoding=self.encoding,
                     allow_none=self.allow_none,
                 )
@@ -550,7 +552,7 @@ class CGIXMLRPCRequestHandler(SimpleXMLRPCDispatcher):
         """Handle a single XML-RPC request"""
         response = self._marshaled_dispatch(request_text)
         print("Content-Type: text/xml")
-        print("Content-Length: %d" % len(response))
+        print("Content-Length: %d" % len(response))  # noqa: UP031
         print()
         sys.stdout.flush()
         sys.stdout.buffer.write(response)
@@ -569,9 +571,9 @@ class CGIXMLRPCRequestHandler(SimpleXMLRPCDispatcher):
             "explain": explain,
         }
         response = response.encode("utf-8")
-        print("Status: %d %s" % (code, message))
-        print("Content-Type: %s" % http.server.DEFAULT_ERROR_CONTENT_TYPE)
-        print("Content-Length: %d" % len(response))
+        print("Status: %d %s" % (code, message))  # noqa: UP031
+        print(f"Content-Type: {http.server.DEFAULT_ERROR_CONTENT_TYPE}")
+        print("Content-Length: %d" % len(response))  # noqa: UP031
         print()
         sys.stdout.flush()
         sys.stdout.buffer.write(response)
@@ -598,9 +600,15 @@ class CGIXMLRPCRequestHandler(SimpleXMLRPCDispatcher):
 class ServerHTMLDoc(pydoc.HTMLDoc):
     """Class used to generate pydoc HTML document for a server"""
 
-    def markup(self, text, escape=None, funcs={}, classes={}, methods={}):
+    def markup(self, text, escape=None, funcs=None, classes=None, methods=None):
         """Mark up some plain text, given a context of symbols to look for.
         Each context dictionary maps object names to anchor names."""
+        if methods is None:
+            methods = {}
+        if classes is None:
+            classes = {}
+        if funcs is None:
+            funcs = {}
         escape = escape or self.escape
         results = []
         here = 0
@@ -619,17 +627,17 @@ class ServerHTMLDoc(pydoc.HTMLDoc):
             all, scheme, rfc, pep, selfdot, name = match.groups()
             if scheme:
                 url = escape(all).replace('"', "&quot;")
-                results.append('<a href="%s">%s</a>' % (url, url))
+                results.append(f'<a href="{url}">{url}</a>')
             elif rfc:
-                url = "http://www.rfc-editor.org/rfc/rfc%d.txt" % int(rfc)
-                results.append('<a href="%s">%s</a>' % (url, escape(all)))
+                url = "http://www.rfc-editor.org/rfc/rfc%d.txt" % int(rfc)  # noqa: UP031
+                results.append(f'<a href="{url}">{escape(all)}</a>')
             elif pep:
-                url = "https://www.python.org/dev/peps/pep-%04d/" % int(pep)
-                results.append('<a href="%s">%s</a>' % (url, escape(all)))
+                url = "https://www.python.org/dev/peps/pep-%04d/" % int(pep)  # noqa: UP031
+                results.append(f'<a href="{url}">{escape(all)}</a>')
             elif text[end : end + 1] == "(":
                 results.append(self.namelink(name, methods, funcs, classes))
             elif selfdot:
-                results.append("self.<strong>%s</strong>" % name)
+                results.append(f"self.<strong>{name}</strong>")
             else:
                 results.append(self.namelink(name, classes))
             here = end
@@ -637,14 +645,19 @@ class ServerHTMLDoc(pydoc.HTMLDoc):
         return "".join(results)
 
     def docroutine(
-        self, object, name, mod=None, funcs={}, classes={}, methods={}, cl=None
+        self, object, name, mod=None, funcs=None, classes=None, methods=None, cl=None
     ):
         """Produce HTML documentation for a function or method object."""
+        if methods is None:
+            methods = {}
+        if classes is None:
+            classes = {}
+        if funcs is None:
+            funcs = {}
         anchor = (cl and cl.__name__ or "") + "-" + name
         note = ""
-        title = '<a name="%s"><strong>%s</strong></a>' % (
-            self.escape(anchor),
-            self.escape(name),
+        title = (
+            f'<a name="{self.escape(anchor)}"><strong>{self.escape(name)}</strong></a>'
         )
         if callable(object):
             argspec = str(signature(object))
@@ -658,11 +671,11 @@ class ServerHTMLDoc(pydoc.HTMLDoc):
         decl = (
             title
             + argspec
-            + (note and self.grey('<font face="helvetica, arial">%s</font>' % note))
+            + (note and self.grey(f'<font face="helvetica, arial">{note}</font>'))
         )
         doc = self.markup(docstring, self.preformat, funcs, classes, methods)
-        doc = doc and "<dd><tt>%s</tt></dd>" % doc
-        return "<dl><dt>%s</dt>%s</dl>\n" % (decl, doc)
+        doc = doc and f"<dd><tt>{doc}</tt></dd>"
+        return f"<dl><dt>{decl}</dt>{doc}</dl>\n"
 
     def docserver(self, server_name, package_documentation, methods):
         """Produce HTML documentation for an XML-RPC server."""
@@ -671,11 +684,11 @@ class ServerHTMLDoc(pydoc.HTMLDoc):
             fdict[key] = "#-" + key
             fdict[value] = fdict[key]
         server_name = self.escape(server_name)
-        head = "<big><big><strong>%s</strong></big></big>" % server_name
+        head = f"<big><big><strong>{server_name}</strong></big></big>"
         result = self.heading(head, "#ffffff", "#7799ee")
         doc = self.markup(package_documentation, self.preformat, fdict)
-        doc = doc and "<tt>%s</tt>" % doc
-        result = result + "<p>%s</p>\n" % doc
+        doc = doc and f"<tt>{doc}</tt>"
+        result = result + f"<p>{doc}</p>\n"
         contents = []
         method_items = sorted(methods.items())
         for key, value in method_items:
@@ -816,7 +829,7 @@ class DocCGIXMLRPCRequestHandler(CGIXMLRPCRequestHandler, XMLRPCDocGenerator):
         """
         response = self.generate_html_documentation().encode("utf-8")
         print("Content-Type: text/html")
-        print("Content-Length: %d" % len(response))
+        print("Content-Length: %d" % len(response))  # noqa: UP031
         print()
         sys.stdout.flush()
         sys.stdout.buffer.write(response)
@@ -837,7 +850,7 @@ if __name__ == "__main__":
         class currentTime:
             @staticmethod
             def getCurrentTime():
-                return datetime.datetime.now()
+                return datetime.datetime.now()  # noqa: DTZ005
 
     with SimpleXMLRPCServer(("localhost", 8000)) as server:
         server.register_function(pow)

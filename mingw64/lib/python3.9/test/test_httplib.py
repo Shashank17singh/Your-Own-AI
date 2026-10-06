@@ -364,7 +364,7 @@ class HeaderTests(TestCase):
             (b"ValidName", b"InvalidValue\n"),
         )
         for name, value in cases:
-            with self.subTest((name, value)):
+            with self.subTest((name, value)):  # noqa: SIM117
                 with self.assertRaisesRegex(ValueError, "Invalid header"):
                     conn.putheader(name, value)
 
@@ -426,7 +426,7 @@ class TransferEncodingTest(TestCase):
         conn.request("POST", "/", self._make_body(), {"Transfer-Encoding": "chunked"})
 
         _, headers, body = self._parse_request(conn.sock.data)
-        self.assertNotIn("content-length", [k.lower() for k in headers.keys()])
+        self.assertNotIn("content-length", [k.lower() for k in headers])
         self.assertEqual(headers["Transfer-Encoding"], "chunked")
         self.assertEqual(body, self.expected_body)
 
@@ -441,7 +441,7 @@ class TransferEncodingTest(TestCase):
         )
 
         _, headers, body = self._parse_request(conn.sock.data)
-        self.assertNotIn("content-length", [k.lower() for k in headers.keys()])
+        self.assertNotIn("content-length", [k.lower() for k in headers])
         self.assertEqual(headers["Transfer-Encoding"], "chunked")
         self.assertEqual(body, self.expected_body)
 
@@ -514,7 +514,6 @@ class TransferEncodingTest(TestCase):
 
     def _parse_chunked(self, data):
         body = []
-        trailers = {}
         n = 0
         lines = data.split(b"\r\n")
         # parse body
@@ -757,7 +756,7 @@ class BasicTest(TestCase):
 
     def test_too_many_headers(self):
         headers = (
-            "\r\n".join("Header%d: foo" % i for i in range(client._MAXHEADERS + 1))
+            "\r\n".join("Header%d: foo" % i for i in range(client._MAXHEADERS + 1))  # noqa: UP031
             + "\r\n"
         )
         text = "HTTP/1.1 200 OK\r\n" + headers
@@ -782,7 +781,7 @@ class BasicTest(TestCase):
             conn.request("GET", "/foo", body)
             self.assertTrue(
                 sock.data.startswith(expected),
-                "%r != %r" % (sock.data[: len(expected)], expected),
+                f"{sock.data[: len(expected)]!r} != {expected!r}",
             )
 
     def test_send(self):
@@ -892,7 +891,7 @@ class BasicTest(TestCase):
                 resp.read()
             except client.IncompleteRead as i:
                 self.assertEqual(i.partial, expected)
-                expected_message = "IncompleteRead(%d bytes read)" % len(expected)
+                expected_message = "IncompleteRead(%d bytes read)" % len(expected)  # noqa: UP031
                 self.assertEqual(repr(i), expected_message)
                 self.assertEqual(str(i), expected_message)
             else:
@@ -935,7 +934,7 @@ class BasicTest(TestCase):
                 n = resp.readinto(b)
             except client.IncompleteRead as i:
                 self.assertEqual(i.partial, expected)
-                expected_message = "IncompleteRead(%d bytes read)" % len(expected)
+                expected_message = "IncompleteRead(%d bytes read)" % len(expected)  # noqa: UP031
                 self.assertEqual(repr(i), expected_message)
                 self.assertEqual(str(i), expected_message)
             else:
@@ -1207,7 +1206,7 @@ class BasicTest(TestCase):
         result = None
 
         def run_server():
-            [conn, address] = serv.accept()
+            [conn, _address] = serv.accept()
             with conn, conn.makefile("rb") as reader:
                 # Read the request header until a blank line
                 while True:
@@ -1350,7 +1349,6 @@ class ExtendedReadTest(TestCase):
         self.assertEqual(b"".join(all), self.lines_expected)
 
     def test_readline(self):
-        resp = self.resp
         self._verify_readline(self.resp.readline, self.lines_expected)
 
     def _verify_readline(self, readline, expected):
@@ -1358,9 +1356,8 @@ class ExtendedReadTest(TestCase):
         while True:
             # short readlines
             line = readline(5)
-            if line and line != b"foo":
-                if len(line) < 5:
-                    self.assertTrue(line.endswith(b"\n"))
+            if line and line != b"foo" and len(line) < 5:
+                self.assertTrue(line.endswith(b"\n"))
             all.append(line)
             if not line:
                 break

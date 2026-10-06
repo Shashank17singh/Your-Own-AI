@@ -103,7 +103,7 @@ class ContextManagerTestCase(unittest.TestCase):
         def whoo():
             try:
                 yield
-            except:
+            except:  # noqa: E722
                 yield
 
         ctx = whoo()
@@ -142,7 +142,7 @@ class ContextManagerTestCase(unittest.TestCase):
                 try:
                     with woohoo():
                         raise stop_exc
-                except Exception as ex:
+                except Exception as ex:  # noqa: BLE001
                     self.assertIs(ex, stop_exc)
                 else:
                     self.fail(f"{stop_exc} was suppressed")
@@ -156,14 +156,14 @@ def woohoo():
     yield
 """
         locals = {}
-        exec(code, locals, locals)
+        exec(code, locals, locals)  # noqa: S102
         woohoo = locals["woohoo"]
 
         stop_exc = StopIteration("spam")
         try:
             with woohoo():
                 raise stop_exc
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self.assertIs(ex, stop_exc)
         else:
             self.fail("StopIteration was suppressed")
@@ -179,7 +179,7 @@ def woohoo():
         try:
             with test_issue29692():
                 raise ZeroDivisionError
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self.assertIs(type(ex), RuntimeError)
             self.assertEqual(ex.args[0], "issue29692:Chained")
             self.assertIsInstance(ex.__cause__, ZeroDivisionError)
@@ -187,7 +187,7 @@ def woohoo():
         try:
             with test_issue29692():
                 raise StopIteration("issue29692:Unchained")
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self.assertIs(type(ex), StopIteration)
             self.assertEqual(ex.args[0], "issue29692:Unchained")
             self.assertIsNone(ex.__cause__)
@@ -312,7 +312,7 @@ class ClosingTestCase(unittest.TestCase):
         self.assertEqual(state, [])
         with self.assertRaises(ZeroDivisionError), closing(x) as y:
             self.assertEqual(x, y)
-            1 / 0
+            1 / 0  # noqa: B018
         self.assertEqual(state, [1])
 
 
@@ -331,7 +331,7 @@ class FileContextTestCase(unittest.TestCase):
         tfn = tempfile.mktemp()
         try:
             f = None
-            with open(tfn, "w") as f:
+            with open(tfn, "w") as f:  # noqa: F811
                 self.assertFalse(f.closed)
                 f.write("Booh\n")
             self.assertTrue(f.closed)
@@ -339,7 +339,7 @@ class FileContextTestCase(unittest.TestCase):
             with self.assertRaises(ZeroDivisionError), open(tfn, "r") as f:
                 self.assertFalse(f.closed)
                 self.assertEqual(f.read(), "Booh\n")
-                1 / 0
+                1 / 0  # noqa: B018
             self.assertTrue(f.closed)
         finally:
             support.unlink(tfn)
@@ -353,7 +353,7 @@ class LockContextTestCase(unittest.TestCase):
         self.assertFalse(locked())
         with self.assertRaises(ZeroDivisionError), lock:
             self.assertTrue(locked())
-            1 / 0
+            1 / 0  # noqa: B018
         self.assertFalse(locked())
 
     def testWithLock(self):
@@ -586,10 +586,10 @@ class TestBaseExitStack:
             ((), {}),
             ((1,), {}),
             ((1, 2), {}),
-            ((), dict(example=1)),
-            ((1,), dict(example=1)),
-            ((1, 2), dict(example=1)),
-            ((1, 2), dict(self=3, callback=4)),
+            ((), {"example": 1}),
+            ((1,), {"example": 1}),
+            ((1, 2), {"example": 1}),
+            ((1, 2), {"self": 3, "callback": 4}),
         ]
         result = []
 
@@ -663,7 +663,7 @@ class TestBaseExitStack:
             self.assertIs(stack._exit_callbacks[-1][1], _expect_exc)
             stack.push(_expect_exc)
             self.assertIs(stack._exit_callbacks[-1][1], _expect_exc)
-            1 / 0
+            1 / 0  # noqa: B018
 
     def test_enter_context(self):
         class TestCM:
@@ -718,12 +718,12 @@ class TestBaseExitStack:
     def test_exit_raise(self):
         with self.assertRaises(ZeroDivisionError), self.exit_stack() as stack:
             stack.push(lambda *exc: False)
-            1 / 0
+            1 / 0  # noqa: B018
 
     def test_exit_suppress(self):
         with self.exit_stack() as stack:
             stack.push(lambda *exc: True)
-            1 / 0
+            1 / 0  # noqa: B018
 
     def test_exit_exception_chaining_reference(self):
         # Sanity check to make sure that ExitStack chaining matches
@@ -749,7 +749,7 @@ class TestBaseExitStack:
             def __exit__(self, *exc_details):
                 try:
                     raise self.inner
-                except:
+                except:  # noqa: E722
                     raise self.outer
 
         class SuppressExc:
@@ -761,11 +761,11 @@ class TestBaseExitStack:
                 return True
 
         try:
-            with RaiseExc(IndexError):
+            with RaiseExc(IndexError):  # noqa: SIM117
                 with RaiseExcWithContext(KeyError, AttributeError):
                     with SuppressExc():
                         with RaiseExc(ValueError):
-                            1 / 0
+                            1 / 0  # noqa: B018
         except IndexError as exc:
             self.assertIsInstance(exc.__context__, KeyError)
             self.assertIsInstance(exc.__context__.__context__, AttributeError)
@@ -797,7 +797,7 @@ class TestBaseExitStack:
                 stack.callback(raise_exc, AttributeError)
                 stack.push(suppress_exc)
                 stack.callback(raise_exc, ValueError)
-                1 / 0
+                1 / 0  # noqa: B018
         except IndexError as exc:
             self.assertIsInstance(exc.__context__, KeyError)
             self.assertIsInstance(exc.__context__.__context__, AttributeError)
@@ -822,7 +822,7 @@ class TestBaseExitStack:
             with self.exit_stack() as stack:
                 stack.callback(lambda: None)
                 stack.callback(raise_exc, IndexError)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             self.assertIsInstance(exc, IndexError)
         else:
             self.fail("Expected IndexError, but no exception was raised")
@@ -832,7 +832,7 @@ class TestBaseExitStack:
                 stack.callback(raise_exc, KeyError)
                 stack.push(suppress_exc)
                 stack.callback(raise_exc, IndexError)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             self.assertIsInstance(exc, KeyError)
         else:
             self.fail("Expected KeyError, but no exception was raised")
@@ -860,7 +860,7 @@ class TestBaseExitStack:
                 stack.enter_context(gets_the_context_right(exc3))
                 stack.enter_context(gets_the_context_right(exc2))
                 raise exc1
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             self.assertIs(exc, exc4)
             self.assertIs(exc.__context__, exc3)
             self.assertIs(exc.__context__.__context__, exc2)
@@ -886,7 +886,7 @@ class TestBaseExitStack:
                 stack.callback(raise_nested, exc4, exc5)
                 stack.callback(raise_nested, exc2, exc3)
                 raise exc1
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             self.assertIs(exc, exc5)
             self.assertIs(exc.__context__, exc4)
             self.assertIs(exc.__context__.__context__, exc3)
@@ -903,7 +903,7 @@ class TestBaseExitStack:
         try:
             with self.exit_stack() as stack:
                 stack.push(suppress_exc)
-                1 / 0
+                1 / 0  # noqa: B018
         except IndexError:
             self.fail("Expected no exception, got IndexError")
 
@@ -949,12 +949,12 @@ class TestBaseExitStack:
         def first():
             try:
                 yield 1
-            except Exception as exc:
-                raise exc
+            except Exception:  # noqa: TRY203
+                raise
 
         # The UniqueRuntimeError should be caught by second()'s exception
         # handler which chain raised a new UniqueException.
-        with self.assertRaises(UniqueException) as err_ctx:
+        with self.assertRaises(UniqueException) as err_ctx:  # noqa: SIM117
             with self.exit_stack() as es_ctx:
                 es_ctx.enter_context(second())
                 es_ctx.enter_context(first())
@@ -1064,15 +1064,15 @@ class TestSuppress(unittest.TestCase):
 
     def test_other_exception(self):
         with self.assertRaises(ZeroDivisionError), suppress(TypeError):
-            1 / 0
+            1 / 0  # noqa: B018
 
     def test_no_args(self):
         with self.assertRaises(ZeroDivisionError), suppress():
-            1 / 0
+            1 / 0  # noqa: B018
 
     def test_multiple_exception_args(self):
         with suppress(ZeroDivisionError, TypeError):
-            1 / 0
+            1 / 0  # noqa: B018
         with suppress(ZeroDivisionError, TypeError):
             len(5)
 
@@ -1086,7 +1086,7 @@ class TestSuppress(unittest.TestCase):
             with ignore_exceptions:  # Check nested usage
                 len(5)
             outer_continued = True
-            1 / 0
+            1 / 0  # noqa: B018
         self.assertTrue(outer_continued)
 
 

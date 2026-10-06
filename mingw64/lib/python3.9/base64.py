@@ -11,32 +11,32 @@ import re
 import struct
 
 __all__ = [
-    # Legacy interface exports traditional RFC 2045 Base64 encodings
-    "encode",
-    "decode",
-    "encodebytes",
-    "decodebytes",
+    "a85decode",
+    "a85encode",
+    "b16decode",
+    "b16encode",
+    "b32decode",
+    "b32encode",
+    "b64decode",
     # Generalized interface for other encodings
     "b64encode",
-    "b64decode",
-    "b32encode",
-    "b32decode",
-    "b16encode",
-    "b16decode",
+    "b85decode",
     # Base85 and Ascii85 encodings
     "b85encode",
-    "b85decode",
-    "a85encode",
-    "a85decode",
+    "decode",
+    "decodebytes",
+    # Legacy interface exports traditional RFC 2045 Base64 encodings
+    "encode",
+    "encodebytes",
+    "standard_b64decode",
     # Standard Base64 encoding
     "standard_b64encode",
-    "standard_b64decode",
+    "urlsafe_b64decode",
     # Some common Base64 alternatives.  As referenced by RFC 3458, see thread
     # starting at:
     #
     # http://zgp.org/pipermail/p2p-hackers/2001-September/000316.html
     "urlsafe_b64encode",
-    "urlsafe_b64decode",
 ]
 
 
@@ -56,7 +56,7 @@ def _bytes_from_decode_data(s):
     except TypeError:
         raise TypeError(
             "argument should be a bytes-like object or ASCII "
-            "string, not %r" % s.__class__.__name__
+            f"string, not {s.__class__.__name__!r}"
         ) from None
 
 
@@ -304,7 +304,7 @@ def _85encode(b, chars, chars2, pad=False, foldnuls=False, foldspaces=False):
     padding = (-len(b)) % 4
     if padding:
         b = b + b"\0" * padding
-    words = struct.Struct("!%dI" % (len(b) // 4)).unpack(b)
+    words = struct.Struct("!%dI" % (len(b) // 4)).unpack(b)  # noqa: UP031
 
     chunks = [
         (
@@ -362,9 +362,8 @@ def a85encode(b, *, foldspaces=False, wrapcol=0, pad=False, adobe=False):
     if wrapcol:
         wrapcol = max(2 if adobe else 1, wrapcol)
         chunks = [result[i : i + wrapcol] for i in range(0, len(result), wrapcol)]
-        if adobe:
-            if len(chunks[-1]) + 2 > wrapcol:
-                chunks.append(b"")
+        if adobe and len(chunks[-1]) + 2 > wrapcol:
+            chunks.append(b"")
         result = b"\n".join(chunks)
     if adobe:
         result += _A85END
@@ -432,7 +431,7 @@ def a85decode(b, *, foldspaces=False, adobe=False, ignorechars=b" \t\n\r\v"):
             # Skip whitespace
             continue
         else:
-            raise ValueError("Non-Ascii85 digit found: %c" % x)
+            raise ValueError("Non-Ascii85 digit found: %c" % x)  # noqa: UP031
 
     result = b"".join(decoded)
     padding = 4 - len(curr)
@@ -496,14 +495,14 @@ def b85decode(b):
             for j, c in enumerate(chunk):
                 if _b85dec[c] is None:
                     raise ValueError(
-                        "bad base85 character at position %d" % (i + j)
+                        "bad base85 character at position %d" % (i + j)  # noqa: UP031
                     ) from None
             raise
         try:
             out.append(packI(acc))
         except struct.error:
             raise ValueError(
-                "base85 overflow in hunk starting at byte %d" % i
+                "base85 overflow in hunk starting at byte %d" % i  # noqa: UP031
             ) from None
 
     result = b"".join(out)
@@ -549,16 +548,13 @@ def _input_type_check(s):
     try:
         m = memoryview(s)
     except TypeError as err:
-        msg = "expected bytes-like object, not %s" % s.__class__.__name__
+        msg = f"expected bytes-like object, not {s.__class__.__name__}"
         raise TypeError(msg) from err
     if m.format not in ("c", "b", "B"):
-        msg = "expected single byte elements, not %r from %s" % (
-            m.format,
-            s.__class__.__name__,
-        )
+        msg = f"expected single byte elements, not {m.format!r} from {s.__class__.__name__}"
         raise TypeError(msg)
     if m.ndim != 1:
-        msg = "expected 1-D data, not %d-D data from %s" % (
+        msg = "expected 1-D data, not %d-D data from %s" % (  # noqa: UP031
             m.ndim,
             s.__class__.__name__,
         )
@@ -594,11 +590,10 @@ def main():
         sys.stdout = sys.stderr
         print(msg)
         print(
-            """usage: %s [-d|-e|-u|-t] [file|-]
+            f"""usage: {sys.argv[0]} [-d|-e|-u|-t] [file|-]
         -d, -u: decode
         -e: encode (default)
         -t: encode and decode string 'Aladdin:open sesame'"""
-            % sys.argv[0]
         )
         sys.exit(2)
     func = encode

@@ -159,7 +159,7 @@ class Wave_read:
     def __init__(self, f):
         self._i_opened_the_file = None
         if isinstance(f, str):
-            f = builtins.open(f, "rb")
+            f = builtins.open(f, "rb")  # noqa: SIM115
             self._i_opened_the_file = f
         # else, assume it is an open file object already
         try:
@@ -267,8 +267,8 @@ class Wave_read:
                 wFormatTag,
                 self._nchannels,
                 self._framerate,
-                dwAvgBytesPerSec,
-                wBlockAlign,
+                _dwAvgBytesPerSec,
+                _wBlockAlign,
             ) = struct.unpack_from("<HHLLH", chunk.read(14))
         except struct.error:
             raise EOFError from None
@@ -281,7 +281,7 @@ class Wave_read:
             if not self._sampwidth:
                 raise Error("bad sample width")
         else:
-            raise Error("unknown format: %r" % (wFormatTag,))
+            raise Error(f"unknown format: {wFormatTag!r}")
         if not self._nchannels:
             raise Error("bad # of channels")
         self._framesize = self._nchannels * self._sampwidth
@@ -318,7 +318,7 @@ class Wave_write:
     def __init__(self, f):
         self._i_opened_the_file = None
         if isinstance(f, str):
-            f = builtins.open(f, "wb")
+            f = builtins.open(f, "wb")  # noqa: SIM115
             self._i_opened_the_file = f
         try:
             self.initfp(f)
@@ -380,7 +380,7 @@ class Wave_write:
             raise Error("cannot change parameters after starting to write")
         if framerate <= 0:
             raise Error("bad frame rate")
-        self._framerate = int(round(framerate))
+        self._framerate = round(framerate)
 
     def getframerate(self):
         if not self._framerate:

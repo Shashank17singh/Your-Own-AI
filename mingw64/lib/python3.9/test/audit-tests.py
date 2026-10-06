@@ -3,7 +3,7 @@
 It should not be imported directly, but should be run by the test_audit
 module with arguments identifying each test.
 
-"""
+"""  # noqa: N999
 
 import contextlib
 import os
@@ -97,12 +97,12 @@ def test_block_add_hook():
 
 def test_block_add_hook_baseexception():
     # Raising BaseException will propagate out when adding a hook
-    with (
+    with (  # noqa: SIM117
         assertRaises(BaseException),
-        TestHook(raise_on_events="sys.addaudithook", exc_type=BaseException) as hook1,
+        TestHook(raise_on_events="sys.addaudithook", exc_type=BaseException),
     ):
         # Adding this next hook should raise BaseException
-        with TestHook() as hook2:
+        with TestHook():
             pass
 
 
@@ -146,7 +146,7 @@ def test_pickle():
     # Before we add the hook, ensure our malicious pickle loads
     assertEqual("Pwned!", pickle.loads(payload_1))
 
-    with TestHook(raise_on_events="pickle.find_class") as hook:
+    with TestHook(raise_on_events="pickle.find_class"):
         with assertRaises(RuntimeError):
             # With the hook enabled, loading globals is not allowed
             pickle.loads(payload_1)
@@ -344,7 +344,7 @@ def test_socket():
     try:
         # Don't care if this fails, we just want the audit message
         sock.bind(("127.0.0.1", 8080))
-    except Exception:
+    except Exception:  # noqa: BLE001, S110
         pass
     finally:
         sock.close()

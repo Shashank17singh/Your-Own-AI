@@ -112,7 +112,7 @@ class Template:
             colno = i - len("".join(lines[:-1]))
             lineno = len(lines)
         raise ValueError(
-            "Invalid placeholder in string: line %d, col %d" % (lineno, colno)
+            "Invalid placeholder in string: line %d, col %d" % (lineno, colno)  # noqa: UP031
         )
 
     def substitute(self, mapping=_sentinel_dict, /, **kws):

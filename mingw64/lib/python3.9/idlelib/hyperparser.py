@@ -39,7 +39,7 @@ class HyperParser:
             for context in editwin.num_context_lines:
                 startat = max(lno - context, 1)
                 startatindex = repr(startat) + ".0"
-                stopatindex = "%d.end" % lno
+                stopatindex = "%d.end" % lno  # noqa: UP031
                 # We add the newline because PyParse requires a newline
                 # at end. We add a space so that index won't be at end
                 # of line, so that its status will be the same as the
@@ -57,7 +57,7 @@ class HyperParser:
                 startatindex = r[1]
             else:
                 startatindex = "1.0"
-            stopatindex = "%d.end" % lno
+            stopatindex = "%d.end" % lno  # noqa: UP031
             # We add the newline because PyParse requires it. We add a
             # space so that index won't be at end of line, so that its
             # status will be the same as the char before it, if should.
@@ -87,7 +87,7 @@ class HyperParser:
         """
         indexinrawtext = len(self.rawtext) - len(self.text.get(index, self.stopatindex))
         if indexinrawtext < 0:
-            raise ValueError("Index %s precedes the analyzed statement" % index)
+            raise ValueError(f"Index {index} precedes the analyzed statement")
         self.indexinrawtext = indexinrawtext
         # find the rightmost bracket to which index belongs
         self.indexbracket = 0
@@ -148,7 +148,7 @@ class HyperParser:
             after += 1
 
         beforeindex = self.text.index(
-            "%s-%dc"
+            "%s-%dc"  # noqa: UP031
             % (self.stopatindex, len(self.rawtext) - self.bracketing[before][0])
         )
         if after >= len(self.bracketing) or self.bracketing[after][0] > len(
@@ -161,7 +161,7 @@ class HyperParser:
             # We are after a real char, so it is a ')' and we give the
             # index before it.
             afterindex = self.text.index(
-                "%s-%dc"
+                "%s-%dc"  # noqa: UP031
                 % (
                     self.stopatindex,
                     len(self.rawtext) - (self.bracketing[after][0] - 1),

@@ -13,7 +13,7 @@ except NameError:
 
 
 class POINT(Structure):
-    _fields_ = [("x", c_int), ("y", c_int)]
+    _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
 
 class BasicWrapTestCase(unittest.TestCase):
@@ -189,7 +189,7 @@ class BasicWrapTestCase(unittest.TestCase):
 
     def test_struct_return_2H(self):
         class S2H(Structure):
-            _fields_ = [("x", c_short), ("y", c_short)]
+            _fields_ = [("x", c_short), ("y", c_short)]  # noqa: RUF012
 
         dll.ret_2h_func.restype = S2H
         dll.ret_2h_func.argtypes = [S2H]
@@ -203,7 +203,7 @@ class BasicWrapTestCase(unittest.TestCase):
 
     def test_struct_return_8H(self):
         class S8I(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_int),
                 ("b", c_int),
                 ("c", c_int),

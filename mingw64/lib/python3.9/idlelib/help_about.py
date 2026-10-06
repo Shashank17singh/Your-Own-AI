@@ -46,7 +46,7 @@ class AboutDialog(Toplevel):
         self.configure(borderwidth=5)
         # place dialog below parent if running htest
         self.geometry(
-            "+%d+%d"
+            "+%d+%d"  # noqa: UP031
             % (
                 parent.winfo_rootx() + 30,
                 parent.winfo_rooty() + (30 if not _htest else 100),

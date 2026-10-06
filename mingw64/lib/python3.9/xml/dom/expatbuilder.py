@@ -97,7 +97,7 @@ def _parse_ns_name(builder, name):
     if len(parts) == 3:
         uri, localname, prefix = parts
         prefix = intern(prefix, prefix)
-        qname = "%s:%s" % (prefix, localname)
+        qname = f"{prefix}:{localname}"
         qname = intern(qname, qname)
         localname = intern(localname, localname)
     elif len(parts) == 2:
@@ -105,7 +105,7 @@ def _parse_ns_name(builder, name):
         prefix = EMPTY_PREFIX
         qname = localname = intern(localname, localname)
     else:
-        raise ValueError("Unsupported syntax: spaces in URIs not supported: %r" % name)
+        raise ValueError(f"Unsupported syntax: spaces in URIs not supported: {name!r}")
     return intern(uri, uri), localname, prefix, qname
 
 
@@ -454,7 +454,7 @@ class FilterVisibilityController:
         else:
             return FILTER_ACCEPT
 
-    _nodetype_mask = {
+    _nodetype_mask = {  # noqa: RUF012
         Node.ELEMENT_NODE: NodeFilter.SHOW_ELEMENT,
         Node.ATTRIBUTE_NODE: NodeFilter.SHOW_ATTRIBUTE,
         Node.TEXT_NODE: NodeFilter.SHOW_TEXT,
@@ -534,18 +534,15 @@ class Skipper(FilterCrutch):
 _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID = (
     "http://xml.python.org/entities/fragment-builder/internal"
 )
-_FRAGMENT_BUILDER_TEMPLATE = (
-    """\
+_FRAGMENT_BUILDER_TEMPLATE = f"""\
 <!DOCTYPE wrapper
-  %%s [
+  %s [
   <!ENTITY fragment-builder-internal
-    SYSTEM "%s">
-%%s
+    SYSTEM "{_FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID}">
+%s
 ]>
-<wrapper %%s
+<wrapper %s
 >&fragment-builder-internal;</wrapper>"""
-    % _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID
-)
 
 
 class FragmentBuilder(ExpatBuilder):
@@ -584,9 +581,9 @@ class FragmentBuilder(ExpatBuilder):
         if doctype:
             subset = doctype.internalSubset or self._getDeclarations()
             if doctype.publicId:
-                ident = 'PUBLIC "%s" "%s"' % (doctype.publicId, doctype.systemId)
+                ident = f'PUBLIC "{doctype.publicId}" "{doctype.systemId}"'
             elif doctype.systemId:
-                ident = 'SYSTEM "%s"' % doctype.systemId
+                ident = f'SYSTEM "{doctype.systemId}"'
         else:
             subset = ""
         nsattrs = self._getNSattrs()  # get ns decls from node's ancestors
@@ -612,32 +609,24 @@ class FragmentBuilder(ExpatBuilder):
                 notation = doctype.notations.item(i)
                 if s:
                     s = s + "\n  "
-                s = "%s<!NOTATION %s" % (s, notation.nodeName)
+                s = f"{s}<!NOTATION {notation.nodeName}"
                 if notation.publicId:
-                    s = '%s PUBLIC "%s"\n             "%s">' % (
-                        s,
-                        notation.publicId,
-                        notation.systemId,
-                    )
+                    s = f'{s} PUBLIC "{notation.publicId}"\n             "{notation.systemId}">'
                 else:
-                    s = '%s SYSTEM "%s">' % (s, notation.systemId)
+                    s = f'{s} SYSTEM "{notation.systemId}">'
             for i in range(doctype.entities.length):
                 entity = doctype.entities.item(i)
                 if s:
                     s = s + "\n  "
-                s = "%s<!ENTITY %s" % (s, entity.nodeName)
+                s = f"{s}<!ENTITY {entity.nodeName}"
                 if entity.publicId:
-                    s = '%s PUBLIC "%s"\n             "%s"' % (
-                        s,
-                        entity.publicId,
-                        entity.systemId,
-                    )
+                    s = f'{s} PUBLIC "{entity.publicId}"\n             "{entity.systemId}"'
                 elif entity.systemId:
-                    s = '%s SYSTEM "%s"' % (s, entity.systemId)
+                    s = f'{s} SYSTEM "{entity.systemId}"'
                 else:
-                    s = '%s "%s"' % (s, entity.firstChild.data)
+                    s = f'{s} "{entity.firstChild.data}"'
                 if entity.notationName:
-                    s = "%s NOTATION %s" % (s, entity.notationName)
+                    s = f"{s} NOTATION {entity.notationName}"
                 s = s + ">"
         return s
 
@@ -739,7 +728,7 @@ class Namespaces:
         def end_element_handler(self, name):
             curNode = self.curNode
             if " " in name:
-                uri, localname, prefix, qname = _parse_ns_name(self, name)
+                uri, localname, prefix, _qname = _parse_ns_name(self, name)
                 assert (
                     curNode.namespaceURI == uri
                     and curNode.localName == localname
@@ -788,9 +777,9 @@ class FragmentBuilderNS(Namespaces, FragmentBuilder):
                     else:
                         declname = "xmlns"
                     if attrs:
-                        attrs = "%s\n    %s='%s'" % (attrs, declname, uri)
+                        attrs = f"{attrs}\n    {declname}='{uri}'"
                     else:
-                        attrs = " %s='%s'" % (declname, uri)
+                        attrs = f" {declname}='{uri}'"
             context = context.parentNode
         return attrs
 

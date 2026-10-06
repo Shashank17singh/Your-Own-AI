@@ -8,8 +8,8 @@ from datetime import datetime, timedelta, tzinfo
 
 from . import _common, _tzpath
 
-EPOCH = datetime(1970, 1, 1)
-EPOCHORDINAL = datetime(1970, 1, 1).toordinal()
+EPOCH = datetime(1970, 1, 1)  # noqa: DTZ001
+EPOCHORDINAL = datetime(1970, 1, 1).toordinal()  # noqa: DTZ001
 
 
 @functools.lru_cache(maxsize=512)
@@ -19,7 +19,7 @@ def _load_timedelta(seconds):
 
 class ZoneInfo(tzinfo):
     _strong_cache_size = 8
-    _strong_cache = collections.OrderedDict()
+    _strong_cache = collections.OrderedDict()  # noqa: RUF012
     _weak_cache = weakref.WeakValueDictionary()
     __module__ = "zoneinfo"
 
@@ -49,7 +49,7 @@ class ZoneInfo(tzinfo):
         obj._key = key
         obj._file_path = obj._find_tzfile(key)
         if obj._file_path is not None:
-            file_obj = open(obj._file_path, "rb")
+            file_obj = open(obj._file_path, "rb")  # noqa: SIM115
         else:
             file_obj = _common.load_tzdata(key)
         with file_obj as f:

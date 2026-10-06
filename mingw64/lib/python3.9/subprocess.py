@@ -140,17 +140,14 @@ class CalledProcessError(SubprocessError):
     def __str__(self):
         if self.returncode and self.returncode < 0:
             try:
-                return "Command '%s' died with %r." % (
-                    self.cmd,
-                    signal.Signals(-self.returncode),
-                )
+                return f"Command '{self.cmd}' died with {signal.Signals(-self.returncode)!r}."
             except ValueError:
-                return "Command '%s' died with unknown signal %d." % (
+                return "Command '%s' died with unknown signal %d." % (  # noqa: UP031
                     self.cmd,
                     -self.returncode,
                 )
         else:
-            return "Command '%s' returned non-zero exit status %d." % (
+            return "Command '%s' returned non-zero exit status %d." % (  # noqa: UP031
                 self.cmd,
                 self.returncode,
             )
@@ -182,7 +179,7 @@ class TimeoutExpired(SubprocessError):
         self.stderr = stderr
 
     def __str__(self):
-        return "Command '%s' timed out after %s seconds" % (self.cmd, self.timeout)
+        return f"Command '{self.cmd}' timed out after {self.timeout} seconds"
 
     @property
     def stdout(self):
@@ -244,7 +241,7 @@ if _mswindows:
             raise ValueError("already closed")
 
         def __repr__(self):
-            return "%s(%d)" % (self.__class__.__name__, int(self))
+            return "%s(%d)" % (self.__class__.__name__, int(self))  # noqa: UP031
 
         __del__ = Close
 
@@ -377,7 +374,7 @@ def _args_from_interpreter_flags():
             if value is True:
                 arg = opt
             else:
-                arg = "%s=%s" % (opt, value)
+                arg = f"{opt}={value}"
             args.extend(("-X", arg))
 
     return args
@@ -1019,7 +1016,7 @@ class Popen:
 
         try:
             if p2cwrite != -1:
-                self.stdin = open(p2cwrite, "wb", bufsize)
+                self.stdin = open(p2cwrite, "wb", bufsize)  # noqa: SIM115
                 if self.text_mode:
                     self.stdin = io.TextIOWrapper(
                         self.stdin,
@@ -1029,13 +1026,13 @@ class Popen:
                         errors=errors,
                     )
             if c2pread != -1:
-                self.stdout = open(c2pread, "rb", bufsize)
+                self.stdout = open(c2pread, "rb", bufsize)  # noqa: SIM115
                 if self.text_mode:
                     self.stdout = io.TextIOWrapper(
                         self.stdout, encoding=encoding, errors=errors
                     )
             if errread != -1:
-                self.stderr = open(errread, "rb", bufsize)
+                self.stderr = open(errread, "rb", bufsize)  # noqa: SIM115
                 if self.text_mode:
                     self.stderr = io.TextIOWrapper(
                         self.stderr, encoding=encoding, errors=errors
@@ -1145,7 +1142,7 @@ class Popen:
                     except TimeoutExpired:
                         pass
                 self._sigint_wait_secs = 0  # Note that this has been done.
-                return  # resume the KeyboardInterrupt
+                return  # resume the KeyboardInterrupt  # noqa: B012
 
             # Wait for the process to terminate, to avoid zombies.
             self.wait()
@@ -1158,7 +1155,7 @@ class Popen:
             # Not reading subprocess exit status creates a zombie process which
             # is only destroyed at the parent python process exit
             _warn(
-                "subprocess %s is still running" % self.pid,
+                f"subprocess {self.pid} is still running",
                 ResourceWarning,
                 source=self,
             )
@@ -1265,7 +1262,7 @@ class Popen:
             finally:
                 self._communication_started = True
 
-            sts = self.wait(timeout=self._remaining_time(endtime))
+            self.wait(timeout=self._remaining_time(endtime))
 
         return (stdout, stderr)
 
@@ -1552,7 +1549,7 @@ class Popen:
 
             # Start the process
             try:
-                hp, ht, pid, tid = _winapi.CreateProcess(
+                hp, ht, pid, _tid = _winapi.CreateProcess(
                     executable,
                     args,
                     # no special security
@@ -1595,7 +1592,7 @@ class Popen:
             in its local scope.
 
             """
-            if self.returncode is None:
+            if self.returncode is None:  # noqa: SIM102
                 if _WaitForSingleObject(self._handle, 0) == _WAIT_OBJECT_0:
                     self.returncode = _GetExitCodeProcess(self._handle)
             return self.returncode

@@ -91,14 +91,16 @@ def run_interp(id, source, **shared):
     _run_interp(id, source, shared)
 
 
-def _run_interp(id, source, shared, _mainns={}):
+def _run_interp(id, source, shared, _mainns=None):
+    if _mainns is None:
+        _mainns = {}
     source = dedent(source)
     main = interpreters.get_main()
     if main == id:
         if interpreters.get_current() != main:
             raise RuntimeError
         # XXX Run a func?
-        exec(source, _mainns)
+        exec(source, _mainns)  # noqa: S102
     else:
         interpreters.run_string(id, source, shared)
 
@@ -212,9 +214,8 @@ class ChannelState(namedtuple("ChannelState", "pending closed")):
         return type(self)(self.pending - 1, closed=self.closed)
 
     def close(self, *, force=True):
-        if self.closed:
-            if not force or self.pending == 0:
-                return self
+        if self.closed and (not force or self.pending == 0):
+            return self
         return type(self)(0 if force else self.pending, closed=True)
 
 
@@ -235,7 +236,7 @@ def run_action(cid, action, end, state, *, hideclosed=True):
         result = state.close()
     else:
         if expectfail:
-            raise ...  # XXX
+            raise ...  # XXX  # noqa: B016
     return result
 
 
@@ -251,7 +252,7 @@ def _run_action(cid, action, end, state):
                 except interpreters.ChannelEmptyError:
                     return state
                 else:
-                    raise Exception("expected ChannelEmptyError")
+                    raise Exception("expected ChannelEmptyError")  # noqa: TRY002
             else:
                 interpreters.channel_recv(cid)
                 return state.decr()
@@ -569,7 +570,7 @@ class InterpreterIDTests(TestBase):
         id2 = interpreters.InterpreterID(int(id1))
         id3 = interpreters.create()
 
-        self.assertTrue(id1 == id1)
+        self.assertTrue(id1 == id1)  # noqa: PLR0124
         self.assertTrue(id1 == id2)
         self.assertTrue(id1 == int(id1))
         self.assertTrue(int(id1) == id1)
@@ -582,7 +583,7 @@ class InterpreterIDTests(TestBase):
         self.assertFalse(id1 == "spam")
         self.assertFalse(id1 == id3)
 
-        self.assertFalse(id1 != id1)
+        self.assertFalse(id1 != id1)  # noqa: PLR0124
         self.assertFalse(id1 != id2)
         self.assertTrue(id1 != id3)
 
@@ -773,7 +774,7 @@ class DestroyTests(TestBase):
         t.join()
 
     def test_still_running(self):
-        (main,) = interpreters.list_all()
+        (_main,) = interpreters.list_all()
         interp = interpreters.create()
         with _running(interp):
             self.assertTrue(
@@ -1185,7 +1186,7 @@ class ChannelIDTests(TestBase):
         cid2 = interpreters._channel_id(int(cid1))
         cid3 = interpreters.channel_create()
 
-        self.assertTrue(cid1 == cid1)
+        self.assertTrue(cid1 == cid1)  # noqa: PLR0124
         self.assertTrue(cid1 == cid2)
         self.assertTrue(cid1 == int(cid1))
         self.assertTrue(int(cid1) == cid1)
@@ -1198,7 +1199,7 @@ class ChannelIDTests(TestBase):
         self.assertFalse(cid1 == "spam")
         self.assertFalse(cid1 == cid3)
 
-        self.assertFalse(cid1 != cid1)
+        self.assertFalse(cid1 != cid1)  # noqa: PLR0124
         self.assertFalse(cid1 != cid2)
         self.assertTrue(cid1 != cid3)
 
@@ -1343,7 +1344,7 @@ class ChannelTests(TestBase):
         """Test listing channel interpreters with a released channel."""
         # Set up one channel with main interpreter on the send end and two
         # subinterpreters on the receive end.
-        interp0 = interpreters.get_main()
+        interpreters.get_main()
         interp1 = interpreters.create()
         interp2 = interpreters.create()
         cid = interpreters.channel_create()
@@ -1393,8 +1394,8 @@ class ChannelTests(TestBase):
 
     def test_channel_list_interpreters_closed(self):
         """Test listing channel interpreters with a closed channel."""
-        interp0 = interpreters.get_main()
-        interp1 = interpreters.create()
+        interpreters.get_main()
+        interpreters.create()
         cid = interpreters.channel_create()
         # Put something in the channel so that it's not empty.
         interpreters.channel_send(cid, "send")
@@ -1415,7 +1416,7 @@ class ChannelTests(TestBase):
 
     def test_channel_list_interpreters_closed_send_end(self):
         """Test listing channel interpreters with a channel's send end closed."""
-        interp0 = interpreters.get_main()
+        interpreters.get_main()
         interp1 = interpreters.create()
         cid = interpreters.channel_create()
         # Put something in the channel so that it's not empty.
@@ -1463,7 +1464,7 @@ class ChannelTests(TestBase):
 
     def test_send_recv_same_interpreter(self):
         id1 = interpreters.create()
-        out = _run_output(
+        _run_output(
             id1,
             dedent("""
             import _xxsubinterpreters as _interpreters
@@ -1479,7 +1480,7 @@ class ChannelTests(TestBase):
     def test_send_recv_different_interpreters(self):
         cid = interpreters.channel_create()
         id1 = interpreters.create()
-        out = _run_output(
+        _run_output(
             id1,
             dedent(f"""
             import _xxsubinterpreters as _interpreters
@@ -1588,7 +1589,7 @@ class ChannelTests(TestBase):
             print(cid.end)
             _interpreters.channel_send(cid, b'spam')
             """),
-            dict(cid=cid.send),
+            {"cid": cid.send},
         )
         obj = interpreters.channel_recv(cid)
 
@@ -1611,7 +1612,7 @@ class ChannelTests(TestBase):
             print(chan.id.end)
             _interpreters.channel_send(chan.id, b'spam')
             """),
-            dict(chan=cid.send),
+            {"chan": cid.send},
         )
         obj = interpreters.channel_recv(cid)
 
@@ -2246,8 +2247,8 @@ class ExhaustiveChannelTests(TestBase):
         ]
 
         # partially emptied
-        for interp1 in interps:
-            for interp2 in interps:
+        for interp1 in interps:  # noqa: PLR1704
+            for interp2 in interps:  # noqa: PLR1704
                 for interp3 in interps:
                     yield [
                         ChannelAction("use", "send", interp1),

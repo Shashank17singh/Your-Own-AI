@@ -39,7 +39,7 @@ class ObjectTreeItem(TreeItem):
         try:
             value = eval(text)
             self.setfunction(value)
-        except:
+        except:  # noqa: E722, S110
             pass
         else:
             self.object = value
@@ -101,7 +101,7 @@ class SequenceTreeItem(ObjectTreeItem):
             def setfunction(value, key=key, object=self.object):
                 object[key] = value
 
-            item = make_objecttreeitem("%r:" % (key,), value, setfunction)
+            item = make_objecttreeitem(f"{key!r}:", value, setfunction)
             sublist.append(item)
         return sublist
 
@@ -111,7 +111,7 @@ class DictTreeItem(SequenceTreeItem):
         keys = list(self.object.keys())
         try:
             keys.sort()
-        except:
+        except:  # noqa: E722, S110
             pass
         return keys
 
@@ -129,10 +129,7 @@ dispatch = {
 
 def make_objecttreeitem(labeltext, object, setfunction=None):
     t = type(object)
-    if t in dispatch:
-        c = dispatch[t]
-    else:
-        c = ObjectTreeItem
+    c = dispatch.get(t, ObjectTreeItem)
     return c(labeltext, object, setfunction)
 
 
@@ -143,7 +140,7 @@ def _object_browser(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test debug object browser")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x + 100, y + 175))
+    top.geometry("+%d+%d" % (x + 100, y + 175))  # noqa: UP031
     top.configure(bd=0, bg="yellow")
     top.focus_set()
     sc = ScrolledCanvas(top, bg="white", highlightthickness=0, takefocus=1)

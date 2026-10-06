@@ -41,7 +41,7 @@ __all__ = [
 import tkinter
 from tkinter import _flatten, _join, _splitdict, _stringify
 
-_REQUIRE_TILE = True if tkinter.TkVersion < 8.5 else False
+_REQUIRE_TILE = tkinter.TkVersion < 8.5
 
 
 def _load_tile(master):
@@ -50,7 +50,7 @@ def _load_tile(master):
 
         tilelib = os.environ.get("TILE_LIBRARY")
         if tilelib:
-            master.tk.eval("global auto_path; lappend auto_path {%s}" % tilelib)
+            master.tk.eval(f"global auto_path; lappend auto_path {{{tilelib}}}")
         master.tk.eval("package require tile")  # TclError may be raised here
         master._tile_loaded = True
 
@@ -72,7 +72,7 @@ def _format_optdict(optdict, script=False, ignore=None):
     opts = []
     for opt, value in optdict.items():
         if not ignore or opt not in ignore:
-            opts.append("-%s" % opt)
+            opts.append(f"-{opt}")
             if value is not None:
                 opts.append(_format_optvalue(value, script))
     return _flatten(opts)
@@ -99,7 +99,7 @@ def _format_mapdict(mapdict, script=False):
       ('-expand', '{active selected} grey focus {1, 2, 3, 4}')"""
     opts = []
     for opt, value in mapdict.items():
-        opts.extend(("-%s" % opt, _format_optvalue(_mapdict_values(value), script)))
+        opts.extend((f"-{opt}", _format_optvalue(_mapdict_values(value), script)))
     return _flatten(opts)
 
 
@@ -111,18 +111,18 @@ def _format_elemcreate(etype, script=False, *args, **kw):
         if etype == "image":  # define an element based on an image
             iname = args[0]
             imagespec = _join(_mapdict_values(args[1:]))
-            spec = "%s %s" % (iname, imagespec)
+            spec = f"{iname} {imagespec}"
         else:
             class_name, part_id = args[:2]
             statemap = _join(_mapdict_values(args[2:]))
-            spec = "%s %s %s" % (class_name, part_id, statemap)
+            spec = f"{class_name} {part_id} {statemap}"
         opts = _format_optdict(kw, script)
     elif etype == "from":  # clone an element
         spec = args[0]  # theme name
         if len(args) > 1:  # elementfrom specified
             opts = (_format_optvalue(args[1], script),)
     if script:
-        spec = "{%s}" % spec
+        spec = f"{{{spec}}}"
         opts = " ".join(opts)
     return spec, opts
 
@@ -157,7 +157,7 @@ def _format_layoutlist(layout, indent=0, indent_size=2):
         elem, opts = layout_elem
         opts = opts or {}
         fopts = " ".join(_format_optdict(opts, True, ("children",)))
-        head = "%s%s%s" % (" " * indent, elem, (" %s" % fopts) if fopts else "")
+        head = "{}{}{}".format(" " * indent, elem, (f" {fopts}") if fopts else "")
         if "children" in opts:
             script.append(head + " -children {")
             indent += indent_size
@@ -180,16 +180,16 @@ def _script_from_settings(settings):
     for name, opts in settings.items():
         if opts.get("configure"):  # format 'configure'
             s = " ".join(_format_optdict(opts["configure"], True))
-            script.append("ttk::style configure %s %s;" % (name, s))
+            script.append(f"ttk::style configure {name} {s};")
         if opts.get("map"):  # format 'map'
             s = " ".join(_format_mapdict(opts["map"], True))
-            script.append("ttk::style map %s %s;" % (name, s))
+            script.append(f"ttk::style map {name} {s};")
         if "layout" in opts:  # format 'layout' which may be empty
             if not opts["layout"]:
                 s = "null"  # could be any other word, but this one makes sense
             else:
                 s, _ = _format_layoutlist(opts["layout"])
-            script.append("ttk::style layout %s {\n%s\n}" % (name, s))
+            script.append(f"ttk::style layout {name} {{\n{s}\n}}")
         if opts.get("element create"):  # format 'element create'
             eopts = opts["element create"]
             etype = eopts[0]
@@ -199,9 +199,7 @@ def _script_from_settings(settings):
             elemargs = eopts[1:argc]
             elemkw = eopts[argc] if argc < len(eopts) and eopts[argc] else {}
             spec, opts = _format_elemcreate(etype, True, *elemargs, **elemkw)
-            script.append(
-                "ttk::style element create %s %s %s %s" % (name, etype, spec, opts)
-            )
+            script.append(f"ttk::style element create {name} {etype} {spec} {opts}")
     return "\n".join(script)
 
 
@@ -343,7 +341,7 @@ class Style:
         or something else of your preference. A statespec is compound of
         one or more states and then a value."""
         if query_opt is not None:
-            result = self.tk.call(self._name, "map", style, "-%s" % query_opt)
+            result = self.tk.call(self._name, "map", style, f"-{query_opt}")
             return _list_from_statespec(self.tk.splitlist(result))
         result = self.tk.call(self._name, "map", style, *_format_mapdict(kw))
         return {
@@ -357,7 +355,7 @@ class Style:
         or more states. If the default argument is set, it is used as
         a fallback value in case no specification for option is found."""
         state = " ".join(state) if state else ""
-        return self.tk.call(self._name, "lookup", style, "-%s" % option, state, default)
+        return self.tk.call(self._name, "lookup", style, f"-{option}", state, default)
 
     def layout(self, style, layoutspec=None):
         """Define the widget layout for given style. If layoutspec is
@@ -1332,7 +1330,7 @@ class OptionMenu(Menubutton):
         self._variable = variable
         self._callback = kwargs.pop("command", None)
         if kwargs:
-            raise tkinter.TclError("unknown option -%s" % (next(iter(kwargs.keys()))))
+            raise tkinter.TclError(f"unknown option -{next(iter(kwargs.keys()))}")
         self.set_menu(default, *values)
 
     def __getitem__(self, item):

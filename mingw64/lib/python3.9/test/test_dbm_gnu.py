@@ -35,7 +35,7 @@ class TestGdbm(unittest.TestCase):
         self.g["12345678910"] = "019237410982340912840198242"
         self.g[b"bytes"] = b"data"
         key_set = set(self.g.keys())
-        self.assertEqual(key_set, set([b"a", b"bytes", b"12345678910"]))
+        self.assertEqual(key_set, {b"a", b"bytes", b"12345678910"})
         self.assertIn("a", self.g)
         self.assertIn(b"a", self.g)
         self.assertEqual(self.g[b"bytes"], b"data")

@@ -96,7 +96,7 @@ class OrderedDictTests:
         od = OrderedDict()
         od.update(red=5, blue=6, other=7, self=8)
         self.assertEqual(
-            sorted(list(od.items())),
+            sorted(od.items()),
             [("blue", 6), ("other", 7), ("red", 5), ("self", 8)],
         )
 
@@ -195,7 +195,7 @@ class OrderedDictTests:
         it = iter(od)
         key = next(it)
         del od[key]
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception):  # noqa: B017
             # Note, the exact exception raised is not guaranteed
             # The only guarantee that the next() will not succeed
             next(it)
@@ -210,7 +210,7 @@ class OrderedDictTests:
         self.assertEqual(sorted(od.keys()), [t[0] for t in pairs])
         self.assertEqual(sorted(od.values()), [t[1] for t in pairs])
         self.assertEqual(sorted(od.items()), pairs)
-        self.assertEqual(sorted(reversed(od)), sorted([t[0] for t in reversed(pairs)]))
+        self.assertEqual(sorted(od), sorted([t[0] for t in reversed(pairs)]))
 
     def test_iterators_empty(self):
         OrderedDict = self.OrderedDict
@@ -298,7 +298,7 @@ class OrderedDictTests:
         od = OrderedDict(pairs)
 
         def check(dup):
-            msg = "\ncopy: %s\nod: %s" % (dup, od)
+            msg = f"\ncopy: {dup}\nod: {od}"
             self.assertIsNot(dup, od, msg)
             self.assertEqual(dup, od)
             self.assertEqual(list(dup.items()), list(od.items()))
@@ -455,7 +455,7 @@ class OrderedDictTests:
     def test_sizeof(self):
         OrderedDict = self.OrderedDict
         # Wimpy test: Just verify the reported size is larger than a regular dict
-        d = dict(a=1)
+        d = {"a": 1}
         od = OrderedDict(**d)
         self.assertGreater(sys.getsizeof(od), sys.getsizeof(d))
 
@@ -486,7 +486,7 @@ class OrderedDictTests:
         # Verify that subclasses can override update() without breaking __init__()
         class MyOD(OrderedDict):
             def update(self, *args, **kwds):
-                raise Exception()
+                raise Exception()  # noqa: TRY002
 
         items = [("a", 1), ("c", 3), ("b", 2)]
         self.assertEqual(list(MyOD(items).items()), items)

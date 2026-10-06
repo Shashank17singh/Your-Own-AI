@@ -13,14 +13,17 @@ NotDefined = object()
 # arguments.
 dispatch = {
     (False, False, False): lambda args, sep, end, file: print(*args),
-    (False, False, True): lambda args, sep, end, file: print(file=file, *args),
-    (False, True, False): lambda args, sep, end, file: print(end=end, *args),
-    (False, True, True): lambda args, sep, end, file: print(end=end, file=file, *args),
-    (True, False, False): lambda args, sep, end, file: print(sep=sep, *args),
-    (True, False, True): lambda args, sep, end, file: print(sep=sep, file=file, *args),
-    (True, True, False): lambda args, sep, end, file: print(sep=sep, end=end, *args),
+    (False, False, True): lambda args, sep, end, file: print(file=file, *args),  # noqa: B026
+    (False, True, False): lambda args, sep, end, file: print(end=end, *args),  # noqa: B026
+    (False, True, True): lambda args, sep, end, file: print(end=end, file=file, *args),  # noqa: B026
+    (True, False, False): lambda args, sep, end, file: print(sep=sep, *args),  # noqa: B026
+    (True, False, True): lambda args, sep, end, file: print(sep=sep, file=file, *args),  # noqa: B026
+    (True, True, False): lambda args, sep, end, file: print(sep=sep, end=end, *args),  # noqa: B026
     (True, True, True): lambda args, sep, end, file: print(
-        sep=sep, end=end, file=file, *args
+        sep=sep,
+        end=end,
+        file=file,
+        *args,  # noqa: B026
     ),
 }
 
@@ -132,21 +135,21 @@ class TestPy2MigrationHint(unittest.TestCase):
     def test_normal_string(self):
         python2_print_str = 'print "Hello World"'
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn('print("Hello World")', str(context.exception))
 
     def test_string_with_soft_space(self):
         python2_print_str = 'print "Hello World",'
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn('print("Hello World", end=" ")', str(context.exception))
 
     def test_string_with_excessive_whitespace(self):
         python2_print_str = 'print  "Hello World", '
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn('print("Hello World", end=" ")', str(context.exception))
 
@@ -155,7 +158,7 @@ class TestPy2MigrationHint(unittest.TestCase):
             print "Hello World"
         """
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn('print("Hello World")', str(context.exception))
 
@@ -165,21 +168,21 @@ class TestPy2MigrationHint(unittest.TestCase):
     def test_string_with_semicolon(self):
         python2_print_str = "print p;"
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn("print(p)", str(context.exception))
 
     def test_string_in_loop_on_same_line(self):
         python2_print_str = "for i in s: print i"
         with self.assertRaises(SyntaxError) as context:
-            exec(python2_print_str)
+            exec(python2_print_str)  # noqa: S102
 
         self.assertIn("print(i)", str(context.exception))
 
     def test_stream_redirection_hint_for_py2_migration(self):
         # Test correct hint produced for Py2 redirection syntax
         with self.assertRaises(TypeError) as context:
-            print >> sys.stderr, "message"
+            print >> sys.stderr, "message"  # noqa: F633
         self.assertIn(
             'Did you mean "print(<message>, file=<output_stream>)"?',
             str(context.exception),
@@ -188,7 +191,7 @@ class TestPy2MigrationHint(unittest.TestCase):
         # Test correct hint is produced in the case where RHS implements
         # __rrshift__ but returns NotImplemented
         with self.assertRaises(TypeError) as context:
-            print >> 42
+            print >> 42  # noqa: F633
         self.assertIn(
             'Did you mean "print(<message>, file=<output_stream>)"?',
             str(context.exception),
@@ -209,7 +212,7 @@ class TestPy2MigrationHint(unittest.TestCase):
             def __rrshift__(self, lhs):
                 return 42  # Force result independent of LHS
 
-        self.assertEqual(print >> OverrideRRShift(), 42)
+        self.assertEqual(print >> OverrideRRShift(), 42)  # noqa: F633
 
 
 if __name__ == "__main__":

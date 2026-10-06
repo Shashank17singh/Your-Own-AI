@@ -147,10 +147,10 @@ class BottomMatcher:
         print("digraph g{")
 
         def print_node(node):
-            for subnode_key in node.transition_table.keys():
+            for subnode_key in node.transition_table:
                 subnode = node.transition_table[subnode_key]
                 print(
-                    "%d -> %d [label=%s] //%s"
+                    "%d -> %d [label=%s] //%s"  # noqa: UP031
                     % (node.id, subnode.id, type_repr(subnode_key), str(subnode.fixers))
                 )
                 if subnode_key == 1:
@@ -166,7 +166,7 @@ _type_reprs = {}
 
 
 def type_repr(type_num):
-    global _type_reprs
+    global _type_reprs  # noqa: PLW0602
     if not _type_reprs:
         from .pygram import python_symbols
 

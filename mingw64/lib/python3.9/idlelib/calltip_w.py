@@ -39,7 +39,7 @@ class CalltipWindow(TooltipBase):
             anchor_index = (self.parenline, self.parencol)
         else:
             anchor_index = (curline, 0)
-        box = self.anchor_widget.bbox("%d.%d" % anchor_index)
+        box = self.anchor_widget.bbox("%d.%d" % anchor_index)  # noqa: UP031
         if not box:
             box = list(self.anchor_widget.bbox("insert"))
             # align to left of window
@@ -185,7 +185,7 @@ def _calltip_window(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test call-tips")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("250x100+%d+%d" % (x + 175, y + 150))
+    top.geometry("250x100+%d+%d" % (x + 175, y + 150))  # noqa: UP031
     text = Text(top)
     text.pack(side=LEFT, fill=BOTH, expand=1)
     text.insert("insert", "string.split")

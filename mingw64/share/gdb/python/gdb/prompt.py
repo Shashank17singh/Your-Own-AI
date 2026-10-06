@@ -17,14 +17,14 @@ def _prompt_object_attr(func, what, attr, nattr):
     try:
         obj = func()
     except gdb.error:
-        return "<no %s>" % what
+        return f"<no {what}>"
     if hasattr(obj, attr):
         result = getattr(obj, attr)
         if callable(result):
             result = result()
         return result
     else:
-        return "<no attribute %s on current %s>" % (attr, what)
+        return f"<no attribute {attr} on current {what}>"
 
 
 def _prompt_frame(attr):
@@ -98,7 +98,7 @@ def prompt_help():
     result = ""
     keys = sorted(prompt_substitutions.keys())
     for key in keys:
-        result += "  \\%s\t%s\n" % (key, prompt_substitutions[key].__doc__)
+        result += f"  \\{key}\t{prompt_substitutions[key].__doc__}\n"
     result += """
 A substitution can be used in a simple form, like "\\f".
 An argument can also be passed to it, like "\\f{name}".

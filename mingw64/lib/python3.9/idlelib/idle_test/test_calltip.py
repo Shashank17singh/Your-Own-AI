@@ -336,7 +336,7 @@ bytes() -> empty bytes object""",
             __class__ = property({}.__getitem__, {}.__setitem__)
 
         class Object(metaclass=Type):
-            __slots__ = "__class__"
+            __slots__ = "__class__"  # noqa: PLC0205
 
         for meth, mtip in (
             (Type, get_spec(type)),

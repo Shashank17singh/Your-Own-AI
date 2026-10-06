@@ -11,7 +11,7 @@ from ctypes import *
 from ctypes.test import need_symbol
 
 try:
-    WINFUNCTYPE
+    WINFUNCTYPE  # noqa: B018
 except NameError:
     # fake to enable this test on Linux
     WINFUNCTYPE = CFUNCTYPE
@@ -24,11 +24,11 @@ if sys.platform == "win32":
 
 
 class POINT(Structure):
-    _fields_ = [("x", c_int), ("y", c_int)]
+    _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
 
 class RECT(Structure):
-    _fields_ = [("left", c_int), ("top", c_int), ("right", c_int), ("bottom", c_int)]
+    _fields_ = [("left", c_int), ("top", c_int), ("right", c_int), ("bottom", c_int)]  # noqa: RUF012
 
 
 class FunctionTestCase(unittest.TestCase):
@@ -72,7 +72,7 @@ class FunctionTestCase(unittest.TestCase):
         try:
 
             class X(Structure):
-                _fields_ = []
+                _fields_ = []  # noqa: RUF012
 
         except TypeError:
             pass
@@ -227,7 +227,7 @@ class FunctionTestCase(unittest.TestCase):
         f.restype = c_int
 
         class X(Structure):
-            _fields_ = [("y", c_int)]
+            _fields_ = [("y", c_int)]  # noqa: RUF012
 
         self.assertRaises(TypeError, f, X())  # cannot convert parameter
 
@@ -336,7 +336,7 @@ class FunctionTestCase(unittest.TestCase):
 
         self.assertEqual(13577625587, f(1000000000000, cb))
 
-    def test_errors(self):
+    def test_errors(self):  # noqa: F811
         self.assertRaises(AttributeError, getattr, dll, "_xxx_yyy")
         self.assertRaises(ValueError, c_int.in_dll, dll, "_xxx_yyy")
 
@@ -363,7 +363,7 @@ class FunctionTestCase(unittest.TestCase):
 
     def test_struct_return_2H(self):
         class S2H(Structure):
-            _fields_ = [("x", c_short), ("y", c_short)]
+            _fields_ = [("x", c_short), ("y", c_short)]  # noqa: RUF012
 
         dll.ret_2h_func.restype = S2H
         dll.ret_2h_func.argtypes = [S2H]
@@ -374,7 +374,7 @@ class FunctionTestCase(unittest.TestCase):
     @unittest.skipUnless(sys.platform == "win32", "Windows-specific test")
     def test_struct_return_2H_stdcall(self):
         class S2H(Structure):
-            _fields_ = [("x", c_short), ("y", c_short)]
+            _fields_ = [("x", c_short), ("y", c_short)]  # noqa: RUF012
 
         windll.s_ret_2h_func.restype = S2H
         windll.s_ret_2h_func.argtypes = [S2H]
@@ -383,7 +383,7 @@ class FunctionTestCase(unittest.TestCase):
 
     def test_struct_return_8H(self):
         class S8I(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_int),
                 ("b", c_int),
                 ("c", c_int),
@@ -406,7 +406,7 @@ class FunctionTestCase(unittest.TestCase):
     @unittest.skipUnless(sys.platform == "win32", "Windows-specific test")
     def test_struct_return_8H_stdcall(self):
         class S8I(Structure):
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("a", c_int),
                 ("b", c_int),
                 ("c", c_int),

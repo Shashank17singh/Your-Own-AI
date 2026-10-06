@@ -147,7 +147,7 @@ class AsyncContextManagerTestCase(unittest.TestCase):
         async def whoo():
             try:
                 yield
-            except:
+            except:  # noqa: E722
                 yield
 
         ctx = whoo()
@@ -234,7 +234,7 @@ class AsyncContextManagerTestCase(unittest.TestCase):
                 try:
                     async with woohoo():
                         raise stop_exc
-                except Exception as ex:
+                except Exception as ex:  # noqa: BLE001
                     self.assertIs(ex, stop_exc)
                 else:
                     self.fail(f"{stop_exc} was suppressed")
@@ -250,7 +250,7 @@ class AsyncContextManagerTestCase(unittest.TestCase):
 
         with self.assertRaises(RuntimeError):
             async with woohoo():
-                1 / 0
+                1 / 0  # noqa: B018
 
         # If the context manager wrapped StopAsyncIteration in a RuntimeError,
         # we also unwrap it, because we can't tell whether the wrapping was
@@ -324,7 +324,7 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
 
                 try:
                     raise exc
-                except:
+                except:  # noqa: E722
                     exc.__context__ = context
                     raise exc
 
@@ -351,9 +351,9 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
             ((), {}),
             ((1,), {}),
             ((1, 2), {}),
-            ((), dict(example=1)),
-            ((1,), dict(example=1)),
-            ((1, 2), dict(example=1)),
+            ((), {"example": 1}),
+            ((1,), {"example": 1}),
+            ((1, 2), {"example": 1}),
         ]
         result = []
 
@@ -429,7 +429,7 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
             self.assertIs(stack._exit_callbacks[-1][1], _expect_exc)
             stack.push_async_exit(_expect_exc)
             self.assertIs(stack._exit_callbacks[-1][1], _expect_exc)
-            1 / 0
+            1 / 0  # noqa: B018
 
     @_async_test
     async def test_async_enter_context(self):
@@ -476,7 +476,7 @@ class TestAsyncExitStack(TestBaseExitStack, unittest.TestCase):
                 stack.push_async_callback(raise_exc, AttributeError)
                 stack.push_async_exit(suppress_exc)
                 stack.push_async_callback(raise_exc, ValueError)
-                1 / 0
+                1 / 0  # noqa: B018
         except IndexError as exc:
             self.assertIsInstance(exc.__context__, KeyError)
             self.assertIsInstance(exc.__context__.__context__, AttributeError)

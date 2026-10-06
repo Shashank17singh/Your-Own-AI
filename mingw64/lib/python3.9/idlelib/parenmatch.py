@@ -147,7 +147,7 @@ class ParenMatch:
         self.text.tag_add("paren", indices[0], rightindex)
         self.text.tag_config("paren", self.HILITE_CONFIG)
 
-    tagfuncs = {
+    tagfuncs = {  # noqa: RUF012
         "opener": create_tag_opener,
         "default": create_tag_opener,
         "parens": create_tag_parens,
@@ -165,7 +165,7 @@ class ParenMatch:
         # or schedules another call for itself.
         self.counter += 1
 
-        def callme(callme, self=self, c=self.counter, index=self.text.index("insert")):
+        def callme(callme, self=self, c=self.counter, index=self.text.index("insert")):  # noqa: B008
             if index != self.text.index("insert"):
                 self.handle_restore_timer(c)
             else:

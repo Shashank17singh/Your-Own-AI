@@ -28,7 +28,7 @@ class BuiltinCompileTests(unittest.TestCase):
         except SyntaxError:
             self.fail("compile() cannot handle Latin-1 source")
         ns = {}
-        exec(code, ns)
+        exec(code, ns)  # noqa: S102
         self.assertEqual("Ç", ns["u"])
 
 

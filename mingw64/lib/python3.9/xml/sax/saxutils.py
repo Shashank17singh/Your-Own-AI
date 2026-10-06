@@ -19,12 +19,14 @@ def __dict_replace(s, d):
     return s
 
 
-def escape(data, entities={}):
+def escape(data, entities=None):
     """Escape &, <, and > in a string of data.
     You can escape other strings of data by passing a dictionary as
     the optional entities parameter.  The keys and values must all be
     strings; each key will be replaced with its corresponding value.
     """
+    if entities is None:
+        entities = {}
     data = data.replace("&", "&amp;")
     data = data.replace(">", "&gt;")
     data = data.replace("<", "&lt;")
@@ -33,12 +35,14 @@ def escape(data, entities={}):
     return data
 
 
-def unescape(data, entities={}):
+def unescape(data, entities=None):
     """Unescape &amp;, &lt;, and &gt; in a string of data.
     You can unescape other strings of data by passing a dictionary as
     the optional entities parameter.  The keys and values must all be
     strings; each key will be replaced with its corresponding value.
     """
+    if entities is None:
+        entities = {}
     data = data.replace("&lt;", "<")
     data = data.replace("&gt;", ">")
     if entities:
@@ -46,7 +50,7 @@ def unescape(data, entities={}):
     return data.replace("&amp;", "&")
 
 
-def quoteattr(data, entities={}):
+def quoteattr(data, entities=None):
     """Escape and quote an attribute value.
     Escape &, <, and > in a string of data, then quote it for use as
     an attribute value.  The \" character will be escaped as well, if
@@ -55,15 +59,17 @@ def quoteattr(data, entities={}):
     the optional entities parameter.  The keys and values must all be
     strings; each key will be replaced with its corresponding value.
     """
+    if entities is None:
+        entities = {}
     entities = {**entities, "\n": "&#10;", "\r": "&#13;", "\t": "&#9;"}
     data = escape(data, entities)
     if '"' in data:
         if "'" in data:
-            data = '"%s"' % data.replace('"', "&quot;")
+            data = '"{}"'.format(data.replace('"', "&quot;"))
         else:
-            data = "'%s'" % data
+            data = f"'{data}'"
     else:
-        data = '"%s"' % data
+        data = f'"{data}"'
     return data
 
 
@@ -133,7 +139,7 @@ class XMLGenerator(handler.ContentHandler):
             self._pending_start_element = False
 
     def startDocument(self):
-        self._write('<?xml version="1.0" encoding="%s"?>\n' % self._encoding)
+        self._write(f'<?xml version="1.0" encoding="{self._encoding}"?>\n')
 
     def endDocument(self):
         self._flush()
@@ -150,8 +156,8 @@ class XMLGenerator(handler.ContentHandler):
     def startElement(self, name, attrs):
         self._finish_pending_start_element()
         self._write("<" + name)
-        for name, value in attrs.items():
-            self._write(" %s=%s" % (name, quoteattr(value)))
+        for name, value in attrs.items():  # noqa: PLR1704
+            self._write(f" {name}={quoteattr(value)}")
         if self._short_empty_elements:
             self._pending_start_element = True
         else:
@@ -162,19 +168,19 @@ class XMLGenerator(handler.ContentHandler):
             self._write("/>")
             self._pending_start_element = False
         else:
-            self._write("</%s>" % name)
+            self._write(f"</{name}>")
 
     def startElementNS(self, name, qname, attrs):
         self._finish_pending_start_element()
         self._write("<" + self._qname(name))
         for prefix, uri in self._undeclared_ns_maps:
             if prefix:
-                self._write(' xmlns:%s="%s"' % (prefix, uri))
+                self._write(f' xmlns:{prefix}="{uri}"')
             else:
-                self._write(' xmlns="%s"' % uri)
+                self._write(f' xmlns="{uri}"')
         self._undeclared_ns_maps = []
-        for name, value in attrs.items():
-            self._write(" %s=%s" % (self._qname(name), quoteattr(value)))
+        for name, value in attrs.items():  # noqa: PLR1704
+            self._write(f" {self._qname(name)}={quoteattr(value)}")
         if self._short_empty_elements:
             self._pending_start_element = True
         else:
@@ -185,7 +191,7 @@ class XMLGenerator(handler.ContentHandler):
             self._write("/>")
             self._pending_start_element = False
         else:
-            self._write("</%s>" % self._qname(name))
+            self._write(f"</{self._qname(name)}>")
 
     def characters(self, content):
         if content:
@@ -203,7 +209,7 @@ class XMLGenerator(handler.ContentHandler):
 
     def processingInstruction(self, target, data):
         self._finish_pending_start_element()
-        self._write("<?%s %s?>" % (target, data))
+        self._write(f"<?{target} {data}?>")
 
 
 class XMLFilterBase(xmlreader.XMLReader):
@@ -326,7 +332,7 @@ def prepare_input_source(source, base=""):
         sysidfilename = os.path.join(basehead, sysid)
         if os.path.isfile(sysidfilename):
             source.setSystemId(sysidfilename)
-            f = open(sysidfilename, "rb")
+            f = open(sysidfilename, "rb")  # noqa: SIM115
         else:
             source.setSystemId(urllib.parse.urljoin(base, sysid))
             f = urllib.request.urlopen(source.getSystemId())

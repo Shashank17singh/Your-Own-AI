@@ -38,13 +38,12 @@ class TestCgitb(unittest.TestCase):
 
     def test_syshook_no_logdir_default_format(self):
         with temp_dir() as tracedir:
-            rc, out, err = assert_python_failure(
+            _rc, out, _err = assert_python_failure(
                 "-c",
                 (
-                    "import cgitb; cgitb.enable(logdir=%s); "
+                    f"import cgitb; cgitb.enable(logdir={tracedir!r}); "
                     'raise ValueError("Hello World")'
-                )
-                % repr(tracedir),
+                ),
                 PYTHONIOENCODING="utf-8",
             )
         out = out.decode()
@@ -58,13 +57,12 @@ class TestCgitb(unittest.TestCase):
     def test_syshook_no_logdir_text_format(self):
         # Issue 12890: we were emitting the <p> tag in text mode.
         with temp_dir() as tracedir:
-            rc, out, err = assert_python_failure(
+            _rc, out, _err = assert_python_failure(
                 "-c",
                 (
-                    'import cgitb; cgitb.enable(format="text", logdir=%s); '
+                    f'import cgitb; cgitb.enable(format="text", logdir={tracedir!r}); '
                     'raise ValueError("Hello World")'
-                )
-                % repr(tracedir),
+                ),
                 PYTHONIOENCODING="utf-8",
             )
         out = out.decode()

@@ -17,7 +17,7 @@ class PlatformTest(unittest.TestCase):
         platform._uname_cache = None
 
     def test_architecture(self):
-        res = platform.architecture()
+        platform.architecture()
 
     @support.skip_unless_symlink
     def test_architecture_via_symlink(self):  # issue3762
@@ -28,25 +28,25 @@ class PlatformTest(unittest.TestCase):
     def test_platform(self):
         for aliased in (False, True):
             for terse in (False, True):
-                res = platform.platform(aliased, terse)
+                platform.platform(aliased, terse)
 
     def test_system(self):
-        res = platform.system()
+        platform.system()
 
     def test_node(self):
-        res = platform.node()
+        platform.node()
 
     def test_release(self):
-        res = platform.release()
+        platform.release()
 
     def test_version(self):
-        res = platform.version()
+        platform.version()
 
     def test_machine(self):
-        res = platform.machine()
+        platform.machine()
 
     def test_processor(self):
-        res = platform.processor()
+        platform.processor()
 
     def setUp(self):
         self.save_version = sys.version
@@ -116,7 +116,7 @@ class PlatformTest(unittest.TestCase):
         ):
             # branch and revision are not "parsed", but fetched
             # from sys._git.  Ignore them
-            name, version, branch, revision, buildno, builddate, compiler = (
+            name, version, _branch, _revision, buildno, builddate, compiler = (
                 platform._sys_version(input)
             )
             self.assertEqual(
@@ -191,7 +191,7 @@ class PlatformTest(unittest.TestCase):
             self.assertEqual(platform.python_compiler(), info[5])
 
     def test_system_alias(self):
-        res = platform.system_alias(
+        platform.system_alias(
             platform.system(),
             platform.release(),
             platform.version(),
@@ -287,11 +287,13 @@ class PlatformTest(unittest.TestCase):
                     del environ["PROCESSOR_ARCHITEW6432"]
                 environ["PROCESSOR_ARCHITECTURE"] = "foo"
                 platform._uname_cache = None
-                system, node, release, version, machine, processor = platform.uname()
+                system, node, release, version, machine, processor = platform.uname()  # noqa: RUF059
                 self.assertEqual(machine, "foo")
                 environ["PROCESSOR_ARCHITEW6432"] = "bar"
                 platform._uname_cache = None
-                system, node, release, version, machine, processor = platform.uname()
+                _system, _node, _release, _version, machine, _processor = (
+                    platform.uname()
+                )
                 self.assertEqual(machine, "bar")
         finally:
             platform._uname_cache = None
@@ -302,7 +304,7 @@ class PlatformTest(unittest.TestCase):
             self.assertTrue(all(res))
 
     def test_win32_ver(self):
-        res = platform.win32_ver()
+        platform.win32_ver()
 
     def test_mac_ver(self):
         res = platform.mac_ver()
@@ -348,7 +350,7 @@ class PlatformTest(unittest.TestCase):
         pid = os.fork()
         if pid == 0:
             # child
-            info = platform.mac_ver()
+            platform.mac_ver()
             os._exit(0)
 
         else:

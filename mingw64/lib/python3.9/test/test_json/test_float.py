@@ -21,7 +21,7 @@ class TestFloat:
     def test_allow_nan(self):
         for val in (float("inf"), float("-inf"), float("nan")):
             out = self.dumps([val])
-            if val == val:  # inf
+            if val == val:  # inf  # noqa: PLR0124
                 self.assertEqual(self.loads(out), [val])
             else:  # nan
                 res = self.loads(out)

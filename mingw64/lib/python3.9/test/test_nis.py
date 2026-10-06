@@ -27,7 +27,7 @@ class NisTests(unittest.TestCase):
                 if not k:
                     continue
                 if nis.match(k, nismap) != v:
-                    self.fail("NIS match failed for key `%s' in map `%s'" % (k, nismap))
+                    self.fail(f"NIS match failed for key `{k}' in map `{nismap}'")
                 else:
                     # just test the one key, otherwise this test could take a
                     # very long time

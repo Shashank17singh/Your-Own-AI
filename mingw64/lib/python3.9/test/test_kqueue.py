@@ -121,7 +121,7 @@ class TestKQueue(unittest.TestCase):
         else:
             # raise AssertionError("Connect should have raised EINPROGRESS")
             pass  # FreeBSD doesn't raise an exception here
-        server, addr = serverSocket.accept()
+        server, _addr = serverSocket.accept()
 
         kq = select.kqueue()
         kq2 = select.kqueue.fromfd(kq.fileno())
@@ -152,15 +152,13 @@ class TestKQueue(unittest.TestCase):
         kq2.control([ev], 0)
 
         events = kq.control(None, 4, 1)
-        events = set((e.ident, e.filter) for e in events)
+        events = {(e.ident, e.filter) for e in events}
         self.assertEqual(
             events,
-            set(
-                [
-                    (client.fileno(), select.KQ_FILTER_WRITE),
-                    (server.fileno(), select.KQ_FILTER_WRITE),
-                ]
-            ),
+            {
+                (client.fileno(), select.KQ_FILTER_WRITE),
+                (server.fileno(), select.KQ_FILTER_WRITE),
+            },
         )
 
         client.send(b"Hello!")
@@ -175,17 +173,15 @@ class TestKQueue(unittest.TestCase):
         else:
             self.fail("timeout waiting for event notifications")
 
-        events = set((e.ident, e.filter) for e in events)
+        events = {(e.ident, e.filter) for e in events}
         self.assertEqual(
             events,
-            set(
-                [
-                    (client.fileno(), select.KQ_FILTER_WRITE),
-                    (client.fileno(), select.KQ_FILTER_READ),
-                    (server.fileno(), select.KQ_FILTER_WRITE),
-                    (server.fileno(), select.KQ_FILTER_READ),
-                ]
-            ),
+            {
+                (client.fileno(), select.KQ_FILTER_WRITE),
+                (client.fileno(), select.KQ_FILTER_READ),
+                (server.fileno(), select.KQ_FILTER_WRITE),
+                (server.fileno(), select.KQ_FILTER_READ),
+            },
         )
 
         # Remove completely client, and server read part
@@ -197,8 +193,8 @@ class TestKQueue(unittest.TestCase):
         kq.control([ev], 0, 0)
 
         events = kq.control([], 4, 0.99)
-        events = set((e.ident, e.filter) for e in events)
-        self.assertEqual(events, set([(server.fileno(), select.KQ_FILTER_WRITE)]))
+        events = {(e.ident, e.filter) for e in events}
+        self.assertEqual(events, {(server.fileno(), select.KQ_FILTER_WRITE)})
 
         client.close()
         server.close()
@@ -254,9 +250,9 @@ class TestKQueue(unittest.TestCase):
         kq.close()
 
     def test_close(self):
-        open_file = open(__file__, "rb")
+        open_file = open(__file__, "rb")  # noqa: SIM115
         self.addCleanup(open_file.close)
-        fd = open_file.fileno()
+        open_file.fileno()
         kqueue = select.kqueue()
 
         # test fileno() method and closed attribute

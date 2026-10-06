@@ -258,7 +258,7 @@ else:
 
 
 def test_main(verbose=False):
-    from test import support, test_metaclass
+    from test import support, test_metaclass  # noqa: PLW0406
 
     support.run_doctest(test_metaclass, verbose)
 

@@ -79,13 +79,15 @@ class PosixTests(unittest.TestCase):
     @unittest.skipUnless(sys.executable, "sys.executable required.")
     def test_keyboard_interrupt_exit_code(self):
         """KeyboardInterrupt triggers exit via SIGINT."""
-        process = subprocess.run(
+        process = subprocess.run(  # noqa: PLW1510
             [
                 sys.executable,
                 "-c",
-                "import os, signal, time\n"
-                "os.kill(os.getpid(), signal.SIGINT)\n"
-                "for _ in range(999): time.sleep(0.01)",
+                (
+                    "import os, signal, time\n"
+                    "os.kill(os.getpid(), signal.SIGINT)\n"
+                    "for _ in range(999): time.sleep(0.01)"
+                ),
             ],
             stderr=subprocess.PIPE,
         )
@@ -142,7 +144,7 @@ class WindowsSignalTests(unittest.TestCase):
         # as that requires setting up a console control handler in a child
         # in its own process group.  Doable, but quite complicated.  (see
         # @eryksun on https://github.com/python/cpython/pull/11862)
-        process = subprocess.run(
+        process = subprocess.run(  # noqa: PLW1510
             [sys.executable, "-c", "raise KeyboardInterrupt"], stderr=subprocess.PIPE
         )
         self.assertIn(b"KeyboardInterrupt", process.stderr)
@@ -216,7 +218,7 @@ class WakeupFDTests(unittest.TestCase):
         with self.assertRaises(ValueError) as cm:
             signal.set_wakeup_fd(wfd)
         self.assertEqual(
-            str(cm.exception), "the fd %s must be in non-blocking mode" % wfd
+            str(cm.exception), f"the fd {wfd} must be in non-blocking mode"
         )
 
         # non-blocking is ok
@@ -623,13 +625,13 @@ class SiginterruptTest(unittest.TestCase):
         """
         # use a subprocess to have only one thread, to have a timeout on the
         # blocking read and to not touch signal handling in this process
-        code = """if 1:
+        code = f"""if 1:
             import errno
             import os
             import signal
             import sys
 
-            interrupt = %r
+            interrupt = {interrupt!r}
             r, w = os.pipe()
 
             def handler(signum, frame):
@@ -658,13 +660,13 @@ class SiginterruptTest(unittest.TestCase):
             finally:
                 os.close(r)
                 os.close(w)
-        """ % (interrupt,)
+        """
         with spawn_python("-c", code) as process:
             try:
                 # wait until the child process is loaded and has started
                 first_line = process.stdout.readline()
 
-                stdout, stderr = process.communicate(timeout=support.SHORT_TIMEOUT)
+                stdout, _stderr = process.communicate(timeout=support.SHORT_TIMEOUT)
             except subprocess.TimeoutExpired:
                 process.kill()
                 return False
@@ -672,8 +674,8 @@ class SiginterruptTest(unittest.TestCase):
                 stdout = first_line + stdout
                 exitcode = process.wait()
                 if exitcode not in (2, 3):
-                    raise Exception(
-                        "Child error (exit code %s): %r" % (exitcode, stdout)
+                    raise Exception(  # noqa: TRY002
+                        f"Child error (exit code {exitcode}): {stdout!r}"
                     )
                 return exitcode == 3
 
@@ -874,7 +876,7 @@ class PendingSignalsTests(unittest.TestCase):
         test: body of the "def test(signum):" function.
         blocked: number of the blocked signal
         """
-        code = """if 1:
+        code = f"""if 1:
         import signal
         import sys
         from signal import Signals
@@ -882,9 +884,9 @@ class PendingSignalsTests(unittest.TestCase):
         def handler(signum, frame):
             1/0
 
-        %s
+        {test.strip()}
 
-        blocked = %s
+        blocked = {blocked}
         signum = signal.SIGALRM
 
         # child: block and wait the signal
@@ -903,10 +905,10 @@ class PendingSignalsTests(unittest.TestCase):
                       file=sys.stderr)
                 sys.exit(1)
         except BaseException as err:
-            print("error: {}".format(err), file=sys.stderr)
+            print("error: {{}}".format(err), file=sys.stderr)
             sys.stderr.flush()
             sys.exit(1)
-        """ % (test.strip(), blocked)
+        """
 
         # sig*wait* must be called with the signal blocked: since the current
         # process might have several threads running, use a subprocess to have
@@ -1143,10 +1145,10 @@ class PendingSignalsTests(unittest.TestCase):
         """
 
         with spawn_python("-c", code) as process:
-            stdout, stderr = process.communicate()
+            stdout, _stderr = process.communicate()
             exitcode = process.wait()
             if exitcode != 3:
-                raise Exception("Child error (exit code %s): %s" % (exitcode, stdout))
+                raise Exception(f"Child error (exit code {exitcode}): {stdout}")  # noqa: TRY002
 
 
 class StressTest(unittest.TestCase):
@@ -1181,7 +1183,7 @@ class StressTest(unittest.TestCase):
         durations = [times[i + 1] - times[i] for i in range(len(times) - 1)]
         med = statistics.median(durations)
         if support.verbose:
-            print("detected median itimer() resolution: %.6f s." % (med,))
+            print(f"detected median itimer() resolution: {med:.6f} s.")
         return med
 
     def decide_itimer_count(self):
@@ -1195,8 +1197,8 @@ class StressTest(unittest.TestCase):
             return 100
         else:
             self.skipTest(
-                "detected itimer resolution (%.3f s.) too high "
-                "(> 10 ms.) on this platform (or system too busy)" % (reso,)
+                f"detected itimer resolution ({reso:.3f} s.) too high "
+                "(> 10 ms.) on this platform (or system too busy)"
             )
 
     @unittest.skipUnless(hasattr(signal, "setitimer"), "test needs setitimer()")

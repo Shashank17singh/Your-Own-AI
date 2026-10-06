@@ -15,15 +15,15 @@ def _format_size(size, sign):
         if abs(size) < 100 and unit != "B":
             # 3 digits (xx.x UNIT)
             if sign:
-                return "%+.1f %s" % (size, unit)
+                return f"{size:+.1f} {unit}"
             else:
-                return "%.1f %s" % (size, unit)
+                return f"{size:.1f} {unit}"
         if abs(size) < 10 * 1024 or unit == "TiB":
             # 4 or 5 digits (xxxx UNIT)
             if sign:
-                return "%+.0f %s" % (size, unit)
+                return f"{size:+.0f} {unit}"
             else:
-                return "%.0f %s" % (size, unit)
+                return f"{size:.0f} {unit}"
         size /= 1024
 
 
@@ -52,18 +52,18 @@ class Statistic:
         )
 
     def __str__(self):
-        text = "%s: size=%s, count=%i" % (
+        text = "%s: size=%s, count=%i" % (  # noqa: UP031
             self.traceback,
             _format_size(self.size, False),
             self.count,
         )
         if self.count:
             average = self.size / self.count
-            text += ", average=%s" % _format_size(average, False)
+            text += f", average={_format_size(average, False)}"
         return text
 
     def __repr__(self):
-        return "<Statistic traceback=%r size=%i count=%i>" % (
+        return "<Statistic traceback=%r size=%i count=%i>" % (  # noqa: UP031
             self.traceback,
             self.size,
             self.count,
@@ -105,7 +105,7 @@ class StatisticDiff:
         )
 
     def __str__(self):
-        text = "%s: size=%s (%s), count=%i (%+i)" % (
+        text = "%s: size=%s (%s), count=%i (%+i)" % (  # noqa: UP031
             self.traceback,
             _format_size(self.size, False),
             _format_size(self.size_diff, True),
@@ -114,11 +114,11 @@ class StatisticDiff:
         )
         if self.count:
             average = self.size / self.count
-            text += ", average=%s" % _format_size(average, False)
+            text += f", average={_format_size(average, False)}"
         return text
 
     def __repr__(self):
-        return "<StatisticDiff traceback=%r size=%i (%+i) count=%i (%+i)>" % (
+        return "<StatisticDiff traceback=%r size=%i (%+i) count=%i (%+i)>" % (  # noqa: UP031
             self.traceback,
             self.size,
             self.size_diff,
@@ -194,10 +194,10 @@ class Frame:
         return hash(self._frame)
 
     def __str__(self):
-        return "%s:%s" % (self.filename, self.lineno)
+        return f"{self.filename}:{self.lineno}"
 
     def __repr__(self):
-        return "<Frame filename=%r lineno=%r>" % (self.filename, self.lineno)
+        return f"<Frame filename={self.filename!r} lineno={self.lineno!r}>"
 
 
 @total_ordering
@@ -271,10 +271,10 @@ class Traceback(Sequence):
         if most_recent_first:
             frame_slice = reversed(frame_slice)
         for frame in frame_slice:
-            lines.append('  File "%s", line %s' % (frame.filename, frame.lineno))
+            lines.append(f'  File "{frame.filename}", line {frame.lineno}')
             line = linecache.getline(frame.filename, frame.lineno).strip()
             if line:
-                lines.append("    %s" % line)
+                lines.append(f"    {line}")
         return lines
 
 
@@ -326,14 +326,10 @@ class Trace:
         return hash(self._trace)
 
     def __str__(self):
-        return "%s: %s" % (self.traceback, _format_size(self.size, False))
+        return f"{self.traceback}: {_format_size(self.size, False)}"
 
     def __repr__(self):
-        return "<Trace domain=%s size=%s, traceback=%r>" % (
-            self.domain,
-            _format_size(self.size, False),
-            self.traceback,
-        )
+        return f"<Trace domain={self.domain} size={_format_size(self.size, False)}, traceback={self.traceback!r}>"
 
 
 class _Traces(Sequence):
@@ -360,7 +356,7 @@ class _Traces(Sequence):
         return self._traces == other._traces
 
     def __repr__(self):
-        return "<Traces len=%s>" % len(self)
+        return f"<Traces len={len(self)}>"
 
 
 def _normalize_filename(filename):
@@ -419,7 +415,7 @@ class Filter(BaseFilter):
             return self._match_frame(filename, lineno)
 
     def _match(self, trace):
-        domain, size, traceback, total_nframe = trace
+        domain, _size, traceback, _total_nframe = trace
         res = self._match_traceback(traceback)
         if self.domain is not None:
             if self.inclusive:
@@ -439,7 +435,7 @@ class DomainFilter(BaseFilter):
         return self._domain
 
     def _match(self, trace):
-        domain, size, traceback, total_nframe = trace
+        domain, _size, _traceback, _total_nframe = trace
         return (domain == self.domain) ^ (not self.inclusive)
 
 
@@ -470,10 +466,10 @@ class Snapshot:
             return pickle.load(fp)
 
     def _filter_trace(self, include_filters, exclude_filters, trace):
-        if include_filters:
+        if include_filters:  # noqa: SIM102
             if not any(trace_filter._match(trace) for trace_filter in include_filters):
                 return False
-        if exclude_filters:
+        if exclude_filters:  # noqa: SIM102
             if any(not trace_filter._match(trace) for trace_filter in exclude_filters):
                 return False
         return True
@@ -486,7 +482,7 @@ class Snapshot:
         """
         if not isinstance(filters, Iterable):
             raise TypeError(
-                "filters must be a list of filters, not %s" % type(filters).__name__
+                f"filters must be a list of filters, not {type(filters).__name__}"
             )
         if filters:
             include_filters = []
@@ -507,17 +503,17 @@ class Snapshot:
 
     def _group_by(self, key_type, cumulative):
         if key_type not in ("traceback", "filename", "lineno"):
-            raise ValueError("unknown key_type: %r" % (key_type,))
+            raise ValueError(f"unknown key_type: {key_type!r}")
         if cumulative and key_type not in ("lineno", "filename"):
             raise ValueError(
-                "cumulative mode cannot by used with key type %r" % key_type
+                f"cumulative mode cannot by used with key type {key_type!r}"
             )
 
         stats = {}
         tracebacks = {}
         if not cumulative:
             for trace in self.traces._traces:
-                domain, size, trace_traceback, total_nframe = trace
+                domain, size, trace_traceback, total_nframe = trace  # noqa: RUF059
                 try:
                     traceback = tracebacks[trace_traceback]
                 except KeyError:
@@ -538,7 +534,7 @@ class Snapshot:
         else:
             # cumulative statistics
             for trace in self.traces._traces:
-                domain, size, trace_traceback, total_nframe = trace
+                _domain, size, trace_traceback, _total_nframe = trace
                 for frame in trace_traceback:
                     try:
                         traceback = tracebacks[frame]

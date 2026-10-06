@@ -58,8 +58,8 @@ class Test:
 
 
 class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
-    eq_pairs = [(Test.Foo("test1"), Test.Foo("test1"))]
-    ne_pairs = [
+    eq_pairs = [(Test.Foo("test1"), Test.Foo("test1"))]  # noqa: RUF012
+    ne_pairs = [  # noqa: RUF012
         (Test.Foo("test1"), Test.Foo("runTest")),
         (Test.Foo("test1"), Test.Bar("test1")),
         (Test.Foo("test1"), Test.Bar("test2")),
@@ -68,7 +68,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
     def test_init__no_test_name(self):
         class Test(unittest.TestCase):
             def runTest(self):
-                raise MyException()
+                raise MyException()  # noqa: F821
 
             def test(self):
                 pass
@@ -84,7 +84,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
     def test_init__test_name__valid(self):
         class Test(unittest.TestCase):
             def runTest(self):
-                raise MyException()
+                raise MyException()  # noqa: F821
 
             def test(self):
                 pass
@@ -94,7 +94,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
     def test_init__test_name__invalid(self):
         class Test(unittest.TestCase):
             def runTest(self):
-                raise MyException()
+                raise MyException()  # noqa: F821
 
             def test(self):
                 pass
@@ -287,7 +287,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
                             with self.subTest(j=j):
                                 if i * j == 6:
                                     raise RuntimeError("raised by Foo.test")
-                1 / 0
+                1 / 0  # noqa: B018
 
         Foo(events).run(result)
         self.assertEqual(events, expected_events)
@@ -632,21 +632,21 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
             try:
                 self.assertEqual(a, b)
             except self.failureException:
-                self.fail("assertEqual(%r, %r) failed" % (a, b))
+                self.fail(f"assertEqual({a!r}, {b!r}) failed")
             try:
                 self.assertEqual(a, b, msg="foo")
             except self.failureException:
-                self.fail("assertEqual(%r, %r) with msg= failed" % (a, b))
+                self.fail(f"assertEqual({a!r}, {b!r}) with msg= failed")
             try:
                 self.assertEqual(a, b, "foo")
             except self.failureException:
-                self.fail("assertEqual(%r, %r) with third parameter failed" % (a, b))
+                self.fail(f"assertEqual({a!r}, {b!r}) with third parameter failed")
         unequal_pairs = [
             ((), []),
             ({}, set()),
-            (set([4, 1]), frozenset([4, 2])),
-            (frozenset([4, 5]), set([2, 3])),
-            (set([3, 4]), set([5, 4])),
+            ({4, 1}, frozenset([4, 2])),
+            (frozenset([4, 5]), {2, 3}),
+            ({3, 4}, {5, 4}),
         ]
         for a, b in unequal_pairs:
             self.assertRaises(self.failureException, self.assertEqual, a, b)
@@ -804,7 +804,7 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
         with self.assertRaises(self.failureException) as cm:
             self.assertEqual(s1, s2)
         self.assertNotIn("^", str(cm.exception))
-        self.assertEqual(str(cm.exception), "%r != %r" % (s1, s2))
+        self.assertEqual(str(cm.exception), f"{s1!r} != {s2!r}")
         self.assertEqual(s + "a", s + "a")
 
     def testAssertEqual_shorten(self):
@@ -816,21 +816,21 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
         with self.assertRaises(self.failureException) as cm:
             self.assertEqual(s1, s2)
         c = "xxxx[35 chars]" + "x" * 61
-        self.assertEqual(str(cm.exception), "'%sa' != '%sb'" % (c, c))
+        self.assertEqual(str(cm.exception), f"'{c}a' != '{c}b'")
         self.assertEqual(s + "a", s + "a")
         p = "y" * 50
         s1, s2 = s + "a" + p, s + "b" + p
         with self.assertRaises(self.failureException) as cm:
             self.assertEqual(s1, s2)
         c = "xxxx[85 chars]xxxxxxxxxxx"
-        self.assertEqual(str(cm.exception), "'%sa%s' != '%sb%s'" % (c, p, c, p))
+        self.assertEqual(str(cm.exception), f"'{c}a{p}' != '{c}b{p}'")
         p = "y" * 100
         s1, s2 = s + "a" + p, s + "b" + p
         with self.assertRaises(self.failureException) as cm:
             self.assertEqual(s1, s2)
         c = "xxxx[91 chars]xxxxx"
         d = "y" * 40 + "[56 chars]yyyy"
-        self.assertEqual(str(cm.exception), "'%sa%s' != '%sb%s'" % (c, d, c, d))
+        self.assertEqual(str(cm.exception), f"'{c}a{d}' != '{c}b{d}'")
 
     def testAssertCountEqual(self):
         a = object()
@@ -907,27 +907,27 @@ class Test_TestCase(unittest.TestCase, TestEquality, TestHashing):
         self.assertRaises(self.failureException, self.assertSetEqual, [], set2)
         self.assertRaises(self.failureException, self.assertSetEqual, set1, None)
         self.assertRaises(self.failureException, self.assertSetEqual, set1, [])
-        set1 = set(["a"])
+        set1 = {"a"}
         set2 = set()
         self.assertRaises(self.failureException, self.assertSetEqual, set1, set2)
-        set1 = set(["a"])
-        set2 = set(["a"])
+        set1 = {"a"}
+        set2 = {"a"}
         self.assertSetEqual(set1, set2)
-        set1 = set(["a"])
-        set2 = set(["a", "b"])
+        set1 = {"a"}
+        set2 = {"a", "b"}
         self.assertRaises(self.failureException, self.assertSetEqual, set1, set2)
-        set1 = set(["a"])
+        set1 = {"a"}
         set2 = frozenset(["a", "b"])
         self.assertRaises(self.failureException, self.assertSetEqual, set1, set2)
-        set1 = set(["a", "b"])
+        set1 = {"a", "b"}
         set2 = frozenset(["a", "b"])
         self.assertSetEqual(set1, set2)
         set1 = set()
         set2 = "foo"
         self.assertRaises(self.failureException, self.assertSetEqual, set1, set2)
         self.assertRaises(self.failureException, self.assertSetEqual, set2, set1)
-        set1 = set([(0, 1), (2, 3)])
-        set2 = set([(4, 5)])
+        set1 = {(0, 1), (2, 3)}
+        set2 = {(4, 5)}
         self.assertRaises(self.failureException, self.assertSetEqual, set1, set2)
 
     def testInequality(self):
@@ -1143,13 +1143,13 @@ test case
         self.assertEqual(cm.exception.args[0], "We expect")
         with self.assertRaises(ValueError):
             int("19", base=8)
-        with self.assertRaises(self.failureException):
+        with self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertRaises(ExceptionMock):
                 pass
-        with self.assertRaisesRegex(self.failureException, "foobar"):
+        with self.assertRaisesRegex(self.failureException, "foobar"):  # noqa: SIM117
             with self.assertRaises(ExceptionMock, msg="foobar"):
                 pass
-        with self.assertRaisesRegex(TypeError, "foobar"):
+        with self.assertRaisesRegex(TypeError, "foobar"):  # noqa: SIM117
             with self.assertRaises(ExceptionMock, foobar=42):
                 pass
         with self.assertRaises(ExceptionMock):
@@ -1207,10 +1207,10 @@ test case
             "x",
             lambda: None,
         )
-        with self.assertRaisesRegex(self.failureException, "foobar"):
+        with self.assertRaisesRegex(self.failureException, "foobar"):  # noqa: SIM117
             with self.assertRaisesRegex(Exception, "expect", msg="foobar"):
                 pass
-        with self.assertRaisesRegex(TypeError, "foobar"):
+        with self.assertRaisesRegex(TypeError, "foobar"):  # noqa: SIM117
             with self.assertRaisesRegex(Exception, "expect", foobar=42):
                 pass
 
@@ -1228,7 +1228,7 @@ test case
 
     def testAssertRaisesRegexMismatch(self):
         def Stub():
-            raise Exception("Unexpected")
+            raise Exception("Unexpected")  # noqa: TRY002
 
         self.assertRaisesRegex(
             self.failureException,
@@ -1315,23 +1315,23 @@ test case
             _runtime_warn()
         with self.assertWarns(RuntimeWarning):
             warnings.warn("foo", category=RuntimeWarning)
-        with self.assertRaises(self.failureException):
+        with self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertWarns(RuntimeWarning):
                 pass
-        with self.assertRaisesRegex(self.failureException, "foobar"):
+        with self.assertRaisesRegex(self.failureException, "foobar"):  # noqa: SIM117
             with self.assertWarns(RuntimeWarning, msg="foobar"):
                 pass
-        with self.assertRaisesRegex(TypeError, "foobar"):
+        with self.assertRaisesRegex(TypeError, "foobar"):  # noqa: SIM117
             with self.assertWarns(RuntimeWarning, foobar=42):
                 pass
         with warnings.catch_warnings():
             warnings.simplefilter("default", RuntimeWarning)
-            with self.assertRaises(self.failureException):
+            with self.assertRaises(self.failureException):  # noqa: SIM117
                 with self.assertWarns(DeprecationWarning):
                     _runtime_warn()
         with warnings.catch_warnings():
             warnings.simplefilter("error", RuntimeWarning)
-            with self.assertRaises(RuntimeWarning):
+            with self.assertRaises(RuntimeWarning):  # noqa: SIM117
                 with self.assertWarns(DeprecationWarning):
                     _runtime_warn()
 
@@ -1380,26 +1380,26 @@ test case
         self.assertEqual(cm.warning.args[0], "foox")
         self.assertIn("test_case.py", cm.filename)
         self.assertEqual(cm.lineno, _runtime_warn_lineno + 1)
-        with self.assertRaises(self.failureException):
+        with self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertWarnsRegex(RuntimeWarning, "o+"):
                 pass
-        with self.assertRaisesRegex(self.failureException, "foobar"):
+        with self.assertRaisesRegex(self.failureException, "foobar"):  # noqa: SIM117
             with self.assertWarnsRegex(RuntimeWarning, "o+", msg="foobar"):
                 pass
-        with self.assertRaisesRegex(TypeError, "foobar"):
+        with self.assertRaisesRegex(TypeError, "foobar"):  # noqa: SIM117
             with self.assertWarnsRegex(RuntimeWarning, "o+", foobar=42):
                 pass
         with warnings.catch_warnings():
             warnings.simplefilter("default", RuntimeWarning)
-            with self.assertRaises(self.failureException):
+            with self.assertRaises(self.failureException):  # noqa: SIM117
                 with self.assertWarnsRegex(DeprecationWarning, "o+"):
                     _runtime_warn("foox")
-        with self.assertRaises(self.failureException):
+        with self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertWarnsRegex(RuntimeWarning, "o+"):
                 _runtime_warn("barz")
         with warnings.catch_warnings():
             warnings.simplefilter("error", RuntimeWarning)
-            with self.assertRaises((RuntimeWarning, self.failureException)):
+            with self.assertRaises((RuntimeWarning, self.failureException)):  # noqa: SIM117
                 with self.assertWarnsRegex(RuntimeWarning, "o+"):
                     _runtime_warn("barz")
 
@@ -1480,17 +1480,17 @@ test case
         self.checkAssertLogsPerLogger("foo")
 
     def testAssertLogsFailureNoLogs(self):
-        with self.assertNoStderr(), self.assertRaises(self.failureException):
+        with self.assertNoStderr(), self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertLogs():
                 pass
 
     def testAssertLogsFailureLevelTooHigh(self):
-        with self.assertNoStderr(), self.assertRaises(self.failureException):
+        with self.assertNoStderr(), self.assertRaises(self.failureException):  # noqa: SIM117
             with self.assertLogs(level="WARNING"):
                 log_foo.info("1")
 
     def testAssertLogsFailureMismatchingLogger(self):
-        with self.assertLogs("quux", level="ERROR"):
+        with self.assertLogs("quux", level="ERROR"):  # noqa: SIM117
             with self.assertRaises(self.failureException):
                 with self.assertLogs("foo"):
                     log_quux.error("1")
@@ -1512,7 +1512,10 @@ test case
             (self.assert_, (True,)),
             (self.failUnlessRaises, (TypeError, lambda _: 3.14 + "spam")),
             (self.failIf, (False,)),
-            (self.assertDictContainsSubset, (dict(a=1, b=2), dict(a=1, b=2, c=3))),
+            (
+                self.assertDictContainsSubset,
+                ({"a": 1, "b": 2}, {"a": 1, "b": 2, "c": 3}),
+            ),
             (self.assertRaisesRegexp, (KeyError, "foo", lambda: {}["foo"])),
             (self.assertRegexpMatches, ("bar", "bar")),
         )
@@ -1522,8 +1525,6 @@ test case
 
     def _testDeprecatedFailMethods(self):
         """Test that the deprecated fail* methods get removed in 3.x"""
-        if sys.version_info[:2] < (3, 3):
-            return
         deprecated_names = [
             "failIfEqual",
             "failUnlessEqual",

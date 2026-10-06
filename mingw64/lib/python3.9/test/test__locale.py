@@ -112,10 +112,9 @@ def setUpModule():
                 encoding = locale.getpreferredencoding(False)
                 try:
                     localeconv()
-                except Exception as err:
+                except Exception as err:  # noqa: BLE001
                     print(
-                        "WARNING: Skip locale %s (encoding %s): [%s] %s"
-                        % (loc, encoding, type(err), err)
+                        f"WARNING: Skip locale {loc} (encoding {encoding}): [{type(err)}] {err}"
                     )
                 else:
                     locales.append(loc)
@@ -239,9 +238,8 @@ class _LocaleTests(unittest.TestCase):
                 self.assertEqual(
                     nl_radixchar,
                     li_radixchar,
-                    "%s (nl_langinfo) != %s (localeconv) "
-                    "(set to %s, using %s)"
-                    % (nl_radixchar, li_radixchar, loc, set_locale),
+                    f"{nl_radixchar} (nl_langinfo) != {li_radixchar} (localeconv) "
+                    f"(set to {loc}, using {set_locale})",
                 )
                 tested = True
         if not tested:
@@ -263,10 +261,10 @@ class _LocaleTests(unittest.TestCase):
                 continue
 
             self.assertEqual(
-                int(eval("3.14") * 100), 314, "using eval('3.14') failed for %s" % loc
+                int(eval("3.14") * 100), 314, f"using eval('3.14') failed for {loc}"
             )
             self.assertEqual(
-                int(float("3.14") * 100), 314, "using float('3.14') failed for %s" % loc
+                int(float("3.14") * 100), 314, f"using float('3.14') failed for {loc}"
             )
             if localeconv()["decimal_point"] != ".":
                 self.assertRaises(

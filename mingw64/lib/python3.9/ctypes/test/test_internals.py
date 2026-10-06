@@ -35,7 +35,7 @@ class ObjectsTestCase(unittest.TestCase):
 
     def test_simple_struct(self):
         class X(Structure):
-            _fields_ = [("a", c_int), ("b", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
 
         a = 421234
         b = 421235
@@ -47,10 +47,10 @@ class ObjectsTestCase(unittest.TestCase):
 
     def test_embedded_structs(self):
         class X(Structure):
-            _fields_ = [("a", c_int), ("b", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
 
         class Y(Structure):
-            _fields_ = [("x", X), ("y", X)]
+            _fields_ = [("x", X), ("y", X)]  # noqa: RUF012
 
         y = Y()
         self.assertEqual(y._objects, None)
@@ -63,10 +63,10 @@ class ObjectsTestCase(unittest.TestCase):
 
     def test_xxx(self):
         class X(Structure):
-            _fields_ = [("a", c_char_p), ("b", c_char_p)]
+            _fields_ = [("a", c_char_p), ("b", c_char_p)]  # noqa: RUF012
 
         class Y(Structure):
-            _fields_ = [("x", X), ("y", X)]
+            _fields_ = [("x", X), ("y", X)]  # noqa: RUF012
 
         s1 = b"Hello, World"
         s2 = b"Hallo, Welt"
@@ -86,7 +86,7 @@ class ObjectsTestCase(unittest.TestCase):
 
     def test_ptr_struct(self):
         class X(Structure):
-            _fields_ = [("data", POINTER(c_int))]
+            _fields_ = [("data", POINTER(c_int))]  # noqa: RUF012
 
         A = c_int * 4
         a = A(11, 22, 33, 44)

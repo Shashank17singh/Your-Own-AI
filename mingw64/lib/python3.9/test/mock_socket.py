@@ -121,7 +121,7 @@ def create_connection(
     address, timeout=socket_module._GLOBAL_DEFAULT_TIMEOUT, source_address=None
 ):
     try:
-        int_port = int(address[1])
+        int(address[1])
     except ValueError:
         raise error
     ms = MockSocket()

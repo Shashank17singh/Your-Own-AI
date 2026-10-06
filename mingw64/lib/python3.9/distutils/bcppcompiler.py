@@ -37,11 +37,11 @@ class BCPPCompiler(CCompiler):
     # as it really isn't necessary for this sort of single-compiler class.
     # Would be nice to have a consistent interface with UnixCCompiler,
     # though, so it's worth thinking about.
-    executables = {}
+    executables = {}  # noqa: RUF012
 
     # Private class data (need to distinguish C from C++ source for compiler)
-    _c_extensions = [".c"]
-    _cpp_extensions = [".cc", ".cpp", ".cxx"]
+    _c_extensions = [".c"]  # noqa: RUF012
+    _cpp_extensions = [".cc", ".cpp", ".cxx"]  # noqa: RUF012
 
     # Needed for the filename generation methods provided by the
     # base class, CCompiler.
@@ -226,14 +226,14 @@ class BCPPCompiler(CCompiler):
             if export_symbols is None:
                 def_file = ""
             else:
-                head, tail = os.path.split(output_filename)
+                _head, tail = os.path.split(output_filename)
                 modname, ext = os.path.splitext(tail)
                 temp_dir = os.path.dirname(objects[0])  # preserve tree structure
-                def_file = os.path.join(temp_dir, "%s.def" % modname)
+                def_file = os.path.join(temp_dir, f"{modname}.def")
                 contents = ["EXPORTS"]
                 for sym in export_symbols or []:
-                    contents.append("  %s=_%s" % (sym, sym))
-                self.execute(write_file, (def_file, contents), "writing %s" % def_file)
+                    contents.append(f"  {sym}=_{sym}")
+                self.execute(write_file, (def_file, contents), f"writing {def_file}")
 
             # Borland C++ has problems with '/' in paths
             objects2 = map(os.path.normpath, objects)
@@ -242,14 +242,14 @@ class BCPPCompiler(CCompiler):
             objects = [startup_obj]
             resources = []
             for file in objects2:
-                base, ext = os.path.splitext(os.path.normcase(file))
+                _base, ext = os.path.splitext(os.path.normcase(file))
                 if ext == ".res":
                     resources.append(file)
                 else:
                     objects.append(file)
 
             for l in library_dirs:
-                ld_args.append("/L%s" % os.path.normpath(l))
+                ld_args.append(f"/L{os.path.normpath(l)}")
             ld_args.append("/L.")  # we sometimes use relative paths
 
             # list of object files
@@ -342,9 +342,7 @@ class BCPPCompiler(CCompiler):
             # use normcase to make sure '.rc' is really '.rc' and not '.RC'
             base, ext = os.path.splitext(os.path.normcase(src_name))
             if ext not in (self.src_extensions + [".rc", ".res"]):
-                raise UnknownFileError(
-                    "unknown file type '%s' (from '%s')" % (ext, src_name)
-                )
+                raise UnknownFileError(f"unknown file type '{ext}' (from '{src_name}')")
             if strip_dir:
                 base = os.path.basename(base)
             if ext == ".res":

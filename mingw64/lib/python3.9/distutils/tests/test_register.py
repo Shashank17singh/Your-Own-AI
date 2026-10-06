@@ -104,7 +104,7 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
                 "name": "xxx",
                 "version": "xxx",
             }
-        pkg_info, dist = self.create_dist(**metadata)
+        _pkg_info, dist = self.create_dist(**metadata)
         return register(dist)
 
     def test_create_pypirc(self):
@@ -137,7 +137,7 @@ class RegisterTestCase(BasePyPIRCCommandTestCase):
         self.assertTrue(os.path.exists(self.rc))
 
         # with the content similar to WANTED_PYPIRC
-        f = open(self.rc)
+        f = open(self.rc)  # noqa: SIM115
         try:
             content = f.read()
             self.assertEqual(content, WANTED_PYPIRC)

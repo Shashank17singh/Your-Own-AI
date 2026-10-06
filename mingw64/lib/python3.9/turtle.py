@@ -241,7 +241,7 @@ _tg_turtle_functions = [
 ]
 _tg_utilities = ["write_docstringdict", "done"]
 
-__all__ = (
+__all__ = (  # noqa: PLE0605
     _tg_classes
     + _tg_screen_functions
     + _tg_turtle_functions
@@ -305,7 +305,7 @@ def config_dict(filename):
         try:
             key, value = line.split("=")
         except ValueError:
-            print("Bad line in config-file %s:\n%s" % (filename, line))
+            print(f"Bad line in config-file {filename}:\n{line}")
             continue
         key = key.strip()
         value = value.strip()
@@ -342,11 +342,11 @@ def readconfig(cfgdict):
     if isfile(default_cfg):
         cfgdict1 = config_dict(default_cfg)
     if "importconfig" in cfgdict1:
-        default_cfg = "turtle_%s.cfg" % cfgdict1["importconfig"]
+        default_cfg = "turtle_{}.cfg".format(cfgdict1["importconfig"])
     try:
-        head, tail = split(__file__)
+        head, _tail = split(__file__)
         cfg_file2 = join(head, default_cfg)
-    except Exception:
+    except Exception:  # noqa: BLE001
         cfg_file2 = ""
     if isfile(cfg_file2):
         cfgdict2 = config_dict(cfg_file2)
@@ -356,7 +356,7 @@ def readconfig(cfgdict):
 
 try:
     readconfig(_CFG)
-except Exception:
+except Exception:  # noqa: BLE001
     print("No configfile read, reason unknown")
 
 
@@ -387,7 +387,7 @@ class Vec2D(tuple):
         return Vec2D(self[0] * other, self[1] * other)
 
     def __rmul__(self, other):
-        if isinstance(other, int) or isinstance(other, float):
+        if isinstance(other, (int, float)):
             return Vec2D(self[0] * other, self[1] * other)
         return NotImplemented
 
@@ -411,7 +411,7 @@ class Vec2D(tuple):
         return (self[0], self[1])
 
     def __repr__(self):
-        return "(%.2f,%.2f)" % self
+        return "({:.2f},{:.2f})".format(*self)
 
 
 ##############################################################################
@@ -453,7 +453,7 @@ def __forwardmethods(fromClass, toClass, toPart, exclude=()):
     __methodDict(toClass, _dict_1)
     _dict = {}
     mfc = __methods(fromClass)
-    for ex in _dict_1:
+    for ex in _dict_1:  # noqa: PLC0206
         if ex[:1] == "_" or ex[-1:] == "_" or ex in exclude or ex in mfc:
             pass
         else:
@@ -463,7 +463,7 @@ def __forwardmethods(fromClass, toClass, toPart, exclude=()):
         d = {"method": method, "func": func}
         if isinstance(toPart, str):
             execString = __stringBody % {"method": method, "attribute": toPart}
-        exec(execString, d)
+        exec(execString, d)  # noqa: S102
         setattr(fromClass, method, d[method])  ### NEWU!
 
 
@@ -632,7 +632,7 @@ class _Root(TK.Tk):
         return self._canvas
 
     def set_geometry(self, width, height, startx, starty):
-        self.geometry("%dx%d%+d%+d" % (width, height, startx, starty))
+        self.geometry("%dx%d%+d%+d" % (width, height, startx, starty))  # noqa: UP031
 
     def ondestroy(self, destroy):
         self.wm_protocol("WM_DELETE_WINDOW", destroy)
@@ -753,7 +753,7 @@ class TurtleScreenBase:
     def _iscolorstring(self, color):
         """Check if the string color is a legal Tkinter color string."""
         try:
-            rgb = self.cv.winfo_rgb(color)
+            self.cv.winfo_rgb(color)
             ok = True
         except TK.TclError:
             ok = False
@@ -780,7 +780,7 @@ class TurtleScreenBase:
         item = self.cv.create_text(
             x - 1, -y, text=txt, anchor=anchor[align], fill=pencolor, font=font
         )
-        x0, y0, x1, y1 = self.cv.bbox(item)
+        _x0, _y0, x1, _y1 = self.cv.bbox(item)
         self.cv.update()
         return item, x1 - 1
 
@@ -794,7 +794,7 @@ class TurtleScreenBase:
         num, the number of the mouse-button defaults to 1
         """
         if fun is None:
-            self.cv.tag_unbind(item, "<Button-%s>" % num)
+            self.cv.tag_unbind(item, f"<Button-{num}>")
         else:
 
             def eventfun(event):
@@ -804,7 +804,7 @@ class TurtleScreenBase:
                 )
                 fun(x, y)
 
-            self.cv.tag_bind(item, "<Button-%s>" % num, eventfun, add)
+            self.cv.tag_bind(item, f"<Button-{num}>", eventfun, add)
 
     def _onrelease(self, item, fun, num=1, add=None):
         """Bind fun to mouse-button-release event on turtle.
@@ -816,7 +816,7 @@ class TurtleScreenBase:
         then _onscreensclick-event.
         """
         if fun is None:
-            self.cv.tag_unbind(item, "<Button%s-ButtonRelease>" % num)
+            self.cv.tag_unbind(item, f"<Button{num}-ButtonRelease>")
         else:
 
             def eventfun(event):
@@ -826,7 +826,7 @@ class TurtleScreenBase:
                 )
                 fun(x, y)
 
-            self.cv.tag_bind(item, "<Button%s-ButtonRelease>" % num, eventfun, add)
+            self.cv.tag_bind(item, f"<Button{num}-ButtonRelease>", eventfun, add)
 
     def _ondrag(self, item, fun, num=1, add=None):
         """Bind fun to mouse-move-event (with pressed mouse button) on turtle.
@@ -838,7 +838,7 @@ class TurtleScreenBase:
         mouse-click event on that turtle.
         """
         if fun is None:
-            self.cv.tag_unbind(item, "<Button%s-Motion>" % num)
+            self.cv.tag_unbind(item, f"<Button{num}-Motion>")
         else:
 
             def eventfun(event):
@@ -848,10 +848,10 @@ class TurtleScreenBase:
                         -self.cv.canvasy(event.y) / self.yscale,
                     )
                     fun(x, y)
-                except Exception:
+                except Exception:  # noqa: BLE001, S110
                     pass
 
-            self.cv.tag_bind(item, "<Button%s-Motion>" % num, eventfun, add)
+            self.cv.tag_bind(item, f"<Button{num}-Motion>", eventfun, add)
 
     def _onscreenclick(self, fun, num=1, add=None):
         """Bind fun to mouse-click event on canvas.
@@ -863,7 +863,7 @@ class TurtleScreenBase:
         then _onscreensclick-event.
         """
         if fun is None:
-            self.cv.unbind("<Button-%s>" % num)
+            self.cv.unbind(f"<Button-{num}>")
         else:
 
             def eventfun(event):
@@ -873,20 +873,20 @@ class TurtleScreenBase:
                 )
                 fun(x, y)
 
-            self.cv.bind("<Button-%s>" % num, eventfun, add)
+            self.cv.bind(f"<Button-{num}>", eventfun, add)
 
     def _onkeyrelease(self, fun, key):
         """Bind fun to key-release event of key.
         Canvas must have focus. See method listen
         """
         if fun is None:
-            self.cv.unbind("<KeyRelease-%s>" % key, None)
+            self.cv.unbind(f"<KeyRelease-{key}>", None)
         else:
 
             def eventfun(event):
                 fun()
 
-            self.cv.bind("<KeyRelease-%s>" % key, eventfun)
+            self.cv.bind(f"<KeyRelease-{key}>", eventfun)
 
     def _onkeypress(self, fun, key=None):
         """If key is given, bind fun to key-press event of key.
@@ -897,7 +897,7 @@ class TurtleScreenBase:
             if key is None:
                 self.cv.unbind("<KeyPress>", None)
             else:
-                self.cv.unbind("<KeyPress-%s>" % key, None)
+                self.cv.unbind(f"<KeyPress-{key}>", None)
         else:
 
             def eventfun(event):
@@ -906,7 +906,7 @@ class TurtleScreenBase:
             if key is None:
                 self.cv.bind("<KeyPress>", eventfun)
             else:
-                self.cv.bind("<KeyPress-%s>" % key, eventfun)
+                self.cv.bind(f"<KeyPress-{key}>", eventfun)
 
     def _listen(self):
         """Set focus on canvas (in order to collect key-events)"""
@@ -1086,14 +1086,14 @@ class Shape:
             if isinstance(data, list):
                 data = tuple(data)
         elif type_ == "image":
-            if isinstance(data, str):
+            if isinstance(data, str):  # noqa: SIM102
                 if data.lower().endswith(".gif") and isfile(data):
                     data = TurtleScreen._image(data)
                 # else data assumed to be Photoimage
         elif type_ == "compound":
             data = []
         else:
-            raise TurtleGraphicsError("There is no shape type %s" % type_)
+            raise TurtleGraphicsError(f"There is no shape type {type_}")
         self._data = data
 
     def addcomponent(self, poly, fill, outline=None):
@@ -1113,7 +1113,7 @@ class Shape:
         >>> # .. add more components and then use register_shape()
         """
         if self._type != "compound":
-            raise TurtleGraphicsError("Cannot add component to %s Shape" % self._type)
+            raise TurtleGraphicsError(f"Cannot add component to {self._type} Shape")
         if outline is None:
             outline = fill
         self._data.append([poly, fill, outline])
@@ -1310,7 +1310,7 @@ class TurtleScreen(TurtleScreenBase):
             return self._mode
         mode = mode.lower()
         if mode not in ["standard", "logo", "world"]:
-            raise TurtleGraphicsError("No turtle-graphics-mode %s" % mode)
+            raise TurtleGraphicsError(f"No turtle-graphics-mode {mode}")
         self._mode = mode
         if mode in ["standard", "logo"]:
             self._setscrollregion(
@@ -1413,16 +1413,16 @@ class TurtleScreen(TurtleScreenBase):
             if self._iscolorstring(color) or color == "":
                 return color
             else:
-                raise TurtleGraphicsError("bad color string: %s" % str(color))
+                raise TurtleGraphicsError(f"bad color string: {color!s}")
         try:
             r, g, b = color
         except (TypeError, ValueError):
-            raise TurtleGraphicsError("bad color arguments: %s" % str(color))
+            raise TurtleGraphicsError(f"bad color arguments: {color!s}")
         if self._colormode == 1.0:
             r, g, b = [round(255.0 * x) for x in (r, g, b)]
         if not ((0 <= r <= 255) and (0 <= g <= 255) and (0 <= b <= 255)):
-            raise TurtleGraphicsError("bad color sequence: %s" % str(color))
-        return "#%02x%02x%02x" % (r, g, b)
+            raise TurtleGraphicsError(f"bad color sequence: {color!s}")
+        return f"#{r:02x}{g:02x}{b:02x}"
 
     def _color(self, cstr):
         if not cstr.startswith("#"):
@@ -1432,7 +1432,7 @@ class TurtleScreen(TurtleScreenBase):
         elif len(cstr) == 4:
             cl = [16 * int(cstr[h], 16) for h in cstr[1:]]
         else:
-            raise TurtleGraphicsError("bad colorstring: %s" % cstr)
+            raise TurtleGraphicsError(f"bad colorstring: {cstr}")
         return tuple(c * self._colormode / 255 for c in cl)
 
     def colormode(self, cmode=None):
@@ -1770,7 +1770,7 @@ class TNavigator:
     Implements methods for turtle movement.
     """
 
-    START_ORIENTATION = {
+    START_ORIENTATION = {  # noqa: RUF012
         "standard": Vec2D(1.0, 0.0),
         "world": Vec2D(1.0, 0.0),
         "logo": Vec2D(0.0, 1.0),
@@ -2427,7 +2427,7 @@ class TPen:
         if speed in speeds:
             speed = speeds[speed]
         elif 0.5 < speed < 10.5:
-            speed = int(round(speed))
+            speed = round(speed)
         else:
             speed = 0
         self.pen(speed=speed)
@@ -2670,17 +2670,15 @@ class TPen:
             self.undobuffer.push(("pen", _p_buf))
 
         newLine = False
-        if "pendown" in p:
-            if self._drawing != p["pendown"]:
-                newLine = True
+        if "pendown" in p and self._drawing != p["pendown"]:
+            newLine = True
         if "pencolor" in p:
             if isinstance(p["pencolor"], tuple):
                 p["pencolor"] = self._colorstr((p["pencolor"],))
             if self._pencolor != p["pencolor"]:
                 newLine = True
-        if "pensize" in p:
-            if self._pensize != p["pensize"]:
-                newLine = True
+        if "pensize" in p and self._pensize != p["pensize"]:
+            newLine = True
         if newLine:
             self._newLine()
         if "pendown" in p:
@@ -2782,7 +2780,7 @@ class RawTurtle(TPen, TNavigator):
     its animation.
     """
 
-    screens = []
+    screens = []  # noqa: RUF012
 
     def __init__(
         self,
@@ -2806,7 +2804,7 @@ class RawTurtle(TPen, TNavigator):
                 self.screen = TurtleScreen(canvas)
                 RawTurtle.screens.append(self.screen)
         else:
-            raise TurtleGraphicsError("bad canvas argument %s" % canvas)
+            raise TurtleGraphicsError(f"bad canvas argument {canvas}")
 
         screen = self.screen
         TNavigator.__init__(self, screen.mode())
@@ -2972,12 +2970,12 @@ class RawTurtle(TPen, TNavigator):
         try:
             r, g, b = args
         except (TypeError, ValueError):
-            raise TurtleGraphicsError("bad color arguments: %s" % str(args))
+            raise TurtleGraphicsError(f"bad color arguments: {args!s}")
         if self.screen._colormode == 1.0:
             r, g, b = [round(255.0 * x) for x in (r, g, b)]
         if not ((0 <= r <= 255) and (0 <= g <= 255) and (0 <= b <= 255)):
-            raise TurtleGraphicsError("bad color sequence: %s" % str(args))
-        return "#%02x%02x%02x" % (r, g, b)
+            raise TurtleGraphicsError(f"bad color sequence: {args!s}")
+        return f"#{r:02x}{g:02x}{b:02x}"
 
     def clone(self):
         """Create and return a clone of the turtle.
@@ -3044,7 +3042,7 @@ class RawTurtle(TPen, TNavigator):
         if name is None:
             return self.turtle.shapeIndex
         if not name in self.screen.getshapes():
-            raise TurtleGraphicsError("There is no shape named %s" % name)
+            raise TurtleGraphicsError(f"There is no shape named {name}")
         self.turtle._setshape(name)
         self._update()
 
@@ -3217,7 +3215,7 @@ class RawTurtle(TPen, TNavigator):
         self._shapetrafo = (m11, m12, m21, m22)
         alfa = math.atan2(-m21, m11) % (2 * math.pi)
         sa, ca = math.sin(alfa), math.cos(alfa)
-        a11, a12, a21, a22 = (
+        a11, a12, _a21, a22 = (
             ca * m11 - sa * m21,
             ca * m12 - sa * m22,
             sa * m11 + ca * m21,
@@ -3740,7 +3738,7 @@ class RawTurtle(TPen, TNavigator):
             self.undobuffer.cumulate = True
         end = self._write(str(arg), align.lower(), font)
         if move:
-            x, y = self.pos()
+            _x, y = self.pos()
             self.setpos(end, y)
         if self.undobuffer:
             self.undobuffer.cumulate = False
@@ -3901,7 +3899,7 @@ class RawTurtle(TPen, TNavigator):
         if action == "rot":
             angle, degPAU = data
             self._rotate(-angle * degPAU / self._degreesPerAU)
-            dummy = self.undobuffer.pop()
+            self.undobuffer.pop()
         elif action == "stamp":
             stitem = data[0]
             self.clearstamp(stitem)
@@ -4105,9 +4103,9 @@ class _Screen(TurtleScreen):
         if _CFG["using_IDLE"]:
             return
         try:
-            mainloop()
+            mainloop()  # noqa: F821
         except AttributeError:
-            exit(0)
+            sys.exit(0)
 
 
 class Turtle(RawTurtle):
@@ -4161,15 +4159,15 @@ def write_docstringdict(filename="turtle_docstringdict"):
         key = "Turtle." + methodname
         docsdict[key] = eval(key).__doc__
 
-    with open("%s.py" % filename, "w") as f:
+    with open(f"{filename}.py", "w") as f:
         keys = sorted(x for x in docsdict if x.split(".")[1] not in _alias_list)
         f.write("docsdict = {\n\n")
         for key in keys[:-1]:
-            f.write("%s :\n" % repr(key))
-            f.write('        """%s\n""",\n\n' % docsdict[key])
+            f.write(f"{key!r} :\n")
+            f.write(f'        """{docsdict[key]}\n""",\n\n')
         key = keys[-1]
-        f.write("%s :\n" % repr(key))
-        f.write('        """%s\n"""\n\n' % docsdict[key])
+        f.write(f"{key!r} :\n")
+        f.write(f'        """{docsdict[key]}\n"""\n\n')
         f.write("}\n")
         f.close()
 
@@ -4181,15 +4179,15 @@ def read_docstrings(lang):
     to the methods of classes Screen and Turtle and - in revised form -
     to the corresponding functions.
     """
-    modname = "turtle_docstringdict_%(language)s" % {"language": lang.lower()}
+    modname = f"turtle_docstringdict_{lang.lower()}"
     module = __import__(modname)
     docsdict = module.docsdict
     for key in docsdict:
         try:
             #            eval(key).im_func.__doc__ = docsdict[key]
             eval(key).__doc__ = docsdict[key]
-        except Exception:
-            print("Bad docstring-entry: %s" % key)
+        except Exception:  # noqa: BLE001
+            print(f"Bad docstring-entry: {key}")
 
 
 _LANGUAGE = _CFG["language"]
@@ -4199,8 +4197,8 @@ try:
         read_docstrings(_LANGUAGE)
 except ImportError:
     print("Cannot find docsdict for", _LANGUAGE)
-except Exception:
-    print("Unknown Error when trying to import %s-docstring-dictionary" % _LANGUAGE)
+except Exception:  # noqa: BLE001
+    print(f"Unknown Error when trying to import {_LANGUAGE}-docstring-dictionary")
 
 
 def getmethparlist(ob):
@@ -4219,7 +4217,7 @@ def getmethparlist(ob):
     items2 = args[1:]
     realArgs = args[1:]
     defaults = ob.__defaults__ or []
-    defaults = ["=%r" % (value,) for value in defaults]
+    defaults = [f"={value!r}" for value in defaults]
     defaults = [""] * (len(realArgs) - len(defaults)) + defaults
     items1 = [arg + dflt for arg, dflt in zip(realArgs, defaults)]
     if varargs is not None:
@@ -4229,9 +4227,9 @@ def getmethparlist(ob):
         items1.append("**" + varkw)
         items2.append("**" + varkw)
     defText = ", ".join(items1)
-    defText = "(%s)" % defText
+    defText = f"({defText})"
     callText = ", ".join(items2)
-    callText = "(%s)" % callText
+    callText = f"({callText})"
     return defText, callText
 
 
@@ -4242,8 +4240,8 @@ def _turtle_docrevise(docstr):
     if docstr is None:
         return None
     turtlename = _CFG["exampleturtle"]
-    newdocstr = docstr.replace("%s." % turtlename, "")
-    parexp = re.compile(r" \(.+ %s\):" % turtlename)
+    newdocstr = docstr.replace(f"{turtlename}.", "")
+    parexp = re.compile(rf" \(.+ {turtlename}\):")
     newdocstr = parexp.sub(":", newdocstr)
     return newdocstr
 
@@ -4255,8 +4253,8 @@ def _screen_docrevise(docstr):
     if docstr is None:
         return None
     screenname = _CFG["examplescreen"]
-    newdocstr = docstr.replace("%s." % screenname, "")
-    parexp = re.compile(r" \(.+ %s\):" % screenname)
+    newdocstr = docstr.replace(f"{screenname}.", "")
+    parexp = re.compile(rf" \(.+ {screenname}\):")
     newdocstr = parexp.sub(":", newdocstr)
     return newdocstr
 
@@ -4292,7 +4290,7 @@ def _make_global_funcs(functions, cls, obj, init, docrevise):
         defstr = __func_body.format(
             obj=obj, init=init, name=methodname, paramslist=pl1, argslist=pl2
         )
-        exec(defstr, globals())
+        exec(defstr, globals())  # noqa: S102
         globals()[methodname].__doc__ = docrevise(method.__doc__)
 
 
@@ -4304,124 +4302,124 @@ _make_global_funcs(
 )
 
 
-done = mainloop
+done = mainloop  # noqa: F821
 
 if __name__ == "__main__":
 
     def switchpen():
-        if isdown():
-            pu()
+        if isdown():  # noqa: F821
+            pu()  # noqa: F821
         else:
-            pd()
+            pd()  # noqa: F821
 
     def demo1():
         """Demo of old turtle.py - module"""
-        reset()
-        tracer(True)
-        up()
-        backward(100)
-        down()
+        reset()  # noqa: F821
+        tracer(True)  # noqa: F821
+        up()  # noqa: F821
+        backward(100)  # noqa: F821
+        down()  # noqa: F821
         # draw 3 squares; the last filled
-        width(3)
+        width(3)  # noqa: F821
         for i in range(3):
             if i == 2:
-                begin_fill()
+                begin_fill()  # noqa: F821
             for _ in range(4):
-                forward(20)
-                left(90)
+                forward(20)  # noqa: F821
+                left(90)  # noqa: F821
             if i == 2:
-                color("maroon")
-                end_fill()
-            up()
-            forward(30)
-            down()
-        width(1)
-        color("black")
+                color("maroon")  # noqa: F821
+                end_fill()  # noqa: F821
+            up()  # noqa: F821
+            forward(30)  # noqa: F821
+            down()  # noqa: F821
+        width(1)  # noqa: F821
+        color("black")  # noqa: F821
         # move out of the way
-        tracer(False)
-        up()
-        right(90)
-        forward(100)
-        right(90)
-        forward(100)
-        right(180)
-        down()
+        tracer(False)  # noqa: F821
+        up()  # noqa: F821
+        right(90)  # noqa: F821
+        forward(100)  # noqa: F821
+        right(90)  # noqa: F821
+        forward(100)  # noqa: F821
+        right(180)  # noqa: F821
+        down()  # noqa: F821
         # some text
-        write("startstart", 1)
-        write("start", 1)
-        color("red")
+        write("startstart", 1)  # noqa: F821
+        write("start", 1)  # noqa: F821
+        color("red")  # noqa: F821
         # staircase
         for i in range(5):
-            forward(20)
-            left(90)
-            forward(20)
-            right(90)
+            forward(20)  # noqa: F821
+            left(90)  # noqa: F821
+            forward(20)  # noqa: F821
+            right(90)  # noqa: F821
         # filled staircase
-        tracer(True)
-        begin_fill()
+        tracer(True)  # noqa: F821
+        begin_fill()  # noqa: F821
         for i in range(5):
-            forward(20)
-            left(90)
-            forward(20)
-            right(90)
-        end_fill()
+            forward(20)  # noqa: F821
+            left(90)  # noqa: F821
+            forward(20)  # noqa: F821
+            right(90)  # noqa: F821
+        end_fill()  # noqa: F821
         # more text
 
     def demo2():
         """Demo of some new features."""
-        speed(1)
-        st()
-        pensize(3)
-        setheading(towards(0, 0))
-        radius = distance(0, 0) / 2.0
-        rt(90)
+        speed(1)  # noqa: F821
+        st()  # noqa: F821
+        pensize(3)  # noqa: F821
+        setheading(towards(0, 0))  # noqa: F821
+        radius = distance(0, 0) / 2.0  # noqa: F821
+        rt(90)  # noqa: F821
         for _ in range(18):
             switchpen()
-            circle(radius, 10)
-        write("wait a moment...")
-        while undobufferentries():
-            undo()
-        reset()
-        lt(90)
-        colormode(255)
+            circle(radius, 10)  # noqa: F821
+        write("wait a moment...")  # noqa: F821
+        while undobufferentries():  # noqa: F821
+            undo()  # noqa: F821
+        reset()  # noqa: F821
+        lt(90)  # noqa: F821
+        colormode(255)  # noqa: F821
         laenge = 10
-        pencolor("green")
-        pensize(3)
-        lt(180)
+        pencolor("green")  # noqa: F821
+        pensize(3)  # noqa: F821
+        lt(180)  # noqa: F821
         for i in range(-2, 16):
             if i > 0:
-                begin_fill()
-                fillcolor(255 - 15 * i, 0, 15 * i)
+                begin_fill()  # noqa: F821
+                fillcolor(255 - 15 * i, 0, 15 * i)  # noqa: F821
             for _ in range(3):
-                fd(laenge)
-                lt(120)
-            end_fill()
+                fd(laenge)  # noqa: F821
+                lt(120)  # noqa: F821
+            end_fill()  # noqa: F821
             laenge += 10
-            lt(15)
-            speed((speed() + 1) % 12)
+            lt(15)  # noqa: F821
+            speed((speed() + 1) % 12)  # noqa: F821
         # end_fill()
 
-        lt(120)
-        pu()
-        fd(70)
-        rt(30)
-        pd()
-        color("red", "yellow")
-        speed(0)
-        begin_fill()
+        lt(120)  # noqa: F821
+        pu()  # noqa: F821
+        fd(70)  # noqa: F821
+        rt(30)  # noqa: F821
+        pd()  # noqa: F821
+        color("red", "yellow")  # noqa: F821
+        speed(0)  # noqa: F821
+        begin_fill()  # noqa: F821
         for _ in range(4):
-            circle(50, 90)
-            rt(90)
-            fd(30)
-            rt(90)
-        end_fill()
-        lt(90)
-        pu()
-        fd(30)
-        pd()
-        shape("turtle")
+            circle(50, 90)  # noqa: F821
+            rt(90)  # noqa: F821
+            fd(30)  # noqa: F821
+            rt(90)  # noqa: F821
+        end_fill()  # noqa: F821
+        lt(90)  # noqa: F821
+        pu()  # noqa: F821
+        fd(30)  # noqa: F821
+        pd()  # noqa: F821
+        shape("turtle")  # noqa: F821
 
-        tri = getturtle()
+        tri = getturtle()  # noqa: F821
         tri.resizemode("auto")
         turtle = Turtle()
         turtle.resizemode("auto")
@@ -4437,7 +4435,7 @@ if __name__ == "__main__":
         turtle.color("blue", "orange")
         turtle.pensize(2)
         tri.speed(6)
-        setheading(towards(turtle))
+        setheading(towards(turtle))  # noqa: F821
         count = 1
         while tri.distance(turtle) > 4:
             turtle.fd(3.5)
@@ -4454,12 +4452,12 @@ if __name__ == "__main__":
         tri.pencolor("red")
 
         def baba(xdummy, ydummy):
-            clearscreen()
-            bye()
+            clearscreen()  # noqa: F821
+            bye()  # noqa: F821
 
         time.sleep(2)
 
-        while undobufferentries():
+        while undobufferentries():  # noqa: F821
             tri.undo()
             turtle.undo()
         tri.fd(50)
@@ -4468,4 +4466,4 @@ if __name__ == "__main__":
 
     demo1()
     demo2()
-    exitonclick()
+    exitonclick()  # noqa: F821

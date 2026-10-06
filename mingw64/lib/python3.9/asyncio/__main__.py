@@ -37,7 +37,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
                 repl_future_interrupted = True
                 future.set_exception(ex)
                 return
-            except BaseException as ex:
+            except BaseException as ex:  # noqa: BLE001
                 future.set_exception(ex)
                 return
 
@@ -48,7 +48,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             try:
                 repl_future = self.loop.create_task(coro)
                 futures._chain_future(repl_future, future)
-            except BaseException as exc:
+            except BaseException as exc:  # noqa: BLE001
                 future.set_exception(exc)
 
         loop.call_soon_threadsafe(callback)
@@ -57,7 +57,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             return future.result()
         except SystemExit:
             raise
-        except BaseException:
+        except BaseException:  # noqa: BLE001
             if repl_future_interrupted:
                 self.write("\nKeyboardInterrupt\n")
             else:

@@ -124,9 +124,9 @@ class PointersTestCase(unittest.TestCase):
         from array import array
 
         a = array("i", [100, 200, 300, 400, 500])
-        addr = a.buffer_info()[0]
+        a.buffer_info()[0]
 
-        p = POINTER(POINTER(c_int))
+        POINTER(POINTER(c_int))
 
     ##        print dir(p)
     ##        print p.from_address
@@ -134,7 +134,7 @@ class PointersTestCase(unittest.TestCase):
 
     def test_other(self):
         class Table(Structure):
-            _fields_ = [("a", c_int), ("b", c_int), ("c", c_int)]
+            _fields_ = [("a", c_int), ("b", c_int), ("c", c_int)]  # noqa: RUF012
 
         pt = pointer(Table(1, 2, 3))
 

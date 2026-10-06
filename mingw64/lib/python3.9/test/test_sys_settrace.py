@@ -65,7 +65,6 @@ def arigo_example0():
     del x
     while 0:
         pass
-    x = 1
 
 
 arigo_example0.events = [
@@ -82,7 +81,6 @@ def arigo_example1():
     del x
     if 0:
         pass
-    x = 1
 
 
 arigo_example1.events = [
@@ -98,7 +96,7 @@ def arigo_example2():
     x = 1
     del x
     if 1:
-        x = 1
+        pass
     else:
         pass
 
@@ -117,7 +115,6 @@ arigo_example2.events = [
 def one_instr_line():
     x = 1
     del x
-    x = 1
 
 
 one_instr_line.events = [
@@ -130,12 +127,11 @@ one_instr_line.events = [
 
 
 def no_pop_tops():  # 0
-    x = 1  # 1
     for a in range(2):  # 2
         if a:  # 3
-            x = 1  # 4
+            pass  # 4
         else:  # 5
-            x = 1  # 6
+            pass  # 6
 
 
 no_pop_tops.events = [
@@ -155,8 +151,7 @@ no_pop_tops.events = [
 def no_pop_blocks():
     y = 1
     while not y:
-        bla
-    x = 1
+        bla  # noqa: B018, F821
 
 
 no_pop_blocks.events = [
@@ -169,7 +164,7 @@ no_pop_blocks.events = [
 
 
 def called():  # line -3
-    x = 1
+    pass
 
 
 def call():  # line 0
@@ -187,13 +182,13 @@ call.events = [
 
 
 def raises():
-    raise Exception
+    raise Exception  # noqa: TRY002
 
 
 def test_raise():
     try:
         raises()
-    except Exception:
+    except Exception:  # noqa: BLE001, S110
         pass
 
 
@@ -274,7 +269,7 @@ def tightloop_example():
     try:
         i = 0
         while 1:
-            b = items[i]
+            items[i]
             i += 1
     except IndexError:
         pass
@@ -336,7 +331,7 @@ def generator_example():
 
     # the following lines were not traced
     for x in range(10):
-        y = x
+        pass
 
 
 generator_example.events = (
@@ -501,9 +496,9 @@ class TraceTestCase(unittest.TestCase):
     def test_14_onliner_if(self):
         def onliners():
             if True:
-                x = False
+                pass
             else:
-                x = True
+                pass
             return 0
 
         self.run_and_compare(
@@ -551,7 +546,7 @@ class TraceTestCase(unittest.TestCase):
 
     def test_16_blank_lines(self):
         namespace = {}
-        exec("def f():\n" + "\n" * 256 + "    pass", namespace)
+        exec("def f():\n" + "\n" * 256 + "    pass", namespace)  # noqa: S102
         self.run_and_compare(
             namespace["f"], [(0, "call"), (257, "line"), (257, "return")]
         )
@@ -560,7 +555,6 @@ class TraceTestCase(unittest.TestCase):
         # Issue 20041: fix TypeError when f_trace is set to None.
         def func():
             sys._getframe().f_trace = None
-            lineno = 2
 
         self.run_and_compare(func, [(0, "call"), (1, "line")])
 
@@ -568,12 +562,10 @@ class TraceTestCase(unittest.TestCase):
         def func():
             try:
                 try:
-                    raise Exception
-                except Exception:
+                    raise Exception  # noqa: TRY002
+                except Exception:  # noqa: TRY203
                     raise
-                    x = "Something"
-                    y = "Something"
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
 
         self.run_and_compare(
@@ -596,11 +588,11 @@ class TraceTestCase(unittest.TestCase):
         def func():
             try:
                 try:
-                    raise Exception
+                    raise Exception  # noqa: TRY002
                 finally:
-                    y = "Something"
-            except Exception:
-                b = 23
+                    pass
+            except Exception:  # noqa: BLE001, S110
+                pass
 
         self.run_and_compare(
             func,
@@ -633,8 +625,7 @@ class TraceTestCase(unittest.TestCase):
 
         async def doit_async():
             async for letter in AsyncIteratorWrapper("abc"):
-                x = letter
-            y = 42
+                pass
 
         def run(tracer):
             x = doit_async()
@@ -689,7 +680,7 @@ class TraceTestCase(unittest.TestCase):
         ]
         try:
             run(tracer.trace)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         self.compare_events(doit_async.__code__.co_firstlineno, tracer.events, events)
 
@@ -732,7 +723,7 @@ class TraceTestCase(unittest.TestCase):
         ]
         try:
             run(tracer.trace)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         self.compare_events(async_test.__code__.co_firstlineno, tracer.events, events)
 
@@ -785,7 +776,7 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
         we're testing, so that the 'exception' trace event fires."""
         if self.raiseOnEvent == "exception":
             x = 0
-            y = 1 / x
+            1 / x
         else:
             return 1
 
@@ -843,11 +834,11 @@ class RaisingTraceFuncTestCase(unittest.TestCase):
         def f():
             x = 0
             # this should raise an error
-            x.no_such_attr
+            x.no_such_attr  # noqa: B018
 
         def g(frame, event, arg):
             if event == "exception":
-                type, exception, trace = arg
+                _type, exception, _trace = arg
                 self.assertIsInstance(exception, Exception)
             return g
 
@@ -1111,7 +1102,7 @@ class JumpTestCase(unittest.TestCase):
     def test_jump_in_nested_finally_2(output):
         try:
             output.append(2)
-            1 / 0
+            1 / 0  # noqa: B018
             return
         finally:
             output.append(6)
@@ -1122,7 +1113,7 @@ class JumpTestCase(unittest.TestCase):
     def test_jump_in_nested_finally_3(output):
         try:
             output.append(2)
-            1 / 0
+            1 / 0  # noqa: B018
             return
         finally:
             output.append(6)
@@ -1140,7 +1131,7 @@ class JumpTestCase(unittest.TestCase):
         finally:
             output.append(4)
             output.append(5)
-            return
+            return  # noqa: B012
             try:
                 output.append(8)
             finally:
@@ -1231,7 +1222,7 @@ class JumpTestCase(unittest.TestCase):
     @jump_test(5, 7, [4, 7, 8])
     def test_jump_between_except_blocks(output):
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError:
             output.append(4)
             output.append(5)
@@ -1242,8 +1233,8 @@ class JumpTestCase(unittest.TestCase):
     @jump_test(5, 6, [4, 6, 7])
     def test_jump_within_except_block(output):
         try:
-            1 / 0
-        except:
+            1 / 0  # noqa: B018
+        except:  # noqa: E722
             output.append(4)
             output.append(5)
             output.append(6)
@@ -1339,14 +1330,14 @@ class JumpTestCase(unittest.TestCase):
     @jump_test(3, 5, [1, 2, 5])
     def test_jump_out_of_with_assignment(output):
         output.append(1)
-        with tracecontext(output, 2) as x:
+        with tracecontext(output, 2):
             output.append(4)
         output.append(5)
 
     @async_jump_test(3, 5, [1, 2, 5])
     async def test_jump_out_of_async_with_assignment(output):
         output.append(1)
-        async with asynctracecontext(output, 2) as x:
+        async with asynctracecontext(output, 2):
             output.append(4)
         output.append(5)
 
@@ -1433,17 +1424,17 @@ class JumpTestCase(unittest.TestCase):
     def test_no_jump_to_except_3(output):
         try:
             output.append(2)
-        except ValueError as e:
+        except ValueError:
             output.append(4)
-            raise e
+            raise
 
     @jump_test(2, 3, [4], (ValueError, "except"))
     def test_no_jump_to_except_4(output):
         try:
             output.append(2)
-        except (ValueError, RuntimeError) as e:
+        except (ValueError, RuntimeError):
             output.append(4)
-            raise e
+            raise
 
     @jump_test(1, 3, [], (ValueError, "into"))
     def test_no_jump_forwards_into_for_block(output):
@@ -1531,7 +1522,7 @@ class JumpTestCase(unittest.TestCase):
     @jump_test(5, 7, [4], (ValueError, "into"))
     def test_no_jump_between_except_blocks_2(output):
         try:
-            1 / 0
+            1 / 0  # noqa: B018
         except ZeroDivisionError:
             output.append(4)
             output.append(5)
@@ -1570,7 +1561,7 @@ class JumpTestCase(unittest.TestCase):
         output.append(1)
         try:
             output.append(3)
-        except:
+        except:  # noqa: E722
             output.append(5)
 
     @jump_test(1, 5, [], (ValueError, "into an 'except'"))
@@ -1578,7 +1569,7 @@ class JumpTestCase(unittest.TestCase):
         output.append(1)
         try:
             output.append(3)
-        except Exception:
+        except Exception:  # noqa: BLE001
             output.append(5)
 
     @jump_test(3, 6, [2, 5, 6], (ValueError, "into an 'except'"))
@@ -1608,8 +1599,8 @@ class JumpTestCase(unittest.TestCase):
         output.append(1)
         try:
             output.append(3)
-            1 / 0
-        except:
+            1 / 0  # noqa: B018
+        except:  # noqa: E722
             output.append(6)
             output.append(7)
 
@@ -1618,8 +1609,8 @@ class JumpTestCase(unittest.TestCase):
         output.append(1)
         try:
             output.append(3)
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             output.append(6)
             output.append(7)
 
@@ -1646,7 +1637,7 @@ class JumpTestCase(unittest.TestCase):
         finally:
             output.append(4)
             output.append(5)
-            return
+            return  # noqa: B012
         output.append(7)
 
     @jump_test(7, 4, [1, 6], (ValueError, "into"))
@@ -1681,17 +1672,16 @@ class JumpTestCase(unittest.TestCase):
 
     def test_large_function(self):
         d = {}
-        exec(
+        exec(  # noqa: S102
             """def f(output):        # line 0
             x = 0                     # line 1
             y = 1                     # line 2
             '''                       # line 3
-            %s                        # lines 4-1004
+            {}                        # lines 4-1004
             '''                       # line 1005
             x += 1                    # line 1006
             output.append(x)          # line 1007
-            return"""
-            % ("\n" * 1000,),
+            return""".format("\n" * 1000),
             d,
         )
         f = d["f"]
@@ -1718,7 +1708,7 @@ output.append(4)
         tracer = JumpTracer(fake_function, 2, 0)
         sys.settrace(tracer.trace)
         namespace = {"output": []}
-        exec(code, namespace)
+        exec(code, namespace)  # noqa: S102
         sys.settrace(None)
         self.compare_jump_output([2, 3, 2, 3, 4], namespace["output"])
 
@@ -1757,7 +1747,7 @@ output.append(4)
     )
     def test_no_jump_from_exception_event(output):
         output.append(1)
-        1 / 0
+        1 / 0  # noqa: B018
 
     @jump_test(3, 2, [2, 5], event="return")
     def test_jump_from_yield(output):

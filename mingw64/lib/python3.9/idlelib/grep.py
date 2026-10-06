@@ -105,7 +105,7 @@ class GrepDialog(SearchDialogBase):
         else:
             path = ""
         dir, base = os.path.split(path)
-        head, tail = os.path.splitext(base)
+        _head, tail = os.path.splitext(base)
         if not tail:
             tail = ".py"
         self.globvar.set(os.path.join(dir, "*" + tail))

@@ -23,13 +23,15 @@ def show_formats():
 class bdist(Command):
     description = "create a built (binary) distribution"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("bdist-base=", "b", "temporary directory for creating built distributions"),
         (
             "plat-name=",
             "p",
-            "platform name to embed in generated filenames "
-            "(default: %s)" % get_platform(),
+            (
+                "platform name to embed in generated filenames "
+                f"(default: {get_platform()})"
+            ),
         ),
         ("formats=", None, "formats for distribution (comma-separated list)"),
         (
@@ -50,9 +52,9 @@ class bdist(Command):
         ),
     ]
 
-    boolean_options = ["skip-build"]
+    boolean_options = ["skip-build"]  # noqa: RUF012
 
-    help_options = [
+    help_options = [  # noqa: RUF012
         ("help-formats", None, "lists available distribution formats", show_formats),
     ]
 
@@ -61,10 +63,10 @@ class bdist(Command):
 
     # This won't do in reality: will need to distinguish RPM-ish Linux,
     # Debian-ish Linux, Solaris, FreeBSD, ..., Windows, Mac OS.
-    default_format = {"posix": "gztar", "nt": "zip"}
+    default_format = {"posix": "gztar", "nt": "zip"}  # noqa: RUF012
 
     # Establish the preferred order (for the --help-formats option).
-    format_commands = [
+    format_commands = [  # noqa: RUF012
         "rpm",
         "gztar",
         "bztar",
@@ -77,7 +79,7 @@ class bdist(Command):
     ]
 
     # And the real information.
-    format_command = {
+    format_command = {  # noqa: RUF012
         "rpm": ("bdist_rpm", "RPM distribution"),
         "gztar": ("bdist_dumb", "gzip'ed tar file"),
         "bztar": ("bdist_dumb", "bzip2'ed tar file"),
@@ -120,7 +122,7 @@ class bdist(Command):
             except KeyError:
                 raise DistutilsPlatformError(
                     "don't know how to create built distributions "
-                    "on platform %s" % os.name
+                    f"on platform {os.name}"
                 )
 
         if self.dist_dir is None:
@@ -133,7 +135,7 @@ class bdist(Command):
             try:
                 commands.append(self.format_command[format][0])
             except KeyError:
-                raise DistutilsOptionError("invalid format '%s'" % format)
+                raise DistutilsOptionError(f"invalid format '{format}'")
 
         # Reinitialize and run each command.
         for i in range(len(self.formats)):

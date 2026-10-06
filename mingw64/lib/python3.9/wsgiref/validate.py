@@ -112,7 +112,7 @@ def validator(application):
         def start_response_wrapper(*args, **kw):
             assert_(
                 len(args) == 2 or len(args) == 3,
-                ("Invalid number of arguments: %s" % (args,)),
+                (f"Invalid number of arguments: {args}"),
             )
             assert_(not kw, "No keyword arguments allowed")
             status = args[0]
@@ -226,7 +226,7 @@ class IteratorWrapper:
         assert_(not self.closed, "Iterator read after closed")
         v = next(self.iterator)
         if type(v) is not bytes:
-            assert_(False, "Iterator yielded non-bytestring (%r)" % (v,))
+            assert_(False, f"Iterator yielded non-bytestring ({v!r})")
         if self.check_start_response is not None:
             assert_(
                 self.check_start_response,
@@ -249,8 +249,7 @@ class IteratorWrapper:
 def check_environ(environ):
     assert_(
         type(environ) is dict,
-        "Environment is not of the right type: %r (environment: %r)"
-        % (type(environ), environ),
+        f"Environment is not of the right type: {type(environ)!r} (environment: {environ!r})",
     )
     for key in [
         "REQUEST_METHOD",
@@ -263,11 +262,11 @@ def check_environ(environ):
         "wsgi.multiprocess",
         "wsgi.run_once",
     ]:
-        assert_(key in environ, "Environment missing required key: %r" % (key,))
+        assert_(key in environ, f"Environment missing required key: {key!r}")
     for key in ["HTTP_CONTENT_TYPE", "HTTP_CONTENT_LENGTH"]:
         assert_(
             key not in environ,
-            "Environment should not have the key: %s (use %s instead)" % (key, key[5:]),
+            f"Environment should not have the key: {key} (use {key[5:]} instead)",
         )
     if "QUERY_STRING" not in environ:
         warnings.warn(
@@ -276,21 +275,20 @@ def check_environ(environ):
             "so application errors are more likely",
             WSGIWarning,
         )
-    for key in environ.keys():
+    for key in environ:
         if "." in key:
             continue
         assert_(
             type(environ[key]) is str,
-            "Environmental variable %s is not a string: %r (value: %r)"
-            % (key, type(environ[key]), environ[key]),
+            f"Environmental variable {key} is not a string: {type(environ[key])!r} (value: {environ[key]!r})",
         )
     assert_(
         type(environ["wsgi.version"]) is tuple,
-        "wsgi.version should be a tuple (%r)" % (environ["wsgi.version"],),
+        "wsgi.version should be a tuple ({!r})".format(environ["wsgi.version"]),
     )
     assert_(
         environ["wsgi.url_scheme"] in ("http", "https"),
-        "wsgi.url_scheme unknown: %r" % environ["wsgi.url_scheme"],
+        "wsgi.url_scheme unknown: {!r}".format(environ["wsgi.url_scheme"]),
     )
     check_input(environ["wsgi.input"])
     check_errors(environ["wsgi.errors"])
@@ -305,20 +303,21 @@ def check_environ(environ):
         "TRACE",
     ):
         warnings.warn(
-            "Unknown REQUEST_METHOD: %r" % environ["REQUEST_METHOD"], WSGIWarning
+            "Unknown REQUEST_METHOD: {!r}".format(environ["REQUEST_METHOD"]),
+            WSGIWarning,
         )
     assert_(
         not environ.get("SCRIPT_NAME") or environ["SCRIPT_NAME"].startswith("/"),
-        "SCRIPT_NAME doesn't start with /: %r" % environ["SCRIPT_NAME"],
+        "SCRIPT_NAME doesn't start with /: {!r}".format(environ["SCRIPT_NAME"]),
     )
     assert_(
         not environ.get("PATH_INFO") or environ["PATH_INFO"].startswith("/"),
-        "PATH_INFO doesn't start with /: %r" % environ["PATH_INFO"],
+        "PATH_INFO doesn't start with /: {!r}".format(environ["PATH_INFO"]),
     )
     if environ.get("CONTENT_LENGTH"):
         assert_(
             int(environ["CONTENT_LENGTH"]) >= 0,
-            "Invalid CONTENT_LENGTH: %r" % environ["CONTENT_LENGTH"],
+            "Invalid CONTENT_LENGTH: {!r}".format(environ["CONTENT_LENGTH"]),
         )
     if not environ.get("SCRIPT_NAME"):
         assert_(
@@ -337,7 +336,7 @@ def check_input(wsgi_input):
     for attr in ["read", "readline", "readlines", "__iter__"]:
         assert_(
             hasattr(wsgi_input, attr),
-            "wsgi.input (%r) doesn't have the attribute %s" % (wsgi_input, attr),
+            f"wsgi.input ({wsgi_input!r}) doesn't have the attribute {attr}",
         )
 
 
@@ -345,7 +344,7 @@ def check_errors(wsgi_errors):
     for attr in ["flush", "write", "writelines"]:
         assert_(
             hasattr(wsgi_errors, attr),
-            "wsgi.errors (%r) doesn't have the attribute %s" % (wsgi_errors, attr),
+            f"wsgi.errors ({wsgi_errors!r}) doesn't have the attribute {attr}",
         )
 
 
@@ -353,14 +352,14 @@ def check_status(status):
     status = check_string_type(status, "Status")
     status_code = status.split(None, 1)[0]
     assert_(
-        len(status_code) == 3, "Status codes must be three characters: %r" % status_code
+        len(status_code) == 3, f"Status codes must be three characters: {status_code!r}"
     )
     status_int = int(status_code)
-    assert_(status_int >= 100, "Status code is invalid: %r" % status_int)
+    assert_(status_int >= 100, f"Status code is invalid: {status_int!r}")
     if len(status) < 4 or status[3] != " ":
         warnings.warn(
-            "The status string (%r) should be a three-digit integer "
-            "followed by a single space and a status explanation" % status,
+            f"The status string ({status!r}) should be a three-digit integer "
+            "followed by a single space and a status explanation",
             WSGIWarning,
         )
 
@@ -368,12 +367,12 @@ def check_status(status):
 def check_headers(headers):
     assert_(
         type(headers) is list,
-        "Headers (%r) must be of type list: %r" % (headers, type(headers)),
+        f"Headers ({headers!r}) must be of type list: {type(headers)!r}",
     )
     for item in headers:
         assert_(
             type(item) is tuple,
-            "Individual headers (%r) must be of type tuple: %r" % (item, type(item)),
+            f"Individual headers ({item!r}) must be of type tuple: {type(item)!r}",
         )
         assert_(len(item) == 2)
         name, value = item
@@ -383,22 +382,21 @@ def check_headers(headers):
             name.lower() != "status",
             "The Status header cannot be used; it conflicts with CGI "
             "script, and HTTP status is not given through headers "
-            "(value: %r)." % value,
+            f"(value: {value!r}).",
         )
         assert_(
             "\n" not in name and ":" not in name,
-            "Header names may not contain ':' or '\\n': %r" % name,
+            f"Header names may not contain ':' or '\\n': {name!r}",
         )
-        assert_(header_re.search(name), "Bad header name: %r" % name)
+        assert_(header_re.search(name), f"Bad header name: {name!r}")
         assert_(
             not name.endswith("-") and not name.endswith("_"),
-            "Names may not end in '-' or '_': %r" % name,
+            f"Names may not end in '-' or '_': {name!r}",
         )
         if bad_header_value_re.search(value):
             assert_(
                 0,
-                "Bad header value: %r (bad char: %r)"
-                % (value, bad_header_value_re.search(value).group(0)),
+                f"Bad header value: {value!r} (bad char: {bad_header_value_re.search(value).group(0)!r})",
             )
 
 
@@ -414,19 +412,18 @@ def check_content_type(status, headers):
             assert_(
                 0,
                 (
-                    "Content-Type header found in a %s response, "
+                    f"Content-Type header found in a {code} response, "
                     "which must not return content."
-                )
-                % code,
+                ),
             )
     if code not in NO_MESSAGE_BODY:
-        assert_(0, "No Content-Type header found in headers (%s)" % headers)
+        assert_(0, f"No Content-Type header found in headers ({headers})")
 
 
 def check_exc_info(exc_info):
     assert_(
         exc_info is None or type(exc_info) is tuple,
-        "exc_info (%r) is not a tuple: %r" % (exc_info, type(exc_info)),
+        f"exc_info ({exc_info!r}) is not a tuple: {type(exc_info)!r}",
     )
 
 

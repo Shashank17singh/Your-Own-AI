@@ -70,7 +70,7 @@ class NamespacePackageTest(unittest.TestCase):
 
 
 class SingleNamespacePackage(NamespacePackageTest):
-    paths = ["portion1"]
+    paths = ["portion1"]  # noqa: RUF012
 
     def test_simple_package(self):
         import foo.one
@@ -88,7 +88,7 @@ class SingleNamespacePackage(NamespacePackageTest):
 
 
 class DynamicPathNamespacePackage(NamespacePackageTest):
-    paths = ["portion1"]
+    paths = ["portion1"]  # noqa: RUF012
 
     def test_dynamic_path(self):
         # Make sure only 'foo.one' can be imported
@@ -109,7 +109,7 @@ class DynamicPathNamespacePackage(NamespacePackageTest):
 
 
 class CombinedNamespacePackages(NamespacePackageTest):
-    paths = ["both_portions"]
+    paths = ["both_portions"]  # noqa: RUF012
 
     def test_imports(self):
         import foo.one
@@ -120,7 +120,7 @@ class CombinedNamespacePackages(NamespacePackageTest):
 
 
 class SeparatedNamespacePackages(NamespacePackageTest):
-    paths = ["portion1", "portion2"]
+    paths = ["portion1", "portion2"]  # noqa: RUF012
 
     def test_imports(self):
         import foo.one
@@ -131,7 +131,7 @@ class SeparatedNamespacePackages(NamespacePackageTest):
 
 
 class SeparatedOverlappingNamespacePackages(NamespacePackageTest):
-    paths = ["portion1", "both_portions"]
+    paths = ["portion1", "both_portions"]  # noqa: RUF012
 
     def test_first_path_wins(self):
         import foo.one
@@ -157,7 +157,7 @@ class SeparatedOverlappingNamespacePackages(NamespacePackageTest):
 
 
 class SingleZipNamespacePackage(NamespacePackageTest):
-    paths = ["top_level_portion1.zip"]
+    paths = ["top_level_portion1.zip"]  # noqa: RUF012
 
     def test_simple_package(self):
         import foo.one
@@ -170,7 +170,7 @@ class SingleZipNamespacePackage(NamespacePackageTest):
 
 
 class SeparatedZipNamespacePackages(NamespacePackageTest):
-    paths = ["top_level_portion1.zip", "portion2"]
+    paths = ["top_level_portion1.zip", "portion2"]  # noqa: RUF012
 
     def test_imports(self):
         import foo.one
@@ -183,7 +183,7 @@ class SeparatedZipNamespacePackages(NamespacePackageTest):
 
 
 class SingleNestedZipNamespacePackage(NamespacePackageTest):
-    paths = ["nested_portion1.zip/nested_portion1"]
+    paths = ["nested_portion1.zip/nested_portion1"]  # noqa: RUF012
 
     def test_simple_package(self):
         import foo.one
@@ -196,7 +196,7 @@ class SingleNestedZipNamespacePackage(NamespacePackageTest):
 
 
 class SeparatedNestedZipNamespacePackages(NamespacePackageTest):
-    paths = ["nested_portion1.zip/nested_portion1", "portion2"]
+    paths = ["nested_portion1.zip/nested_portion1", "portion2"]  # noqa: RUF012
 
     def test_imports(self):
         import foo.one
@@ -210,7 +210,7 @@ class SeparatedNestedZipNamespacePackages(NamespacePackageTest):
 
 
 class LegacySupport(NamespacePackageTest):
-    paths = ["not_a_namespace_pkg", "portion1", "portion2", "both_portions"]
+    paths = ["not_a_namespace_pkg", "portion1", "portion2", "both_portions"]  # noqa: RUF012
 
     def test_non_namespace_package_takes_precedence(self):
         import foo.one
@@ -222,7 +222,7 @@ class LegacySupport(NamespacePackageTest):
 
 
 class DynamicPathCalculation(NamespacePackageTest):
-    paths = ["project1", "project2"]
+    paths = ["project1", "project2"]  # noqa: RUF012
 
     def test_project3_fails(self):
         import parent.child.one
@@ -271,7 +271,7 @@ class DynamicPathCalculation(NamespacePackageTest):
 
 
 class ZipWithMissingDirectory(NamespacePackageTest):
-    paths = ["missing_directory.zip"]
+    paths = ["missing_directory.zip"]  # noqa: RUF012
 
     @unittest.expectedFailure
     def test_missing_directory(self):
@@ -297,7 +297,7 @@ class ZipWithMissingDirectory(NamespacePackageTest):
 
 
 class ModuleAndNamespacePackageInSameDir(NamespacePackageTest):
-    paths = ["module_and_namespace_package"]
+    paths = ["module_and_namespace_package"]  # noqa: RUF012
 
     def test_module_before_namespace_package(self):
         # Make sure we find the module in preference to the
@@ -308,7 +308,7 @@ class ModuleAndNamespacePackageInSameDir(NamespacePackageTest):
 
 
 class ReloadTests(NamespacePackageTest):
-    paths = ["portion1"]
+    paths = ["portion1"]  # noqa: RUF012
 
     def test_simple_package(self):
         import foo.one
@@ -342,7 +342,7 @@ class ReloadTests(NamespacePackageTest):
 
 
 class LoaderTests(NamespacePackageTest):
-    paths = ["portion1"]
+    paths = ["portion1"]  # noqa: RUF012
 
     def test_namespace_loader_consistency(self):
         # bpo-32303

@@ -1,6 +1,6 @@
 """This is a test"""
 
-from __future__ import braces
+from __future__ import braces  # noqa: F407
 
 
 def f(x):

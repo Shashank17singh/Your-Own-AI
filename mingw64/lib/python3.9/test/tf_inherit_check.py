@@ -19,7 +19,7 @@ with SuppressCrashReport():
             sys.exit(0)
         else:
             if verbose:
-                sys.stderr.write("fd %d is open in child" % fd)
+                sys.stderr.write("fd %d is open in child" % fd)  # noqa: UP031
             sys.exit(1)
 
     except Exception:

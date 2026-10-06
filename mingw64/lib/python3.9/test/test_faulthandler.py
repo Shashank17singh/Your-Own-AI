@@ -33,8 +33,8 @@ MEMORY_SANITIZER = (
 
 def expected_traceback(lineno1, lineno2, header, min_count=1):
     regex = header
-    regex += '  File "<string>", line %s in func\n' % lineno1
-    regex += '  File "<string>", line %s in <module>' % lineno2
+    regex += f'  File "<string>", line {lineno1} in func\n'
+    regex += f'  File "<string>", line {lineno2} in <module>'
     if 1 < min_count:
         return "^" + (regex + "\n") * (min_count - 1) + regex
     else:
@@ -73,7 +73,7 @@ class FaultHandlerTests(unittest.TestCase):
         with support.SuppressCrashReport():
             process = script_helper.spawn_python("-c", code, pass_fds=pass_fds)
             with process:
-                output, stderr = process.communicate()
+                output, _stderr = process.communicate()
                 exitcode = process.wait()
         output = output.decode("ascii", "backslashreplace")
         if filename:
@@ -137,12 +137,12 @@ class FaultHandlerTests(unittest.TestCase):
 
     def check_fatal_error(self, code, line_number, name_regex, func=None, **kw):
         if func:
-            name_regex = "%s: %s" % (func, name_regex)
-        fatal_error = "Fatal Python error: %s" % name_regex
+            name_regex = f"{func}: {name_regex}"
+        fatal_error = f"Fatal Python error: {name_regex}"
         self.check_error(code, line_number, fatal_error, **kw)
 
     def check_windows_exception(self, code, line_number, name_regex, **kw):
-        fatal_error = "Windows fatal exception: %s" % name_regex
+        fatal_error = f"Windows fatal exception: {name_regex}"
         self.check_error(code, line_number, fatal_error, **kw)
 
     @unittest.skipIf(
@@ -341,13 +341,12 @@ class FaultHandlerTests(unittest.TestCase):
         with tempfile.TemporaryFile("wb+") as fp:
             fd = fp.fileno()
             self.check_fatal_error(
-                """
+                f"""
                 import faulthandler
                 import sys
-                faulthandler.enable(%s)
+                faulthandler.enable({fd})
                 faulthandler._sigsegv()
-                """
-                % fd,
+                """,
                 4,
                 "Segmentation fault",
                 fd=fd,
@@ -378,7 +377,7 @@ class FaultHandlerTests(unittest.TestCase):
         stderr, exitcode = self.get_output(code)
         stderr = "\n".join(stderr)
         self.assertTrue(
-            not_expected not in stderr, "%r is present in %r" % (not_expected, stderr)
+            not_expected not in stderr, f"{not_expected!r} is present in {stderr!r}"
         )
         self.assertNotEqual(exitcode, 0)
 
@@ -488,7 +487,7 @@ class FaultHandlerTests(unittest.TestCase):
             lineno = 14
         expected = [
             "Stack (most recent call first):",
-            '  File "<string>", line %s in funcB' % lineno,
+            f'  File "<string>", line {lineno} in funcB',
             '  File "<string>", line 17 in funcA',
             '  File "<string>", line 19 in <module>',
         ]
@@ -527,7 +526,7 @@ class FaultHandlerTests(unittest.TestCase):
         )
         expected = [
             "Stack (most recent call first):",
-            '  File "<string>", line 4 in %s' % truncated,
+            f'  File "<string>", line 4 in {truncated}',
             '  File "<string>", line 6 in <module>',
         ]
         trace, exitcode = self.get_output(code)
@@ -656,10 +655,7 @@ class FaultHandlerTests(unittest.TestCase):
             count = loops
             if repeat:
                 count *= 2
-            header = (
-                r"Timeout \(%s\)!\nThread 0x[0-9a-f]+ \(most recent call first\):\n"
-                % timeout_str
-            )
+            header = rf"Timeout \({timeout_str}\)!\nThread 0x[0-9a-f]+ \(most recent call first\):\n"
             regex = expected_traceback(17, 26, header, min_count=count)
             self.assertRegex(trace, regex)
         else:

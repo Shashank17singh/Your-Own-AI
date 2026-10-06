@@ -116,7 +116,7 @@ class XmlTestBase(unittest.TestCase):
 def xml_str(doc, encoding=None):
     if encoding is None:
         return doc
-    return '<?xml version="1.0" encoding="%s"?>\n%s' % (encoding, doc)
+    return f'<?xml version="1.0" encoding="{encoding}"?>\n{doc}'
 
 
 def xml_bytes(doc, encoding, decl_encoding=...):
@@ -277,22 +277,22 @@ class MakeParserTest(unittest.TestCase):
         # before.
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
         from xml.sax import make_parser
 
-        p = make_parser()
+        make_parser()
 
     def test_make_parser3(self):
         # Testing that make_parser can handle different types of
@@ -307,7 +307,7 @@ class MakeParserTest(unittest.TestCase):
     def test_make_parser4(self):
         # Testing that make_parser can handle empty iterables.
         make_parser([])
-        make_parser(tuple())
+        make_parser(())
         make_parser(set())
         make_parser(frozenset())
         make_parser({})
@@ -379,7 +379,7 @@ class SaxutilsTest(unittest.TestCase):
     def test_make_parser(self):
         # Creating a parser should succeed - it should fall back
         # to the expatreader
-        p = make_parser(["xml.parsers.no_such_parser"])
+        make_parser(["xml.parsers.no_such_parser"])
 
 
 class PrepareInputSourceTest(unittest.TestCase):
@@ -660,7 +660,7 @@ class XmlgenTest:
 
         self.assertEqual(
             result.getvalue(),
-            self.xml('<ns1:doc xmlns:ns1="%s"><udoc></udoc></ns1:doc>' % ns_uri),
+            self.xml(f'<ns1:doc xmlns:ns1="{ns_uri}"><udoc></udoc></ns1:doc>'),
         )
 
     def test_xmlgen_ns_empty(self):
@@ -679,7 +679,7 @@ class XmlgenTest:
 
         self.assertEqual(
             result.getvalue(),
-            self.xml('<ns1:doc xmlns:ns1="%s"><udoc/></ns1:doc>' % ns_uri),
+            self.xml(f'<ns1:doc xmlns:ns1="{ns_uri}"><udoc/></ns1:doc>'),
         )
 
     def test_1463026_1(self):
@@ -854,7 +854,7 @@ class StringXmlgenTest(XmlgenTest, unittest.TestCase):
     ioclass = StringIO
 
     def xml(self, doc, encoding="iso-8859-1"):
-        return '<?xml version="1.0" encoding="%s"?>\n%s' % (encoding, doc)
+        return f'<?xml version="1.0" encoding="{encoding}"?>\n{doc}'
 
     test_xmlgen_unencodable = None
 
@@ -863,7 +863,7 @@ class BytesXmlgenTest(XmlgenTest, unittest.TestCase):
     ioclass = BytesIO
 
     def xml(self, doc, encoding="iso-8859-1"):
-        return ('<?xml version="1.0" encoding="%s"?>\n%s' % (encoding, doc)).encode(
+        return (f'<?xml version="1.0" encoding="{encoding}"?>\n{doc}').encode(
             encoding, "xmlcharrefreplace"
         )
 
@@ -892,7 +892,7 @@ class StreamWriterXmlgenTest(XmlgenTest, unittest.TestCase):
         return writer
 
     def xml(self, doc, encoding="iso-8859-1"):
-        return ('<?xml version="1.0" encoding="%s"?>\n%s' % (encoding, doc)).encode(
+        return (f'<?xml version="1.0" encoding="{encoding}"?>\n{doc}').encode(
             "ascii", "xmlcharrefreplace"
         )
 
@@ -901,7 +901,7 @@ class StreamReaderWriterXmlgenTest(XmlgenTest, unittest.TestCase):
     fname = support.TESTFN + "-codecs"
 
     def ioclass(self):
-        writer = codecs.open(
+        writer = codecs.open(  # noqa: SIM115
             self.fname, "w", encoding="ascii", errors="xmlcharrefreplace", buffering=0
         )
 
@@ -921,7 +921,7 @@ class StreamReaderWriterXmlgenTest(XmlgenTest, unittest.TestCase):
         return writer
 
     def xml(self, doc, encoding="iso-8859-1"):
-        return ('<?xml version="1.0" encoding="%s"?>\n%s' % (encoding, doc)).encode(
+        return (f'<?xml version="1.0" encoding="{encoding}"?>\n{doc}').encode(
             "ascii", "xmlcharrefreplace"
         )
 
@@ -992,7 +992,7 @@ class ExpatReaderTest(XmlTestBase):
         xmlgen = XMLGenerator(result)
 
         parser.setContentHandler(xmlgen)
-        parser.parse(open(fname, "rb"))
+        parser.parse(open(fname, "rb"))  # noqa: SIM115
 
         self.assertEqual(result.getvalue(), xml_test_out)
 
@@ -1014,7 +1014,7 @@ class ExpatReaderTest(XmlTestBase):
         xmlgen = XMLGenerator(result)
 
         parser.setContentHandler(xmlgen)
-        with open(TEST_XMLFILE, "rb") as f:
+        with open(TEST_XMLFILE, "rb") as f:  # noqa: SIM117
             with open(f.fileno(), "rb", closefd=False) as f2:
                 parser.parse(f2)
 
@@ -1175,7 +1175,7 @@ class ExpatReaderTest(XmlTestBase):
         gather = self.AttrGatherer()
         parser.setContentHandler(gather)
 
-        parser.feed("<doc xmlns:ns='%s' ns:attr='val'/>" % ns_uri)
+        parser.feed(f"<doc xmlns:ns='{ns_uri}' ns:attr='val'/>")
         parser.close()
 
         attrs = gather._attrs

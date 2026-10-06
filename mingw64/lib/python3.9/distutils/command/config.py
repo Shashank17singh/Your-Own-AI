@@ -22,7 +22,7 @@ LANG_EXT = {"c": ".c", "c++": ".cxx"}
 class config(Command):
     description = "prepare to build"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("compiler=", None, "specify the compiler type"),
         ("cc=", None, "specify the compiler executable"),
         ("include-dirs=", "I", "list of directories to search for header files"),
@@ -103,7 +103,7 @@ class config(Command):
         filename = "_configtest" + LANG_EXT[lang]
         with open(filename, "w") as file:
             if headers:
-                file.writelines("#include <%s>\n" % header for header in headers)
+                file.writelines(f"#include <{header}>\n" for header in headers)
                 file.write("\n")
             file.write(body)
             if body[-1] != "\n":
@@ -120,7 +120,7 @@ class config(Command):
     def _compile(self, body, headers, include_dirs, lang):
         src = self._gen_temp_sourcefile(body, headers, lang)
         if self.dump_source:
-            dump_file(src, "compiling '%s':" % src)
+            dump_file(src, f"compiling '{src}':")
         (obj,) = self.compiler.object_filenames([src])
         self.temp_files.extend([src, obj])
         self.compiler.compile([src], include_dirs=include_dirs)
@@ -192,7 +192,7 @@ class config(Command):
         symbols the preprocessor and compiler set by default.
         """
         self._check_compiler()
-        src, out = self._preprocess(body, headers, include_dirs, lang)
+        _src, out = self._preprocess(body, headers, include_dirs, lang)
 
         if isinstance(pattern, str):
             pattern = re.compile(pattern)
@@ -270,7 +270,7 @@ class config(Command):
 
         self._check_compiler()
         try:
-            src, obj, exe = self._link(
+            _src, _obj, exe = self._link(
                 body, headers, include_dirs, libraries, library_dirs, lang
             )
             self.spawn([exe])
@@ -312,12 +312,12 @@ class config(Command):
         self._check_compiler()
         body = []
         if decl:
-            body.append("int %s ();" % func)
+            body.append(f"int {func} ();")
         body.append("int main () {")
         if call:
-            body.append("  %s();" % func)
+            body.append(f"  {func}();")
         else:
-            body.append("  %s;" % func)
+            body.append(f"  {func};")
         body.append("}")
         body = "\n".join(body) + "\n"
 
@@ -329,7 +329,7 @@ class config(Command):
         library_dirs=None,
         headers=None,
         include_dirs=None,
-        other_libraries=[],
+        other_libraries=None,
     ):
         """Determine if 'library' is available to be linked against,
         without actually checking that any particular symbols are provided
@@ -339,6 +339,8 @@ class config(Command):
         'other_libraries' will be included in the link, in case 'library'
         has symbols that depend on other libraries.
         """
+        if other_libraries is None:
+            other_libraries = []
         self._check_compiler()
         return self.try_link(
             "int main (void) { }",
@@ -367,7 +369,7 @@ def dump_file(filename, head=None):
         log.info("%s", filename)
     else:
         log.info(head)
-    file = open(filename)
+    file = open(filename)  # noqa: SIM115
     try:
         log.info(file.read())
     finally:

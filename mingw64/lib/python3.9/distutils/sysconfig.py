@@ -74,9 +74,8 @@ def _posix_build():
     # GCC[mingw*] use posix build system
     # Check for cross builds explicitly
     host_platform = os.environ.get("_PYTHON_HOST_PLATFORM")
-    if host_platform:
-        if host_platform.startswith("mingw"):
-            return True
+    if host_platform and host_platform.startswith("mingw"):
+        return True
     return os.name == "posix" or (os.name == "nt" and "GCC" in sys.version)
 
 
@@ -100,7 +99,7 @@ def get_python_version():
     leaving off the patchlevel.  Sample return values could be '1.5'
     or '2.2'.
     """
-    return "%d.%d" % sys.version_info[:2]
+    return "%d.%d" % sys.version_info[:2]  # noqa: UP031
 
 
 def get_python_inc(plat_specific=0, prefix=None):
@@ -143,7 +142,7 @@ def get_python_inc(plat_specific=0, prefix=None):
     else:
         raise DistutilsPlatformError(
             "I don't know where Python installs its C header files "
-            "on platform '%s'" % os.name
+            f"on platform '{os.name}'"
         )
 
 
@@ -187,7 +186,7 @@ def get_python_lib(plat_specific=0, standard_lib=0, prefix=None):
             return os.path.join(prefix, "Lib", "site-packages")
     else:
         raise DistutilsPlatformError(
-            "I don't know where Python installs its library on platform '%s'" % os.name
+            f"I don't know where Python installs its library on platform '{os.name}'"
         )
 
 
@@ -197,8 +196,8 @@ def customize_compiler(compiler):
     Mainly needed on Unix, so we can plug in the information that
     varies across Unices and is stored in Python's Makefile.
     """
-    global _config_vars
-    if compiler.compiler_type in ["cygwin", "mingw32"]:
+    global _config_vars  # noqa: PLW0602
+    if compiler.compiler_type in ["cygwin", "mingw32"]:  # noqa: SIM102
         # Note that cygwin use posix build and 'unix' compiler.
         # If build is not based on posix then we must predefine
         # some environment variables corresponding to posix
@@ -312,7 +311,7 @@ def get_makefile_filename():
     lib_dir = get_python_lib(plat_specific=0, standard_lib=1)
     config_file = f"config-{get_python_version()}{build_flags}"
     if hasattr(sys.implementation, "_multiarch"):
-        config_file += "-%s" % sys.implementation._multiarch
+        config_file += f"-{sys.implementation._multiarch}"
     return os.path.join(lib_dir, config_file, "Makefile")
 
 

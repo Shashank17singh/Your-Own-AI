@@ -68,7 +68,7 @@ def dumps(obj, protocol=None):
 
 
 class CodePickler(pickle.Pickler):
-    dispatch_table = {types.CodeType: pickle_code, **copyreg.dispatch_table}
+    dispatch_table = {types.CodeType: pickle_code, **copyreg.dispatch_table}  # noqa: RUF012
 
 
 BUFSIZE = 8 * 1024
@@ -106,14 +106,14 @@ class RPCServer(socketserver.TCPServer):
 
         """
         try:
-            raise
+            raise  # noqa: PLE0704
         except SystemExit:
             raise
-        except:
+        except:  # noqa: E722
             erf = sys.__stderr__
             print("\n" + "-" * 40, file=erf)
             print("Unhandled server exception!", file=erf)
-            print("Thread: %s" % threading.current_thread().name, file=erf)
+            print(f"Thread: {threading.current_thread().name}", file=erf)
             print("Client Address: ", client_address, file=erf)
             print("Request: ", repr(request), file=erf)
             traceback.print_exc(file=erf)
@@ -177,7 +177,7 @@ class SocketIO:
         except TypeError:
             return ("ERROR", "Bad request format")
         if oid not in self.objtable:
-            return ("ERROR", "Unknown object id: %r" % (oid,))
+            return ("ERROR", f"Unknown object id: {oid!r}")
         obj = self.objtable[oid]
         if methodname == "__methods__":
             methods = {}
@@ -188,7 +188,7 @@ class SocketIO:
             _getattributes(obj, attributes)
             return ("OK", attributes)
         if not hasattr(obj, methodname):
-            return ("ERROR", "Unsupported method name: %r" % (methodname,))
+            return ("ERROR", f"Unsupported method name: {methodname!r}")
         method = getattr(obj, methodname)
         try:
             if how == "CALL":
@@ -200,16 +200,16 @@ class SocketIO:
                 request_queue.put((seq, (method, args, kwargs)))
                 return ("QUEUED", None)
             else:
-                return ("ERROR", "Unsupported message type: %s" % how)
+                return ("ERROR", f"Unsupported message type: {how}")
         except SystemExit:
             raise
         except KeyboardInterrupt:
             raise
         except OSError:
             raise
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             return ("CALLEXC", ex)
-        except:
+        except:  # noqa: E722
             msg = (
                 "*** Internal Error: rpc.py:SocketIO.localcall()\n\n"
                 " Object: %s \n Method: %s \n Args: %s\n"
@@ -234,7 +234,7 @@ class SocketIO:
         if threading.current_thread() != self.sockthread:
             cvar = threading.Condition()
             self.cvars[seq] = cvar
-        self.debug(("asynccall:%d:" % seq), oid, methodname, args, kwargs)
+        self.debug(("asynccall:%d:" % seq), oid, methodname, args, kwargs)  # noqa: UP031
         self.putmessage((seq, request))
         return seq
 
@@ -244,14 +244,14 @@ class SocketIO:
         if threading.current_thread() != self.sockthread:
             cvar = threading.Condition()
             self.cvars[seq] = cvar
-        self.debug(("asyncqueue:%d:" % seq), oid, methodname, args, kwargs)
+        self.debug(("asyncqueue:%d:" % seq), oid, methodname, args, kwargs)  # noqa: UP031
         self.putmessage((seq, request))
         return seq
 
     def asyncreturn(self, seq):
-        self.debug("asyncreturn:%d:call getresponse(): " % seq)
+        self.debug("asyncreturn:%d:call getresponse(): " % seq)  # noqa: UP031
         response = self.getresponse(seq, wait=0.05)
-        self.debug(("asyncreturn:%d:response: " % seq), response)
+        self.debug(("asyncreturn:%d:response: " % seq), response)  # noqa: UP031
         return self.decoderesponse(response)
 
     def decoderesponse(self, response):
@@ -276,7 +276,7 @@ class SocketIO:
         raise SystemError(how, what)
 
     def decode_interrupthook(self):
-        """"""
+        """"""  # noqa: D419
         raise EOFError
 
     def mainloop(self):
@@ -323,9 +323,7 @@ class SocketIO:
             while myseq not in self.responses:
                 cvar.wait()
             response = self.responses[myseq]
-            self.debug(
-                "_getresponse:%s: thread woke up: response: %s" % (myseq, response)
-            )
+            self.debug(f"_getresponse:{myseq}: thread woke up: response: {response}")
             del self.responses[myseq]
             del self.cvars[myseq]
             cvar.release()
@@ -336,7 +334,7 @@ class SocketIO:
         return seq
 
     def putmessage(self, message):
-        self.debug("putmessage:%d:" % message[0])
+        self.debug("putmessage:%d:" % message[0])  # noqa: UP031
         try:
             s = dumps(message)
         except pickle.PicklingError:
@@ -345,7 +343,7 @@ class SocketIO:
         s = struct.pack("<i", len(s)) + s
         while len(s) > 0:
             try:
-                r, w, x = select.select([], [self.sock], [])
+                _r, _w, _x = select.select([], [self.sock], [])
                 n = self.sock.send(s[:BUFSIZE])
             except (AttributeError, TypeError):
                 raise OSError("socket no longer exists")
@@ -358,7 +356,7 @@ class SocketIO:
     def pollpacket(self, wait):
         self._stage0()
         if len(self.buff) < self.bufneed:
-            r, w, x = select.select([self.sock.fileno()], [], [], wait)
+            r, _w, _x = select.select([self.sock.fileno()], [], [], wait)
             if len(r) == 0:
                 return None
             try:
@@ -445,12 +443,12 @@ class SocketIO:
                 return None
             seq, resq = message
             how = resq[0]
-            self.debug("pollresponse:%d:myseq:%s" % (seq, myseq))
+            self.debug("pollresponse:%d:myseq:%s" % (seq, myseq))  # noqa: UP031
             # process or queue a request
             if how in ("CALL", "QUEUE"):
-                self.debug("pollresponse:%d:localcall:call:" % seq)
+                self.debug("pollresponse:%d:localcall:call:" % seq)  # noqa: UP031
                 response = self.localcall(seq, resq)
-                self.debug("pollresponse:%d:localcall:response:%s" % (seq, response))
+                self.debug("pollresponse:%d:localcall:response:%s" % (seq, response))  # noqa: UP031
                 if how == "CALL":
                     self.putmessage((seq, response))
                 elif how == "QUEUE":

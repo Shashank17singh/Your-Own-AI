@@ -174,8 +174,8 @@ def quoteaddr(addrstring):
         # parseaddr couldn't parse it, use it as is and hope for the best.
         if addrstring.strip().startswith("<"):
             return addrstring
-        return "<%s>" % addrstring
-    return "<%s>" % addr
+        return f"<{addrstring}>"
+    return f"<{addr}>"
 
 
 def _addr_only(addrstring):
@@ -303,7 +303,7 @@ class SMTP:
                     addr = socket.gethostbyname(socket.gethostname())
                 except socket.gaierror:
                     pass
-                self.local_hostname = "[%s]" % addr
+                self.local_hostname = f"[{addr}]"
 
     def __enter__(self):
         return self
@@ -329,7 +329,7 @@ class SMTP:
 
     def _print_debug(self, *args):
         if self.debuglevel > 1:
-            print(datetime.datetime.now().time(), *args, file=sys.stderr)
+            print(datetime.datetime.now().time(), *args, file=sys.stderr)  # noqa: DTZ005
         else:
             print(*args, file=sys.stderr)
 
@@ -454,7 +454,7 @@ class SMTP:
 
         errmsg = b"\n".join(resp)
         if self.debuglevel > 0:
-            self._print_debug("reply: retcode (%s); Msg: %a" % (errcode, errmsg))
+            self._print_debug(f"reply: retcode ({errcode}); Msg: {errmsg!a}")
         return errcode, errmsg
 
     def docmd(self, cmd, args=""):
@@ -574,7 +574,7 @@ class SMTP:
                 else:
                     raise SMTPNotSupportedError("SMTPUTF8 not supported by server")
             optionlist = " " + " ".join(options)
-        self.putcmd("mail", "FROM:%s%s" % (quoteaddr(sender), optionlist))
+        self.putcmd("mail", f"FROM:{quoteaddr(sender)}{optionlist}")
         return self.getreply()
 
     def rcpt(self, recip, options=()):
@@ -582,7 +582,7 @@ class SMTP:
         optionlist = ""
         if options and self.does_esmtp:
             optionlist = " " + " ".join(options)
-        self.putcmd("rcpt", "TO:%s%s" % (quoteaddr(recip), optionlist))
+        self.putcmd("rcpt", f"TO:{quoteaddr(recip)}{optionlist}")
         return self.getreply()
 
     def data(self, msg):
@@ -640,7 +640,7 @@ class SMTP:
          SMTPHeloError            The server didn't reply properly to
                                   the helo greeting.
         """
-        if self.helo_resp is None and self.ehlo_resp is None:
+        if self.helo_resp is None and self.ehlo_resp is None:  # noqa: SIM102
             if not (200 <= self.ehlo()[0] <= 299):
                 code, resp = self.helo()
                 if not (200 <= code <= 299):
@@ -708,7 +708,7 @@ class SMTP:
     def auth_plain(self, challenge=None):
         """Authobject to use with PLAIN authentication. Requires self.user and
         self.password to be set."""
-        return "\0%s\0%s" % (self.user, self.password)
+        return f"\0{self.user}\0{self.password}"
 
     def auth_login(self, challenge=None):
         """Authobject to use with LOGIN authentication. Requires self.user and
@@ -910,9 +910,9 @@ class SMTP:
             msg = _fix_eols(msg).encode("ascii")
         if self.does_esmtp:
             if self.has_extn("size"):
-                esmtp_opts.append("size=%d" % len(msg))
+                esmtp_opts.append("size=%d" % len(msg))  # noqa: UP031
             for option in mail_options:
-                esmtp_opts.append(option)
+                esmtp_opts.append(option)  # noqa: PERF402
         code, resp = self.mail(from_addr, esmtp_opts)
         if code != 250:
             if code == 421:
@@ -1200,7 +1200,7 @@ if __name__ == "__main__":
         if not line:
             break
         msg = msg + line
-    print("Message length is %d" % len(msg))
+    print("Message length is %d" % len(msg))  # noqa: UP031
 
     server = SMTP("localhost")
     server.set_debuglevel(1)

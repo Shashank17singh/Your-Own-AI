@@ -51,7 +51,7 @@ EMPTYSTRING = ""
 # space-wise.  Remember that headers and bodies have different sets of safe
 # characters.  Initialize both maps with the full expansion, and then override
 # the safe bytes with the more compact form.
-_QUOPRI_MAP = ["=%02X" % c for c in range(256)]
+_QUOPRI_MAP = [f"={c:02X}" for c in range(256)]
 _QUOPRI_HEADER_MAP = _QUOPRI_MAP[:]
 _QUOPRI_BODY_MAP = _QUOPRI_MAP[:]
 
@@ -142,7 +142,7 @@ def header_encode(header_bytes, charset="iso-8859-1"):
     encoded = header_bytes.decode("latin1").translate(_QUOPRI_HEADER_MAP)
     # Now add the RFC chrome to each encoded chunk and glue the chunks
     # together.
-    return "=?%s?q?%s?=" % (charset, encoded)
+    return f"=?{charset}?q?{encoded}?="
 
 
 _QUOPRI_BODY_ENCODE_MAP = _QUOPRI_BODY_MAP[:]

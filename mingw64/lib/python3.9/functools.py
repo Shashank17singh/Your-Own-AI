@@ -503,7 +503,7 @@ class _HashedSeq(list):
 
     """
 
-    __slots__ = "hashvalue"
+    __slots__ = "hashvalue"  # noqa: PLC0205
 
     def __init__(self, tup, hash=hash):
         self[:] = tup
@@ -517,8 +517,8 @@ def _make_key(
     args,
     kwds,
     typed,
-    kwd_mark=(object(),),
-    fasttypes={int, str},
+    kwd_mark=(object(),),  # noqa: B008
+    fasttypes=None,
     tuple=tuple,
     type=type,
     len=len,
@@ -537,6 +537,8 @@ def _make_key(
     # Formerly, we sorted() the kwds before looping.  The new way is *much*
     # faster; however, it means that f(x=1, y=2) will now be treated as a
     # distinct call from f(y=2, x=1) which will be cached separately.
+    if fasttypes is None:
+        fasttypes = {int, str}
     key = args
     if kwds:
         key += kwd_mark
@@ -676,7 +678,7 @@ def _lru_cache_wrapper(user_function, maxsize, typed, _CacheInfo):
                     # still adjusting the links.
                     root = oldroot[NEXT]
                     oldkey = root[KEY]
-                    oldresult = root[RESULT]
+                    root[RESULT]
                     root[KEY] = root[RESULT] = None
                     # Now update the cache dictionary.
                     del cache[oldkey]

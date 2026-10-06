@@ -47,12 +47,12 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         remove_tree(self.root_target, verbose=0)
 
         mkpath(self.target, verbose=1)
-        wanted = ["creating %s" % self.root_target, "creating %s" % self.target]
+        wanted = [f"creating {self.root_target}", f"creating {self.target}"]
         self.assertEqual(self._logs, wanted)
         self._logs = []
 
         remove_tree(self.root_target, verbose=1)
-        wanted = ["removing '%s' (and everything under it)" % self.root_target]
+        wanted = [f"removing '{self.root_target}' (and everything under it)"]
         self.assertEqual(self._logs, wanted)
 
     @unittest.skipIf(
@@ -74,7 +74,7 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         self.assertEqual(self._logs, [])
         remove_tree(self.root_target, verbose=0)
 
-        wanted = ["creating %s" % self.root_target]
+        wanted = [f"creating {self.root_target}"]
         create_tree(self.root_target, ["one", "two", "three"], verbose=1)
         self.assertEqual(self._logs, wanted)
 
@@ -94,7 +94,7 @@ class DirUtilTestCase(support.TempdirManager, unittest.TestCase):
         with open(a_file, "w") as f:
             f.write("some content")
 
-        wanted = ["copying %s -> %s" % (a_file, self.target2)]
+        wanted = [f"copying {a_file} -> {self.target2}"]
         copy_tree(self.target, self.target2, verbose=1)
         self.assertEqual(self._logs, wanted)
 

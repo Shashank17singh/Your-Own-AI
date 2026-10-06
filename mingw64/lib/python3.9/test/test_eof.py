@@ -40,10 +40,10 @@ class EOFTestCase(unittest.TestCase):
         """A continuation at the end of input must be an error; bpo2180."""
         expect = "unexpected EOF while parsing (<string>, line 1)"
         with self.assertRaises(SyntaxError) as excinfo:
-            exec("x = 5\\")
+            exec("x = 5\\")  # noqa: S102
         self.assertEqual(str(excinfo.exception), expect)
         with self.assertRaises(SyntaxError) as excinfo:
-            exec("\\")
+            exec("\\")  # noqa: S102
         self.assertEqual(str(excinfo.exception), expect)
 
     @unittest.skipIf(not sys.executable, "sys.executable required")
@@ -51,13 +51,13 @@ class EOFTestCase(unittest.TestCase):
         """Ensure tok_nextc() does not add too many ending newlines."""
         with support.temp_dir() as temp_dir:
             file_name = script_helper.make_script(temp_dir, "foo", "\\")
-            rc, out, err = script_helper.assert_python_failure(file_name)
+            rc, out, err = script_helper.assert_python_failure(file_name)  # noqa: RUF059
             self.assertIn(b"unexpected EOF while parsing", err)
             self.assertIn(b"line 2", err)
             self.assertIn(b"\\", err)
 
             file_name = script_helper.make_script(temp_dir, "foo", "y = 6\\")
-            rc, out, err = script_helper.assert_python_failure(file_name)
+            _rc, _out, err = script_helper.assert_python_failure(file_name)
             self.assertIn(b"unexpected EOF while parsing", err)
             self.assertIn(b"line 2", err)
             self.assertIn(b"y = 6\\", err)

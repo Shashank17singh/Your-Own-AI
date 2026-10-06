@@ -170,10 +170,7 @@ def has_key(ch):
 
     # Check the current terminal description for that capability;
     # if present, return true, else return false.
-    if _curses.tigetstr(capability_name):
-        return True
-    else:
-        return False
+    return bool(_curses.tigetstr(capability_name))
 
 
 if __name__ == "__main__":
@@ -187,7 +184,7 @@ if __name__ == "__main__":
             python = has_key(key)
             if system != python:
                 L.append(
-                    "Mismatch for key %s, system=%i, Python=%i"
+                    "Mismatch for key %s, system=%i, Python=%i"  # noqa: UP031
                     % (_curses.keyname(key), system, python)
                 )
     finally:

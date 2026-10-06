@@ -153,20 +153,26 @@ class HTTPStatus(IntEnum):
     TOO_MANY_REQUESTS = (
         429,
         "Too Many Requests",
-        "The user has sent too many requests in "
-        'a given amount of time ("rate limiting")',
+        (
+            "The user has sent too many requests in "
+            'a given amount of time ("rate limiting")'
+        ),
     )
     REQUEST_HEADER_FIELDS_TOO_LARGE = (
         431,
         "Request Header Fields Too Large",
-        "The server is unwilling to process the request because its header "
-        "fields are too large",
+        (
+            "The server is unwilling to process the request because its header "
+            "fields are too large"
+        ),
     )
     UNAVAILABLE_FOR_LEGAL_REASONS = (
         451,
         "Unavailable For Legal Reasons",
-        "The server is denying access to the "
-        "resource as a consequence of a legal demand",
+        (
+            "The server is denying access to the "
+            "resource as a consequence of a legal demand"
+        ),
     )
 
     # server errors

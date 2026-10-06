@@ -343,7 +343,7 @@ class Distribution:
 
         def parse_condition(section):
             section = section or ""
-            extra, sep, markers = section.partition(":")
+            extra, _sep, markers = section.partition(":")
             if extra and markers:
                 markers = f"({markers})"
             conditions = list(filter(None, [markers, make_condition(extra)]))
@@ -391,7 +391,7 @@ class DistributionFinder(MetaPathFinder):
             return vars(self).get("path", sys.path)
 
     @abc.abstractmethod
-    def find_distributions(self, context=Context()):
+    def find_distributions(self, context=Context()):  # noqa: B008
         """
         Find distributions.
 
@@ -473,7 +473,7 @@ class Prepared:
 
 class MetadataPathFinder(DistributionFinder):
     @classmethod
-    def find_distributions(cls, context=DistributionFinder.Context()):
+    def find_distributions(cls, context=DistributionFinder.Context()):  # noqa: B008
         """
         Find distributions.
 

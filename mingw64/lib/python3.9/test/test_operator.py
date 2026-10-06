@@ -423,7 +423,7 @@ class OperatorTestCase:
         self.assertRaises(TypeError, f, a)
         self.assertRaises(TypeError, operator.itemgetter)
 
-        d = dict(key="val")
+        d = {"key": "val"}
         f = operator.itemgetter("key")
         self.assertEqual(f(d), "val")
         f = operator.itemgetter("nonkey")

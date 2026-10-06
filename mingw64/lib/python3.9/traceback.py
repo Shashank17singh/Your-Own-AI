@@ -170,17 +170,17 @@ def format_exception_only(etype, value):
 def _format_final_exc_line(etype, value):
     valuestr = _some_str(value)
     if value is None or not valuestr:
-        line = "%s\n" % etype
+        line = f"{etype}\n"
     else:
-        line = "%s: %s\n" % (etype, valuestr)
+        line = f"{etype}: {valuestr}\n"
     return line
 
 
 def _some_str(value):
     try:
         return str(value)
-    except:
-        return "<unprintable %s object>" % type(value).__name__
+    except:  # noqa: E722
+        return f"<unprintable {type(value).__name__} object>"
 
 
 # --
@@ -290,7 +290,7 @@ class FrameSummary:
         self.name = name
         self._line = line
         if lookup_line:
-            self.line
+            self.line  # noqa: B018
         self.locals = {k: repr(v) for k, v in locals.items()} if locals else None
 
     def __eq__(self, other):
@@ -401,7 +401,7 @@ class StackSummary(list):
         # If immediate lookup was desired, trigger lookups now.
         if lookup_lines:
             for f in result:
-                f.line
+                f.line  # noqa: B018
         return result
 
     @classmethod
@@ -605,7 +605,7 @@ class TracebackException:
     def _load_lines(self):
         """Private API. force all lines in the stack to be loaded."""
         for frame in self.stack:
-            frame.line
+            frame.line  # noqa: B018
         if self.__context__:
             self.__context__._load_lines()
         if self.__cause__:

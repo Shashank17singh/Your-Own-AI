@@ -64,10 +64,10 @@ class TestSpwdNonRoot(unittest.TestCase):
     def test_getspnam_exception(self):
         name = "bin"
         try:
-            with self.assertRaises(PermissionError) as cm:
+            with self.assertRaises(PermissionError):
                 spwd.getspnam(name)
         except KeyError as exc:
-            self.skipTest("spwd entry %r doesn't exist: %s" % (name, exc))
+            self.skipTest(f"spwd entry {name!r} doesn't exist: {exc}")
 
 
 if __name__ == "__main__":

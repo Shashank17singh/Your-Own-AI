@@ -37,7 +37,7 @@ if sys.platform == "win32":
         def __init__(self, size):
             self.size = size
             for i in range(100):
-                name = "pym-%d-%s" % (os.getpid(), next(self._rand))
+                name = "pym-%d-%s" % (os.getpid(), next(self._rand))  # noqa: UP031
                 buf = mmap.mmap(-1, size, tagname=name)
                 if _winapi.GetLastError() == 0:
                     break
@@ -80,7 +80,8 @@ else:
                 # Arena is created anew (if fd != -1, it means we're coming
                 # from rebuild_arena() below)
                 self.fd, name = tempfile.mkstemp(
-                    prefix="pym-%d-" % os.getpid(), dir=self._choose_dir(size)
+                    prefix="pym-%d-" % os.getpid(),
+                    dir=self._choose_dir(size),  # noqa: UP031
                 )
                 os.unlink(name)
                 util.Finalize(self, os.close, (self.fd,))
@@ -334,5 +335,5 @@ class BufferWrapper:
         util.Finalize(self, BufferWrapper._heap.free, args=(block,))
 
     def create_memoryview(self):
-        (arena, start, stop), size = self._state
+        (arena, start, _stop), size = self._state
         return memoryview(arena.buffer)[start : start + size]

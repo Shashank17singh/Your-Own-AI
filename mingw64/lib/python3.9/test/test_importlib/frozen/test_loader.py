@@ -65,7 +65,7 @@ class ExecModuleTests(abc.LoaderTests):
 
     def test_module_repr(self):
         name = "__hello__"
-        module, output = self.exec_module(name)
+        module, _output = self.exec_module(name)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", DeprecationWarning)
             repr_str = self.machinery.FrozenImporter.module_repr(module)
@@ -73,7 +73,7 @@ class ExecModuleTests(abc.LoaderTests):
 
     def test_module_repr_indirect(self):
         name = "__hello__"
-        module, output = self.exec_module(name)
+        module, _output = self.exec_module(name)
         self.assertEqual(repr(module), "<module '__hello__' (frozen)>")
 
     # No way to trigger an error in a frozen module.
@@ -123,7 +123,7 @@ class LoaderTests(abc.LoaderTests):
                 self.assertEqual(
                     attr_value,
                     value,
-                    "for __phello__.%s, %r != %r" % (attr, attr_value, value),
+                    f"for __phello__.{attr}, {attr_value!r} != {value!r}",
                 )
             self.assertEqual(stdout.getvalue(), "Hello world!\n")
             self.assertFalse(hasattr(module, "__file__"))
@@ -143,7 +143,7 @@ class LoaderTests(abc.LoaderTests):
                 self.assertEqual(
                     attr_value,
                     value,
-                    "for __phello__.spam.%s, %r != %r" % (attr, attr_value, value),
+                    f"for __phello__.spam.{attr}, {attr_value!r} != {value!r}",
                 )
             self.assertEqual(stdout.getvalue(), "Hello world!\n")
             self.assertFalse(hasattr(module, "__file__"))
@@ -194,7 +194,7 @@ class InspectLoaderTests:
         with captured_stdout() as stdout:
             code = self.machinery.FrozenImporter.get_code(name)
             mod = types.ModuleType(name)
-            exec(code, mod.__dict__)
+            exec(code, mod.__dict__)  # noqa: S102
             self.assertTrue(hasattr(mod, "initialized"))
             self.assertEqual(stdout.getvalue(), "Hello world!\n")
 

@@ -10,13 +10,13 @@ def f_bad_ann():
 
 class C_OK:
     def __init__(self, x: int) -> None:
-        self.x: no_such_name = x  # This one is OK as proposed by Guido
+        self.x: no_such_name = x  # This one is OK as proposed by Guido  # noqa: F821
 
 
 class D_bad_ann:
     def __init__(self, x: int) -> None:
-        sfel.y: int = 0
+        sfel.y: int = 0  # noqa: F821
 
 
 def g_bad_ann():
-    no_such_name.attr: int = 0
+    no_such_name.attr: int = 0  # noqa: F821

@@ -34,7 +34,7 @@ def constructor(object):
 # Example: provide pickling support for complex numbers.
 
 try:
-    complex
+    complex  # noqa: B018
 except NameError:
     pass
 else:
@@ -154,7 +154,7 @@ def _slotnames(cls):
                     elif name.startswith("__") and not name.endswith("__"):
                         stripped = c.__name__.lstrip("_")
                         if stripped:
-                            names.append("_%s%s" % (stripped, name))
+                            names.append(f"_{stripped}{name}")
                         else:
                             names.append(name)
                     else:
@@ -163,7 +163,7 @@ def _slotnames(cls):
     # Cache the outcome in the class if at all possible
     try:
         cls.__slotnames__ = names
-    except:
+    except:  # noqa: E722, S110
         pass  # But don't die if we can't
 
     return names
@@ -195,12 +195,11 @@ def add_extension(module, name, code):
         return  # Redundant registrations are benign
     if key in _extension_registry:
         raise ValueError(
-            "key %s is already registered with code %s"
-            % (key, _extension_registry[key])
+            f"key {key} is already registered with code {_extension_registry[key]}"
         )
     if code in _inverted_registry:
         raise ValueError(
-            "code %s is already in use for key %s" % (code, _inverted_registry[code])
+            f"code {code} is already in use for key {_inverted_registry[code]}"
         )
     _extension_registry[key] = code
     _inverted_registry[code] = key
@@ -210,7 +209,7 @@ def remove_extension(module, name, code):
     """Unregister an extension code.  For testing only."""
     key = (module, name)
     if _extension_registry.get(key) != code or _inverted_registry.get(code) != key:
-        raise ValueError("key %s is not registered with code %s" % (key, code))
+        raise ValueError(f"key {key} is not registered with code {code}")
     del _extension_registry[key]
     del _inverted_registry[code]
     _extension_cache.pop(code, None)

@@ -94,7 +94,7 @@ class TestInteractiveInterpreter(unittest.TestCase):
         user_input = dedent(user_input)
         p = spawn_repl()
         p.stdin.write(user_input)
-        output = kill_python(p)
+        kill_python(p)
         self.assertEqual(p.returncode, 0)
 
     def test_close_stdin(self):

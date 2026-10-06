@@ -156,42 +156,42 @@ class GettextTestCase1(GettextBaseTest):
     def test_some_translations(self):
         eq = self.assertEqual
         # test some translations
-        eq(_("albatross"), "albatross")
-        eq(_("mullusk"), "bacon")
-        eq(_(r"Raymond Luxury Yach-t"), "Throatwobbler Mangrove")
-        eq(_(r"nudge nudge"), "wink wink")
+        eq(_("albatross"), "albatross")  # noqa: F821
+        eq(_("mullusk"), "bacon")  # noqa: F821
+        eq(_(r"Raymond Luxury Yach-t"), "Throatwobbler Mangrove")  # noqa: F821
+        eq(_(r"nudge nudge"), "wink wink")  # noqa: F821
 
     def test_some_translations_with_context(self):
         eq = self.assertEqual
-        eq(pgettext("my context", "nudge nudge"), 'wink wink (in "my context")')
+        eq(pgettext("my context", "nudge nudge"), 'wink wink (in "my context")')  # noqa: F821
         eq(
-            pgettext("my other context", "nudge nudge"),
+            pgettext("my other context", "nudge nudge"),  # noqa: F821
             'wink wink (in "my other context")',
         )
 
     def test_double_quotes(self):
         eq = self.assertEqual
         # double quotes
-        eq(_("albatross"), "albatross")
-        eq(_("mullusk"), "bacon")
-        eq(_(r"Raymond Luxury Yach-t"), "Throatwobbler Mangrove")
-        eq(_(r"nudge nudge"), "wink wink")
+        eq(_("albatross"), "albatross")  # noqa: F821
+        eq(_("mullusk"), "bacon")  # noqa: F821
+        eq(_(r"Raymond Luxury Yach-t"), "Throatwobbler Mangrove")  # noqa: F821
+        eq(_(r"nudge nudge"), "wink wink")  # noqa: F821
 
     def test_triple_single_quotes(self):
         eq = self.assertEqual
         # triple single quotes
-        eq(_("""albatross"""), "albatross")
-        eq(_("""mullusk"""), "bacon")
-        eq(_(r"""Raymond Luxury Yach-t"""), "Throatwobbler Mangrove")
-        eq(_(r"""nudge nudge"""), "wink wink")
+        eq(_("""albatross"""), "albatross")  # noqa: F821
+        eq(_("""mullusk"""), "bacon")  # noqa: F821
+        eq(_(r"""Raymond Luxury Yach-t"""), "Throatwobbler Mangrove")  # noqa: F821
+        eq(_(r"""nudge nudge"""), "wink wink")  # noqa: F821
 
     def test_triple_double_quotes(self):
         eq = self.assertEqual
         # triple double quotes
-        eq(_("""albatross"""), "albatross")
-        eq(_("""mullusk"""), "bacon")
-        eq(_(r"""Raymond Luxury Yach-t"""), "Throatwobbler Mangrove")
-        eq(_(r"""nudge nudge"""), "wink wink")
+        eq(_("""albatross"""), "albatross")  # noqa: F821
+        eq(_("""mullusk"""), "bacon")  # noqa: F821
+        eq(_(r"""Raymond Luxury Yach-t"""), "Throatwobbler Mangrove")  # noqa: F821
+        eq(_(r"""nudge nudge"""), "wink wink")  # noqa: F821
 
     def test_multiline_strings(self):
         eq = self.assertEqual
@@ -199,7 +199,7 @@ class GettextTestCase1(GettextBaseTest):
         eq(
             _("""This module provides internationalization and localization
 support for your Python programs by providing an interface to the GNU
-gettext message catalog library."""),
+gettext message catalog library."""),  # noqa: F821
             """Guvf zbqhyr cebivqrf vagreangvbanyvmngvba naq ybpnyvmngvba
 fhccbeg sbe lbhe Clguba cebtenzf ol cebivqvat na vagresnpr gb gur TAH
 trggrkg zrffntr pngnybt yvoenel.""",
@@ -212,17 +212,17 @@ trggrkg zrffntr pngnybt yvoenel.""",
             t = gettext.GNUTranslations(fp)
         # Install the translation object
         t.install()
-        eq(_("nudge nudge"), "wink wink")
+        eq(_("nudge nudge"), "wink wink")  # noqa: F821
         # Try unicode return type
         t.install()
-        eq(_("mullusk"), "bacon")
+        eq(_("mullusk"), "bacon")  # noqa: F821
         # Test installation of other methods
         import builtins
 
         t.install(names=["gettext", "lgettext"])
-        eq(_, t.gettext)
+        eq(_, t.gettext)  # noqa: F821
         eq(builtins.gettext, t.gettext)
-        eq(lgettext, t.lgettext)
+        eq(lgettext, t.lgettext)  # noqa: F821
         del builtins.gettext
         del builtins.lgettext
 
@@ -762,7 +762,7 @@ class GNUTranslationParsingTest(GettextBaseTest):
             fp.write(base64.decodebytes(GNU_MO_DATA_ISSUE_17898))
         with open(MOFILE, "rb") as fp:
             # If this runs cleanly, the bug is fixed.
-            t = gettext.GNUTranslations(fp)
+            gettext.GNUTranslations(fp)
 
     def test_ignore_comments_in_headers_issue36239(self):
         """Checks that comments like:
@@ -982,7 +982,7 @@ msgid "There is %s file"
 msgid_plural "There are %s files"
 msgstr[0] "Hay %s fichero (context)"
 msgstr[1] "Hay %s ficheros (context)"
-"""
+"""  # noqa: B018
 
 # Here's the second example po file example, used to generate the UMO_DATA
 # containing utf-8 encoded Unicode strings
@@ -1011,7 +1011,7 @@ msgstr "\xc2\xa4yz"
 msgctxt "mycontext\xc3\x9e"
 msgid "ab\xc3\x9e"
 msgstr "\xc2\xa4yz (context version)"
-"""
+"""  # noqa: B018
 
 # Here's the third example po file, used to generate MMO_DATA
 
@@ -1028,7 +1028,7 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-15\n"
 "Content-Transfer-Encoding: quoted-printable\n"
 "Generated-By: pygettext.py 1.3\n"
-"""
+"""  # noqa: B018
 
 #
 # messages.po, used for bug 17898
@@ -1041,4 +1041,4 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "#-#-#-#-#  messages.po (EdX Studio)  #-#-#-#-#\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"""
+"""  # noqa: B018

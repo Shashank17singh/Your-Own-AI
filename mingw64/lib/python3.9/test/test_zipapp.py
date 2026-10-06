@@ -181,7 +181,7 @@ class ZipAppTest(unittest.TestCase):
             "a:silly name",
         ]
         for main in problems:
-            with self.subTest(main=main):
+            with self.subTest(main=main):  # noqa: SIM117
                 with self.assertRaises(zipapp.ZipAppError):
                     zipapp.create_archive(str(source), str(target), main=main)
 
@@ -274,7 +274,7 @@ class ZipAppTest(unittest.TestCase):
         source = self.tmpdir / "source"
         source.mkdir()
         (source / "__main__.py").touch()
-        target = self.tmpdir / "source.pyz"
+        self.tmpdir / "source.pyz"
         temp_archive = io.BytesIO()
         zipapp.create_archive(str(source), temp_archive, interpreter="python")
         new_target = io.BytesIO()
@@ -371,7 +371,7 @@ class ZipAppCmdlineTest(unittest.TestCase):
     def test_cmdline_copy_inplace(self):
         # Test copying an archive in place fails.
         original = self.make_archive()
-        target = self.tmpdir / "target.pyz"
+        self.tmpdir / "target.pyz"
         args = [str(original), "-o", str(original)]
         with self.assertRaises(SystemExit) as cm:
             zipapp.main(args)

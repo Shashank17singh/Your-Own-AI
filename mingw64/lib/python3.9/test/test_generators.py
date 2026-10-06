@@ -38,7 +38,7 @@ class SignalAndYieldFromTest(unittest.TestCase):
         gen.send(None)
         try:
             _testcapi.raise_SIGINT_then_send_None(gen)
-        except BaseException as _exc:
+        except BaseException as _exc:  # noqa: BLE001
             exc = _exc
         self.assertIs(type(exc), StopIteration)
         self.assertEqual(exc.value, "PASSED")
@@ -60,8 +60,8 @@ class FinalizationTest(unittest.TestCase):
         del g
         support.gc_collect()
         self.assertIs(wr(), None)
-        self.assertTrue(frame)
-        del frame
+        self.assertTrue(frame)  # noqa: F821
+        del frame  # noqa: F821
         support.gc_collect()
 
     def test_refcycle(self):
@@ -72,7 +72,7 @@ class FinalizationTest(unittest.TestCase):
         def gen():
             nonlocal finalized
             try:
-                g = yield
+                yield
                 yield 1
             finally:
                 finalized = True
@@ -193,10 +193,10 @@ class ExceptionTest(unittest.TestCase):
 
         try:
             raise ValueError()
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             try:
                 make.throw(exc)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
 
         next(make)
@@ -214,7 +214,7 @@ class ExceptionTest(unittest.TestCase):
         g = gen()
         try:
             raise ValueError
-        except Exception:
+        except Exception:  # noqa: BLE001
             self.assertEqual(next(g), "done")
         self.assertEqual(sys.exc_info(), (None, None, None))
 
@@ -239,7 +239,7 @@ class ExceptionTest(unittest.TestCase):
         next(g)
         try:
             raise ValueError
-        except Exception:
+        except Exception:  # noqa: BLE001
             next(g)
 
         self.assertEqual(next(g), "done")
@@ -255,7 +255,7 @@ class ExceptionTest(unittest.TestCase):
                     # we are called from "except ValueError:"
                     self.assertEqual(sys.exc_info()[0], ValueError)
                     raise TypeError()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 self.assertEqual(sys.exc_info()[0], TypeError)
                 self.assertEqual(type(exc.__context__), ValueError)
             # we are still called from "except ValueError:"
@@ -268,7 +268,7 @@ class ExceptionTest(unittest.TestCase):
         next(g)
         try:
             raise ValueError
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             g.throw(exc)
 
         self.assertEqual(next(g), "done")
@@ -304,7 +304,7 @@ class ExceptionTest(unittest.TestCase):
         # See also PEP 479.
 
         def gen():
-            raise StopIteration
+            raise StopIteration  # noqa: PLR1708
             yield
 
         with self.assertRaisesRegex(RuntimeError, "raised StopIteration"):
@@ -315,7 +315,7 @@ class ExceptionTest(unittest.TestCase):
 
         def f():
             yield 1
-            raise StopIteration
+            raise StopIteration  # noqa: PLR1708
             yield 2  # never reached
 
         g = f()
@@ -351,7 +351,7 @@ class GeneratorThrowTest(unittest.TestCase):
         def f():
             try:
                 raise KeyError("a")
-            except Exception:
+            except Exception:  # noqa: BLE001
                 yield
 
         gen = f()
@@ -367,10 +367,10 @@ class GeneratorThrowTest(unittest.TestCase):
         def f():
             try:
                 raise KeyError("a")
-            except Exception:
+            except Exception:  # noqa: BLE001
                 try:
                     yield
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001
                     self.assertEqual(type(exc), ValueError)
                     context = exc.__context__
                     self.assertEqual((type(context), context.args), (KeyError, ("a",)))
@@ -389,7 +389,7 @@ class GeneratorThrowTest(unittest.TestCase):
         def g():
             try:
                 raise KeyError("a")
-            except Exception:
+            except Exception:  # noqa: BLE001
                 yield from f()
 
         gen = g()
@@ -411,10 +411,10 @@ class GeneratorThrowTest(unittest.TestCase):
             nonlocal has_cycle
             try:
                 raise exc
-            except Exception:
+            except Exception:  # noqa: BLE001
                 try:
                     yield from f()
-                except Exception as exc:
+                except Exception as exc:  # noqa: BLE001, PLR1704
                     has_cycle = exc is exc.__context__
             yield
 
@@ -434,12 +434,12 @@ class GeneratorThrowTest(unittest.TestCase):
 
             try:
                 yield
-            except Exception:
+            except Exception:  # noqa: BLE001
                 raise RuntimeError
 
         gen = g()
         gen.send(None)
-        with self.assertRaises(RuntimeError) as cm:
+        with self.assertRaises(RuntimeError):
             gen.throw(ValueError)
 
 
@@ -449,7 +449,7 @@ class GeneratorStackTraceTest(unittest.TestCase):
         while frame:
             name = frame.f_code.co_name
             # Stop checking frames when we get to our test helper.
-            if name.startswith("check_") or name.startswith("call_"):
+            if name.startswith(("check_", "call_")):
                 break
 
             names.append(name)
@@ -462,7 +462,7 @@ class GeneratorStackTraceTest(unittest.TestCase):
             self.check_stack_names(sys._getframe(), ["f", "g"])
             try:
                 yield
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
             self.check_stack_names(sys._getframe(), ["f", "g"])
 
@@ -1440,12 +1440,10 @@ def simple_conjoin(gs):
         if i >= len(gs):
             yield values
         else:
-            for values[i] in gs[i]():
-                for x in gen(i + 1):
-                    yield x
+            for values[i] in gs[i]():  # noqa: B020
+                yield from gen(i + 1)
 
-    for x in gen(0):
-        yield x
+    yield from gen(0)
 
 
 # That works fine, but recursing a level and checking i against len(gs) for
@@ -1469,7 +1467,7 @@ def conjoin(gs):
 
         elif (n - i) % 3:
             ip1 = i + 1
-            for values[i] in gs[i]():
+            for values[i] in gs[i]():  # noqa: B020
                 for x in gen(ip1):
                     yield x
 
@@ -1499,11 +1497,9 @@ def conjoin(gs):
             for values[i] in g():
                 for values[ip1] in g1():
                     for values[ip2] in g2():
-                        for x in _gen3(ip3):
-                            yield x
+                        yield from _gen3(ip3)
 
-    for x in gen(0):
-        yield x
+    yield from gen(0)
 
 
 # And one more approach:  For backtracking apps like the Knight's Tour
@@ -1594,8 +1590,7 @@ class Queens:
     # Generate solutions.
     def solve(self):
         self.used = 0
-        for row2col in conjoin(self.rowgenerators):
-            yield row2col
+        yield from conjoin(self.rowgenerators)
 
     def printsolution(self, row2col):
         n = self.n
@@ -1795,8 +1790,7 @@ class Knights:
     # Generate solutions.
     def solve(self):
         self._init_board()
-        for x in conjoin(self.squaregenerators):
-            yield x
+        yield from conjoin(self.squaregenerators)
 
     def printsolution(self, x):
         m, n = self.m, self.n
@@ -2403,7 +2397,7 @@ __test__ = {
 # Note that doctest and regrtest both look in sys.argv for a "-v" argument,
 # so this works as expected in both ways of running regrtest.
 def test_main(verbose=None):
-    from test import support, test_generators
+    from test import support, test_generators  # noqa: PLW0406
 
     support.run_unittest(__name__)
     support.run_doctest(test_generators, verbose)

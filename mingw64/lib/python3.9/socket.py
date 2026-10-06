@@ -248,7 +248,7 @@ class socket(_socket.socket):
         address(es).
         """
         closed = getattr(self, "_closed", False)
-        s = "<%s.%s%s fd=%i, family=%s, type=%s, proto=%i" % (
+        s = "<%s.%s%s fd=%i, family=%s, type=%s, proto=%i" % (  # noqa: UP031
             self.__class__.__module__,
             self.__class__.__qualname__,
             " [closed]" if closed else "",
@@ -261,13 +261,13 @@ class socket(_socket.socket):
             try:
                 laddr = self.getsockname()
                 if laddr:
-                    s += ", laddr=%s" % str(laddr)
+                    s += f", laddr={laddr!s}"
             except error:
                 pass
             try:
                 raddr = self.getpeername()
                 if raddr:
-                    s += ", raddr=%s" % str(raddr)
+                    s += f", raddr={raddr!s}"
             except error:
                 pass
         s += ">"
@@ -313,7 +313,7 @@ class socket(_socket.socket):
         """
         # XXX refactor to share code?
         if not set(mode) <= {"r", "w", "b"}:
-            raise ValueError("invalid mode %r (only r, w, b allowed)" % (mode,))
+            raise ValueError(f"invalid mode {mode!r} (only r, w, b allowed)")
         writing = "w" in mode
         reading = "r" in mode or not writing
         assert reading or writing
@@ -695,7 +695,7 @@ class SocketIO(io.RawIOBase):
 
     def __init__(self, sock, mode):
         if mode not in ("r", "w", "rw", "rb", "wb", "rwb"):
-            raise ValueError("invalid mode: %r" % mode)
+            raise ValueError(f"invalid mode: {mode!r}")
         io.RawIOBase.__init__(self)
         self._sock = sock
         if "b" not in mode:
@@ -803,7 +803,7 @@ def getfqdn(name=""):
     if not name or name == "0.0.0.0":
         name = gethostname()
     try:
-        hostname, aliases, ipaddrs = gethostbyaddr(name)
+        hostname, aliases, _ipaddrs = gethostbyaddr(name)
     except error:
         pass
     else:
@@ -835,7 +835,7 @@ def create_connection(address, timeout=_GLOBAL_DEFAULT_TIMEOUT, source_address=N
     host, port = address
     err = None
     for res in getaddrinfo(host, port, 0, SOCK_STREAM):
-        af, socktype, proto, canonname, sa = res
+        af, socktype, proto, _canonname, sa = res
         sock = None
         try:
             sock = socket(af, socktype, proto)
@@ -936,10 +936,7 @@ def create_server(
         try:
             sock.bind(address)
         except error as err:
-            msg = "%s (while attempting to bind on address %r)" % (
-                err.strerror,
-                address,
-            )
+            msg = f"{err.strerror} (while attempting to bind on address {address!r})"
             raise error(err.errno, msg) from None
         if backlog is None:
             sock.listen()

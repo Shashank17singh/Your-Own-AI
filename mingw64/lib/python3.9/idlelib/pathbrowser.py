@@ -37,7 +37,9 @@ class PathBrowserTreeItem(TreeItem):
 
 
 class DirBrowserTreeItem(TreeItem):
-    def __init__(self, dir, packages=[]):
+    def __init__(self, dir, packages=None):
+        if packages is None:
+            packages = []
         self.dir = dir
         self.packages = packages
 

@@ -40,7 +40,7 @@ def is_code_page_present(cp):
     MAX_PATH = 260
 
     class CPINFOEXW(ctypes.Structure):
-        _fields_ = [
+        _fields_ = [  # noqa: RUF012
             ("MaxCharSize", UINT),
             ("DefaultChar", BYTE * MAX_DEFAULTCHAR),
             ("LeadByte", BYTE * MAX_LEADBYTES),
@@ -445,7 +445,7 @@ class ReadTest(MixInCheckStateHandling):
                 test_sequence.decode(self.encoding, "replace"),
                 before + self.ill_formed_sequence_replace + after,
             )
-            backslashreplace = "".join("\\x%02x" % b for b in self.ill_formed_sequence)
+            backslashreplace = "".join(f"\\x{b:02x}" for b in self.ill_formed_sequence)
             self.assertEqual(
                 test_sequence.decode(self.encoding, "backslashreplace"),
                 before + backslashreplace + after,
@@ -734,7 +734,7 @@ class UTF16Test(ReadTest, unittest.TestCase):
         with open(support.TESTFN, "wb") as fp:
             fp.write(s)
         with support.check_warnings(("", DeprecationWarning)):
-            reader = codecs.open(support.TESTFN, "U", encoding=self.encoding)
+            reader = codecs.open(support.TESTFN, "U", encoding=self.encoding)  # noqa: SIM115
         with reader:
             self.assertEqual(reader.read(), s1)
 
@@ -1265,8 +1265,10 @@ class EscapeDecodeTest(unittest.TestCase):
 punycode_testcases = [
     # A Arabic (Egyptian):
     (
-        "\u0644\u064a\u0647\u0645\u0627\u0628\u062a\u0643\u0644"
-        "\u0645\u0648\u0634\u0639\u0631\u0628\u064a\u061f",
+        (
+            "\u0644\u064a\u0647\u0645\u0627\u0628\u062a\u0643\u0644"
+            "\u0645\u0648\u0634\u0639\u0631\u0628\u064a\u061f"
+        ),
         b"egbpdaj6bu4bxfgehfvwxn",
     ),
     # B Chinese (simplified):
@@ -1281,88 +1283,110 @@ punycode_testcases = [
     ),
     # D Czech: Pro<ccaron>prost<ecaron>nemluv<iacute><ccaron>esky
     (
-        "\u0050\u0072\u006f\u010d\u0070\u0072\u006f\u0073\u0074"
-        "\u011b\u006e\u0065\u006d\u006c\u0075\u0076\u00ed\u010d"
-        "\u0065\u0073\u006b\u0079",
+        (
+            "\u0050\u0072\u006f\u010d\u0070\u0072\u006f\u0073\u0074"
+            "\u011b\u006e\u0065\u006d\u006c\u0075\u0076\u00ed\u010d"
+            "\u0065\u0073\u006b\u0079"
+        ),
         b"Proprostnemluvesky-uyb24dma41a",
     ),
     # E Hebrew:
     (
-        "\u05dc\u05de\u05d4\u05d4\u05dd\u05e4\u05e9\u05d5\u05d8"
-        "\u05dc\u05d0\u05de\u05d3\u05d1\u05e8\u05d9\u05dd\u05e2"
-        "\u05d1\u05e8\u05d9\u05ea",
+        (
+            "\u05dc\u05de\u05d4\u05d4\u05dd\u05e4\u05e9\u05d5\u05d8"
+            "\u05dc\u05d0\u05de\u05d3\u05d1\u05e8\u05d9\u05dd\u05e2"
+            "\u05d1\u05e8\u05d9\u05ea"
+        ),
         b"4dbcagdahymbxekheh6e0a7fei0b",
     ),
     # F Hindi (Devanagari):
     (
-        "\u092f\u0939\u0932\u094b\u0917\u0939\u093f\u0928\u094d"
-        "\u0926\u0940\u0915\u094d\u092f\u094b\u0902\u0928\u0939"
-        "\u0940\u0902\u092c\u094b\u0932\u0938\u0915\u0924\u0947"
-        "\u0939\u0948\u0902",
+        (
+            "\u092f\u0939\u0932\u094b\u0917\u0939\u093f\u0928\u094d"
+            "\u0926\u0940\u0915\u094d\u092f\u094b\u0902\u0928\u0939"
+            "\u0940\u0902\u092c\u094b\u0932\u0938\u0915\u0924\u0947"
+            "\u0939\u0948\u0902"
+        ),
         b"i1baa7eci9glrd9b2ae1bj0hfcgg6iyaf8o0a1dig0cd",
     ),
     # (G) Japanese (kanji and hiragana):
     (
-        "\u306a\u305c\u307f\u3093\u306a\u65e5\u672c\u8a9e\u3092"
-        "\u8a71\u3057\u3066\u304f\u308c\u306a\u3044\u306e\u304b",
+        (
+            "\u306a\u305c\u307f\u3093\u306a\u65e5\u672c\u8a9e\u3092"
+            "\u8a71\u3057\u3066\u304f\u308c\u306a\u3044\u306e\u304b"
+        ),
         b"n8jok5ay5dzabd5bym9f0cm5685rrjetr6pdxa",
     ),
     # (H) Korean (Hangul syllables):
     (
-        "\uc138\uacc4\uc758\ubaa8\ub4e0\uc0ac\ub78c\ub4e4\uc774"
-        "\ud55c\uad6d\uc5b4\ub97c\uc774\ud574\ud55c\ub2e4\uba74"
-        "\uc5bc\ub9c8\ub098\uc88b\uc744\uae4c",
+        (
+            "\uc138\uacc4\uc758\ubaa8\ub4e0\uc0ac\ub78c\ub4e4\uc774"
+            "\ud55c\uad6d\uc5b4\ub97c\uc774\ud574\ud55c\ub2e4\uba74"
+            "\uc5bc\ub9c8\ub098\uc88b\uc744\uae4c"
+        ),
         b"989aomsvi5e83db1d2a355cv1e0vak1dwrv93d5xbh15a0dt30a5jpsd879ccm6fea98c",
     ),
     # (I) Russian (Cyrillic):
     (
-        "\u043f\u043e\u0447\u0435\u043c\u0443\u0436\u0435\u043e"
-        "\u043d\u0438\u043d\u0435\u0433\u043e\u0432\u043e\u0440"
-        "\u044f\u0442\u043f\u043e\u0440\u0443\u0441\u0441\u043a"
-        "\u0438",
+        (
+            "\u043f\u043e\u0447\u0435\u043c\u0443\u0436\u0435\u043e"
+            "\u043d\u0438\u043d\u0435\u0433\u043e\u0432\u043e\u0440"
+            "\u044f\u0442\u043f\u043e\u0440\u0443\u0441\u0441\u043a"
+            "\u0438"
+        ),
         b"b1abfaaepdrnnbgefbaDotcwatmq2g4l",
     ),
     # (J) Spanish: Porqu<eacute>nopuedensimplementehablarenEspa<ntilde>ol
     (
-        "\u0050\u006f\u0072\u0071\u0075\u00e9\u006e\u006f\u0070"
-        "\u0075\u0065\u0064\u0065\u006e\u0073\u0069\u006d\u0070"
-        "\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0068\u0061"
-        "\u0062\u006c\u0061\u0072\u0065\u006e\u0045\u0073\u0070"
-        "\u0061\u00f1\u006f\u006c",
+        (
+            "\u0050\u006f\u0072\u0071\u0075\u00e9\u006e\u006f\u0070"
+            "\u0075\u0065\u0064\u0065\u006e\u0073\u0069\u006d\u0070"
+            "\u006c\u0065\u006d\u0065\u006e\u0074\u0065\u0068\u0061"
+            "\u0062\u006c\u0061\u0072\u0065\u006e\u0045\u0073\u0070"
+            "\u0061\u00f1\u006f\u006c"
+        ),
         b"PorqunopuedensimplementehablarenEspaol-fmd56a",
     ),
     # (K) Vietnamese:
     #  T<adotbelow>isaoh<odotbelow>kh<ocirc>ngth<ecirchookabove>ch\
     #   <ihookabove>n<oacute>iti<ecircacute>ngVi<ecircdotbelow>t
     (
-        "\u0054\u1ea1\u0069\u0073\u0061\u006f\u0068\u1ecd\u006b"
-        "\u0068\u00f4\u006e\u0067\u0074\u0068\u1ec3\u0063\u0068"
-        "\u1ec9\u006e\u00f3\u0069\u0074\u0069\u1ebf\u006e\u0067"
-        "\u0056\u0069\u1ec7\u0074",
+        (
+            "\u0054\u1ea1\u0069\u0073\u0061\u006f\u0068\u1ecd\u006b"
+            "\u0068\u00f4\u006e\u0067\u0074\u0068\u1ec3\u0063\u0068"
+            "\u1ec9\u006e\u00f3\u0069\u0074\u0069\u1ebf\u006e\u0067"
+            "\u0056\u0069\u1ec7\u0074"
+        ),
         b"TisaohkhngthchnitingVit-kjcr8268qyxafd2f1b9g",
     ),
     # (L) 3<nen>B<gumi><kinpachi><sensei>
     ("\u0033\u5e74\u0042\u7d44\u91d1\u516b\u5148\u751f", b"3B-ww4c5e180e575a65lsy2b"),
     # (M) <amuro><namie>-with-SUPER-MONKEYS
     (
-        "\u5b89\u5ba4\u5948\u7f8e\u6075\u002d\u0077\u0069\u0074"
-        "\u0068\u002d\u0053\u0055\u0050\u0045\u0052\u002d\u004d"
-        "\u004f\u004e\u004b\u0045\u0059\u0053",
+        (
+            "\u5b89\u5ba4\u5948\u7f8e\u6075\u002d\u0077\u0069\u0074"
+            "\u0068\u002d\u0053\u0055\u0050\u0045\u0052\u002d\u004d"
+            "\u004f\u004e\u004b\u0045\u0059\u0053"
+        ),
         b"-with-SUPER-MONKEYS-pc58ag80a8qai00g7n9n",
     ),
     # (N) Hello-Another-Way-<sorezore><no><basho>
     (
-        "\u0048\u0065\u006c\u006c\u006f\u002d\u0041\u006e\u006f"
-        "\u0074\u0068\u0065\u0072\u002d\u0057\u0061\u0079\u002d"
-        "\u305d\u308c\u305e\u308c\u306e\u5834\u6240",
+        (
+            "\u0048\u0065\u006c\u006c\u006f\u002d\u0041\u006e\u006f"
+            "\u0074\u0068\u0065\u0072\u002d\u0057\u0061\u0079\u002d"
+            "\u305d\u308c\u305e\u308c\u306e\u5834\u6240"
+        ),
         b"Hello-Another-Way--fc4qua05auwb3674vfr0b",
     ),
     # (O) <hitotsu><yane><no><shita>2
     ("\u3072\u3068\u3064\u5c4b\u6839\u306e\u4e0b\u0032", b"2-u9tlzr9756bt3uc0v"),
     # (P) Maji<de>Koi<suru>5<byou><mae>
     (
-        "\u004d\u0061\u006a\u0069\u3067\u004b\u006f\u0069\u3059"
-        "\u308b\u0035\u79d2\u524d",
+        (
+            "\u004d\u0061\u006a\u0069\u3067\u004b\u006f\u0069\u3059"
+            "\u308b\u0035\u79d2\u524d"
+        ),
         b"MajiKoi5-783gue6qz075azm5e",
     ),
     # (Q) <pafii>de<runba>
@@ -1416,9 +1440,11 @@ class PunycodeTest(unittest.TestCase):
 nameprep_tests = [
     # 3.1 Map to nothing.
     (
-        b"foo\xc2\xad\xcd\x8f\xe1\xa0\x86\xe1\xa0\x8bbar"
-        b"\xe2\x80\x8b\xe2\x81\xa0baz\xef\xb8\x80\xef\xb8\x88\xef"
-        b"\xb8\x8f\xef\xbb\xbf",
+        (
+            b"foo\xc2\xad\xcd\x8f\xe1\xa0\x86\xe1\xa0\x8bbar"
+            b"\xe2\x80\x8b\xe2\x81\xa0baz\xef\xb8\x80\xef\xb8\x88\xef"
+            b"\xb8\x8f\xef\xbb\xbf"
+        ),
         b"foobarbaz",
     ),
     # 3.2 Case folding ASCII U+0043 U+0041 U+0046 U+0045.
@@ -1516,17 +1542,21 @@ nameprep_tests = [
     # 3.44 Larger test (shrinking).
     # Original test case reads \xc3\xdf
     (
-        b"X\xc2\xad\xc3\x9f\xc4\xb0\xe2\x84\xa1j\xcc\x8c\xc2\xa0\xc2"
-        b"\xaa\xce\xb0\xe2\x80\x80",
+        (
+            b"X\xc2\xad\xc3\x9f\xc4\xb0\xe2\x84\xa1j\xcc\x8c\xc2\xa0\xc2"
+            b"\xaa\xce\xb0\xe2\x80\x80"
+        ),
         b"xssi\xcc\x87tel\xc7\xb0 a\xce\xb0 ",
     ),
     # 3.45 Larger test (expanding).
     # Original test case reads \xc3\x9f
     (
         b"X\xc3\x9f\xe3\x8c\x96\xc4\xb0\xe2\x84\xa1\xe2\x92\x9f\xe3\x8c\x80",
-        b"xss\xe3\x82\xad\xe3\x83\xad\xe3\x83\xa1\xe3\x83\xbc\xe3"
-        b"\x83\x88\xe3\x83\xabi\xcc\x87tel\x28d\x29\xe3\x82"
-        b"\xa2\xe3\x83\x91\xe3\x83\xbc\xe3\x83\x88",
+        (
+            b"xss\xe3\x82\xad\xe3\x83\xad\xe3\x83\xa1\xe3\x83\xbc\xe3"
+            b"\x83\x88\xe3\x83\xabi\xcc\x87tel\x28d\x29\xe3\x82"
+            b"\xa2\xe3\x83\x91\xe3\x83\xbc\xe3\x83\x88"
+        ),
     ),
 ]
 
@@ -1548,8 +1578,8 @@ class NameprepTest(unittest.TestCase):
                 prepped = str(prepped, "utf-8", "surrogatepass")
                 try:
                     self.assertEqual(nameprep(orig), prepped)
-                except Exception as e:
-                    raise support.TestFailed("Test 3.%d: %s" % (pos + 1, str(e)))
+                except Exception as e:  # noqa: BLE001
+                    raise support.TestFailed("Test 3.%d: %s" % (pos + 1, str(e)))  # noqa: UP031
 
 
 class IDNACodecTest(unittest.TestCase):
@@ -1653,8 +1683,8 @@ class IDNACodecTest(unittest.TestCase):
         "python.org".encode("idna", "strict")
         b"python.org".decode("idna", "strict")
         for errors in ("ignore", "replace", "backslashreplace", "surrogateescape"):
-            self.assertRaises(Exception, "python.org".encode, "idna", errors)
-            self.assertRaises(Exception, b"python.org".decode, "idna", errors)
+            self.assertRaises(Exception, "python.org".encode, "idna", errors)  # noqa: B017
+            self.assertRaises(Exception, b"python.org".decode, "idna", errors)  # noqa: B017
 
 
 class CodecsModuleTest(unittest.TestCase):
@@ -1791,7 +1821,7 @@ class CodecsModuleTest(unittest.TestCase):
         mock_open = mock.mock_open()
         with mock.patch("builtins.open", mock_open) as file:
             with self.assertRaises(LookupError):
-                codecs.open(support.TESTFN, "wt", "invalid-encoding")
+                codecs.open(support.TESTFN, "wt", "invalid-encoding")  # noqa: SIM115
 
             file().close.assert_called()
 
@@ -1949,9 +1979,9 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
             self.assertEqual(encoding.replace("_", "-"), name.replace("_", "-"))
 
             b, size = codecs.getencoder(encoding)(s)
-            self.assertEqual(size, len(s), "encoding=%r" % encoding)
+            self.assertEqual(size, len(s), f"encoding={encoding!r}")
             chars, size = codecs.getdecoder(encoding)(b)
-            self.assertEqual(chars, s, "encoding=%r" % encoding)
+            self.assertEqual(chars, s, f"encoding={encoding!r}")
 
             if encoding not in broken_unicode_with_stateful:
                 # check stream reader/writer
@@ -1969,7 +1999,7 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
                 for c in encodedresult:
                     q.write(bytes([c]))
                     decodedresult += reader.read()
-                self.assertEqual(decodedresult, s, "encoding=%r" % encoding)
+                self.assertEqual(decodedresult, s, f"encoding={encoding!r}")
 
             if encoding not in broken_unicode_with_stateful:
                 # check incremental decoder/encoder and iterencode()/iterdecode()
@@ -1988,13 +2018,13 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
                     for c in encodedresult:
                         decodedresult += decoder.decode(bytes([c]))
                     decodedresult += decoder.decode(b"", True)
-                    self.assertEqual(decodedresult, s, "encoding=%r" % encoding)
+                    self.assertEqual(decodedresult, s, f"encoding={encoding!r}")
 
                     # check iterencode()/iterdecode()
                     result = "".join(
                         codecs.iterdecode(codecs.iterencode(s, encoding), encoding)
                     )
-                    self.assertEqual(result, s, "encoding=%r" % encoding)
+                    self.assertEqual(result, s, f"encoding={encoding!r}")
 
                     # check iterencode()/iterdecode() with empty string
                     result = "".join(
@@ -2014,7 +2044,7 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
                         decodedresult = "".join(
                             decoder.decode(bytes([c])) for c in encodedresult
                         )
-                        self.assertEqual(decodedresult, s, "encoding=%r" % encoding)
+                        self.assertEqual(decodedresult, s, f"encoding={encoding!r}")
 
     @support.cpython_only
     def test_basics_capi(self):
@@ -2037,7 +2067,7 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
                     for c in encodedresult:
                         decodedresult += cdecoder.decode(bytes([c]))
                     decodedresult += cdecoder.decode(b"", True)
-                    self.assertEqual(decodedresult, s, "encoding=%r" % encoding)
+                    self.assertEqual(decodedresult, s, f"encoding={encoding!r}")
 
                 if encoding not in ("idna", "mbcs"):
                     # check incremental decoder/encoder with errors argument
@@ -2055,11 +2085,11 @@ class BasicUnicodeTest(unittest.TestCase, MixInCheckStateHandling):
                         decodedresult = "".join(
                             cdecoder.decode(bytes([c])) for c in encodedresult
                         )
-                        self.assertEqual(decodedresult, s, "encoding=%r" % encoding)
+                        self.assertEqual(decodedresult, s, f"encoding={encoding!r}")
 
     def test_seek(self):
         # all codecs should be able to encode these
-        s = "%s\n%s\n" % (100 * "abc123", 100 * "def456")
+        s = "{}\n{}\n".format(100 * "abc123", 100 * "def456")
         for encoding in all_unicode_encodings:
             if encoding == "idna":  # FIXME: See SF bug #1163178
                 continue
@@ -2462,9 +2492,9 @@ class UnicodeEscapeTest(unittest.TestCase):
         check("\\", rb"\\")
         for b in range(32):
             if chr(b) not in "\t\n\r":
-                check(chr(b), ("\\x%02x" % b).encode())
+                check(chr(b), (f"\\x{b:02x}").encode())
         for b in range(127, 256):
-            check(chr(b), ("\\x%02x" % b).encode())
+            check(chr(b), (f"\\x{b:02x}").encode())
         check("\u20ac", rb"\u20ac")
         check("\U0001d120", rb"\U0001d120")
 
@@ -2709,7 +2739,7 @@ else:
     bytes_transform_encodings.append("zlib_codec")
     transform_aliases["zlib_codec"] = ["zip", "zlib"]
 try:
-    import bz2
+    import bz2  # noqa: F401
 except ImportError:
     pass
 else:
@@ -3092,14 +3122,13 @@ class CodePageTest(unittest.TestCase):
                     decoded = codecs.code_page_decode(cp, raw, errors, True)
                 except UnicodeDecodeError as err:
                     self.fail(
-                        'Unable to decode %a from "cp%s" with '
-                        "errors=%r: %s" % (raw, cp, errors, err)
+                        f'Unable to decode {raw!a} from "cp{cp}" with '
+                        f"errors={errors!r}: {err}"
                     )
                 self.assertEqual(
                     decoded[0],
                     expected,
-                    '%a.decode("cp%s", %r)=%a != %a'
-                    % (raw, cp, errors, decoded[0], expected),
+                    f'{raw!a}.decode("cp{cp}", {errors!r})={decoded[0]!a} != {expected!a}',
                 )
                 # assert 0 <= decoded[1] <= len(raw)
                 self.assertGreaterEqual(decoded[1], 0)
@@ -3116,14 +3145,13 @@ class CodePageTest(unittest.TestCase):
                     encoded = codecs.code_page_encode(cp, text, errors)
                 except UnicodeEncodeError as err:
                     self.fail(
-                        'Unable to encode %a to "cp%s" with '
-                        "errors=%r: %s" % (text, cp, errors, err)
+                        f'Unable to encode {text!a} to "cp{cp}" with '
+                        f"errors={errors!r}: {err}"
                     )
                 self.assertEqual(
                     encoded[0],
                     expected,
-                    '%a.encode("cp%s", %r)=%a != %a'
-                    % (text, cp, errors, encoded[0], expected),
+                    f'{text!a}.encode("cp{cp}", {errors!r})={encoded[0]!a} != {expected!a}',
                 )
                 self.assertEqual(encoded[1], len(text))
             else:

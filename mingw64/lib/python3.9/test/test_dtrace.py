@@ -39,7 +39,7 @@ def normalize_trace_output(output):
 class TraceBackend:
     EXTENSION = None
     COMMAND = None
-    COMMAND_ARGS = []
+    COMMAND_ARGS = []  # noqa: RUF012
 
     def run_case(self, name, optimize_python=None):
         actual_output = normalize_trace_output(
@@ -90,12 +90,12 @@ class TraceBackend:
 
 class DTraceBackend(TraceBackend):
     EXTENSION = ".d"
-    COMMAND = ["dtrace", "-q", "-s"]
+    COMMAND = ["dtrace", "-q", "-s"]  # noqa: RUF012
 
 
 class SystemTapBackend(TraceBackend):
     EXTENSION = ".stp"
-    COMMAND = ["stap", "-g"]
+    COMMAND = ["stap", "-g"]  # noqa: RUF012
 
 
 class TraceTests(unittest.TestCase):
@@ -122,7 +122,7 @@ class TraceTests(unittest.TestCase):
     def test_verify_call_opcodes(self):
         """Ensure our call stack test hits all function call opcodes"""
 
-        opcodes = set(["CALL_FUNCTION", "CALL_FUNCTION_EX", "CALL_FUNCTION_KW"])
+        opcodes = {"CALL_FUNCTION", "CALL_FUNCTION_EX", "CALL_FUNCTION_KW"}
 
         with open(abspath("call_stack.py")) as f:
             code_string = f.read()

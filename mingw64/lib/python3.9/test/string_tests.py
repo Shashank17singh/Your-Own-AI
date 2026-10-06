@@ -27,7 +27,7 @@ class BadSeq1(Sequence):
         self.seq = [7, "hello", 123]
 
     def __str__(self):
-        return "{0} {1} {2}".format(*self.seq)
+        return "{} {} {}".format(*self.seq)
 
 
 class BadSeq2(Sequence):
@@ -63,12 +63,9 @@ class BaseTest:
         elif isinstance(obj, tuple):
             return tuple([self.fixtype(x) for x in obj])
         elif isinstance(obj, dict):
-            return dict(
-                [
-                    (self.fixtype(key), self.fixtype(value))
-                    for (key, value) in obj.items()
-                ]
-            )
+            return {
+                self.fixtype(key): self.fixtype(value) for (key, value) in obj.items()
+            }
         else:
             return obj
 
@@ -172,8 +169,8 @@ class BaseTest:
                 else:
                     r2, rem = len(i) + 1, 0
                 if rem or r1 != r2:
-                    self.assertEqual(rem, 0, "%s != 0 for %s" % (rem, i))
-                    self.assertEqual(r1, r2, "%s != %s for %s" % (r1, r2, i))
+                    self.assertEqual(rem, 0, f"{rem} != 0 for {i}")
+                    self.assertEqual(r1, r2, f"{r1} != {r2} for {i}")
 
     def test_find(self):
         self.checkequal(0, "abcdefghiabc", "find", "abc")
@@ -1384,8 +1381,8 @@ class MixinStrUnicodeUserStringTest:
         self.checkraises(ValueError, "%10", "__mod__", (42,))
 
         # Outrageously large width or precision should raise ValueError.
-        self.checkraises(ValueError, "%%%df" % (2**64), "__mod__", (3.2))
-        self.checkraises(ValueError, "%%.%df" % (2**64), "__mod__", (3.2))
+        self.checkraises(ValueError, "%%%df" % (2**64), "__mod__", (3.2))  # noqa: UP031
+        self.checkraises(ValueError, "%%.%df" % (2**64), "__mod__", (3.2))  # noqa: UP031
         self.checkraises(OverflowError, "%*s", "__mod__", (sys.maxsize + 1, ""))
         self.checkraises(OverflowError, "%.*f", "__mod__", (sys.maxsize + 1, 1.0 / 7))
 
@@ -1408,7 +1405,7 @@ class MixinStrUnicodeUserStringTest:
     def test_floatformatting(self):
         # float formatting
         for prec in range(100):
-            format = "%%.%if" % prec
+            format = "%%.%if" % prec  # noqa: UP031
             value = 0.01
             for x in range(60):
                 value = value * 3.14159265359 / 3.0 * 10.0

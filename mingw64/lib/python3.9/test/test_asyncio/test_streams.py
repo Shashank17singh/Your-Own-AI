@@ -334,12 +334,12 @@ class StreamTests(test_utils.TestCase):
         self.assertEqual(b"", stream._buffer)
 
         stream.feed_data(b"12345678\n")
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             self.loop.run_until_complete(stream.readline())
         self.assertEqual(b"", stream._buffer)
 
         stream.feed_data(b"12345678")
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             self.loop.run_until_complete(stream.readline())
         self.assertEqual(b"", stream._buffer)
 
@@ -467,13 +467,13 @@ class StreamTests(test_utils.TestCase):
     def test_readuntil_limit_found_sep(self):
         stream = asyncio.StreamReader(loop=self.loop, limit=3)
         stream.feed_data(b"some dataAA")
-        with self.assertRaisesRegex(asyncio.LimitOverrunError, "not found") as cm:
+        with self.assertRaisesRegex(asyncio.LimitOverrunError, "not found"):
             self.loop.run_until_complete(stream.readuntil(b"AAA"))
 
         self.assertEqual(b"some dataAA", stream._buffer)
 
         stream.feed_data(b"A")
-        with self.assertRaisesRegex(asyncio.LimitOverrunError, "is found") as cm:
+        with self.assertRaisesRegex(asyncio.LimitOverrunError, "is found"):
             self.loop.run_until_complete(stream.readuntil(b"AAA"))
 
         self.assertEqual(b"some dataAAA", stream._buffer)
@@ -749,10 +749,10 @@ os.close(fd)
         rfd, wfd = os.pipe()
         args = [sys.executable, "-c", code, str(wfd)]
 
-        pipe = open(rfd, "rb", 0)
+        pipe = open(rfd, "rb", 0)  # noqa: SIM115
         reader = asyncio.StreamReader(loop=self.loop, limit=1)
         protocol = asyncio.StreamReaderProtocol(reader, loop=self.loop)
-        transport, _ = self.loop.run_until_complete(
+        _transport, _ = self.loop.run_until_complete(
             self.loop.connect_read_pipe(lambda: protocol, pipe)
         )
 
@@ -814,7 +814,7 @@ os.close(fd)
 
         async def client(host, port):
             with self.assertWarns(DeprecationWarning):
-                reader, writer = await asyncio.open_connection(
+                _reader, writer = await asyncio.open_connection(
                     host, port, loop=self.loop
                 )
 

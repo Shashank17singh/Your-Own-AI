@@ -31,8 +31,8 @@ bool_types = []
 float_types = [c_double, c_float]
 
 try:
-    c_ulonglong
-    c_longlong
+    c_ulonglong  # noqa: B018
+    c_longlong  # noqa: B018
 except NameError:
     pass
 else:
@@ -40,7 +40,7 @@ else:
     signed_types.append(c_longlong)
 
 try:
-    c_bool
+    c_bool  # noqa: B018
 except NameError:
     pass
 else:
@@ -160,7 +160,7 @@ class NumberTestCase(unittest.TestCase):
     def test_alignments(self):
         for t in signed_types + unsigned_types + float_types:
             code = t._type_  # the typecode
-            align = struct.calcsize("c%c" % code) - struct.calcsize(code)
+            align = struct.calcsize("c%c" % code) - struct.calcsize(code)  # noqa: UP031
 
             # alignment of the type...
             self.assertEqual((code, alignment(t)), (code, align))
@@ -280,7 +280,7 @@ def run_test(rep, msg, func, arg=None):
             func()
             func()
         stop = clock()
-    print("%15s: %.2f us" % (msg, ((stop - start) * 1e6 / 5 / rep)))
+    print("%15s: %.2f us" % (msg, ((stop - start) * 1e6 / 5 / rep)))  # noqa: UP031
 
 
 def check_perf():

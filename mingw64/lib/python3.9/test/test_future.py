@@ -21,7 +21,7 @@ def get_error_location(msg):
 
 class FutureTest(unittest.TestCase):
     def check_syntax_error(self, err, basename, lineno, offset=1):
-        self.assertIn("%s.py, line %d" % (basename, lineno), str(err))
+        self.assertIn("%s.py, line %d" % (basename, lineno), str(err))  # noqa: UP031
         self.assertEqual(os.path.basename(err.filename), basename + ".py")
         self.assertEqual(err.lineno, lineno)
         self.assertEqual(err.offset, offset)
@@ -103,14 +103,14 @@ class FutureTest(unittest.TestCase):
         #       the parser hack disabled. If a new keyword is introduced in
         #       2.6, change this to refer to the new future import.
         try:
-            exec("from __future__ import print_function; print 0")
+            exec("from __future__ import print_function; print 0")  # noqa: S102
         except SyntaxError:
             pass
         else:
             self.fail("syntax error didn't occur")
 
         try:
-            exec("from __future__ import (print_function); print 0")
+            exec("from __future__ import (print_function); print 0")  # noqa: S102
         except SyntaxError:
             pass
         else:
@@ -122,7 +122,7 @@ class FutureTest(unittest.TestCase):
 
     def test_unicode_literals_exec(self):
         scope = {}
-        exec("from __future__ import unicode_literals; x = ''", {}, scope)
+        exec("from __future__ import unicode_literals; x = ''", {}, scope)  # noqa: S102
         self.assertIsInstance(scope["x"], str)
 
 
@@ -143,7 +143,7 @@ class AnnotationsFutureTestCase(unittest.TestCase):
 
     def getActual(self, annotation):
         scope = {}
-        exec(self.template.format(ann=annotation), {}, scope)
+        exec(self.template.format(ann=annotation), {}, scope)  # noqa: S102
         func_ret_ann = scope["f"].__annotations__["return"]
         func_arg_ann = scope["g"].__annotations__["arg"]
         async_func_ret_ann = scope["f2"].__annotations__["return"]

@@ -14,7 +14,7 @@ def what(file, h=None):
     try:
         if h is None:
             if isinstance(file, (str, PathLike)):
-                f = open(file, "rb")
+                f = open(file, "rb")  # noqa: SIM115
                 h = f.read(32)
             else:
                 location = file.tell()

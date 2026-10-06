@@ -214,7 +214,7 @@ def main():
     mainscreen = turtle.Screen()
     mainscreen.mode("standard")
     mainscreen.setup(SCREENWIDTH, SCREENHEIGHT)
-    nim = Nim(mainscreen)
+    Nim(mainscreen)
     return "EVENTLOOP"
 
 

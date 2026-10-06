@@ -76,7 +76,7 @@ class TestImport(unittest.TestCase):
 
         # ...now  change  the module  so  that  the NameError  doesn't
         # happen
-        self.rewrite_file("%s = 1" % var)
+        self.rewrite_file(f"{var} = 1")
         module = __import__(self.module_name).foo
         self.assertEqual(getattr(module, var), 1)
 

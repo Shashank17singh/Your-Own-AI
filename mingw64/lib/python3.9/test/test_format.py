@@ -32,7 +32,7 @@ def testformat(formatstr, args, output=None, limit=None, overflowok=False):
             if verbose:
                 print("no")
             raise AssertionError(
-                "%r %% %r == %r != %r" % (formatstr, args, result, output)
+                f"{formatstr!r} % {args!r} == {result!r} != {output!r}"
             )
         # when 'limit' is specified, it determines how many characters
         # must match exactly; lengths must always match.
@@ -46,10 +46,7 @@ def testformat(formatstr, args, output=None, limit=None, overflowok=False):
         ):
             if verbose:
                 print("no")
-            print(
-                "%s %% %s == %s != %s"
-                % (repr(formatstr), repr(args), repr(result), repr(output))
-            )
+            print(f"{formatstr!r} % {args!r} == {result!r} != {output!r}")
         else:
             if verbose:
                 print("yes")
@@ -97,7 +94,7 @@ def test_exc(formatstr, args, exception, excmsg):
         print("Unexpected exception")
         raise
     else:
-        raise TestFailed("did not get expected exception: %s" % excmsg)
+        raise TestFailed(f"did not get expected exception: {excmsg}")
 
 
 def test_exc_common(formatstr, args, exception, excmsg):
@@ -349,7 +346,7 @@ class FormatTest(unittest.TestCase):
         if maxsize == 2**31 - 1:
             # crashes 2.2.1 and earlier:
             try:
-                "%*d" % (maxsize, -127)
+                "%*d" % (maxsize, -127)  # noqa: B018, UP031
             except MemoryError:
                 pass
             else:
@@ -454,7 +451,7 @@ class FormatTest(unittest.TestCase):
         if maxsize == 2**31 - 1:
             # crashes 2.2.1 and earlier:
             try:
-                "%*d" % (maxsize, -127)
+                "%*d" % (maxsize, -127)  # noqa: B018, UP031
             except MemoryError:
                 pass
             else:
@@ -517,11 +514,11 @@ class FormatTest(unittest.TestCase):
     def test_optimisations(self):
         text = "abcde"  # 5 characters
 
-        self.assertIs("%s" % text, text)
-        self.assertIs("%.5s" % text, text)
-        self.assertIs("%.10s" % text, text)
-        self.assertIs("%1s" % text, text)
-        self.assertIs("%5s" % text, text)
+        self.assertIs(f"{text}", text)
+        self.assertIs(f"{text:.5}", text)
+        self.assertIs(f"{text:.10}", text)
+        self.assertIs("%1s" % text, text)  # noqa: UP031
+        self.assertIs("%5s" % text, text)  # noqa: UP031
 
         self.assertIs(f"{text}", text)
         self.assertIs(f"{text:s}", text)
@@ -537,13 +534,13 @@ class FormatTest(unittest.TestCase):
         f = 1.2
         self.assertEqual(format(f, ".0f"), "1")
         self.assertEqual(format(f, ".3f"), "1.200")
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             format(f, ".%sf" % (sys.maxsize + 1))
 
         c = complex(f)
         self.assertEqual(format(c, ".0f"), "1+0j")
         self.assertEqual(format(c, ".3f"), "1.200+0.000j")
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             format(c, ".%sf" % (sys.maxsize + 1))
 
     @support.cpython_only
@@ -551,17 +548,17 @@ class FormatTest(unittest.TestCase):
         from _testcapi import INT_MAX
 
         f = 1.2
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             format(f, ".%sf" % (INT_MAX + 1))
 
         c = complex(f)
-        with self.assertRaises(ValueError) as cm:
+        with self.assertRaises(ValueError):
             format(c, ".%sf" % (INT_MAX + 1))
 
     def test_g_format_has_no_trailing_zeros(self):
         # regression test for bugs.python.org/issue40780
-        self.assertEqual("%.3g" % 1505.0, "1.5e+03")
-        self.assertEqual("%#.3g" % 1505.0, "1.50e+03")
+        self.assertEqual(f"{1505.0:.3g}", "1.5e+03")
+        self.assertEqual(f"{1505.0:#.3g}", "1.50e+03")
 
         self.assertEqual(format(1505.0, ".3g"), "1.5e+03")
         self.assertEqual(format(1505.0, "#.3g"), "1.50e+03")

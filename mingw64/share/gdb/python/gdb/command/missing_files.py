@@ -16,7 +16,7 @@ def validate_regexp(exp, idstring):
     try:
         return re.compile(exp)
     except SyntaxError:
-        raise SyntaxError("Invalid %s regexp: %s." % (idstring, exp))
+        raise SyntaxError(f"Invalid {idstring} regexp: {exp}.")
 
 
 def parse_missing_file_command_args(arg):
@@ -78,7 +78,9 @@ class InfoMissingFileHandlers(gdb.Command):
         for handler in gdb._filter_missing_file_handlers(handlers, self.handler_type):
             if name_re.match(handler.name):
                 print(
-                    "  %s%s" % (handler.name, "" if handler.enabled else " [disabled]")
+                    "  {}{}".format(
+                        handler.name, "" if handler.enabled else " [disabled]"
+                    )
                 )
 
     def invoke(self, arg, from_tty):
@@ -86,7 +88,7 @@ class InfoMissingFileHandlers(gdb.Command):
         if locus_re.match("progspace") and locus_re.pattern != "":
             cp = gdb.current_progspace()
             self.list_handlers(
-                "Progspace %s:" % cp.filename, cp.missing_file_handlers, name_re
+                f"Progspace {cp.filename}:", cp.missing_file_handlers, name_re
             )
         for progspace in gdb.progspaces():
             filename = progspace.filename or ""
@@ -97,7 +99,7 @@ class InfoMissingFileHandlers(gdb.Command):
                     else:
                         msg = "Progspace <no-file>:"
                 else:
-                    msg = "Progspace %s:" % filename
+                    msg = f"Progspace {filename}:"
                 self.list_handlers(
                     msg,
                     progspace.missing_file_handlers,
@@ -145,7 +147,7 @@ def do_enable_handler(arg, flag, handler_type):
                 progspace.missing_file_handlers, name_re, flag, handler_type
             )
     print(
-        "%d missing %s handler%s %s"
+        "%d missing %s handler%s %s"  # noqa: UP031
         % (
             total,
             handler_type,

@@ -28,7 +28,7 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         try:
             st2 = parser.sequence2st(t)
         except parser.ParserError as why:
-            self.fail("could not roundtrip %r: %s" % (s, why))
+            self.fail(f"could not roundtrip {s!r}: {why}")
 
         self.assertEqual(t, st2.totuple(), "could not re-generate syntax tree")
 
@@ -41,7 +41,7 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         suite = parser.suite("from __future__ import unicode_literals; x = ''")
         code = suite.compile()
         scope = {}
-        exec(code, {}, scope)
+        exec(code, {}, scope)  # noqa: S102
         self.assertIsInstance(scope["x"], str)
 
     def check_suite(self, s):
@@ -156,25 +156,25 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         )
         # double check for nonsense
         with self.assertRaises(SyntaxError):
-            exec("2+2: int", {}, {})
+            exec("2+2: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("[]: int = 5", {}, {})
+            exec("[]: int = 5", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("x, *y, z: int = range(5)", {}, {})
+            exec("x, *y, z: int = range(5)", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("x: int = 1, y = 2", {}, {})
+            exec("x: int = 1, y = 2", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("u = v: int", {}, {})
+            exec("u = v: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("False: int", {}, {})
+            exec("False: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("x.False: int", {}, {})
+            exec("x.False: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("x.y,: int", {}, {})
+            exec("x.y,: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("[0]: int", {}, {})
+            exec("[0]: int", {}, {})  # noqa: S102
         with self.assertRaises(SyntaxError):
-            exec("f(): int", {}, {})
+            exec("f(): int", {}, {})  # noqa: S102
 
     def test_simple_augmented_assignments(self):
         self.check_suite("a += b")
@@ -343,12 +343,11 @@ class RoundtripLegalSyntaxTestCase(unittest.TestCase):
         st = parser.suite(code)
 
         def walk(tree):
-            node_type = tree[0]
+            tree[0]
             next = tree[1]
             if isinstance(next, (tuple, list)):
                 for elt in tree[1:]:
-                    for x in walk(elt):
-                        yield x
+                    yield from walk(elt)
             else:
                 yield tree
 
@@ -498,7 +497,7 @@ class IllegalSyntaxTestCase(unittest.TestCase):
         except parser.ParserError:
             pass
         else:
-            self.fail("did not detect invalid tree for %r" % label)
+            self.fail(f"did not detect invalid tree for {label!r}")
 
     def test_junk(self):
         # not even remotely valid:
@@ -1113,7 +1112,7 @@ class CompileTestCase(unittest.TestCase):
         st = parser.suite("x = 2; y = x + 3")
         code = parser.compilest(st)
         globs = {}
-        exec(code, globs)
+        exec(code, globs)  # noqa: S102
         self.assertEqual(globs["y"], 5)
 
     def test_compile_error(self):
@@ -1175,7 +1174,7 @@ class ParserStackLimitTestCase(unittest.TestCase):
 
     def test_trigger_memory_error(self):
         e = self._nested_expression(100)
-        rc, out, err = assert_python_failure("-Xoldparser", "-c", e)
+        _rc, _out, err = assert_python_failure("-Xoldparser", "-c", e)
         # parsing the expression will result in an error message
         # followed by a MemoryError (see #11963)
         self.assertIn(b"s_push: parser stack overflow", err)
@@ -1195,9 +1194,9 @@ class STObjectTestCase(unittest.TestCase):
         st3_copy = parser.expr("list(x**3 for x in range(20))")
 
         # exercise fast path for object identity
-        self.assertEqual(st1 == st1, True)
-        self.assertEqual(st2 == st2, True)
-        self.assertEqual(st3 == st3, True)
+        self.assertEqual(st1 == st1, True)  # noqa: PLR0124
+        self.assertEqual(st2 == st2, True)  # noqa: PLR0124
+        self.assertEqual(st3 == st3, True)  # noqa: PLR0124
         # slow path equality
         self.assertEqual(st1, st1_copy)
         self.assertEqual(st2, st2_copy)
@@ -1205,9 +1204,9 @@ class STObjectTestCase(unittest.TestCase):
         self.assertEqual(st1 == st2, False)
         self.assertEqual(st1 == st3, False)
         self.assertEqual(st2 == st3, False)
-        self.assertEqual(st1 != st1, False)
-        self.assertEqual(st2 != st2, False)
-        self.assertEqual(st3 != st3, False)
+        self.assertEqual(st1 != st1, False)  # noqa: PLR0124
+        self.assertEqual(st2 != st2, False)  # noqa: PLR0124
+        self.assertEqual(st3 != st3, False)  # noqa: PLR0124
         self.assertEqual(st1 != st1_copy, False)
         self.assertEqual(st2 != st2_copy, False)
         self.assertEqual(st3 != st3_copy, False)
@@ -1235,9 +1234,9 @@ class STObjectTestCase(unittest.TestCase):
         self.assertTrue(bottom <= mid)
         self.assertTrue(bottom <= top)
         self.assertTrue(mid <= top)
-        self.assertTrue(bottom <= bottom)
-        self.assertTrue(mid <= mid)
-        self.assertTrue(top <= top)
+        self.assertTrue(bottom <= bottom)  # noqa: PLR0124
+        self.assertTrue(mid <= mid)  # noqa: PLR0124
+        self.assertTrue(top <= top)  # noqa: PLR0124
         # interaction with other types
         self.assertEqual(st1 == 1588.602459, False)
         self.assertEqual("spanish armada" != st2, True)
@@ -1312,7 +1311,7 @@ class OtherParserCase(unittest.TestCase):
 class TestDeprecation(unittest.TestCase):
     def test_deprecation_message(self):
         code = "def f():\n  import parser\n\nf()"
-        rc, out, err = assert_python_ok("-c", code)
+        _rc, _out, err = assert_python_ok("-c", code)
         self.assertIn(b"<string>:2: DeprecationWarning", err)
 
 

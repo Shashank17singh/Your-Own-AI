@@ -10,7 +10,7 @@ termios = import_module("termios")
 get_attribute(termios, "TIOCGPGRP")  # Can't run tests without this feature
 
 try:
-    tty = open("/dev/tty", "rb")
+    tty = open("/dev/tty", "rb")  # noqa: SIM115
 except OSError:
     raise unittest.SkipTest("Unable to open /dev/tty")
 else:
@@ -86,8 +86,8 @@ class IoctlTests(unittest.TestCase):
 
             our_winsz = struct.pack("HHHH", 80, 25, 0, 0)
             # test both with a positive and potentially negative ioctl code
-            new_winsz = fcntl.ioctl(mfd, set_winsz_opcode_pos, our_winsz)
-            new_winsz = fcntl.ioctl(mfd, set_winsz_opcode_maybe_neg, our_winsz)
+            fcntl.ioctl(mfd, set_winsz_opcode_pos, our_winsz)
+            fcntl.ioctl(mfd, set_winsz_opcode_maybe_neg, our_winsz)
         finally:
             os.close(mfd)
             os.close(sfd)

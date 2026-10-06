@@ -138,7 +138,7 @@ class AutoComplete:
                 i -= 1
             comp_start = curline[i:j]
             if i and curline[i - 1] == ".":  # Need object with attributes.
-                hp.set_index("insert-%dc" % (len(curline) - (i - 1)))
+                hp.set_index("insert-%dc" % (len(curline) - (i - 1)))  # noqa: UP031
                 comp_what = hp.get_expression()
                 if not comp_what or (not evalfuncs and comp_what.find("(") != -1):
                     return None
@@ -154,7 +154,11 @@ class AutoComplete:
             return None
         self.autocompletewindow = self._make_autocomplete_window()
         return not self.autocompletewindow.show_window(
-            comp_lists, "insert-%dc" % len(comp_start), complete, mode, wantwin
+            comp_lists,
+            "insert-%dc" % len(comp_start),
+            complete,
+            mode,
+            wantwin,  # noqa: UP031
         )
 
     def fetch_completions(self, what, mode):
@@ -171,7 +175,7 @@ class AutoComplete:
         """
         try:
             rpcclt = self.editwin.flist.pyshell.interp.rpcclt
-        except:
+        except:  # noqa: E722
             rpcclt = None
         if rpcclt:
             return rpcclt.remotecall(
@@ -200,7 +204,7 @@ class AutoComplete:
                             smalll = sorted(entity.__all__)
                         else:
                             smalll = [s for s in bigl if s[:1] != "_"]
-                    except:
+                    except:  # noqa: E722
                         return [], []
 
             elif mode == FILES:

@@ -33,11 +33,11 @@ class BytesTest(unittest.TestCase):
         try:
             x = b"x" * (MAX_Py_ssize_t - 128)
 
-            with self.assertRaises(OverflowError) as cm:
+            with self.assertRaises(OverflowError):
                 # this statement used a fast path in ceval.c
                 x = x + b"x" * 128
 
-            with self.assertRaises(OverflowError) as cm:
+            with self.assertRaises(OverflowError):
                 # this statement used a fast path in ceval.c
                 x += b"x" * 128
         finally:
@@ -71,11 +71,11 @@ class StrTest(unittest.TestCase):
         try:
             x = "x" * int(MAX_Py_ssize_t // (1.1 * self.unicodesize))
 
-            with self.assertRaises(MemoryError) as cm:
+            with self.assertRaises(MemoryError):
                 # this statement uses a fast path in ceval.c
                 x = x + x
 
-            with self.assertRaises(MemoryError) as cm:
+            with self.assertRaises(MemoryError):
                 # this statement uses a fast path in ceval.c
                 x += x
         finally:

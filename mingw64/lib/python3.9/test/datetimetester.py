@@ -65,26 +65,24 @@ class TestModule(unittest.TestCase):
             self.skipTest("Only run for Fast C implementation")
 
         datetime = datetime_module
-        names = set(
+        names = {
             name
             for name in dir(datetime)
             if not name.startswith("__") and not name.endswith("__")
-        )
-        allowed = set(
-            [
-                "MAXYEAR",
-                "MINYEAR",
-                "date",
-                "datetime",
-                "datetime_CAPI",
-                "time",
-                "timedelta",
-                "timezone",
-                "tzinfo",
-                "sys",
-            ]
-        )
-        self.assertEqual(names - allowed, set([]))
+        }
+        allowed = {
+            "MAXYEAR",
+            "MINYEAR",
+            "date",
+            "datetime",
+            "datetime_CAPI",
+            "time",
+            "timedelta",
+            "timezone",
+            "tzinfo",
+            "sys",
+        }
+        self.assertEqual(names - allowed, set())
 
     def test_divide_and_round(self):
         if "_Fast" in self.__class__.__name__:
@@ -166,7 +164,7 @@ class TestTZInfo(unittest.TestCase):
         # wasn't able to get away with having __init__ raise
         # NotImplementedError.
         useless = tzinfo()
-        dt = datetime.max
+        dt = datetime.max  # noqa: DTZ901
         self.assertRaises(NotImplementedError, useless.tzname, dt)
         self.assertRaises(NotImplementedError, useless.utcoffset, dt)
         self.assertRaises(NotImplementedError, useless.dst, dt)
@@ -181,7 +179,7 @@ class TestTZInfo(unittest.TestCase):
         ne = NotEnough(3, "NotByALongShot")
         self.assertIsInstance(ne, tzinfo)
 
-        dt = datetime.now()
+        dt = datetime.now()  # noqa: DTZ005
         self.assertRaises(NotImplementedError, ne.tzname, dt)
         self.assertRaises(NotImplementedError, ne.utcoffset, dt)
         self.assertRaises(NotImplementedError, ne.dst, dt)
@@ -189,7 +187,7 @@ class TestTZInfo(unittest.TestCase):
     def test_normal(self):
         fo = FixedOffset(3, "Three")
         self.assertIsInstance(fo, tzinfo)
-        for dt in datetime.now(), None:
+        for dt in datetime.now(), None:  # noqa: DTZ005
             self.assertEqual(fo.utcoffset(dt), timedelta(minutes=3))
             self.assertEqual(fo.tzname(dt), "Three")
             self.assertEqual(fo.dst(dt), timedelta(minutes=42))
@@ -254,14 +252,13 @@ class TestTimeZone(unittest.TestCase):
     def setUp(self):
         self.ACDT = timezone(timedelta(hours=9.5), "ACDT")
         self.EST = timezone(-timedelta(hours=5), "EST")
-        self.DT = datetime(2010, 1, 1)
+        self.DT = datetime(2010, 1, 1)  # noqa: DTZ001
 
     def test_str(self):
         for tz in [self.ACDT, self.EST, timezone.utc, timezone.min, timezone.max]:
             self.assertEqual(str(tz), tz.tzname(None))
 
     def test_repr(self):
-        datetime = datetime_module
         for tz in [self.ACDT, self.EST, timezone.utc, timezone.min, timezone.max]:
             # test round-trip
             tzrep = repr(tz)
@@ -361,7 +358,7 @@ class TestTimeZone(unittest.TestCase):
         self.assertEqual(timezone(HOUR), timezone(HOUR))
         self.assertEqual(timezone(-5 * HOUR), timezone(-5 * HOUR, "EST"))
         with self.assertRaises(TypeError):
-            timezone(ZERO) < timezone(ZERO)
+            timezone(ZERO) < timezone(ZERO)  # noqa: B015
         self.assertIn(timezone(ZERO), {timezone(ZERO)})
         self.assertTrue(timezone(ZERO) != None)
         self.assertFalse(timezone(ZERO) == None)
@@ -380,7 +377,7 @@ class TestTimeZone(unittest.TestCase):
 
     def test_aware_datetime(self):
         # test that timezone instances can be used by datetime
-        t = datetime(1, 1, 1)
+        t = datetime(1, 1, 1)  # noqa: DTZ001
         for tz in [timezone.min, timezone.max, timezone.utc]:
             self.assertEqual(tz.tzname(t), t.replace(tzinfo=tz).tzname())
             self.assertEqual(tz.utcoffset(t), t.replace(tzinfo=tz).utcoffset())
@@ -433,7 +430,7 @@ class TestTimeZone(unittest.TestCase):
         bad_time_deltas.extend([-delta for delta in bad_time_deltas])
 
         for delta in bad_time_deltas:
-            with self.subTest(test_type="bad", delta=delta):
+            with self.subTest(test_type="bad", delta=delta):  # noqa: SIM117
                 with self.assertRaises(ValueError):
                     timezone(delta)
 
@@ -626,10 +623,10 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
 
         # Add/sub ints or floats should be illegal
         for i in 1, 1.0:
-            self.assertRaises(TypeError, lambda: a + i)
-            self.assertRaises(TypeError, lambda: a - i)
-            self.assertRaises(TypeError, lambda: i + a)
-            self.assertRaises(TypeError, lambda: i - a)
+            self.assertRaises(TypeError, lambda: a + i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: a - i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i + a)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i - a)  # noqa: B023
 
         # Division of int by timedelta doesn't make sense.
         # Division by zero doesn't make sense.
@@ -738,14 +735,14 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
             self.assertEqual(badarg == t1, False)
             self.assertEqual(badarg != t1, True)
 
-            self.assertRaises(TypeError, lambda: t1 <= badarg)
-            self.assertRaises(TypeError, lambda: t1 < badarg)
-            self.assertRaises(TypeError, lambda: t1 > badarg)
-            self.assertRaises(TypeError, lambda: t1 >= badarg)
-            self.assertRaises(TypeError, lambda: badarg <= t1)
-            self.assertRaises(TypeError, lambda: badarg < t1)
-            self.assertRaises(TypeError, lambda: badarg > t1)
-            self.assertRaises(TypeError, lambda: badarg >= t1)
+            self.assertRaises(TypeError, lambda: t1 <= badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 < badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 > badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 >= badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg <= t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg < t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg > t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg >= t1)  # noqa: B023
 
     def test_str(self):
         td = timedelta
@@ -778,24 +775,24 @@ class TestTimeDelta(HarmlessMixedComparison, unittest.TestCase):
 
     def test_repr(self):
         name = "datetime." + self.theclass.__name__
-        self.assertEqual(repr(self.theclass(1)), "%s(days=1)" % name)
-        self.assertEqual(repr(self.theclass(10, 2)), "%s(days=10, seconds=2)" % name)
+        self.assertEqual(repr(self.theclass(1)), f"{name}(days=1)")
+        self.assertEqual(repr(self.theclass(10, 2)), f"{name}(days=10, seconds=2)")
         self.assertEqual(
             repr(self.theclass(-10, 2, 400000)),
-            "%s(days=-10, seconds=2, microseconds=400000)" % name,
+            f"{name}(days=-10, seconds=2, microseconds=400000)",
         )
-        self.assertEqual(repr(self.theclass(seconds=60)), "%s(seconds=60)" % name)
-        self.assertEqual(repr(self.theclass()), "%s(0)" % name)
+        self.assertEqual(repr(self.theclass(seconds=60)), f"{name}(seconds=60)")
+        self.assertEqual(repr(self.theclass()), f"{name}(0)")
         self.assertEqual(
-            repr(self.theclass(microseconds=100)), "%s(microseconds=100)" % name
+            repr(self.theclass(microseconds=100)), f"{name}(microseconds=100)"
         )
         self.assertEqual(
             repr(self.theclass(days=1, microseconds=100)),
-            "%s(days=1, microseconds=100)" % name,
+            f"{name}(days=1, microseconds=100)",
         )
         self.assertEqual(
             repr(self.theclass(seconds=1, microseconds=100)),
-            "%s(seconds=1, microseconds=100)" % name,
+            f"{name}(seconds=1, microseconds=100)",
         )
 
     def test_roundtrip(self):
@@ -1318,10 +1315,10 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
 
         # Add/sub ints or floats should be illegal
         for i in 1, 1.0:
-            self.assertRaises(TypeError, lambda: a + i)
-            self.assertRaises(TypeError, lambda: a - i)
-            self.assertRaises(TypeError, lambda: i + a)
-            self.assertRaises(TypeError, lambda: i - a)
+            self.assertRaises(TypeError, lambda: a + i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: a - i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i + a)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i - a)  # noqa: B023
 
         # delta - date is senseless.
         self.assertRaises(TypeError, lambda: day - a)
@@ -1678,13 +1675,13 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
             self.assertEqual(badarg == t1, False)
             self.assertEqual(badarg != t1, True)
 
-            self.assertRaises(TypeError, lambda: t1 < badarg)
-            self.assertRaises(TypeError, lambda: t1 > badarg)
-            self.assertRaises(TypeError, lambda: t1 >= badarg)
-            self.assertRaises(TypeError, lambda: badarg <= t1)
-            self.assertRaises(TypeError, lambda: badarg < t1)
-            self.assertRaises(TypeError, lambda: badarg > t1)
-            self.assertRaises(TypeError, lambda: badarg >= t1)
+            self.assertRaises(TypeError, lambda: t1 < badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 > badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 >= badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg <= t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg < t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg > t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg >= t1)  # noqa: B023
 
     def test_mixed_compare(self):
         our = self.theclass(2000, 4, 5)
@@ -1724,11 +1721,11 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
             # padded to 4 digits across platforms.  The C standard
             # assumes year >= 1900, so it does not specify the number
             # of digits.
-            if d.strftime("%Y") != "%04d" % y:
+            if d.strftime("%Y") != "%04d" % y:  # noqa: UP031
                 # Year 42 returns '42', not padded
-                self.assertEqual(d.strftime("%Y"), "%d" % y)
+                self.assertEqual(d.strftime("%Y"), "%d" % y)  # noqa: UP031
                 # '0042' is obtained anyway
-                self.assertEqual(d.strftime("%4Y"), "%04d" % y)
+                self.assertEqual(d.strftime("%4Y"), "%04d" % y)  # noqa: UP031
 
     def test_replace(self):
         cls = self.theclass
@@ -1743,7 +1740,7 @@ class TestDate(HarmlessMixedComparison, unittest.TestCase):
             expected = cls(*newargs)
             got = base.replace(**{name: newval})
             self.assertEqual(expected, got)
-            i += 1
+            i += 1  # noqa: SIM113
 
         # Out of bounds.
         base = cls(2000, 2, 29)
@@ -2338,10 +2335,10 @@ class TestDateTime(TestDate):
         )
         # Add/sub ints or floats should be illegal
         for i in 1, 1.0:
-            self.assertRaises(TypeError, lambda: a + i)
-            self.assertRaises(TypeError, lambda: a - i)
-            self.assertRaises(TypeError, lambda: i + a)
-            self.assertRaises(TypeError, lambda: i - a)
+            self.assertRaises(TypeError, lambda: a + i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: a - i)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i + a)  # noqa: B023
+            self.assertRaises(TypeError, lambda: i - a)  # noqa: B023
 
         # delta - datetime is senseless.
         self.assertRaises(TypeError, lambda: day - a)
@@ -2384,11 +2381,15 @@ class TestDateTime(TestDate):
 
     def test_compat_unpickle(self):
         tests = [
-            b"cdatetime\ndatetime\n("
-            b"S'\\x07\\xdf\\x0b\\x1b\\x14;\\x01\\x00\\x10\\x00'\ntR.",
+            (
+                b"cdatetime\ndatetime\n("
+                b"S'\\x07\\xdf\\x0b\\x1b\\x14;\\x01\\x00\\x10\\x00'\ntR."
+            ),
             b"cdatetime\ndatetime\n(U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00tR.",
-            b"\x80\x02cdatetime\ndatetime\n"
-            b"U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00\x85R.",
+            (
+                b"\x80\x02cdatetime\ndatetime\n"
+                b"U\n\x07\xdf\x0b\x1b\x14;\x01\x00\x10\x00\x85R."
+            ),
         ]
         args = 2015, 11, 27, 20, 59, 1, 64**2
         expected = self.theclass(*args)
@@ -2825,7 +2826,7 @@ class TestDateTime(TestDate):
             expected = cls(*newargs)
             got = base.replace(**{name: newval})
             self.assertEqual(expected, got)
-            i += 1
+            i += 1  # noqa: SIM113
 
         # Out of bounds.
         base = cls(2000, 2, 29)
@@ -3127,7 +3128,7 @@ class TestDateTime(TestDate):
         ]
 
         for bad_str in bad_strs:
-            with self.subTest(bad_str=bad_str):
+            with self.subTest(bad_str=bad_str):  # noqa: SIM117
                 with self.assertRaises(ValueError):
                     self.theclass.fromisoformat(bad_str)
 
@@ -3246,14 +3247,14 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
             self.assertEqual(badarg == t1, False)
             self.assertEqual(badarg != t1, True)
 
-            self.assertRaises(TypeError, lambda: t1 <= badarg)
-            self.assertRaises(TypeError, lambda: t1 < badarg)
-            self.assertRaises(TypeError, lambda: t1 > badarg)
-            self.assertRaises(TypeError, lambda: t1 >= badarg)
-            self.assertRaises(TypeError, lambda: badarg <= t1)
-            self.assertRaises(TypeError, lambda: badarg < t1)
-            self.assertRaises(TypeError, lambda: badarg > t1)
-            self.assertRaises(TypeError, lambda: badarg >= t1)
+            self.assertRaises(TypeError, lambda: t1 <= badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 < badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 > badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: t1 >= badarg)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg <= t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg < t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg > t1)  # noqa: B023
+            self.assertRaises(TypeError, lambda: badarg >= t1)  # noqa: B023
 
     def test_bad_constructor_arguments(self):
         # bad hours
@@ -3441,15 +3442,13 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
 
     def test_repr(self):
         name = "datetime." + self.theclass.__name__
-        self.assertEqual(repr(self.theclass(1, 2, 3, 4)), "%s(1, 2, 3, 4)" % name)
+        self.assertEqual(repr(self.theclass(1, 2, 3, 4)), f"{name}(1, 2, 3, 4)")
+        self.assertEqual(repr(self.theclass(10, 2, 3, 4000)), f"{name}(10, 2, 3, 4000)")
         self.assertEqual(
-            repr(self.theclass(10, 2, 3, 4000)), "%s(10, 2, 3, 4000)" % name
+            repr(self.theclass(0, 2, 3, 400000)), f"{name}(0, 2, 3, 400000)"
         )
-        self.assertEqual(
-            repr(self.theclass(0, 2, 3, 400000)), "%s(0, 2, 3, 400000)" % name
-        )
-        self.assertEqual(repr(self.theclass(12, 2, 3, 0)), "%s(12, 2, 3)" % name)
-        self.assertEqual(repr(self.theclass(23, 15, 0, 0)), "%s(23, 15)" % name)
+        self.assertEqual(repr(self.theclass(12, 2, 3, 0)), f"{name}(12, 2, 3)")
+        self.assertEqual(repr(self.theclass(23, 15, 0, 0)), f"{name}(23, 15)")
 
     def test_resolution_info(self):
         self.assertIsInstance(self.theclass.min, self.theclass)
@@ -3531,7 +3530,7 @@ class TestTime(HarmlessMixedComparison, unittest.TestCase):
             expected = cls(*newargs)
             got = base.replace(**{name: newval})
             self.assertEqual(expected, got)
-            i += 1
+            i += 1  # noqa: SIM113
 
         # Out of bounds.
         base = cls(1)
@@ -3657,7 +3656,7 @@ class TZInfoBase:
             if legit:
                 aofs = abs(offset)
                 h, m = divmod(aofs, 60)
-                tag = "%c%02d:%02d" % (offset < 0 and "-" or "+", h, m)
+                tag = "%c%02d:%02d" % (offset < 0 and "-" or "+", h, m)  # noqa: UP031
                 if isinstance(t, datetime):
                     t = t.timetz()
                 self.assertEqual(str(t), "01:02:03" + tag)
@@ -3921,24 +3920,30 @@ class TestTimeTZ(TestTime, TZInfoBase, unittest.TestCase):
 
     def test_compat_unpickle(self):
         tests = [
-            b"cdatetime\ntime\n(S'\\x05\\x06\\x07\\x01\\xe2@'\n"
-            b"ctest.datetimetester\nPicklableFixedOffset\n(tR"
-            b"(dS'_FixedOffset__offset'\ncdatetime\ntimedelta\n"
-            b"(I-1\nI68400\nI0\ntRs"
-            b"S'_FixedOffset__dstoffset'\nNs"
-            b"S'_FixedOffset__name'\nS'cookie'\nsbtR.",
-            b"cdatetime\ntime\n(U\x06\x05\x06\x07\x01\xe2@"
-            b"ctest.datetimetester\nPicklableFixedOffset\n)R"
-            b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
-            b"(J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00tR"
-            b"U\x17_FixedOffset__dstoffsetN"
-            b"U\x12_FixedOffset__nameU\x06cookieubtR.",
-            b"\x80\x02cdatetime\ntime\nU\x06\x05\x06\x07\x01\xe2@"
-            b"ctest.datetimetester\nPicklableFixedOffset\n)R"
-            b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
-            b"J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00\x87R"
-            b"U\x17_FixedOffset__dstoffsetN"
-            b"U\x12_FixedOffset__nameU\x06cookieub\x86R.",
+            (
+                b"cdatetime\ntime\n(S'\\x05\\x06\\x07\\x01\\xe2@'\n"
+                b"ctest.datetimetester\nPicklableFixedOffset\n(tR"
+                b"(dS'_FixedOffset__offset'\ncdatetime\ntimedelta\n"
+                b"(I-1\nI68400\nI0\ntRs"
+                b"S'_FixedOffset__dstoffset'\nNs"
+                b"S'_FixedOffset__name'\nS'cookie'\nsbtR."
+            ),
+            (
+                b"cdatetime\ntime\n(U\x06\x05\x06\x07\x01\xe2@"
+                b"ctest.datetimetester\nPicklableFixedOffset\n)R"
+                b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
+                b"(J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00tR"
+                b"U\x17_FixedOffset__dstoffsetN"
+                b"U\x12_FixedOffset__nameU\x06cookieubtR."
+            ),
+            (
+                b"\x80\x02cdatetime\ntime\nU\x06\x05\x06\x07\x01\xe2@"
+                b"ctest.datetimetester\nPicklableFixedOffset\n)R"
+                b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
+                b"J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00\x87R"
+                b"U\x17_FixedOffset__dstoffsetN"
+                b"U\x12_FixedOffset__nameU\x06cookieub\x86R."
+            ),
         ]
 
         tinfo = PicklableFixedOffset(-300, "cookie")
@@ -3988,7 +3993,7 @@ class TestTimeTZ(TestTime, TZInfoBase, unittest.TestCase):
             expected = cls(*newargs)
             got = base.replace(**{name: newval})
             self.assertEqual(expected, got)
-            i += 1
+            i += 1  # noqa: SIM113
 
         # Ensure we can get rid of a tzinfo.
         self.assertEqual(base.tzname(), "+100")
@@ -4145,7 +4150,7 @@ class TestTimeTZ(TestTime, TZInfoBase, unittest.TestCase):
         ]
 
         for bad_str in bad_strs:
-            with self.subTest(bad_str=bad_str):
+            with self.subTest(bad_str=bad_str):  # noqa: SIM117
                 with self.assertRaises(ValueError):
                     self.theclass.fromisoformat(bad_str)
 
@@ -4258,7 +4263,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         self.assertEqual(t2, t2)
         # and > comparison should fail
         with self.assertRaises(TypeError):
-            t1 > t2
+            t1 > t2  # noqa: B015
 
         # It's also naive if it has tzinfo but tzinfo.utcoffset() is None.
         class Naive(tzinfo):
@@ -4308,27 +4313,33 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
 
     def test_compat_unpickle(self):
         tests = [
-            b"cdatetime\ndatetime\n"
-            b"(S'\\x07\\xdf\\x0b\\x1b\\x14;\\x01\\x01\\xe2@'\n"
-            b"ctest.datetimetester\nPicklableFixedOffset\n(tR"
-            b"(dS'_FixedOffset__offset'\ncdatetime\ntimedelta\n"
-            b"(I-1\nI68400\nI0\ntRs"
-            b"S'_FixedOffset__dstoffset'\nNs"
-            b"S'_FixedOffset__name'\nS'cookie'\nsbtR.",
-            b"cdatetime\ndatetime\n"
-            b"(U\n\x07\xdf\x0b\x1b\x14;\x01\x01\xe2@"
-            b"ctest.datetimetester\nPicklableFixedOffset\n)R"
-            b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
-            b"(J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00tR"
-            b"U\x17_FixedOffset__dstoffsetN"
-            b"U\x12_FixedOffset__nameU\x06cookieubtR.",
-            b"\x80\x02cdatetime\ndatetime\n"
-            b"U\n\x07\xdf\x0b\x1b\x14;\x01\x01\xe2@"
-            b"ctest.datetimetester\nPicklableFixedOffset\n)R"
-            b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
-            b"J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00\x87R"
-            b"U\x17_FixedOffset__dstoffsetN"
-            b"U\x12_FixedOffset__nameU\x06cookieub\x86R.",
+            (
+                b"cdatetime\ndatetime\n"
+                b"(S'\\x07\\xdf\\x0b\\x1b\\x14;\\x01\\x01\\xe2@'\n"
+                b"ctest.datetimetester\nPicklableFixedOffset\n(tR"
+                b"(dS'_FixedOffset__offset'\ncdatetime\ntimedelta\n"
+                b"(I-1\nI68400\nI0\ntRs"
+                b"S'_FixedOffset__dstoffset'\nNs"
+                b"S'_FixedOffset__name'\nS'cookie'\nsbtR."
+            ),
+            (
+                b"cdatetime\ndatetime\n"
+                b"(U\n\x07\xdf\x0b\x1b\x14;\x01\x01\xe2@"
+                b"ctest.datetimetester\nPicklableFixedOffset\n)R"
+                b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
+                b"(J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00tR"
+                b"U\x17_FixedOffset__dstoffsetN"
+                b"U\x12_FixedOffset__nameU\x06cookieubtR."
+            ),
+            (
+                b"\x80\x02cdatetime\ndatetime\n"
+                b"U\n\x07\xdf\x0b\x1b\x14;\x01\x01\xe2@"
+                b"ctest.datetimetester\nPicklableFixedOffset\n)R"
+                b"}(U\x14_FixedOffset__offsetcdatetime\ntimedelta\n"
+                b"J\xff\xff\xff\xffJ0\x0b\x01\x00K\x00\x87R"
+                b"U\x17_FixedOffset__dstoffsetN"
+                b"U\x12_FixedOffset__nameU\x06cookieub\x86R."
+            ),
         ]
         args = 2015, 11, 27, 20, 59, 1, 123456
         tinfo = PicklableFixedOffset(-300, "cookie")
@@ -4470,7 +4481,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
     def test_tzinfo_now(self):
         meth = self.theclass.now
         # Ensure it doesn't require tzinfo (i.e., that this doesn't blow up).
-        base = meth()
+        meth()
         # Try with and without naming the keyword.
         off42 = FixedOffset(42, "42")
         another = meth(off42)
@@ -4496,7 +4507,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
             for dummy in range(3):
                 now = datetime.now(weirdtz)
                 self.assertIs(now.tzinfo, weirdtz)
-                utcnow = datetime.utcnow().replace(tzinfo=utc)
+                utcnow = datetime.utcnow().replace(tzinfo=utc)  # noqa: DTZ003
                 now2 = utcnow.astimezone(weirdtz)
                 if abs(now - now2) < timedelta(seconds=30):
                     break
@@ -4512,7 +4523,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         meth = self.theclass.fromtimestamp
         ts = time.time()
         # Ensure it doesn't require tzinfo (i.e., that this doesn't blow up).
-        base = meth(ts)
+        meth(ts)
         # Try with and without naming the keyword.
         off42 = FixedOffset(42, "42")
         another = meth(ts, off42)
@@ -4531,7 +4542,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
 
         # Try to make sure tz= actually does some conversion.
         timestamp = 1000000000
-        utcdatetime = datetime.utcfromtimestamp(timestamp)
+        utcdatetime = datetime.utcfromtimestamp(timestamp)  # noqa: DTZ004
         # In POSIX (epoch 1970), that's 2001-09-09 01:46:40 UTC, give or take.
         # But on some flavor of Mac, it's nowhere near that.  So we can't have
         # any idea here what time that actually is, we can only test that
@@ -4545,7 +4556,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
     def test_tzinfo_utcnow(self):
         meth = self.theclass.utcnow
         # Ensure it doesn't require tzinfo (i.e., that this doesn't blow up).
-        base = meth()
+        meth()
         # Try with and without naming the keyword; for whatever reason,
         # utcnow() doesn't accept a tzinfo argument.
         off42 = FixedOffset(42, "42")
@@ -4558,7 +4569,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
         meth = self.theclass.utcfromtimestamp
         ts = time.time()
         # Ensure it doesn't require tzinfo (i.e., that this doesn't blow up).
-        base = meth(ts)
+        meth(ts)
         # Try with and without naming the keyword; for whatever reason,
         # utcfromtimestamp() doesn't accept a tzinfo argument.
         off42 = FixedOffset(42, "42")
@@ -4732,7 +4743,7 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
             expected = cls(*newargs)
             got = base.replace(**{name: newval})
             self.assertEqual(expected, got)
-            i += 1
+            i += 1  # noqa: SIM113
 
         # Ensure we can get rid of a tzinfo.
         self.assertEqual(base.tzname(), "+100")
@@ -4848,8 +4859,8 @@ class TestDateTimeTZ(TestDateTime, TZInfoBase, unittest.TestCase):
                 self.assertEqual(got, expected)
 
     def test_mixed_compare(self):
-        t1 = datetime(1, 2, 3, 4, 5, 6, 7)
-        t2 = datetime(1, 2, 3, 4, 5, 6, 7)
+        t1 = datetime(1, 2, 3, 4, 5, 6, 7)  # noqa: DTZ001
+        t2 = datetime(1, 2, 3, 4, 5, 6, 7)  # noqa: DTZ001
         self.assertEqual(t1, t2)
         t2 = t2.replace(tzinfo=None)
         self.assertEqual(t1, t2)
@@ -4920,12 +4931,12 @@ MINUTE = timedelta(minutes=1)
 HOUR = timedelta(hours=1)
 DAY = timedelta(days=1)
 # In the US, DST starts at 2am (standard time) on the first Sunday in April.
-DSTSTART = datetime(1, 4, 1, 2)
+DSTSTART = datetime(1, 4, 1, 2)  # noqa: DTZ001
 # and ends at 2am (DST time; 1am standard time) on the last Sunday of Oct,
 # which is the first Sunday on or after Oct 25.  Because we view 1:MM as
 # being standard time on that day, there is no spelling in local time of
 # the last hour of DST (that's 1:MM DST, but 1:MM is taken as standard time).
-DSTEND = datetime(1, 10, 25, 1)
+DSTEND = datetime(1, 10, 25, 1)  # noqa: DTZ001
 
 
 class USTimeZone(tzinfo):
@@ -4982,8 +4993,8 @@ utc_fake = FixedOffset(-12 * 60, "UTCfake", 0)
 
 class TestTimezoneConversions(unittest.TestCase):
     # The DST switch times for 2002, in std time.
-    dston = datetime(2002, 4, 7, 2)
-    dstoff = datetime(2002, 10, 27, 1)
+    dston = datetime(2002, 4, 7, 2)  # noqa: DTZ001
+    dstoff = datetime(2002, 10, 27, 1)  # noqa: DTZ001
 
     theclass = datetime
 
@@ -5182,13 +5193,15 @@ class TestTimezoneConversions(unittest.TestCase):
 
     def test_fromutc(self):
         self.assertRaises(TypeError, Eastern.fromutc)  # not enough args
-        now = datetime.utcnow().replace(tzinfo=utc_real)
+        now = datetime.utcnow().replace(tzinfo=utc_real)  # noqa: DTZ003
         self.assertRaises(ValueError, Eastern.fromutc, now)  # wrong tzinfo
         now = now.replace(tzinfo=Eastern)  # insert correct tzinfo
         enow = Eastern.fromutc(now)  # doesn't blow up
         self.assertEqual(enow.tzinfo, Eastern)  # has right tzinfo member
         self.assertRaises(TypeError, Eastern.fromutc, now, now)  # too many args
-        self.assertRaises(TypeError, Eastern.fromutc, date.today())  # wrong type
+        self.assertRaises(
+            TypeError, Eastern.fromutc, date.today()
+        )  # wrong type  # noqa: DTZ011
 
         # Always converts UTC to standard time.
         class FauxUSTimeZone(USTimeZone):
@@ -5250,7 +5263,7 @@ class Oddballs(unittest.TestCase):
     def test_bug_1028306(self):
         # Trying to compare a date to a datetime should act like a mixed-
         # type comparison, despite that datetime is a subclass of date.
-        as_date = date.today()
+        as_date = date.today()  # noqa: DTZ011
         as_datetime = datetime.combine(as_date, time())
         self.assertTrue(as_date != as_datetime)
         self.assertTrue(as_datetime != as_date)
@@ -5287,9 +5300,9 @@ class Oddballs(unittest.TestCase):
 
     def test_extra_attributes(self):
         for x in [
-            date.today(),
+            date.today(),  # noqa: DTZ011
             time(),
-            datetime.utcnow(),
+            datetime.utcnow(),  # noqa: DTZ003
             timedelta(),
             tzinfo(),
             timezone(timedelta()),
@@ -5308,20 +5321,20 @@ class Oddballs(unittest.TestCase):
         for xx in [decimal.Decimal(10), decimal.Decimal("10.9"), Number(10)]:
             with self.assertWarns(DeprecationWarning):
                 self.assertEqual(
-                    datetime(10, 10, 10, 10, 10, 10, 10),
-                    datetime(xx, xx, xx, xx, xx, xx, xx),
+                    datetime(10, 10, 10, 10, 10, 10, 10),  # noqa: DTZ001
+                    datetime(xx, xx, xx, xx, xx, xx, xx),  # noqa: DTZ001
                 )
 
         with self.assertRaisesRegex(
             TypeError, "^an integer is required " r"\(got type str\)$"
         ):
-            datetime(10, 10, "10")
+            datetime(10, 10, "10")  # noqa: DTZ001
 
         f10 = Number(10.9)
         with self.assertRaisesRegex(
             TypeError, "^__int__ returned non-int " r"\(type float\)$"
         ):
-            datetime(10, 10, f10)
+            datetime(10, 10, f10)  # noqa: DTZ001
 
         class Float(float):
             pass
@@ -5330,22 +5343,22 @@ class Oddballs(unittest.TestCase):
         with self.assertRaisesRegex(
             TypeError, "^integer argument expected, got float$"
         ):
-            datetime(10, 10, s10)
+            datetime(10, 10, s10)  # noqa: DTZ001
 
         with self.assertRaises(TypeError):
-            datetime(10.0, 10, 10)
+            datetime(10.0, 10, 10)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10.0, 10)
+            datetime(10, 10.0, 10)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10, 10.0)
+            datetime(10, 10, 10.0)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10, 10, 10.0)
+            datetime(10, 10, 10, 10.0)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10, 10, 10, 10.0)
+            datetime(10, 10, 10, 10, 10.0)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10, 10, 10, 10, 10.0)
+            datetime(10, 10, 10, 10, 10, 10.0)  # noqa: DTZ001
         with self.assertRaises(TypeError):
-            datetime(10, 10, 10, 10, 10, 10, 10.0)
+            datetime(10, 10, 10, 10, 10, 10, 10.0)  # noqa: DTZ001
 
 
 #############################################################################
@@ -5557,14 +5570,14 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
 
     def test_constructors(self):
         t = time(0, fold=1)
-        dt = datetime(1, 1, 1, fold=1)
+        dt = datetime(1, 1, 1, fold=1)  # noqa: DTZ001
         self.assertEqual(t.fold, 1)
         self.assertEqual(dt.fold, 1)
         with self.assertRaises(TypeError):
             time(0, 0, 0, 0, None, 0)
 
     def test_member(self):
-        dt = datetime(1, 1, 1, fold=1)
+        dt = datetime(1, 1, 1, fold=1)  # noqa: DTZ001
         t = dt.time()
         self.assertEqual(t.fold, 1)
         t = dt.timetz()
@@ -5572,7 +5585,7 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
 
     def test_replace(self):
         t = time(0)
-        dt = datetime(1, 1, 1)
+        dt = datetime(1, 1, 1)  # noqa: DTZ001
         self.assertEqual(t.replace(fold=1).fold, 1)
         self.assertEqual(dt.replace(fold=1).fold, 1)
         self.assertEqual(t.replace(fold=0).fold, 0)
@@ -5595,21 +5608,21 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
 
     def test_comparison(self):
         t = time(0)
-        dt = datetime(1, 1, 1)
+        dt = datetime(1, 1, 1)  # noqa: DTZ001
         self.assertEqual(t, t.replace(fold=1))
         self.assertEqual(dt, dt.replace(fold=1))
 
     def test_hash(self):
         t = time(0)
-        dt = datetime(1, 1, 1)
+        dt = datetime(1, 1, 1)  # noqa: DTZ001
         self.assertEqual(hash(t), hash(t.replace(fold=1)))
         self.assertEqual(hash(dt), hash(dt.replace(fold=1)))
 
     @support.run_with_tz("EST+05EDT,M3.2.0,M11.1.0")
     def test_fromtimestamp(self):
         s = 1414906200
-        dt0 = datetime.fromtimestamp(s)
-        dt1 = datetime.fromtimestamp(s + 3600)
+        dt0 = datetime.fromtimestamp(s)  # noqa: DTZ006
+        dt1 = datetime.fromtimestamp(s + 3600)  # noqa: DTZ006
         self.assertEqual(dt0.fold, 0)
         self.assertEqual(dt1.fold, 1)
 
@@ -5625,8 +5638,8 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
         # $ TZ=Australia/Lord_Howe date -r 1428160500
         # Sun Apr  5 01:45:00 LHST 2015
         s = 1428158700
-        t0 = datetime.fromtimestamp(s)
-        t1 = datetime.fromtimestamp(s + 1800)
+        t0 = datetime.fromtimestamp(s)  # noqa: DTZ006
+        t1 = datetime.fromtimestamp(s + 1800)  # noqa: DTZ006
         self.assertEqual(t0, t1)
         self.assertEqual(t0.fold, 0)
         self.assertEqual(t1.fold, 1)
@@ -5634,11 +5647,11 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
     def test_fromtimestamp_low_fold_detection(self):
         # Ensure that fold detection doesn't cause an
         # OSError for really low values, see bpo-29097
-        self.assertEqual(datetime.fromtimestamp(0).fold, 0)
+        self.assertEqual(datetime.fromtimestamp(0).fold, 0)  # noqa: DTZ006
 
     @support.run_with_tz("EST+05EDT,M3.2.0,M11.1.0")
     def test_timestamp(self):
-        dt0 = datetime(2014, 11, 2, 1, 30)
+        dt0 = datetime(2014, 11, 2, 1, 30)  # noqa: DTZ001
         dt1 = dt0.replace(fold=1)
         self.assertEqual(dt0.timestamp() + 3600, dt1.timestamp())
 
@@ -5649,14 +5662,14 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
             self.skipTest(
                 "Australia/Lord_Howe timezone is not supported on this platform"
             )
-        t = datetime(2015, 4, 5, 1, 45)
+        t = datetime(2015, 4, 5, 1, 45)  # noqa: DTZ001
         s0 = t.replace(fold=0).timestamp()
         s1 = t.replace(fold=1).timestamp()
         self.assertEqual(s0 + 1800, s1)
 
     @support.run_with_tz("EST+05EDT,M3.2.0,M11.1.0")
     def test_astimezone(self):
-        dt0 = datetime(2014, 11, 2, 1, 30)
+        dt0 = datetime(2014, 11, 2, 1, 30)  # noqa: DTZ001
         dt1 = dt0.replace(fold=1)
         # Convert both naive instances to aware.
         adt0 = dt0.astimezone()
@@ -5671,7 +5684,7 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
 
     def test_pickle_fold(self):
         t = time(fold=1)
-        dt = datetime(1, 1, 1, fold=1)
+        dt = datetime(1, 1, 1, fold=1)  # noqa: DTZ001
         for pickler, unpickler, proto in pickle_choices:
             for x in [t, dt]:
                 s = pickler.dumps(x, proto)
@@ -5681,7 +5694,7 @@ class TestLocalTimeDisambiguation(unittest.TestCase):
 
     def test_repr(self):
         t = time(fold=1)
-        dt = datetime(1, 1, 1, fold=1)
+        dt = datetime(1, 1, 1, fold=1)  # noqa: DTZ001
         self.assertEqual(repr(t), "datetime.time(0, 0, fold=1)")
         self.assertEqual(repr(dt), "datetime.datetime(1, 1, 1, 0, 0, fold=1)")
 
@@ -5927,7 +5940,7 @@ class ZoneInfo(tzinfo):
             zonedir = cls.zoneroot
         zone_tab = os.path.join(zonedir, "zone.tab")
         try:
-            f = open(zone_tab)
+            f = open(zone_tab)  # noqa: SIM115
         except OSError:
             return
         with f:
@@ -5941,11 +5954,11 @@ class ZoneInfo(tzinfo):
         count = gap_count = fold_count = zeros_count = 0
         min_gap = min_fold = timedelta.max
         max_gap = max_fold = ZERO
-        min_gap_datetime = max_gap_datetime = datetime.min
+        min_gap_datetime = max_gap_datetime = datetime.min  # noqa: DTZ901
         min_gap_zone = max_gap_zone = None
-        min_fold_datetime = max_fold_datetime = datetime.min
+        min_fold_datetime = max_fold_datetime = datetime.min  # noqa: DTZ901
         min_fold_zone = max_fold_zone = None
-        stats_since = datetime(
+        stats_since = datetime(  # noqa: DTZ001
             start_year, 1, 1
         )  # Starting from 1970 eliminates a lot of noise
         for zonename in cls.zonenames():
@@ -5960,9 +5973,9 @@ class ZoneInfo(tzinfo):
                         max_gap = shift
                         max_gap_zone = zonename
                         max_gap_datetime = dt
-                    if (shift, datetime.max - dt) < (
+                    if (shift, datetime.max - dt) < (  # noqa: DTZ901
                         min_gap,
-                        datetime.max - min_gap_datetime,
+                        datetime.max - min_gap_datetime,  # noqa: DTZ901
                     ):
                         min_gap = shift
                         min_gap_zone = zonename
@@ -5974,9 +5987,9 @@ class ZoneInfo(tzinfo):
                         max_fold = shift
                         max_fold_zone = zonename
                         max_fold_datetime = dt
-                    if (shift, datetime.max - dt) < (
+                    if (shift, datetime.max - dt) < (  # noqa: DTZ901
                         min_fold,
-                        datetime.max - min_fold_datetime,
+                        datetime.max - min_fold_datetime,  # noqa: DTZ901
                     ):
                         min_fold = shift
                         min_fold_zone = zonename
@@ -5984,39 +5997,39 @@ class ZoneInfo(tzinfo):
                 else:
                     zeros_count += 1
         trans_counts = (gap_count, fold_count, zeros_count)
-        print("Number of zones:       %5d" % count)
+        print("Number of zones:       %5d" % count)  # noqa: UP031
         print(
-            "Number of transitions: %5d = %d (gaps) + %d (folds) + %d (zeros)"
+            "Number of transitions: %5d = %d (gaps) + %d (folds) + %d (zeros)"  # noqa: UP031
             % ((sum(trans_counts),) + trans_counts)
         )
         print(
-            "Min gap:         %16s at %s in %s"
+            "Min gap:         %16s at %s in %s"  # noqa: UP031
             % (min_gap, min_gap_datetime, min_gap_zone)
         )
         print(
-            "Max gap:         %16s at %s in %s"
+            "Max gap:         %16s at %s in %s"  # noqa: UP031
             % (max_gap, max_gap_datetime, max_gap_zone)
         )
         print(
-            "Min fold:        %16s at %s in %s"
+            "Min fold:        %16s at %s in %s"  # noqa: UP031
             % (min_fold, min_fold_datetime, min_fold_zone)
         )
         print(
-            "Max fold:        %16s at %s in %s"
+            "Max fold:        %16s at %s in %s"  # noqa: UP031
             % (max_fold, max_fold_datetime, max_fold_zone)
         )
 
     def transitions(self):
         for (_, prev_ti), (t, ti) in pairs(zip(self.ut, self.ti)):
             shift = ti[0] - prev_ti[0]
-            yield datetime.utcfromtimestamp(t), shift
+            yield datetime.utcfromtimestamp(t), shift  # noqa: DTZ004
 
     def nondst_folds(self):
         """Find all folds with the same value of isdst on both sides of the transition."""
         for (_, prev_ti), (t, ti) in pairs(zip(self.ut, self.ti)):
             shift = ti[0] - prev_ti[0]
             if shift < ZERO and ti[1] == prev_ti[1]:
-                yield datetime.utcfromtimestamp(t), -shift, prev_ti[2], ti[2]
+                yield datetime.utcfromtimestamp(t), -shift, prev_ti[2], ti[2]  # noqa: DTZ004
 
     @classmethod
     def print_all_nondst_folds(cls, same_abbr=False, start_year=1):
@@ -6028,7 +6041,7 @@ class ZoneInfo(tzinfo):
                     continue
                 count += 1
                 print(
-                    "%3d) %-30s %s %10s %5s -> %s"
+                    "%3d) %-30s %s %10s %5s -> %s"  # noqa: UP031
                     % (count, zonename, dt, shift, prev_abbr, abbr)
                 )
 
@@ -6059,7 +6072,7 @@ class ZoneInfoTest(unittest.TestCase):
         try:
             self.tz = ZoneInfo.fromname(self.zonename)
         except FileNotFoundError as err:
-            self.skipTest("Skipping %s: %s" % (self.zonename, err))
+            self.skipTest(f"Skipping {self.zonename}: {err}")
 
     def assertEquivDatetimes(self, a, b):
         self.assertEqual(
@@ -6108,7 +6121,7 @@ class ZoneInfoTest(unittest.TestCase):
                 self.assertLess(
                     ldt.replace(fold=1).utcoffset(),
                     ldt.replace(fold=0).utcoffset(),
-                    "At %s." % ldt,
+                    f"At {ldt}.",
                 )
 
             for x in [-timedelta.resolution, shift]:
@@ -6128,7 +6141,7 @@ class ZoneInfoTest(unittest.TestCase):
             # civil time was generally not solar time in those years.
             self.zonename.startswith("right/")
         ):
-            self.skipTest("Skipping %s" % self.zonename)
+            self.skipTest(f"Skipping {self.zonename}")
         tz = self.tz
         TZ = os.environ.get("TZ")
         os.environ["TZ"] = self.zonename
@@ -6139,7 +6152,7 @@ class ZoneInfoTest(unittest.TestCase):
                     # System support for times around the end of 32-bit time_t
                     # and later is flaky on many systems.
                     break
-                s0 = (udt - datetime(1970, 1, 1)) // SEC
+                s0 = (udt - datetime(1970, 1, 1)) // SEC  # noqa: DTZ001
                 ss = shift // SEC  # shift seconds
                 for x in [
                     -40 * 3600,
@@ -6151,14 +6164,14 @@ class ZoneInfoTest(unittest.TestCase):
                     ss + 40 * 3600,
                 ]:
                     s = s0 + x
-                    sdt = datetime.fromtimestamp(s)
+                    sdt = datetime.fromtimestamp(s)  # noqa: DTZ006
                     tzdt = datetime.fromtimestamp(s, tz).replace(tzinfo=None)
                     self.assertEquivDatetimes(sdt, tzdt)
                     s1 = sdt.timestamp()
                     self.assertEqual(s, s1)
                 if ss > 0:  # gap
                     # Create local time inside the gap
-                    dt = datetime.fromtimestamp(s0) - shift / 2
+                    dt = datetime.fromtimestamp(s0) - shift / 2  # noqa: DTZ006
                     ts0 = dt.timestamp()
                     ts1 = dt.replace(fold=1).timestamp()
                     self.assertEqual(ts0, s0 + ss / 2)
@@ -6176,7 +6189,7 @@ class ZoneInfoCompleteTest(unittest.TestSuite):
         tests = []
         if is_resource_enabled("tzdata"):
             for name in ZoneInfo.zonenames():
-                Test = type("ZoneInfoTest[%s]" % name, (ZoneInfoTest,), {})
+                Test = type(f"ZoneInfoTest[{name}]", (ZoneInfoTest,), {})
                 Test.zonename = name
                 for method in dir(Test):
                     if method.startswith("test_"):
@@ -6321,7 +6334,7 @@ class CapiTest(unittest.TestCase):
 
         d = date(2011, 1, 1)
         ds = DateSubclass(2011, 1, 1)
-        dt = datetime(2011, 1, 1)
+        dt = datetime(2011, 1, 1)  # noqa: DTZ001
 
         is_date = _testcapi.datetime_check_date
 
@@ -6337,8 +6350,8 @@ class CapiTest(unittest.TestCase):
 
         # Check that various other things are not dates at all
         args = [
-            tuple(),
-            list(),
+            (),
+            [],
             1,
             "2011-01-01",
             timedelta(1),
@@ -6369,8 +6382,8 @@ class CapiTest(unittest.TestCase):
 
         # Check that various other things are not times
         args = [
-            tuple(),
-            list(),
+            (),
+            [],
             1,
             "2011-01-01",
             timedelta(1),
@@ -6387,7 +6400,7 @@ class CapiTest(unittest.TestCase):
         class DateTimeSubclass(datetime):
             pass
 
-        dt = datetime(2011, 1, 1, 12, 30)
+        dt = datetime(2011, 1, 1, 12, 30)  # noqa: DTZ001
         dts = DateTimeSubclass(2011, 1, 1, 12, 30)
 
         is_datetime = _testcapi.datetime_check_datetime
@@ -6402,8 +6415,8 @@ class CapiTest(unittest.TestCase):
 
         # Check that various other things are not datetimes
         args = [
-            tuple(),
-            list(),
+            (),
+            [],
             1,
             "2011-01-01",
             timedelta(1),
@@ -6435,13 +6448,13 @@ class CapiTest(unittest.TestCase):
 
         # Check that various other things are not timedeltas
         args = [
-            tuple(),
-            list(),
+            (),
+            [],
             1,
             "2011-01-01",
             timezone.utc,
             date(2011, 1, 1),
-            datetime(2011, 1, 1),
+            datetime(2011, 1, 1),  # noqa: DTZ001
         ]
 
         for arg in args:
@@ -6471,12 +6484,12 @@ class CapiTest(unittest.TestCase):
 
         # Check that various other things are not tzinfos
         args = [
-            tuple(),
-            list(),
+            (),
+            [],
             1,
             "2011-01-01",
             date(2011, 1, 1),
-            datetime(2011, 1, 1),
+            datetime(2011, 1, 1),  # noqa: DTZ001
         ]
 
         for arg in args:
@@ -6496,7 +6509,7 @@ class CapiTest(unittest.TestCase):
                 self.assertEqual(c_api_date, exp_date)
 
     def test_datetime_from_dateandtime(self):
-        exp_date = datetime(1993, 8, 26, 22, 12, 55, 99999)
+        exp_date = datetime(1993, 8, 26, 22, 12, 55, 99999)  # noqa: DTZ001
 
         for macro in False, True:
             with self.subTest(macro=macro):
@@ -6514,7 +6527,7 @@ class CapiTest(unittest.TestCase):
                 self.assertEqual(c_api_date, exp_date)
 
     def test_datetime_from_dateandtimeandfold(self):
-        exp_date = datetime(1993, 8, 26, 22, 12, 55, 99999)
+        exp_date = datetime(1993, 8, 26, 22, 12, 55, 99999)  # noqa: DTZ001
 
         for fold in [0, 1]:
             for macro in False, True:
@@ -6579,7 +6592,7 @@ class CapiTest(unittest.TestCase):
                 self.assertEqual(c_api_delta, exp_delta)
 
     def test_date_from_timestamp(self):
-        ts = datetime(1995, 4, 12).timestamp()
+        ts = datetime(1995, 4, 12).timestamp()  # noqa: DTZ001
 
         for macro in False, True:
             with self.subTest(macro=macro):

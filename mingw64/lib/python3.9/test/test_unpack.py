@@ -144,7 +144,7 @@ __test__ = {"doctests": doctests}
 
 
 def test_main(verbose=False):
-    from test import support, test_unpack
+    from test import support, test_unpack  # noqa: PLW0406
 
     support.run_doctest(test_unpack, verbose)
 

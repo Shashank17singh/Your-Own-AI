@@ -360,7 +360,7 @@ class BaseTestCase(unittest.TestCase):
 
     def create_test(self, name=None, code=None):
         if not name:
-            name = "noop%s" % BaseTestCase.TEST_UNIQUE_ID
+            name = f"noop{BaseTestCase.TEST_UNIQUE_ID}"
             BaseTestCase.TEST_UNIQUE_ID += 1
 
         if code is None:
@@ -384,14 +384,14 @@ class BaseTestCase(unittest.TestCase):
                 fp.write(code)
         except PermissionError as exc:
             if not sysconfig.is_python_build():
-                self.skipTest("cannot write %s: %s" % (path, exc))
+                self.skipTest(f"cannot write {path}: {exc}")
             raise
         return name
 
     def regex_search(self, regex, output):
         match = re.search(regex, output, re.MULTILINE)
         if not match:
-            self.fail("%r not found in %r" % (regex, output))
+            self.fail(f"{regex!r} not found in {output!r}")
         return match
 
     def check_line(self, output, regex):
@@ -399,12 +399,9 @@ class BaseTestCase(unittest.TestCase):
         self.assertRegex(output, regex)
 
     def parse_executed_tests(self, output):
-        regex = r"^%s\[ *[0-9]+(?:/ *[0-9]+)*\] (%s)" % (
-            LOG_PREFIX,
-            self.TESTNAME_REGEX,
-        )
+        regex = rf"^{LOG_PREFIX}\[ *[0-9]+(?:/ *[0-9]+)*\] ({self.TESTNAME_REGEX})"
         parser = re.finditer(regex, output, re.MULTILINE)
-        return list(match.group(1) for match in parser)
+        return [match.group(1) for match in parser]
 
     def check_executed_tests(
         self,
@@ -414,12 +411,14 @@ class BaseTestCase(unittest.TestCase):
         failed=(),
         env_changed=(),
         omitted=(),
-        rerun={},
+        rerun=None,
         no_test_ran=(),
         randomize=False,
         interrupted=False,
         fail_env_changed=False,
     ):
+        if rerun is None:
+            rerun = {}
         if isinstance(tests, str):
             tests = [tests]
         if isinstance(skipped, str):
@@ -446,7 +445,7 @@ class BaseTestCase(unittest.TestCase):
             count = len(tests)
             names = " ".join(sorted(tests))
             regex = line_format % (count, plural(count))
-            regex = r"%s:\n    %s$" % (regex, names)
+            regex = rf"{regex}:\n    {names}$"
             return regex
 
         if skipped:
@@ -492,9 +491,9 @@ class BaseTestCase(unittest.TestCase):
             - len(no_test_ran)
         )
         if good:
-            regex = r"%s test%s OK\.$" % (good, plural(good))
+            regex = rf"{good} test{plural(good)} OK\.$"
             if not skipped and not failed and good > 1:
-                regex = "All %s" % regex
+                regex = f"All {regex}"
             self.check_line(output, regex)
 
         if interrupted:
@@ -516,9 +515,9 @@ class BaseTestCase(unittest.TestCase):
         result = ", ".join(result)
         if rerun:
             self.check_line(output, "Tests result: FAILURE")
-            result = "FAILURE then %s" % result
+            result = f"FAILURE then {result}"
 
-        self.check_line(output, "Tests result: %s" % result)
+        self.check_line(output, f"Tests result: {result}")
 
     def parse_random_seed(self, output):
         match = self.regex_search(r"Using random seed ([0-9]+)", output)
@@ -531,17 +530,13 @@ class BaseTestCase(unittest.TestCase):
             input = ""
         if "stderr" not in kw:
             kw["stderr"] = subprocess.STDOUT
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             args, text=True, input=input, stdout=subprocess.PIPE, **kw
         )
         if proc.returncode != exitcode:
-            msg = "Command %s failed with exit code %s\n\nstdout:\n---\n%s\n---\n" % (
-                str(args),
-                proc.returncode,
-                proc.stdout,
-            )
+            msg = f"Command {args!s} failed with exit code {proc.returncode}\n\nstdout:\n---\n{proc.stdout}\n---\n"
             if proc.stderr:
-                msg += "\nstderr:\n---\n%s---\n" % proc.stderr
+                msg += f"\nstderr:\n---\n{proc.stderr}---\n"
             self.fail(msg)
         return proc
 
@@ -593,7 +588,7 @@ class ProgramsTestCase(BaseTestCase):
         self.tests = [self.create_test() for index in range(self.NTEST)]
 
         self.python_args = ["-Wd", "-E", "-bb"]
-        self.regrtest_args = ["-uall", "-rwW", "--testdir=%s" % self.tmptestdir]
+        self.regrtest_args = ["-uall", "-rwW", f"--testdir={self.tmptestdir}"]
         self.regrtest_args.extend(("--timeout", "3600", "-j4"))
         if sys.platform == "win32":
             self.regrtest_args.append("-n")
@@ -672,7 +667,7 @@ class ProgramsTestCase(BaseTestCase):
     def test_tools_buildbot_test(self):
         # Tools\buildbot\test.bat
         script = os.path.join(ROOT_DIR, "Tools", "buildbot", "test.bat")
-        test_args = ["--testdir=%s" % self.tmptestdir]
+        test_args = [f"--testdir={self.tmptestdir}"]
         if platform.machine() == "ARM64":
             test_args.append("-arm64")  # ARM 64-bit build
         elif platform.machine() == "ARM":
@@ -707,7 +702,7 @@ class ArgsTestCase(BaseTestCase):
     """
 
     def run_tests(self, *testargs, **kw):
-        cmdargs = ["-m", "test", "--testdir=%s" % self.tmptestdir, *testargs]
+        cmdargs = ["-m", "test", f"--testdir={self.tmptestdir}", *testargs]
         return self.run_python(cmdargs, **kw)
 
     def test_failing_test(self):
@@ -731,14 +726,13 @@ class ArgsTestCase(BaseTestCase):
         tests = {}
         for resource in ("audio", "network"):
             code = textwrap.dedent(
-                """
-                        from test import support; support.requires(%r)
+                f"""
+                        from test import support; support.requires({resource!r})
                         import unittest
                         class PassingTest(unittest.TestCase):
                             def test_pass(self):
                                 pass
                     """
-                % resource
             )
 
             tests[resource] = self.create_test(resource, code)
@@ -771,7 +765,7 @@ class ArgsTestCase(BaseTestCase):
         test_random = int(match.group(1))
 
         # try to reproduce with the random seed
-        output = self.run_tests("-r", "--randseed=%s" % randseed, test)
+        output = self.run_tests("-r", f"--randseed={randseed}", test)
         randseed2 = self.parse_random_seed(output)
         self.assertEqual(randseed2, randseed)
 
@@ -793,9 +787,9 @@ class ArgsTestCase(BaseTestCase):
         with open(filename, "w") as fp:
             previous = None
             for index, name in enumerate(tests, 1):
-                line = "00:00:%02i [%s/%s] %s" % (index, index, len(tests), name)
+                line = "00:00:%02i [%s/%s] %s" % (index, index, len(tests), name)  # noqa: UP031
                 if previous:
-                    line += " -- %s took 0 sec" % previous
+                    line += f" -- {previous} took 0 sec"
                 print(line, file=fp)
                 previous = name
 
@@ -805,7 +799,7 @@ class ArgsTestCase(BaseTestCase):
         # test format '[2/7] test_opcodes'
         with open(filename, "w") as fp:
             for index, name in enumerate(tests, 1):
-                print("[%s/%s] %s" % (index, len(tests), name), file=fp)
+                print(f"[{index}/{len(tests)}] {name}", file=fp)
 
         output = self.run_tests("--fromfile", filename)
         self.check_executed_tests(output, tests)
@@ -821,7 +815,7 @@ class ArgsTestCase(BaseTestCase):
         # test format 'Lib/test/test_opcodes.py'
         with open(filename, "w") as fp:
             for name in tests:
-                print("Lib/test/%s.py" % name, file=fp)
+                print(f"Lib/test/{name}.py", file=fp)
 
         output = self.run_tests("--fromfile", filename)
         self.check_executed_tests(output, tests)
@@ -837,10 +831,7 @@ class ArgsTestCase(BaseTestCase):
         tests = [self.create_test() for index in range(3)]
         output = self.run_tests("--slowest", *tests)
         self.check_executed_tests(output, tests)
-        regex = "10 slowest tests:\n(?:- %s: .*\n){%s}" % (
-            self.TESTNAME_REGEX,
-            len(tests),
-        )
+        regex = f"10 slowest tests:\n(?:- {self.TESTNAME_REGEX}: .*\n){{{len(tests)}}}"
         self.check_line(output, regex)
 
     def test_slowest_interrupted(self):
@@ -911,7 +902,7 @@ class ArgsTestCase(BaseTestCase):
         line = "beginning 6 repetitions\n123456\n......\n"
         self.check_line(output, re.escape(line))
 
-        line2 = "%s leaked [1, 1, 1] %s, sum=3\n" % (test, what)
+        line2 = f"{test} leaked [1, 1, 1] {what}, sum=3\n"
         self.assertIn(line2, output)
 
         with open(filename) as fp:
@@ -967,14 +958,14 @@ class ArgsTestCase(BaseTestCase):
 
         # Test --list-cases
         all_methods = [
-            "%s.Tests.test_method1" % testname,
-            "%s.Tests.test_method2" % testname,
+            f"{testname}.Tests.test_method1",
+            f"{testname}.Tests.test_method2",
         ]
         output = self.run_tests("--list-cases", testname)
         self.assertEqual(output.splitlines(), all_methods)
 
         # Test --list-cases with --match
-        all_methods = ["%s.Tests.test_method1" % testname]
+        all_methods = [f"{testname}.Tests.test_method1"]
         output = self.run_tests("--list-cases", "-m", "test_method1", testname)
         self.assertEqual(output.splitlines(), all_methods)
 
@@ -1006,7 +997,6 @@ class ArgsTestCase(BaseTestCase):
                 def test_method4(self):
                     pass
         """)
-        all_methods = ["test_method1", "test_method2", "test_method3", "test_method4"]
         testname = self.create_test(code=code)
 
         # only run a subset
@@ -1017,7 +1007,7 @@ class ArgsTestCase(BaseTestCase):
             # only ignore the method name
             "test_method1",
             # ignore the full identifier
-            "%s.Tests.test_method3" % testname,
+            f"{testname}.Tests.test_method3",
         ]
         with open(filename, "w") as fp:
             for name in subset:
@@ -1058,7 +1048,7 @@ class ArgsTestCase(BaseTestCase):
             # only match the method name
             "test_method1",
             # match the full identifier
-            "%s.Tests.test_method3" % testname,
+            f"{testname}.Tests.test_method3",
         ]
         with open(filename, "w") as fp:
             for name in subset:
@@ -1251,7 +1241,7 @@ class ArgsTestCase(BaseTestCase):
 
         output = self.run_tests("-j2", "--timeout=1.0", testname, exitcode=2)
         self.check_executed_tests(output, [testname], failed=testname)
-        self.assertRegex(output, re.compile("%s timed out" % testname, re.MULTILINE))
+        self.assertRegex(output, re.compile(f"{testname} timed out", re.MULTILINE))
 
     def test_unraisable_exc(self):
         # --fail-env-changed must catch unraisable exception.
@@ -1293,7 +1283,7 @@ class ArgsTestCase(BaseTestCase):
         open(filename, "wb").close()
         names = [dirname, filename]
 
-        cmdargs = ["-m", "test", "--tempdir=%s" % self.tmptestdir, "--cleanup"]
+        cmdargs = ["-m", "test", f"--tempdir={self.tmptestdir}", "--cleanup"]
         self.run_python(cmdargs)
 
         for name in names:

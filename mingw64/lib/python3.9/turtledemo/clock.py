@@ -113,11 +113,11 @@ def datum(z):
     j = z.year
     m = monat[z.month - 1]
     t = z.day
-    return "%s %d %d" % (m, t, j)
+    return "%s %d %d" % (m, t, j)  # noqa: UP031
 
 
 def tick():
-    t = datetime.today()
+    t = datetime.today()  # noqa: DTZ002
     sekunde = t.second + t.microsecond * 0.000001
     minute = t.minute + sekunde / 60.0
     stunde = t.hour + minute / 60.0

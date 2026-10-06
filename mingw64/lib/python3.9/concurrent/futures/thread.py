@@ -51,10 +51,10 @@ class _WorkItem:
 
         try:
             result = self.fn(*self.args, **self.kwargs)
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             self.future.set_exception(exc)
             # Break a reference cycle with the exception 'exc'
-            self = None
+            self = None  # noqa: PLW0642
         else:
             self.future.set_result(result)
 
@@ -65,7 +65,7 @@ def _worker(executor_reference, work_queue, initializer, initargs):
     if initializer is not None:
         try:
             initializer(*initargs)
-        except BaseException:
+        except BaseException:  # noqa: BLE001
             _base.LOGGER.critical("Exception in initializer:", exc_info=True)
             executor = executor_reference()
             if executor is not None:
@@ -100,7 +100,7 @@ def _worker(executor_reference, work_queue, initializer, initargs):
                 work_queue.put(None)
                 return
             del executor
-    except BaseException:
+    except BaseException:  # noqa: BLE001
         _base.LOGGER.critical("Exception in worker", exc_info=True)
 
 
@@ -149,7 +149,7 @@ class ThreadPoolExecutor(_base.Executor):
         self._shutdown = False
         self._shutdown_lock = threading.Lock()
         self._thread_name_prefix = thread_name_prefix or (
-            "ThreadPoolExecutor-%d" % self._counter()
+            "ThreadPoolExecutor-%d" % self._counter()  # noqa: UP031
         )
         self._initializer = initializer
         self._initargs = initargs
@@ -187,7 +187,7 @@ class ThreadPoolExecutor(_base.Executor):
 
         num_threads = len(self._threads)
         if num_threads < self._max_workers:
-            thread_name = "%s_%d" % (self._thread_name_prefix or self, num_threads)
+            thread_name = "%s_%d" % (self._thread_name_prefix or self, num_threads)  # noqa: UP031
             t = threading.Thread(
                 name=thread_name,
                 target=_worker,

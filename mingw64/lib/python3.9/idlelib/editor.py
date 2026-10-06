@@ -30,19 +30,19 @@ from tkinter.ttk import Scrollbar
 
 # The default tab setting for a Text widget, in average-width characters.
 TK_TABWIDTH_DEFAULT = 8
-_py_version = " (%s)" % platform.python_version()
+_py_version = f" ({platform.python_version()})"
 darwin = sys.platform == "darwin"
 
 
 def _sphinx_version():
     "Format sys.version_info to produce the Sphinx version string used to install the chm docs"
     major, minor, micro, level, serial = sys.version_info
-    release = "%s%s" % (major, minor)
-    release += "%s" % (micro,)
+    release = f"{major}{minor}"
+    release += f"{micro}"
     if level == "candidate":
-        release += "rc%s" % (serial,)
+        release += f"rc{serial}"
     elif level != "final":
-        release += "%s%s" % (level[0], serial)
+        release += f"{level[0]}{serial}"
     return release
 
 
@@ -77,7 +77,7 @@ class EditorWindow:
             dochome = os.path.join(sys.base_prefix, "Doc", "index.html")
             if sys.platform.count("linux"):
                 # look for html docs in a couple of standard places
-                pyver = "python-docs-" + "%s.%s.%s" % sys.version_info[:3]
+                pyver = "python-docs-" + "{}.{}.{}".format(*sys.version_info[:3])
                 if os.path.isdir("/var/www/html/python/"):  # "python2" rpm
                     dochome = "/var/www/html/python/index.html"
                 else:
@@ -85,7 +85,7 @@ class EditorWindow:
                     dochome = os.path.join(basepath, pyver, "Doc", "index.html")
             elif sys.platform[:3] == "win":
                 chmfile = os.path.join(
-                    sys.base_prefix, "Doc", "Python%s.chm" % _sphinx_version()
+                    sys.base_prefix, "Doc", f"Python{_sphinx_version()}.chm"
                 )
                 if os.path.isfile(chmfile):
                     dochome = chmfile
@@ -102,7 +102,7 @@ class EditorWindow:
                     EditorWindow.help_url = "file://" + EditorWindow.help_url
             else:
                 EditorWindow.help_url = (
-                    "https://docs.python.org/%d.%d/" % sys.version_info[:2]
+                    "https://docs.python.org/%d.%d/" % sys.version_info[:2]  # noqa: UP031
                 )
         self.flist = flist
         root = root or flist.root
@@ -378,7 +378,7 @@ class EditorWindow:
         self.width = pixel_width // zero_char_width
 
     def new_callback(self, event):
-        dirname, basename = self.io.defaultfilename()
+        dirname, _basename = self.io.defaultfilename()
         self.flist.new(dirname)
         return "break"
 
@@ -447,10 +447,10 @@ class EditorWindow:
 
     def set_line_and_column(self, event=None):
         line, column = self.text.index(INSERT).split(".")
-        self.status_bar.set_label("column", "Col: %s" % column)
-        self.status_bar.set_label("line", "Ln: %s" % line)
+        self.status_bar.set_label("column", f"Col: {column}")
+        self.status_bar.set_label("line", f"Ln: {line}")
 
-    menu_specs = [
+    menu_specs = [  # noqa: RUF012
         ("file", "_File"),
         ("edit", "_Edit"),
         ("format", "F_ormat"),
@@ -536,7 +536,7 @@ class EditorWindow:
 
         for item in self.rmenu_specs:
             try:
-                label, eventname, verify_state = item
+                label, _eventname, verify_state = item
             except ValueError:  # see issue1207589
                 continue
 
@@ -550,7 +550,7 @@ class EditorWindow:
             self.text.config(cursor="ibeam")
         return "break"
 
-    rmenu_specs = [
+    rmenu_specs = [  # noqa: RUF012
         # ("Label", "<<virtual-event>>", "statefuncname"), ...
         ("Close", "<<close-window>>", None),  # Example
     ]
@@ -766,7 +766,7 @@ class EditorWindow:
 
     def gotoline(self, lineno):
         if lineno is not None and lineno > 0:
-            self.text.mark_set("insert", "%d.0" % lineno)
+            self.text.mark_set("insert", "%d.0" % lineno)  # noqa: UP031
             self.text.tag_remove("sel", "1.0", "end")
             self.text.tag_add("sel", "insert", "insert +1l")
             self.center()
@@ -774,7 +774,7 @@ class EditorWindow:
     def ispythonsource(self, filename):
         if not filename or os.path.isdir(filename):
             return True
-        base, ext = os.path.splitext(os.path.basename(filename))
+        _base, ext = os.path.splitext(os.path.basename(filename))
         if os.path.normcase(ext) in (".py", ".pyw"):
             return True
         line = self.text.get("1.0", "1.0 lineend")
@@ -908,7 +908,7 @@ class EditorWindow:
                     if accel:
                         itemName = menu.entrycget(index, "label")
                         event = ""
-                        if menubarItem in menuEventDict:
+                        if menubarItem in menuEventDict:  # noqa: SIM102
                             if itemName in menuEventDict[menubarItem]:
                                 event = menuEventDict[menubarItem][itemName]
                         if event:
@@ -1029,8 +1029,8 @@ class EditorWindow:
             title = "untitled"
         icon = short or long or title
         if not self.get_saved():
-            title = "*%s*" % title
-            icon = "*%s" % icon
+            title = f"*{title}*"
+            icon = f"*{icon}"
         self.top.wm_title(title)
         self.top.wm_iconname(icon)
 
@@ -1138,14 +1138,14 @@ class EditorWindow:
         for name in self.get_standard_extension_names():
             try:
                 self.load_extension(name)
-            except:
+            except:  # noqa: E722
                 print("Failed to load extension", repr(name))
                 traceback.print_exc()
 
     def get_standard_extension_names(self):
         return idleConf.GetExtensions(editor_only=True)
 
-    extfiles = {  # Map built-in config-extension section names to file names.
+    extfiles = {  # Map built-in config-extension section names to file names.  # noqa: RUF012
         "ZzDummy": "zzdummy",
     }
 
@@ -1356,7 +1356,7 @@ class EditorWindow:
             if have <= want or chars[-1] not in " \t":
                 break
         text.undo_block_start()
-        text.delete("insert-%dc" % ncharsdeleted, "insert")
+        text.delete("insert-%dc" % ncharsdeleted, "insert")  # noqa: UP031
         if have < want:
             text.insert("insert", " " * (want - have))
         text.undo_block_stop()
@@ -1432,7 +1432,7 @@ class EditorWindow:
                 line = line[:-1]
                 i += 1
             if i:
-                text.delete("insert - %d chars" % i, "insert")
+                text.delete("insert - %d chars" % i, "insert")  # noqa: UP031
 
             # Strip whitespace after insert point.
             while text.get("insert") in " \t":
@@ -1494,7 +1494,7 @@ class EditorWindow:
                     else:
                         self.reindent_to(y.compute_backslash_indent())
                 else:
-                    assert 0, "bogus continuation type %r" % (c,)
+                    assert 0, f"bogus continuation type {c!r}"
                 return "break"
 
             # This line starts a brand new statement; indent relative to
@@ -1518,7 +1518,7 @@ class EditorWindow:
 
     def _build_char_in_string_func(self, startindex):
         def inner(offset, _startindex=startindex, _icis=self.is_char_in_string):
-            return _icis(_startindex + "+%dc" % offset)
+            return _icis(_startindex + "+%dc" % offset)  # noqa: UP031
 
         return inner
 
@@ -1559,8 +1559,8 @@ class EditorWindow:
     def guess_indent(self):
         opener, indented = IndentSearcher(self.text, self.tabwidth).run()
         if opener and indented:
-            raw, indentsmall = get_line_indent(opener, self.tabwidth)
-            raw, indentlarge = get_line_indent(indented, self.tabwidth)
+            raw, indentsmall = get_line_indent(opener, self.tabwidth)  # noqa: RUF059
+            _raw, indentlarge = get_line_indent(indented, self.tabwidth)
         else:
             indentsmall = indentlarge = 0
         return indentlarge - indentsmall

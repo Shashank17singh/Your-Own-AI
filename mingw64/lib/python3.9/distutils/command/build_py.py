@@ -15,21 +15,23 @@ from distutils.util import Mixin2to3, convert_path
 class build_py(Command):
     description = '"build" pure Python modules (copy to build directory)'
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("build-lib=", "d", 'directory to "build" (copy) to'),
         ("compile", "c", "compile .py to .pyc"),
         ("no-compile", None, "don't compile .py files [default]"),
         (
             "optimize=",
             "O",
-            'also compile with optimization: -O1 for "python -O", '
-            '-O2 for "python -OO", and -O0 to disable [default: -O0]',
+            (
+                'also compile with optimization: -O1 for "python -O", '
+                '-O2 for "python -OO", and -O0 to disable [default: -O0]'
+            ),
         ),
         ("force", "f", "forcibly build everything (ignore file timestamps)"),
     ]
 
-    boolean_options = ["compile", "force"]
-    negative_opt = {"no-compile": "compile"}
+    boolean_options = ["compile", "force"]  # noqa: RUF012
+    negative_opt = {"no-compile": "compile"}  # noqa: RUF012
 
     def initialize_options(self):
         self.build_lib = None
@@ -135,7 +137,6 @@ class build_py(Command):
 
     def build_package_data(self):
         """Copy data files into build directory"""
-        lastdir = None
         for package, src_dir, build_dir, filenames in self.data_files:
             for filename in filenames:
                 target = os.path.join(build_dir, filename)
@@ -190,12 +191,12 @@ class build_py(Command):
         if package_dir != "":
             if not os.path.exists(package_dir):
                 raise DistutilsFileError(
-                    "package directory '%s' does not exist" % package_dir
+                    f"package directory '{package_dir}' does not exist"
                 )
             if not os.path.isdir(package_dir):
                 raise DistutilsFileError(
-                    "supposed package directory '%s' exists, "
-                    "but is not a directory" % package_dir
+                    f"supposed package directory '{package_dir}' exists, "
+                    "but is not a directory"
                 )
 
         # Require __init__.py for all but the "root package"
@@ -232,7 +233,7 @@ class build_py(Command):
                 module = os.path.splitext(os.path.basename(f))[0]
                 modules.append((package, module, f))
             else:
-                self.debug_print("excluding %s" % setup_script)
+                self.debug_print(f"excluding {setup_script}")
         return modules
 
     def find_modules(self):

@@ -6,7 +6,7 @@ import re
 import sys
 from email._policybase import Compat32, Policy, _extend_docstrings, compat32
 from email.contentmanager import raw_data_manager
-from email.headerregistry import HeaderRegistry as HeaderRegistry
+from email.headerregistry import HeaderRegistry
 from email.message import EmailMessage
 from email.utils import _has_surrogates
 

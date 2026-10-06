@@ -89,7 +89,7 @@ class SAXParseException(SAXException):
         colnum = self.getColumnNumber()
         if colnum is None:
             colnum = "?"
-        return "%s:%s:%s: %s" % (sysid, linenum, colnum, self._msg)
+        return f"{sysid}:{linenum}:{colnum}: {self._msg}"
 
 
 class SAXNotRecognizedException(SAXException):

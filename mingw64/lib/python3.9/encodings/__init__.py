@@ -124,7 +124,7 @@ def search_function(encoding):
     if not isinstance(entry, codecs.CodecInfo):
         if not 4 <= len(entry) <= 7:
             raise CodecRegistryError(
-                'module "%s" (%s) failed to register' % (mod.__name__, mod.__file__)
+                f'module "{mod.__name__}" ({mod.__file__}) failed to register'
             )
         if (
             not callable(entry[0])
@@ -135,7 +135,7 @@ def search_function(encoding):
             or (len(entry) > 5 and entry[5] is not None and not callable(entry[5]))
         ):
             raise CodecRegistryError(
-                'incompatible codecs in module "%s" (%s)' % (mod.__name__, mod.__file__)
+                f'incompatible codecs in module "{mod.__name__}" ({mod.__file__})'
             )
         if len(entry) < 7 or entry[6] is None:
             entry += (None,) * (6 - len(entry)) + (mod.__name__.split(".", 1)[1],)
@@ -168,7 +168,7 @@ if sys.platform == "win32":
         try:
             import _winapi
 
-            ansi_code_page = "cp%s" % _winapi.GetACP()
+            ansi_code_page = f"cp{_winapi.GetACP()}"
             if encoding == ansi_code_page:
                 import encodings.mbcs
 

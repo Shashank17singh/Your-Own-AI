@@ -271,7 +271,7 @@ class ScopeTests(unittest.TestCase):
         self.assertEqual(inc(1), 2)
         self.assertEqual(plus10(5), 15)
 
-        f2 = lambda x: (lambda: lambda y: x + y)()
+        f2 = lambda x: (lambda: lambda y: x + y)()  # noqa: PLC3002
         inc = f2(1)
         plus10 = f2(10)
         self.assertEqual(inc(1), 2)
@@ -290,7 +290,7 @@ class ScopeTests(unittest.TestCase):
     def testUnboundLocal(self):
 
         def errorInOuter():
-            print(y)
+            print(y)  # noqa: F821
 
             def inner():
                 return y
@@ -314,14 +314,14 @@ class ScopeTests(unittest.TestCase):
         def errorInOuter():
             y = 1
             del y
-            print(y)
+            print(y)  # noqa: F821
 
             def inner():
-                return y
+                return y  # noqa: F821
 
         def errorInInner():
             def inner():
-                return y
+                return y  # noqa: F821
 
             y = 1
             del y
@@ -332,7 +332,7 @@ class ScopeTests(unittest.TestCase):
 
     def testUnboundLocal_AugAssign(self):
         # test for bug #1501934: incorrect LOAD/STORE_GLOBAL generation
-        exec(
+        exec(  # noqa: S102
             """if 1:
             global_x = 1
             def f():
@@ -447,7 +447,7 @@ class ScopeTests(unittest.TestCase):
             self.assertEqual(g.get(), 13)
             g.set(15)
             self.assertEqual(g.get(), 13)
-            """)
+            """)  # noqa: S102
 
     def testLeaks(self):
 
@@ -497,7 +497,7 @@ class ScopeTests(unittest.TestCase):
                 passed = looked_up_by_load_name
 
             self.assertTrue(X.passed)
-            """)
+            """)  # noqa: S102
 
     def testLocalsFunction(self):
 
@@ -548,7 +548,7 @@ class ScopeTests(unittest.TestCase):
                 def m(self):
                     return x
 
-                z = list(locals())
+                z = list(locals())  # noqa: RUF012
 
             return C
 
@@ -601,7 +601,7 @@ class ScopeTests(unittest.TestCase):
             kind, des = getter
             if kind == 1:  # AV happens when stepping from this line to next
                 if des == "":
-                    des = "_%s__%s" % (klass.__name__, name)
+                    des = f"_{klass.__name__}__{name}"
                 return lambda obj: getattr(obj, des)
 
         class TestClass:
@@ -623,7 +623,7 @@ class ScopeTests(unittest.TestCase):
         self.assertRaises(TypeError, eval, g.__code__)
 
         try:
-            exec(g.__code__, {})
+            exec(g.__code__, {})  # noqa: S102
         except TypeError:
             pass
         else:
@@ -651,7 +651,7 @@ class ScopeTests(unittest.TestCase):
 
         def f(x):
             def g():
-                x
+                x  # noqa: B018
                 eval("x + 1")
 
             return g
@@ -663,7 +663,7 @@ class ScopeTests(unittest.TestCase):
         # the cell where the object was stored.
         class Special:
             def __del__(self):
-                nestedcell_get()
+                nestedcell_get()  # noqa: F821
 
     def testNonLocalFunction(self):
 
@@ -714,7 +714,7 @@ class ScopeTests(unittest.TestCase):
         # function does not affect the second function.
         local_ns = {}
         global_ns = {}
-        exec(
+        exec(  # noqa: S102
             """if 1:
             def f():
                 y = 1
@@ -791,7 +791,7 @@ class ScopeTests(unittest.TestCase):
             pass
 
         def b():
-            global a
+            global a  # noqa: PLW0602
 
     def testClassNamespaceOverridesClosure(self):
         # See #17853.
@@ -805,7 +805,7 @@ class ScopeTests(unittest.TestCase):
 
         class X:
             locals()["x"] = 43
-            del x
+            del x  # noqa: F821
 
         self.assertFalse(hasattr(X, "x"))
         self.assertEqual(x, 42)
@@ -826,12 +826,12 @@ class ScopeTests(unittest.TestCase):
         class Tester:
             def dig(self):
                 if 0:
-                    lambda: self
+                    lambda: self  # noqa: B018
                 try:
-                    1 / 0
-                except Exception as exc:
+                    1 / 0  # noqa: B018
+                except Exception as exc:  # noqa: BLE001
                     self.exc = exc
-                self = None  # Break the cycle
+                self = None  # Break the cycle  # noqa: PLW0642
 
         tester = Tester()
         tester.dig()

@@ -41,7 +41,7 @@ class AutoExpand:
             self.bell()
             return "break"
         word = self.getprevword()
-        self.text.delete("insert - %d chars" % len(word), "insert")
+        self.text.delete("insert - %d chars" % len(word), "insert")  # noqa: UP031
         newword = words[index]
         index = (index + 1) % len(words)
         if index == 0:

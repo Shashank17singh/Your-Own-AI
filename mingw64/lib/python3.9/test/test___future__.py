@@ -16,13 +16,13 @@ class FutureTest(unittest.TestCase):
             if obj is not None and isinstance(obj, __future__._Feature):
                 self.assertTrue(
                     name in given_feature_names,
-                    "%r should have been in all_feature_names" % name,
+                    f"{name!r} should have been in all_feature_names",
                 )
                 given_feature_names.remove(name)
         self.assertEqual(
             len(given_feature_names),
             0,
-            "all_feature_names has too much: %r" % given_feature_names,
+            f"all_feature_names has too much: {given_feature_names!r}",
         )
 
     def test_attributes(self):
@@ -36,15 +36,15 @@ class FutureTest(unittest.TestCase):
             e = self.assertEqual
 
             def check(t, name):
-                a(isinstance(t, tuple), "%s isn't tuple" % name)
-                e(len(t), 5, "%s isn't 5-tuple" % name)
+                a(isinstance(t, tuple), f"{name} isn't tuple")  # noqa: B023
+                e(len(t), 5, f"{name} isn't 5-tuple")  # noqa: B023
                 major, minor, micro, level, serial = t
-                a(isinstance(major, int), "%s major isn't int" % name)
-                a(isinstance(minor, int), "%s minor isn't int" % name)
-                a(isinstance(micro, int), "%s micro isn't int" % name)
-                a(isinstance(level, str), "%s level isn't string" % name)
-                a(level in GOOD_SERIALS, "%s level string has unknown value" % name)
-                a(isinstance(serial, int), "%s serial isn't int" % name)
+                a(isinstance(major, int), f"{name} major isn't int")  # noqa: B023
+                a(isinstance(minor, int), f"{name} minor isn't int")  # noqa: B023
+                a(isinstance(micro, int), f"{name} micro isn't int")  # noqa: B023
+                a(isinstance(level, str), f"{name} level isn't string")  # noqa: B023
+                a(level in GOOD_SERIALS, f"{name} level string has unknown value")  # noqa: B023
+                a(isinstance(serial, int), f"{name} serial isn't int")  # noqa: B023
 
             check(optional, "optional")
             if mandatory is not None:

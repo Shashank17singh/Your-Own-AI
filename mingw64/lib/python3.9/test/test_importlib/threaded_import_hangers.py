@@ -39,6 +39,6 @@ for name, func, args in [
         t.start()
         t.join(TIMEOUT)
         if t.is_alive():
-            errors.append("%s appeared to hang" % name)
+            errors.append(f"{name} appeared to hang")
     finally:
         del t

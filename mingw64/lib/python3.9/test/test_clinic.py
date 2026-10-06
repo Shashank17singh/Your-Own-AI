@@ -390,7 +390,7 @@ module os
 os.access
     follow_symlinks: bool = True
     something_else: str = ''""")
-        p = function.parameters["follow_symlinks"]
+        function.parameters["follow_symlinks"]
         self.assertEqual(3, len(function.parameters))
         self.assertIsInstance(
             function.parameters["something_else"].converter, clinic.str_converter
@@ -870,7 +870,7 @@ Not at column 0!
 
     def test_legacy_converters(self):
         block = self.parse('module os\nos.access\n   path: "s"')
-        module, function = block.signatures
+        _module, function = block.signatures
         self.assertIsInstance(
             (function.parameters["path"]).converter, clinic.str_converter
         )

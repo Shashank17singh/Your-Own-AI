@@ -95,21 +95,16 @@ class TestMain(unittest.TestCase):
         stderr = err.getvalue()
         self.assertIn(" implies -w.", stderr)
         self.assertIn(
-            "Output in %r will mirror the input directory %r layout"
-            % (self.py3_dest_dir, self.py2_src_dir),
+            f"Output in {self.py3_dest_dir!r} will mirror the input directory {self.py2_src_dir!r} layout",
             stderr,
         )
         self.assertEqual(
-            set(name + suffix for name in self.setup_files),
+            {name + suffix for name in self.setup_files},
             set(os.listdir(self.py3_dest_dir)),
         )
         for name in self.setup_files:
             self.assertIn(
-                "Writing converted %s to %s"
-                % (
-                    os.path.join(self.py2_src_dir, name),
-                    os.path.join(self.py3_dest_dir, name + suffix),
-                ),
+                f"Writing converted {os.path.join(self.py2_src_dir, name)} to {os.path.join(self.py3_dest_dir, name + suffix)}",
                 stderr,
             )
         sep = re.escape(os.sep)
@@ -121,7 +116,7 @@ class TestMain(unittest.TestCase):
         self.setup_test_source_trees()
         err = io.StringIO()
         py2_files = [self.trivial_py2_file, self.init_py2_file]
-        expected_files = set(os.path.basename(name) for name in py2_files)
+        expected_files = {os.path.basename(name) for name in py2_files}
         ret = self.run_2to3_capture(
             [
                 "-n",
@@ -139,8 +134,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(ret, 0)
         stderr = err.getvalue()
         self.assertIn(
-            "Output in %r will mirror the input directory %r layout"
-            % (self.py3_dest_dir, self.py2_src_dir),
+            f"Output in {self.py3_dest_dir!r} will mirror the input directory {self.py2_src_dir!r} layout",
             stderr,
         )
         self.assertEqual(expected_files, set(os.listdir(self.py3_dest_dir)))
@@ -165,12 +159,11 @@ class TestMain(unittest.TestCase):
         self.assertEqual(ret, 0)
         stderr = err.getvalue()
         self.assertIn(
-            "Output in %r will mirror the input directory %r layout"
-            % (self.py3_dest_dir, self.py2_src_dir),
+            f"Output in {self.py3_dest_dir!r} will mirror the input directory {self.py2_src_dir!r} layout",
             stderr,
         )
         self.assertEqual(
-            set([os.path.basename(self.trivial_py2_file)]),
+            {os.path.basename(self.trivial_py2_file)},
             set(os.listdir(self.py3_dest_dir)),
         )
 

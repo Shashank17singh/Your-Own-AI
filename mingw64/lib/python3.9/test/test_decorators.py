@@ -27,7 +27,7 @@ class DbcheckError(Exception):
         # A real version of this would set attributes here
         Exception.__init__(
             self,
-            "dbcheck %r failed (func=%s args=%s kwds=%s)" % (exprstr, func, args, kwds),
+            f"dbcheck {exprstr!r} failed (func={func} args={args} kwds={kwds})",
         )
 
 
@@ -35,7 +35,7 @@ def dbcheck(exprstr, globals=None, locals=None):
     "Decorator to implement debugging assertions"
 
     def decorate(func):
-        expr = compile(exprstr, "dbcheck-%s" % func.__name__, "eval")
+        expr = compile(exprstr, f"dbcheck-{func.__name__}", "eval")
 
         def check(*args, **kwds):
             if not eval(expr, globals, locals):
@@ -130,7 +130,7 @@ class TestDecorators(unittest.TestCase):
             return decorate
 
         args = ("Now", "is", "the", "time")
-        kwds = dict(one=1, two=2)
+        kwds = {"one": 1, "two": 2}
 
         @noteargs(*args, **kwds)
         def f1():
@@ -145,7 +145,7 @@ class TestDecorators(unittest.TestCase):
 
         self.assertEqual(f2(), 84)
         self.assertEqual(
-            f2.dbval, (("terry", "gilliam"), dict(eric="idle", john="cleese"))
+            f2.dbval, (("terry", "gilliam"), {"eric": "idle", "john": "cleese"})
         )
 
         @noteargs(
@@ -175,7 +175,7 @@ class TestDecorators(unittest.TestCase):
 
         self.assertEqual(double.__name__, "double")
 
-        self.assertEqual(counts, dict(double=0))
+        self.assertEqual(counts, {"double": 0})
 
         # Only the first call with a given argument bumps the call count:
         #
@@ -205,12 +205,12 @@ class TestDecorators(unittest.TestCase):
         for expr in ("1.+2j", "[1, 2][-1]", "(1, 2)", "True", "...", "None"):
             compile(expr, "test", "eval")  # Sanity check.
             with self.assertRaises(TypeError):
-                exec(f"@{expr}\ndef f(): pass")
+                exec(f"@{expr}\ndef f(): pass")  # noqa: S102
 
         def unimp(func):
             raise NotImplementedError
 
-        context = dict(nullval=None, unimp=unimp)
+        context = {"nullval": None, "unimp": unimp}
 
         for expr, exc in [
             ("undef", NameError),
@@ -218,7 +218,7 @@ class TestDecorators(unittest.TestCase):
             ("nullval.attr", AttributeError),
             ("unimp", NotImplementedError),
         ]:
-            codestr = "@%s\ndef f(): pass\nassert f() is None" % expr
+            codestr = f"@{expr}\ndef f(): pass\nassert f() is None"
             code = compile(codestr, "test", "exec")
             self.assertRaises(exc, eval, code, context)
 
@@ -305,8 +305,8 @@ class TestDecorators(unittest.TestCase):
                 elif fname == "arg":
                     opname, res = ("evalargs", str(self.index))
                 else:
-                    assert False, "Unknown attrname %s" % fname
-                actions.append("%s%d" % (opname, self.index))
+                    assert False, f"Unknown attrname {fname}"
+                actions.append("%s%d" % (opname, self.index))  # noqa: UP031
                 return res
 
         c1, c2, c3 = map(NameLookupTracer, [1, 2, 3])

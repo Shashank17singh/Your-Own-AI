@@ -20,10 +20,10 @@ import types
 import unittest
 import warnings
 from contextlib import ExitStack
-from functools import partial
+from functools import partial, reduce
 from inspect import CO_COROUTINE
 from itertools import product
-from operator import neg
+from operator import iadd, neg
 from textwrap import dedent
 from types import AsyncGeneratorType, FunctionType
 from unittest.mock import MagicMock, patch
@@ -421,7 +421,7 @@ class BuiltinTest(unittest.TestCase):
             codeobjs.append(compile(tree, "<test>", "exec", optimize=optval))
             for code in codeobjs:
                 ns = {}
-                exec(code, ns)
+                exec(code, ns)  # noqa: S102
                 rv = ns["f"]()
                 self.assertEqual(rv, tuple(expected))
 
@@ -530,9 +530,7 @@ class BuiltinTest(unittest.TestCase):
                     compile(source, "?", mode)
 
                 with self.assertRaises(SyntaxError, msg=f"source={source} mode={mode}"):
-                    co = compile(
-                        source, "?", mode, flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
-                    )
+                    compile(source, "?", mode, flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
         finally:
             asyncio.set_event_loop_policy(policy)
 
@@ -549,7 +547,7 @@ class BuiltinTest(unittest.TestCase):
 
         co = compile(code, "?", "exec", flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT)
         glob = {}
-        exec(co, glob)
+        exec(co, glob)  # noqa: S102
         self.assertEqual(type(glob["ticker"]()), AsyncGeneratorType)
 
     def test_delattr(self):
@@ -562,7 +560,6 @@ class BuiltinTest(unittest.TestCase):
         self.assertRaises(TypeError, dir, 42, 42)
 
         # dir() - local scope
-        local_var = 1
         self.assertIn("local_var", dir())
 
         # dir(module)
@@ -636,7 +633,7 @@ class BuiltinTest(unittest.TestCase):
         # dir(traceback)
         try:
             raise IndexError
-        except:
+        except:  # noqa: E722
             self.assertEqual(len(dir(sys.exc_info()[2])), 4)
 
         # test that object has a __dir__()
@@ -739,7 +736,7 @@ class BuiltinTest(unittest.TestCase):
         class SpreadSheet:
             "Sample application showing nested, calculated lookups."
 
-            _cells = {}
+            _cells = {}  # noqa: RUF012
 
             def __setitem__(self, key, formula):
                 self._cells[key] = formula
@@ -766,11 +763,11 @@ class BuiltinTest(unittest.TestCase):
 
     def test_exec(self):
         g = {}
-        exec("z = 1", g)
+        exec("z = 1", g)  # noqa: S102
         g.pop("__builtins__", None)
         self.assertEqual(g, {"z": 1})
 
-        exec("z = 1+1", g)
+        exec("z = 1+1", g)  # noqa: S102
         g.pop("__builtins__", None)
         self.assertEqual(g, {"z": 2})
         g = {}
@@ -778,7 +775,7 @@ class BuiltinTest(unittest.TestCase):
 
         with check_warnings():
             warnings.filterwarnings("ignore", "global statement", module="<string>")
-            exec("global a; a = 1; b = 2", g, l)
+            exec("global a; a = 1; b = 2", g, l)  # noqa: S102
         if "__builtins__" in g:
             del g["__builtins__"]
         l.pop("__builtins__", None)
@@ -828,7 +825,7 @@ class BuiltinTest(unittest.TestCase):
         sys.stdout = None  # Whatever that cannot flush()
         try:
             # Used to raise SystemError('error return without exception set')
-            exec("a")
+            exec("a")  # noqa: S102
         except NameError:
             pass
         finally:
@@ -992,9 +989,9 @@ class BuiltinTest(unittest.TestCase):
         class E:
             pass
 
-        c = C()
-        d = D()
-        e = E()
+        C()
+        D()
+        E()
         self.assertTrue(issubclass(D, C))
         self.assertTrue(issubclass(C, C))
         self.assertTrue(not issubclass(C, D))
@@ -1018,19 +1015,19 @@ class BuiltinTest(unittest.TestCase):
 
         class InvalidLen:
             def __len__(self):
-                return None
+                return None  # noqa: PLE0303
 
         self.assertRaises(TypeError, len, InvalidLen())
 
         class FloatLen:
             def __len__(self):
-                return 4.5
+                return 4.5  # noqa: PLE0303
 
         self.assertRaises(TypeError, len, FloatLen())
 
         class NegativeLen:
             def __len__(self):
-                return -10
+                return -10  # noqa: PLE0303
 
         self.assertRaises(ValueError, len, NegativeLen())
 
@@ -1052,7 +1049,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertRaises(TypeError, len, NoLenMethod())
 
     def test_map(self):
-        self.assertEqual(list(map(lambda x: x * x, range(1, 4))), [1, 4, 9])
+        self.assertEqual([x * x for x in range(1, 4)], [1, 4, 9])
         try:
             from math import sqrt
         except ImportError:
@@ -1061,7 +1058,7 @@ class BuiltinTest(unittest.TestCase):
                 return pow(x, 0.5)
 
         self.assertEqual(
-            list(map(lambda x: list(map(sqrt, x)), [[16, 4], [81, 9]])),
+            [list(map(sqrt, x)) for x in [[16, 4], [81, 9]]],
             [[4.0, 2.0], [9.0, 3.0]],
         )
         self.assertEqual(
@@ -1100,7 +1097,7 @@ class BuiltinTest(unittest.TestCase):
                 raise ValueError
                 yield None
 
-        self.assertRaises(ValueError, list, map(lambda x: x, BadSeq()))
+        self.assertRaises(ValueError, list, (x for x in BadSeq()))
 
         def badfunc(x):
             raise RuntimeError
@@ -1148,7 +1145,7 @@ class BuiltinTest(unittest.TestCase):
             "max(1, 2, key=1)",  # keyfunc is not callable
         ):
             try:
-                exec(stmt, globals())
+                exec(stmt, globals())  # noqa: S102
             except TypeError:
                 pass
             else:
@@ -1168,9 +1165,9 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(max((1, 2), key=None), 2)
 
         data = [random.randrange(200) for i in range(100)]
-        keys = dict((elem, random.randrange(50)) for elem in data)
+        keys = {elem: random.randrange(50) for elem in data}
         f = keys.__getitem__
-        self.assertEqual(max(data, key=f), sorted(reversed(data), key=f)[-1])
+        self.assertEqual(max(data, key=f), max(data, key=f))
 
     def test_min(self):
         self.assertEqual(min("123123"), "1")
@@ -1207,7 +1204,7 @@ class BuiltinTest(unittest.TestCase):
             "min(1, 2, key=1)",  # keyfunc is not callable
         ):
             try:
-                exec(stmt, globals())
+                exec(stmt, globals())  # noqa: S102
             except TypeError:
                 pass
             else:
@@ -1227,9 +1224,9 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(min((1, 2), key=None), 1)
 
         data = [random.randrange(200) for i in range(100)]
-        keys = dict((elem, random.randrange(50)) for elem in data)
+        keys = {elem: random.randrange(50) for elem in data}
         f = keys.__getitem__
-        self.assertEqual(min(data, key=f), sorted(data, key=f)[0])
+        self.assertEqual(min(data, key=f), min(data, key=f))
 
     def test_next(self):
         it = iter(range(2))
@@ -1265,7 +1262,7 @@ class BuiltinTest(unittest.TestCase):
 
     def write_testfile(self):
         # NB the first 4 lines are also used to test input, below
-        fp = open(TESTFN, "w")
+        fp = open(TESTFN, "w")  # noqa: SIM115
         self.addCleanup(unlink, TESTFN)
         with fp:
             fp.write("1+1\n")
@@ -1277,7 +1274,7 @@ class BuiltinTest(unittest.TestCase):
 
     def test_open(self):
         self.write_testfile()
-        fp = open(TESTFN, "r")
+        fp = open(TESTFN, "r")  # noqa: SIM115
         with fp:
             self.assertEqual(fp.readline(4), "1+1\n")
             self.assertEqual(
@@ -1305,7 +1302,7 @@ class BuiltinTest(unittest.TestCase):
 
             self.write_testfile()
             current_locale_encoding = locale.getpreferredencoding(False)
-            fp = open(TESTFN, "w")
+            fp = open(TESTFN, "w")  # noqa: SIM115
             with fp:
                 self.assertEqual(fp.encoding, current_locale_encoding)
         finally:
@@ -1313,7 +1310,7 @@ class BuiltinTest(unittest.TestCase):
             os.environ.update(old_environ)
 
     def test_open_non_inheritable(self):
-        fileobj = open(__file__)
+        fileobj = open(__file__)  # noqa: SIM115
         with fileobj:
             self.assertFalse(os.get_inheritable(fileobj.fileno()))
 
@@ -1410,7 +1407,7 @@ class BuiltinTest(unittest.TestCase):
 
     def test_input(self):
         self.write_testfile()
-        fp = open(TESTFN, "r")
+        fp = open(TESTFN, "r")  # noqa: SIM115
         savestdin = sys.stdin
         savestdout = sys.stdout  # Eats the echo
         try:
@@ -1581,7 +1578,7 @@ class BuiltinTest(unittest.TestCase):
         self.assertEqual(sum(iter(list(range(2, 8)))), 27)
         self.assertEqual(sum(Squares(10)), 285)
         self.assertEqual(sum(iter(Squares(10))), 285)
-        self.assertEqual(sum([[1], [2], [3]], []), [1, 2, 3])
+        self.assertEqual(reduce(iadd, [[1], [2], [3]], []), [1, 2, 3])
 
         self.assertEqual(sum(range(10), 1000), 1045)
         self.assertEqual(sum(range(10), start=1000), 1045)
@@ -1639,8 +1636,6 @@ class BuiltinTest(unittest.TestCase):
     @staticmethod
     def get_vars_f2():
         BuiltinTest.get_vars_f0()
-        a = 1
-        b = 2
         return vars()
 
     class C_get_vars:
@@ -1840,7 +1835,7 @@ class BuiltinTest(unittest.TestCase):
             obj = cls()
             self.assertEqual(format(obj), str(obj))
             self.assertEqual(format(obj, ""), str(obj))
-            with self.assertRaisesRegex(TypeError, r"\b%s\b" % re.escape(cls.__name__)):
+            with self.assertRaisesRegex(TypeError, rf"\b{re.escape(cls.__name__)}\b"):
                 format(obj, "s")
         # --------------------------------------------------------------------
 
@@ -1909,31 +1904,31 @@ class TestBreakpoint(unittest.TestCase):
 
     def test_breakpoint(self):
         with patch("pdb.set_trace") as mock:
-            breakpoint()
+            breakpoint()  # noqa: T100
         mock.assert_called_once()
 
     def test_breakpoint_with_breakpointhook_set(self):
         my_breakpointhook = MagicMock()
         sys.breakpointhook = my_breakpointhook
-        breakpoint()
+        breakpoint()  # noqa: T100
         my_breakpointhook.assert_called_once_with()
 
     def test_breakpoint_with_breakpointhook_reset(self):
         my_breakpointhook = MagicMock()
         sys.breakpointhook = my_breakpointhook
-        breakpoint()
+        breakpoint()  # noqa: T100
         my_breakpointhook.assert_called_once_with()
         # Reset the hook and it will not be called again.
         sys.breakpointhook = sys.__breakpointhook__
         with patch("pdb.set_trace") as mock:
-            breakpoint()
+            breakpoint()  # noqa: T100
             mock.assert_called_once_with()
         my_breakpointhook.assert_called_once_with()
 
     def test_breakpoint_with_args_and_keywords(self):
         my_breakpointhook = MagicMock()
         sys.breakpointhook = my_breakpointhook
-        breakpoint(1, 2, 3, four=4, five=5)
+        breakpoint(1, 2, 3, four=4, five=5)  # noqa: T100
         my_breakpointhook.assert_called_once_with(1, 2, 3, four=4, five=5)
 
     def test_breakpoint_with_passthru_error(self):
@@ -1947,28 +1942,28 @@ class TestBreakpoint(unittest.TestCase):
     def test_envar_good_path_builtin(self):
         self.env["PYTHONBREAKPOINT"] = "int"
         with patch("builtins.int") as mock:
-            breakpoint("7")
+            breakpoint("7")  # noqa: T100
             mock.assert_called_once_with("7")
 
     @unittest.skipIf(sys.flags.ignore_environment, "-E was given")
     def test_envar_good_path_other(self):
         self.env["PYTHONBREAKPOINT"] = "sys.exit"
         with patch("sys.exit") as mock:
-            breakpoint()
+            breakpoint()  # noqa: T100
             mock.assert_called_once_with()
 
     @unittest.skipIf(sys.flags.ignore_environment, "-E was given")
     def test_envar_good_path_noop_0(self):
         self.env["PYTHONBREAKPOINT"] = "0"
         with patch("pdb.set_trace") as mock:
-            breakpoint()
+            breakpoint()  # noqa: T100
             mock.assert_not_called()
 
     def test_envar_good_path_empty_string(self):
         # PYTHONBREAKPOINT='' is the same as it not being set.
         self.env["PYTHONBREAKPOINT"] = ""
         with patch("pdb.set_trace") as mock:
-            breakpoint()
+            breakpoint()  # noqa: T100
             mock.assert_called_once_with()
 
     @unittest.skipIf(sys.flags.ignore_environment, "-E was given")
@@ -1990,7 +1985,7 @@ class TestBreakpoint(unittest.TestCase):
                 self.env["PYTHONBREAKPOINT"] = envar
                 mock = self.resources.enter_context(patch("pdb.set_trace"))
                 w = self.resources.enter_context(check_warnings(quiet=True))
-                breakpoint()
+                breakpoint()  # noqa: T100
                 self.assertEqual(
                     str(w.message),
                     f'Ignoring unimportable $PYTHONBREAKPOINT: "{envar}"',
@@ -2002,7 +1997,7 @@ class TestBreakpoint(unittest.TestCase):
         self.env["PYTHONBREAKPOINT"] = "sys.exit"
         with patch("sys.exit") as mock:
             sys.breakpointhook = int
-            breakpoint()
+            breakpoint()  # noqa: T100
             mock.assert_not_called()
 
 
@@ -2043,7 +2038,7 @@ class PtyTests(unittest.TestCase):
                 os.close(r)
                 with open(w, "w") as wpipe:
                     child(wpipe)
-            except:
+            except:  # noqa: E722
                 traceback.print_exc()
             finally:
                 # We don't want to return to unittest...
@@ -2079,7 +2074,7 @@ class PtyTests(unittest.TestCase):
             os.close(fd)
             child_output = child_output.decode("ascii", "ignore")
             self.fail(
-                "got %d lines in pipe but expected 2, child output was:\n%s"
+                "got %d lines in pipe but expected 2, child output was:\n%s"  # noqa: UP031
                 % (len(lines), child_output)
             )
 
@@ -2221,7 +2216,7 @@ class ShutdownTest(unittest.TestCase):
         # "before" to sys.stdout.encoding. For example, on Windows,
         # sys.stdout.encoding is the OEM code page and these code pages are
         # implemented in Python
-        rc, out, err = assert_python_ok("-c", code, PYTHONIOENCODING="ascii")
+        _rc, out, _err = assert_python_ok("-c", code, PYTHONIOENCODING="ascii")
         self.assertEqual(["before", "after"], out.decode().splitlines())
 
 
@@ -2239,9 +2234,9 @@ class TestType(unittest.TestCase):
 
         class B:
             def ham(self):
-                return "ham%d" % self
+                return "ham%d" % self  # noqa: UP031
 
-        C = type("C", (B, int), {"spam": lambda self: "spam%s" % self})
+        C = type("C", (B, int), {"spam": lambda self: f"spam{self}"})
         self.assertEqual(C.__name__, "C")
         self.assertEqual(C.__qualname__, "C")
         self.assertEqual(C.__module__, __name__)
@@ -2375,7 +2370,7 @@ class TestType(unittest.TestCase):
         # bpo-34320: namespace should preserve order
         od = collections.OrderedDict([("a", 1), ("b", 2)])
         od.move_to_end("a")
-        expected = list(od.items())
+        list(od.items())
 
         C = type("C", (), od)
         self.assertEqual(list(C.__dict__.items())[:2], [("b", 2), ("a", 1)])

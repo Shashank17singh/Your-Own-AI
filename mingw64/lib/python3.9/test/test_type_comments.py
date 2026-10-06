@@ -362,7 +362,7 @@ class TypeCommentTests(unittest.TestCase):
                 if arg is not None:
                     self.assertIsNone(
                         arg.type_comment,
-                        "%s(%s:%r)" % (t.name, arg.arg, arg.type_comment),
+                        f"{t.name}({arg.arg}:{arg.type_comment!r})",
                     )
 
     def test_inappropriate_type_comments(self):

@@ -20,13 +20,7 @@ PROGRAM_BLOCKED = [sys.executable, "-c", "import time; time.sleep(3600)"]
 PROGRAM_CAT = [
     sys.executable,
     "-c",
-    ";".join(
-        (
-            "import sys",
-            "data = sys.stdin.buffer.read()",
-            "sys.stdout.buffer.write(data)",
-        )
-    ),
+    "import sys;data = sys.stdin.buffer.read();sys.stdout.buffer.write(data)",
 ]
 
 
@@ -85,7 +79,7 @@ class SubprocessTransportTests(test_utils.TestCase):
 
     def test_subprocess_repr(self):
         waiter = self.loop.create_future()
-        transport, protocol = self.create_transport(waiter)
+        transport, _protocol = self.create_transport(waiter)
         transport._process_exited(6)
         self.loop.run_until_complete(waiter)
 
@@ -136,7 +130,7 @@ class SubprocessMixin:
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
             )
-            stdout, stderr = await proc.communicate(data)
+            stdout, _stderr = await proc.communicate(data)
             return proc.returncode, stdout
 
         task = run(b"some data")
@@ -263,7 +257,7 @@ class SubprocessMixin:
             code = "\n".join(
                 (
                     "import sys",
-                    'sys.stdout.write("x" * %s)' % size,
+                    f'sys.stdout.write("x" * {size})',
                     "sys.stdout.flush()",
                 )
             )
@@ -288,7 +282,7 @@ class SubprocessMixin:
             )
             stdout_transport = proc._transport.get_pipe_transport(1)
 
-            stdout, stderr = await proc.communicate()
+            stdout, _stderr = await proc.communicate()
 
             # The child process produced more than limit bytes of output,
             # the stream reader transport should pause the protocol to not
@@ -317,7 +311,7 @@ class SubprocessMixin:
                 stderr=asyncio.subprocess.PIPE,
                 close_fds=False,
             )
-            stdout, stderr = await proc.communicate(message)
+            stdout, _stderr = await proc.communicate(message)
             exitcode = await proc.wait()
             return (stdout, exitcode)
 
@@ -338,7 +332,7 @@ class SubprocessMixin:
                 stderr=asyncio.subprocess.PIPE,
                 close_fds=False,
             )
-            stdout, stderr = await proc.communicate(b"")
+            stdout, _stderr = await proc.communicate(b"")
             exitcode = await proc.wait()
             return (stdout, exitcode)
 
@@ -359,7 +353,7 @@ class SubprocessMixin:
                 stderr=asyncio.subprocess.PIPE,
                 close_fds=False,
             )
-            stdout, stderr = await proc.communicate()
+            stdout, _stderr = await proc.communicate()
             exitcode = await proc.wait()
             return (stdout, exitcode)
 
@@ -380,7 +374,7 @@ class SubprocessMixin:
                 stderr=asyncio.subprocess.PIPE,
                 close_fds=False,
             )
-            stdout, stderr = await proc.communicate(b"abc")
+            stdout, _stderr = await proc.communicate(b"abc")
             exitcode = await proc.wait()
             return (stdout, exitcode)
 
@@ -401,7 +395,7 @@ class SubprocessMixin:
                 stderr=asyncio.subprocess.DEVNULL,
                 close_fds=False,
             )
-            stdout, stderr = await proc.communicate(b"abc")
+            _stdout, stderr = await proc.communicate(b"abc")
             exitcode = await proc.wait()
             return (stderr, exitcode)
 
@@ -475,7 +469,7 @@ class SubprocessMixin:
             create = self.loop.subprocess_exec(
                 asyncio.SubprocessProtocol, *PROGRAM_BLOCKED
             )
-            transport, protocol = await create
+            transport, _protocol = await create
 
             kill_called = False
 
@@ -510,7 +504,7 @@ class SubprocessMixin:
             create = self.loop.subprocess_exec(
                 asyncio.SubprocessProtocol, *PROGRAM_BLOCKED
             )
-            transport, protocol = await create
+            transport, _protocol = await create
             proc = transport.get_extra_info("subprocess")
 
             # kill the process (but asyncio is not notified immediately)
@@ -574,15 +568,7 @@ class SubprocessMixin:
     def test_read_stdout_after_process_exit(self):
 
         async def execute():
-            code = "\n".join(
-                [
-                    "import sys",
-                    "for _ in range(64):",
-                    '    sys.stdout.write("x" * 4096)',
-                    "sys.stdout.flush()",
-                    "sys.exit(1)",
-                ]
-            )
+            code = 'import sys\nfor _ in range(64):\n    sys.stdout.write("x" * 4096)\nsys.stdout.flush()\nsys.exit(1)'
 
             process = await asyncio.create_subprocess_exec(
                 sys.executable,

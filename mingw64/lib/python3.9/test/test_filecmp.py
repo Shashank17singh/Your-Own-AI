@@ -52,8 +52,8 @@ class FileCompareTestCase(unittest.TestCase):
         )
 
     def test_cache_clear(self):
-        first_compare = filecmp.cmp(self.name, self.name_same, shallow=False)
-        second_compare = filecmp.cmp(self.name, self.name_diff, shallow=False)
+        filecmp.cmp(self.name, self.name_same, shallow=False)
+        filecmp.cmp(self.name, self.name_diff, shallow=False)
         filecmp.clear_cache()
         self.assertTrue(
             len(filecmp._cache) == 0, "Cache not cleared after calling clear_cache"

@@ -98,7 +98,7 @@ class HelperFunctionTest(unittest.TestCase):
 
     def test_readmailcapfile(self):
         # Test readmailcapfile() using test file. It should match MAILCAPDICT.
-        with open(MAILCAPFILE, "r") as mcf:
+        with open(MAILCAPFILE, "r") as mcf:  # noqa: SIM117
             with self.assertWarns(DeprecationWarning):
                 d = mailcap.readmailcapfile(mcf)
         self.assertDictEqual(d, MAILCAPDICT_DEPRECATED)
@@ -230,11 +230,11 @@ class FindmatchTest(unittest.TestCase):
                 ('"An audio fragment"', audio_basic_entry),
             ),
             ([c, "audio/basic", "foobar"], {}, (None, None)),
-            ([c, "video/*"], {"filename": fname}, ("animate %s" % fname, video_entry)),
+            ([c, "video/*"], {"filename": fname}, (f"animate {fname}", video_entry)),
             (
                 [c, "audio/basic", "compose"],
                 {"filename": fname},
-                ("audiocompose %s" % fname, audio_basic_entry),
+                (f"audiocompose {fname}", audio_basic_entry),
             ),
             (
                 [c, "audio/basic"],

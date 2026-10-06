@@ -54,7 +54,7 @@ class PindentTests(unittest.TestCase):
             compile(clean, "_test.py", "exec")
             self.assertEqual(self.pindent(clean, "-c"), closed)
             self.assertEqual(self.pindent(closed, "-d"), clean)
-            rc, out, err = assert_python_ok(self.script, "-c", data_path)
+            rc, out, err = assert_python_ok(self.script, "-c", data_path)  # noqa: RUF059
             self.assertEqual(out, b"")
             self.assertEqual(err, b"")
             with open(backup) as f:
@@ -64,7 +64,7 @@ class PindentTests(unittest.TestCase):
             broken = self.lstriplines(closed)
             with open(data_path, "w") as f:
                 f.write(broken)
-            rc, out, err = assert_python_ok(self.script, "-r", data_path)
+            _rc, out, err = assert_python_ok(self.script, "-r", data_path)
             self.assertEqual(out, b"")
             self.assertEqual(err, b"")
             with open(backup) as f:

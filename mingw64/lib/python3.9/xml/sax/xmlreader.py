@@ -68,19 +68,19 @@ class XMLReader:
 
     def getFeature(self, name):
         "Looks up and returns the state of a SAX2 feature."
-        raise SAXNotRecognizedException("Feature '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Feature '{name}' not recognized")
 
     def setFeature(self, name, state):
         "Sets the state of a SAX2 feature."
-        raise SAXNotRecognizedException("Feature '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Feature '{name}' not recognized")
 
     def getProperty(self, name):
         "Looks up and returns the value of a SAX2 property."
-        raise SAXNotRecognizedException("Property '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Property '{name}' not recognized")
 
     def setProperty(self, name, value):
         "Sets the value of a SAX2 property."
-        raise SAXNotRecognizedException("Property '%s' not recognized" % name)
+        raise SAXNotRecognizedException(f"Property '{name}' not recognized")
 
 
 class IncrementalParser(XMLReader):

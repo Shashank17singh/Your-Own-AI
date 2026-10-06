@@ -77,8 +77,8 @@ def _maybe_compile(compiler, source, filename, symbol):
         if symbol != "eval":
             source = "pass"  # Replace it with a 'pass' statement
 
-    err = err1 = err2 = None
-    code = code1 = code2 = None
+    err1 = err2 = None
+    code = code1 = None
 
     try:
         code = compiler(source, filename, symbol)
@@ -96,7 +96,7 @@ def _maybe_compile(compiler, source, filename, symbol):
             err1 = e
 
         try:
-            code2 = compiler(source + "\n\n", filename, symbol)
+            compiler(source + "\n\n", filename, symbol)
         except SyntaxError as e:
             err2 = e
 

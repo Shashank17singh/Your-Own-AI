@@ -138,7 +138,8 @@ class TestFail:
             self.assertEqual(err.lineno, 1)
             self.assertEqual(err.colno, idx + 1)
             self.assertEqual(
-                str(err), "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx)
+                str(err),
+                "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx),  # noqa: UP031
             )
 
     def test_unexpected_data(self):
@@ -174,7 +175,8 @@ class TestFail:
             self.assertEqual(err.lineno, 1)
             self.assertEqual(err.colno, idx + 1)
             self.assertEqual(
-                str(err), "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx)
+                str(err),
+                "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx),  # noqa: UP031
             )
 
     def test_extra_data(self):
@@ -197,7 +199,8 @@ class TestFail:
             self.assertEqual(err.lineno, 1)
             self.assertEqual(err.colno, idx + 1)
             self.assertEqual(
-                str(err), "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx)
+                str(err),
+                "%s: line 1 column %d (char %d)" % (msg, idx + 1, idx),  # noqa: UP031
             )
 
     def test_linecol(self):
@@ -217,7 +220,7 @@ class TestFail:
             self.assertEqual(err.colno, col)
             self.assertEqual(
                 str(err),
-                "Expecting value: line %s column %d (char %d)" % (line, col, idx),
+                "Expecting value: line %s column %d (char %d)" % (line, col, idx),  # noqa: UP031
             )
 
 

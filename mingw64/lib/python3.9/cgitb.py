@@ -119,7 +119,7 @@ def html(einfo, context=5):
     head = (
         '<body bgcolor="#f0f0f8">'
         + pydoc.html.heading(
-            "<big><big>%s</big></big>" % strong(pydoc.html.escape(str(etype))),
+            f"<big><big>{strong(pydoc.html.escape(str(etype)))}</big></big>",
             "#ffffff",
             "#6622aa",
             pyver + "<br>" + date,
@@ -135,7 +135,7 @@ function calls leading up to the error, in the order they occurred.</p>"""
     for frame, file, lnum, func, lines, index in records:
         if file:
             file = os.path.abspath(file)
-            link = '<a href="file://%s">%s</a>' % (file, pydoc.html.escape(file))
+            link = f'<a href="file://{file}">{pydoc.html.escape(file)}</a>'
         else:
             file = link = "?"
         args, varargs, varkw, locals = inspect.getargvalues(frame)
@@ -153,32 +153,32 @@ function calls leading up to the error, in the order they occurred.</p>"""
 
         highlight = {}
 
-        def reader(lnum=[lnum]):
-            highlight[lnum[0]] = 1
+        def reader(lnum=None):
+            if lnum is None:
+                lnum = [lnum]
+            highlight[lnum[0]] = 1  # noqa: B023
             try:
-                return linecache.getline(file, lnum[0])
+                return linecache.getline(file, lnum[0])  # noqa: B023
             finally:
                 lnum[0] += 1
 
         vars = scanvars(reader, frame, locals)
 
         rows = [
-            '<tr><td bgcolor="#d8bbff">%s%s %s</td></tr>'
-            % ("<big>&nbsp;</big>", link, call)
+            '<tr><td bgcolor="#d8bbff">{}{} {}</td></tr>'.format(
+                "<big>&nbsp;</big>", link, call
+            )
         ]
         if index is not None:
             i = lnum - index
             for line in lines:
                 num = small("&nbsp;" * (5 - len(str(i))) + str(i)) + "&nbsp;"
                 if i in highlight:
-                    line = "<tt>=&gt;%s%s</tt>" % (num, pydoc.html.preformat(line))
-                    rows.append('<tr><td bgcolor="#ffccee">%s</td></tr>' % line)
+                    line = f"<tt>=&gt;{num}{pydoc.html.preformat(line)}</tt>"
+                    rows.append(f'<tr><td bgcolor="#ffccee">{line}</td></tr>')
                 else:
-                    line = "<tt>&nbsp;&nbsp;%s%s</tt>" % (
-                        num,
-                        pydoc.html.preformat(line),
-                    )
-                    rows.append("<tr><td>%s</td></tr>" % grey(line))
+                    line = f"<tt>&nbsp;&nbsp;{num}{pydoc.html.preformat(line)}</tt>"
+                    rows.append(f"<tr><td>{grey(line)}</td></tr>")
                 i += 1
 
         done, dump = {}, []
@@ -188,32 +188,30 @@ function calls leading up to the error, in the order they occurred.</p>"""
             done[name] = 1
             if value is not __UNDEF__:
                 if where in ("global", "builtin"):
-                    name = ("<em>%s</em> " % where) + strong(name)
+                    name = (f"<em>{where}</em> ") + strong(name)
                 elif where == "local":
                     name = strong(name)
                 else:
                     name = where + strong(name.split(".")[-1])
-                dump.append("%s&nbsp;= %s" % (name, pydoc.html.repr(value)))
+                dump.append(f"{name}&nbsp;= {pydoc.html.repr(value)}")
             else:
                 dump.append(name + " <em>undefined</em>")
 
-        rows.append("<tr><td>%s</td></tr>" % small(grey(", ".join(dump))))
+        rows.append("<tr><td>{}</td></tr>".format(small(grey(", ".join(dump)))))
         frames.append(
             """
-<table width="100%%" cellspacing=0 cellpadding=0 border=0>
-%s</table>"""
-            % "\n".join(rows)
+<table width="100%" cellspacing=0 cellpadding=0 border=0>
+{}</table>""".format("\n".join(rows))
         )
 
     exception = [
-        "<p>%s: %s"
-        % (strong(pydoc.html.escape(str(etype))), pydoc.html.escape(str(evalue)))
+        f"<p>{strong(pydoc.html.escape(str(etype)))}: {pydoc.html.escape(str(evalue))}"
     ]
     for name in dir(evalue):
         if name[:1] == "_":
             continue
         value = pydoc.html.repr(getattr(evalue, name))
-        exception.append("\n<br>%s%s&nbsp;=\n%s" % (indent, name, value))
+        exception.append(f"\n<br>{indent}{name}&nbsp;=\n{value}")
 
     return (
         head
@@ -226,10 +224,9 @@ function calls leading up to the error, in the order they occurred.</p>"""
      for a Web browser because the 'cgitb' module was enabled.  In case you
      are not reading this in a Web browser, here is the original traceback:
 
-%s
+{}
 -->
-"""
-        % pydoc.html.escape("".join(traceback.format_exception(etype, evalue, etb)))
+""".format(pydoc.html.escape("".join(traceback.format_exception(etype, evalue, etb))))
     )
 
 
@@ -241,7 +238,7 @@ def text(einfo, context=5):
     pyver = "Python " + sys.version.split()[0] + ": " + sys.executable
     date = time.ctime(time.time())
     head = (
-        "%s\n%s\n%s\n" % (str(etype), pyver, date)
+        f"{etype!s}\n{pyver}\n{date}\n"
         + """
 A problem occurred in a Python script.  Here is the sequence of
 function calls leading up to the error, in the order they occurred.
@@ -267,20 +264,22 @@ function calls leading up to the error, in the order they occurred.
 
         highlight = {}
 
-        def reader(lnum=[lnum]):
-            highlight[lnum[0]] = 1
+        def reader(lnum=None):
+            if lnum is None:
+                lnum = [lnum]
+            highlight[lnum[0]] = 1  # noqa: B023
             try:
-                return linecache.getline(file, lnum[0])
+                return linecache.getline(file, lnum[0])  # noqa: B023
             finally:
                 lnum[0] += 1
 
         vars = scanvars(reader, frame, locals)
 
-        rows = [" %s %s" % (file, call)]
+        rows = [f" {file} {call}"]
         if index is not None:
             i = lnum - index
             for line in lines:
-                num = "%5d " % i
+                num = "%5d " % i  # noqa: UP031
                 rows.append(num + line.rstrip())
                 i += 1
 
@@ -294,17 +293,17 @@ function calls leading up to the error, in the order they occurred.
                     name = "global " + name
                 elif where != "local":
                     name = where + name.split(".")[-1]
-                dump.append("%s = %s" % (name, pydoc.text.repr(value)))
+                dump.append(f"{name} = {pydoc.text.repr(value)}")
             else:
                 dump.append(name + " undefined")
 
         rows.append("\n".join(dump))
-        frames.append("\n%s\n" % "\n".join(rows))
+        frames.append("\n{}\n".format("\n".join(rows)))
 
-    exception = ["%s: %s" % (str(etype), str(evalue))]
+    exception = [f"{etype!s}: {evalue!s}"]
     for name in dir(evalue):
         value = pydoc.text.repr(getattr(evalue, name))
-        exception.append("\n%s%s = %s" % (" " * 4, name, value))
+        exception.append("\n{}{} = {}".format(" " * 4, name, value))
 
     return (
         head
@@ -315,9 +314,8 @@ function calls leading up to the error, in the order they occurred.
 The above is a description of an error in a Python program.  Here is
 the original traceback:
 
-%s
-"""
-        % "".join(traceback.format_exception(etype, evalue, etb))
+{}
+""".format("".join(traceback.format_exception(etype, evalue, etb)))
     )
 
 
@@ -343,7 +341,7 @@ class Hook:
         plain = False
         try:
             doc = formatter(info, self.context)
-        except:  # just in case something goes wrong
+        except:  # just in case something goes wrong  # noqa: E722
             doc = "".join(traceback.format_exception(*info))
             plain = True
 
@@ -363,17 +361,17 @@ class Hook:
             try:
                 with os.fdopen(fd, "w") as file:
                     file.write(doc)
-                msg = "%s contains the description of this error." % path
-            except:
-                msg = "Tried to save traceback to %s, but failed." % path
+                msg = f"{path} contains the description of this error."
+            except:  # noqa: E722
+                msg = f"Tried to save traceback to {path}, but failed."
 
             if self.format == "html":
-                self.file.write("<p>%s</p>\n" % msg)
+                self.file.write(f"<p>{msg}</p>\n")
             else:
                 self.file.write(msg + "\n")
         try:
             self.file.flush()
-        except:
+        except:  # noqa: E722, S110
             pass
 
 

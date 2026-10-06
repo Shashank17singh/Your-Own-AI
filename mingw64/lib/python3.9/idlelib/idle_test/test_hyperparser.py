@@ -211,7 +211,7 @@ class HyperParserTest(unittest.TestCase):
                 return False
             else:
                 err_msg = f"Unexpected result: {result} (expected 0 or {len(candidate)}"
-                raise Exception(err_msg)
+                raise Exception(err_msg)  # noqa: TRY002
 
         # invalid first character which is valid elsewhere in an identifier
         self.assertFalse(is_valid_id("2notid"))

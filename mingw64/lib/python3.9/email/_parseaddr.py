@@ -401,7 +401,7 @@ class AddrlistClass:
                 self.pos += 1
                 preserve_ws = False
             elif self.field[self.pos] == '"':
-                aslist.append('"%s"' % quote(self.getquote()))
+                aslist.append(f'"{quote(self.getquote())}"')
             elif self.field[self.pos] in self.atomends:
                 if aslist and not aslist[-1].strip():
                     aslist.pop()
@@ -495,7 +495,7 @@ class AddrlistClass:
 
     def getdomainliteral(self):
         """Parse an RFC 2822 domain-literal."""
-        return "[%s]" % self.getdelimited("[", "]\r", False)
+        return "[{}]".format(self.getdelimited("[", "]\r", False))
 
     def getatom(self, atomends=None):
         """Parse an RFC 2822 atom.

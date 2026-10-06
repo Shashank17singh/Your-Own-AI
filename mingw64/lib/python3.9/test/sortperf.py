@@ -20,15 +20,15 @@ def randfloats(n):
     # Generating floats is expensive, so this writes them out to a file in
     # a temp directory.  If the file already exists, it just reads them
     # back in and shuffles them a bit.
-    fn = os.path.join(td, "rr%06d" % n)
+    fn = os.path.join(td, "rr%06d" % n)  # noqa: UP031
     try:
-        fp = open(fn, "rb")
+        fp = open(fn, "rb")  # noqa: SIM115
     except OSError:
         r = random.random
         result = [r() for i in range(n)]
         try:
             try:
-                fp = open(fn, "wb")
+                fp = open(fn, "wb")  # noqa: SIM115
                 marshal.dump(result, fp)
                 fp.close()
                 fp = None
@@ -92,7 +92,7 @@ def tabulate(r):
     for i in r:
         n = 1 << i
         L = randfloats(n)
-        print("%2d %7d" % (i, n), end=" ")
+        print("%2d %7d" % (i, n), end=" ")  # noqa: UP031
         flush()
         doit(L)  # *sort
         L.reverse()
@@ -122,7 +122,7 @@ def tabulate(r):
             L = L * (n // 4)
             # Force the elements to be distinct objects, else timings can be
             # artificially low.
-            L = list(map(lambda x: --x, L))
+            L = [--x for x in L]  # noqa: B002
         doit(L)  # ~sort
         del L
 

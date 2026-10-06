@@ -3,7 +3,7 @@ from ctypes import *
 
 
 class X(Structure):
-    _fields_ = [("a", c_int), ("b", c_int)]
+    _fields_ = [("a", c_int), ("b", c_int)]  # noqa: RUF012
     new_was_called = False
 
     def __new__(cls):
@@ -17,7 +17,7 @@ class X(Structure):
 
 
 class Y(Structure):
-    _fields_ = [("x", X)]
+    _fields_ = [("x", X)]  # noqa: RUF012
 
 
 class InitTest(unittest.TestCase):

@@ -53,7 +53,7 @@ class ResourceTest(unittest.TestCase):
                     limit_set = True
                 except ValueError:
                     limit_set = False
-                f = open(support.TESTFN, "wb")
+                f = open(support.TESTFN, "wb")  # noqa: SIM115
                 try:
                     f.write(b"X" * 1024)
                     try:
@@ -85,7 +85,7 @@ class ResourceTest(unittest.TestCase):
         # Be sure that setrlimit is checking for really large values
         too_big = 10**50
         try:
-            cur, max = resource.getrlimit(resource.RLIMIT_FSIZE)
+            _cur, max = resource.getrlimit(resource.RLIMIT_FSIZE)
         except AttributeError:
             pass
         else:
@@ -101,15 +101,15 @@ class ResourceTest(unittest.TestCase):
     def test_getrusage(self):
         self.assertRaises(TypeError, resource.getrusage)
         self.assertRaises(TypeError, resource.getrusage, 42, 42)
-        usageself = resource.getrusage(resource.RUSAGE_SELF)
-        usagechildren = resource.getrusage(resource.RUSAGE_CHILDREN)
+        resource.getrusage(resource.RUSAGE_SELF)
+        resource.getrusage(resource.RUSAGE_CHILDREN)
         # May not be available on all systems.
         try:
-            usageboth = resource.getrusage(resource.RUSAGE_BOTH)
+            resource.getrusage(resource.RUSAGE_BOTH)
         except (ValueError, AttributeError):
             pass
         try:
-            usage_thread = resource.getrusage(resource.RUSAGE_THREAD)
+            resource.getrusage(resource.RUSAGE_THREAD)
         except (ValueError, AttributeError):
             pass
 
@@ -119,7 +119,7 @@ class ResourceTest(unittest.TestCase):
     )
     def test_setrusage_refcount(self):
         try:
-            limits = resource.getrlimit(resource.RLIMIT_CPU)
+            resource.getrlimit(resource.RLIMIT_CPU)
         except AttributeError:
             pass
         else:

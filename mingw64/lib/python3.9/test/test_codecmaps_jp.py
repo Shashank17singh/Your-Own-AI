@@ -11,7 +11,7 @@ from test import multibytecodec_support
 class TestCP932Map(multibytecodec_support.TestBase_Mapping, unittest.TestCase):
     encoding = "cp932"
     mapfileurl = "http://www.pythontest.net/unicode/CP932.TXT"
-    supmaps = [
+    supmaps = [  # noqa: RUF012
         (b"\x80", "\u0080"),
         (b"\xa0", "\uf8f0"),
         (b"\xfd", "\uf8f1"),
@@ -32,10 +32,10 @@ class TestSJISCOMPATMap(multibytecodec_support.TestBase_Mapping, unittest.TestCa
     encoding = "shift_jis"
     mapfilename = "SHIFTJIS.TXT"
     mapfileurl = "http://www.pythontest.net/unicode/SHIFTJIS.TXT"
-    pass_enctest = [
+    pass_enctest = [  # noqa: RUF012
         (b"\x81_", "\\"),
     ]
-    pass_dectest = [
+    pass_dectest = [  # noqa: RUF012
         (b"\\", "\xa5"),
         (b"~", "\u203e"),
         (b"\x81_", "\\"),

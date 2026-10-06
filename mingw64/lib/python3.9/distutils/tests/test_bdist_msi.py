@@ -15,7 +15,7 @@ class BDistMSITestCase(
         # minimal test XXX need more tests
         from distutils.command.bdist_msi import bdist_msi
 
-        project_dir, dist = self.create_dist()
+        _project_dir, dist = self.create_dist()
         with check_warnings(("", DeprecationWarning)):
             cmd = bdist_msi(dist)
         cmd.ensure_finalized()

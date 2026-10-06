@@ -48,7 +48,7 @@ class BinASCIITest(unittest.TestCase):
     def test_functions(self):
         # Check presence of all functions
         for name in all_functions:
-            self.assertTrue(hasattr(getattr(binascii, name), "__call__"))
+            self.assertTrue(callable(getattr(binascii, name)))
             self.assertRaises(TypeError, getattr(binascii, name))
 
     @support.ignore_warnings(category=DeprecationWarning)
@@ -62,7 +62,7 @@ class BinASCIITest(unittest.TestCase):
             try:
                 a = b2a(self.type2test(raw))
                 res = a2b(self.type2test(a))
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 self.fail(f"{fb}/{fa} conversion raises {err!r}")
             if fb == "b2a_hqx":
                 # b2a_hqx returns a tuple
@@ -385,7 +385,7 @@ class BinASCIITest(unittest.TestCase):
             f = getattr(binascii, func)
             try:
                 f(empty)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 self.fail(f"{func}({empty!r}) raises {err!r}")
 
     def test_unicode_b2a(self):
@@ -393,7 +393,7 @@ class BinASCIITest(unittest.TestCase):
         for func in set(all_functions) - set(a2b_functions) | {"rledecode_hqx"}:
             try:
                 self.assertRaises(TypeError, getattr(binascii, func), "test")
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 self.fail(f'{func}("test") raises {err!r}')
         # crc_hqx needs 2 arguments
         self.assertRaises(TypeError, binascii.crc_hqx, "test", 0)
@@ -414,7 +414,7 @@ class BinASCIITest(unittest.TestCase):
                 binary_res = a2b(a)
                 a = a.decode("ascii")
                 res = a2b(a)
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 self.fail(f"{fb}/{fa} conversion raises {err!r}")
             if fb == "b2a_hqx":
                 # b2a_hqx returns a tuple

@@ -57,7 +57,7 @@ class HashEqualityTestCase(unittest.TestCase):
         hashed = list(map(hash, objlist))
         for h in hashed[1:]:
             if h != hashed[0]:
-                self.fail("hashed values differ: %r" % (objlist,))
+                self.fail(f"hashed values differ: {objlist!r}")
 
     def test_numeric_literals(self):
         self.same_hash(1, 1, 1.0, 1.0 + 0.0j)
@@ -128,17 +128,17 @@ class NoHash:
 
 
 class HashInheritanceTestCase(unittest.TestCase):
-    default_expected = [
+    default_expected = [  # noqa: RUF012
         object(),
         DefaultHash(),
         OnlyInequality(),
     ]
-    fixed_expected = [
+    fixed_expected = [  # noqa: RUF012
         FixedHash(),
         InheritedHashWithEquality(),
         InheritedHashWithInequality(),
     ]
-    error_expected = [
+    error_expected = [  # noqa: RUF012
         NoHash(),
         OnlyEquality(),
     ]
@@ -177,7 +177,7 @@ class DefaultIterSeq:
 
 
 class HashBuiltinsTestCase(unittest.TestCase):
-    hashes_to_check = [
+    hashes_to_check = [  # noqa: RUF012
         enumerate(range(10)),
         iter(DefaultIterSeq()),
         iter(lambda: 0, 0),
@@ -194,7 +194,7 @@ class HashRandomizationTests:
     # an object to be tested
 
     def get_hash_command(self, repr_):
-        return "print(hash(eval(%a)))" % repr_
+        return f"print(hash(eval({repr_!a})))"
 
     def get_hash(self, repr_, seed=None):
         env = os.environ.copy()
@@ -220,7 +220,7 @@ class StringlikeHashRandomizationTests(HashRandomizationTests):
     repr_long = None
 
     # 32bit little, 64bit little, 32bit big, 64bit big
-    known_hashes = {
+    known_hashes = {  # noqa: RUF012
         "djba33x": [  # only used for small strings
             # seed 0, 'abc'
             [193485960, 193485960, 193485960, 193485960],
@@ -330,7 +330,7 @@ class MemoryviewHashRandomizationTests(
 
 class DatetimeTests(HashRandomizationTests):
     def get_hash_command(self, repr_):
-        return "import datetime; print(hash(%s))" % repr_
+        return f"import datetime; print(hash({repr_}))"
 
 
 class DatetimeDateTests(DatetimeTests, unittest.TestCase):
@@ -338,7 +338,7 @@ class DatetimeDateTests(DatetimeTests, unittest.TestCase):
 
 
 class DatetimeDatetimeTests(DatetimeTests, unittest.TestCase):
-    repr_ = repr(datetime.datetime(1, 2, 3, 4, 5, 6, 7))
+    repr_ = repr(datetime.datetime(1, 2, 3, 4, 5, 6, 7))  # noqa: DTZ001
 
 
 class DatetimeTimeTests(DatetimeTests, unittest.TestCase):

@@ -39,10 +39,10 @@ TYPE = "power< 'type' trailer< '(' x=any ')' > >"
 class FixIdioms(fixer_base.BaseFix):
     explicit = True  # The user must ask for this fixer
 
-    PATTERN = r"""
-        isinstance=comparison< %s %s T=any >
+    PATTERN = rf"""
+        isinstance=comparison< {TYPE} {CMP} T=any >
         |
-        isinstance=comparison< T=any %s %s >
+        isinstance=comparison< T=any {CMP} {TYPE} >
         |
         while_stmt< 'while' while='1' ':' any+ >
         |
@@ -76,7 +76,7 @@ class FixIdioms(fixer_base.BaseFix):
             >
             next=any*
         >
-    """ % (TYPE, CMP, CMP, TYPE)
+    """
 
     def match(self, node):
         r = super().match(node)

@@ -305,7 +305,7 @@ class StreamReaderProtocol(FlowControlMixin, protocols.Protocol):
         reader = self._stream_reader
         if reader is not None:
             reader.feed_eof()
-        if self._over_ssl:
+        if self._over_ssl:  # noqa: SIM103
             # Prevent a warning in SSLProtocol.eof_received:
             # "returning true from eof_received()
             # has no effect when using ssl"

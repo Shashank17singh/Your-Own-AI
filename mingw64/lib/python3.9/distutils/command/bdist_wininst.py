@@ -17,13 +17,15 @@ from distutils.util import get_platform
 class bdist_wininst(Command):
     description = "create an executable installer for MS Windows"
 
-    user_options = [
+    user_options = [  # noqa: RUF012
         ("bdist-dir=", None, "temporary directory for creating the distribution"),
         (
             "plat-name=",
             "p",
-            "platform name to embed in generated filenames "
-            "(default: %s)" % get_platform(),
+            (
+                "platform name to embed in generated filenames "
+                f"(default: {get_platform()})"
+            ),
         ),
         (
             "keep-temp",
@@ -57,26 +59,32 @@ class bdist_wininst(Command):
         (
             "install-script=",
             None,
-            "basename of installation script to be run after "
-            "installation or before deinstallation",
+            (
+                "basename of installation script to be run after "
+                "installation or before deinstallation"
+            ),
         ),
         (
             "pre-install-script=",
             None,
-            "Fully qualified filename of a script to be run before "
-            "any files are installed.  This script need not be in the "
-            "distribution",
+            (
+                "Fully qualified filename of a script to be run before "
+                "any files are installed.  This script need not be in the "
+                "distribution"
+            ),
         ),
         (
             "user-access-control=",
             None,
-            "specify Vista's UAC handling - 'none'/default=no "
-            "handling, 'auto'=use UAC if target Python installed for "
-            "all users, 'force'=always use UAC",
+            (
+                "specify Vista's UAC handling - 'none'/default=no "
+                "handling, 'auto'=use UAC if target Python installed for "
+                "all users, 'force'=always use UAC"
+            ),
         ),
     ]
 
-    boolean_options = [
+    boolean_options = [  # noqa: RUF012
         "keep-temp",
         "no-target-compile",
         "no-target-optimize",
@@ -130,8 +138,8 @@ class bdist_wininst(Command):
             short_version = get_python_version()
             if self.target_version and self.target_version != short_version:
                 raise DistutilsOptionError(
-                    "target version can only be %s, or the '--skip-build'"
-                    " option must be specified" % (short_version,)
+                    f"target version can only be {short_version}, or the '--skip-build'"
+                    " option must be specified"
                 )
             self.target_version = short_version
 
@@ -147,7 +155,7 @@ class bdist_wininst(Command):
                     break
             else:
                 raise DistutilsOptionError(
-                    "install_script '%s' not found in scripts" % self.install_script
+                    f"install_script '{self.install_script}' not found in scripts"
                 )
 
     def run(self):
@@ -183,8 +191,8 @@ class bdist_wininst(Command):
             target_version = self.target_version
             if not target_version:
                 assert self.skip_build, "Should have already checked this"
-                target_version = "%d.%d" % sys.version_info[:2]
-            plat_specifier = ".%s-%s" % (self.plat_name, target_version)
+                target_version = "%d.%d" % sys.version_info[:2]  # noqa: UP031
+            plat_specifier = f".{self.plat_name}-{target_version}"
             build = self.get_finalized_command("build")
             build.build_lib = os.path.join(build.build_base, "lib" + plat_specifier)
 
@@ -258,32 +266,31 @@ class bdist_wininst(Command):
         ]:
             data = getattr(metadata, name, "")
             if data:
-                info = info + ("\n    %s: %s" % (name.capitalize(), escape(data)))
-                lines.append("%s=%s" % (name, escape(data)))
+                info = info + (f"\n    {name.capitalize()}: {escape(data)}")
+                lines.append(f"{name}={escape(data)}")
 
         # The [setup] section contains entries controlling
         # the installer runtime.
         lines.append("\n[Setup]")
         if self.install_script:
-            lines.append("install_script=%s" % self.install_script)
-        lines.append("info=%s" % escape(info))
-        lines.append("target_compile=%d" % (not self.no_target_compile))
-        lines.append("target_optimize=%d" % (not self.no_target_optimize))
+            lines.append(f"install_script={self.install_script}")
+        lines.append(f"info={escape(info)}")
+        lines.append("target_compile=%d" % (not self.no_target_compile))  # noqa: UP031
+        lines.append("target_optimize=%d" % (not self.no_target_optimize))  # noqa: UP031
         if self.target_version:
-            lines.append("target_version=%s" % self.target_version)
+            lines.append(f"target_version={self.target_version}")
         if self.user_access_control:
-            lines.append("user_access_control=%s" % self.user_access_control)
+            lines.append(f"user_access_control={self.user_access_control}")
 
         title = self.title or self.distribution.get_fullname()
-        lines.append("title=%s" % escape(title))
+        lines.append(f"title={escape(title)}")
         import distutils
         import time
 
-        build_info = "Built %s with distutils-%s" % (
-            time.ctime(time.time()),
-            distutils.__version__,
+        build_info = (
+            f"Built {time.ctime(time.time())} with distutils-{distutils.__version__}"
         )
-        lines.append("build_info=%s" % build_info)
+        lines.append(f"build_info={build_info}")
         return "\n".join(lines)
 
     def create_exe(self, arcname, fullname, bitmap=None):
@@ -294,7 +301,7 @@ class bdist_wininst(Command):
         cfgdata = self.get_inidata()
 
         installer_name = self.get_installer_filename(fullname)
-        self.announce("creating %s" % installer_name)
+        self.announce(f"creating {installer_name}")
 
         if bitmap:
             with open(bitmap, "rb") as f:
@@ -348,11 +355,11 @@ class bdist_wininst(Command):
             # it's better to include this in the name
             installer_name = os.path.join(
                 self.dist_dir,
-                "%s.%s-py%s.exe" % (fullname, self.plat_name, self.target_version),
+                f"{fullname}.{self.plat_name}-py{self.target_version}.exe",
             )
         else:
             installer_name = os.path.join(
-                self.dist_dir, "%s.%s.exe" % (fullname, self.plat_name)
+                self.dist_dir, f"{fullname}.{self.plat_name}.exe"
             )
         return installer_name
 
@@ -409,8 +416,8 @@ class bdist_wininst(Command):
         else:
             sfix = ""
 
-        filename = os.path.join(directory, "wininst-%s%s.exe" % (bv, sfix))
-        f = open(filename, "rb")
+        filename = os.path.join(directory, f"wininst-{bv}{sfix}.exe")
+        f = open(filename, "rb")  # noqa: SIM115
         try:
             return f.read()
         finally:

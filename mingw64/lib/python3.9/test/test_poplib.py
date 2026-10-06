@@ -42,7 +42,7 @@ line3\r\n\
 
 
 class DummyPOP3Handler(asynchat.async_chat):
-    CAPAS = {"UIDL": [], "IMPLEMENTATION": ["python-testlib-pop-server"]}
+    CAPAS = {"UIDL": [], "IMPLEMENTATION": ["python-testlib-pop-server"]}  # noqa: RUF012
     enable_UTF8 = False
 
     def __init__(self, conn):
@@ -70,10 +70,10 @@ class DummyPOP3Handler(asynchat.async_chat):
             method = getattr(self, "cmd_" + cmd)
             method(arg)
         else:
-            self.push('-ERR unrecognized POP3 command "%s".' % cmd)
+            self.push(f'-ERR unrecognized POP3 command "{cmd}".')
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
     def push(self, data):
         asynchat.async_chat.push(self, data.encode("ISO-8859-1") + b"\r\n")
@@ -97,7 +97,7 @@ class DummyPOP3Handler(asynchat.async_chat):
 
     def cmd_list(self, arg):
         if arg:
-            self.push("+OK %s %s" % (arg, arg))
+            self.push(f"+OK {arg} {arg}")
         else:
             self.push("+OK")
             asynchat.async_chat.push(self, LIST_RESP)
@@ -105,7 +105,7 @@ class DummyPOP3Handler(asynchat.async_chat):
     cmd_uidl = cmd_list
 
     def cmd_retr(self, arg):
-        self.push("+OK %s bytes" % len(RETR_RESP))
+        self.push(f"+OK {len(RETR_RESP)} bytes")
         asynchat.async_chat.push(self, RETR_RESP)
 
     cmd_top = cmd_retr
@@ -244,7 +244,7 @@ class DummyPOP3Server(asyncore.dispatcher, threading.Thread):
         return 0
 
     def handle_error(self):
-        raise
+        raise  # noqa: PLE0704
 
 
 class TestPOP3Class(TestCase):
@@ -371,7 +371,7 @@ class TestPOP3Class(TestCase):
 
     def test_capa(self):
         capa = self.client.capa()
-        self.assertTrue("IMPLEMENTATION" in capa.keys())
+        self.assertTrue("IMPLEMENTATION" in capa)
 
     def test_quit(self):
         resp = self.client.quit()
@@ -382,7 +382,7 @@ class TestPOP3Class(TestCase):
     @requires_ssl
     def test_stls_capa(self):
         capa = self.client.capa()
-        self.assertTrue("STLS" in capa.keys())
+        self.assertTrue("STLS" in capa)
 
     @requires_ssl
     def test_stls(self):
@@ -476,7 +476,7 @@ class TestPOP3_SSLClass(TestPOP3Class):
 
     def test_stls_capa(self):
         capa = self.client.capa()
-        self.assertFalse("STLS" in capa.keys())
+        self.assertFalse("STLS" in capa)
 
 
 @requires_ssl
@@ -511,7 +511,7 @@ class TestPOP3_TLSClass(TestPOP3Class):
 
     def test_stls_capa(self):
         capa = self.client.capa()
-        self.assertFalse(b"STLS" in capa.keys())
+        self.assertFalse(b"STLS" in capa)
 
 
 class TestTimeouts(TestCase):
@@ -534,7 +534,7 @@ class TestTimeouts(TestCase):
         serv.listen()
         evt.set()
         try:
-            conn, addr = serv.accept()
+            conn, _addr = serv.accept()
             conn.send(b"+ Hola mundo\n")
             conn.close()
         except TimeoutError:

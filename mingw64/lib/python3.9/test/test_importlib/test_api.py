@@ -18,7 +18,7 @@ class ImportModuleTests:
 
     def test_module_import(self):
         # Test importing a top-level module.
-        with test_util.mock_modules("top_level") as mock:
+        with test_util.mock_modules("top_level") as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 module = self.init.import_module("top_level")
                 self.assertEqual(module.__name__, "top_level")
@@ -28,7 +28,7 @@ class ImportModuleTests:
         pkg_name = "pkg"
         pkg_long_name = f"{pkg_name}.__init__"
         name = f"{pkg_name}.mod"
-        with test_util.mock_modules(pkg_long_name, name) as mock:
+        with test_util.mock_modules(pkg_long_name, name) as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 module = self.init.import_module(name)
                 self.assertEqual(module.__name__, name)
@@ -40,7 +40,7 @@ class ImportModuleTests:
         module_name = "mod"
         absolute_name = f"{pkg_name}.{module_name}"
         relative_name = f".{module_name}"
-        with test_util.mock_modules(pkg_long_name, absolute_name) as mock:
+        with test_util.mock_modules(pkg_long_name, absolute_name) as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 self.init.import_module(pkg_name)
                 module = self.init.import_module(relative_name, pkg_name)
@@ -48,7 +48,7 @@ class ImportModuleTests:
 
     def test_deep_relative_package_import(self):
         modules = ["a.__init__", "a.b.__init__", "a.c"]
-        with test_util.mock_modules(*modules) as mock:
+        with test_util.mock_modules(*modules) as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 self.init.import_module("a")
                 self.init.import_module("a.b")
@@ -61,7 +61,7 @@ class ImportModuleTests:
         pkg_name = "pkg"
         pkg_long_name = f"{pkg_name}.__init__"
         name = f"{pkg_name}.mod"
-        with test_util.mock_modules(pkg_long_name, name) as mock:
+        with test_util.mock_modules(pkg_long_name, name) as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 self.init.import_module(pkg_name)
                 module = self.init.import_module(name, pkg_name)
@@ -88,7 +88,7 @@ class ImportModuleTests:
 
         code = {"a": load_a, "a.b": load_b}
         modules = ["a.__init__", "a.b"]
-        with test_util.mock_modules(*modules, module_code=code) as mock:
+        with test_util.mock_modules(*modules, module_code=code) as mock:  # noqa: SIM117
             with test_util.import_state(meta_path=[mock]):
                 self.init.import_module("a.b")
         self.assertEqual(b_load_count, 1)
@@ -144,7 +144,7 @@ class FindLoaderTests:
     def test_success(self):
         # Return the loader found on sys.meta_path.
         name = "some_mod"
-        with test_util.uncache(name):
+        with test_util.uncache(name):  # noqa: SIM117
             with test_util.import_state(meta_path=[self.FakeMetaFinder]):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", DeprecationWarning)
@@ -154,7 +154,7 @@ class FindLoaderTests:
         # Searching on a path should work.
         name = "some_mod"
         path = "path to some place"
-        with test_util.uncache(name):
+        with test_util.uncache(name):  # noqa: SIM117
             with test_util.import_state(meta_path=[self.FakeMetaFinder]):
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore", DeprecationWarning)
@@ -240,7 +240,7 @@ class ReloadTests:
 
     def test_reload_location_changed(self):
         name = "spam"
-        with support.temp_cwd(None) as cwd, test_util.uncache("spam"):
+        with support.temp_cwd(None) as cwd, test_util.uncache("spam"):  # noqa: SIM117
             with support.DirsOnSysPath(cwd):
                 # Start as a plain module.
                 self.init.invalidate_caches()
@@ -292,7 +292,7 @@ class ReloadTests:
 
     def test_reload_namespace_changed(self):
         name = "spam"
-        with support.temp_cwd(None) as cwd, test_util.uncache("spam"):
+        with support.temp_cwd(None) as cwd, test_util.uncache("spam"):  # noqa: SIM117
             with support.DirsOnSysPath(cwd):
                 # Start as a namespace package.
                 self.init.invalidate_caches()
@@ -317,10 +317,10 @@ class ReloadTests:
                 self.assertIsNotNone(spec.loader)
                 self.assertIsNotNone(loader)
                 self.assertEqual(spec.loader, loader)
-                self.assertEqual(set(path), set([os.path.dirname(bad_path)]))
+                self.assertEqual(set(path), {os.path.dirname(bad_path)})
                 with self.assertRaises(AttributeError):
                     # a NamespaceLoader
-                    loader.path
+                    loader.path  # noqa: B018
                 self.assertEqual(ns, expected)
 
                 # Change to a regular package.

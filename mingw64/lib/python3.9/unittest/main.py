@@ -42,7 +42,7 @@ def _convert_names(names):
 
 def _convert_select_pattern(pattern):
     if not "*" in pattern:
-        pattern = "*%s*" % pattern
+        pattern = f"*{pattern}*"
     return pattern
 
 
@@ -229,7 +229,7 @@ class TestProgram:
 
     def _getDiscoveryArgParser(self, parent):
         parser = argparse.ArgumentParser(parents=[parent])
-        parser.prog = "%s discover" % self.progName
+        parser.prog = f"{self.progName} discover"
         parser.epilog = (
             "For test discovery all test modules must be "
             "importable from the top level directory of the "

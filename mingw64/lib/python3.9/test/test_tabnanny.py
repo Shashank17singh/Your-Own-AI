@@ -190,7 +190,7 @@ class TestCheck(TestCase):
 
     def test_correct_directory(self):
         """Directory which contains few error free python source code files."""
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:  # noqa: SIM117
             with TemporaryPyFile(SOURCE_CODES["error_free"], directory=tmp_dir):
                 self.verify_tabnanny_check(tmp_dir)
 
@@ -246,7 +246,7 @@ class TestCheck(TestCase):
                 SOURCE_CODES["wrong_indented"], directory=tmp_dir
             )
             code_file = TemporaryPyFile(SOURCE_CODES["error_free"], directory=tmp_dir)
-            with error_file as e_file, code_file as c_file:
+            with error_file as e_file, code_file:
                 err = (
                     "unindent does not match any outer indentation level"
                     " (<tokenize>, line 3)\n"
@@ -277,7 +277,7 @@ class TestProcessTokens(TestCase):
         #                        `tabnanny.process_tokens()`.
 
         for key in ["tab_space_errored_1", "tab_space_errored_2"]:
-            with self.subTest(key=key):
+            with self.subTest(key=key):  # noqa: SIM117
                 with TemporaryPyFile(SOURCE_CODES[key]) as file_path:
                     with open(file_path) as f:
                         tokens = tokenize.generate_tokens(f.readline)

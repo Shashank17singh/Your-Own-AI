@@ -58,19 +58,19 @@ class TypesTests(unittest.TestCase):
             self.fail("not 1 is true instead of false")
 
     def test_comparisons(self):
-        if 0 < 1 <= 1 == 1 >= 1 > 0 != 1:
+        if 0 < 1 <= 1 == 1 >= 1 > 0 != 1:  # noqa: PLR0133
             pass
         else:
             self.fail("int comparisons failed")
-        if 0.0 < 1.0 <= 1.0 == 1.0 >= 1.0 > 0.0 != 1.0:
+        if 0.0 < 1.0 <= 1.0 == 1.0 >= 1.0 > 0.0 != 1.0:  # noqa: PLR0133
             pass
         else:
             self.fail("float comparisons failed")
-        if "" < "a" <= "a" == "a" < "abc" < "abd" < "b":
+        if "" < "a" <= "a" == "a" < "abc" < "abd" < "b":  # noqa: PLR0133
             pass
         else:
             self.fail("string comparisons failed")
-        if None is None:
+        if None is None:  # noqa: PLR0133
             pass
         else:
             self.fail("identity test failed")
@@ -82,54 +82,54 @@ class TypesTests(unittest.TestCase):
 
     def test_zero_division(self):
         try:
-            5.0 / 0.0
+            5.0 / 0.0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5.0 / 0.0 didn't raise ZeroDivisionError")
 
         try:
-            5.0 // 0.0
+            5.0 // 0.0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5.0 // 0.0 didn't raise ZeroDivisionError")
 
         try:
-            5.0 % 0.0
+            5.0 % 0.0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5.0 % 0.0 didn't raise ZeroDivisionError")
 
         try:
-            5 / 0
+            5 / 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5 / 0 didn't raise ZeroDivisionError")
 
         try:
-            5 // 0
+            5 // 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5 // 0 didn't raise ZeroDivisionError")
 
         try:
-            5 % 0
+            5 % 0  # noqa: B018
         except ZeroDivisionError:
             pass
         else:
             self.fail("5 % 0 didn't raise ZeroDivisionError")
 
     def test_numeric_types(self):
-        if 0 != 0.0 or 1 != 1.0 or -1 != -1.0:
+        if 0 != 0.0 or 1 != 1.0 or -1 != -1.0:  # noqa: PLR0133
             self.fail("int/float value not equal")
         # calling built-in types without argument must return 0
-        if 0 != 0:
+        if 0 != 0:  # noqa: PLR0133
             self.fail("int() does not return 0")
-        if 0.0 != 0.0:
+        if 0.0 != 0.0:  # noqa: PLR0133
             self.fail("float() does not return 0.0")
         if int(1.9) == 1 == int(1.1) and int(-1.1) == -1 == int(-1.9):
             pass
@@ -143,7 +143,7 @@ class TypesTests(unittest.TestCase):
     def test_float_to_string(self):
         def test(f, result):
             self.assertEqual(f.__format__("e"), result)
-            self.assertEqual("%e" % f, result)
+            self.assertEqual(f"{f:e}", result)
 
         # test all 2 digit exponents, both with __format__ and with
         #  '%' formatting
@@ -152,19 +152,19 @@ class TypesTests(unittest.TestCase):
 
         # test some 3 digit exponents
         self.assertEqual((1.5e100).__format__("e"), "1.500000e+100")
-        self.assertEqual("%e" % 1.5e100, "1.500000e+100")
+        self.assertEqual(f"{1.5e100:e}", "1.500000e+100")
 
         self.assertEqual((1.5e101).__format__("e"), "1.500000e+101")
-        self.assertEqual("%e" % 1.5e101, "1.500000e+101")
+        self.assertEqual(f"{1.5e101:e}", "1.500000e+101")
 
         self.assertEqual((1.5e-100).__format__("e"), "1.500000e-100")
-        self.assertEqual("%e" % 1.5e-100, "1.500000e-100")
+        self.assertEqual(f"{1.5e-100:e}", "1.500000e-100")
 
         self.assertEqual((1.5e-101).__format__("e"), "1.500000e-101")
-        self.assertEqual("%e" % 1.5e-101, "1.500000e-101")
+        self.assertEqual(f"{1.5e-101:e}", "1.500000e-101")
 
-        self.assertEqual("%g" % 1.0, "1")
-        self.assertEqual("%#g" % 1.0, "1.00000")
+        self.assertEqual(f"{1.0:g}", "1")
+        self.assertEqual(f"{1.0:#g}", "1.00000")
 
     def test_normal_integers(self):
         # Ensure the first 256 integers are shared
@@ -180,7 +180,7 @@ class TypesTests(unittest.TestCase):
             self.fail("int op")
         if (-12) + (-24) != -36:
             self.fail("int op")
-        if not 12 < 24:
+        if not 12 < 24:  # noqa: PLR0133
             self.fail("int op")
         if not -24 < -12:
             self.fail("int op")
@@ -194,22 +194,22 @@ class TypesTests(unittest.TestCase):
             j = m // divisor
             prod = divisor * j
             if prod != m:
-                self.fail("%r * %r == %r != %r" % (divisor, j, prod, m))
+                self.fail(f"{divisor!r} * {j!r} == {prod!r} != {m!r}")
             if type(prod) is not int:
-                self.fail("expected type(prod) to be int, not %r" % type(prod))
+                self.fail(f"expected type(prod) to be int, not {type(prod)!r}")
         # Check for unified integral type
         for divisor in 1, 2, 4, 8, 16, 32:
             j = m // divisor - 1
             prod = divisor * j
             if type(prod) is not int:
-                self.fail("expected type(%r) to be int, not %r" % (prod, type(prod)))
+                self.fail(f"expected type({prod!r}) to be int, not {type(prod)!r}")
         # Check for unified integral type
         m = sys.maxsize
         for divisor in 1, 2, 4, 8, 16, 32:
             j = m // divisor + 1
             prod = divisor * j
             if type(prod) is not int:
-                self.fail("expected type(%r) to be int, not %r" % (prod, type(prod)))
+                self.fail(f"expected type({prod!r}) to be int, not {type(prod)!r}")
 
         x = sys.maxsize
         self.assertIsInstance(x + 1, int, "(sys.maxsize + 1) should have returned int")
@@ -243,7 +243,7 @@ class TypesTests(unittest.TestCase):
             self.fail("float op")
         if (-12.0) + (-24.0) != -36.0:
             self.fail("float op")
-        if not 12.0 < 24.0:
+        if not 12.0 < 24.0:  # noqa: PLR0133
             self.fail("float op")
         if not -24.0 < -12.0:
             self.fail("float op")
@@ -263,12 +263,12 @@ class TypesTests(unittest.TestCase):
             self.fail("string repetition 0*")
         if min("abc") != "a" or max("abc") != "c":
             self.fail("min/max string")
-        if "a" in "abc" and "b" in "abc" and "c" in "abc" and "d" not in "abc":
+        if "a" in "abc" and "b" in "abc" and "c" in "abc" and "d" not in "abc":  # noqa: PLR0133
             pass
         else:
             self.fail("in/not in string")
         x = "x" * 103
-        if "%s!" % x != x + "!":
+        if f"{x}!" != x + "!":
             self.fail("nasty string formatting bug")
 
         # extended slices for strings
@@ -750,7 +750,7 @@ class MappingProxyTests(unittest.TestCase):
     def test_missing(self):
         class dictmissing(dict):
             def __missing__(self, key):
-                return "missing=%s" % key
+                return f"missing={key}"
 
         view = self.mappingproxy(dictmissing(x=1))
         self.assertEqual(view["x"], 1)
@@ -788,10 +788,10 @@ class MappingProxyTests(unittest.TestCase):
                 return "values"
 
             def __getitem__(self, key):
-                return "getitem=%s" % dict.__getitem__(self, key)
+                return f"getitem={dict.__getitem__(self, key)}"
 
             def get(self, key, default=None):
-                return "get=%s" % dict.get(self, key, "default=%r" % default)
+                return "get={}".format(dict.get(self, key, f"default={default!r}"))
 
         custom = customdict({"key": "value"})
         view = self.mappingproxy(custom)
@@ -958,7 +958,7 @@ class ClassCreationTests(unittest.TestCase):
         def meta_func(name, bases, ns, **kw):
             return name, bases, ns, kw
 
-        res = types.new_class("X", (int, object), dict(metaclass=meta_func, x=0))
+        res = types.new_class("X", (int, object), {"metaclass": meta_func, "x": 0})
         self.assertEqual(res, ("X", (int, object), {}, {"x": 0}))
 
     def test_new_class_defaults(self):
@@ -974,7 +974,7 @@ class ClassCreationTests(unittest.TestCase):
             ns["x"] = 0
 
         C = types.new_class(
-            name="C", bases=(int,), kwds=dict(metaclass=Meta, z=2), exec_body=func
+            name="C", bases=(int,), kwds={"metaclass": Meta, "z": 2}, exec_body=func
         )
         self.assertTrue(issubclass(C, int))
         self.assertIsInstance(C, Meta)
@@ -1288,7 +1288,7 @@ class ClassCreationTests(unittest.TestCase):
         # This is a TypeError, because of a metaclass conflict:
         # BNotMeta is neither a subclass, nor a superclass of type
         with self.assertRaises(TypeError):
-            D = types.new_class("D", (C,), {"metaclass": type})
+            types.new_class("D", (C,), {"metaclass": type})
 
         E = types.new_class("E", (C,), {"metaclass": ANotMeta})
         self.assertIs(BNotMeta, type(E))
@@ -1314,9 +1314,9 @@ class ClassCreationTests(unittest.TestCase):
         # TypeError: BNotMeta is neither a
         # subclass, nor a superclass of int
         with self.assertRaises(TypeError):
-            X = types.new_class("X", (C, 0))
+            types.new_class("X", (C, 0))
         with self.assertRaises(TypeError):
-            X = types.new_class("X", (0, C))
+            types.new_class("X", (0, C))
 
     def test_one_argument_type(self):
         expected_message = "type.__new__() takes exactly 3 arguments (1 given)"
@@ -1343,7 +1343,7 @@ class SimpleNamespaceTests(unittest.TestCase):
     def test_constructor(self):
         ns1 = types.SimpleNamespace()
         ns2 = types.SimpleNamespace(x=1, y=2)
-        ns3 = types.SimpleNamespace(**dict(x=1, y=2))
+        ns3 = types.SimpleNamespace(x=1, y=2)
 
         with self.assertRaises(TypeError):
             types.SimpleNamespace(1, 2, 3)
@@ -1373,7 +1373,7 @@ class SimpleNamespaceTests(unittest.TestCase):
 
         self.assertEqual(ns1.__dict__, {})
         self.assertEqual(ns2.__dict__, {"y": 2, "x": 1})
-        self.assertEqual(mapping, dict(a=True, b=False))
+        self.assertEqual(mapping, {"a": True, "b": False})
 
     def test_attrget(self):
         ns = types.SimpleNamespace(x=1, y=2, w=3)
@@ -1382,7 +1382,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertEqual(ns.y, 2)
         self.assertEqual(ns.w, 3)
         with self.assertRaises(AttributeError):
-            ns.z
+            ns.z  # noqa: B018
 
     def test_attrset(self):
         ns1 = types.SimpleNamespace()
@@ -1392,8 +1392,8 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns2.z = 4
         ns2.theta = None
 
-        self.assertEqual(ns1.__dict__, dict(a="spam", b="ham"))
-        self.assertEqual(ns2.__dict__, dict(x=1, y=2, w=3, z=4, theta=None))
+        self.assertEqual(ns1.__dict__, {"a": "spam", "b": "ham"})
+        self.assertEqual(ns2.__dict__, {"x": 1, "y": 2, "w": 3, "z": 4, "theta": None})
 
     def test_attrdel(self):
         ns1 = types.SimpleNamespace()
@@ -1405,14 +1405,14 @@ class SimpleNamespaceTests(unittest.TestCase):
             del ns2.spam
 
         del ns2.y
-        self.assertEqual(vars(ns2), dict(w=3, x=1))
+        self.assertEqual(vars(ns2), {"w": 3, "x": 1})
         ns2.y = "spam"
-        self.assertEqual(vars(ns2), dict(w=3, x=1, y="spam"))
+        self.assertEqual(vars(ns2), {"w": 3, "x": 1, "y": "spam"})
         del ns2.y
-        self.assertEqual(vars(ns2), dict(w=3, x=1))
+        self.assertEqual(vars(ns2), {"w": 3, "x": 1})
 
         ns1.spam = 5
-        self.assertEqual(vars(ns1), dict(spam=5))
+        self.assertEqual(vars(ns1), {"spam": 5})
         del ns1.spam
         self.assertEqual(vars(ns1), {})
 
@@ -1443,10 +1443,10 @@ class SimpleNamespaceTests(unittest.TestCase):
         ns2.ham = "?"
         ns2.spam = ns3
 
-        self.assertEqual(vars(ns1), dict(a=1, b=2))
-        self.assertEqual(vars(ns2), dict(spam=ns3, ham="?"))
+        self.assertEqual(vars(ns1), {"a": 1, "b": 2})
+        self.assertEqual(vars(ns2), {"spam": ns3, "ham": "?"})
         self.assertEqual(ns2.spam, ns3)
-        self.assertEqual(vars(ns3), dict(x=ns1))
+        self.assertEqual(vars(ns3), {"x": ns1})
         self.assertEqual(ns3.x.a, 1)
 
     def test_recursive(self):
@@ -1486,7 +1486,7 @@ class SimpleNamespaceTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             iter(ns)
         with self.assertRaises(TypeError):
-            "spam" in ns
+            "spam" in ns  # noqa: B015
         with self.assertRaises(TypeError):
             ns["spam"]
 
@@ -1521,13 +1521,13 @@ class SimpleNamespaceTests(unittest.TestCase):
         self.assertFalse(types.SimpleNamespace() == FakeSimpleNamespace())
         self.assertTrue(types.SimpleNamespace() != FakeSimpleNamespace())
         with self.assertRaises(TypeError):
-            types.SimpleNamespace() < FakeSimpleNamespace()
+            types.SimpleNamespace() < FakeSimpleNamespace()  # noqa: B015
         with self.assertRaises(TypeError):
-            types.SimpleNamespace() <= FakeSimpleNamespace()
+            types.SimpleNamespace() <= FakeSimpleNamespace()  # noqa: B015
         with self.assertRaises(TypeError):
-            types.SimpleNamespace() > FakeSimpleNamespace()
+            types.SimpleNamespace() > FakeSimpleNamespace()  # noqa: B015
         with self.assertRaises(TypeError):
-            types.SimpleNamespace() >= FakeSimpleNamespace()
+            types.SimpleNamespace() >= FakeSimpleNamespace()  # noqa: B015
 
 
 class CoroutineTests(unittest.TestCase):
@@ -1737,7 +1737,7 @@ class CoroutineTests(unittest.TestCase):
         gen.throw.side_effect = error
         try:
             wrapper.throw(1)
-        except Exception as ex:
+        except Exception as ex:  # noqa: BLE001
             self.assertIs(ex, error)
         else:
             self.fail("wrapper did not propagate an exception")

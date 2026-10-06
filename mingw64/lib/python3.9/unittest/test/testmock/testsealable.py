@@ -21,7 +21,7 @@ class TestSealable(unittest.TestCase):
         m = mock.Mock()
         mock.seal(m)
         with self.assertRaises(AttributeError):
-            m.test
+            m.test  # noqa: B018
         with self.assertRaises(AttributeError):
             m()
 
@@ -73,9 +73,9 @@ class TestSealable(unittest.TestCase):
         mock.seal(m)
         self.assertEqual(m.test1.test2().test3, 4)
         with self.assertRaises(AttributeError):
-            m.test1.test2().test4
+            m.test1.test2().test4  # noqa: B018
         with self.assertRaises(AttributeError):
-            m.test1.test3
+            m.test1.test3  # noqa: B018
 
     def test_seals_recurse_on_magic_methods(self):
         m = mock.MagicMock()
@@ -85,9 +85,9 @@ class TestSealable(unittest.TestCase):
         self.assertEqual(m.test1.test2["a"].test3, 4)
         self.assertEqual(m.test1.test2[2:5].test3, 4)
         with self.assertRaises(AttributeError):
-            m.test1.test2["a"].test4
+            m.test1.test2["a"].test4  # noqa: B018
         with self.assertRaises(AttributeError):
-            m.test1.test3[2:5].test4
+            m.test1.test3[2:5].test4  # noqa: B018
 
     def test_seals_dont_recurse_on_manual_attributes(self):
         m = mock.Mock(name="root_mock")
@@ -95,7 +95,7 @@ class TestSealable(unittest.TestCase):
         m.test1.test2.test3 = 4
         mock.seal(m)
         self.assertEqual(m.test1.test2.test3, 4)
-        m.test1.test2.test4  # Does not raise
+        m.test1.test2.test4  # Does not raise  # noqa: B018
         m.test1.test2.test4 = 1  # Does not raise
 
     def test_integration_with_spec_att_definition(self):
@@ -107,7 +107,7 @@ class TestSealable(unittest.TestCase):
         self.assertEqual(m.attr_sample1, 1)
         self.assertEqual(m.attr_sample3, 3)
         with self.assertRaises(AttributeError):
-            m.attr_sample2
+            m.attr_sample2  # noqa: B018
 
     def test_integration_with_spec_method_definition(self):
         """You need to defin the methods, even if they are in the spec"""
@@ -128,20 +128,20 @@ class TestSealable(unittest.TestCase):
         m = mock.Mock()
         mock.seal(m)
         with self.assertRaises(AttributeError) as cm:
-            m.SECRETE_name
+            m.SECRETE_name  # noqa: B018
         self.assertIn("SECRETE_name", str(cm.exception))
 
     def test_attribute_chain_is_maintained(self):
         m = mock.Mock(name="mock_name")
-        m.test1.test2.test3.test4
+        m.test1.test2.test3.test4  # noqa: B018
         mock.seal(m)
         with self.assertRaises(AttributeError) as cm:
-            m.test1.test2.test3.test4.boom
+            m.test1.test2.test3.test4.boom  # noqa: B018
         self.assertIn("mock_name.test1.test2.test3.test4.boom", str(cm.exception))
 
     def test_call_chain_is_maintained(self):
         m = mock.Mock()
-        m.test1().test2.test3().test4
+        m.test1().test2.test3().test4  # noqa: B018
         mock.seal(m)
         with self.assertRaises(AttributeError) as cm:
             m.test1().test2.test3().test4()

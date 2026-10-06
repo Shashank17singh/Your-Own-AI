@@ -42,7 +42,7 @@ class MD5SumTests(unittest.TestCase):
         self.assertFalse(err)
 
     def test_dash_l(self):
-        rc, out, err = assert_python_ok(self.script, "-l", self.fodder)
+        rc, out, _err = assert_python_ok(self.script, "-l", self.fodder)
         self.assertEqual(rc, 0)
         self.assertIn(self.fodder_md5, out)
         parts = self.fodder.split(os.path.sep)
@@ -50,18 +50,18 @@ class MD5SumTests(unittest.TestCase):
         self.assertNotIn(parts[-2].encode(), out)
 
     def test_dash_t(self):
-        rc, out, err = assert_python_ok(self.script, "-t", self.fodder)
+        rc, out, _err = assert_python_ok(self.script, "-t", self.fodder)
         self.assertEqual(rc, 0)
         self.assertTrue(out.startswith(self.fodder_textmode_md5))
         self.assertNotIn(self.fodder_md5, out)
 
     def test_dash_s(self):
-        rc, out, err = assert_python_ok(self.script, "-s", "512", self.fodder)
+        rc, out, _err = assert_python_ok(self.script, "-s", "512", self.fodder)
         self.assertEqual(rc, 0)
         self.assertIn(self.fodder_md5, out)
 
     def test_multiple_files(self):
-        rc, out, err = assert_python_ok(self.script, self.fodder, self.fodder)
+        rc, out, _err = assert_python_ok(self.script, self.fodder, self.fodder)
         self.assertEqual(rc, 0)
         lines = out.splitlines()
         self.assertEqual(len(lines), 2)

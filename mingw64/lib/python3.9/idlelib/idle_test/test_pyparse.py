@@ -15,7 +15,7 @@ class ParseMapTest(unittest.TestCase):
 
     def test_trans(self):
         # trans is the production instance of ParseMap, used in _study1
-        parser = pyparse.Parser(4, 4)
+        pyparse.Parser(4, 4)
         self.assertEqual(
             "\t a([{b}])b\"c'd\n".translate(pyparse.trans), "xxx(((x)))x\"x'x\n"
         )

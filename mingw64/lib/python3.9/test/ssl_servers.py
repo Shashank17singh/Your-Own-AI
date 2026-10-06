@@ -31,11 +31,7 @@ class HTTPSServer(_HTTPServer):
         self.context = context
 
     def __str__(self):
-        return "<%s %s:%s>" % (
-            self.__class__.__name__,
-            self.server_name,
-            self.server_port,
-        )
+        return f"<{self.__class__.__name__} {self.server_name}:{self.server_port}>"
 
     def get_request(self):
         # override this to wrap socket with SSL
@@ -45,7 +41,7 @@ class HTTPSServer(_HTTPServer):
         except OSError as e:
             # socket errors are silenced by the caller, print them here
             if support.verbose:
-                sys.stderr.write("Got an error:\n%s\n" % e)
+                sys.stderr.write(f"Got an error:\n{e}\n")
             raise
         return sslconn, addr
 
@@ -75,8 +71,8 @@ class RootedHTTPRequestHandler(SimpleHTTPRequestHandler):
         words = filter(None, words)
         path = self.root
         for word in words:
-            drive, word = os.path.splitdrive(word)
-            head, word = os.path.split(word)
+            _drive, word = os.path.splitdrive(word)
+            _head, word = os.path.split(word)
             path = os.path.join(path, word)
         return path
 
@@ -84,7 +80,7 @@ class RootedHTTPRequestHandler(SimpleHTTPRequestHandler):
         # we override this to suppress logging unless "verbose"
         if support.verbose:
             sys.stdout.write(
-                " server (%s:%d %s):\n   [%s] %s\n"
+                " server (%s:%d %s):\n   [%s] %s\n"  # noqa: UP031
                 % (
                     self.server.server_address,
                     self.server.server_port,
@@ -140,7 +136,7 @@ class HTTPSServerThread(threading.Thread):
         self.daemon = True
 
     def __str__(self):
-        return "<%s %s>" % (self.__class__.__name__, self.server)
+        return f"<{self.__class__.__name__} {self.server}>"
 
     def start(self, flag=None):
         self.flag = flag

@@ -25,17 +25,17 @@ class Test(unittest.TestCase):
         print(sys.byteorder, file=sys.stderr)
         for i in range(32):
             bits = BITS()
-            setattr(bits, "i%s" % i, 1)
+            setattr(bits, f"i{i}", 1)
             dump(bits)
 
     def test_slots(self):
         class BigPoint(BigEndianStructure):
             __slots__ = ()
-            _fields_ = [("x", c_int), ("y", c_int)]
+            _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
         class LowPoint(LittleEndianStructure):
             __slots__ = ()
-            _fields_ = [("x", c_int), ("y", c_int)]
+            _fields_ = [("x", c_int), ("y", c_int)]  # noqa: RUF012
 
         big = BigPoint()
         little = LowPoint()
@@ -231,10 +231,10 @@ class Test(unittest.TestCase):
             ):
 
                 class NestedStructure(nested):
-                    _fields_ = [("x", c_uint32), ("y", c_uint32)]
+                    _fields_ = [("x", c_uint32), ("y", c_uint32)]  # noqa: RUF012
 
                 class TestStructure(parent):
-                    _fields_ = [("point", NestedStructure)]
+                    _fields_ = [("point", NestedStructure)]  # noqa: RUF012
 
                 self.assertEqual(len(data), sizeof(TestStructure))
                 ptr = POINTER(TestStructure)
@@ -257,7 +257,7 @@ class Test(unittest.TestCase):
             fmt = "<bxhid"
 
         class S(base):
-            _fields_ = [("b", c_byte), ("h", c_short), ("i", c_int), ("d", c_double)]
+            _fields_ = [("b", c_byte), ("h", c_short), ("i", c_int), ("d", c_double)]  # noqa: RUF012
 
         s1 = S(0x12, 0x1234, 0x12345678, 3.14)
         s2 = struct.pack(fmt, 0x12, 0x1234, 0x12345678, 3.14)
@@ -273,7 +273,7 @@ class Test(unittest.TestCase):
 
         class S(base):
             _pack_ = 1
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("b", c_byte),
                 ("h", c_short),
                 ("_1", c_byte),
@@ -294,12 +294,11 @@ class Test(unittest.TestCase):
         if sys.byteorder == "little":
             fmt = "<b h xi xd"
         else:
-            base = LittleEndianStructure
             fmt = ">b h xi xd"
 
         class S(Structure):
             _pack_ = 1
-            _fields_ = [
+            _fields_ = [  # noqa: RUF012
                 ("b", c_byte),
                 ("h", c_short),
                 ("_1", c_byte),

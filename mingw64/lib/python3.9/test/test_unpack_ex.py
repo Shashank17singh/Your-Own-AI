@@ -401,7 +401,7 @@ else:
 
 
 def test_main(verbose=False):
-    from test import support, test_unpack_ex
+    from test import support, test_unpack_ex  # noqa: PLW0406
 
     support.run_doctest(test_unpack_ex, verbose)
 

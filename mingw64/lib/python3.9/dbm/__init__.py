@@ -30,7 +30,7 @@ implementations.
 __all__ = ["error", "open", "whichdb"]
 
 import builtins
-import io
+import io  # noqa: F401
 import os
 import struct
 import sys
@@ -74,7 +74,7 @@ def open(file, flag="r", mode=0o666):
                 _defaultmod = mod
             _modules[name] = mod
         if not _defaultmod:
-            raise ImportError("no dbm clone found; tried %s" % _names)
+            raise ImportError(f"no dbm clone found; tried {_names}")
 
     # guess the type of an existing database, if not creating a new one
     result = whichdb(file) if "n" not in flag else None
@@ -112,16 +112,16 @@ def whichdb(filename):
 
     # Check for ndbm first -- this has a .pag and a .dir file
     try:
-        f = builtins.open(filename + ".pag", "rb")
+        f = builtins.open(filename + ".pag", "rb")  # noqa: SIM115
         f.close()
-        f = builtins.open(filename + ".dir", "rb")
+        f = builtins.open(filename + ".dir", "rb")  # noqa: SIM115
         f.close()
         return "dbm.ndbm"
     except OSError:
         # some dbm emulations based on Berkeley DB generate a .db file
         # some do not, but they should be caught by the bsd checks
         try:
-            f = builtins.open(filename + ".db", "rb")
+            f = builtins.open(filename + ".db", "rb")  # noqa: SIM115
             f.close()
             # guarantee we can actually open the file using dbm
             # kind of overkill, but since we are dealing with emulations
@@ -141,7 +141,7 @@ def whichdb(filename):
         # dumbdbm files with no keys are empty
         if size == 0:
             return "dbm.dumb"
-        f = builtins.open(filename + ".dir", "rb")
+        f = builtins.open(filename + ".dir", "rb")  # noqa: SIM115
         try:
             if f.read(1) in (b"'", b'"'):
                 return "dbm.dumb"
@@ -152,7 +152,7 @@ def whichdb(filename):
 
     # See if the file exists, return None if not
     try:
-        f = builtins.open(filename, "rb")
+        f = builtins.open(filename, "rb")  # noqa: SIM115
     except OSError:
         return None
 

@@ -72,7 +72,7 @@ class TestSupport(unittest.TestCase):
         self.assertNotIn("sched", sys.modules)
 
     def test_unlink(self):
-        with open(TESTFN, "w") as f:
+        with open(TESTFN, "w"):
             pass
         support.unlink(TESTFN)
         self.assertFalse(os.path.exists(TESTFN))
@@ -109,7 +109,7 @@ class TestSupport(unittest.TestCase):
         sys.path.insert(0, os.curdir)
         importlib.invalidate_caches()
         try:
-            mod = __import__(TESTFN)
+            __import__(TESTFN)
             self.assertIn(TESTFN, sys.modules)
 
             support.forget(TESTFN)
@@ -161,8 +161,8 @@ class TestSupport(unittest.TestCase):
         """Test passing a directory that already exists."""
 
         def call_temp_dir(path):
-            with support.temp_dir(path) as temp_path:
-                raise Exception("should not get here")
+            with support.temp_dir(path):
+                raise Exception("should not get here")  # noqa: TRY002
 
         path = tempfile.mkdtemp()
         path = os.path.realpath(path)
@@ -230,7 +230,7 @@ class TestSupport(unittest.TestCase):
     def test_change_cwd(self):
         original_cwd = os.getcwd()
 
-        with support.temp_dir() as temp_path:
+        with support.temp_dir() as temp_path:  # noqa: SIM117
             with support.change_cwd(temp_path) as new_cwd:
                 self.assertEqual(new_cwd, temp_path)
                 self.assertEqual(os.getcwd(), new_cwd)
@@ -242,8 +242,8 @@ class TestSupport(unittest.TestCase):
         original_cwd = os.getcwd()
 
         def call_change_cwd(path):
-            with support.change_cwd(path) as new_cwd:
-                raise Exception("should not get here")
+            with support.change_cwd(path):
+                raise Exception("should not get here")  # noqa: TRY002
 
         with support.temp_dir() as parent_dir:
             non_existent_dir = os.path.join(parent_dir, "does_not_exist")
@@ -469,7 +469,7 @@ class TestSupport(unittest.TestCase):
             # child process: do nothing, just exit
             os._exit(0)
 
-        t0 = time.monotonic()
+        time.monotonic()
         deadline = time.monotonic() + support.SHORT_TIMEOUT
 
         was_altered = support.environment_altered
@@ -496,7 +496,7 @@ class TestSupport(unittest.TestCase):
                 # loop until the child process completed
                 time.sleep(0.100)
 
-            msg = "Warning -- reap_children() reaped child process %s" % pid
+            msg = f"Warning -- reap_children() reaped child process {pid}"
             self.assertIn(msg, stderr.getvalue())
             self.assertTrue(support.environment_altered)
         finally:
@@ -514,7 +514,7 @@ class TestSupport(unittest.TestCase):
             for key, value in os.environ.items()
             if not key.startswith("PYTHON")
         }
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,

@@ -75,7 +75,7 @@ class Repr:
             s = ", ".join(pieces)
             if n == 1 and trail:
                 right = trail + right
-        return "%s%s%s" % (left, s, right)
+        return f"{left}{s}{right}"
 
     def repr_tuple(self, x, level):
         return self._repr_iterable(x, level, "(", ")", self.maxtuple, ",")
@@ -85,8 +85,8 @@ class Repr:
 
     def repr_array(self, x, level):
         if not x:
-            return "array('%s')" % x.typecode
-        header = "array('%s', [" % x.typecode
+            return f"array('{x.typecode}')"
+        header = f"array('{x.typecode}', ["
         return self._repr_iterable(x, level, header, "])", self.maxarray)
 
     def repr_set(self, x, level):
@@ -116,11 +116,11 @@ class Repr:
         for key in islice(_possibly_sorted(x), self.maxdict):
             keyrepr = repr1(key, newlevel)
             valrepr = repr1(x[key], newlevel)
-            pieces.append("%s: %s" % (keyrepr, valrepr))
+            pieces.append(f"{keyrepr}: {valrepr}")
         if n > self.maxdict:
             pieces.append("...")
         s = ", ".join(pieces)
-        return "{%s}" % (s,)
+        return f"{{{s}}}"
 
     def repr_str(self, x, level):
         s = builtins.repr(x[: self.maxstring])
@@ -144,8 +144,8 @@ class Repr:
             s = builtins.repr(x)
             # Bugs in x.__repr__() can cause arbitrary
             # exceptions -- then make up something
-        except Exception:
-            return "<%s instance at %#x>" % (x.__class__.__name__, id(x))
+        except Exception:  # noqa: BLE001
+            return f"<{x.__class__.__name__} instance at {id(x):#x}>"
         if len(s) > self.maxother:
             i = max(0, (self.maxother - 3) // 2)
             j = max(0, self.maxother - 3 - i)
@@ -159,7 +159,7 @@ def _possibly_sorted(x):
     # sequence in that case.
     try:
         return sorted(x)
-    except Exception:
+    except Exception:  # noqa: BLE001
         return list(x)
 
 

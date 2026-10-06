@@ -73,7 +73,7 @@ class TestDefaultDict(unittest.TestCase):
         d3 = defaultdict(foo)
         self.assertTrue(d3.default_factory is foo)
         d3[13]
-        self.assertEqual(repr(d3), "defaultdict(%s, {13: 43})" % repr(foo))
+        self.assertEqual(repr(d3), f"defaultdict({foo!r}, {{13: 43}})")
 
     def test_print(self):
         d1 = defaultdict()
@@ -87,7 +87,7 @@ class TestDefaultDict(unittest.TestCase):
         # invoked for *real* files.
         tfn = tempfile.mktemp()
         try:
-            f = open(tfn, "w+")
+            f = open(tfn, "w+")  # noqa: SIM115
             try:
                 print(d1, file=f)
                 print(d2, file=f)
@@ -173,7 +173,7 @@ class TestDefaultDict(unittest.TestCase):
         # tp_print slot. So this part is essentially the same test as above.
         tfn = tempfile.mktemp()
         try:
-            f = open(tfn, "w+")
+            f = open(tfn, "w+")  # noqa: SIM115
             try:
                 print(d, file=f)
             finally:

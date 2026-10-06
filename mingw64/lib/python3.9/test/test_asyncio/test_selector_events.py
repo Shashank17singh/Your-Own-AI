@@ -391,7 +391,7 @@ class BaseSelectorEventLoopTests(test_utils.TestCase):
         # asyncio.sleep(0) to ensure created tasks are complete to avoid
         # task pending warnings.
         mock_obj = mock.patch.object
-        with mock_obj(self.loop, "_accept_connection2") as accept2_mock:
+        with mock_obj(self.loop, "_accept_connection2"):
             self.loop._accept_connection(mock.Mock(), sock, backlog=backlog)
         self.loop.run_until_complete(asyncio.sleep(0))
         self.assertEqual(sock.accept.call_count, backlog)

@@ -32,13 +32,13 @@ def build_pattern():
             #      import_name< 'import' (module=%r
             #          | dotted_as_names< any* module=%r any* >) >
             #      """ % (module, module)
-            yield """
-                  import_from< 'from' module_name=%r 'import'
-                      ( attr_name=%r | import_as_name< attr_name=%r 'as' any >) >
-                  """ % (module, old_attr, old_attr)
-            yield """
-                  power< module_name=%r trailer< '.' attr_name=%r > any* >
-                  """ % (module, old_attr)
+            yield f"""
+                  import_from< 'from' module_name={module!r} 'import'
+                      ( attr_name={old_attr!r} | import_as_name< attr_name={old_attr!r} 'as' any >) >
+                  """
+            yield f"""
+                  power< module_name={module!r} trailer< '.' attr_name={old_attr!r} > any* >
+                  """
     # yield """bare_name=%s""" % alternates(bare)
 
 

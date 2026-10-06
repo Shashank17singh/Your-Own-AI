@@ -92,7 +92,7 @@ class Shelf(collections.abc.MutableMapping):
         self.keyencoding = keyencoding
 
     def __iter__(self):
-        for k in self.dict.keys():
+        for k in self.dict:
             yield k.decode(self.keyencoding)
 
     def __len__(self):
@@ -151,7 +151,7 @@ class Shelf(collections.abc.MutableMapping):
             # because CPython is in interpreter shutdown.
             try:
                 self.dict = _ClosedDict()
-            except:
+            except:  # noqa: E722
                 self.dict = None
 
     def __del__(self):
@@ -224,7 +224,7 @@ class DbfilenameShelf(Shelf):
     def __init__(self, filename, flag="c", protocol=None, writeback=False):
         import dbm
 
-        Shelf.__init__(self, dbm.open(filename, flag), protocol, writeback)
+        Shelf.__init__(self, dbm.open(filename, flag), protocol, writeback)  # noqa: SIM115
 
 
 def open(filename, flag="c", protocol=None, writeback=False):

@@ -156,7 +156,7 @@ class zipimporter:
         Return the code object for the specified module. Raise ZipImportError
         if the module couldn't be found.
         """
-        code, ispackage, modpath = _get_module_code(self, fullname)
+        code, _ispackage, _modpath = _get_module_code(self, fullname)
         return code
 
     def get_data(self, pathname):
@@ -186,7 +186,7 @@ class zipimporter:
         """
         # Deciding the filename requires working out where the code
         # would come from if the module was actually loaded
-        code, ispackage, modpath = _get_module_code(self, fullname)
+        _code, _ispackage, modpath = _get_module_code(self, fullname)
         return modpath
 
     def get_source(self, fullname):
@@ -251,7 +251,7 @@ class zipimporter:
             if not hasattr(mod, "__builtins__"):
                 mod.__builtins__ = __builtins__
             _bootstrap_external._fix_up_module(mod.__dict__, fullname, modpath)
-            exec(code, mod.__dict__)
+            exec(code, mod.__dict__)  # noqa: S102
         except:
             del sys.modules[fullname]
             raise
@@ -525,7 +525,7 @@ def _get_decompress_func():
     _importing_zlib = True
     try:
         from zlib import decompress
-    except Exception:
+    except Exception:  # noqa: BLE001
         _bootstrap._verbose_message("zipimport: zlib UNAVAILABLE")
         raise ZipImportError("can't decompress data; zlib not available")
     finally:
@@ -537,7 +537,9 @@ def _get_decompress_func():
 
 # Given a path to a Zip file and a toc_entry, return the (uncompressed) data.
 def _get_data(archive, toc_entry):
-    datapath, compress, data_size, file_size, file_offset, time, date, crc = toc_entry
+    _datapath, compress, data_size, _file_size, file_offset, _time, _date, _crc = (
+        toc_entry
+    )
     if data_size < 0:
         raise ZipImportError("negative data size")
 
@@ -574,7 +576,7 @@ def _get_data(archive, toc_entry):
     # Decompress with zlib
     try:
         decompress = _get_decompress_func()
-    except Exception:
+    except Exception:  # noqa: BLE001
         raise ZipImportError("can't decompress data; zlib not available")
     return decompress(raw_data, -15)
 
@@ -625,7 +627,7 @@ def _unmarshal_code(self, pathname, fullpath, fullname, data):
     else:
         source_mtime, source_size = _get_mtime_and_size_of_source(self, fullpath)
 
-        if source_mtime:
+        if source_mtime:  # noqa: SIM102
             # We don't use _bootstrap_external._validate_timestamp_pyc
             # to allow for a more lenient timestamp check.
             if (

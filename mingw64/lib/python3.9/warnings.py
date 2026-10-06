@@ -51,7 +51,7 @@ def _formatwarnmsg_impl(msg):
             import linecache
 
             line = linecache.getline(msg.filename, msg.lineno)
-        except Exception:
+        except Exception:  # noqa: BLE001
             # When a warning is logged during Python shutdown, linecache
             # and the import machinery don't work anymore
             line = None
@@ -60,14 +60,14 @@ def _formatwarnmsg_impl(msg):
         line = msg.line
     if line:
         line = line.strip()
-        s += "  %s\n" % line
+        s += f"  {line}\n"
 
     if msg.source is not None:
         try:
             import tracemalloc
         # Logging a warning should not raise a new exception:
         # catch Exception, not only ImportError and RecursionError.
-        except Exception:
+        except Exception:  # noqa: BLE001
             # don't suggest to enable tracemalloc if it's not available
             tracing = True
             tb = None
@@ -75,7 +75,7 @@ def _formatwarnmsg_impl(msg):
             tracing = tracemalloc.is_tracing()
             try:
                 tb = tracemalloc.get_object_traceback(msg.source)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 # When a warning is logged during Python shutdown, tracemalloc
                 # and the import machinery don't work anymore
                 tb = None
@@ -83,18 +83,18 @@ def _formatwarnmsg_impl(msg):
         if tb is not None:
             s += "Object allocated at (most recent call last):\n"
             for frame in tb:
-                s += '  File "%s", lineno %s\n' % (frame.filename, frame.lineno)
+                s += f'  File "{frame.filename}", lineno {frame.lineno}\n'
 
                 try:
                     if linecache is not None:
                         line = linecache.getline(frame.filename, frame.lineno)
                     else:
                         line = None
-                except Exception:
+                except Exception:  # noqa: BLE001
                     line = None
                 if line:
                     line = line.strip()
-                    s += "    %s\n" % line
+                    s += f"    {line}\n"
         elif not tracing:
             s += (
                 f"{category}: Enable tracemalloc to get the object "
@@ -163,7 +163,7 @@ def filterwarnings(
         "default",
         "module",
         "once",
-    ), "invalid action: %r" % (action,)
+    ), f"invalid action: {action!r}"
     assert isinstance(message, str), "message must be a string"
     assert isinstance(category, type), "category must be a class"
     assert issubclass(category, Warning), "category must be a Warning subclass"
@@ -202,7 +202,7 @@ def simplefilter(action, category=Warning, lineno=0, append=False):
         "default",
         "module",
         "once",
-    ), "invalid action: %r" % (action,)
+    ), f"invalid action: {action!r}"
     assert isinstance(lineno, int) and lineno >= 0, "lineno must be an int >= 0"
     _add_filter(action, None, category, None, lineno, append=append)
 
@@ -245,7 +245,7 @@ def _processoptions(args):
 def _setoption(arg):
     parts = arg.split(":")
     if len(parts) > 5:
-        raise _OptionError("too many fields (max 5): %r" % (arg,))
+        raise _OptionError(f"too many fields (max 5): {arg!r}")
     while len(parts) < 5:
         parts.append("")
     action, message, category, module, lineno = [s.strip() for s in parts]
@@ -263,7 +263,7 @@ def _setoption(arg):
             if lineno < 0:
                 raise ValueError
         except (ValueError, OverflowError):
-            raise _OptionError("invalid lineno %r" % (lineno,)) from None
+            raise _OptionError(f"invalid lineno {lineno!r}") from None
     else:
         lineno = 0
     filterwarnings(action, message, category, module, lineno)
@@ -278,7 +278,7 @@ def _getaction(action):
     for a in ("default", "always", "ignore", "module", "once", "error"):
         if a.startswith(action):
             return a
-    raise _OptionError("invalid action: %r" % (action,))
+    raise _OptionError(f"invalid action: {action!r}")
 
 
 # Helper for _setoption()
@@ -294,13 +294,13 @@ def _getcategory(category):
         try:
             m = __import__(module, None, None, [klass])
         except ImportError:
-            raise _OptionError("invalid module name: %r" % (module,)) from None
+            raise _OptionError(f"invalid module name: {module!r}") from None
     try:
         cat = getattr(m, klass)
     except AttributeError:
-        raise _OptionError("unknown warning category: %r" % (category,)) from None
+        raise _OptionError(f"unknown warning category: {category!r}") from None
     if not issubclass(cat, Warning):
-        raise _OptionError("invalid warning category: %r" % (category,))
+        raise _OptionError(f"invalid warning category: {category!r}")
     return cat
 
 
@@ -436,7 +436,7 @@ def warn_explicit(
     else:
         # Unrecognized actions are errors
         raise RuntimeError(
-            "Unrecognized action (%r) in warnings.filters:\n %s" % (action, item)
+            f"Unrecognized action ({action!r}) in warnings.filters:\n {item}"
         )
     # Print message and context
     msg = WarningMessage(message, category, filename, lineno, source)
@@ -468,9 +468,8 @@ class WarningMessage:
 
     def __str__(self):
         return (
-            "{message : %r, category : %r, filename : %r, lineno : %s, "
-            "line : %r}"
-            % (self.message, self._category_name, self.filename, self.lineno, self.line)
+            f"{{message : {self.message!r}, category : {self._category_name!r}, filename : {self.filename!r}, lineno : {self.lineno}, "
+            f"line : {self.line!r}}}"
         )
 
 
@@ -507,13 +506,13 @@ class catch_warnings:
         if self._record:
             args.append("record=True")
         if self._module is not sys.modules["warnings"]:
-            args.append("module=%r" % self._module)
+            args.append(f"module={self._module!r}")
         name = type(self).__name__
-        return "%s(%s)" % (name, ", ".join(args))
+        return "{}({})".format(name, ", ".join(args))
 
     def __enter__(self):
         if self._entered:
-            raise RuntimeError("Cannot enter %r twice" % self)
+            raise RuntimeError(f"Cannot enter {self!r} twice")
         self._entered = True
         self._filters = self._module.filters
         self._module.filters = self._filters[:]
@@ -532,7 +531,7 @@ class catch_warnings:
 
     def __exit__(self, *exc_info):
         if not self._entered:
-            raise RuntimeError("Cannot exit %r without entering first" % self)
+            raise RuntimeError(f"Cannot exit {self!r} without entering first")
         self._module.filters = self._filters
         self._module._filters_mutated()
         self._module.showwarning = self._showwarning
@@ -600,7 +599,7 @@ except ImportError:
 
 # Module initialization
 _processoptions(sys.warnoptions)
-if not _warnings_defaults:
+if not _warnings_defaults:  # noqa: SIM102
     # Several warning categories are ignored by default in regular builds
     if not hasattr(sys, "gettotalrefcount"):
         filterwarnings(

@@ -26,7 +26,7 @@ def get_gdb_version():
             version, stderr = proc.communicate()
 
         if proc.returncode:
-            raise Exception(
+            raise Exception(  # noqa: TRY002
                 f"Command {' '.join(cmd)!r} failed "
                 f"with exit code {proc.returncode}: "
                 f"stdout={version!r} stderr={stderr!r}"
@@ -44,7 +44,7 @@ def get_gdb_version():
     # 'HP gdb 6.7 for HP Itanium (32 or 64 bit) and target HP-UX 11iv2 and 11iv3.\n' -> 6.7
     match = re.search(r"^(?:GNU|HP) gdb.*?\b(\d+)\.(\d+)", version)
     if match is None:
-        raise Exception("unable to parse GDB version: %r" % version)
+        raise Exception(f"unable to parse GDB version: {version!r}")  # noqa: TRY002
     return (version, int(match.group(1)), int(match.group(2)))
 
 
@@ -52,8 +52,7 @@ gdb_version, gdb_major_version, gdb_minor_version = get_gdb_version()
 if gdb_major_version < 7:
     raise unittest.SkipTest(
         "gdb versions before 7.0 didn't support python "
-        "embedding. Saw %s.%s:\n%s"
-        % (gdb_major_version, gdb_minor_version, gdb_version)
+        f"embedding. Saw {gdb_major_version}.{gdb_minor_version}:\n{gdb_version}"
     )
 
 if not sysconfig.is_python_build():
@@ -186,7 +185,7 @@ class DebuggerTests(unittest.TestCase):
         # Generate a list of commands in gdb's language:
         commands = [
             "set breakpoint pending yes",
-            "break %s" % breakpoint,
+            f"break {breakpoint}",
             # The tests assume that the first frame of printed
             #  backtrace will not contain program counter,
             #  that is however not guaranteed by gdb
@@ -222,7 +221,7 @@ class DebuggerTests(unittest.TestCase):
         # print commands
 
         # Use "commands" to generate the arguments with which to invoke "gdb":
-        args = ["--eval-command=%s" % cmd for cmd in commands]
+        args = [f"--eval-command={cmd}" for cmd in commands]
         args += ["--args", sys.executable]
         args.extend(subprocess._args_from_interpreter_flags())
 
@@ -300,19 +299,19 @@ class DebuggerTests(unittest.TestCase):
             re.DOTALL,
         )
         if not m:
-            self.fail("Unexpected gdb output: %r\n%s" % (gdb_output, gdb_output))
+            self.fail(f"Unexpected gdb output: {gdb_output!r}\n{gdb_output}")
         return m.group(1), gdb_output
 
     def assertEndsWith(self, actual, exp_end):
         '''Ensure that the given "actual" string ends with "exp_end"'''
         self.assertTrue(
-            actual.endswith(exp_end), msg="%r did not end with %r" % (actual, exp_end)
+            actual.endswith(exp_end), msg=f"{actual!r} did not end with {exp_end!r}"
         )
 
     def assertMultilineMatches(self, actual, pattern):
         m = re.match(pattern, actual, re.DOTALL)
         if not m:
-            self.fail(msg="%r did not match %r" % (actual, pattern))
+            self.fail(msg=f"{actual!r} did not match {pattern!r}")
 
     def get_sample_script(self):
         return findfile("gdb_sample.py")
@@ -333,8 +332,7 @@ class PrettyPrintTests(DebuggerTests):
             gdb_repr,
             exp_repr,
             (
-                "%r did not equal expected %r; full output was:\n%s"
-                % (gdb_repr, exp_repr, gdb_output)
+                f"{gdb_repr!r} did not equal expected {exp_repr!r}; full output was:\n{gdb_output}"
             ),
         )
 
@@ -427,7 +425,7 @@ class PrettyPrintTests(DebuggerTests):
 
     def test_tuples(self):
         "Verify the pretty-printing of tuples"
-        self.assertGdbRepr(tuple(), "()")
+        self.assertGdbRepr((), "()")
         self.assertGdbRepr((1,), "(1,)")
         self.assertGdbRepr(("foo", "bar", "baz"))
 
@@ -436,15 +434,15 @@ class PrettyPrintTests(DebuggerTests):
         if (gdb_major_version, gdb_minor_version) < (7, 3):
             self.skipTest("pretty-printing of sets needs gdb 7.3 or later")
         self.assertGdbRepr(set(), "set()")
-        self.assertGdbRepr(set(["a"]), "{'a'}")
+        self.assertGdbRepr({"a"}, "{'a'}")
         # PYTHONHASHSEED is need to get the exact frozenset item order
         if not sys.flags.ignore_environment:
-            self.assertGdbRepr(set(["a", "b"]), "{'a', 'b'}")
-            self.assertGdbRepr(set([4, 5, 6]), "{4, 5, 6}")
+            self.assertGdbRepr({"a", "b"}, "{'a', 'b'}")
+            self.assertGdbRepr({4, 5, 6}, "{4, 5, 6}")
 
         # Ensure that we handle sets containing the "dummy" key value,
         # which happens on deletion:
-        gdb_repr, gdb_output = self.get_gdb_repr("""s = set(['a','b'])
+        gdb_repr, _gdb_output = self.get_gdb_repr("""s = set(['a','b'])
 s.remove('a')
 id(s)""")
         self.assertEqual(gdb_repr, "{'b'}")
@@ -467,11 +465,11 @@ try:
     raise RuntimeError("I am an error")
 except RuntimeError as e:
     id(e)
-""")
+""")  # noqa: RUF059
         self.assertEqual(gdb_repr, "RuntimeError('I am an error',)")
 
         # Test division by zero:
-        gdb_repr, gdb_output = self.get_gdb_repr("""
+        gdb_repr, _gdb_output = self.get_gdb_repr("""
 try:
     a = 1 / 0
 except ZeroDivisionError as e:
@@ -481,18 +479,18 @@ except ZeroDivisionError as e:
 
     def test_modern_class(self):
         "Verify the pretty-printing of new-style class instances"
-        gdb_repr, gdb_output = self.get_gdb_repr("""
+        gdb_repr, _gdb_output = self.get_gdb_repr("""
 class Foo:
     pass
 foo = Foo()
 foo.an_int = 42
 id(foo)""")
         m = re.match(r"<Foo\(an_int=42\) at remote 0x-?[0-9a-f]+>", gdb_repr)
-        self.assertTrue(m, msg="Unexpected new-style class rendering %r" % gdb_repr)
+        self.assertTrue(m, msg=f"Unexpected new-style class rendering {gdb_repr!r}")
 
     def test_subclassing_list(self):
         "Verify the pretty-printing of an instance of a list subclass"
-        gdb_repr, gdb_output = self.get_gdb_repr("""
+        gdb_repr, _gdb_output = self.get_gdb_repr("""
 class Foo(list):
     pass
 foo = Foo()
@@ -501,13 +499,13 @@ foo.an_int = 42
 id(foo)""")
         m = re.match(r"<Foo\(an_int=42\) at remote 0x-?[0-9a-f]+>", gdb_repr)
 
-        self.assertTrue(m, msg="Unexpected new-style class rendering %r" % gdb_repr)
+        self.assertTrue(m, msg=f"Unexpected new-style class rendering {gdb_repr!r}")
 
     def test_subclassing_tuple(self):
         "Verify the pretty-printing of an instance of a tuple subclass"
         # This should exercise the negative tp_dictoffset code in the
         # new-style class support
-        gdb_repr, gdb_output = self.get_gdb_repr("""
+        gdb_repr, _gdb_output = self.get_gdb_repr("""
 class Foo(tuple):
     pass
 foo = Foo((1, 2, 3))
@@ -515,7 +513,7 @@ foo.an_int = 42
 id(foo)""")
         m = re.match(r"<Foo\(an_int=42\) at remote 0x-?[0-9a-f]+>", gdb_repr)
 
-        self.assertTrue(m, msg="Unexpected new-style class rendering %r" % gdb_repr)
+        self.assertTrue(m, msg=f"Unexpected new-style class rendering {gdb_repr!r}")
 
     def assertSane(self, source, corruption, exprepr=None):
         """Run Python under gdb, corrupting variables in the inferior process
@@ -531,11 +529,10 @@ id(foo)""")
         gdb_repr, gdb_output = self.get_gdb_repr(
             source, cmds_after_breakpoint=cmds_after_breakpoint
         )
-        if exprepr:
-            if gdb_repr == exprepr:
-                # gdb managed to print the value in spite of the corruption;
-                # this is good (see http://bugs.python.org/issue8330)
-                return
+        if exprepr and gdb_repr == exprepr:
+            # gdb managed to print the value in spite of the corruption;
+            # this is good (see http://bugs.python.org/issue8330)
+            return
 
         # Match anything for the type name; 0xDEADBEEF could point to
         # something arbitrary (see  http://bugs.python.org/issue8330)
@@ -543,11 +540,11 @@ id(foo)""")
 
         m = re.match(pattern, gdb_repr)
         if not m:
-            self.fail("Unexpected gdb representation: %r\n%s" % (gdb_repr, gdb_output))
+            self.fail(f"Unexpected gdb representation: {gdb_repr!r}\n{gdb_output}")
 
     def test_NULL_ptr(self):
         "Ensure that a NULL PyObject* is handled gracefully"
-        gdb_repr, gdb_output = self.get_gdb_repr(
+        gdb_repr, _gdb_output = self.get_gdb_repr(
             "id(42)", cmds_after_breakpoint=["set variable v=0", "backtrace"]
         )
 
@@ -577,20 +574,20 @@ id(foo)""")
 
         # (this was the issue causing tracebacks in
         #  http://bugs.python.org/issue8032#msg100537 )
-        gdb_repr, gdb_output = self.get_gdb_repr(
+        gdb_repr, _gdb_output = self.get_gdb_repr(
             "id(__builtins__.help)", import_site=True
         )
 
         m = re.match(r"<_Helper at remote 0x-?[0-9a-f]+>", gdb_repr)
-        self.assertTrue(m, msg="Unexpected rendering %r" % gdb_repr)
+        self.assertTrue(m, msg=f"Unexpected rendering {gdb_repr!r}")
 
     def test_selfreferential_list(self):
         """Ensure that a reference loop involving a list doesn't lead proxyval
         into an infinite loop:"""
-        gdb_repr, gdb_output = self.get_gdb_repr("a = [3, 4, 5] ; a.append(a) ; id(a)")
+        gdb_repr, gdb_output = self.get_gdb_repr("a = [3, 4, 5] ; a.append(a) ; id(a)")  # noqa: RUF059
         self.assertEqual(gdb_repr, "[3, 4, 5, [...]]")
 
-        gdb_repr, gdb_output = self.get_gdb_repr(
+        gdb_repr, _gdb_output = self.get_gdb_repr(
             "a = [3, 4, 5] ; b = [a] ; a.append(b) ; id(a)"
         )
         self.assertEqual(gdb_repr, "[3, 4, 5, [[...]]]")
@@ -598,7 +595,7 @@ id(foo)""")
     def test_selfreferential_dict(self):
         """Ensure that a reference loop involving a dict doesn't lead proxyval
         into an infinite loop:"""
-        gdb_repr, gdb_output = self.get_gdb_repr(
+        gdb_repr, _gdb_output = self.get_gdb_repr(
             "a = {} ; b = {'bar':a} ; a['foo'] = b ; id(a)"
         )
 
@@ -613,7 +610,7 @@ foo.an_attr = foo
 id(foo)""")
         self.assertTrue(
             re.match(r"<Foo\(an_attr=<\.\.\.>\) at remote 0x-?[0-9a-f]+>", gdb_repr),
-            "Unexpected gdb representation: %r\n%s" % (gdb_repr, gdb_output),
+            f"Unexpected gdb representation: {gdb_repr!r}\n{gdb_output}",
         )
 
     def test_selfreferential_new_style_instance(self):
@@ -625,7 +622,7 @@ foo.an_attr = foo
 id(foo)""")
         self.assertTrue(
             re.match(r"<Foo\(an_attr=<\.\.\.>\) at remote 0x-?[0-9a-f]+>", gdb_repr),
-            "Unexpected gdb representation: %r\n%s" % (gdb_repr, gdb_output),
+            f"Unexpected gdb representation: {gdb_repr!r}\n{gdb_output}",
         )
 
         gdb_repr, gdb_output = self.get_gdb_repr("""
@@ -641,12 +638,12 @@ id(a)""")
                 r"<Foo\(an_attr=<Foo\(an_attr=<\.\.\.>\) at remote 0x-?[0-9a-f]+>\) at remote 0x-?[0-9a-f]+>",
                 gdb_repr,
             ),
-            "Unexpected gdb representation: %r\n%s" % (gdb_repr, gdb_output),
+            f"Unexpected gdb representation: {gdb_repr!r}\n{gdb_output}",
         )
 
     def test_truncation(self):
         "Verify that very long output is truncated"
-        gdb_repr, gdb_output = self.get_gdb_repr("id(list(range(1000)))")
+        gdb_repr, _gdb_output = self.get_gdb_repr("id(list(range(1000)))")
         self.assertEqual(
             gdb_repr,
             "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, "
@@ -680,7 +677,7 @@ id(a)""")
                 r"<built-in method readlines of _io.TextIOWrapper object at remote 0x-?[0-9a-f]+>",
                 gdb_repr,
             ),
-            "Unexpected gdb representation: %r\n%s" % (gdb_repr, gdb_output),
+            f"Unexpected gdb representation: {gdb_repr!r}\n{gdb_output}",
         )
 
     def test_frames(self):
@@ -702,7 +699,7 @@ id(foo.__code__)""",
                 gdb_output,
                 re.DOTALL,
             ),
-            "Unexpected gdb representation: %r\n%s" % (gdb_output, gdb_output),
+            f"Unexpected gdb representation: {gdb_output!r}\n{gdb_output}",
         )
 
 
@@ -1065,7 +1062,7 @@ class PyLocalsTests(DebuggerTests):
 
 def setUpModule():
     if support.verbose:
-        print("GDB version %s.%s:" % (gdb_major_version, gdb_minor_version))
+        print(f"GDB version {gdb_major_version}.{gdb_minor_version}:")
         for line in gdb_version.splitlines():
             print(" " * 4 + line)
 

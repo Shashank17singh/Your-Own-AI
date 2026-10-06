@@ -94,7 +94,7 @@ class Handle:
             self._context.run(self._callback, *self._args)
         except (SystemExit, KeyboardInterrupt):
             raise
-        except BaseException as exc:
+        except BaseException as exc:  # noqa: BLE001
             cb = format_helpers._format_callback_source(self._callback, self._args)
             msg = f"Exception in callback {cb}"
             context = {
@@ -105,7 +105,7 @@ class Handle:
             if self._source_traceback:
                 context["source_traceback"] = self._source_traceback
             self._loop.call_exception_handler(context)
-        self = None  # Needed to break cycles when an exception occurs.
+        self = None  # Needed to break cycles when an exception occurs.  # noqa: PLW0642
 
 
 class TimerHandle(Handle):
@@ -708,8 +708,7 @@ class BaseDefaultEventLoopPolicy(AbstractEventLoopPolicy):
 
         if self._local._loop is None:
             raise RuntimeError(
-                "There is no current event loop in thread %r."
-                % threading.current_thread().name
+                f"There is no current event loop in thread {threading.current_thread().name!r}."
             )
 
         return self._local._loop

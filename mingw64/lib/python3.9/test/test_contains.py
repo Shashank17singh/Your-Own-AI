@@ -38,7 +38,7 @@ class TestContains(unittest.TestCase):
         self.assertIn("", "")
         self.assertIn("", "abc")
 
-        self.assertRaises(TypeError, lambda: None in "abc")
+        self.assertRaises(TypeError, lambda: None in "abc")  # noqa: PLR0133
 
     def test_builtin_sequence_types(self):
         # a collection of tests on builtin sequence types
@@ -61,7 +61,7 @@ class TestContains(unittest.TestCase):
             works when the list is modified during the check.
             """
 
-            aList = list(range(15))
+            aList = list(range(15))  # noqa: RUF012
 
             def __eq__(self, other):
                 if other == 12:
@@ -83,7 +83,7 @@ class TestContains(unittest.TestCase):
             for elem in container:
                 self.assertIn(elem, container)
             self.assertTrue(container == constructor(values))
-            self.assertTrue(container == container)
+            self.assertTrue(container == container)  # noqa: PLR0124
 
     def test_block_fallback(self):
         # blocking fallback with __contains__ = None

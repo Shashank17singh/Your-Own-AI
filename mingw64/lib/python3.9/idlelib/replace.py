@@ -107,7 +107,7 @@ class ReplaceDialog(SearchDialogBase):
         First performs a replace and then, if the replace was
         successful, a find next.
         """
-        if self.do_find(self.ok):
+        if self.do_find(self.ok):  # noqa: SIM102
             if self.do_replace():  # Only find next match if replace succeeded.
                 # A bad re can cause it to fail.
                 self.do_find(False)
@@ -160,14 +160,14 @@ class ReplaceDialog(SearchDialogBase):
             if not res:
                 break
             line, m = res
-            chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+            text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
             orig = m.group()
             new = self._replace_expand(m, repl)
             if new is None:
                 break
             i, j = m.span()
-            first = "%d.%d" % (line, i)
-            last = "%d.%d" % (line, j)
+            first = "%d.%d" % (line, i)  # noqa: UP031
+            last = "%d.%d" % (line, j)  # noqa: UP031
             if new == orig:
                 text.mark_set("insert", last)
             else:
@@ -197,8 +197,8 @@ class ReplaceDialog(SearchDialogBase):
             return False
         line, m = res
         i, j = m.span()
-        first = "%d.%d" % (line, i)
-        last = "%d.%d" % (line, j)
+        first = "%d.%d" % (line, i)  # noqa: UP031
+        last = "%d.%d" % (line, j)  # noqa: UP031
         self.show_hit(first, last)
         self.ok = True
         return True
@@ -217,7 +217,7 @@ class ReplaceDialog(SearchDialogBase):
         if not pos:
             first = last = pos = text.index("insert")
         line, col = searchengine.get_line_col(pos)
-        chars = text.get("%d.0" % line, "%d.0" % (line + 1))
+        chars = text.get("%d.0" % line, "%d.0" % (line + 1))  # noqa: UP031
         m = prog.match(chars, col)
         if not prog:
             return False
@@ -271,7 +271,7 @@ def _replace_dialog(parent):  # htest #
     top = Toplevel(parent)
     top.title("Test ReplaceDialog")
     x, y = map(int, parent.geometry().split("+")[1:])
-    top.geometry("+%d+%d" % (x, y + 175))
+    top.geometry("+%d+%d" % (x, y + 175))  # noqa: UP031
 
     # mock undo delegator methods
     def undo_block_start():

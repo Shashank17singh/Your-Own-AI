@@ -230,7 +230,7 @@ class TestSocketSendfile(LargeFileTest, unittest.TestCase):
         port = socket_helper.find_unused_port()
         with socket.create_server(("", port)) as sock:
             self.tcp_server(sock)
-            with socket.create_connection(("127.0.0.1", port)) as client:
+            with socket.create_connection(("127.0.0.1", port)) as client:  # noqa: SIM117
                 with open(TESTFN, "rb") as f:
                     client.sendfile(f)
         self.tearDown()
@@ -259,14 +259,12 @@ def setUpModule():
     # space therefore the resource must be enabled to run this test.
     # If not, nothing after this line stanza will be executed.
     if sys.platform[:3] == "win" or sys.platform == "darwin":
-        requires(
-            "largefile", "test requires %s bytes and a long time to run" % str(size)
-        )
+        requires("largefile", f"test requires {size!s} bytes and a long time to run")
     else:
         # Only run if the current filesystem supports large files.
         # (Skip this test on Windows, since we now always support
         # large files.)
-        f = open(TESTFN, "wb", buffering=0)
+        f = open(TESTFN, "wb", buffering=0)  # noqa: SIM115
         try:
             # 2**31 == 2147483648
             f.seek(2147483649)

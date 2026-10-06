@@ -53,13 +53,13 @@ def idle_formatwarning(message, category, filename, lineno, line=None):
     """Format warnings the IDLE way."""
 
     s = "\nWarning (from warnings module):\n"
-    s += '  File "%s", line %s\n' % (filename, lineno)
+    s += f'  File "{filename}", line {lineno}\n'
     if line is None:
         line = linecache.getline(filename, lineno)
     line = line.strip()
     if line:
-        s += "    %s\n" % line
-    s += "%s: %s\n" % (category.__name__, message)
+        s += f"    {line}\n"
+    s += f"{category.__name__}: {message}\n"
     return s
 
 
@@ -132,14 +132,14 @@ def main(del_exitfunc=False):
 
     """
     global exit_now
-    global quitting
+    global quitting  # noqa: PLW0602
     global no_exitfunc
     no_exitfunc = del_exitfunc
     # time.sleep(15) # test subprocess not responding
     try:
         assert len(sys.argv) > 1
         port = int(sys.argv[-1])
-    except:
+    except:  # noqa: E722
         print("IDLE Subprocess: no IP port passed in sys.argv.", file=sys.__stderr__)
         return
 
@@ -177,12 +177,12 @@ def main(del_exitfunc=False):
         except SystemExit:
             capture_warnings(False)
             raise
-        except:
+        except:  # noqa: E722
             type, value, tb = sys.exc_info()
             try:
                 print_exception()
                 rpc.response_queue.put((seq, None))
-            except:
+            except:  # noqa: E722
                 # Link didn't work, print same exception to __stderr__
                 traceback.print_exception(type, value, tb, file=sys.__stderr__)
                 exit()
@@ -425,14 +425,14 @@ class MyRPCServer(rpc.RPCServer):
         """
         global quitting
         try:
-            raise
+            raise  # noqa: PLE0704
         except SystemExit:
             raise
         except EOFError:
             global exit_now
             exit_now = True
             thread.interrupt_main()
-        except:
+        except:  # noqa: E722
             erf = sys.__stderr__
             print(
                 textwrap.dedent(f"""
@@ -479,7 +479,7 @@ class StdioFile(io.TextIOBase):
 
     @property
     def name(self):
-        return "<%s>" % self.tags
+        return f"<{self.tags}>"
 
     def isatty(self):
         return True
@@ -609,7 +609,7 @@ class Executive:
             self.user_exc_info = None
             interruptable = True
             try:
-                exec(code, self.locals)
+                exec(code, self.locals)  # noqa: S102
             finally:
                 interruptable = False
         except SystemExit as e:
@@ -618,7 +618,7 @@ class Executive:
                 if not isinstance(ob, (type(None), int)):
                     print("SystemExit: " + str(ob), file=sys.stderr)
             # Return to the interactive prompt.
-        except:
+        except:  # noqa: E722
             self.user_exc_info = sys.exc_info()  # For testing, hook, viewer.
             if quitting:
                 exit()
@@ -627,7 +627,7 @@ class Executive:
             else:
                 try:
                     sys.excepthook(*self.user_exc_info)
-                except:
+                except:  # noqa: E722
                     self.user_exc_info = sys.exc_info()  # For testing.
                     print_exception()
             jit = self.rpchandler.console.getvar("<<toggle-jit-stack-viewer>>")

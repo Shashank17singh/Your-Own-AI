@@ -1,1 +1,1 @@
-from xml.etree.ElementTree import *
+from xml.etree.ElementTree import *  # noqa: N999

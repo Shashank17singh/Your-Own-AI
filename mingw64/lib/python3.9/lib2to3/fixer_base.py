@@ -28,7 +28,7 @@ class BaseFix:
     options = None  # Options object passed to initializer
     filename = None  # The filename (set by set_filename)
     numbers = itertools.count(1)  # For new_name()
-    used_names = set()  # A set of all used NAMEs
+    used_names = set()  # A set of all used NAMEs  # noqa: RUF012
     order = "post"  # Does the fixer prefer pre- or post-order traversal
     explicit = False  # Is this ignored by refactor.py -f all?
     run_order = 5  # Fixers will be sorted by run order before execution
@@ -118,7 +118,7 @@ class BaseFix:
     def log_message(self, message):
         if self.first_log:
             self.first_log = False
-            self.log.append("### In file %s ###" % self.filename)
+            self.log.append(f"### In file {self.filename} ###")
         self.log.append(message)
 
     def cannot_convert(self, node, reason=None):
@@ -144,7 +144,7 @@ class BaseFix:
         Optional second argument is why it can't be converted.
         """
         lineno = node.get_lineno()
-        self.log_message("Line %d: %s" % (lineno, reason))
+        self.log_message("Line %d: %s" % (lineno, reason))  # noqa: UP031
 
     def start_tree(self, tree, filename):
         """Some fixers need to maintain tree-wide state.

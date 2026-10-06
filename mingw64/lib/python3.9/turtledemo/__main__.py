@@ -108,14 +108,16 @@ class DemoWindow:
         if darwin:
             import subprocess
 
-            subprocess.run(
+            subprocess.run(  # noqa: PLW1510
                 [
                     "osascript",
                     "-e",
                     'tell application "System Events"',
                     "-e",
-                    "set frontmost of the first process whose "
-                    f"unix id is {os.getpid()} to true",
+                    (
+                        "set frontmost of the first process whose "
+                        f"unix id is {os.getpid()} to true"
+                    ),
                     "-e",
                     "end tell",
                 ],
@@ -224,10 +226,10 @@ class DemoWindow:
         text["xscrollcommand"] = hbar.set
         text["font"] = tuple(txtfont)
         shortcut = "Command" if darwin else "Control"
-        text.bind_all("<%s-minus>" % shortcut, self.decrease_size)
-        text.bind_all("<%s-underscore>" % shortcut, self.decrease_size)
-        text.bind_all("<%s-equal>" % shortcut, self.increase_size)
-        text.bind_all("<%s-plus>" % shortcut, self.increase_size)
+        text.bind_all(f"<{shortcut}-minus>", self.decrease_size)
+        text.bind_all(f"<{shortcut}-underscore>", self.decrease_size)
+        text.bind_all(f"<{shortcut}-equal>", self.increase_size)
+        text.bind_all(f"<{shortcut}-plus>", self.increase_size)
         text.bind("<Control-MouseWheel>", self.update_mousewheel)
         text.bind("<Control-Button-4>", self.increase_size)
         text.bind("<Control-Button-5>", self.decrease_size)
@@ -253,7 +255,7 @@ class DemoWindow:
     def set_txtsize(self, size):
         txtfont[1] = size
         self.text["font"] = tuple(txtfont)
-        self.output_lbl["text"] = "Font size %d" % size
+        self.output_lbl["text"] = "Font size %d" % size  # noqa: UP031
 
     def decrease_size(self, dummy=None):
         self.set_txtsize(max(txtfont[1] - 1, MINIMUM_FONT_SIZE))

@@ -36,7 +36,7 @@ def stringify_tokens_from_source(token_generator, source_string):
     num_lines = len(source_string.splitlines())
     missing_trailing_nl = source_string[-1] not in "\r\n"
 
-    for type, token, start, end, line in token_generator:
+    for type, token, start, end, line in token_generator:  # noqa: F402
         if type == ENDMARKER:
             break
         # Ignore the new line on the last line if the input lacks one
@@ -299,7 +299,7 @@ def k(x):
     def test_underscore_literals(self):
         def number_token(s):
             f = BytesIO(s.encode("utf-8"))
-            for toktype, token, start, end, line in tokenize(f.readline):
+            for toktype, token, start, end, line in tokenize(f.readline):  # noqa: F402
                 if toktype == NUMBER:
                     return token
             return "invalid token"
@@ -1262,7 +1262,7 @@ class TestTokenizerAdheresToPep0263(TestCase):
 
     def _testFile(self, filename):
         path = os.path.join(os.path.dirname(__file__), filename)
-        TestRoundtrip.check_roundtrip(self, open(path, "rb"))
+        TestRoundtrip.check_roundtrip(self, open(path, "rb"))  # noqa: SIM115
 
     def test_utf8_coding_cookie_and_no_utf8_bom(self):
         f = "tokenize_tests-utf8-coding-cookie-and-no-utf8-bom-sig.txt"
@@ -1476,7 +1476,7 @@ class TestDetectEncoding(TestCase):
                     b"do_something += 4\n",
                 )
                 rl = self.get_readline(lines)
-                found, consumed_lines = detect_encoding(rl)
+                found, _consumed_lines = detect_encoding(rl)
                 self.assertEqual(found, "iso-8859-1")
 
     def test_syntaxerror_latin1(self):
@@ -1498,7 +1498,7 @@ class TestDetectEncoding(TestCase):
                     b"1 + 3\n",
                 )
                 rl = self.get_readline(lines)
-                found, consumed_lines = detect_encoding(rl)
+                found, _consumed_lines = detect_encoding(rl)
                 self.assertEqual(found, "utf-8")
 
     def test_short_files(self):
@@ -1538,7 +1538,7 @@ class TestDetectEncoding(TestCase):
         # test coding cookie
         for encoding in ("iso-8859-15", "utf-8"):
             with open(filename, "w", encoding=encoding) as fp:
-                print("# coding: %s" % encoding, file=fp)
+                print(f"# coding: {encoding}", file=fp)
                 print("print('euro:\u20ac')", file=fp)
             with tokenize_open(filename) as fp:
                 self.assertEqual(fp.encoding, encoding)

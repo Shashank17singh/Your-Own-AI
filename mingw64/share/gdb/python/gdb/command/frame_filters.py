@@ -56,8 +56,8 @@ class InfoFrameFilter(gdb.Command):
                 enabled = (
                     f"{self.enabled_string(gdb.frames.get_enabled(frame_filter[1])):<7}"
                 )
-                print("  %s  %s  %s" % (priority, enabled, name))
-            except Exception:
+                print(f"  {priority}  {enabled}  {name}")
+            except Exception:  # noqa: BLE001
                 e = sys.exc_info()[1]
                 print("  Error printing filter '" + name + "': " + str(e))
         if blank_line:
@@ -68,11 +68,11 @@ class InfoFrameFilter(gdb.Command):
         any_printed = self.print_list("global frame-filters:", gdb.frame_filters, True)
         cp = gdb.current_progspace()
         any_printed += self.print_list(
-            "progspace %s frame-filters:" % cp.filename, cp.frame_filters, True
+            f"progspace {cp.filename} frame-filters:", cp.frame_filters, True
         )
         for objfile in gdb.objfiles():
             any_printed += self.print_list(
-                "objfile %s frame-filters:" % objfile.filename,
+                f"objfile {objfile.filename} frame-filters:",
                 objfile.frame_filters,
                 False,
             )

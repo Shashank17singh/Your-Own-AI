@@ -27,7 +27,7 @@ class TestPathfixFunctional(unittest.TestCase):
         with open(filename, "w", encoding="utf8") as f:
             f.write(f"{shebang}\n" + 'print("Hello world")\n')
         encoding = sys.getfilesystemencoding()
-        proc = subprocess.run(
+        proc = subprocess.run(  # noqa: PLW1510
             [sys.executable, self.script, *pathfix_flags, "-n", pathfix_arg],
             env={**os.environ, "PYTHONIOENCODING": encoding},
             capture_output=True,

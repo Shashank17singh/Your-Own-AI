@@ -61,8 +61,8 @@ class S(metaclass=Meta):
 
 
 def foo(x: int = 10):
-    def bar(y: List[str]):
-        x: str = "yes"
+    def bar(y: List[str]):  # noqa: F821
+        pass
 
     bar()
 

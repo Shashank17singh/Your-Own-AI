@@ -25,7 +25,7 @@ class IntLike:
 class MemorySeekTestMixin:
     def testInit(self):
         buf = self.buftype("1234567890")
-        bytesIo = self.ioclass(buf)
+        self.ioclass(buf)
 
     def testRead(self):
         buf = self.buftype("1234567890")
@@ -824,7 +824,7 @@ class CBytesIOTest(PyBytesIOTest):
         # to be immutable.
         ba = bytearray(1024)
         old_rc = sys.getrefcount(ba)
-        memio = self.ioclass(ba)
+        self.ioclass(ba)
         self.assertEqual(sys.getrefcount(ba), old_rc)
 
 

@@ -87,11 +87,11 @@ class Token_Tests(unittest.TestCase):
                 try:
                     func()
                 except TypeError:
-                    self.fail("%s cannot be called with no argument" % name)
+                    self.fail(f"{name} cannot be called with no argument")
                 try:
                     func(None)
                 except TypeError:
-                    self.fail("%s cannot be called with None" % name)
+                    self.fail(f"{name} cannot be called with None")
         size = secrets.DEFAULT_ENTROPY
         self.assertEqual(len(secrets.token_bytes(None)), size)
         self.assertEqual(len(secrets.token_hex(None)), 2 * size)

@@ -121,7 +121,7 @@ class HTMLParser(_markupbase.ParserBase):
 
     def set_cdata_mode(self, elem):
         self.cdata_elem = elem.lower()
-        self.interesting = re.compile(r"</\s*%s\s*>" % self.cdata_elem, re.IGNORECASE)
+        self.interesting = re.compile(rf"</\s*{self.cdata_elem}\s*>", re.IGNORECASE)
 
     def clear_cdata_mode(self):
         self.interesting = interesting_normal
@@ -410,10 +410,9 @@ class HTMLParser(_markupbase.ParserBase):
             return gtpos + 1
 
         elem = match.group(1).lower()  # script or style
-        if self.cdata_elem is not None:
-            if elem != self.cdata_elem:
-                self.handle_data(rawdata[i:gtpos])
-                return gtpos
+        if self.cdata_elem is not None and elem != self.cdata_elem:
+            self.handle_data(rawdata[i:gtpos])
+            return gtpos
 
         self.handle_endtag(elem)
         self.clear_cdata_mode()

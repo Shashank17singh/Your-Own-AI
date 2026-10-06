@@ -110,7 +110,7 @@ class TestLiterals(unittest.TestCase):
             if b in b"""\n\r"'01234567NU\\abfnrtuvx""":
                 continue
             with self.assertWarns(DeprecationWarning):
-                self.assertEqual(eval(r"'\%c'" % b), "\\" + chr(b))
+                self.assertEqual(eval(r"'\%c'" % b), "\\" + chr(b))  # noqa: UP031
 
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always", category=DeprecationWarning)
@@ -160,7 +160,7 @@ class TestLiterals(unittest.TestCase):
             if b in b"""\n\r"'01234567\\abfnrtvx""":
                 continue
             with self.assertWarns(DeprecationWarning):
-                self.assertEqual(eval(r"b'\%c'" % b), b"\\" + bytes([b]))
+                self.assertEqual(eval(r"b'\%c'" % b), b"\\" + bytes([b]))  # noqa: UP031
 
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always", category=DeprecationWarning)
@@ -218,7 +218,7 @@ class TestLiterals(unittest.TestCase):
     def check_encoding(self, encoding, extra=""):
         modname = "xx_" + encoding.replace("-", "_")
         fn = os.path.join(self.tmpdir, modname + ".py")
-        f = open(fn, "w", encoding=encoding)
+        f = open(fn, "w", encoding=encoding)  # noqa: SIM115
         try:
             f.write(TEMPLATE % encoding)
             f.write(extra)

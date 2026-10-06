@@ -116,7 +116,7 @@ class FractionTest(unittest.TestCase):
         except exc_type as e:
             self.assertEqual(message, str(e))
         else:
-            self.fail("%s not raised" % exc_type.__name__)
+            self.fail(f"{exc_type.__name__} not raised")
 
     def testInit(self):
         self.assertEqual((0, 1), _components(F()))
@@ -614,10 +614,10 @@ class FractionTest(unittest.TestCase):
 
         self.assertFalse(float("inf") < F(1, 2))
         self.assertTrue(float("-inf") < F(0, 10))
-        self.assertFalse(float("nan") < F(-3, 7))
+        self.assertFalse(float("nan") < F(-3, 7))  # noqa: PLW0177
         self.assertTrue(F(1, 2) < float("inf"))
         self.assertFalse(F(17, 12) < float("-inf"))
-        self.assertFalse(F(144, -89) < float("nan"))
+        self.assertFalse(F(144, -89) < float("nan"))  # noqa: PLW0177
 
     def testMixedLessEqual(self):
         self.assertTrue(0.5 <= F(1, 2))
@@ -631,10 +631,10 @@ class FractionTest(unittest.TestCase):
 
         self.assertFalse(float("inf") <= F(1, 2))
         self.assertTrue(float("-inf") <= F(0, 10))
-        self.assertFalse(float("nan") <= F(-3, 7))
+        self.assertFalse(float("nan") <= F(-3, 7))  # noqa: PLW0177
         self.assertTrue(F(1, 2) <= float("inf"))
         self.assertFalse(F(17, 12) <= float("-inf"))
-        self.assertFalse(F(144, -89) <= float("nan"))
+        self.assertFalse(F(144, -89) <= float("nan"))  # noqa: PLW0177
 
     def testBigFloatComparisons(self):
         # Because 10**23 can't be represented exactly as a float:
@@ -673,8 +673,8 @@ class FractionTest(unittest.TestCase):
         self.assertFalse(2 == F(3, 2))
         self.assertTrue(F(4, 2) == 2)
         self.assertFalse(F(5, 2) == 2)
-        self.assertFalse(F(5, 2) == float("nan"))
-        self.assertFalse(float("nan") == F(3, 7))
+        self.assertFalse(F(5, 2) == float("nan"))  # noqa: PLW0177
+        self.assertFalse(float("nan") == F(3, 7))  # noqa: PLW0177
         self.assertFalse(F(5, 2) == float("inf"))
         self.assertFalse(float("-inf") == F(2, 5))
 

@@ -47,8 +47,8 @@ Parse Plist example:
 """
 
 __all__ = [
-    "FMT_BINARY",
-    "FMT_XML",
+    "FMT_BINARY",  # noqa: F822
+    "FMT_XML",  # noqa: F822
     "UID",
     "InvalidFileException",
     "dump",
@@ -86,7 +86,7 @@ class UID:
         return self.data
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, repr(self.data))
+        return f"{self.__class__.__name__}({self.data!r})"
 
     def __reduce__(self):
         return self.__class__, (self.data,)
@@ -155,11 +155,11 @@ def _date_from_string(s):
         if val is None:
             break
         lst.append(int(val))
-    return datetime.datetime(*lst)
+    return datetime.datetime(*lst)  # noqa: DTZ001
 
 
 def _date_to_string(d):
-    return "%04d-%02d-%02dT%02d:%02d:%02dZ" % (
+    return "%04d-%02d-%02dT%02d:%02d:%02dZ" % (  # noqa: UP031
         d.year,
         d.month,
         d.day,
@@ -232,7 +232,7 @@ class _PlistParser:
         if self.current_key is not None:
             if not isinstance(self.stack[-1], type({})):
                 raise ValueError(
-                    "unexpected element at line %d" % self.parser.CurrentLineNumber
+                    "unexpected element at line %d" % self.parser.CurrentLineNumber  # noqa: UP031
                 )
             self.stack[-1][self.current_key] = value
             self.current_key = None
@@ -242,7 +242,7 @@ class _PlistParser:
         else:
             if not isinstance(self.stack[-1], type([])):
                 raise ValueError(
-                    "unexpected element at line %d" % self.parser.CurrentLineNumber
+                    "unexpected element at line %d" % self.parser.CurrentLineNumber  # noqa: UP031
                 )
             self.stack[-1].append(value)
 
@@ -261,7 +261,7 @@ class _PlistParser:
     def end_dict(self):
         if self.current_key:
             raise ValueError(
-                "missing value for key '%s' at line %d"
+                "missing value for key '%s' at line %d"  # noqa: UP031
                 % (self.current_key, self.parser.CurrentLineNumber)
             )
         self.stack.pop()
@@ -269,7 +269,7 @@ class _PlistParser:
     def end_key(self):
         if self.current_key or not isinstance(self.stack[-1], type({})):
             raise ValueError(
-                "unexpected key at line %d" % self.parser.CurrentLineNumber
+                "unexpected key at line %d" % self.parser.CurrentLineNumber  # noqa: UP031
             )
         self.current_key = self.get_data()
 
@@ -289,7 +289,7 @@ class _PlistParser:
 
     def end_integer(self):
         raw = self.get_data()
-        if raw.startswith("0x") or raw.startswith("0X"):
+        if raw.startswith(("0x", "0X")):
             self.add_object(int(raw, 16))
         else:
             self.add_object(int(raw))
@@ -316,22 +316,22 @@ class _DumbXMLWriter:
 
     def begin_element(self, element):
         self.stack.append(element)
-        self.writeln("<%s>" % element)
+        self.writeln(f"<{element}>")
         self._indent_level += 1
 
     def end_element(self, element):
         assert self._indent_level > 0
         assert self.stack.pop() == element
         self._indent_level -= 1
-        self.writeln("</%s>" % element)
+        self.writeln(f"</{element}>")
 
     def simple_element(self, element, value=None):
         if value is not None:
             value = _escape(value)
-            self.writeln("<%s>%s</%s>" % (element, value, element))
+            self.writeln(f"<{element}>{value}</{element}>")
 
         else:
-            self.writeln("<%s/>" % element)
+            self.writeln(f"<{element}/>")
 
     def writeln(self, line):
         if line:
@@ -379,7 +379,7 @@ class _PlistWriter(_DumbXMLWriter):
 
         elif isinstance(value, int):
             if -1 << 63 <= value < 1 << 64:
-                self.simple_element("integer", "%d" % value)
+                self.simple_element("integer", "%d" % value)  # noqa: UP031
             else:
                 raise OverflowError(value)
 
@@ -399,7 +399,7 @@ class _PlistWriter(_DumbXMLWriter):
             self.write_array(value)
 
         else:
-            raise TypeError("unsupported type: %s" % type(value))
+            raise TypeError(f"unsupported type: {type(value)}")
 
     def write_bytes(self, data):
         self.begin_element("data")
@@ -598,7 +598,7 @@ class _BinaryPlistParser:
             f = struct.unpack(">d", self._fp.read(8))[0]
             # timestamp 0 of binary plists corresponds to 1/1/2001
             # (year of Mac OS X 10.0), instead of 1/1/1970.
-            result = datetime.datetime(2001, 1, 1) + datetime.timedelta(seconds=f)
+            result = datetime.datetime(2001, 1, 1) + datetime.timedelta(seconds=f)  # noqa: DTZ001
 
         elif tokenH == 0x40:  # data
             s = self._get_size(tokenL)
@@ -826,7 +826,7 @@ class _BinaryPlistWriter:
             self._fp.write(struct.pack(">Bd", 0x23, value))
 
         elif isinstance(value, datetime.datetime):
-            f = (value - datetime.datetime(2001, 1, 1)).total_seconds()
+            f = (value - datetime.datetime(2001, 1, 1)).total_seconds()  # noqa: DTZ001
             self._fp.write(struct.pack(">Bd", 0x33, f))
 
         elif isinstance(value, (bytes, bytearray)):
@@ -897,16 +897,16 @@ def _is_fmt_binary(header):
 #
 
 _FORMATS = {
-    FMT_XML: dict(
-        detect=_is_fmt_xml,
-        parser=_PlistParser,
-        writer=_PlistWriter,
-    ),
-    FMT_BINARY: dict(
-        detect=_is_fmt_binary,
-        parser=_BinaryPlistParser,
-        writer=_BinaryPlistWriter,
-    ),
+    FMT_XML: {  # noqa: F821
+        "detect": _is_fmt_xml,
+        "parser": _PlistParser,
+        "writer": _PlistWriter,
+    },
+    FMT_BINARY: {  # noqa: F821
+        "detect": _is_fmt_binary,
+        "parser": _BinaryPlistParser,
+        "writer": _BinaryPlistWriter,
+    },
 }
 
 
@@ -940,18 +940,18 @@ def loads(value, *, fmt=None, dict_type=dict):
     return load(fp, fmt=fmt, dict_type=dict_type)
 
 
-def dump(value, fp, *, fmt=FMT_XML, sort_keys=True, skipkeys=False):
+def dump(value, fp, *, fmt=FMT_XML, sort_keys=True, skipkeys=False):  # noqa: F821
     """Write 'value' to a .plist file. 'fp' should be a writable,
     binary file object.
     """
     if fmt not in _FORMATS:
-        raise ValueError("Unsupported format: %r" % (fmt,))
+        raise ValueError(f"Unsupported format: {fmt!r}")
 
     writer = _FORMATS[fmt]["writer"](fp, sort_keys=sort_keys, skipkeys=skipkeys)
     writer.write(value)
 
 
-def dumps(value, *, fmt=FMT_XML, skipkeys=False, sort_keys=True):
+def dumps(value, *, fmt=FMT_XML, skipkeys=False, sort_keys=True):  # noqa: F821
     """Return a bytes object with the contents for a .plist file."""
     fp = BytesIO()
     dump(value, fp, fmt=fmt, skipkeys=skipkeys, sort_keys=sort_keys)

@@ -18,8 +18,7 @@ def eggs(x, y):
     global fr, st
     fr = inspect.currentframe()
     st = inspect.stack()
-    p = x
-    q = y / 0
+    y / 0
 
 
 # line 20
@@ -48,7 +47,7 @@ class StupidGit:
     def argue(self, a, b, c):
         try:
             spam(a, b, c)
-        except:
+        except:  # noqa: E722
             self.ex = sys.exc_info()
             self.tr = inspect.trace()
 
@@ -89,8 +88,8 @@ async def lobbest(grenade):
 
 currentframe = inspect.currentframe()
 try:
-    raise Exception()
-except:
+    raise Exception()  # noqa: TRY002
+except:  # noqa: E722
     tb = sys.exc_info()[2]
 
 

@@ -160,7 +160,7 @@ skip_expected = not os.path.isdir(directory)
 EXTENDEDERRORTEST = False
 
 # Test extra functionality in the C version (-DEXTRA_FUNCTIONALITY).
-EXTRA_FUNCTIONALITY = True if hasattr(C, "DecClamped") else False
+EXTRA_FUNCTIONALITY = bool(hasattr(C, "DecClamped"))
 requires_extra_functionality = unittest.skipUnless(
     EXTRA_FUNCTIONALITY, "test requires build with -DEXTRA_FUNCTIONALITY"
 )
@@ -179,42 +179,40 @@ class IBMTestCases(unittest.TestCase):
 
         # List of individual .decTest test ids that correspond to tests that
         # we're skipping for one reason or another.
-        self.skipped_test_ids = set(
-            [
-                # Skip implementation-specific scaleb tests.
-                "scbx164",
-                "scbx165",
-                # For some operations (currently exp, ln, log10, power), the decNumber
-                # reference implementation imposes additional restrictions on the context
-                # and operands.  These restrictions are not part of the specification;
-                # however, the effect of these restrictions does show up in some of the
-                # testcases.  We skip testcases that violate these restrictions, since
-                # Decimal behaves differently from decNumber for these testcases so these
-                # testcases would otherwise fail.
-                "expx901",
-                "expx902",
-                "expx903",
-                "expx905",
-                "lnx901",
-                "lnx902",
-                "lnx903",
-                "lnx905",
-                "logx901",
-                "logx902",
-                "logx903",
-                "logx905",
-                "powx1183",
-                "powx1184",
-                "powx4001",
-                "powx4002",
-                "powx4003",
-                "powx4005",
-                "powx4008",
-                "powx4010",
-                "powx4012",
-                "powx4014",
-            ]
-        )
+        self.skipped_test_ids = {
+            # Skip implementation-specific scaleb tests.
+            "scbx164",
+            "scbx165",
+            # For some operations (currently exp, ln, log10, power), the decNumber
+            # reference implementation imposes additional restrictions on the context
+            # and operands.  These restrictions are not part of the specification;
+            # however, the effect of these restrictions does show up in some of the
+            # testcases.  We skip testcases that violate these restrictions, since
+            # Decimal behaves differently from decNumber for these testcases so these
+            # testcases would otherwise fail.
+            "expx901",
+            "expx902",
+            "expx903",
+            "expx905",
+            "lnx901",
+            "lnx902",
+            "lnx903",
+            "lnx905",
+            "logx901",
+            "logx902",
+            "logx903",
+            "logx905",
+            "powx1183",
+            "powx1184",
+            "powx4001",
+            "powx4002",
+            "powx4003",
+            "powx4005",
+            "powx4008",
+            "powx4010",
+            "powx4012",
+            "powx4014",
+        }
 
         if self.decimal == C:
             # status has additional Subnormal, Underflow
@@ -339,7 +337,7 @@ class IBMTestCases(unittest.TestCase):
             return self.decimal.Decimal(v, context)
 
     def eval_file(self, file):
-        global skip_expected
+        global skip_expected  # noqa: PLW0602
         if skip_expected:
             raise unittest.SkipTest
         with open(file) as f:
@@ -347,7 +345,7 @@ class IBMTestCases(unittest.TestCase):
                 line = line.replace("\r\n", "").replace("\n", "")
                 # print line
                 try:
-                    t = self.eval_line(line)
+                    self.eval_line(line)
                 except self.decimal.DecimalException as exception:
                     # Exception raised where there shouldn't have been one.
                     self.fail(
@@ -449,11 +447,9 @@ class IBMTestCases(unittest.TestCase):
                         except error:
                             pass
                         except Signals[self.decimal] as e:
-                            self.fail(
-                                "Raised %s in %s when %s disabled" % (e, s, error)
-                            )
+                            self.fail(f"Raised {e} in {s} when {error} disabled")
                         else:
-                            self.fail("Did not raise %s in %s" % (error, s))
+                            self.fail(f"Did not raise {error} in {s}")
                         self.context.traps[error] = 0
                 v = self.context.create_decimal(v)
             else:
@@ -470,9 +466,9 @@ class IBMTestCases(unittest.TestCase):
                 except error:
                     pass
                 except Signals[self.decimal] as e:
-                    self.fail("Raised %s in %s when %s disabled" % (e, s, error))
+                    self.fail(f"Raised {e} in {s} when {error} disabled")
                 else:
-                    self.fail("Did not raise %s in %s" % (error, s))
+                    self.fail(f"Did not raise {error} in {s}")
                 self.context.traps[error] = 0
 
             # as above, but add traps cumulatively, to check precedence
@@ -486,9 +482,9 @@ class IBMTestCases(unittest.TestCase):
                 except error:
                     pass
                 except Signals[self.decimal] as e:
-                    self.fail("Raised %s in %s; expected %s" % (type(e), s, error))
+                    self.fail(f"Raised {type(e)} in {s}; expected {error}")
                 else:
-                    self.fail("Did not raise %s in %s" % (error, s))
+                    self.fail(f"Did not raise {error} in {s}")
             # reset traps
             for error in ordered_errors:
                 self.context.traps[error] = 0
@@ -500,7 +496,7 @@ class IBMTestCases(unittest.TestCase):
             if fname in self.LogicalFunctions:
                 result = str(int(eval(result)))  # 'True', 'False' -> '1', '0'
         except Signals[self.decimal] as error:
-            self.fail("Raised %s in %s" % (error, s))
+            self.fail(f"Raised {error} in {s}")
         except:  # Catch any error long enough to state the test case.
             print("ERROR:", s)
             raise
@@ -992,8 +988,8 @@ class ImplicitConstructionTest(unittest.TestCase):
         ]
 
         for sym, lop, rop in oplist:
-            setattr(E, lop, lambda self, other: "str" + lop + str(other))
-            setattr(E, rop, lambda self, other: str(other) + rop + "str")
+            setattr(E, lop, lambda self, other: "str" + lop + str(other))  # noqa: B023
+            setattr(E, rop, lambda self, other: str(other) + rop + "str")  # noqa: B023
             self.assertEqual(eval("E()" + sym + "Decimal(10)"), "str" + lop + "10")
             self.assertEqual(eval("Decimal(10)" + sym + "E()"), "10" + rop + "str")
 
@@ -1553,7 +1549,7 @@ class ArithmeticOperatorsTest(unittest.TestCase):
         for x, y in qnan_pairs + snan_pairs:
             for op in order_ops + equality_ops:
                 got = op(x, y)
-                expected = True if op is operator.ne else False
+                expected = op is operator.ne
                 self.assertIs(
                     expected,
                     got,
@@ -1568,7 +1564,7 @@ class ArithmeticOperatorsTest(unittest.TestCase):
             for x, y in qnan_pairs:
                 for op in equality_ops:
                     got = op(x, y)
-                    expected = True if op is operator.ne else False
+                    expected = op is operator.ne
                     self.assertIs(
                         expected,
                         got,
@@ -2197,7 +2193,7 @@ class UsabilityTest(unittest.TestCase):
         for exp in range(-4, 2):
             for coeff in range(1000):
                 for sign in "+", "-":
-                    d = Decimal("%s%dE%d" % (sign, coeff, exp))
+                    d = Decimal("%s%dE%d" % (sign, coeff, exp))  # noqa: UP031
                     pq = d.as_integer_ratio()
                     p, q = pq
 
@@ -3065,7 +3061,6 @@ class ContextAPItests(unittest.TestCase):
 
     def test_copy(self):
         # All copies should be deep
-        Decimal = self.decimal.Decimal
         Context = self.decimal.Context
 
         c = Context()
@@ -3922,13 +3917,13 @@ class ContextFlags(unittest.TestCase):
                     ans,
                     new_ans,
                     "operation produces different answers depending on flags set: "
-                    + "expected %s, got %s." % (ans, new_ans),
+                    + f"expected {ans}, got {new_ans}.",
                 )
                 self.assertEqual(
                     new_flags,
                     expected_flags,
                     "operation raises different flags depending on flags set: "
-                    + "expected %s, got %s" % (expected_flags, new_flags),
+                    + f"expected {expected_flags}, got {new_flags}",
                 )
 
     def test_flag_comparisons(self):
@@ -4085,7 +4080,7 @@ class ContextFlags(unittest.TestCase):
 
         def test_containers(c, signal=None):
             c.clear_flags()
-            s = set([100.0, Decimal("100.0")])
+            s = {100.0, Decimal("100.0")}
             self.assertEqual(len(s), 1)
             self.assertTrue(c.flags[FloatOperation])
 
@@ -4097,11 +4092,11 @@ class ContextFlags(unittest.TestCase):
             self.assertTrue(c.flags[FloatOperation])
 
             c.clear_flags()
-            b = 10.0 in [Decimal("10.0"), 1.0]
+            10.0 in [Decimal("10.0"), 1.0]  # noqa: B015
             self.assertTrue(c.flags[FloatOperation])
 
             c.clear_flags()
-            b = 10.0 in {Decimal("10.0"): "a", 1.0: "b"}
+            10.0 in {Decimal("10.0"): "a", 1.0: "b"}  # noqa: B015
             self.assertTrue(c.flags[FloatOperation])
 
         nc = Context()
@@ -4115,7 +4110,6 @@ class ContextFlags(unittest.TestCase):
             test_containers(c, signal=FloatOperation)
 
     def test_float_operation_default(self):
-        Decimal = self.decimal.Decimal
         Context = self.decimal.Context
         Inexact = self.decimal.Inexact
         FloatOperation = self.decimal.FloatOperation
@@ -4172,7 +4166,7 @@ class SpecialContexts(unittest.TestCase):
                 c = getcontext()
                 self.assertIsNot(c, template)
                 self.assertEqual(c.prec, 441)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             ex = e.__class__
         finally:
             BasicContext.prec = basic_context_prec
@@ -4214,7 +4208,7 @@ class SpecialContexts(unittest.TestCase):
             c = getcontext()
             self.assertIsNot(c, DefaultContext)
             self.assertEqual(c.prec, 961)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             ex = e.__class__
         finally:
             DefaultContext.prec = default_context_prec
@@ -4755,7 +4749,6 @@ class PyFunctionality(unittest.TestCase):
     def test_py_alternate_formatting(self):
         # triples giving a format, a Decimal, and the expected result
         Decimal = P.Decimal
-        localcontext = P.localcontext
 
         test_values = [
             # Issue 7094: Alternate formatting (specified by #)
@@ -4811,7 +4804,7 @@ class PyWhitebox(unittest.TestCase):
         setcontext = P.setcontext
 
         c = DefaultContext.copy()
-        c.traps = dict((s, 0) for s in OrderedSignals[P])
+        c.traps = {s: 0 for s in OrderedSignals[P]}
         setcontext(c)
 
         d1 = Decimal("-25e55")
@@ -4896,7 +4889,7 @@ class PyWhitebox(unittest.TestCase):
         Decimal = P.Decimal
         localcontext = P.localcontext
 
-        with localcontext() as c:
+        with localcontext():
             x = Decimal("NaN")._rescale(3, ROUND_UP)
             self.assertTrue(x.is_nan())
 
@@ -5173,11 +5166,6 @@ class CWhitebox(unittest.TestCase):
     @requires_extra_functionality
     def test_c_context_errors_extra(self):
         Context = C.Context
-        InvalidOperation = C.InvalidOperation
-        Overflow = C.Overflow
-        localcontext = C.localcontext
-        getcontext = C.getcontext
-        setcontext = C.setcontext
         HAVE_CONFIG_64 = C.MAX_PREC > 425000000
 
         c = Context()
@@ -5216,11 +5204,6 @@ class CWhitebox(unittest.TestCase):
     def test_c_valid_context(self):
         # These tests are for code coverage in _decimal.
         DefaultContext = C.DefaultContext
-        Clamped = C.Clamped
-        Underflow = C.Underflow
-        Inexact = C.Inexact
-        Rounded = C.Rounded
-        Subnormal = C.Subnormal
 
         c = DefaultContext.copy()
 
@@ -5294,7 +5277,9 @@ class CWhitebox(unittest.TestCase):
         self.assertRaises(ValueError, Decimal(1).__format__, "<>=10.10")
         maxsize = 2**63 - 1 if HAVE_CONFIG_64 else 2**31 - 1
         self.assertRaises(
-            ValueError, Decimal("1.23456789").__format__, "=%d.1" % maxsize
+            ValueError,
+            Decimal("1.23456789").__format__,
+            "=%d.1" % maxsize,  # noqa: UP031
         )
 
     def test_c_integral(self):
@@ -5505,7 +5490,7 @@ class CWhitebox(unittest.TestCase):
         # Signal dict methods
         self.assertTrue(Overflow in c.traps)
         c.clear_traps()
-        for k in c.traps.keys():
+        for k in c.traps:
             c.traps[k] = True
         for v in c.traps.values():
             self.assertTrue(v)
@@ -5519,9 +5504,9 @@ class CWhitebox(unittest.TestCase):
         self.assertRaises(TypeError, c.flags.get, "x", "y", "z")
 
         self.assertEqual(len(c.flags), len(c.traps))
-        s = sys.getsizeof(c.flags)
-        s = sys.getsizeof(c.traps)
-        s = c.flags.__repr__()
+        sys.getsizeof(c.flags)
+        sys.getsizeof(c.traps)
+        c.flags.__repr__()
 
         # Set flags/traps.
         c.clear_flags()
@@ -5578,7 +5563,7 @@ class CWhitebox(unittest.TestCase):
                     emax = random.randrange(0, 10000)
                     clamp = random.randrange(0, 2)
                     caps = random.randrange(0, 2)
-                    cr = random.randrange(0, 2)
+                    random.randrange(0, 2)
                     c = Context(
                         prec=prec,
                         rounding=round,
@@ -5662,18 +5647,18 @@ class CWhitebox(unittest.TestCase):
             c.traps[InvalidOperation] = True
 
             # Clamped
-            x = "0e%d" % sys.maxsize
+            x = "0e%d" % sys.maxsize  # noqa: UP031
             self.assertRaises(InvalidOperation, Decimal, x)
 
-            x = "0e%d" % (-sys.maxsize - 1)
+            x = "0e%d" % (-sys.maxsize - 1)  # noqa: UP031
             self.assertRaises(InvalidOperation, Decimal, x)
 
             # Overflow
-            x = "1e%d" % sys.maxsize
+            x = "1e%d" % sys.maxsize  # noqa: UP031
             self.assertRaises(InvalidOperation, Decimal, x)
 
             # Underflow
-            x = "1e%d" % (-sys.maxsize - 1)
+            x = "1e%d" % (-sys.maxsize - 1)  # noqa: UP031
             self.assertRaises(InvalidOperation, Decimal, x)
 
     def test_from_tuple(self):
@@ -5780,17 +5765,6 @@ class CWhitebox(unittest.TestCase):
         # The following functions fill the available precision and are
         # therefore not suitable for large precisions (by design of the
         # specification).
-        MaxContextSkip = [
-            "logical_invert",
-            "next_minus",
-            "next_plus",
-            "logical_and",
-            "logical_or",
-            "logical_xor",
-            "next_toward",
-            "rotate",
-            "shift",
-        ]
 
         Decimal = C.Decimal
         Context = C.Context
@@ -5831,10 +5805,10 @@ class SignatureTest(unittest.TestCase):
 
                 # parameter names:
                 c_names = list(c_sig.parameters.keys())
-                p_names = [x for x in p_sig.parameters.keys() if not x.startswith("_")]
+                p_names = [x for x in p_sig.parameters if not x.startswith("_")]
 
                 self.assertEqual(
-                    c_names, p_names, msg="parameter name mismatch in %s" % p_func
+                    c_names, p_names, msg=f"parameter name mismatch in {p_func}"
                 )
 
                 c_kind = [x.kind for x in c_sig.parameters.values()]
@@ -5847,7 +5821,7 @@ class SignatureTest(unittest.TestCase):
                 # parameters:
                 if attr != "setcontext":
                     self.assertEqual(
-                        c_kind, p_kind, msg="parameter kind mismatch in %s" % p_func
+                        c_kind, p_kind, msg=f"parameter kind mismatch in {p_func}"
                     )
 
     def test_inspect_types(self):
@@ -5927,10 +5901,10 @@ class SignatureTest(unittest.TestCase):
 
                     # parameter names:
                     p_names = list(p_sig.parameters.keys())
-                    c_names = [tr(x) for x in c_sig.parameters.keys()]
+                    c_names = [tr(x) for x in c_sig.parameters]
 
                     self.assertEqual(
-                        c_names, p_names, msg="parameter name mismatch in %s" % p_func
+                        c_names, p_names, msg=f"parameter name mismatch in {p_func}"
                     )
 
                     p_kind = [x.kind for x in p_sig.parameters.values()]
@@ -5945,30 +5919,30 @@ class SignatureTest(unittest.TestCase):
                         self.assertEqual(
                             c_kind[1:],
                             p_kind[1:],
-                            msg="parameter kind mismatch in %s" % p_func,
+                            msg=f"parameter kind mismatch in {p_func}",
                         )
                     else:  # Context methods are positional only in the C version.
                         self.assertEqual(
                             len(c_kind),
                             len(p_kind),
-                            msg="parameter kind mismatch in %s" % p_func,
+                            msg=f"parameter kind mismatch in {p_func}",
                         )
 
                     # Run the function:
                     args, kwds = mkargs(C, c_sig)
                     try:
                         getattr(c_type(9), attr)(*args, **kwds)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         raise TestFailed(
-                            "invalid signature for %s: %s %s" % (c_func, args, kwds)
+                            f"invalid signature for {c_func}: {args} {kwds}"
                         )
 
                     args, kwds = mkargs(P, p_sig)
                     try:
                         getattr(p_type(9), attr)(*args, **kwds)
-                    except Exception:
+                    except Exception:  # noqa: BLE001
                         raise TestFailed(
-                            "invalid signature for %s: %s %s" % (p_func, args, kwds)
+                            f"invalid signature for {p_func}: {args} {kwds}"
                         )
 
         doit("Decimal")

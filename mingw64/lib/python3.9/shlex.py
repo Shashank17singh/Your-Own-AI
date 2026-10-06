@@ -89,16 +89,16 @@ class shlex:
         self.lineno = 1
         if self.debug:
             if newfile is not None:
-                print("shlex: pushing to file %s" % (self.infile,))
+                print(f"shlex: pushing to file {self.infile}")
             else:
-                print("shlex: pushing to stream %s" % (self.instream,))
+                print(f"shlex: pushing to stream {self.instream}")
 
     def pop_source(self):
         "Pop the input source stack."
         self.instream.close()
         self.infile, self.instream, self.lineno = self.filestack.popleft()
         if self.debug:
-            print("shlex: popping to %s, line %d" % (self.instream, self.lineno))
+            print("shlex: popping to %s, line %d" % (self.instream, self.lineno))  # noqa: UP031
         self.state = " "
 
     def get_token(self):
@@ -144,7 +144,7 @@ class shlex:
             if nextchar == "\n":
                 self.lineno += 1
             if self.debug >= 3:
-                print("shlex: in state %r I see character: %r" % (self.state, nextchar))
+                print(f"shlex: in state {self.state!r} I see character: {nextchar!r}")
             if self.state is None:
                 self.token = ""  # past end of file
                 break
@@ -303,7 +303,7 @@ class shlex:
             infile = self.infile
         if lineno is None:
             lineno = self.lineno
-        return '"%s", line %d: ' % (infile, lineno)
+        return '"%s", line %d: ' % (infile, lineno)  # noqa: UP031
 
     def __iter__(self):
         return self

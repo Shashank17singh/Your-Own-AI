@@ -113,17 +113,19 @@ class Text:
     for instance, 0-width characters or character + accent.
     """
 
-    def __init__(self, master=None, cnf={}, **kw):
+    def __init__(self, master=None, cnf=None, **kw):
         """Initialize mock, non-gui, text-only Text widget.
 
         At present, all args are ignored. Almost all affect visual behavior.
         There are just a few Text-only options that affect text behavior.
         """
+        if cnf is None:
+            cnf = {}
         self.data = ["", "\n"]
 
     def index(self, index):
         "Return string version of index decoded according to current text."
-        return "%s.%s" % self._decode(index, endflag=1)
+        return "{}.{}".format(*self._decode(index, endflag=1))
 
     def _decode(self, index, endflag=0):
         """Return a (line, char) tuple of int indexes into self.data.
@@ -146,7 +148,7 @@ class Text:
         try:
             index = index.lower()
         except AttributeError:
-            raise TclError('bad text index "%s"' % index) from None
+            raise TclError(f'bad text index "{index}"') from None
 
         lastline = len(self.data) - 1  # same as number of text lines
         if index == "insert":
@@ -275,8 +277,8 @@ class Text:
             return line1 != line2 or char1 != char2
         else:
             raise TclError(
-                """bad comparison operator "%s": """
-                """must be <, <=, ==, >=, >, or !=""" % op
+                f"""bad comparison operator "{op}": """
+                """must be <, <=, ==, >=, >, or !="""
             )
 
     # The following Text methods normally do something and return None.

@@ -19,7 +19,7 @@ class TestCallable(unittest.TestCase):
     def test_non_callable(self):
         for mock in NonCallableMagicMock(), NonCallableMock():
             self.assertRaises(TypeError, mock)
-            self.assertFalse(hasattr(mock, "__call__"))
+            self.assertFalse(callable(mock))
             self.assertIn(mock.__class__.__name__, repr(mock))
 
     def test_hierarchy(self):
@@ -46,7 +46,7 @@ class TestCallable(unittest.TestCase):
         self.assertTrue(issubclass(type(two.two), MagicSub))
 
     def test_patch_spec(self):
-        patcher = patch("%s.X" % __name__, spec=True)
+        patcher = patch(f"{__name__}.X", spec=True)
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         instance = mock()
@@ -55,7 +55,7 @@ class TestCallable(unittest.TestCase):
         self.assertRaises(TypeError, instance)
 
     def test_patch_spec_set(self):
-        patcher = patch("%s.X" % __name__, spec_set=True)
+        patcher = patch(f"{__name__}.X", spec_set=True)
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         instance = mock()
@@ -64,14 +64,14 @@ class TestCallable(unittest.TestCase):
         self.assertRaises(TypeError, instance)
 
     def test_patch_spec_instance(self):
-        patcher = patch("%s.X" % __name__, spec=X())
+        patcher = patch(f"{__name__}.X", spec=X())
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         self.assertNotCallable(mock)
         self.assertRaises(TypeError, mock)
 
     def test_patch_spec_set_instance(self):
-        patcher = patch("%s.X" % __name__, spec_set=X())
+        patcher = patch(f"{__name__}.X", spec_set=X())
         mock = patcher.start()
         self.addCleanup(patcher.stop)
         self.assertNotCallable(mock)
@@ -90,7 +90,7 @@ class TestCallable(unittest.TestCase):
 
         for arg in "spec", "spec_set":
             for Klass in CallableX, Sub, Multi:
-                with patch("%s.X" % __name__, **{arg: Klass}) as mock:
+                with patch(f"{__name__}.X", **{arg: Klass}) as mock:
                     instance = mock()
                     mock.assert_called_once_with()
                     self.assertTrue(is_instance(instance, MagicMock))

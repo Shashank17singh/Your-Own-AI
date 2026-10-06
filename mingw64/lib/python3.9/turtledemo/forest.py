@@ -100,7 +100,7 @@ def main():
         for b in u, s, t:
             try:
                 b.__next__()
-            except:
+            except:  # noqa: E722
                 done += 1
         if done == 3:
             break

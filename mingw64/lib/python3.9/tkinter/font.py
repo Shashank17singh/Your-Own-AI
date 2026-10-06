@@ -76,7 +76,7 @@ class Font:
             self.delete_font = False
             if self.name not in tk.splitlist(tk.call("font", "names")):
                 raise tkinter._tkinter.TclError(
-                    "named font %s does not already exist" % (self.name,)
+                    f"named font {self.name} does not already exist"
                 )
             if font:
                 tk.call("font", "configure", self.name, *font)
@@ -105,7 +105,7 @@ class Font:
         try:
             if self.delete_font:
                 self._call("font", "delete", self.name)
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
 
     def copy(self):

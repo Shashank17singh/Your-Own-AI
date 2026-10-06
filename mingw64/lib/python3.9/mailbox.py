@@ -283,7 +283,7 @@ class Mailbox:
                 # Make sure the message ends with a newline
                 target.write(linesep)
         else:
-            raise TypeError("Invalid message type: %s" % type(message))
+            raise TypeError(f"Invalid message type: {type(message)}")
 
     __class_getitem__ = classmethod(GenericAlias)
 
@@ -350,7 +350,7 @@ class Maildir(Mailbox):
         except OSError as e:
             os.remove(tmp_file.name)
             if e.errno == errno.EEXIST:
-                raise ExternalClashError("Name clash with existing message: %s" % dest)
+                raise ExternalClashError(f"Name clash with existing message: {dest}")
             else:
                 raise
         return uniq
@@ -415,7 +415,7 @@ class Maildir(Mailbox):
 
     def get_file(self, key):
         """Return a file-like representation or raise a KeyError."""
-        f = open(os.path.join(self._path, self._lookup(key)), "rb")
+        f = open(os.path.join(self._path, self._lookup(key)), "rb")  # noqa: SIM115
         return _ProxyFile(f)
 
     def iterkeys(self):
@@ -489,7 +489,7 @@ class Maildir(Mailbox):
             os.path.join(path, "cur")
         ):
             if len(entry) < 1 or entry[0] != ".":
-                raise NotEmptyError("Folder contains message(s): %s" % folder)
+                raise NotEmptyError(f"Folder contains message(s): {folder}")
         for entry in os.listdir(path):
             if (
                 entry != "new"
@@ -497,9 +497,7 @@ class Maildir(Mailbox):
                 and entry != "tmp"
                 and os.path.isdir(os.path.join(path, entry))
             ):
-                raise NotEmptyError(
-                    "Folder contains subdirectory '%s': %s" % (folder, entry)
-                )
+                raise NotEmptyError(f"Folder contains subdirectory '{folder}': {entry}")
         for root, dirs, files in os.walk(path, topdown=False):
             for entry in files:
                 os.remove(os.path.join(root, entry))
@@ -525,13 +523,7 @@ class Maildir(Mailbox):
             hostname = hostname.replace("/", r"\057")
         if ":" in hostname:
             hostname = hostname.replace(":", r"\072")
-        uniq = "%s.M%sP%sQ%s.%s" % (
-            int(now),
-            int(now % 1 * 1e6),
-            os.getpid(),
-            Maildir._count,
-            hostname,
-        )
+        uniq = f"{int(now)}.M{int(now % 1 * 1e6)}P{os.getpid()}Q{Maildir._count}.{hostname}"
         path = os.path.join(self._path, "tmp", uniq)
         try:
             os.stat(path)
@@ -543,7 +535,7 @@ class Maildir(Mailbox):
                 pass
 
         # Fall through to here if stat succeeded or open raised EEXIST.
-        raise ExternalClashError("Name clash prevented file creation: %s" % path)
+        raise ExternalClashError(f"Name clash prevented file creation: {path}")
 
     def _refresh(self):
         """Update table of contents mapping."""
@@ -592,7 +584,7 @@ class Maildir(Mailbox):
         try:
             return self._toc[key]
         except KeyError:
-            raise KeyError("No message with key: %s" % key) from None
+            raise KeyError(f"No message with key: {key}") from None
 
     # This method is for backward compatibility only.
     def next(self):
@@ -615,15 +607,15 @@ class _singlefileMailbox(Mailbox):
         """Initialize a single-file mailbox."""
         Mailbox.__init__(self, path, factory, create)
         try:
-            f = open(self._path, "rb+")
+            f = open(self._path, "rb+")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
                 if create:
-                    f = open(self._path, "wb+")
+                    f = open(self._path, "wb+")  # noqa: SIM115
                 else:
                     raise NoSuchMailboxError(self._path)
             elif e.errno in (errno.EACCES, errno.EROFS):
-                f = open(self._path, "rb")
+                f = open(self._path, "rb")  # noqa: SIM115
             else:
                 raise
         self._file = f
@@ -704,7 +696,7 @@ class _singlefileMailbox(Mailbox):
         cur_len = self._file.tell()
         if cur_len != self._file_length:
             raise ExternalClashError(
-                "Size of mailbox file changed "
+                "Size of mailbox file changed "  # noqa: UP031
                 "(expected %i, found %i)" % (self._file_length, cur_len)
             )
 
@@ -740,7 +732,7 @@ class _singlefileMailbox(Mailbox):
         except FileExistsError:
             os.remove(self._path)
             os.rename(new_file.name, self._path)
-        self._file = open(self._path, "rb+")
+        self._file = open(self._path, "rb+")  # noqa: SIM115
         self._toc = new_toc
         self._pending = False
         self._pending_sync = False
@@ -778,7 +770,7 @@ class _singlefileMailbox(Mailbox):
             try:
                 return self._toc[key]
             except KeyError:
-                raise KeyError("No message with key: %s" % key) from None
+                raise KeyError(f"No message with key: {key}") from None
 
     def _append_message(self, message):
         """Append message to mailbox and return (start, stop) offsets."""
@@ -1024,10 +1016,10 @@ class MH(Mailbox):
         """Remove the keyed message; raise KeyError if it doesn't exist."""
         path = os.path.join(self._path, str(key))
         try:
-            f = open(path, "rb+")
+            f = open(path, "rb+")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise KeyError("No message with key: %s" % key)
+                raise KeyError(f"No message with key: {key}")
             else:
                 raise
         else:
@@ -1038,10 +1030,10 @@ class MH(Mailbox):
         """Replace the keyed message; raise KeyError if it doesn't exist."""
         path = os.path.join(self._path, str(key))
         try:
-            f = open(path, "rb+")
+            f = open(path, "rb+")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise KeyError("No message with key: %s" % key)
+                raise KeyError(f"No message with key: {key}")
             else:
                 raise
         try:
@@ -1062,12 +1054,12 @@ class MH(Mailbox):
         """Return a Message representation or raise a KeyError."""
         try:
             if self._locked:
-                f = open(os.path.join(self._path, str(key)), "rb+")
+                f = open(os.path.join(self._path, str(key)), "rb+")  # noqa: SIM115
             else:
-                f = open(os.path.join(self._path, str(key)), "rb")
+                f = open(os.path.join(self._path, str(key)), "rb")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise KeyError("No message with key: %s" % key)
+                raise KeyError(f"No message with key: {key}")
             else:
                 raise
         with f:
@@ -1087,12 +1079,12 @@ class MH(Mailbox):
         """Return a bytes representation or raise a KeyError."""
         try:
             if self._locked:
-                f = open(os.path.join(self._path, str(key)), "rb+")
+                f = open(os.path.join(self._path, str(key)), "rb+")  # noqa: SIM115
             else:
-                f = open(os.path.join(self._path, str(key)), "rb")
+                f = open(os.path.join(self._path, str(key)), "rb")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise KeyError("No message with key: %s" % key)
+                raise KeyError(f"No message with key: {key}")
             else:
                 raise
         with f:
@@ -1107,10 +1099,10 @@ class MH(Mailbox):
     def get_file(self, key):
         """Return a file-like representation or raise a KeyError."""
         try:
-            f = open(os.path.join(self._path, str(key)), "rb")
+            f = open(os.path.join(self._path, str(key)), "rb")  # noqa: SIM115
         except OSError as e:
             if e.errno == errno.ENOENT:
-                raise KeyError("No message with key: %s" % key)
+                raise KeyError(f"No message with key: {key}")
             else:
                 raise
         return _ProxyFile(f)
@@ -1132,7 +1124,7 @@ class MH(Mailbox):
     def lock(self):
         """Lock the mailbox."""
         if not self._locked:
-            self._file = open(os.path.join(self._path, ".mh_sequences"), "rb+")
+            self._file = open(os.path.join(self._path, ".mh_sequences"), "rb+")  # noqa: SIM115
             _lock_file(self._file)
             self._locked = True
 
@@ -1178,7 +1170,7 @@ class MH(Mailbox):
         elif entries == []:
             pass
         else:
-            raise NotEmptyError("Folder not empty: %s" % self._path)
+            raise NotEmptyError(f"Folder not empty: {self._path}")
         os.rmdir(path)
 
     def get_sequences(self):
@@ -1203,13 +1195,13 @@ class MH(Mailbox):
                         del results[name]
                 except ValueError:
                     raise FormatError(
-                        "Invalid sequence specification: %s" % line.rstrip()
+                        f"Invalid sequence specification: {line.rstrip()}"
                     )
         return results
 
     def set_sequences(self, sequences):
         """Set sequences using the given name-to-key-list dictionary."""
-        f = open(os.path.join(self._path, ".mh_sequences"), "r+", encoding="ASCII")
+        f = open(os.path.join(self._path, ".mh_sequences"), "r+", encoding="ASCII")  # noqa: SIM115
         try:
             os.close(os.open(f.name, os.O_WRONLY | os.O_TRUNC))
             for name, keys in sequences.items():
@@ -1225,9 +1217,9 @@ class MH(Mailbox):
                             f.write("-")
                     elif completing:
                         completing = False
-                        f.write("%s %s" % (prev, key))
+                        f.write(f"{prev} {key}")
                     else:
-                        f.write(" %s" % key)
+                        f.write(f" {key}")
                     prev = key
                 if completing:
                     f.write(str(prev) + "\n")
@@ -1260,7 +1252,7 @@ class MH(Mailbox):
         self._next_key = prev + 1
         if len(changes) == 0:
             return
-        for name, key_list in sequences.items():
+        for key_list in sequences.values():
             for old, new in changes:
                 if old in key_list:
                     key_list[key_list.index(old)] = new
@@ -1529,11 +1521,11 @@ class Babyl(_singlefileMailbox):
                 # Universal newline support.
                 if line.endswith(b"\r\n"):
                     line = line[:-2] + linesep
-                elif line.endswith(b"\r") or line.endswith(b"\n"):
+                elif line.endswith((b"\r", b"\n")):
                     line = line[:-1] + linesep
                 self._file.write(line)
         else:
-            raise TypeError("Invalid message type: %s" % type(message))
+            raise TypeError(f"Invalid message type: {type(message)}")
         stop = self._file.tell()
         return (start, stop)
 
@@ -1558,7 +1550,7 @@ class Message(email.message.Message):
         elif message is None:
             email.message.Message.__init__(self)
         else:
-            raise TypeError("Invalid message type: %s" % type(message))
+            raise TypeError(f"Invalid message type: {type(message)}")
 
     def _become_message(self, message):
         """Assume the non-format-specific state of message."""
@@ -1578,7 +1570,7 @@ class Message(email.message.Message):
 class MaildirMessage(Message):
     """Message with Maildir-specific properties."""
 
-    _type_specific_attributes = ["_subdir", "_info", "_date"]
+    _type_specific_attributes = ["_subdir", "_info", "_date"]  # noqa: RUF012
 
     def __init__(self, message=None):
         """Initialize a MaildirMessage instance."""
@@ -1596,7 +1588,7 @@ class MaildirMessage(Message):
         if subdir == "new" or subdir == "cur":
             self._subdir = subdir
         else:
-            raise ValueError("subdir must be 'new' or 'cur': %s" % subdir)
+            raise ValueError(f"subdir must be 'new' or 'cur': {subdir}")
 
     def get_flags(self):
         """Return as a string the flags that are set."""
@@ -1627,7 +1619,7 @@ class MaildirMessage(Message):
         try:
             self._date = float(date)
         except ValueError:
-            raise TypeError("can't convert to float: %s" % date) from None
+            raise TypeError(f"can't convert to float: {date}") from None
 
     def get_info(self):
         """Get the message's "info" as a string."""
@@ -1638,7 +1630,7 @@ class MaildirMessage(Message):
         if isinstance(info, str):
             self._info = info
         else:
-            raise TypeError("info must be a string: %s" % type(info))
+            raise TypeError(f"info must be a string: {type(info)}")
 
     def _explain_to(self, message):
         """Copy Maildir-specific state to message insofar as possible."""
@@ -1680,13 +1672,13 @@ class MaildirMessage(Message):
         elif isinstance(message, Message):
             pass
         else:
-            raise TypeError("Cannot convert to specified type: %s" % type(message))
+            raise TypeError(f"Cannot convert to specified type: {type(message)}")
 
 
 class _mboxMMDFMessage(Message):
     """Message with mbox- or MMDF-specific properties."""
 
-    _type_specific_attributes = ["_from"]
+    _type_specific_attributes = ["_from"]  # noqa: RUF012
 
     def __init__(self, message=None):
         """Initialize an mboxMMDFMessage instance."""
@@ -1793,7 +1785,7 @@ class _mboxMMDFMessage(Message):
         elif isinstance(message, Message):
             pass
         else:
-            raise TypeError("Cannot convert to specified type: %s" % type(message))
+            raise TypeError(f"Cannot convert to specified type: {type(message)}")
 
 
 class mboxMessage(_mboxMMDFMessage):
@@ -1803,7 +1795,7 @@ class mboxMessage(_mboxMMDFMessage):
 class MHMessage(Message):
     """Message with MH-specific properties."""
 
-    _type_specific_attributes = ["_sequences"]
+    _type_specific_attributes = ["_sequences"]  # noqa: RUF012
 
     def __init__(self, message=None):
         """Initialize an MHMessage instance."""
@@ -1824,7 +1816,7 @@ class MHMessage(Message):
             if not sequence in self._sequences:
                 self._sequences.append(sequence)
         else:
-            raise TypeError("sequence type must be str: %s" % type(sequence))
+            raise TypeError(f"sequence type must be str: {type(sequence)}")
 
     def remove_sequence(self, sequence):
         """Remove sequence from the list of sequences including the message."""
@@ -1868,13 +1860,13 @@ class MHMessage(Message):
         elif isinstance(message, Message):
             pass
         else:
-            raise TypeError("Cannot convert to specified type: %s" % type(message))
+            raise TypeError(f"Cannot convert to specified type: {type(message)}")
 
 
 class BabylMessage(Message):
     """Message with Babyl-specific properties."""
 
-    _type_specific_attributes = ["_labels", "_visible"]
+    _type_specific_attributes = ["_labels", "_visible"]  # noqa: RUF012
 
     def __init__(self, message=None):
         """Initialize a BabylMessage instance."""
@@ -1896,7 +1888,7 @@ class BabylMessage(Message):
             if label not in self._labels:
                 self._labels.append(label)
         else:
-            raise TypeError("label must be a string: %s" % type(label))
+            raise TypeError(f"label must be a string: {type(label)}")
 
     def remove_label(self, label):
         """Remove label from the list of labels on the message."""
@@ -1915,7 +1907,7 @@ class BabylMessage(Message):
 
     def update_visible(self):
         """Update and/or sensibly generate a set of visible headers."""
-        for header in self._visible.keys():
+        for header in self._visible:
             if header in self:
                 self._visible.replace_header(header, self[header])
             else:
@@ -1962,7 +1954,7 @@ class BabylMessage(Message):
         elif isinstance(message, Message):
             pass
         else:
-            raise TypeError("Cannot convert to specified type: %s" % type(message))
+            raise TypeError(f"Cannot convert to specified type: {type(message)}")
 
 
 class MMDFMessage(_mboxMMDFMessage):
@@ -2118,7 +2110,7 @@ def _lock_file(f, dotlock=True):
                 fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except OSError as e:
                 if e.errno in (errno.EAGAIN, errno.EACCES, errno.EROFS):
-                    raise ExternalClashError("lockf: lock unavailable: %s" % f.name)
+                    raise ExternalClashError(f"lockf: lock unavailable: {f.name}")
                 else:
                     raise
         if dotlock:
@@ -2141,7 +2133,7 @@ def _lock_file(f, dotlock=True):
                     os.unlink(pre_lock.name)
             except FileExistsError:
                 os.remove(pre_lock.name)
-                raise ExternalClashError("dot lock unavailable: %s" % f.name)
+                raise ExternalClashError(f"dot lock unavailable: {f.name}")
     except:
         if fcntl:
             fcntl.lockf(f, fcntl.LOCK_UN)
@@ -2170,7 +2162,7 @@ def _create_carefully(path):
 def _create_temporary(path):
     """Create a temp file based on path and open for reading and writing."""
     return _create_carefully(
-        "%s.%s.%s.%s" % (path, int(time.time()), socket.gethostname(), os.getpid())
+        f"{path}.{int(time.time())}.{socket.gethostname()}.{os.getpid()}"
     )
 
 

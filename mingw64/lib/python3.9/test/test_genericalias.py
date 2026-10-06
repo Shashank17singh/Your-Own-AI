@@ -49,7 +49,7 @@ V = TypeVar("V")
 class BaseTest(unittest.TestCase):
     """Test basics."""
 
-    generic_types = [
+    generic_types = [  # noqa: RUF012
         type,
         tuple,
         list,
@@ -138,7 +138,7 @@ class BaseTest(unittest.TestCase):
     def test_unsubscriptable(self):
         for t in int, str, float, Sized, Hashable:
             tname = t.__name__
-            with self.subTest(f"Testing {tname}"):
+            with self.subTest(f"Testing {tname}"):  # noqa: SIM117
                 with self.assertRaises(TypeError):
                     t[int]
 
@@ -149,8 +149,10 @@ class BaseTest(unittest.TestCase):
                 alias = t[int]
                 self.assertEqual(alias(), t())
                 if t is dict:
-                    self.assertEqual(alias(iter([("a", 1), ("b", 2)])), dict(a=1, b=2))
-                    self.assertEqual(alias(a=1, b=2), dict(a=1, b=2))
+                    self.assertEqual(
+                        alias(iter([("a", 1), ("b", 2)])), {"a": 1, "b": 2}
+                    )
+                    self.assertEqual(alias(a=1, b=2), {"a": 1, "b": 2})
                 elif t is defaultdict:
 
                     def default():
@@ -334,12 +336,12 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(alias.__parameters__, loaded.__parameters__)
 
     def test_union(self):
-        a = typing.Union[list[int], list[str]]
+        a = typing.Union[list[int], list[str]]  # noqa: UP007
         self.assertEqual(a.__args__, (list[int], list[str]))
         self.assertEqual(a.__parameters__, ())
 
     def test_union_generic(self):
-        a = typing.Union[list[T], tuple[T, ...]]
+        a = typing.Union[list[T], tuple[T, ...]]  # noqa: UP007
         self.assertEqual(a.__args__, (list[T], tuple[T, ...]))
         self.assertEqual(a.__parameters__, (T,))
 

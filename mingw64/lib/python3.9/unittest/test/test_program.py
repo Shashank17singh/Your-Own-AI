@@ -210,22 +210,22 @@ class TestCommandLineArgs(unittest.TestCase):
             setattr(program, attr, true)
             program.parseArgs([None])
             self.assertIs(getattr(program, attr), true)
-            short_opt = "-%s" % arg[0]
-            long_opt = "--%s" % arg
+            short_opt = f"-{arg[0]}"
+            long_opt = f"--{arg}"
             for opt in short_opt, long_opt:
                 setattr(program, attr, None)
                 program.parseArgs([None, opt])
                 self.assertIs(getattr(program, attr), True)
                 setattr(program, attr, False)
                 with (
-                    support.captured_stderr() as stderr,
+                    support.captured_stderr(),
                     self.assertRaises(SystemExit) as cm,
                 ):
                     program.parseArgs([None, opt])
                 self.assertEqual(cm.exception.args, (2,))
                 setattr(program, attr, True)
                 with (
-                    support.captured_stderr() as stderr,
+                    support.captured_stderr(),
                     self.assertRaises(SystemExit) as cm,
                 ):
                     program.parseArgs([None, opt])

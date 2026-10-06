@@ -185,7 +185,7 @@ class SymtableTest(unittest.TestCase):
 
         # Test that annotations for nonlocals are valid after the
         # variable is declared as nonlocal.
-        st6 = symtable.symtable(
+        symtable.symtable(
             "def g():\n    x = 2\n    def f():\n        nonlocal x\n    x: int",
             "test",
             "exec",
@@ -214,7 +214,7 @@ class SymtableTest(unittest.TestCase):
                 self.assertEqual(e.lineno, 1)
                 self.assertEqual(e.offset, offset)
             else:
-                self.fail("no SyntaxError for %r" % (brokencode,))
+                self.fail(f"no SyntaxError for {brokencode!r}")
 
         checkfilename("def f(x): foo)(", 14)  # parse-time
         checkfilename("def f(x): global x", 11)  # symtable-build-time
@@ -227,13 +227,13 @@ class SymtableTest(unittest.TestCase):
             symtable.symtable("pass", list(b"spam"), "exec")
 
     def test_eval(self):
-        symbols = symtable.symtable("42", "?", "eval")
+        symtable.symtable("42", "?", "eval")
 
     def test_single(self):
-        symbols = symtable.symtable("42", "?", "single")
+        symtable.symtable("42", "?", "single")
 
     def test_exec(self):
-        symbols = symtable.symtable("def f(x): return x", "?", "exec")
+        symtable.symtable("def f(x): return x", "?", "exec")
 
     def test_bytes(self):
         top = symtable.symtable(TEST_CODE.encode("utf8"), "?", "exec")

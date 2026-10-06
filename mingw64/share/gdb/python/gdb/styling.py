@@ -26,7 +26,7 @@ try:
             return highlight(contents, lexer, formatter).encode(
                 gdb.host_charset(), "backslashreplace"
             )
-        except Exception:
+        except Exception:  # noqa: BLE001
             return None
 
     class HandleNasmComments(TokenMergeFilter):
@@ -55,7 +55,7 @@ try:
             flavor = gdb.parameter("disassembly-flavor")
             if flavor == "intel" and gdbarch.name()[:4] == "i386":
                 lexer_type = "nasm"
-        except Exception:
+        except Exception:  # noqa: BLE001, S110
             pass
         if lexer_type not in _asm_lexers:
             _asm_lexers[lexer_type] = lexers.get_lexer_by_name(lexer_type)
@@ -68,7 +68,7 @@ try:
             lexer = __get_asm_lexer(gdbarch)
             formatter = get_formatter()
             return highlight(content, lexer, formatter).rstrip().encode()
-        except Exception:
+        except Exception:  # noqa: BLE001
             return content
 
 except ImportError:

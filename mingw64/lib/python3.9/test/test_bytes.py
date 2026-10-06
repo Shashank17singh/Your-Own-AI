@@ -215,15 +215,15 @@ class BaseBytesTest:
         # Issue #34974: bytes and bytearray constructors replace unexpected
         # exceptions.
         class BadInt:
-            def __index__(self):
-                1 / 0
+            def __index__(self):  # noqa: PLE0305
+                1 / 0  # noqa: B018
 
         self.assertRaises(ZeroDivisionError, self.type2test, BadInt())
         self.assertRaises(ZeroDivisionError, self.type2test, [BadInt()])
 
         class BadIterable:
             def __iter__(self):
-                1 / 0
+                1 / 0  # noqa: B018
 
         self.assertRaises(ZeroDivisionError, self.type2test, BadIterable())
 
@@ -403,11 +403,11 @@ class BaseBytesTest:
             self.assertEqual(b * 3, b"abcabcabc")
             self.assertEqual(b * 0, b"")
             self.assertEqual(b * -1, b"")
-            self.assertRaises(TypeError, lambda: b * 3.14)
-            self.assertRaises(TypeError, lambda: 3.14 * b)
+            self.assertRaises(TypeError, lambda: b * 3.14)  # noqa: B023
+            self.assertRaises(TypeError, lambda: 3.14 * b)  # noqa: B023
             # XXX Shouldn't bytes and bytearray agree on what to raise?
             with self.assertRaises((OverflowError, MemoryError)):
-                c = b * sys.maxsize
+                b * sys.maxsize
             with self.assertRaises((OverflowError, MemoryError)):
                 b *= sys.maxsize
 
@@ -473,7 +473,7 @@ class BaseBytesTest:
         ):
             with self.assertRaises(ValueError) as cm:
                 self.type2test.fromhex(data)
-            self.assertIn("at position %s" % pos, str(cm.exception))
+            self.assertIn(f"at position {pos}", str(cm.exception))
 
     def test_hex(self):
         self.assertRaises(TypeError, self.type2test.hex)
@@ -1010,7 +1010,7 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
 
         class A:
             def __bytes__(self):
-                return None
+                return None  # noqa: PLE0308
 
         self.assertRaises(TypeError, bytes, A())
 
@@ -1101,7 +1101,7 @@ class BytesTest(BaseBytesTest, unittest.TestCase):
         else:
             # UNIX (glibc)
             def ptr_formatter(ptr):
-                return "%#x" % ptr
+                return f"{ptr:#x}"
 
         ptr = 0xABCDEF
         self.assertEqual(
@@ -1593,13 +1593,13 @@ class ByteArrayTest(BaseBytesTest, unittest.TestCase):
         self.assertEqual(b, b"")
         self.assertEqual(c, b"")
         # Same for rpartition
-        b, c, a = bytearray(b"x").rpartition(b"y")
+        b, c, a = bytearray(b"x").rpartition(b"y")  # noqa: RUF059
         self.assertEqual(b, b"")
         self.assertEqual(c, b"")
         self.assertIsNot(b, c)
         b += b"!"
         self.assertEqual(c, b"")
-        c, b, a = bytearray(b"x").rpartition(b"y")
+        c, b, _a = bytearray(b"x").rpartition(b"y")
         self.assertEqual(b, b"")
         self.assertEqual(c, b"")
 
@@ -1609,7 +1609,7 @@ class ByteArrayTest(BaseBytesTest, unittest.TestCase):
         # Furthermore, no destructive changes to the buffer may be applied
         # before raising the error.
         b = bytearray(range(10))
-        v = memoryview(b)
+        memoryview(b)
 
         def resize(n):
             b[1:-1] = range(n + 1, 2 * n - 1)
@@ -1728,38 +1728,38 @@ class AssortedBytesTest(unittest.TestCase):
             self.assertEqual(format(b), str(b))
             self.assertEqual(format(b, ""), str(b))
             with self.assertRaisesRegex(
-                TypeError, r"\b%s\b" % re.escape(type(b).__name__)
+                TypeError, rf"\b{re.escape(type(b).__name__)}\b"
             ):
                 format(b, "s")
 
     def test_compare_bytes_to_bytearray(self):
-        self.assertEqual(b"abc" == b"abc", True)
-        self.assertEqual(b"ab" != b"abc", True)
-        self.assertEqual(b"ab" <= b"abc", True)
-        self.assertEqual(b"ab" < b"abc", True)
-        self.assertEqual(b"abc" >= b"ab", True)
-        self.assertEqual(b"abc" > b"ab", True)
+        self.assertEqual(b"abc" == b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" != b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" <= b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" < b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"abc" >= b"ab", True)  # noqa: PLR0133
+        self.assertEqual(b"abc" > b"ab", True)  # noqa: PLR0133
 
-        self.assertEqual(b"abc" != b"abc", False)
-        self.assertEqual(b"ab" == b"abc", False)
-        self.assertEqual(b"ab" > b"abc", False)
-        self.assertEqual(b"ab" >= b"abc", False)
-        self.assertEqual(b"abc" < b"ab", False)
-        self.assertEqual(b"abc" <= b"ab", False)
+        self.assertEqual(b"abc" != b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" == b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" > b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" >= b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"abc" < b"ab", False)  # noqa: PLR0133
+        self.assertEqual(b"abc" <= b"ab", False)  # noqa: PLR0133
 
-        self.assertEqual(b"abc" == b"abc", True)
-        self.assertEqual(b"ab" != b"abc", True)
-        self.assertEqual(b"ab" <= b"abc", True)
-        self.assertEqual(b"ab" < b"abc", True)
-        self.assertEqual(b"abc" >= b"ab", True)
-        self.assertEqual(b"abc" > b"ab", True)
+        self.assertEqual(b"abc" == b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" != b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" <= b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"ab" < b"abc", True)  # noqa: PLR0133
+        self.assertEqual(b"abc" >= b"ab", True)  # noqa: PLR0133
+        self.assertEqual(b"abc" > b"ab", True)  # noqa: PLR0133
 
-        self.assertEqual(b"abc" != b"abc", False)
-        self.assertEqual(b"ab" == b"abc", False)
-        self.assertEqual(b"ab" > b"abc", False)
-        self.assertEqual(b"ab" >= b"abc", False)
-        self.assertEqual(b"abc" < b"ab", False)
-        self.assertEqual(b"abc" <= b"ab", False)
+        self.assertEqual(b"abc" != b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" == b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" > b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"ab" >= b"abc", False)  # noqa: PLR0133
+        self.assertEqual(b"abc" < b"ab", False)  # noqa: PLR0133
+        self.assertEqual(b"abc" <= b"ab", False)  # noqa: PLR0133
 
     @test.support.requires_docstrings
     def test_doc(self):
@@ -1793,7 +1793,7 @@ class AssortedBytesTest(unittest.TestCase):
         for b, s in tests:
             self.assertEqual(b, bytearray(s, "latin-1"))
         for c in range(128, 256):
-            self.assertRaises(SyntaxError, eval, 'b"%s"' % chr(c))
+            self.assertRaises(SyntaxError, eval, f'b"{chr(c)}"')
 
     def test_split_bytearray(self):
         self.assertEqual(b"a b".split(memoryview(b" ")), [b"a", b"b"])
@@ -1814,29 +1814,29 @@ class AssortedBytesTest(unittest.TestCase):
             return test.support.check_warnings(("", BytesWarning))
 
         with bytes_warning():
-            b"" == ""
+            b"" == ""  # noqa: B015, PLR0133
         with bytes_warning():
-            "" == b""
+            "" == b""  # noqa: B015, PLR0133
         with bytes_warning():
-            b"" != ""
+            b"" != ""  # noqa: B015, PLR0133
         with bytes_warning():
-            "" != b""
+            "" != b""  # noqa: B015, PLR0133
         with bytes_warning():
-            bytearray(b"") == ""
+            bytearray(b"") == ""  # noqa: B015
         with bytes_warning():
-            "" == bytearray(b"")
+            "" == bytearray(b"")  # noqa: B015
         with bytes_warning():
-            bytearray(b"") != ""
+            bytearray(b"") != ""  # noqa: B015
         with bytes_warning():
-            "" != bytearray(b"")
+            "" != bytearray(b"")  # noqa: B015
         with bytes_warning():
-            b"\0" == 0
+            b"\0" == 0  # noqa: B015, PLR0133
         with bytes_warning():
-            0 == b"\0"
+            0 == b"\0"  # noqa: B015, PLR0133
         with bytes_warning():
-            b"\0" != 0
+            b"\0" != 0  # noqa: B015, PLR0133
         with bytes_warning():
-            0 != b"\0"
+            0 != b"\0"  # noqa: B015, PLR0133
 
     # Optimizations:
     # __iter__? (optimization)
@@ -1912,7 +1912,7 @@ class SubclassTest:
         _a, _b = self.type2test(a), self.type2test(b)
 
         # test comparison operators with subclass instances
-        self.assertTrue(_a == _a)
+        self.assertTrue(_a == _a)  # noqa: PLR0124
         self.assertTrue(_a != _b)
         self.assertTrue(_a < _b)
         self.assertTrue(_a <= _b)

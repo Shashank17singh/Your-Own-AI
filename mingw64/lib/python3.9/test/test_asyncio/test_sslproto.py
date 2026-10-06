@@ -327,7 +327,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
             on_data = self.loop.create_future()
             on_eof = self.loop.create_future()
 
-            tr, proto = await self.loop.create_connection(
+            tr, _proto = await self.loop.create_connection(
                 lambda: ClientProto(on_data, on_eof), *addr, ssl=client_context
             )
 
@@ -635,7 +635,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                 0.5,
             )
 
-        with self.tcp_server(server, max_clients=1, backlog=1) as srv:
+        with self.tcp_server(server, max_clients=1, backlog=1) as srv:  # noqa: SIM117
             with self.assertRaises(asyncio.TimeoutError):
                 self.loop.run_until_complete(client(srv.addr))
 
@@ -667,7 +667,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
 
         async def client(addr):
             with self.assertWarns(DeprecationWarning):
-                reader, writer = await asyncio.open_connection(
+                _reader, _writer = await asyncio.open_connection(
                     *addr,
                     ssl=client_sslctx,
                     server_hostname="",
@@ -675,7 +675,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                     ssl_handshake_timeout=1.0,
                 )
 
-        with self.tcp_server(server, max_clients=1, backlog=1) as srv:
+        with self.tcp_server(server, max_clients=1, backlog=1) as srv:  # noqa: SIM117
             with self.assertRaisesRegex(
                 ConnectionAbortedError, r"SSL handshake.*is taking longer"
             ):
@@ -701,7 +701,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
 
         async def client(addr):
             with self.assertWarns(DeprecationWarning):
-                reader, writer = await asyncio.open_connection(
+                _reader, _writer = await asyncio.open_connection(
                     *addr,
                     ssl=client_sslctx,
                     server_hostname="",
@@ -709,7 +709,7 @@ class BaseStartTLS(func_tests.FunctionalTestCaseMixin):
                     ssl_handshake_timeout=support.LOOPBACK_TIMEOUT,
                 )
 
-        with self.tcp_server(server, max_clients=1, backlog=1) as srv:
+        with self.tcp_server(server, max_clients=1, backlog=1) as srv:  # noqa: SIM117
             with self.assertRaises(ssl.SSLCertVerificationError):
                 self.loop.run_until_complete(client(srv.addr))
 

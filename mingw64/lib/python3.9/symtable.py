@@ -58,7 +58,7 @@ class SymbolTable:
         if self.__class__ == SymbolTable:
             kind = ""
         else:
-            kind = "%s " % self.__class__.__name__
+            kind = f"{self.__class__.__name__} "
 
         if self._table.name == "top":
             return f"<{kind}SymbolTable for module {self._filename}>"

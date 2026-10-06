@@ -279,7 +279,7 @@ class AST_Tests(unittest.TestCase):
         self.assertEqual(x.__dict__["foobar"], 42)
 
         with self.assertRaises(AttributeError):
-            x.vararg
+            x.vararg  # noqa: B018
 
         with self.assertRaises(TypeError):
             # "ast.AST constructor takes 0 positional arguments"
@@ -369,7 +369,7 @@ class AST_Tests(unittest.TestCase):
         )
 
         with self.assertRaises(AttributeError):
-            x.args
+            x.args  # noqa: B018
         self.assertIsNone(x.vararg)
 
         x = ast.arguments(*range(1, 8))
@@ -387,20 +387,20 @@ class AST_Tests(unittest.TestCase):
         self.assertEqual(x._fields, ("value", "kind"))
 
         with self.assertRaises(AttributeError):
-            x.value
+            x.value  # noqa: B018
 
         with self.assertRaises(AttributeError):
-            x.n
+            x.n  # noqa: B018
 
         x = ast.Num(42)
         self.assertEqual(x.value, 42)
         self.assertEqual(x.n, 42)
 
         with self.assertRaises(AttributeError):
-            x.lineno
+            x.lineno  # noqa: B018
 
         with self.assertRaises(AttributeError):
-            x.foobar
+            x.foobar  # noqa: B018
 
         x = ast.Num(lineno=2)
         self.assertEqual(x.lineno, 2)
@@ -594,12 +594,12 @@ class AST_Tests(unittest.TestCase):
         protocols = [0, 1, 2]
         for mod in mods:
             for protocol in protocols:
-                for ast in (compile(i, "?", "exec", 0x400) for i in exec_tests):
+                for ast in (compile(i, "?", "exec", 0x400) for i in exec_tests):  # noqa: F402
                     ast2 = mod.loads(mod.dumps(ast, protocol))
                     self.assertEqual(to_tuple(ast2), to_tuple(ast))
 
     def test_invalid_sum(self):
-        pos = dict(lineno=2, col_offset=3)
+        pos = {"lineno": 2, "col_offset": 3}
         m = ast.Module([ast.Expr(ast.expr(**pos), **pos)], [])
         with self.assertRaises(TypeError) as cm:
             compile(m, "<test>", "exec")
@@ -714,8 +714,8 @@ class ASTHelpers_Test(unittest.TestCase):
 
     def test_parse_in_error(self):
         try:
-            1 / 0
-        except Exception:
+            1 / 0  # noqa: B018
+        except Exception:  # noqa: BLE001
             with self.assertRaises(SyntaxError) as e:
                 ast.literal_eval(r"'\U'")
             self.assertIsNotNone(e.exception.__context__)
@@ -1075,7 +1075,7 @@ Module(
         mod = ast.Module(body, [])
         code = compile(mod, "test", "exec")
         ns = {}
-        exec(code, ns)
+        exec(code, ns)  # noqa: S102
         self.assertIn("sleep", ns)
 
     def test_recursion_direct(self):
@@ -1531,7 +1531,7 @@ class ConstantTests(unittest.TestCase):
         code = compile(tree, "<string>", "exec")
 
         ns = {}
-        exec(code, ns)
+        exec(code, ns)  # noqa: S102
         return ns["x"]
 
     def test_validation(self):
@@ -2149,7 +2149,7 @@ def main():
             print(kind + "_results = [")
             for statement in statements:
                 tree = ast.parse(statement, "?", kind)
-                print("%r," % (to_tuple(tree),))
+                print(f"{to_tuple(tree)!r},")
             print("]")
         print("main()")
         raise SystemExit

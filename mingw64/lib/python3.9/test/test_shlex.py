@@ -147,9 +147,7 @@ class ShlexTest(unittest.TestCase):
     def splitTest(self, data, comments):
         for i in range(len(data)):
             l = shlex.split(data[i][0], comments=comments)
-            self.assertEqual(
-                l, data[i][1:], "%s: %s != %s" % (data[i][0], l, data[i][1:])
-            )
+            self.assertEqual(l, data[i][1:], f"{data[i][0]}: {l} != {data[i][1:]}")
 
     def oldSplit(self, s):
         ret = []
@@ -176,7 +174,7 @@ class ShlexTest(unittest.TestCase):
             self.assertEqual(
                 l,
                 self.data[i][1:],
-                "%s: %s != %s" % (self.data[i][0], l, self.data[i][1:]),
+                f"{self.data[i][0]}: {l} != {self.data[i][1:]}",
             )
 
     def testSyntaxSplitAmpersandAndPipe(self):
@@ -185,13 +183,13 @@ class ShlexTest(unittest.TestCase):
         # of course, the same applies to | and ||
         # these should all parse to the same output
         for delimiter in ("&&", "&", "|&", ";&", ";;&", "||", "|", "&|", ";|", ";;|"):
-            src = ["echo hi %s echo bye" % delimiter, "echo hi%secho bye" % delimiter]
+            src = [f"echo hi {delimiter} echo bye", f"echo hi{delimiter}echo bye"]
             ref = ["echo", "hi", delimiter, "echo", "bye"]
             for ss, ws in itertools.product(src, (False, True)):
                 s = shlex.shlex(ss, punctuation_chars=True)
                 s.whitespace_split = ws
                 result = list(s)
-                self.assertEqual(ref, result, "While splitting '%s' [ws=%s]" % (ss, ws))
+                self.assertEqual(ref, result, f"While splitting '{ss}' [ws={ws}]")
 
     def testSyntaxSplitSemicolon(self):
         """Test handling of syntax splitting of ;"""
@@ -199,16 +197,16 @@ class ShlexTest(unittest.TestCase):
         # these should all parse to the same output
         for delimiter in (";", ";;", ";&", ";;&"):
             src = [
-                "echo hi %s echo bye" % delimiter,
-                "echo hi%s echo bye" % delimiter,
-                "echo hi%secho bye" % delimiter,
+                f"echo hi {delimiter} echo bye",
+                f"echo hi{delimiter} echo bye",
+                f"echo hi{delimiter}echo bye",
             ]
             ref = ["echo", "hi", delimiter, "echo", "bye"]
             for ss, ws in itertools.product(src, (False, True)):
                 s = shlex.shlex(ss, punctuation_chars=True)
                 s.whitespace_split = ws
                 result = list(s)
-                self.assertEqual(ref, result, "While splitting '%s' [ws=%s]" % (ss, ws))
+                self.assertEqual(ref, result, f"While splitting '{ss}' [ws={ws}]")
 
     def testSyntaxSplitRedirect(self):
         """Test handling of syntax splitting of >"""
@@ -216,15 +214,15 @@ class ShlexTest(unittest.TestCase):
         # these should all parse to the same output
         for delimiter in ("<", "|"):
             src = [
-                "echo hi %s out" % delimiter,
-                "echo hi%s out" % delimiter,
-                "echo hi%sout" % delimiter,
+                f"echo hi {delimiter} out",
+                f"echo hi{delimiter} out",
+                f"echo hi{delimiter}out",
             ]
             ref = ["echo", "hi", delimiter, "out"]
             for ss, ws in itertools.product(src, (False, True)):
                 s = shlex.shlex(ss, punctuation_chars=True)
                 result = list(s)
-                self.assertEqual(ref, result, "While splitting '%s' [ws=%s]" % (ss, ws))
+                self.assertEqual(ref, result, f"While splitting '{ss}' [ws={ws}]")
 
     def testSyntaxSplitParen(self):
         """Test handling of syntax splitting of ()"""
@@ -235,7 +233,7 @@ class ShlexTest(unittest.TestCase):
             s = shlex.shlex(ss, punctuation_chars=True)
             s.whitespace_split = ws
             result = list(s)
-            self.assertEqual(ref, result, "While splitting '%s' [ws=%s]" % (ss, ws))
+            self.assertEqual(ref, result, f"While splitting '{ss}' [ws={ws}]")
 
     def testSyntaxSplitCustom(self):
         """Test handling of syntax splitting with custom chars"""
@@ -243,12 +241,12 @@ class ShlexTest(unittest.TestCase):
         ref = ["~/a", "&", "&", "b-c", "--color=auto", "||", "d", "*.py?"]
         s = shlex.shlex(ss, punctuation_chars="|")
         result = list(s)
-        self.assertEqual(ref, result, "While splitting '%s' [ws=False]" % ss)
+        self.assertEqual(ref, result, f"While splitting '{ss}' [ws=False]")
         ref = ["~/a&&b-c", "--color=auto", "||", "d", "*.py?"]
         s = shlex.shlex(ss, punctuation_chars="|")
         s.whitespace_split = True
         result = list(s)
-        self.assertEqual(ref, result, "While splitting '%s' [ws=True]" % ss)
+        self.assertEqual(ref, result, f"While splitting '{ss}' [ws=True]")
 
     def testTokenTypes(self):
         """Test that tokens are split with types as expected."""
@@ -331,10 +329,10 @@ class ShlexTest(unittest.TestCase):
         self.assertEqual(shlex.quote(safeunquoted), safeunquoted)
         self.assertEqual(shlex.quote("test file name"), "'test file name'")
         for u in unsafe:
-            self.assertEqual(shlex.quote("test%sname" % u), "'test%sname'" % u)
+            self.assertEqual(shlex.quote(f"test{u}name"), f"'test{u}name'")
         for u in unsafe:
             self.assertEqual(
-                shlex.quote("test%s'name'" % u), "'test%s'\"'\"'name'\"'\"''" % u
+                shlex.quote(f"test{u}'name'"), f"'test{u}'\"'\"'name'\"'\"''"
             )
 
     def testJoin(self):

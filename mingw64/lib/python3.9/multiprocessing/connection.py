@@ -74,7 +74,8 @@ def arbitrary_address(family):
         return tempfile.mktemp(prefix="listener-", dir=util.get_temp_dir())
     elif family == "AF_PIPE":
         return tempfile.mktemp(
-            prefix=r"\\.\pipe\pyc-%d-%d-" % (os.getpid(), next(_mmap_counter)), dir=""
+            prefix=r"\\.\pipe\pyc-%d-%d-" % (os.getpid(), next(_mmap_counter)),
+            dir="",  # noqa: UP031
         )
     else:
         raise ValueError("unrecognized family")
@@ -85,12 +86,12 @@ def _validate_family(family):
     Checks if the family is valid for the current environment.
     """
     if sys.platform != "win32" and family == "AF_PIPE":
-        raise ValueError("Family %s is not recognized." % family)
+        raise ValueError(f"Family {family} is not recognized.")
 
     if sys.platform == "win32" and family == "AF_UNIX":
         # double check
         if not hasattr(socket, family):
-            raise ValueError("Family %s is not recognized." % family)
+            raise ValueError(f"Family {family} is not recognized.")
 
 
 def address_type(address):
@@ -106,7 +107,7 @@ def address_type(address):
     elif type(address) is str or util.is_abstract_socket_namespace(address):
         return "AF_UNIX"
     else:
-        raise ValueError("address type of %r unrecognized" % address)
+        raise ValueError(f"address type of {address!r} unrecognized")
 
 
 #
@@ -312,11 +313,11 @@ if _winapi:
                         ov.cancel()
                         raise
                     finally:
-                        nread, err = ov.GetOverlappedResult(True)
+                        _nread, err = ov.GetOverlappedResult(True)
                         if err == 0:
                             f = io.BytesIO()
                             f.write(ov.getbuffer())
-                            return f
+                            return f  # noqa: B012
                         elif err == _winapi.ERROR_MORE_DATA:
                             return self._get_more_data(ov, maxsize)
                 except OSError as e:
@@ -702,7 +703,7 @@ if sys.platform == "win32":
                 # written data and then disconnected -- see Issue 14725.
             else:
                 try:
-                    res = _winapi.WaitForMultipleObjects([ov.event], False, INFINITE)
+                    _winapi.WaitForMultipleObjects([ov.event], False, INFINITE)
                 except:
                     ov.cancel()
                     _winapi.CloseHandle(handle)
@@ -744,7 +745,7 @@ if sys.platform == "win32":
             else:
                 break
         else:
-            raise
+            raise  # noqa: PLE0704
 
         _winapi.SetNamedPipeHandleState(h, _winapi.PIPE_READMODE_MESSAGE, None, None)
         return PipeConnection(h)
@@ -765,7 +766,7 @@ def deliver_challenge(connection, authkey):
     import hmac
 
     if not isinstance(authkey, bytes):
-        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")
+        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")  # noqa: TRY004
     message = os.urandom(MESSAGE_LENGTH)
     connection.send_bytes(CHALLENGE + message)
     digest = hmac.new(authkey, message, "md5").digest()
@@ -781,9 +782,9 @@ def answer_challenge(connection, authkey):
     import hmac
 
     if not isinstance(authkey, bytes):
-        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")
+        raise ValueError(f"Authkey must be bytes, not {type(authkey)!s}")  # noqa: TRY004
     message = connection.recv_bytes(256)  # reject large message
-    assert message[: len(CHALLENGE)] == CHALLENGE, "message = %r" % message
+    assert message[: len(CHALLENGE)] == CHALLENGE, f"message = {message!r}"
     message = message[len(CHALLENGE) :]
     digest = hmac.new(authkey, message, "md5").digest()
     connection.send_bytes(digest)
@@ -820,7 +821,7 @@ def _xml_dumps(obj):
 
 
 def _xml_loads(s):
-    (obj,), method = xmlrpclib.loads(s.decode("utf-8"))
+    (obj,), _method = xmlrpclib.loads(s.decode("utf-8"))
     return obj
 
 
@@ -937,7 +938,7 @@ if sys.platform == "win32":
                 if err != _winapi.ERROR_OPERATION_ABORTED:
                     o = waithandle_to_obj[ov.event]
                     ready_objects.add(o)
-                    if err == 0:
+                    if err == 0:  # noqa: SIM102
                         # If o.fileno() is an overlapped pipe handle then
                         # a zero length message HAS been consumed.
                         if hasattr(o, "_got_empty_message"):

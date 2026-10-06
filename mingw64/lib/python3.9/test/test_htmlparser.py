@@ -281,7 +281,7 @@ text
             'html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"',
         ]
         for dtd in dtds:
-            self._run_check("<!DOCTYPE %s>" % dtd, [("decl", "DOCTYPE " + dtd)])
+            self._run_check(f"<!DOCTYPE {dtd}>", [("decl", "DOCTYPE " + dtd)])
 
     def test_startendtag(self):
         self._run_check(
@@ -660,7 +660,7 @@ text
             ("a&b ", [("data", "a"), ("entityref", "b"), ("data", " ")]),
             ("a&b;", [("data", "a"), ("entityref", "b")]),
         ]
-        for html, expected in data:
+        for html, expected in data:  # noqa: F402
             self._run_check(html, expected)
 
     def test_broken_comments(self):
@@ -828,14 +828,12 @@ class AttributesTestCase(TestCaseBase):
         # see #1200313
         for entity in ["&", "&amp;", "&#38;", "&#x26;"]:
             self._run_check(
-                '<a href="%s">' % entity, [("starttag", "a", [("href", "&")])]
+                f'<a href="{entity}">', [("starttag", "a", [("href", "&")])]
             )
             self._run_check(
-                "<a href='%s'>" % entity, [("starttag", "a", [("href", "&")])]
+                f"<a href='{entity}'>", [("starttag", "a", [("href", "&")])]
             )
-            self._run_check(
-                "<a href=%s>" % entity, [("starttag", "a", [("href", "&")])]
-            )
+            self._run_check(f"<a href={entity}>", [("starttag", "a", [("href", "&")])])
 
     def test_malformed_attributes(self):
         # see #13357

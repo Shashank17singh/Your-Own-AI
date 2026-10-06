@@ -21,7 +21,7 @@ try:
         CURLY = 2
         MOE = 3
 
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     Stooges = exc
 
 try:
@@ -31,7 +31,7 @@ try:
         CURLY = 2
         MOE = 3
 
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     IntStooges = exc
 
 try:
@@ -41,7 +41,7 @@ try:
         CURLY = 2.72
         MOE = 3.142596
 
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     FloatStooges = exc
 
 try:
@@ -51,7 +51,7 @@ try:
         CURLY = 2
         MOE = 3
 
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     FlagStooges = exc
 
 # for pickle test and subclass tests
@@ -64,22 +64,22 @@ try:
         BDFL = "Guido van Rossum"
         FLUFL = "Barry Warsaw"
 
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     Name = exc
 
 try:
     Question = Enum("Question", "who what when where why", module=__name__)
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     Question = exc
 
 try:
     Answer = Enum("Answer", "him this then there because")
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     Answer = exc
 
 try:
     Theory = Enum("Theory", "rule law supposition", qualname="spanish_inquisition")
-except Exception as exc:
+except Exception as exc:  # noqa: BLE001
     Theory = exc
 
 # for doctests
@@ -90,7 +90,7 @@ try:
         BANANA = 2
         CHERRY = 3
 
-except Exception:
+except Exception:  # noqa: BLE001, S110
     pass
 
 
@@ -227,25 +227,23 @@ class TestEnum(unittest.TestCase):
         Season = self.Season
         self.assertEqual(
             set(dir(Season)),
-            set(
-                [
-                    "__class__",
-                    "__doc__",
-                    "__members__",
-                    "__module__",
-                    "SPRING",
-                    "SUMMER",
-                    "AUTUMN",
-                    "WINTER",
-                ]
-            ),
+            {
+                "__class__",
+                "__doc__",
+                "__members__",
+                "__module__",
+                "SPRING",
+                "SUMMER",
+                "AUTUMN",
+                "WINTER",
+            },
         )
 
     def test_dir_on_item(self):
         Season = self.Season
         self.assertEqual(
             set(dir(Season.WINTER)),
-            set(["__class__", "__doc__", "__module__", "name", "value"]),
+            {"__class__", "__doc__", "__module__", "name", "value"},
         )
 
     def test_dir_with_added_behavior(self):
@@ -254,15 +252,15 @@ class TestEnum(unittest.TestCase):
             these = "those"
 
             def wowser(self):
-                return "Wowser! I'm %s!" % self.name
+                return f"Wowser! I'm {self.name}!"
 
         self.assertEqual(
             set(dir(Test)),
-            set(["__class__", "__doc__", "__members__", "__module__", "this", "these"]),
+            {"__class__", "__doc__", "__members__", "__module__", "this", "these"},
         )
         self.assertEqual(
             set(dir(Test.this)),
-            set(["__class__", "__doc__", "__module__", "name", "value", "wowser"]),
+            {"__class__", "__doc__", "__module__", "name", "value", "wowser"},
         )
 
     def test_dir_on_sub_with_behavior_on_super(self):
@@ -276,7 +274,7 @@ class TestEnum(unittest.TestCase):
 
         self.assertEqual(
             set(dir(SubEnum.sample)),
-            set(["__class__", "__doc__", "__module__", "name", "value", "invisible"]),
+            {"__class__", "__doc__", "__module__", "name", "value", "invisible"},
         )
 
     def test_dir_on_sub_with_behavior_including_instance_dict_on_super(self):
@@ -436,9 +434,9 @@ class TestEnum(unittest.TestCase):
         Season = self.Season
         self.assertIn(Season.AUTUMN, Season)
         with self.assertRaises(TypeError):
-            3 in Season
+            3 in Season  # noqa: B015
         with self.assertRaises(TypeError):
-            "AUTUMN" in Season
+            "AUTUMN" in Season  # noqa: B015
 
         val = Season(3)
         self.assertIn(val, Season)
@@ -452,9 +450,9 @@ class TestEnum(unittest.TestCase):
     def test_comparisons(self):
         Season = self.Season
         with self.assertRaises(TypeError):
-            Season.SPRING < Season.WINTER
+            Season.SPRING < Season.WINTER  # noqa: B015
         with self.assertRaises(TypeError):
-            Season.SPRING > 4
+            Season.SPRING > 4  # noqa: B015
 
         self.assertNotEqual(Season.SPRING, 1)
 
@@ -465,7 +463,7 @@ class TestEnum(unittest.TestCase):
 
         self.assertNotEqual(Season.SPRING, Part.SPRING)
         with self.assertRaises(TypeError):
-            Season.SPRING < Part.CLIP
+            Season.SPRING < Part.CLIP  # noqa: B015
 
     def test_enum_duplicates(self):
         class Season(Enum):
@@ -473,7 +471,7 @@ class TestEnum(unittest.TestCase):
             SUMMER = 2
             AUTUMN = FALL = 3
             WINTER = 4
-            ANOTHER_SPRING = 1
+            ANOTHER_SPRING = 1  # noqa: PIE796
 
         lst = list(Season)
         self.assertEqual(
@@ -503,7 +501,6 @@ class TestEnum(unittest.TestCase):
                 red = 1
                 green = 2
                 blue = 3
-                red = 4
 
         with self.assertRaises(TypeError):
 
@@ -512,7 +509,7 @@ class TestEnum(unittest.TestCase):
                 green = 2
                 blue = 3
 
-                def red(self):
+                def red(self):  # noqa: F811
                     return "red"
 
         with self.assertRaises(TypeError):
@@ -522,7 +519,7 @@ class TestEnum(unittest.TestCase):
                 def red(self):
                     return "redder"
 
-                red = 1
+                red = 1  # noqa: F811
                 green = 2
                 blue = 3
 
@@ -672,7 +669,7 @@ class TestEnum(unittest.TestCase):
             RED, GREEN, BLUE = 1, 2, 3
 
             def __repr__(self):
-                return "test.%s" % (self._name_,)
+                return f"test.{self._name_}"
 
             __str__ = object.__str__
 
@@ -685,7 +682,7 @@ class TestEnum(unittest.TestCase):
 
         class MyMethodEnum(Enum):
             def hello(self):
-                return "Hello!  My name is %s" % self.name
+                return f"Hello!  My name is {self.name}"
 
         class Test1Enum(MyMethodEnum, int, MyStrEnum):
             One = 1
@@ -763,7 +760,7 @@ class TestEnum(unittest.TestCase):
 
         class MyStr(str):
             def hello(self):
-                return "hello, %s" % self
+                return f"hello, {self}"
 
         class MyInt(int):
             def repr(self):
@@ -937,7 +934,7 @@ class TestEnum(unittest.TestCase):
             shiny = "rare"
 
         self.__class__.NestedEnum = NestedEnum
-        self.NestedEnum.__qualname__ = "%s.NestedEnum" % self.__class__.__name__
+        self.NestedEnum.__qualname__ = f"{self.__class__.__name__}.NestedEnum"
         test_pickle_dump_load(self.assertIs, self.NestedEnum.twigs)
 
     def test_pickle_by_name(self):
@@ -1205,7 +1202,7 @@ class TestEnum(unittest.TestCase):
             these = "those"
 
             def really(self):
-                return "no, not %s" % self.value
+                return f"no, not {self.value}"
 
         self.assertIsNot(type(whatever.really), whatever)
         self.assertEqual(whatever.this.really(), "no, not that")
@@ -1328,7 +1325,7 @@ class TestEnum(unittest.TestCase):
             blue = 3
 
             def __repr__(self):
-                return "don't you just love shades of %s?" % self.name
+                return f"don't you just love shades of {self.name}?"
 
         self.assertEqual(
             repr(Color.blue),
@@ -1338,7 +1335,7 @@ class TestEnum(unittest.TestCase):
     def test_inherited_repr(self):
         class MyEnum(Enum):
             def __repr__(self):
-                return "My name is %s." % self.name
+                return f"My name is {self.name}."
 
         class MyIntEnum(int, MyEnum):
             this = 1
@@ -1742,8 +1739,8 @@ class TestEnum(unittest.TestCase):
     def test_duplicate_values_give_unique_enum_items(self):
         class AutoNumber(Enum):
             first = ()
-            second = ()
-            third = ()
+            second = ()  # noqa: PIE796
+            third = ()  # noqa: PIE796
 
             def __new__(cls):
                 value = len(cls.__members__) + 1
@@ -1864,7 +1861,7 @@ class TestEnum(unittest.TestCase):
 
         class Color(Shade):
             def hex(self):
-                return "%s hexlified!" % self.value
+                return f"{self.value} hexlified!"
 
         class MoreColor(Color):
             cyan = 4
@@ -1904,7 +1901,7 @@ class TestEnum(unittest.TestCase):
                     a = self.name
                     e = cls(self.value).name
                     raise ValueError(
-                        "aliases not allowed in UniqueEnum:  %r --> %r" % (a, e)
+                        f"aliases not allowed in UniqueEnum:  {a!r} --> {e!r}"
                     )
 
         class Color(UniqueEnum):
@@ -1959,14 +1956,14 @@ class TestEnum(unittest.TestCase):
             _ignore_ = "Period i"
             Period = vars()
             for i in range(13):
-                Period["month_%d" % i] = i * 30, "month"
+                Period["month_%d" % i] = i * 30, "month"  # noqa: UP031
             for i in range(53):
-                Period["week_%d" % i] = i * 7, "week"
+                Period["week_%d" % i] = i * 7, "week"  # noqa: UP031
             for i in range(32):
-                Period["day_%d" % i] = i, "day"
-            OneDay = day_1
-            OneWeek = week_1
-            OneMonth = month_1
+                Period["day_%d" % i] = i, "day"  # noqa: UP031
+            OneDay = day_1  # noqa: F821
+            OneWeek = week_1  # noqa: F821
+            OneMonth = month_1  # noqa: F821
 
         self.assertFalse(hasattr(Period, "_ignore_"))
         self.assertFalse(hasattr(Period, "Period"))
@@ -1992,7 +1989,7 @@ class TestEnum(unittest.TestCase):
             list(ColorInAList),
             [ColorInAList.red, ColorInAList.green, ColorInAList.blue],
         )
-        for enum, value in zip(ColorInAList, range(3)):
+        for enum, value in zip(ColorInAList, range(3)):  # noqa: F402
             value += 1
             self.assertEqual(enum.value, [value])
             self.assertIs(ColorInAList([value]), enum)
@@ -2121,7 +2118,7 @@ class TestEnum(unittest.TestCase):
         except ValueError as exc:
             self.assertTrue(exc.__context__ is None)
         else:
-            raise Exception("Exception not raised.")
+            raise Exception("Exception not raised.")  # noqa: TRY002
 
     def test_missing(self):
         class Color(Enum):
@@ -2148,19 +2145,19 @@ class TestEnum(unittest.TestCase):
         except ValueError as exc:
             self.assertTrue(exc.__context__ is None)
         else:
-            raise Exception("Exception not raised.")
+            raise Exception("Exception not raised.")  # noqa: TRY002
         try:
             Color("bad return")
         except TypeError as exc:
             self.assertTrue(isinstance(exc.__context__, ValueError))
         else:
-            raise Exception("Exception not raised.")
+            raise Exception("Exception not raised.")  # noqa: TRY002
         try:
             Color("error out")
         except ZeroDivisionError as exc:
             self.assertTrue(isinstance(exc.__context__, ValueError))
         else:
-            raise Exception("Exception not raised.")
+            raise Exception("Exception not raised.")  # noqa: TRY002
 
     def test_missing_exceptions_reset(self):
         import gc
@@ -2319,8 +2316,7 @@ class TestEnum(unittest.TestCase):
                 for a in args:
                     if not isinstance(a, str):
                         raise TypeError(
-                            "Enumeration '%s' (%s) is not"
-                            " a string" % (a, type(a).__name__)
+                            f"Enumeration '{a}' ({type(a).__name__}) is not a string"
                         )
                 return str.__new__(cls, *args, **kwargs)
 
@@ -2424,7 +2420,7 @@ class TestEnum(unittest.TestCase):
         code = compile(code, "<string>", "exec")
         global_ns = {}
         local_ls = {}
-        exec(code, global_ns, local_ls)
+        exec(code, global_ns, local_ls)  # noqa: S102
 
     @unittest.skipUnless(
         sys.version_info[:2] == (3, 9),
@@ -2746,13 +2742,13 @@ class TestFlag(unittest.TestCase):
         self.assertFalse(Color.BLACK in Open)
         self.assertFalse(Open.RO in Color)
         with self.assertRaises(TypeError):
-            "BLACK" in Color
+            "BLACK" in Color  # noqa: B015
         with self.assertRaises(TypeError):
-            "RO" in Open
+            "RO" in Open  # noqa: B015
         with self.assertRaises(TypeError):
-            1 in Color
+            1 in Color  # noqa: B015
         with self.assertRaises(TypeError):
-            1 in Open
+            1 in Open  # noqa: B015
 
     def test_member_contains(self):
         Perm = self.Perm
@@ -2901,7 +2897,7 @@ class TestFlag(unittest.TestCase):
             try:
                 for i in range(256):
                     seen.add(TestFlag(i))
-            except Exception:
+            except Exception:  # noqa: BLE001
                 failed = True
 
         threads = [threading.Thread(target=cycle_enum) for _ in range(8)]
@@ -3094,11 +3090,11 @@ class TestIntFlag(unittest.TestCase):
         values = list(Perm) + [RW, RX, WX, RWX, Perm(0)]
         for i in values:
             for j in values:
-                self.assertEqual(i & j, i.value & j.value, "i is %r, j is %r" % (i, j))
+                self.assertEqual(i & j, i.value & j.value, f"i is {i!r}, j is {j!r}")
                 self.assertEqual(
-                    (i & j).value, i.value & j.value, "i is %r, j is %r" % (i, j)
+                    (i & j).value, i.value & j.value, f"i is {i!r}, j is {j!r}"
                 )
-                self.assertIs(type(i & j), Perm, "i is %r, j is %r" % (i, j))
+                self.assertIs(type(i & j), Perm, f"i is {i!r}, j is {j!r}")
             for j in range(8):
                 self.assertEqual(i & j, i.value & j)
                 self.assertEqual((i & j).value, i.value & j)
@@ -3259,13 +3255,13 @@ class TestIntFlag(unittest.TestCase):
         self.assertFalse(Color.GREEN in Open)
         self.assertFalse(Open.RW in Color)
         with self.assertRaises(TypeError):
-            "GREEN" in Color
+            "GREEN" in Color  # noqa: B015
         with self.assertRaises(TypeError):
-            "RW" in Open
+            "RW" in Open  # noqa: B015
         with self.assertRaises(TypeError):
-            2 in Color
+            2 in Color  # noqa: B015
         with self.assertRaises(TypeError):
-            2 in Open
+            2 in Open  # noqa: B015
 
     def test_member_contains(self):
         Perm = self.Perm
@@ -3375,7 +3371,7 @@ class TestIntFlag(unittest.TestCase):
             try:
                 for i in range(256):
                     seen.add(TestFlag(i))
-            except Exception:
+            except Exception:  # noqa: BLE001
                 failed = True
 
         threads = [threading.Thread(target=cycle_enum) for _ in range(8)]
@@ -3391,7 +3387,7 @@ class TestIntFlag(unittest.TestCase):
 class TestEmptyAndNonLatinStrings(unittest.TestCase):
     def test_empty_string(self):
         with self.assertRaises(ValueError):
-            empty_abc = Enum("empty_abc", ("", "B", "C"))
+            Enum("empty_abc", ("", "B", "C"))
 
     def test_non_latin_character_string(self):
         greek_abc = Enum("greek_abc", ("\u03b1", "B", "C"))
@@ -3425,7 +3421,7 @@ class TestUnique(unittest.TestCase):
             class Dirty(Enum):
                 one = 1
                 two = "dos"
-                tres = 1
+                tres = 1  # noqa: PIE796
 
         with self.assertRaisesRegex(
             ValueError,
@@ -3546,28 +3542,27 @@ class TestStdLib(unittest.TestCase):
         self.assertEqual(result, expected_text)
 
     def test_inspect_getmembers(self):
-        values = dict(
-            (
-                ("__class__", EnumMeta),
-                ("__doc__", "An enumeration."),
-                ("__members__", self.Color.__members__),
-                ("__module__", __name__),
-                ("blue", self.Color.blue),
-                ("green", self.Color.green),
-                ("name", Enum.__dict__["name"]),
-                ("red", self.Color.red),
-                ("value", Enum.__dict__["value"]),
-            )
-        )
+        values = {
+            "__class__": EnumMeta,
+            "__doc__": "An enumeration.",
+            "__members__": self.Color.__members__,
+            "__module__": __name__,
+            "blue": self.Color.blue,
+            "green": self.Color.green,
+            "name": Enum.__dict__["name"],
+            "red": self.Color.red,
+            "value": Enum.__dict__["value"],
+        }
         result = dict(inspect.getmembers(self.Color))
         self.assertEqual(values.keys(), result.keys())
         failed = False
-        for k in values:
+        for k in values:  # noqa: PLC0206
             if result[k] != values[k]:
                 print()
                 print(
-                    "\n%s\n     key: %s\n  result: %s\nexpected: %s\n%s\n"
-                    % ("=" * 75, k, result[k], values[k], "=" * 75)
+                    "\n{}\n     key: {}\n  result: {}\nexpected: {}\n{}\n".format(
+                        "=" * 75, k, result[k], values[k], "=" * 75
+                    )
                 )
                 failed = True
         if failed:
@@ -3636,7 +3631,7 @@ class TestStdLib(unittest.TestCase):
         failed = False
         for v, r in zip(values, result):
             if r != v:
-                print("\n%s\n%s\n%s\n%s\n" % ("=" * 75, r, v, "=" * 75))
+                print("\n{}\n{}\n{}\n{}\n".format("=" * 75, r, v, "=" * 75))
                 failed = True
         if failed:
             self.fail("result does not equal expected, see print above")

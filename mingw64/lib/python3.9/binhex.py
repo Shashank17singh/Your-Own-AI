@@ -66,7 +66,7 @@ def getfileinfo(name):
             finfo.Type = "TEXT"
         fp.seek(0, 2)
         dsize = fp.tell()
-    dir, file = os.path.split(name)
+    _dir, file = os.path.split(name)
     file = file.replace(":", "-", 1)
     return file, finfo, dsize, 0
 
@@ -166,7 +166,7 @@ class BinHex:
         close_on_error = False
         if isinstance(ofp, str):
             ofname = ofp
-            ofp = open(ofname, "wb")
+            ofp = open(ofname, "wb")  # noqa: SIM115
             close_on_error = True
         try:
             ofp.write(b"(This file must be converted with BinHex 4.0)\r\r:")
@@ -225,7 +225,7 @@ class BinHex:
 
     def close_data(self):
         if self.dlen != 0:
-            raise Error("Incorrect data size, diff=%r" % (self.rlen,))
+            raise Error(f"Incorrect data size, diff={self.rlen!r}")
         self._writecrc()
         self.state = _DID_DATA
 
@@ -246,7 +246,7 @@ class BinHex:
             if self.state != _DID_DATA:
                 raise Error("Close at the wrong time")
             if self.rlen != 0:
-                raise Error("Incorrect resource-datasize, diff=%r" % (self.rlen,))
+                raise Error(f"Incorrect resource-datasize, diff={self.rlen!r}")
             self._writecrc()
         finally:
             self.state = None
@@ -384,7 +384,7 @@ class _Rledecoderengine:
 class HexBin:
     def __init__(self, ifp):
         if isinstance(ifp, str):
-            ifp = open(ifp, "rb")
+            ifp = open(ifp, "rb")  # noqa: SIM115
         #
         # Find initial colon.
         #
@@ -415,7 +415,7 @@ class HexBin:
         # XXXX Is this needed??
         self.crc = self.crc & 0xFFFF
         if filecrc != self.crc:
-            raise Error("CRC error, computed %x, read %x" % (self.crc, filecrc))
+            raise Error(f"CRC error, computed {self.crc:x}, read {filecrc:x}")
         self.crc = 0
 
     def _readheader(self):
@@ -456,7 +456,7 @@ class HexBin:
         if self.state != _DID_HEADER:
             raise Error("close_data at wrong time")
         if self.dlen:
-            dummy = self._read(self.dlen)
+            self._read(self.dlen)
         self._checkcrc()
         self.state = _DID_DATA
 
@@ -478,7 +478,7 @@ class HexBin:
             return
         try:
             if self.rlen:
-                dummy = self.read_rsrc(self.rlen)
+                self.read_rsrc(self.rlen)
             self._checkcrc()
         finally:
             self.state = None
@@ -488,7 +488,6 @@ class HexBin:
 def hexbin(inp, out):
     """hexbin(infilename, outfilename) - Decode binhexed file"""
     ifp = HexBin(inp)
-    finfo = ifp.FInfo
     if not out:
         out = ifp.FName
 

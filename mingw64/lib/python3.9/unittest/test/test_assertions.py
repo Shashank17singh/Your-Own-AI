@@ -53,7 +53,7 @@ class Test_Assertions(unittest.TestCase):
         self.assertRaises(
             TypeError, self.assertNotAlmostEqual, 1.1, 1.0, places=2, delta=2
         )
-        first = datetime.datetime.now()
+        first = datetime.datetime.now()  # noqa: DTZ005
         second = first + datetime.timedelta(seconds=10)
         self.assertAlmostEqual(first, second, delta=datetime.timedelta(seconds=20))
         self.assertNotAlmostEqual(first, second, delta=datetime.timedelta(seconds=5))
@@ -278,7 +278,7 @@ class TestLongMessage(unittest.TestCase):
     def testAssertSetEqual(self):
         self.assertMessages(
             "assertSetEqual",
-            (set(), set([None])),
+            (set(), {None}),
             ["None$", "^oops$", "None$", "None : oops$"],
         )
 
@@ -473,8 +473,8 @@ class TestLongMessage(unittest.TestCase):
         p = product((self.testableFalse, self.testableTrue), ({}, {"msg": "oops"}))
         for (cls, kwargs), err in zip(p, errors):
             method = getattr(cls, methodName)
-            with self.assertRaisesRegex(cls.failureException, err):
-                with method(*args, **kwargs) as cm:
+            with self.assertRaisesRegex(cls.failureException, err):  # noqa: SIM117
+                with method(*args, **kwargs):
                     func()
 
     def testAssertRaises(self):

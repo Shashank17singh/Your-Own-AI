@@ -18,11 +18,7 @@ class addbase(tempfile._TemporaryFileWrapper):
         self.fp = fp
 
     def __repr__(self):
-        return "<%s at %r whose fp = %r>" % (
-            self.__class__.__name__,
-            id(self),
-            self.file,
-        )
+        return f"<{self.__class__.__name__} at {id(self)!r} whose fp = {self.file!r}>"
 
     def __enter__(self):
         if self.fp.closed:

@@ -350,11 +350,11 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         # Its __path__ is an iterable of 1 element from zip1.
         mod = importlib.import_module(packdir3.replace(os.sep, ".")[:-1])
         self.assertEqual(1, len(mod.__path__))
-        mpath = list(mod.__path__)[0].split("path1.zip" + os.sep)[1]
+        mpath = next(iter(mod.__path__)).split("path1.zip" + os.sep)[1]
         self.assertEqual(packdir3[:-1], mpath)
 
         # TESTPACK/TESTMOD only exists in path1.
-        mod = importlib.import_module(".".join((TESTPACK, TESTMOD)))
+        mod = importlib.import_module(f"{TESTPACK}.{TESTMOD}")
         self.assertEqual("path1.zip", mod.__file__.split(os.sep)[-3])
 
         # And TESTPACK/(TESTMOD + '2') only exists in path2.
@@ -362,7 +362,7 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         self.assertEqual(os.path.basename(TEMP_DIR), mod.__file__.split(os.sep)[-3])
 
         # One level deeper...
-        subpkg = ".".join((TESTPACK, TESTPACK2))
+        subpkg = f"{TESTPACK}.{TESTPACK2}"
         mod = importlib.import_module(subpkg)
         self.assertEqual(2, len(mod.__path__))
         p1, p2 = mod.__path__
@@ -370,7 +370,7 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         self.assertEqual("path1.zip", p2.split(os.sep)[-3])
 
         # subpkg.TESTMOD exists in both zips should load from zip2.
-        mod = importlib.import_module(".".join((subpkg, TESTMOD)))
+        mod = importlib.import_module(f"{subpkg}.{TESTMOD}")
         self.assertEqual(os.path.basename(TEMP_DIR), mod.__file__.split(os.sep)[-4])
 
         # subpkg.TESTMOD + '2' only exists in zip2.
@@ -427,11 +427,11 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         # Tts __path__ is an iterable of 1 element from zip1.
         mod = importlib.import_module(packdir3.replace(os.sep, ".")[:-1])
         self.assertEqual(1, len(mod.__path__))
-        mpath = list(mod.__path__)[0].split("path1.zip" + os.sep)[1]
+        mpath = next(iter(mod.__path__)).split("path1.zip" + os.sep)[1]
         self.assertEqual(packdir3[:-1], mpath)
 
         # TESTPACK/TESTMOD only exists in path1.
-        mod = importlib.import_module(".".join((TESTPACK, TESTMOD)))
+        mod = importlib.import_module(f"{TESTPACK}.{TESTMOD}")
         self.assertEqual("path1.zip", mod.__file__.split(os.sep)[-3])
 
         # And TESTPACK/(TESTMOD + '2') only exists in path2.
@@ -439,7 +439,7 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         self.assertEqual("path2.zip", mod.__file__.split(os.sep)[-3])
 
         # One level deeper...
-        subpkg = ".".join((TESTPACK, TESTPACK2))
+        subpkg = f"{TESTPACK}.{TESTPACK2}"
         mod = importlib.import_module(subpkg)
         self.assertEqual(2, len(mod.__path__))
         p1, p2 = mod.__path__
@@ -447,7 +447,7 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
         self.assertEqual("path1.zip", p2.split(os.sep)[-3])
 
         # subpkg.TESTMOD exists in both zips should load from zip2.
-        mod = importlib.import_module(".".join((subpkg, TESTMOD)))
+        mod = importlib.import_module(f"{subpkg}.{TESTMOD}")
         self.assertEqual("path2.zip", mod.__file__.split(os.sep)[-4])
 
         # subpkg.TESTMOD + '2' only exists in zip2.
@@ -651,13 +651,13 @@ class UncompressedZipImportTestCase(ImportHooksBaseTestCase):
     def doTraceback(self, module):
         try:
             module.do_raise()
-        except:
+        except:  # noqa: E722
             tb = sys.exc_info()[2].tb_next
 
-            f, lno, n, line = extract_tb(tb, 1)[0]
+            f, lno, n, line = extract_tb(tb, 1)[0]  # noqa: RUF059
             self.assertEqual(line, raise_src.strip())
 
-            f, lno, n, line = extract_stack(tb.tb_frame, 1)[0]
+            _f, _lno, _n, line = extract_stack(tb.tb_frame, 1)[0]
             self.assertEqual(line, raise_src.strip())
 
             s = io.StringIO()
@@ -742,7 +742,7 @@ class BadFileZipImportTestCase(unittest.TestCase):
         try:
             os.close(fd)
 
-            with self.assertRaises(zipimport.ZipImportError) as cm:
+            with self.assertRaises(zipimport.ZipImportError):
                 zipimport.zipimporter(TESTMOD)
         finally:
             # If we leave "the read-only bit" set on Windows, nothing can
@@ -752,7 +752,7 @@ class BadFileZipImportTestCase(unittest.TestCase):
 
     def testNotZipFile(self):
         support.unlink(TESTMOD)
-        fp = open(TESTMOD, "w+")
+        fp = open(TESTMOD, "w+")  # noqa: SIM115
         fp.write("a" * 22)
         fp.close()
         self.assertZipFailure(TESTMOD)
@@ -760,7 +760,7 @@ class BadFileZipImportTestCase(unittest.TestCase):
     # XXX: disabled until this works on Big-endian machines
     def _testBogusZipFile(self):
         support.unlink(TESTMOD)
-        fp = open(TESTMOD, "w+")
+        fp = open(TESTMOD, "w+")  # noqa: SIM115
         fp.write(struct.pack("=I", 0x06054B50))
         fp.write("a" * 18)
         fp.close()

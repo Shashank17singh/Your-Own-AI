@@ -88,7 +88,7 @@ class TestSuper(unittest.TestCase):
         class E(A):
             def f(self):
                 def nested():
-                    self
+                    self  # noqa: B018
 
                 return super().f() + "E"
 
@@ -110,11 +110,11 @@ class TestSuper(unittest.TestCase):
             x = __class__
 
             def f():
-                __class__
+                __class__  # noqa: B018
 
         self.assertIs(X.x, type(self))
         with self.assertRaises(NameError) as e:
-            exec(
+            exec(  # noqa: S102
                 """class X:
                 __class__
                 def f():
@@ -129,7 +129,7 @@ class TestSuper(unittest.TestCase):
             __class__ = 42
 
             def f():
-                __class__
+                __class__  # noqa: B018
 
         self.assertEqual(globals()["__class__"], 42)
         del globals()["__class__"]
@@ -140,7 +140,7 @@ class TestSuper(unittest.TestCase):
             __class__ = 42
 
             def f():
-                __class__
+                __class__  # noqa: B018
 
         self.assertEqual(__class__, 42)
 
@@ -257,7 +257,7 @@ class TestSuper(unittest.TestCase):
         self.assertIs(class_cell, method_closure[0])
         # Ensure the cell reference *doesn't* get turned into an attribute
         with self.assertRaises(AttributeError):
-            WithClassRef.__classcell__
+            WithClassRef.__classcell__  # noqa: B018
 
     def test___classcell___missing(self):
         # See issue #23722
@@ -292,7 +292,7 @@ class TestSuper(unittest.TestCase):
                 return super().__new__(cls, name, bases, namespace)
 
         for bad_cell in (None, 0, "", object()):
-            with self.subTest(bad_cell=bad_cell):
+            with self.subTest(bad_cell=bad_cell):  # noqa: SIM117
                 with self.assertRaises(TypeError):
 
                     class A(metaclass=Meta, cell=bad_cell):
@@ -303,8 +303,8 @@ class TestSuper(unittest.TestCase):
         # Pointing the cell reference at the wrong class is also prohibited
         class Meta(type):
             def __new__(cls, name, bases, namespace):
-                cls = super().__new__(cls, name, bases, namespace)
-                B = type("B", (), namespace)
+                cls = super().__new__(cls, name, bases, namespace)  # noqa: PLW0642
+                type("B", (), namespace)
                 return cls
 
         with self.assertRaises(TypeError):

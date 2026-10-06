@@ -23,7 +23,7 @@ def is_specialization_of(x, template_name):
     """
     if isinstance(x, gdb.Type):
         x = x.tag
-    return re.match(r"^std::(__\d::|__debug::)?%s<.*>$" % template_name, x) is not None
+    return re.match(rf"^std::(__\d::|__debug::)?{template_name}<.*>$", x) is not None
 
 
 class LibStdCxxXMethod(gdb.xmethod.XMethod):
@@ -117,7 +117,7 @@ class ArrayAtWorker(ArrayWorkerBase):
     def __call__(self, obj, index):
         if int(index) >= int(self._size):
             raise IndexError(
-                'Array index "%d" should not be >= %d.' % ((int(index), self._size))
+                'Array index "%d" should not be >= %d.' % ((int(index), self._size))  # noqa: UP031
             )
         return obj["_M_elems"][index]
 
@@ -161,7 +161,7 @@ class ArrayMethodsMatcher(gdb.xmethod.XMethodMatcher):
         try:
             value_type = class_type.template_argument(0)
             size = class_type.template_argument(1)
-        except:
+        except:  # noqa: E722
             return None
         return method.worker_class(value_type, size)
 
@@ -268,7 +268,7 @@ class DequeAtWorker(DequeWorkerBase):
         deque_size = int(self.size(obj))
         if int(index) >= deque_size:
             raise IndexError(
-                'Deque index "%d" should not be >= %d.' % (int(index), deque_size)
+                'Deque index "%d" should not be >= %d.' % (int(index), deque_size)  # noqa: UP031
             )
         else:
             return self.index(obj, index)
@@ -366,10 +366,7 @@ class ListEmptyWorker(ListWorkerBase):
 
     def __call__(self, obj):
         base_node = obj["_M_impl"]["_M_node"]
-        if base_node["_M_next"] == base_node.address:
-            return True
-        else:
-            return False
+        return base_node["_M_next"] == base_node.address
 
 
 class ListSizeWorker(ListWorkerBase):
@@ -506,7 +503,7 @@ class VectorAtWorker(VectorWorkerBase):
         size = int(self.size(obj))
         if int(index) >= size:
             raise IndexError(
-                'Vector index "%d" should not be >= %d.' % ((int(index), size))
+                'Vector index "%d" should not be >= %d.' % ((int(index), size))  # noqa: UP031
             )
         return self.get(obj, int(index))
 
@@ -752,7 +749,7 @@ class SharedPtrSubscriptWorker(SharedPtrGetWorker):
         m = re.match(r".*\[(\d+)]$", str(self._elem_type))
         if m and index >= int(m.group(1)):
             raise IndexError(
-                'shared_ptr<%s> index "%d" should not be >= %d.'
+                'shared_ptr<%s> index "%d" should not be >= %d.'  # noqa: UP031
                 % (self._elem_type, int(index), int(m.group(1)))
             )
         return SharedPtrGetWorker.__call__(self, obj)[index]

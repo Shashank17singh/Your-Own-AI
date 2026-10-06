@@ -142,7 +142,7 @@ def _copy(master_fd, master_read=_read, stdin_read=_read):
             standard input -> pty master    (stdin_read)"""
     fds = [master_fd, STDIN_FILENO]
     while True:
-        rfds, wfds, xfds = select(fds, [], [])
+        rfds, _wfds, _xfds = select(fds, [], [])
         if master_fd in rfds:
             data = master_read(master_fd)
             if not data:  # Reached EOF.

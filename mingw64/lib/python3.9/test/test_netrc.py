@@ -175,7 +175,7 @@ class NetrcTestCase(unittest.TestCase):
 
         with support.swap_attr(os.path, "expanduser", fake_expanduser):
             nrc = netrc.netrc()
-            login, account, password = nrc.authenticators("foo.domain.com")
+            login, _account, _password = nrc.authenticators("foo.domain.com")
             self.assertEqual(login, "bar")
 
         self.assertTrue(called)

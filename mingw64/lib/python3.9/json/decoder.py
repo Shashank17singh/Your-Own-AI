@@ -32,7 +32,7 @@ class JSONDecodeError(ValueError):
     def __init__(self, msg, doc, pos):
         lineno = doc.count("\n", 0, pos) + 1
         colno = pos - doc.rfind("\n", 0, pos)
-        errmsg = "%s: line %d column %d (char %d)" % (msg, lineno, colno, pos)
+        errmsg = "%s: line %d column %d (char %d)" % (msg, lineno, colno, pos)  # noqa: UP031
         ValueError.__init__(self, errmsg)
         self.msg = msg
         self.doc = doc

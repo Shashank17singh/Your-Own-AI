@@ -57,10 +57,7 @@ def is_forking(argv):
     """
     Return whether commandline indicates we are forking
     """
-    if len(argv) >= 2 and argv[1] == "--multiprocessing-fork":
-        return True
-    else:
-        return False
+    return bool(len(argv) >= 2 and argv[1] == "--multiprocessing-fork")
 
 
 def freeze_support():
@@ -85,11 +82,11 @@ def get_command_line(**kwds):
     """
     if getattr(sys, "frozen", False):
         return [sys.executable, "--multiprocessing-fork"] + [
-            "%s=%r" % item for item in kwds.items()
+            "{}={!r}".format(*item) for item in kwds.items()
         ]
     else:
         prog = "from multiprocessing.spawn import spawn_main; spawn_main(%s)"
-        prog %= ", ".join("%s=%r" % item for item in kwds.items())
+        prog %= ", ".join("{}={!r}".format(*item) for item in kwds.items())
         opts = util._args_from_interpreter_flags()
         return [_python_exe] + opts + ["-c", prog, "--multiprocessing-fork"]
 
@@ -157,10 +154,10 @@ def get_preparation_data(name):
     Return info about parent needed by child to unpickle process object
     """
     _check_not_importing_main()
-    d = dict(
-        log_to_stderr=util._log_to_stderr,
-        authkey=process.current_process().authkey,
-    )
+    d = {
+        "log_to_stderr": util._log_to_stderr,
+        "authkey": process.current_process().authkey,
+    }
 
     if util._logger is not None:
         d["log_level"] = util._logger.getEffectiveLevel()

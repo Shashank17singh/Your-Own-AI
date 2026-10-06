@@ -78,8 +78,7 @@ def deep_items(type_):
         if k:
             yield k, v
         else:
-            for i in deep_items(v.type):
-                yield i
+            yield from deep_items(v.type)
 
 
 class TypePrinter:

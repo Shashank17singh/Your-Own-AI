@@ -14,7 +14,7 @@ except ImportError:
     def _get_dump(cls):
         # Reimplement _get_dump() for pure-Python implementation of
         # the abc module (Lib/_py_abc.py)
-        registry_weakrefs = set(weakref.ref(obj) for obj in cls._abc_registry)
+        registry_weakrefs = {weakref.ref(obj) for obj in cls._abc_registry}
         return (
             registry_weakrefs,
             cls._abc_cache,
@@ -34,7 +34,7 @@ def dash_R(ns, test_name, test_func):
     import copyreg
 
     if not hasattr(sys, "gettotalrefcount"):
-        raise Exception("Tracking reference leaks requires a debug build of Python")
+        raise Exception("Tracking reference leaks requires a debug build of Python")  # noqa: TRY002
 
     # Avoid false positives due to various caches
     # filling slowly with random data:
@@ -144,12 +144,7 @@ def dash_R(ns, test_name, test_func):
         # ignore warmup runs
         deltas = deltas[nwarmup:]
         if checker(deltas):
-            msg = "%s leaked %s %s, sum=%s" % (
-                test_name,
-                deltas,
-                item_name,
-                sum(deltas),
-            )
+            msg = f"{test_name} leaked {deltas} {item_name}, sum={sum(deltas)}"
             print(msg, file=sys.stderr, flush=True)
             with open(fname, "a") as refrep:
                 print(msg, file=refrep)

@@ -59,7 +59,7 @@ complex_nans = [
 
 class CMathTests(unittest.TestCase):
     # list of all functions in cmath
-    test_functions = [
+    test_functions = [  # noqa: RUF012
         getattr(cmath, fname)
         for fname in [
             "acos",
@@ -85,7 +85,7 @@ class CMathTests(unittest.TestCase):
     test_functions.append(lambda x: cmath.log(14.0 - 27j, x))
 
     def setUp(self):
-        self.test_values = open(test_file)
+        self.test_values = open(test_file)  # noqa: SIM115
 
     def tearDown(self):
         self.test_values.close()
@@ -148,9 +148,8 @@ class CMathTests(unittest.TestCase):
         # (in theory there are examples where it would be legitimate for a
         # and b to have opposite signs; in practice these hardly ever
         # occur).
-        if not a and not b:
-            if math.copysign(1.0, a) != math.copysign(1.0, b):
-                self.fail(msg or f"zero has wrong sign: expected {a!r}, got {b!r}")
+        if not a and not b and math.copysign(1.0, a) != math.copysign(1.0, b):
+            self.fail(msg or f"zero has wrong sign: expected {a!r}, got {b!r}")
 
         # if a-b overflows, or b is infinite, return False.  Again, in
         # theory there are examples where a is within a few ulps of the
@@ -306,7 +305,7 @@ class CMathTests(unittest.TestCase):
             # this could be considered a bug.
             self.assertRaises(TypeError, f, NeitherComplexNorFloat())
             self.assertRaises(TypeError, f, MyInt())
-            self.assertRaises(Exception, f, NeitherComplexNorFloatOS())
+            self.assertRaises(Exception, f, NeitherComplexNorFloatOS())  # noqa: B017
             # non-complex return value from __complex__ -> TypeError
             for bad_complex in non_complexes:
                 self.assertRaises(TypeError, f, MyComplex(bad_complex))
@@ -404,7 +403,7 @@ class CMathTests(unittest.TestCase):
             expected = complex(er, ei)
 
             # Skip certain tests on OS X 10.4.
-            if osx_version is not None and osx_version < (10, 5):
+            if osx_version is not None and osx_version < (10, 5):  # noqa: SIM102
                 if id in SKIP_ON_TIGER:
                     continue
 

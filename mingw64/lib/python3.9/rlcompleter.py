@@ -156,7 +156,7 @@ class Completer:
         expr, attr = m.group(1, 3)
         try:
             thisobject = eval(expr, self.namespace)
-        except Exception:
+        except Exception:  # noqa: BLE001
             return []
 
         # get the content of the object, except __builtins__
@@ -177,7 +177,7 @@ class Completer:
         while True:
             for word in words:
                 if word[:n] == attr and not (noprefix and word[: n + 1] == noprefix):
-                    match = "%s.%s" % (expr, word)
+                    match = f"{expr}.{word}"
                     if isinstance(getattr(type(thisobject), word, None), property):
                         # bpo-44752: thisobject.word is a method decorated by
                         # `@property`. What follows applies a postfix if

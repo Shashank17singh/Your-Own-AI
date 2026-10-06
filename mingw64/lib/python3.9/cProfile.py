@@ -103,7 +103,7 @@ class Profile(_lsprof.Profiler):
     def runctx(self, cmd, globals, locals):
         self.enable()
         try:
-            exec(cmd, globals, locals)
+            exec(cmd, globals, locals)  # noqa: S102
         finally:
             self.disable()
         return self

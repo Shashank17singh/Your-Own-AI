@@ -63,8 +63,9 @@ class FixerTestCase(support.TestCase):
             # We're the last in pre and post is empty
             return
         self.fail(
-            "Fixer run order (%s) is incorrect; %s should be last."
-            % (", ".join([x.__class__.__module__ for x in (pre + post)]), n)
+            "Fixer run order ({}) is incorrect; {} should be last.".format(
+                ", ".join([x.__class__.__module__ for x in (pre + post)]), n
+            )
         )
 
 
@@ -1333,13 +1334,13 @@ class Test_dict(FixerTestCase):
 
     def test_unchanged(self):
         for wrapper in fixer_util.consuming_calls:
-            s = "s = %s(d.keys())" % wrapper
+            s = f"s = {wrapper}(d.keys())"
             self.unchanged(s)
 
-            s = "s = %s(d.values())" % wrapper
+            s = f"s = {wrapper}(d.values())"
             self.unchanged(s)
 
-            s = "s = %s(d.items())" % wrapper
+            s = f"s = {wrapper}(d.items())"
             self.unchanged(s)
 
     def test_01(self):
@@ -1575,7 +1576,7 @@ class Test_xrange(FixerTestCase):
 
     def test_in_consuming_context(self):
         for call in fixer_util.consuming_calls:
-            self.unchanged("a = %s(range(10))" % call)
+            self.unchanged(f"a = {call}(range(10))")
 
 
 class Test_xrange_with_reduce(FixerTestCase):
@@ -1640,27 +1641,27 @@ class Test_raw_input(FixerTestCase):
 class Test_funcattrs(FixerTestCase):
     fixer = "funcattrs"
 
-    attrs = ["closure", "doc", "name", "defaults", "code", "globals", "dict"]
+    attrs = ["closure", "doc", "name", "defaults", "code", "globals", "dict"]  # noqa: RUF012
 
     def test(self):
         for attr in self.attrs:
-            b = "a.func_%s" % attr
-            a = "a.__%s__" % attr
+            b = f"a.func_{attr}"
+            a = f"a.__{attr}__"
             self.check(b, a)
 
-            b = "self.foo.func_%s.foo_bar" % attr
-            a = "self.foo.__%s__.foo_bar" % attr
+            b = f"self.foo.func_{attr}.foo_bar"
+            a = f"self.foo.__{attr}__.foo_bar"
             self.check(b, a)
 
     def test_unchanged(self):
         for attr in self.attrs:
-            s = "foo(func_%s + 5)" % attr
+            s = f"foo(func_{attr} + 5)"
             self.unchanged(s)
 
-            s = "f(foo.__%s__)" % attr
+            s = f"f(foo.__{attr}__)"
             self.unchanged(s)
 
-            s = "f(foo.__%s__.foo)" % attr
+            s = f"f(foo.__{attr}__.foo)"
             self.unchanged(s)
 
 
@@ -1710,97 +1711,97 @@ class Test_xreadlines(FixerTestCase):
 class ImportsFixerTests:
     def test_import_module(self):
         for old, new in self.modules.items():
-            b = "import %s" % old
-            a = "import %s" % new
+            b = f"import {old}"
+            a = f"import {new}"
             self.check(b, a)
 
-            b = "import foo, %s, bar" % old
-            a = "import foo, %s, bar" % new
+            b = f"import foo, {old}, bar"
+            a = f"import foo, {new}, bar"
             self.check(b, a)
 
     def test_import_from(self):
         for old, new in self.modules.items():
-            b = "from %s import foo" % old
-            a = "from %s import foo" % new
+            b = f"from {old} import foo"
+            a = f"from {new} import foo"
             self.check(b, a)
 
-            b = "from %s import foo, bar" % old
-            a = "from %s import foo, bar" % new
+            b = f"from {old} import foo, bar"
+            a = f"from {new} import foo, bar"
             self.check(b, a)
 
-            b = "from %s import (yes, no)" % old
-            a = "from %s import (yes, no)" % new
+            b = f"from {old} import (yes, no)"
+            a = f"from {new} import (yes, no)"
             self.check(b, a)
 
     def test_import_module_as(self):
         for old, new in self.modules.items():
-            b = "import %s as foo_bar" % old
-            a = "import %s as foo_bar" % new
+            b = f"import {old} as foo_bar"
+            a = f"import {new} as foo_bar"
             self.check(b, a)
 
-            b = "import %s as foo_bar" % old
-            a = "import %s as foo_bar" % new
+            b = f"import {old} as foo_bar"
+            a = f"import {new} as foo_bar"
             self.check(b, a)
 
     def test_import_from_as(self):
         for old, new in self.modules.items():
-            b = "from %s import foo as bar" % old
-            a = "from %s import foo as bar" % new
+            b = f"from {old} import foo as bar"
+            a = f"from {new} import foo as bar"
             self.check(b, a)
 
     def test_star(self):
         for old, new in self.modules.items():
-            b = "from %s import *" % old
-            a = "from %s import *" % new
+            b = f"from {old} import *"
+            a = f"from {new} import *"
             self.check(b, a)
 
     def test_import_module_usage(self):
         for old, new in self.modules.items():
-            b = """
-                import %s
-                foo(%s.bar)
-                """ % (old, old)
-            a = """
-                import %s
-                foo(%s.bar)
-                """ % (new, new)
+            b = f"""
+                import {old}
+                foo({old}.bar)
+                """
+            a = f"""
+                import {new}
+                foo({new}.bar)
+                """
             self.check(b, a)
 
-            b = """
-                from %s import x
-                %s = 23
-                """ % (old, old)
-            a = """
-                from %s import x
-                %s = 23
-                """ % (new, old)
+            b = f"""
+                from {old} import x
+                {old} = 23
+                """
+            a = f"""
+                from {new} import x
+                {old} = 23
+                """
             self.check(b, a)
 
-            s = """
+            s = f"""
                 def f():
-                    %s.method()
-                """ % (old,)
+                    {old}.method()
+                """
             self.unchanged(s)
 
             # test nested usage
-            b = """
-                import %s
-                %s.bar(%s.foo)
-                """ % (old, old, old)
-            a = """
-                import %s
-                %s.bar(%s.foo)
-                """ % (new, new, new)
+            b = f"""
+                import {old}
+                {old}.bar({old}.foo)
+                """
+            a = f"""
+                import {new}
+                {new}.bar({new}.foo)
+                """
             self.check(b, a)
 
-            b = """
-                import %s
-                x.%s
-                """ % (old, old)
-            a = """
-                import %s
-                x.%s
-                """ % (new, old)
+            b = f"""
+                import {old}
+                x.{old}
+                """
+            a = f"""
+                import {new}
+                x.{old}
+                """
             self.check(b, a)
 
 
@@ -1853,8 +1854,8 @@ class Test_urllib(FixerTestCase):
 
     def test_import_module(self):
         for old, changes in self.modules.items():
-            b = "import %s" % old
-            a = "import %s" % ", ".join(map(itemgetter(0), changes))
+            b = f"import {old}"
+            a = "import {}".format(", ".join(map(itemgetter(0), changes)))
             self.check(b, a)
 
     def test_import_from(self):
@@ -1863,25 +1864,25 @@ class Test_urllib(FixerTestCase):
             for new, members in changes:
                 for member in members:
                     all_members.append(member)
-                    b = "from %s import %s" % (old, member)
-                    a = "from %s import %s" % (new, member)
+                    b = f"from {old} import {member}"
+                    a = f"from {new} import {member}"
                     self.check(b, a)
 
-                    s = "from foo import %s" % member
+                    s = f"from foo import {member}"
                     self.unchanged(s)
 
-                b = "from %s import %s" % (old, ", ".join(members))
-                a = "from %s import %s" % (new, ", ".join(members))
+                b = "from {} import {}".format(old, ", ".join(members))
+                a = "from {} import {}".format(new, ", ".join(members))
                 self.check(b, a)
 
-                s = "from foo import %s" % ", ".join(members)
+                s = "from foo import {}".format(", ".join(members))
                 self.unchanged(s)
 
             # test the breaking of a module into multiple replacements
-            b = "from %s import %s" % (old, ", ".join(all_members))
+            b = "from {} import {}".format(old, ", ".join(all_members))
             a = "\n".join(
                 [
-                    "from %s import %s" % (new, ", ".join(members))
+                    "from {} import {}".format(new, ", ".join(members))
                     for (new, members) in changes
                 ]
             )
@@ -1889,23 +1890,23 @@ class Test_urllib(FixerTestCase):
 
     def test_import_module_as(self):
         for old in self.modules:
-            s = "import %s as foo" % old
+            s = f"import {old} as foo"
             self.warns_unchanged(s, "This module is now multiple modules")
 
     def test_import_from_as(self):
         for old, changes in self.modules.items():
             for new, members in changes:
                 for member in members:
-                    b = "from %s import %s as foo_bar" % (old, member)
-                    a = "from %s import %s as foo_bar" % (new, member)
+                    b = f"from {old} import {member} as foo_bar"
+                    a = f"from {new} import {member} as foo_bar"
                     self.check(b, a)
-                    b = "from %s import %s as blah, %s" % (old, member, member)
-                    a = "from %s import %s as blah, %s" % (new, member, member)
+                    b = f"from {old} import {member} as blah, {member}"
+                    a = f"from {new} import {member} as blah, {member}"
                     self.check(b, a)
 
     def test_star(self):
         for old in self.modules:
-            s = "from %s import *" % old
+            s = f"from {old} import *"
             self.warns_unchanged(s, "Cannot handle star imports")
 
     def test_indented(self):
@@ -1944,23 +1945,23 @@ def foo():
             for new, members in changes:
                 for member in members:
                     new_import = ", ".join([n for (n, mems) in self.modules[old]])
-                    b = """
-                        import %s
-                        foo(%s.%s)
-                        """ % (old, old, member)
-                    a = """
-                        import %s
-                        foo(%s.%s)
-                        """ % (new_import, new, member)
+                    b = f"""
+                        import {old}
+                        foo({old}.{member})
+                        """
+                    a = f"""
+                        import {new_import}
+                        foo({new}.{member})
+                        """
                     self.check(b, a)
-                    b = """
-                        import %s
-                        %s.%s(%s.%s)
-                        """ % (old, old, member, old, member)
-                    a = """
-                        import %s
-                        %s.%s(%s.%s)
-                        """ % (new_import, new, member, new, member)
+                    b = f"""
+                        import {old}
+                        {old}.{member}({old}.{member})
+                        """
+                    a = f"""
+                        import {new_import}
+                        {new}.{member}({new}.{member})
+                        """
                     self.check(b, a)
 
 
@@ -2203,33 +2204,33 @@ class Test_tuple_params(FixerTestCase):
 class Test_methodattrs(FixerTestCase):
     fixer = "methodattrs"
 
-    attrs = ["func", "self", "class"]
+    attrs = ["func", "self", "class"]  # noqa: RUF012
 
     def test(self):
         for attr in self.attrs:
-            b = "a.im_%s" % attr
+            b = f"a.im_{attr}"
             if attr == "class":
                 a = "a.__self__.__class__"
             else:
-                a = "a.__%s__" % attr
+                a = f"a.__{attr}__"
             self.check(b, a)
 
-            b = "self.foo.im_%s.foo_bar" % attr
+            b = f"self.foo.im_{attr}.foo_bar"
             if attr == "class":
                 a = "self.foo.__self__.__class__.foo_bar"
             else:
-                a = "self.foo.__%s__.foo_bar" % attr
+                a = f"self.foo.__{attr}__.foo_bar"
             self.check(b, a)
 
     def test_unchanged(self):
         for attr in self.attrs:
-            s = "foo(im_%s + 5)" % attr
+            s = f"foo(im_{attr} + 5)"
             self.unchanged(s)
 
-            s = "f(foo.__%s__)" % attr
+            s = f"f(foo.__{attr}__)"
             self.unchanged(s)
 
-            s = "f(foo.__%s__.foo)" % attr
+            s = f"f(foo.__{attr}__.foo)"
             self.unchanged(s)
 
 
@@ -2831,48 +2832,48 @@ class Test_numliterals(FixerTestCase):
 class Test_renames(FixerTestCase):
     fixer = "renames"
 
-    modules = {
+    modules = {  # noqa: RUF012
         "sys": ("maxint", "maxsize"),
     }
 
     def test_import_from(self):
         for mod, (old, new) in list(self.modules.items()):
-            b = "from %s import %s" % (mod, old)
-            a = "from %s import %s" % (mod, new)
+            b = f"from {mod} import {old}"
+            a = f"from {mod} import {new}"
             self.check(b, a)
 
-            s = "from foo import %s" % old
+            s = f"from foo import {old}"
             self.unchanged(s)
 
     def test_import_from_as(self):
         for mod, (old, new) in list(self.modules.items()):
-            b = "from %s import %s as foo_bar" % (mod, old)
-            a = "from %s import %s as foo_bar" % (mod, new)
+            b = f"from {mod} import {old} as foo_bar"
+            a = f"from {mod} import {new} as foo_bar"
             self.check(b, a)
 
     def test_import_module_usage(self):
         for mod, (old, new) in list(self.modules.items()):
-            b = """
-                import %s
-                foo(%s, %s.%s)
-                """ % (mod, mod, mod, old)
-            a = """
-                import %s
-                foo(%s, %s.%s)
-                """ % (mod, mod, mod, new)
+            b = f"""
+                import {mod}
+                foo({mod}, {mod}.{old})
+                """
+            a = f"""
+                import {mod}
+                foo({mod}, {mod}.{new})
+                """
             self.check(b, a)
 
     def XXX_test_from_import_usage(self):
         # not implemented yet
         for mod, (old, new) in list(self.modules.items()):
-            b = """
-                from %s import %s
-                foo(%s, %s)
-                """ % (mod, old, mod, old)
-            a = """
-                from %s import %s
-                foo(%s, %s)
-                """ % (mod, new, mod, new)
+            b = f"""
+                from {mod} import {old}
+                foo({mod}, {old})
+                """
+            a = f"""
+                from {mod} import {new}
+                foo({mod}, {new})
+                """
             self.check(b, a)
 
 
@@ -3816,16 +3817,16 @@ class Test_itertools_imports(FixerTestCase):
 
     def test_ifilter_and_zip_longest(self):
         for name in "filterfalse", "zip_longest":
-            b = "from itertools import i%s" % (name,)
-            a = "from itertools import %s" % (name,)
+            b = f"from itertools import i{name}"
+            a = f"from itertools import {name}"
             self.check(b, a)
 
-            b = "from itertools import imap, i%s, foo" % (name,)
-            a = "from itertools import %s, foo" % (name,)
+            b = f"from itertools import imap, i{name}, foo"
+            a = f"from itertools import {name}, foo"
             self.check(b, a)
 
-            b = "from itertools import bar, i%s, foo" % (name,)
-            a = "from itertools import bar, %s, foo" % (name,)
+            b = f"from itertools import bar, i{name}, foo"
+            a = f"from itertools import bar, {name}, foo"
             self.check(b, a)
 
     def test_import_star(self):
@@ -3873,7 +3874,7 @@ class Test_import(FixerTestCase):
             return os.path.pathsep.join(path.split("/"))
 
         self.always_exists = False
-        self.present_files = set(["__init__.py"])
+        self.present_files = {"__init__.py"}
         expected_extensions = (".py", os.path.sep, ".pyc", ".so", ".sl", ".pyd")
         names_to_test = (p("/spam/eggs.py"), "ni.py", p("../../shrubbery.py"))
 
@@ -3886,7 +3887,7 @@ class Test_import(FixerTestCase):
                 name = os.path.dirname(name) + "/jam"
             else:
                 name = "jam"
-            expected_checks = set(name + ext for ext in expected_extensions)
+            expected_checks = {name + ext for ext in expected_extensions}
             expected_checks.add("__init__.py")
 
             self.assertEqual(set(self.files_checked), expected_checks)
@@ -3894,27 +3895,27 @@ class Test_import(FixerTestCase):
     def test_not_in_package(self):
         s = "import bar"
         self.always_exists = False
-        self.present_files = set(["bar.py"])
+        self.present_files = {"bar.py"}
         self.unchanged(s)
 
     def test_with_absolute_import_enabled(self):
         s = "from __future__ import absolute_import\nimport bar"
         self.always_exists = False
-        self.present_files = set(["__init__.py", "bar.py"])
+        self.present_files = {"__init__.py", "bar.py"}
         self.unchanged(s)
 
     def test_in_package(self):
         b = "import bar"
         a = "from . import bar"
         self.always_exists = False
-        self.present_files = set(["__init__.py", "bar.py"])
+        self.present_files = {"__init__.py", "bar.py"}
         self.check(b, a)
 
     def test_import_from_package(self):
         b = "import bar"
         a = "from . import bar"
         self.always_exists = False
-        self.present_files = set(["__init__.py", "bar" + os.path.sep])
+        self.present_files = {"__init__.py", "bar" + os.path.sep}
         self.check(b, a)
 
     def test_already_relative_import(self):
@@ -3977,7 +3978,7 @@ class Test_import(FixerTestCase):
 
     def test_local_and_absolute(self):
         self.always_exists = False
-        self.present_files = set(["foo.py", "__init__.py"])
+        self.present_files = {"foo.py", "__init__.py"}
 
         s = "import foo, bar"
         self.warns_unchanged(s, "absolute and local imports together")

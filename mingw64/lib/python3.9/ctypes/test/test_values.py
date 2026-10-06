@@ -48,7 +48,7 @@ class PythonValuesTestCase(unittest.TestCase):
         # module, and a __phello__ package containing a spam
         # module.
         class struct_frozen(Structure):
-            _fields_ = [("name", c_char_p), ("code", POINTER(c_ubyte)), ("size", c_int)]
+            _fields_ = [("name", c_char_p), ("code", POINTER(c_ubyte)), ("size", c_int)]  # noqa: RUF012
 
         FrozenTable = POINTER(struct_frozen)
 

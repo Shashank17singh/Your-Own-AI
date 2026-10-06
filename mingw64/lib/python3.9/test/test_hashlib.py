@@ -117,7 +117,7 @@ class HashLibTestCase(unittest.TestCase):
         "shake_256",
     )
 
-    shakes = {"shake_128", "shake_256"}
+    shakes = {"shake_128", "shake_256"}  # noqa: RUF012
 
     # Issue #14693: fallback modules are always compiled under POSIX
     _warn_on_extension_import = os.name == "posix" or COMPILED_WITH_PYDEBUG
@@ -128,7 +128,7 @@ class HashLibTestCase(unittest.TestCase):
             return importlib.import_module(module_name)
         except ModuleNotFoundError as error:
             if self._warn_on_extension_import and module_name in builtin_hashes:
-                warnings.warn("Did a C extension fail to compile? %s" % error)
+                warnings.warn(f"Did a C extension fail to compile? {error}")
         return None
 
     def __init__(self, *args, **kwargs):
@@ -231,7 +231,7 @@ class HashLibTestCase(unittest.TestCase):
     def test_algorithms_guaranteed(self):
         self.assertEqual(
             hashlib.algorithms_guaranteed,
-            set(_algo for _algo in self.supported_hash_names if _algo.islower()),
+            {_algo for _algo in self.supported_hash_names if _algo.islower()},
         )
 
     def test_algorithms_available(self):
@@ -374,7 +374,7 @@ class HashLibTestCase(unittest.TestCase):
             self.assertEqual(
                 computed,
                 hexdigest,
-                "Hash algorithm %s constructed using %s returned hexdigest"
+                "Hash algorithm %s constructed using %s returned hexdigest"  # noqa: UP031
                 " %r for %d byte input data that should have hashed to %r."
                 % (name, hash_object_constructor, computed, len(data), hexdigest),
             )
@@ -1014,7 +1014,7 @@ class HashLibTestCase(unittest.TestCase):
 
 
 class KDFTests(unittest.TestCase):
-    pbkdf2_test_vectors = [
+    pbkdf2_test_vectors = [  # noqa: RUF012
         (b"password", b"salt", 1, None),
         (b"password", b"salt", 2, None),
         (b"password", b"salt", 4096, None),
@@ -1029,7 +1029,7 @@ class KDFTests(unittest.TestCase):
         (b"pass\0word", b"sa\0lt", 4096, 16),
     ]
 
-    scrypt_test_vectors = [
+    scrypt_test_vectors = [  # noqa: RUF012
         (
             b"",
             b"",
@@ -1062,7 +1062,7 @@ class KDFTests(unittest.TestCase):
         ),
     ]
 
-    pbkdf2_results = {
+    pbkdf2_results = {  # noqa: RUF012
         "sha1": [
             # official test vectors from RFC 6070
             (bytes.fromhex("0c60c80f961f0e71f3a9b524af6012062fe037a6"), None),

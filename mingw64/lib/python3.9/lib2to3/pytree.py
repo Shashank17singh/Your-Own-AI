@@ -21,7 +21,7 @@ _type_reprs = {}
 
 
 def type_repr(type_num):
-    global _type_reprs
+    global _type_reprs  # noqa: PLW0602
     if not _type_reprs:
         from .pygram import python_symbols
 
@@ -204,11 +204,6 @@ class Base:
             return ""
         return next_sib.prefix
 
-    if sys.version_info < (3, 0):
-
-        def __str__(self):
-            return str(self).encode("ascii")
-
 
 class Node(Base):
     """Concrete implementation for interior nodes."""
@@ -237,11 +232,7 @@ class Node(Base):
 
     def __repr__(self):
         """Return a canonical string representation."""
-        return "%s(%s, %r)" % (
-            self.__class__.__name__,
-            type_repr(self.type),
-            self.children,
-        )
+        return f"{self.__class__.__name__}({type_repr(self.type)}, {self.children!r})"
 
     def __unicode__(self):
         """
@@ -251,8 +242,7 @@ class Node(Base):
         """
         return "".join(map(str, self.children))
 
-    if sys.version_info > (3, 0):
-        __str__ = __unicode__
+    __str__ = __unicode__
 
     def _eq(self, other):
         """Compare two nodes for equality."""
@@ -329,13 +319,15 @@ class Leaf(Base):
     lineno = 0  # Line where this token starts in the input
     column = 0  # Column where this token tarts in the input
 
-    def __init__(self, type, value, context=None, prefix=None, fixers_applied=[]):
+    def __init__(self, type, value, context=None, prefix=None, fixers_applied=None):
         """
         Initializer.
 
         Takes a type constant (a token number < 256), a string value, and an
         optional context keyword argument.
         """
+        if fixers_applied is None:
+            fixers_applied = []
         assert 0 <= type < 256, type
         if context is not None:
             self._prefix, (self.lineno, self.column) = context
@@ -347,7 +339,7 @@ class Leaf(Base):
 
     def __repr__(self):
         """Return a canonical string representation."""
-        return "%s(%r, %r)" % (self.__class__.__name__, self.type, self.value)
+        return f"{self.__class__.__name__}({self.type!r}, {self.value!r})"
 
     def __unicode__(self):
         """
@@ -357,8 +349,7 @@ class Leaf(Base):
         """
         return self.prefix + str(self.value)
 
-    if sys.version_info > (3, 0):
-        __str__ = __unicode__
+    __str__ = __unicode__
 
     def _eq(self, other):
         """Compare two nodes for equality."""
@@ -445,7 +436,7 @@ class BasePattern:
         args = [type_repr(self.type), self.content, self.name]
         while args and args[-1] is None:
             del args[-1]
-        return "%s(%s)" % (self.__class__.__name__, ", ".join(map(repr, args)))
+        return "{}({})".format(self.__class__.__name__, ", ".join(map(repr, args)))
 
     def optimize(self):
         """

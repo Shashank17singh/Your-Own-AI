@@ -155,7 +155,7 @@ def ellipsisStructArg(data):
 for arg in sys.argv[1:]:
     if arg in ["-debug", "-verify", "--cli"]:
         continue
-    print("Checking %s..." % arg)
+    print(f"Checking {arg}...")
     data = cppcheckdata.CppcheckData(arg)
     if VERIFY:
         VERIFY_ACTUAL = []

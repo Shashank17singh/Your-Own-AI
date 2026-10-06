@@ -40,9 +40,9 @@ class Rat:
 
         The arguments must be ints, and default to (0, 1)."""
         if not isint(num):
-            raise TypeError("Rat numerator must be int (%r)" % num)
+            raise TypeError(f"Rat numerator must be int ({num!r})")
         if not isint(den):
-            raise TypeError("Rat denominator must be int (%r)" % den)
+            raise TypeError(f"Rat denominator must be int ({den!r})")
         # But the zero is always on
         if den == 0:
             raise ZeroDivisionError("zero denominator")
@@ -64,7 +64,7 @@ class Rat:
 
     def __repr__(self):
         """Convert a Rat to a string resembling a Rat constructor call."""
-        return "Rat(%d, %d)" % (self.__num, self.__den)
+        return "Rat(%d, %d)" % (self.__num, self.__den)  # noqa: UP031
 
     def __str__(self):
         """Convert a Rat to a string resembling a decimal numeric value."""
@@ -80,8 +80,8 @@ class Rat:
             try:
                 return int(self.__num)
             except OverflowError:
-                raise OverflowError("%s too large to convert to int" % repr(self))
-        raise ValueError("can't convert %s to int" % repr(self))
+                raise OverflowError(f"{self!r} too large to convert to int")
+        raise ValueError(f"can't convert {self!r} to int")
 
     def __add__(self, other):
         """Add two Rats, or a Rat and a number."""
@@ -252,13 +252,13 @@ class RatTestCase(unittest.TestCase):
             except TypeError:
                 pass
             else:
-                self.fail("Rat(%r) didn't raise TypeError" % bad)
+                self.fail(f"Rat({bad!r}) didn't raise TypeError")
             try:
                 a = Rat(1, bad)
             except TypeError:
                 pass
             else:
-                self.fail("Rat(1, %r) didn't raise TypeError" % bad)
+                self.fail(f"Rat(1, {bad!r}) didn't raise TypeError")
 
     def test_add(self):
         self.assertEqual(Rat(2, 3) + Rat(1, 3), 1)
@@ -473,7 +473,7 @@ class FallbackBlockingTests(unittest.TestCase):
 
     def test_fallback_ne_blocking(self):
         e, sn, xn = SupEq(), SN(), XN()
-        self.assertFalse(e != e)
+        self.assertFalse(e != e)  # noqa: PLR0124
         self.assertRaises(TypeError, ne, e, sn)
         self.assertRaises(TypeError, ne, sn, e)
         self.assertFalse(e != xn)

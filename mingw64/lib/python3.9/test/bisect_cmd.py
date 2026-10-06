@@ -38,7 +38,7 @@ def write_tests(filename, tests):
 def write_output(filename, tests):
     if not filename:
         return
-    print("Writing %s tests into %s" % (len(tests), filename))
+    print(f"Writing {len(tests)} tests into {filename}")
     write_tests(filename, tests)
     return filename
 
@@ -58,11 +58,11 @@ def list_cases(args):
     cmd = python_cmd()
     cmd.extend(["-m", "test", "--list-cases"])
     cmd.extend(args.test_args)
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, text=True)  # noqa: PLW1510
     exitcode = proc.returncode
     if exitcode:
         cmd = format_shell_args(cmd)
-        print("Failed to list tests: %s failed with exit code %s" % (cmd, exitcode))
+        print(f"Failed to list tests: {cmd} failed with exit code {exitcode}")
         sys.exit(exitcode)
     tests = proc.stdout.splitlines()
     return tests
@@ -76,8 +76,8 @@ def run_tests(args, tests, huntrleaks=None):
         cmd = python_cmd()
         cmd.extend(["-m", "test", "--matchfile", tmp])
         cmd.extend(args.test_args)
-        print("+ %s" % format_shell_args(cmd))
-        proc = subprocess.run(cmd)
+        print(f"+ {format_shell_args(cmd)}")
+        proc = subprocess.run(cmd)  # noqa: PLW1510
         return proc.returncode
     finally:
         if os.path.exists(tmp):
@@ -126,12 +126,12 @@ def main():
     else:
         tests = list_cases(args)
 
-    print("Start bisection with %s tests" % len(tests))
-    print("Test arguments: %s" % format_shell_args(args.test_args))
+    print(f"Start bisection with {len(tests)} tests")
+    print(f"Test arguments: {format_shell_args(args.test_args)}")
     print(
-        "Bisection will stop when getting %s or less tests "
-        "(-n/--max-tests option), or after %s iterations "
-        "(-N/--max-iter option)" % (args.max_tests, args.max_iter)
+        f"Bisection will stop when getting {args.max_tests} or less tests "
+        f"(-n/--max-tests option), or after {args.max_iter} iterations "
+        "(-N/--max-iter option)"
     )
     output = write_output(args.output, tests)
     print()
@@ -144,15 +144,12 @@ def main():
             ntest = max(ntest // 2, 1)
             subtests = random.sample(tests, ntest)
 
-            print(
-                "[+] Iteration %s: run %s tests/%s"
-                % (iteration, len(subtests), len(tests))
-            )
+            print(f"[+] Iteration {iteration}: run {len(subtests)} tests/{len(tests)}")
             print()
 
             exitcode = run_tests(args, subtests)
 
-            print("ran %s tests/%s" % (ntest, len(tests)))
+            print(f"ran {ntest} tests/{len(tests)}")
             print("exit", exitcode)
             if exitcode:
                 print("Tests failed: continuing with this subtest")
@@ -167,25 +164,23 @@ def main():
         print("Bisection interrupted!")
         print()
 
-    print("Tests (%s):" % len(tests))
+    print(f"Tests ({len(tests)}):")
     for test in tests:
-        print("* %s" % test)
+        print(f"* {test}")
     print()
 
     if output:
-        print("Output written into %s" % output)
+        print(f"Output written into {output}")
 
     dt = math.ceil(time.monotonic() - start_time)
     if len(tests) <= args.max_tests:
         print(
-            "Bisection completed in %s iterations and %s"
-            % (iteration, datetime.timedelta(seconds=dt))
+            f"Bisection completed in {iteration} iterations and {datetime.timedelta(seconds=dt)}"
         )
         sys.exit(1)
     else:
         print(
-            "Bisection failed after %s iterations and %s"
-            % (iteration, datetime.timedelta(seconds=dt))
+            f"Bisection failed after {iteration} iterations and {datetime.timedelta(seconds=dt)}"
         )
 
 

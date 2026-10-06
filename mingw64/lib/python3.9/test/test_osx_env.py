@@ -20,18 +20,18 @@ class OSXEnvironmentVariableTestCase(unittest.TestCase):
             subpc = [
                 str(sys.executable),
                 "-c",
-                'import sys; sys.exit(2 if "%s" %s %s else 3)' % (val, cond, sv),
+                f'import sys; sys.exit(2 if "{val}" {cond} {sv} else 3)',
             ]
             # ensure environment variable does not exist
             evg.unset(ev)
             # test that test on sys.xxx normally fails
             rc = subprocess.call(subpc)
-            self.assertEqual(rc, 3, "expected %s not %s %s" % (ev, cond, sv))
+            self.assertEqual(rc, 3, f"expected {ev} not {cond} {sv}")
             # set environ variable
             evg.set(ev, val)
             # test that sys.xxx has been influenced by the environ value
             rc = subprocess.call(subpc)
-            self.assertEqual(rc, 2, "expected %s %s %s" % (ev, cond, sv))
+            self.assertEqual(rc, 2, f"expected {ev} {cond} {sv}")
 
     def test_pythonexecutable_sets_sys_executable(self):
         self._check_sys("PYTHONEXECUTABLE", "==", "sys.executable")

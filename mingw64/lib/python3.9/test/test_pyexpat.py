@@ -46,7 +46,7 @@ class SetAttributeTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.parser.returns_unicode = 1
         with self.assertRaises(AttributeError):
-            self.parser.returns_unicode
+            self.parser.returns_unicode  # noqa: B018
 
         # Issue #25019
         self.assertRaises(TypeError, setattr, self.parser, range(0xF), 0)
@@ -116,20 +116,20 @@ class ParseTest(unittest.TestCase):
             self.out.append("Comment: " + repr(text))
 
         def NotationDeclHandler(self, *args):
-            name, base, sysid, pubid = args
-            self.out.append("Notation declared: %s" % (args,))
+            _name, _base, _sysid, _pubid = args
+            self.out.append(f"Notation declared: {args}")
 
         def UnparsedEntityDeclHandler(self, *args):
-            entityName, base, systemId, publicId, notationName = args
-            self.out.append("Unparsed entity decl: %s" % (args,))
+            _entityName, _base, _systemId, _publicId, _notationName = args
+            self.out.append(f"Unparsed entity decl: {args}")
 
         def NotStandaloneHandler(self):
             self.out.append("Not standalone")
             return 1
 
         def ExternalEntityRefHandler(self, *args):
-            context, base, sysId, pubId = args
-            self.out.append("External entity ref: %s" % (args[1:],))
+            _context, _base, _sysId, _pubId = args
+            self.out.append(f"External entity ref: {args[1:]}")
             return 1
 
         def StartDoctypeDeclHandler(self, *args):
@@ -166,7 +166,7 @@ class ParseTest(unittest.TestCase):
         def DefaultHandlerExpand(self, userData):
             pass
 
-    handler_names = [
+    handler_names = [  # noqa: RUF012
         "StartElementHandler",
         "EndElementHandler",
         "CharacterDataHandler",
@@ -373,15 +373,14 @@ class BufferTextTest(unittest.TestCase):
         self.assertEqual(
             self.stuff,
             expected,
-            "%s\nstuff    = %r\nexpected = %r"
-            % (label, self.stuff, map(str, expected)),
+            f"{label}\nstuff    = {self.stuff!r}\nexpected = {map(str, expected)!r}",
         )
 
     def CharacterDataHandler(self, text):
         self.stuff.append(text)
 
     def StartElementHandler(self, name, attrs):
-        self.stuff.append("<%s>" % name)
+        self.stuff.append(f"<{name}>")
         bt = attrs.get("buffer-text")
         if bt == "yes":
             self.parser.buffer_text = 1
@@ -389,12 +388,14 @@ class BufferTextTest(unittest.TestCase):
             self.parser.buffer_text = 0
 
     def EndElementHandler(self, name):
-        self.stuff.append("</%s>" % name)
+        self.stuff.append(f"</{name}>")
 
     def CommentHandler(self, data):
-        self.stuff.append("<!--%s-->" % data)
+        self.stuff.append(f"<!--{data}-->")
 
-    def setHandlers(self, handlers=[]):
+    def setHandlers(self, handlers=None):
+        if handlers is None:
+            handlers = []
         for name in handlers:
             setattr(self.parser, name, getattr(self, name))
 
@@ -501,7 +502,7 @@ class HandlerExceptionTest(unittest.TestCase):
             self.assertEqual(
                 e.args[0],
                 "a",
-                "Expected RuntimeError for element 'a', but" + " found %r" % e.args[0],
+                "Expected RuntimeError for element 'a', but" + f" found {e.args[0]!r}",
             )
             # Check that the traceback contains the relevant line in pyexpat.c
             entries = traceback.extract_tb(e.__traceback__)
@@ -535,7 +536,7 @@ class PositionTest(unittest.TestCase):
         self.assertTrue(self.upto < len(self.expected_list), "too many parser events")
         expected = self.expected_list[self.upto]
         self.assertEqual(
-            pos, expected, "Expected position %s, got position %s" % (pos, expected)
+            pos, expected, f"Expected position {pos}, got position {expected}"
         )
         self.upto += 1
 
@@ -574,7 +575,7 @@ class sf1296433Test(unittest.TestCase):
         parser = expat.ParserCreate()
         parser.CharacterDataHandler = handler
 
-        self.assertRaises(Exception, parser.Parse, xml.encode("iso8859"))
+        self.assertRaises(Exception, parser.Parse, xml.encode("iso8859"))  # noqa: B017
 
 
 class ChardataBufferTest(unittest.TestCase):

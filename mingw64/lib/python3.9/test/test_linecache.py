@@ -82,15 +82,15 @@ class GetLineTestsBadData(TempFile):
 
 
 class EmptyFile(GetLineTestsGoodData, unittest.TestCase):
-    file_list = []
+    file_list = []  # noqa: RUF012
 
 
 class SingleEmptyLine(GetLineTestsGoodData, unittest.TestCase):
-    file_list = ["\n"]
+    file_list = ["\n"]  # noqa: RUF012
 
 
 class GoodUnicode(GetLineTestsGoodData, unittest.TestCase):
-    file_list = ["á\n", "b\n", "abcdef\n", "ááááá\n"]
+    file_list = ["á\n", "b\n", "abcdef\n", "ááááá\n"]  # noqa: RUF012
 
 
 class BadUnicode(GetLineTestsBadData, unittest.TestCase):
@@ -215,7 +215,7 @@ class LineCacheTests(unittest.TestCase):
 
     def test_lazycache_already_cached(self):
         linecache.clearcache()
-        lines = linecache.getlines(NONEXISTENT_FILENAME, globals())
+        linecache.getlines(NONEXISTENT_FILENAME, globals())
         self.assertEqual(False, linecache.lazycache(NONEXISTENT_FILENAME, globals()))
         self.assertEqual(4, len(linecache.cache[NONEXISTENT_FILENAME]))
 

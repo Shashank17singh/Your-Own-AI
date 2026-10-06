@@ -79,7 +79,7 @@ class OSEINTRTest(EINTRBaseTest):
     """EINTR tests for the os module."""
 
     def new_sleep_process(self):
-        code = "import time; time.sleep(%r)" % self.sleep_time
+        code = f"import time; time.sleep({self.sleep_time!r})"
         return self.subprocess(code)
 
     def _test_wait_multiple(self, wait_func):
@@ -125,8 +125,8 @@ class OSEINTRTest(EINTRBaseTest):
                 "import os, sys, time",
                 "",
                 "wr = int(sys.argv[1])",
-                "datas = %r" % datas,
-                "sleep_time = %r" % self.sleep_time,
+                f"datas = {datas!r}",
+                f"sleep_time = {self.sleep_time!r}",
                 "",
                 "for data in datas:",
                 "    # let the parent block on read()",
@@ -155,8 +155,8 @@ class OSEINTRTest(EINTRBaseTest):
                 "import io, os, sys, time",
                 "",
                 "rd = int(sys.argv[1])",
-                "sleep_time = %r" % self.sleep_time,
-                'data = b"x" * %s' % support.PIPE_MAX_SIZE,
+                f"sleep_time = {self.sleep_time!r}",
+                f'data = b"x" * {support.PIPE_MAX_SIZE}',
                 "data_len = len(data)",
                 "",
                 "# let the parent block on write()",
@@ -201,10 +201,10 @@ class SocketEINTRTest(EINTRBaseTest):
                 "import os, socket, sys, time",
                 "",
                 "fd = int(sys.argv[1])",
-                "family = %s" % int(wr.family),
-                "sock_type = %s" % int(wr.type),
-                "datas = %r" % datas,
-                "sleep_time = %r" % self.sleep_time,
+                f"family = {int(wr.family)}",
+                f"sock_type = {int(wr.type)}",
+                f"datas = {datas!r}",
+                f"sleep_time = {self.sleep_time!r}",
                 "",
                 "wr = socket.fromfd(fd, family, sock_type)",
                 "os.close(fd)",
@@ -245,9 +245,9 @@ class SocketEINTRTest(EINTRBaseTest):
                 "import os, socket, sys, time",
                 "",
                 "fd = int(sys.argv[1])",
-                "family = %s" % int(rd.family),
-                "sock_type = %s" % int(rd.type),
-                "sleep_time = %r" % self.sleep_time,
+                f"family = {int(rd.family)}",
+                f"sock_type = {int(rd.type)}",
+                f"sleep_time = {self.sleep_time!r}",
                 'data = b"xyz" * %s' % (support.SOCK_MAX_SIZE // 3),
                 "data_len = len(data)",
                 "",
@@ -299,9 +299,9 @@ class SocketEINTRTest(EINTRBaseTest):
             (
                 "import socket, time",
                 "",
-                "host = %r" % socket_helper.HOST,
-                "port = %s" % port,
-                "sleep_time = %r" % self.sleep_time,
+                f"host = {socket_helper.HOST!r}",
+                f"port = {port}",
+                f"sleep_time = {self.sleep_time!r}",
                 "",
                 "# let parent block on accept()",
                 "time.sleep(sleep_time)",
@@ -331,15 +331,15 @@ class SocketEINTRTest(EINTRBaseTest):
         try:
             os.mkfifo(filename)
         except PermissionError as e:
-            self.skipTest("os.mkfifo(): %s" % e)
+            self.skipTest(f"os.mkfifo(): {e}")
         self.addCleanup(support.unlink, filename)
 
         code = "\n".join(
             (
                 "import os, time",
                 "",
-                "path = %a" % filename,
-                "sleep_time = %r" % self.sleep_time,
+                f"path = {filename!a}",
+                f"sleep_time = {self.sleep_time!r}",
                 "",
                 "# let the parent block",
                 "time.sleep(sleep_time)",
@@ -354,7 +354,7 @@ class SocketEINTRTest(EINTRBaseTest):
             self.assertEqual(proc.wait(), 0)
 
     def python_open(self, path):
-        fp = open(path, "w")
+        fp = open(path, "w")  # noqa: SIM115
         fp.close()
 
     @unittest.skipIf(
@@ -397,7 +397,7 @@ class SignalEINTRTest(EINTRBaseTest):
 
     def check_sigwait(self, wait_func):
         signum = signal.SIGUSR1
-        pid = os.getpid()
+        os.getpid()
 
         old_handler = signal.signal(signum, lambda *args: None)
         self.addCleanup(signal.signal, signum, old_handler)
@@ -405,22 +405,22 @@ class SignalEINTRTest(EINTRBaseTest):
         code = "\n".join(
             (
                 "import os, time",
-                "pid = %s" % os.getpid(),
-                "signum = %s" % int(signum),
-                "sleep_time = %r" % self.sleep_time,
+                f"pid = {os.getpid()}",
+                f"signum = {int(signum)}",
+                f"sleep_time = {self.sleep_time!r}",
                 "time.sleep(sleep_time)",
                 "os.kill(pid, signum)",
             )
         )
 
-        old_mask = signal.pthread_sigmask(signal.SIG_BLOCK, [signum])
+        signal.pthread_sigmask(signal.SIG_BLOCK, [signum])
         self.addCleanup(signal.pthread_sigmask, signal.SIG_UNBLOCK, [signum])
 
         t0 = time.monotonic()
         proc = self.subprocess(code)
         with kill_on_error(proc):
             wait_func(signum)
-            dt = time.monotonic() - t0
+            time.monotonic() - t0
 
         self.assertEqual(proc.wait(), 0)
 
@@ -503,9 +503,9 @@ class FNTLEINTRTest(EINTRBaseTest):
         code = "\n".join(
             (
                 "import fcntl, time",
-                "with open('%s', 'wb') as f:" % support.TESTFN,
-                "   fcntl.%s(f, fcntl.LOCK_EX)" % lock_name,
-                "   time.sleep(%s)" % self.sleep_time,
+                f"with open('{support.TESTFN}', 'wb') as f:",
+                f"   fcntl.{lock_name}(f, fcntl.LOCK_EX)",
+                f"   time.sleep({self.sleep_time})",
             )
         )
         start_time = time.monotonic()
@@ -515,7 +515,7 @@ class FNTLEINTRTest(EINTRBaseTest):
                 while True:  # synchronize the subprocess
                     dt = time.monotonic() - start_time
                     if dt > 60.0:
-                        raise Exception("failed to sync child in %.1f sec" % dt)
+                        raise Exception(f"failed to sync child in {dt:.1f} sec")  # noqa: TRY002
                     try:
                         lock_func(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
                         lock_func(f, fcntl.LOCK_UN)

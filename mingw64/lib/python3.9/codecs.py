@@ -15,7 +15,7 @@ import sys
 try:
     from _codecs import *
 except ImportError as why:
-    raise SystemError("Failed to load the builtin codecs: %s" % why)
+    raise SystemError(f"Failed to load the builtin codecs: {why}")
 
 __all__ = [
     "BOM",
@@ -147,12 +147,7 @@ class CodecInfo(tuple):
         return self
 
     def __repr__(self):
-        return "<%s.%s object for encoding %s at %#x>" % (
-            self.__class__.__module__,
-            self.__class__.__qualname__,
-            self.name,
-            id(self),
-        )
+        return f"<{self.__class__.__module__}.{self.__class__.__qualname__} object for encoding {self.name} at {id(self):#x}>"
 
 
 class Codec:
@@ -422,7 +417,7 @@ class StreamWriter(Codec):
 
     def write(self, object):
         """Writes the object's contents encoded to self.stream."""
-        data, consumed = self.encode(object, self.errors)
+        data, _consumed = self.encode(object, self.errors)
         self.stream.write(data)
 
     def writelines(self, list):
@@ -529,9 +524,8 @@ class StreamReader(Codec):
         # read until we get the required number of characters (if available)
         while True:
             # can the request be satisfied from the character buffer?
-            if chars >= 0:
-                if len(self.charbuffer) >= chars:
-                    break
+            if chars >= 0 and len(self.charbuffer) >= chars:
+                break
             # we need more data
             if size < 0:
                 newdata = self.stream.read()
@@ -595,7 +589,7 @@ class StreamReader(Codec):
         # If size is given, we call read() only once
         while True:
             data = self.read(readsize, firstline=True)
-            if data:
+            if data:  # noqa: SIM102
                 # If we're at a "\r" read one extra character (which might
                 # be a "\n") to get a proper line ending. If the stream is
                 # temporarily exhausted we return the wrong line ending.
@@ -835,7 +829,7 @@ class StreamRecoder:
     def read(self, size=-1):
 
         data = self.reader.read(size)
-        data, bytesencoded = self.encode(data, self.errors)
+        data, _bytesencoded = self.encode(data, self.errors)
         return data
 
     def readline(self, size=None):
@@ -844,19 +838,19 @@ class StreamRecoder:
             data = self.reader.readline()
         else:
             data = self.reader.readline(size)
-        data, bytesencoded = self.encode(data, self.errors)
+        data, _bytesencoded = self.encode(data, self.errors)
         return data
 
     def readlines(self, sizehint=None):
 
         data = self.reader.read()
-        data, bytesencoded = self.encode(data, self.errors)
+        data, _bytesencoded = self.encode(data, self.errors)
         return data.splitlines(keepends=True)
 
     def __next__(self):
         """Return the next decoded line from the input stream."""
         data = next(self.reader)
-        data, bytesencoded = self.encode(data, self.errors)
+        data, _bytesencoded = self.encode(data, self.errors)
         return data
 
     def __iter__(self):
@@ -864,13 +858,13 @@ class StreamRecoder:
 
     def write(self, data):
 
-        data, bytesdecoded = self.decode(data, self.errors)
+        data, _bytesdecoded = self.decode(data, self.errors)
         return self.writer.write(data)
 
     def writelines(self, list):
 
         data = b"".join(list)
-        data, bytesdecoded = self.decode(data, self.errors)
+        data, _bytesdecoded = self.decode(data, self.errors)
         return self.writer.write(data)
 
     def reset(self):
@@ -930,7 +924,7 @@ def open(filename, mode="r", encoding=None, errors="strict", buffering=-1):
     if encoding is not None and "b" not in mode:
         # Force opening of the file in binary mode
         mode = mode + "b"
-    file = builtins.open(filename, mode, buffering)
+    file = builtins.open(filename, mode, buffering)  # noqa: SIM115
     if encoding is None:
         return file
 

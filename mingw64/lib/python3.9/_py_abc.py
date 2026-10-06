@@ -41,7 +41,7 @@ class ABCMeta(type):
             if getattr(value, "__isabstractmethod__", False)
         }
         for base in bases:
-            for name in getattr(base, "__abstractmethods__", set()):
+            for name in getattr(base, "__abstractmethods__", set()):  # noqa: PLR1704
                 value = getattr(cls, name, None)
                 if getattr(value, "__isabstractmethod__", False):
                     abstracts.add(name)
@@ -66,7 +66,7 @@ class ABCMeta(type):
         # this means we allow X.register(X) and interpret it as a no-op.
         if issubclass(cls, subclass):
             # This would create a cycle, which is bad for the algorithm below
-            raise RuntimeError("Refusing to create an inheritance cycle")
+            raise RuntimeError("Refusing to create an inheritance cycle")  # noqa: TRY004
         cls._abc_registry.add(subclass)
         ABCMeta._abc_invalidation_counter += 1  # Invalidate negative cache
         return subclass

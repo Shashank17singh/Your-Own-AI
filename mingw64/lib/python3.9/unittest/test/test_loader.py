@@ -298,9 +298,9 @@ class Test_TestLoader(unittest.TestCase):
         self.assertEqual(1, len(loader.errors))
         error = loader.errors[0]
         self.assertTrue(
-            "Failed to call load_tests:" in error, "missing error string in %r" % error
+            "Failed to call load_tests:" in error, f"missing error string in {error!r}"
         )
-        test = list(suite)[0]
+        test = next(iter(suite))
         self.assertRaisesRegex(TypeError, "some failure", test.m)
 
     def test_loadTestsFromName__empty_name(self):
@@ -318,7 +318,7 @@ class Test_TestLoader(unittest.TestCase):
         error, test = self.check_deferred_error(loader, suite)
         expected = "Failed to import test module: abc () //"
         expected_regex = r"Failed to import test module: abc \(\) //"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(ImportError, expected_regex, getattr(test, "abc () //"))
 
     def test_loadTestsFromName__unknown_module_name(self):
@@ -326,7 +326,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("sdasfasfasdf")
         expected = "No module named 'sdasfasfasdf'"
         error, test = self.check_deferred_error(loader, suite)
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(ImportError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromName__unknown_attr_name_on_module(self):
@@ -334,7 +334,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("unittest.loader.sdasfasfasdf")
         expected = "module 'unittest.loader' has no attribute 'sdasfasfasdf'"
         error, test = self.check_deferred_error(loader, suite)
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromName__unknown_attr_name_on_package(self):
@@ -342,7 +342,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("unittest.sdasfasfasdf")
         expected = "No module named 'unittest.sdasfasfasdf'"
         error, test = self.check_deferred_error(loader, suite)
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(ImportError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromName__relative_unknown_name(self):
@@ -350,7 +350,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("sdasfasfasdf", unittest)
         expected = "module 'unittest' has no attribute 'sdasfasfasdf'"
         error, test = self.check_deferred_error(loader, suite)
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromName__relative_empty_name(self):
@@ -358,7 +358,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("", unittest)
         error, test = self.check_deferred_error(loader, suite)
         expected = "has no attribute ''"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, getattr(test, ""))
 
     def test_loadTestsFromName__relative_malformed_name(self):
@@ -367,7 +367,7 @@ class Test_TestLoader(unittest.TestCase):
         error, test = self.check_deferred_error(loader, suite)
         expected = "module 'unittest' has no attribute 'abc () //'"
         expected_regex = r"module 'unittest' has no attribute 'abc \(\) //'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(
             AttributeError, expected_regex, getattr(test, "abc () //")
         )
@@ -447,7 +447,7 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromName("testcase_1.testfoo", m)
         expected = "type object 'MyTestCase' has no attribute 'testfoo'"
         error, test = self.check_deferred_error(loader, suite)
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.testfoo)
 
     def test_loadTestsFromName__callable__TestSuite(self):
@@ -520,7 +520,7 @@ class Test_TestLoader(unittest.TestCase):
         m.return_wrong = return_wrong
         loader = unittest.TestLoader()
         try:
-            suite = loader.loadTestsFromName("return_wrong", m)
+            loader.loadTestsFromName("return_wrong", m)
         except TypeError:
             pass
         else:
@@ -551,7 +551,7 @@ class Test_TestLoader(unittest.TestCase):
         self.assertNotEqual([], loader.errors)
         self.assertEqual(1, len(loader.errors))
         error = loader.errors[0]
-        test = list(suite)[0]
+        test = next(iter(suite))
         return error, test
 
     def test_loadTestsFromNames__empty_name_list(self):
@@ -578,18 +578,18 @@ class Test_TestLoader(unittest.TestCase):
     def test_loadTestsFromNames__malformed_name(self):
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames(["abc () //"])
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "Failed to import test module: abc () //"
         expected_regex = r"Failed to import test module: abc \(\) //"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(ImportError, expected_regex, getattr(test, "abc () //"))
 
     def test_loadTestsFromNames__unknown_module_name(self):
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames(["sdasfasfasdf"])
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "Failed to import test module: sdasfasfasdf"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(ImportError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromNames__unknown_attr_name(self):
@@ -597,17 +597,17 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromNames(
             ["unittest.loader.sdasfasfasdf", "unittest.test.dummy"]
         )
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "module 'unittest.loader' has no attribute 'sdasfasfasdf'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromNames__unknown_name_relative_1(self):
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames(["sdasfasfasdf"], unittest)
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "module 'unittest' has no attribute 'sdasfasfasdf'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromNames__unknown_name_relative_2(self):
@@ -615,24 +615,24 @@ class Test_TestLoader(unittest.TestCase):
         suite = loader.loadTestsFromNames(["TestCase", "sdasfasfasdf"], unittest)
         error, test = self.check_deferred_error(loader, list(suite)[1])
         expected = "module 'unittest' has no attribute 'sdasfasfasdf'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.sdasfasfasdf)
 
     def test_loadTestsFromNames__relative_empty_name(self):
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames([""], unittest)
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "has no attribute ''"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, getattr(test, ""))
 
     def test_loadTestsFromNames__relative_malformed_name(self):
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames(["abc () //"], unittest)
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "module 'unittest' has no attribute 'abc () //'"
         expected_regex = r"module 'unittest' has no attribute 'abc \(\) //'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(
             AttributeError, expected_regex, getattr(test, "abc () //")
         )
@@ -725,9 +725,9 @@ class Test_TestLoader(unittest.TestCase):
         m.testcase_1 = MyTestCase
         loader = unittest.TestLoader()
         suite = loader.loadTestsFromNames(["testcase_1.testfoo"], m)
-        error, test = self.check_deferred_error(loader, list(suite)[0])
+        error, test = self.check_deferred_error(loader, next(iter(suite)))
         expected = "type object 'MyTestCase' has no attribute 'testfoo'"
-        self.assertIn(expected, error, "missing error string in %r" % error)
+        self.assertIn(expected, error, f"missing error string in {error!r}")
         self.assertRaisesRegex(AttributeError, expected, test.testfoo)
 
     def test_loadTestsFromNames__callable__TestSuite(self):
@@ -789,7 +789,7 @@ class Test_TestLoader(unittest.TestCase):
         m.return_wrong = return_wrong
         loader = unittest.TestLoader()
         try:
-            suite = loader.loadTestsFromNames(["return_wrong"], m)
+            loader.loadTestsFromNames(["return_wrong"], m)
         except TypeError:
             pass
         else:

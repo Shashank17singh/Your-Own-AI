@@ -182,7 +182,7 @@ def _encode(data, name="data"):
             err.object,
             err.start,
             err.end,
-            "%s (%.20r) is not valid Latin-1. Use %s.encode('utf-8') "
+            "%s (%.20r) is not valid Latin-1. Use %s.encode('utf-8') "  # noqa: UP031
             "if you want to send it encoded in UTF-8."
             % (name.title(), data[err.start : err.end], name),
         ) from None
@@ -232,7 +232,7 @@ def _read_headers(fp):
             raise LineTooLong("header line")
         headers.append(line)
         if len(headers) > _MAXHEADERS:
-            raise HTTPException("got more than %d headers" % _MAXHEADERS)
+            raise HTTPException("got more than %d headers" % _MAXHEADERS)  # noqa: UP031
         if line in (b"\r\n", b"\n", b""):
             break
     return headers
@@ -331,7 +331,7 @@ class HTTPResponse(io.BufferedIOBase):
         # read until we get a non-100 response
         while True:
             version, status, reason = self._read_status()
-            if status != CONTINUE:
+            if status != CONTINUE:  # noqa: F821
                 break
             # skip the header from the 100 response
             skipped_headers = _read_headers(self.fp)
@@ -383,8 +383,8 @@ class HTTPResponse(io.BufferedIOBase):
 
         # does the body have a fixed length? (of zero)
         if (
-            status == NO_CONTENT
-            or status == NOT_MODIFIED
+            status == NO_CONTENT  # noqa: F821
+            or status == NOT_MODIFIED  # noqa: F821
             or 100 <= status < 200  # 1xx codes
             or self._method == "HEAD"
         ):
@@ -401,9 +401,7 @@ class HTTPResponse(io.BufferedIOBase):
         if self.version == 11:
             # An HTTP/1.1 proxy is assumed to stay open unless
             # explicitly closed.
-            if conn and "close" in conn.lower():
-                return True
-            return False
+            return bool(conn and "close" in conn.lower())
 
         # Some HTTP/1.0 implementations have support for persistent
         # connections, using rules different than HTTP/1.1.
@@ -419,7 +417,7 @@ class HTTPResponse(io.BufferedIOBase):
 
         # Proxy-Connection is a netscape hack.
         pconn = self.headers.get("proxy-connection")
-        if pconn and "keep-alive" in pconn.lower():
+        if pconn and "keep-alive" in pconn.lower():  # noqa: SIM103
             return False
 
         # otherwise, assume it will close
@@ -510,10 +508,9 @@ class HTTPResponse(io.BufferedIOBase):
         if self.chunked:
             return self._readinto_chunked(b)
 
-        if self.length is not None:
-            if len(b) > self.length:
-                # clip the read to the "end of response"
-                b = memoryview(b)[0 : self.length]
+        if self.length is not None and len(b) > self.length:
+            # clip the read to the "end of response"
+            b = memoryview(b)[0 : self.length]
 
         # we do not use _safe_read() here because this may be a .will_close
         # connection, and the user is reading more bytes than will be provided
@@ -916,7 +913,7 @@ class HTTPConnection:
                     if host[i + 1 :] == "":  # http://foo.com:/ == http://foo.com/
                         port = self.default_port
                     else:
-                        raise InvalidURL("nonnumeric port: '%s'" % host[i + 1 :])
+                        raise InvalidURL(f"nonnumeric port: '{host[i + 1 :]}'")
                 host = host[:i]
             else:
                 port = self.default_port
@@ -944,7 +941,7 @@ class HTTPConnection:
         del headers
 
         response = self.response_class(self.sock, method=self._method)
-        version, code, message = response._read_status()
+        _version, code, message = response._read_status()
 
         if code != http.HTTPStatus.OK:
             self.close()
@@ -1023,7 +1020,7 @@ class HTTPConnection:
             else:
                 raise TypeError(
                     "data should be a bytes-like object "
-                    "or an iterable, got %r" % type(data)
+                    f"or an iterable, got {type(data)!r}"
                 )
 
     def _output(self, s):
@@ -1078,7 +1075,7 @@ class HTTPConnection:
                     except TypeError:
                         raise TypeError(
                             "message_body should be a bytes-like "
-                            "object or an iterable, got %r" % type(message_body)
+                            f"object or an iterable, got {type(message_body)!r}"
                         )
                 else:
                     # the object implements the buffer interface and
@@ -1145,7 +1142,7 @@ class HTTPConnection:
         url = url or "/"
         self._validate_path(url)
 
-        request = "%s %s %s" % (method, url, self._http_vsn_str)
+        request = f"{method} {url} {self._http_vsn_str}"
 
         self._output(self._encode_request(request))
 
@@ -1169,7 +1166,7 @@ class HTTPConnection:
 
                 netloc = ""
                 if url.startswith("http"):
-                    nil, netloc, nil, nil, nil = urlsplit(url)
+                    nil, netloc, nil, nil, _nil = urlsplit(url)  # noqa: PLW0128, RUF059
 
                 if netloc:
                     try:
@@ -1200,7 +1197,7 @@ class HTTPConnection:
                         self.putheader("Host", host_enc)
                     else:
                         host_enc = host_enc.decode("ascii")
-                        self.putheader("Host", "%s:%s" % (host_enc, port))
+                        self.putheader("Host", f"{host_enc}:{port}")
 
             # note: we are assuming that clients will not attempt to set these
             #       headers since *this* library must deal with the
@@ -1271,7 +1268,7 @@ class HTTPConnection:
             header = header.encode("ascii")
 
         if not _is_legal_header_name(header):
-            raise ValueError("Invalid header name %r" % (header,))
+            raise ValueError(f"Invalid header name {header!r}")
 
         values = list(values)
         for i, one_value in enumerate(values):
@@ -1281,7 +1278,7 @@ class HTTPConnection:
                 values[i] = str(one_value).encode("ascii")
 
             if _is_illegal_header_value(values[i]):
-                raise ValueError("Invalid header value %r" % (values[i],))
+                raise ValueError(f"Invalid header value {values[i]!r}")
 
         value = b"\r\n\t".join(values)
         header = header + b": " + value
@@ -1300,8 +1297,10 @@ class HTTPConnection:
             raise CannotSendHeader()
         self._send_output(message_body, encode_chunked=encode_chunked)
 
-    def request(self, method, url, body=None, headers={}, *, encode_chunked=False):
+    def request(self, method, url, body=None, headers=None, *, encode_chunked=False):
         """Send a complete request to the server."""
+        if headers is None:
+            headers = {}
         self._send_request(method, url, body, headers, encode_chunked)
 
     def _send_request(self, method, url, body, headers, encode_chunked):
@@ -1334,7 +1333,7 @@ class HTTPConnection:
                 if content_length is None:
                     if body is not None:
                         if self.debuglevel > 0:
-                            print("Unable to determine size of %r" % body)
+                            print(f"Unable to determine size of {body!r}")
                         encode_chunked = True
                         self.putheader("Transfer-Encoding", "chunked")
                 else:
@@ -1533,10 +1532,10 @@ class IncompleteRead(HTTPException):
 
     def __repr__(self):
         if self.expected is not None:
-            e = ", %i more expected" % self.expected
+            e = ", %i more expected" % self.expected  # noqa: UP031
         else:
             e = ""
-        return "%s(%i bytes read%s)" % (self.__class__.__name__, len(self.partial), e)
+        return "%s(%i bytes read%s)" % (self.__class__.__name__, len(self.partial), e)  # noqa: UP031
 
     __str__ = object.__str__
 
@@ -1568,7 +1567,8 @@ class BadStatusLine(HTTPException):
 class LineTooLong(HTTPException):
     def __init__(self, line_type):
         HTTPException.__init__(
-            self, "got more than %d bytes when reading %s" % (_MAXLINE, line_type)
+            self,
+            "got more than %d bytes when reading %s" % (_MAXLINE, line_type),  # noqa: UP031
         )
 
 
