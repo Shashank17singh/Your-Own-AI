@@ -17,3 +17,7 @@ if(WIN32)
     target_link_libraries(vectordb ws2_32)
 endif()
 
+# Unit tests: run with ctest
+enable_testing()
+add_executable(vector_engine_tests tests/test_vector_engine.cpp)
+add_test(NAME vector_engine COMMAND vector_engine_tests)

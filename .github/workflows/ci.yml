@@ -22,3 +22,6 @@ jobs:
         run: |
           ls -la build/
           echo "Build successful"
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
