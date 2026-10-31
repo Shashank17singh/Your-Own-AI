@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "request_guard.h"
 #include "vector_engine.h"
 
 static int failures = 0;
@@ -117,6 +118,18 @@ static void testChunking() {
     CHECK(!chunks.empty() && chunks.back().find("w9") != std::string::npos);
 }
 
+static void testRequestGuard() {
+    CHECK(isLocalRequest("localhost:8080", ""));
+    CHECK(isLocalRequest("127.0.0.1:8080", "http://127.0.0.1:8080"));
+    CHECK(isLocalRequest("localhost:8080", "http://localhost:8080"));
+
+    CHECK(!isLocalRequest("localhost:8080", "https://evil.example"));
+    CHECK(!isLocalRequest("localhost:8080", "null"));
+    CHECK(!isLocalRequest("evil.example:8080", ""));  // DNS rebinding.
+    CHECK(!isLocalRequest("evil.example:8080", "http://evil.example:8080"));
+    CHECK(!isLocalRequest("", ""));
+}
+
 int main() {
     testDistances();
     testMetricLookup();
@@ -127,6 +140,7 @@ int main() {
     testParseVec();
     testJsonHelpers();
     testChunking();
+    testRequestGuard();
 
     if (failures == 0) {
         std::cout << "All vector engine tests passed.\n";
