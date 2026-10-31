@@ -11,6 +11,7 @@
 #include <windows.h>
 #endif
 #include "httplib.h"
+#include "request_guard.h"
 #include "vector_engine.h"
 #include <algorithm>
 #include <chrono>
@@ -283,6 +284,15 @@ int main() {
     cout << "  embed model: " << ollama.embedModel
               << "  gen model: " << ollama.genModel << endl;
   httplib::Server svr;
+  svr.set_pre_routing_handler(
+      [](const httplib::Request &req, httplib::Response &res) {
+        if (isLocalRequest(req.get_header_value("Host"),
+                           req.get_header_value("Origin"))) {
+          return httplib::Server::HandlerResponse::Unhandled;
+        }
+        res.status = 403;
+        return httplib::Server::HandlerResponse::Handled;
+      });
   svr.Options(".*", [](const httplib::Request &, httplib::Response &res) {
     cors(res);
     res.status = 204;
