@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="darkreader-lock" />
 
@@ -12,7 +13,12 @@
       rel="stylesheet"
     />
     <style>
+/* Hallmark · checked: 2026-10-31 · genre: modern-minimal (inferred)
+ * fixed: 25 tokens lifted, focus, motion and states added · structural: left for the owner, see the audit
+ * built: the project · redesign: polish · v2.0.0 */
+
       :root {
+  --field-edge: #8c8fa8;
         --bg: #faf5ff;
         --card: #ffffff;
         --border: #ddd6fe;
@@ -25,7 +31,36 @@
         --muted: #64748b;
         --red: #ef4444;
         --green: #10b981;
-      }
+  --color-blue-300-a12: rgba(108,99,255,0.12);
+  --color-green-200-a10: rgba(166,227,161,0.1);
+  --color-pink-200-a10: rgba(243,139,168,0.1);
+  --color-blue-400: #4f46e5;
+  --color-white: #fff;
+  --color-blue-300-a30: rgba(108,99,255,0.3);
+  --color-blue-300-a55: rgba(108,99,255,0.55);
+  --color-blue-800: #1c1c35;
+  --color-green-200-a12: rgba(166,227,161,0.12);
+  --color-green-200-a30: rgba(166,227,161,0.3);
+  --color-green-200-a22: rgba(166,227,161,0.22);
+  --color-blue-700: #252545;
+  --color-pink-200-a12: rgba(243,139,168,0.12);
+  --color-pink-200-a25: rgba(243,139,168,0.25);
+  --color-teal-400-a40: rgba(0,217,255,0.4);
+  --color-pink-200-a30: rgba(243,139,168,0.3);
+  --color-blue-300-a25: rgba(108,99,255,0.25);
+  --color-blue-300-a10: rgba(108,99,255,0.1);
+  --color-blue-300-a20: rgba(108,99,255,0.2);
+  --color-blue-800-2: #0a0a18;
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: inherit;
+  --canvas-1: #07070f;
+  --canvas-2: #0e0e1e;
+  --canvas-3: #1a1a38;
+  --canvas-4: #151530;
+  --canvas-5: rgba(108,99,255,0.18);
+  --canvas-6: #fff;
+  --canvas-7: #aaaacc;
+}
       * {
         box-sizing: border-box;
         margin: 0;
@@ -34,7 +69,7 @@
       body {
         background: var(--bg);
         color: var(--text);
-        font-family: "DM Sans", sans-serif;
+        font-family: var(--font-sans);
         height: 100vh;
         overflow: hidden;
         display: flex;
@@ -52,41 +87,31 @@
         flex-shrink: 0;
       }
       header h1 {
+        color: var(--accent2, var(--focus-ring));
         font-size: 17px;
         font-weight: 600;
-        letter-spacing: 4px;
-        background: linear-gradient(
-          90deg,
-          var(--cs),
-          var(--accent),
-          var(--math)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
       }
       .badge {
         font-size: 10px;
         padding: 2px 8px;
         border-radius: 10px;
-        letter-spacing: 1px;
         border: 1px solid var(--border);
         color: var(--muted);
       }
       .badge.hl {
         border-color: var(--accent);
         color: var(--accent);
-        background: rgba(108, 99, 255, 0.12);
+        background: var(--color-blue-300-a12);
       }
       .badge.ok {
         border-color: var(--green);
         color: var(--green);
-        background: rgba(166, 227, 161, 0.1);
+        background: var(--color-green-200-a10);
       }
       .badge.err {
         border-color: var(--red);
         color: var(--red);
-        background: rgba(243, 139, 168, 0.1);
+        background: var(--color-pink-200-a10);
       }
       #statsLabel {
         margin-left: auto;
@@ -142,11 +167,10 @@
         padding: 10px 6px;
         text-align: center;
         font-size: 10px;
-        letter-spacing: 1px;
         cursor: pointer;
         color: var(--muted);
         border-bottom: 2px solid transparent;
-        transition: all 0.2s;
+        transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
       }
       .tab.on {
         color: var(--accent);
@@ -167,8 +191,6 @@
       /* ── COMMON COMPONENTS ── */
       .sec {
         font-size: 10px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
         color: var(--muted);
         margin-bottom: 8px;
       }
@@ -181,15 +203,13 @@
         color: var(--text);
         padding: 9px 11px;
         border-radius: 6px;
-        font-family: inherit;
+        font-family: var(--font-serif);
         font-size: 12px;
-        outline: none;
         transition: border-color 0.2s;
       }
       input[type="text"]:focus,
       select:focus,
       textarea:focus {
-        border-color: var(--accent);
       }
       textarea {
         resize: vertical;
@@ -212,23 +232,24 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
-        font-family: inherit;
+        font-family: var(--font-serif);
         font-size: 12px;
         font-weight: 500;
-        letter-spacing: 0.5px;
-        transition: all 0.2s;
+        transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
       }
       .btn-p {
-        background: linear-gradient(135deg, var(--accent), #4f46e5);
-        color: #fff;
-        box-shadow: 0 0 18px rgba(108, 99, 255, 0.3);
+        background: linear-gradient(135deg, var(--accent), var(--color-blue-400));
+        color: var(--color-white);
+        box-shadow: 0 0 18px var(--color-blue-300-a30);
       }
       .btn-p:hover {
-        box-shadow: 0 0 28px rgba(108, 99, 255, 0.55);
+        box-shadow: 0 0 28px var(--color-blue-300-a55);
         transform: translateY(-1px);
       }
       .btn-p:disabled {
-        opacity: 0.5;
+        background: var(--disabled-fill);
+  color: var(--disabled-ink);
+  cursor: not-allowed;
         transform: none;
         cursor: wait;
       }
@@ -237,22 +258,26 @@
         color: var(--text);
       }
       .btn-s:hover {
-        background: #1c1c35;
+        background: var(--color-blue-800);
       }
       .btn-s:disabled {
-        opacity: 0.5;
+        background: var(--disabled-fill);
+  color: var(--disabled-ink);
+  cursor: not-allowed;
         cursor: wait;
       }
       .btn-g {
-        background: rgba(166, 227, 161, 0.12);
+        background: var(--color-green-200-a12);
         color: var(--green);
-        border: 1px solid rgba(166, 227, 161, 0.3);
+        border: 1px solid var(--color-green-200-a30);
       }
       .btn-g:hover {
-        background: rgba(166, 227, 161, 0.22);
+        background: var(--color-green-200-a22);
       }
       .btn-g:disabled {
-        opacity: 0.5;
+        background: var(--disabled-fill);
+  color: var(--disabled-ink);
+  cursor: not-allowed;
         cursor: wait;
       }
 
@@ -270,14 +295,13 @@
         font-size: 10px;
         cursor: pointer;
         text-align: center;
-        transition: all 0.2s;
-        letter-spacing: 0.5px;
-        font-family: inherit;
+        transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+        font-family: var(--font-serif);
       }
       .algo-btn.on {
         border-color: var(--accent);
         color: var(--accent);
-        background: rgba(108, 99, 255, 0.12);
+        background: var(--color-blue-300-a12);
       }
 
       .legend {
@@ -323,12 +347,11 @@
         }
       }
       .rcard:hover {
-        border-color: #252545;
+        border-color: var(--color-blue-700);
       }
       .rrank {
         font-size: 9px;
         color: var(--muted);
-        letter-spacing: 1px;
         margin-bottom: 3px;
       }
       .rmeta {
@@ -346,7 +369,6 @@
         font-size: 9px;
         padding: 2px 7px;
         border-radius: 8px;
-        letter-spacing: 0.5px;
       }
       .rdist {
         font-size: 10px;
@@ -355,19 +377,19 @@
         text-align: right;
       }
       .del {
-        background: rgba(243, 139, 168, 0.12);
+        background: var(--color-pink-200-a12);
         color: var(--red);
-        border: 1px solid rgba(243, 139, 168, 0.25);
+        border: 1px solid var(--color-pink-200-a25);
         border-radius: 4px;
         cursor: pointer;
         font-size: 10px;
         padding: 2px 7px;
-        font-family: inherit;
+        font-family: var(--font-serif);
         transition: background 0.2s;
         width: auto;
       }
       .del:hover {
-        background: rgba(243, 139, 168, 0.25);
+        background: var(--color-pink-200-a25);
       }
 
       /* ── LATENCY / BENCH / LAYERS ── */
@@ -375,7 +397,7 @@
         font-size: 32px;
         font-weight: 600;
         color: var(--cs);
-        text-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        text-shadow: 0 0 20px var(--color-teal-400-a40);
       }
       .lat-sub {
         font-size: 11px;
@@ -406,7 +428,6 @@
       .bfill {
         height: 100%;
         border-radius: 4px;
-        transition: width 0.5s ease;
       }
       .layers {
         display: flex;
@@ -436,7 +457,6 @@
         background: var(--accent);
         border-radius: 3px;
         opacity: 0.7;
-        transition: width 0.4s;
       }
       .lcount {
         width: 80px;
@@ -485,7 +505,7 @@
         color: var(--muted);
       }
 
-      /* ── OLLAMA STATUS ── */
+      /* ── Ollama STATUS ── */
       .ollama-status {
         background: var(--bg);
         border: 1px solid var(--border);
@@ -495,10 +515,10 @@
         line-height: 1.6;
       }
       .ollama-status.ok {
-        border-color: rgba(166, 227, 161, 0.3);
+        border-color: var(--color-green-200-a30);
       }
       .ollama-status.err {
-        border-color: rgba(243, 139, 168, 0.3);
+        border-color: var(--color-pink-200-a30);
       }
 
       /* ── CHAT ── */
@@ -508,8 +528,8 @@
         gap: 12px;
       }
       .chat-q {
-        background: rgba(108, 99, 255, 0.12);
-        border: 1px solid rgba(108, 99, 255, 0.25);
+        background: var(--color-blue-300-a12);
+        border: 1px solid var(--color-blue-300-a25);
         border-radius: 7px;
         padding: 10px 12px;
         font-size: 12px;
@@ -523,7 +543,6 @@
       }
       .chat-a-label {
         font-size: 9px;
-        letter-spacing: 2px;
         color: var(--green);
         margin-bottom: 6px;
       }
@@ -539,7 +558,6 @@
       }
       .chat-ctx-label {
         font-size: 9px;
-        letter-spacing: 1px;
         color: var(--muted);
         margin-bottom: 6px;
       }
@@ -549,13 +567,13 @@
         padding: 2px 7px;
         border-radius: 10px;
         margin: 2px;
-        background: rgba(108, 99, 255, 0.1);
-        border: 1px solid rgba(108, 99, 255, 0.2);
+        background: var(--color-blue-300-a10);
+        border: 1px solid var(--color-blue-300-a20);
         color: var(--accent);
         cursor: pointer;
       }
       .ctx-chip:hover {
-        background: rgba(108, 99, 255, 0.2);
+        background: var(--color-blue-300-a20);
       }
       .ctx-expand {
         display: none;
@@ -564,7 +582,7 @@
         line-height: 1.5;
         margin-top: 6px;
         padding: 8px;
-        background: #0a0a18;
+        background: var(--color-blue-800-2);
         border-radius: 5px;
       }
       .thinking {
@@ -623,15 +641,111 @@
         background: var(--border);
         border-radius: 2px;
       }
-    </style>
+
+/* Accessibility states added by the polish pass. */
+:root {
+  --field-edge: #8c8fa8;
+  --focus-ring: #1d2939;
+  --disabled-fill: #e5e7eb;
+  --disabled-ink: #6b7280;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible + label {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: var(--disabled-fill);
+  color: var(--disabled-ink);
+  cursor: not-allowed;
+}
+
+.algo-btn {
+  color: var(--focus-ring);
+}
+
+input[type="text"],
+select,
+textarea {
+  border-color: var(--field-edge) !important;
+}
+@media (max-width: 900px) {
+  header {
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  header * {
+    min-width: 0;
+  }
+
+  body {
+    height: auto;
+    overflow: visible;
+  }
+
+  .layout {
+    display: block;
+    overflow: visible;
+  }
+
+  .left-panel,
+  .center-panel,
+  .right-panel {
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+  }
+
+  .center-panel {
+    height: 60vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
   </head>
   <body>
     <header>
       <h1>Your-Own-AI</h1>
       <span class="badge hl">HNSW</span>
-      <span class="badge">KD-TREE</span>
-      <span class="badge">BRUTE FORCE</span>
-      <span class="badge" id="ollamaBadge">OLLAMA…</span>
+      <span class="badge">KD-Tree</span>
+      <span class="badge">Brute force</span>
+      <span class="badge" id="ollamaBadge">Ollama…</span>
       <span id="statsLabel">loading…</span>
     </header>
 
@@ -641,35 +755,29 @@
         <div>
           <div class="sec">Query (Demo Vectors)</div>
           <div style="display: flex; flex-direction: column; gap: 6px">
-            <input
+            <input aria-label="binary tree, sushi, basketball…"
               type="text"
               id="qInput"
               placeholder="binary tree, sushi, basketball…"
             />
-            <button class="btn-p" onclick="runSearch()">SEARCH</button>
+            <button class="btn-p" onclick="runSearch()">Search</button>
           </div>
         </div>
         <div>
           <div class="sec">Algorithm</div>
           <div class="algo-row">
-            <div class="algo-btn on" data-algo="hnsw" onclick="setAlgo(this)">
-              HNSW
-            </div>
-            <div class="algo-btn" data-algo="kdtree" onclick="setAlgo(this)">
-              KD-TREE
-            </div>
+            <div class="algo-btn on" data-algo="hnsw" onclick="setAlgo(this)">HNSW</div>
+            <div class="algo-btn" data-algo="kdtree" onclick="setAlgo(this)">KD-Tree</div>
             <div
               class="algo-btn"
               data-algo="bruteforce"
               onclick="setAlgo(this)"
-            >
-              BRUTE
-            </div>
+            >Brute</div>
           </div>
         </div>
         <div>
           <div class="sec">Distance Metric</div>
-          <select id="metric">
+          <select aria-label="metric" id="metric">
             <option value="cosine">Cosine Similarity</option>
             <option value="euclidean">Euclidean Distance</option>
             <option value="manhattan">Manhattan Distance</option>
@@ -677,7 +785,7 @@
         </div>
         <div>
           <div class="sec">Top-K: <span id="kLabel">5</span></div>
-          <input
+          <input aria-label="kSlider"
             type="range"
             id="kSlider"
             min="1"
@@ -735,33 +843,31 @@
         <div>
           <div class="sec">Insert Demo Vector</div>
           <div style="display: flex; flex-direction: column; gap: 6px">
-            <input type="text" id="addMeta" placeholder="Description…" />
-            <select id="addCat">
+            <input aria-label="Description…" type="text" id="addMeta" placeholder="Description…" />
+            <select aria-label="addCat" id="addCat">
               <option value="cs">CS / Algorithms</option>
               <option value="math">Mathematics</option>
               <option value="food">Food &amp; Cooking</option>
               <option value="sports">Sports &amp; Games</option>
             </select>
-            <button class="btn-s" onclick="addVector()">+ INSERT</button>
+            <button class="btn-s" onclick="addVector()">+ Insert</button>
           </div>
         </div>
         <div>
           <div class="sec">Benchmark</div>
-          <button class="btn-s" onclick="runBenchmark()">
-            COMPARE ALL ALGOS
-          </button>
+          <button class="btn-s" onclick="runBenchmark()">Compare all algos</button>
         </div>
       </div>
 
       <!-- ══ CENTER: SCATTER PLOT ══ -->
-      <div class="center-panel"><canvas id="scatter"></canvas></div>
+      <div class="center-panel"><canvas role="img" aria-label="Chart of the stored vectors" id="scatter"></canvas></div>
 
       <!-- ══ RIGHT PANEL: TABS ══ -->
       <div class="right-panel">
         <div class="tabs">
-          <div class="tab on" onclick="switchTab('search')">SEARCH</div>
-          <div class="tab" onclick="switchTab('docs')">DOCUMENTS</div>
-          <div class="tab" onclick="switchTab('rag')">ASK AI</div>
+          <div class="tab on" onclick="switchTab('search')">Search</div>
+          <div class="tab" onclick="switchTab('docs')">Documents</div>
+          <div class="tab" onclick="switchTab('rag')">Ask AI</div>
         </div>
 
         <!-- TAB: SEARCH -->
@@ -781,7 +887,7 @@
           </div>
           <div>
             <div class="sec">Query Embedding (16D)</div>
-            <canvas id="vecCvs" height="76"></canvas>
+            <canvas role="img" aria-label="Chart of the stored vectors" id="vecCvs" height="76"></canvas>
           </div>
           <div id="benchSec" style="display: none">
             <div class="sec">Algorithm Comparison</div>
@@ -804,12 +910,12 @@
           <div>
             <div class="sec">Insert Document</div>
             <div style="display: flex; flex-direction: column; gap: 8px">
-              <input
+              <input aria-label="Document title / topic…"
                 type="text"
                 id="docTitle"
                 placeholder="Document title / topic…"
               />
-              <textarea
+              <textarea aria-label="Paste your notes, textbook excerpt, lecture content…&#10;&#10;Long text is automatically split into overlapping chunks and each chunk gets its own real embedding via Ollama"
                 id="docText"
                 placeholder="Paste your notes, textbook excerpt, lecture content…&#10;&#10;Long text is automatically split into overlapping chunks and each chunk gets its own real embedding via Ollama's nomic-embed-text model."
               ></textarea>
@@ -818,7 +924,7 @@
                 id="insertDocBtn"
                 onclick="insertDocument()"
               >
-                EMBED &amp; INSERT
+                Embed &amp; insert
               </button>
               <div
                 id="insertStatus"
@@ -843,13 +949,13 @@
           <div>
             <div class="sec">Ask a Question</div>
             <div style="display: flex; flex-direction: column; gap: 8px">
-              <textarea
+              <textarea aria-label="What is dynamic programming?&#10;Explain the main idea of HNSW.&#10;How does the recipe differ from…"
                 id="ragQuestion"
                 rows="3"
                 placeholder="What is dynamic programming?&#10;Explain the main idea of HNSW.&#10;How does the recipe differ from…"
               ></textarea>
               <div style="display: flex; gap: 6px">
-                <select id="ragK" style="width: auto; flex-shrink: 0">
+                <select aria-label="ragK" id="ragK" style="width: auto; flex-shrink: 0">
                   <option value="2">Top 2</option>
                   <option value="3" selected>Top 3</option>
                   <option value="5">Top 5</option>
@@ -859,9 +965,7 @@
                   id="askBtn"
                   onclick="askAI()"
                   style="flex: 1"
-                >
-                  ASK AI
-                </button>
+                >Ask AI</button>
               </div>
               <div style="font-size: 10px; color: var(--muted)">
                 Uses your inserted documents as context. Answers come from the
@@ -885,6 +989,15 @@
 
     <div id="tip"></div>
 
+    <script>
+      const cssColorCache = new Map();
+      function cssColor(name) {
+        if (!cssColorCache.has(name)) {
+          cssColorCache.set(name, getComputedStyle(document.documentElement).getPropertyValue(name).trim());
+        }
+        return cssColorCache.get(name);
+      }
+    </script>
     <script>
       // ════════════════════════════════════════════════════════════
       //  CONSTANTS
@@ -1141,9 +1254,9 @@
 
       function drawFrame() {
         ctx.clearRect(0, 0, sc.width, sc.height);
-        ctx.fillStyle = "#07070f";
+        ctx.fillStyle = cssColor("--canvas-1");
         ctx.fillRect(0, 0, sc.width, sc.height);
-        ctx.strokeStyle = "#0e0e1e";
+        ctx.strokeStyle = cssColor("--canvas-2");
         ctx.lineWidth = 1;
         for (let i = 0; i <= 8; i++) {
           const tx = 70 + (i / 8) * (sc.width - 140),
@@ -1157,7 +1270,7 @@
           ctx.lineTo(sc.width - 70, ty);
           ctx.stroke();
         }
-        ctx.fillStyle = "#1a1a38";
+        ctx.fillStyle = cssColor("--canvas-3");
         ctx.font = "11px Fira Code,monospace";
         ctx.fillText("PC₁ →", sc.width / 2 - 40, sc.height - 18);
         ctx.save();
@@ -1165,7 +1278,7 @@
         ctx.rotate(-Math.PI / 2);
         ctx.fillText("PC₂ →", 0, 0);
         ctx.restore();
-        ctx.fillStyle = "#151530";
+        ctx.fillStyle = cssColor("--canvas-4");
         ctx.font = "12px Fira Code,monospace";
         ctx.fillText("2D PCA Projection  ·  Semantic Space", 80, 28);
 
@@ -1174,7 +1287,7 @@
           for (const pt of pcaPoints) {
             if (!hitIds.has(pt.item.id)) continue;
             const [px, py] = w2c(pt.x, pt.y);
-            ctx.strokeStyle = "rgba(108,99,255,0.18)";
+            ctx.strokeStyle = cssColor("--canvas-5");
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
             ctx.beginPath();
@@ -1220,7 +1333,7 @@
           const [qx, qy] = w2c(queryPt.x, queryPt.y);
           ctx.save();
           ctx.translate(qx, qy);
-          ctx.shadowColor = "#fff";
+          ctx.shadowColor = cssColor("--canvas-6");
           ctx.shadowBlur = 18;
           ctx.beginPath();
           for (let i = 0; i < 10; i++) {
@@ -1230,16 +1343,16 @@
             else ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
           }
           ctx.closePath();
-          ctx.fillStyle = "#fff";
+          ctx.fillStyle = cssColor("--canvas-6");
           ctx.fill();
           ctx.shadowBlur = 0;
           ctx.restore();
-          ctx.fillStyle = "#aaaacc";
+          ctx.fillStyle = cssColor("--canvas-7");
           ctx.font = "10px Fira Code,monospace";
           ctx.fillText("query", qx + 16, qy + 4);
         }
         if (!pcaPoints.length) {
-          ctx.fillStyle = "#1a1a38";
+          ctx.fillStyle = cssColor("--canvas-3");
           ctx.font = "13px Fira Code,monospace";
           ctx.textAlign = "center";
           ctx.fillText("Connecting to VectorDB…", sc.width / 2, sc.height / 2);
@@ -1403,7 +1516,7 @@
         vc.width = W;
         const vx = vc.getContext("2d");
         vx.clearRect(0, 0, W, 76);
-        vx.fillStyle = "#07070f";
+        vx.fillStyle = cssColor("--canvas-1");
         vx.fillRect(0, 0, W, 76);
         const bw = (W - 4) / DIMS;
         for (let i = 0; i < DIMS; i++) {
@@ -1517,7 +1630,7 @@
           const box = document.getElementById("ollamaStatus");
           if (d.ollamaAvailable) {
             badge.className = "badge ok";
-            badge.textContent = "OLLAMA ✓";
+            badge.textContent = "Ollama ✓";
             box.className = "ollama-status ok";
             box.innerHTML =
               `<span style="color:var(--green)">● Online</span><br>` +
@@ -1527,7 +1640,7 @@
               `Documents: <span style="color:var(--text)">${d.docCount}</span>`;
           } else {
             badge.className = "badge err";
-            badge.textContent = "OLLAMA ✗";
+            badge.textContent = "Ollama ✗";
             box.className = "ollama-status err";
             box.innerHTML =
               `<span style="color:var(--red)">● Offline</span><br><br>` +
