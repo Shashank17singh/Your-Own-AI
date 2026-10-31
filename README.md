@@ -23,7 +23,7 @@ A custom C++ vector database implementing HNSW, KD-Tree, and Brute-Force search.
 
 | Feature                     | Description                                                                     |
 | --------------------------- | ------------------------------------------------------------------------------- |
-| **3 Search Algorithms**     | HNSW (production-grade), KD-Tree, Brute Force - run all three and compare speed |
+| **3 Search Algorithms**     | HNSW, KD-Tree and Brute Force. Run all three and compare speed |
 | **3 Distance Metrics**      | Cosine similarity, Euclidean distance, Manhattan distance                       |
 | **16D Demo Vectors**        | 20 pre-loaded semantic vectors across 4 categories (CS, Math, Food, Sports)     |
 | **2D PCA Scatter Plot**     | Live visualization of semantic space - watch clusters form                      |
@@ -166,7 +166,7 @@ This produces `db.exe`.
 >
 > - `g++: command not found` → MSYS2 not in PATH, redo Step 1 point 5
 > - `undefined reference to WSA...` → missing `-lws2_32` flag, add it
-> - Takes too long? Remove `-O2` for a faster (but slower) compile
+> - Takes too long? Remove `-O2` to compile faster, at the cost of a slower program
 
 ### Step 6 - Run Everything
 
