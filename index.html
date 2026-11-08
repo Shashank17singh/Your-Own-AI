@@ -1,65 +1,68 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="darkreader-lock" />
-
-    <meta charset="UTF-8" />
-    <title>VectorDB - HNSW + RAG</title>
+    <title>Your Own AI</title>
+    <meta name="description" content="A C++ vector database with HNSW, KD-Tree and brute-force search, a local RAG pipeline on Ollama, and a live 2D PCA view of the vectors." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <style>
-/* Hallmark · checked: 2026-10-31 · genre: modern-minimal (inferred)
- * fixed: 25 tokens lifted, focus, motion and states added · structural: left for the owner, see the audit
- * built: the project · redesign: polish · v2.0.0 */
+/* Hallmark · redesign: 2026-11-08 · genre: modern-minimal · system: ui-ux-pro-max Swiss minimal, dense dashboard; shares UPI Mesh's slate palette, sky accent for this project
+ * critique: one dark surface from header to canvas, one accent, no glow or gradient; the PCA canvas is the signature and the chrome steps back from it.
+ * built: the project · v2.0.0 */
 
       :root {
-  --field-edge: #8c8fa8;
-        --bg: #faf5ff;
-        --card: #ffffff;
-        --border: #ddd6fe;
-        --cs: #0891b2;
-        --math: #a78bfa;
-        --food: #f59e0b;
-        --sports: #10b981;
-        --accent: #7c3aed;
-        --text: #1e1b4b;
-        --muted: #64748b;
-        --red: #ef4444;
-        --green: #10b981;
-  --color-blue-300-a12: rgba(108,99,255,0.12);
+        color-scheme: dark;
+        --field-edge: #475569;
+        --bg: #111a2e;
+        --card: #16213a;
+        --border: #2b3a55;
+        --cs: #00d9ff;
+        --math: #b388ff;
+        --food: #ffb74d;
+        --sports: #69f0ae;
+        --accent: #5cc8f5;
+        --on-accent: #0b1424;
+        --text: #eef2f8;
+        --muted: #9aa8bf;
+        --red: #f87171;
+        --green: #4ade80;
+  --color-blue-300-a12: rgba(92,200,245,0.12);
   --color-green-200-a10: rgba(166,227,161,0.1);
   --color-pink-200-a10: rgba(243,139,168,0.1);
-  --color-blue-400: #4f46e5;
-  --color-white: #fff;
-  --color-blue-300-a30: rgba(108,99,255,0.3);
-  --color-blue-300-a55: rgba(108,99,255,0.55);
-  --color-blue-800: #1c1c35;
+  --color-blue-400: #5cc8f5;
+  --color-white: #0b1424;
+  --color-blue-300-a30: rgba(92,200,245,0.3);
+  --color-blue-300-a55: rgba(92,200,245,0.55);
+  --color-blue-800: #22304b;
   --color-green-200-a12: rgba(166,227,161,0.12);
   --color-green-200-a30: rgba(166,227,161,0.3);
   --color-green-200-a22: rgba(166,227,161,0.22);
-  --color-blue-700: #252545;
+  --color-blue-700: #475569;
   --color-pink-200-a12: rgba(243,139,168,0.12);
   --color-pink-200-a25: rgba(243,139,168,0.25);
   --color-teal-400-a40: rgba(0,217,255,0.4);
   --color-pink-200-a30: rgba(243,139,168,0.3);
-  --color-blue-300-a25: rgba(108,99,255,0.25);
-  --color-blue-300-a10: rgba(108,99,255,0.1);
-  --color-blue-300-a20: rgba(108,99,255,0.2);
-  --color-blue-800-2: #0a0a18;
-  --font-sans: "DM Sans", sans-serif;
+  --color-blue-300-a25: rgba(92,200,245,0.25);
+  --color-blue-300-a10: rgba(92,200,245,0.1);
+  --color-blue-300-a20: rgba(92,200,245,0.2);
+  --color-blue-800-2: #0d1526;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: inherit;
-  --canvas-1: #07070f;
-  --canvas-2: #0e0e1e;
-  --canvas-3: #1a1a38;
-  --canvas-4: #151530;
-  --canvas-5: rgba(108,99,255,0.18);
-  --canvas-6: #fff;
-  --canvas-7: #aaaacc;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --canvas-1: #0b1222;
+  --canvas-2: #16213a;
+  --canvas-3: #22304b;
+  --canvas-4: #1a2640;
+  --canvas-5: rgba(92,200,245,0.16);
+  --canvas-6: #ffffff;
+  --canvas-7: #9aa8bf;
 }
       * {
         box-sizing: border-box;
@@ -80,13 +83,14 @@
       header {
         background: var(--card);
         border-bottom: 1px solid var(--border);
-        padding: 10px 20px;
+        padding: 8px 20px;
         display: flex;
         align-items: center;
         gap: 12px;
         flex-shrink: 0;
       }
       header h1 {
+        text-wrap: balance;
         color: var(--accent2, var(--focus-ring));
         font-size: 17px;
         font-weight: 600;
@@ -134,7 +138,7 @@
         padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 16px;
       }
       .center-panel {
         flex: 1;
@@ -164,7 +168,7 @@
       }
       .tab {
         flex: 1;
-        padding: 10px 6px;
+        padding: 8px 8px;
         text-align: center;
         font-size: 10px;
         cursor: pointer;
@@ -201,7 +205,7 @@
         background: var(--bg);
         border: 1px solid var(--border);
         color: var(--text);
-        padding: 9px 11px;
+        padding: 8px 12px;
         border-radius: 6px;
         font-family: var(--font-serif);
         font-size: 12px;
@@ -228,7 +232,7 @@
       }
       button {
         width: 100%;
-        padding: 9px 14px;
+        padding: 8px 16px;
         border: none;
         border-radius: 6px;
         cursor: pointer;
@@ -238,13 +242,12 @@
         transition: color 0.2s, background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s, opacity 0.2s;
       }
       .btn-p {
-        background: linear-gradient(135deg, var(--accent), var(--color-blue-400));
-        color: var(--color-white);
-        box-shadow: 0 0 18px var(--color-blue-300-a30);
+        background: var(--accent);
+        color: var(--on-accent);
+        font-weight: 600;
       }
       .btn-p:hover {
-        box-shadow: 0 0 28px var(--color-blue-300-a55);
-        transform: translateY(-1px);
+        background: color-mix(in srgb, var(--accent) 85%, var(--text));
       }
       .btn-p:disabled {
         background: var(--disabled-fill);
@@ -283,11 +286,11 @@
 
       .algo-row {
         display: flex;
-        gap: 5px;
+        gap: 4px;
       }
       .algo-btn {
         flex: 1;
-        padding: 7px 4px;
+        padding: 8px 4px;
         border-radius: 6px;
         border: 1px solid var(--border);
         background: var(--bg);
@@ -307,7 +310,7 @@
       .legend {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
       }
       .leg-row {
         display: flex;
@@ -327,13 +330,13 @@
       .results {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 8px;
       }
       .rcard {
         background: var(--bg);
         border: 1px solid var(--border);
         border-radius: 7px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         animation: fadeUp 0.25s ease;
       }
       @keyframes fadeUp {
@@ -352,22 +355,22 @@
       .rrank {
         font-size: 9px;
         color: var(--muted);
-        margin-bottom: 3px;
+        margin-bottom: 4px;
       }
       .rmeta {
         font-size: 12px;
         line-height: 1.4;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       .rfoot {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 6px;
+        gap: 8px;
       }
       .rcat {
         font-size: 9px;
-        padding: 2px 7px;
+        padding: 2px 8px;
         border-radius: 8px;
       }
       .rdist {
@@ -383,7 +386,7 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 10px;
-        padding: 2px 7px;
+        padding: 2px 8px;
         font-family: var(--font-serif);
         transition: background 0.2s;
         width: auto;
@@ -407,12 +410,12 @@
       .bench {
         display: flex;
         flex-direction: column;
-        gap: 9px;
+        gap: 8px;
       }
       .brow {
         display: flex;
         flex-direction: column;
-        gap: 3px;
+        gap: 4px;
       }
       .blabel {
         display: flex;
@@ -432,12 +435,12 @@
       .layers {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
       }
       .lrow {
         display: flex;
         align-items: center;
-        gap: 7px;
+        gap: 8px;
         font-size: 10px;
       }
       .lnum {
@@ -474,13 +477,13 @@
       .doc-list {
         display: flex;
         flex-direction: column;
-        gap: 7px;
+        gap: 8px;
       }
       .dcard {
         background: var(--bg);
         border: 1px solid var(--border);
         border-radius: 7px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         animation: fadeUp 0.25s ease;
       }
       .dcard-title {
@@ -493,7 +496,7 @@
         font-size: 10px;
         color: var(--muted);
         line-height: 1.5;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       .dcard-foot {
         display: flex;
@@ -510,7 +513,7 @@
         background: var(--bg);
         border: 1px solid var(--border);
         border-radius: 7px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         font-size: 11px;
         line-height: 1.6;
       }
@@ -531,7 +534,7 @@
         background: var(--color-blue-300-a12);
         border: 1px solid var(--color-blue-300-a25);
         border-radius: 7px;
-        padding: 10px 12px;
+        padding: 8px 12px;
         font-size: 12px;
         line-height: 1.5;
       }
@@ -544,7 +547,7 @@
       .chat-a-label {
         font-size: 9px;
         color: var(--green);
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       .chat-a-text {
         font-size: 12px;
@@ -552,19 +555,19 @@
         white-space: pre-wrap;
       }
       .chat-ctx {
-        margin-top: 10px;
+        margin-top: 8px;
         border-top: 1px solid var(--border);
         padding-top: 8px;
       }
       .chat-ctx-label {
         font-size: 9px;
         color: var(--muted);
-        margin-bottom: 6px;
+        margin-bottom: 8px;
       }
       .ctx-chip {
         display: inline-block;
         font-size: 9px;
-        padding: 2px 7px;
+        padding: 2px 8px;
         border-radius: 10px;
         margin: 2px;
         background: var(--color-blue-300-a10);
@@ -580,7 +583,7 @@
         font-size: 10px;
         color: var(--muted);
         line-height: 1.5;
-        margin-top: 6px;
+        margin-top: 8px;
         padding: 8px;
         background: var(--color-blue-800-2);
         border-radius: 5px;
@@ -623,7 +626,7 @@
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 6px;
-        padding: 7px 11px;
+        padding: 8px 12px;
         font-size: 11px;
         pointer-events: none;
         max-width: 220px;
@@ -644,10 +647,9 @@
 
 /* Accessibility states added by the polish pass. */
 :root {
-  --field-edge: #8c8fa8;
-  --focus-ring: #1d2939;
-  --disabled-fill: #e5e7eb;
-  --disabled-ink: #6b7280;
+  --focus-ring: #eef3fb;
+  --disabled-fill: #22304b;
+  --disabled-ink: #a6b2c6;
 }
 
 [hidden] {
@@ -686,7 +688,7 @@ textarea:disabled {
 }
 
 .algo-btn {
-  color: var(--focus-ring);
+  color: var(--text);
 }
 
 input[type="text"],
@@ -741,7 +743,7 @@ textarea {
   </head>
   <body>
     <header>
-      <h1>Your-Own-AI</h1>
+      <h1>Your Own AI</h1>
       <span class="badge hl">HNSW</span>
       <span class="badge">KD-Tree</span>
       <span class="badge">Brute force</span>
@@ -1276,7 +1278,7 @@ textarea {
           ctx.stroke();
         }
         ctx.fillStyle = cssColor("--canvas-3");
-        ctx.font = "11px Fira Code,monospace";
+        ctx.font = "11px JetBrains Mono,monospace";
         ctx.fillText("PC₁ →", sc.width / 2 - 40, sc.height - 18);
         ctx.save();
         ctx.translate(18, sc.height / 2 + 50);
@@ -1284,7 +1286,7 @@ textarea {
         ctx.fillText("PC₂ →", 0, 0);
         ctx.restore();
         ctx.fillStyle = cssColor("--canvas-4");
-        ctx.font = "12px Fira Code,monospace";
+        ctx.font = "12px JetBrains Mono,monospace";
         ctx.fillText("2D PCA Projection  ·  Semantic Space", 80, 28);
 
         if (queryPt && hitIds.size > 0) {
@@ -1353,12 +1355,12 @@ textarea {
           ctx.shadowBlur = 0;
           ctx.restore();
           ctx.fillStyle = cssColor("--canvas-7");
-          ctx.font = "10px Fira Code,monospace";
+          ctx.font = "10px JetBrains Mono,monospace";
           ctx.fillText("query", qx + 16, qy + 4);
         }
         if (!pcaPoints.length) {
           ctx.fillStyle = cssColor("--canvas-3");
-          ctx.font = "13px Fira Code,monospace";
+          ctx.font = "13px JetBrains Mono,monospace";
           ctx.textAlign = "center";
           ctx.fillText("Connecting to VectorDB…", sc.width / 2, sc.height / 2);
           ctx.textAlign = "left";

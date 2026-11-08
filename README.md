@@ -1,17 +1,6 @@
-<div align="center">
+# Your Own AI
 
-# Your-Own-AI (VectorDB) - Building a Vector Database in C++
-
-**A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama**
-
-[![C++](https://img.shields.io/badge/C++17-Backend-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
-[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-000000?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.com/)
-[![HNSW](https://img.shields.io/badge/HNSW-Vector%20Search-4B8BBE?style=for-the-badge&logoColor=white)](https://arxiv.org/abs/1603.09320)
-[![REST API](https://img.shields.io/badge/REST-API-6A5ACD?style=for-the-badge&logoColor=white)](#rest-api-reference)
-
-</div>
-
----
+A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama.
 
 ## Overview
 
