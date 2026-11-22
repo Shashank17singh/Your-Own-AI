@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" width="72" height="72" alt="Your Own AI Logo" />
+</p>
+
 # Your Own AI
 
 A fully working vector database with HNSW, KD-Tree, and Brute Force search, plus a local RAG pipeline powered by Ollama.
