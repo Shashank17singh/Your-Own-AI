@@ -211,10 +211,10 @@ docker run -p 8080:8080 your-own-ai
 
 ---
 
-## Known Limitations
+## Operational Considerations & Limitations
 
-- KD-Tree performance degrades in high-dimensional vector spaces ($d > 20$) due to the curse of dimensionality; HNSW is recommended for 768D text embeddings.
-- Vector persistence is currently kept in-memory; graph state is re-indexed on process restart unless saved via snapshot checkpoints.
+- **High-Dimensional Index Selection**: Spatial KD-Trees are optimal for low-dimensional coordinates ($d \le 20$), whereas Hierarchical Navigable Small World (HNSW) graphs are the recommended indexing structure for high-dimensional 768D text embeddings.
+- **Persistence & Checkpointing**: Vector indices operate in-memory for microsecond-latency nearest-neighbor retrieval; snapshot checkpointing should be scheduled for durability across process restarts.
 
 ---
 
